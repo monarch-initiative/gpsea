@@ -1,16 +1,20 @@
 from collections import defaultdict
 import glob
-from gpc import Patient
+from gpc import Patient, Disease, AllPatients
 import os
+from gpc import compare
 
-allPatients = defaultdict(Patient)
+allPatients = AllPatients()
 
-for file in glob.glob('phenopackets/*.json'):
+for file in glob.glob('phenopackets/AutismTest/*.json'):
     fileName = os.path.basename(file)
-    print(fileName)
     current = Patient(file)
     
-    if current.get_genotypes is not None and len(current.get_genotypes) != 0:
-        allPatients[fileName] = current
+    allPatients.add(current)
+
+print(allPatients.list_all_diseases())
+print(allPatients.list_all_phenotypes())
     
-for p in allPatients: print(allPatients[p].describe())
+#for p in allPatients: print(allPatients[p].describe())
+
+compare.RunStats(allPatients, 'deletion', 'duplication')
