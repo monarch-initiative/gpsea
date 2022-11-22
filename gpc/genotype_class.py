@@ -1,62 +1,50 @@
 import pyensembl
 import varcode as vc
+from .patient_class import Patient
 
-class Genotype:
-    def __init__(self, genInterp):
-        contig = genInterp.variant_interpretation.variation_descriptor.vcf_record.chrom
-        start = genInterp.variant_interpretation.variation_descriptor.vcf_record.pos
-        ref = genInterp.variant_interpretation.variation_descriptor.vcf_record.ref
-        alt = genInterp.variant_interpretation.variation_descriptor.vcf_record.alt
-        self._myVar = vc.Variant(str(contig), start, ref, alt, ensembl = pyensembl.ensembl_grch37)
-        self._variant = self._myVar.short_description
-        self._topVar = self._myVar.effects().top_priority_effect()
+    
+def is_missense(pat):
+    if pat.variant.variant.effects().top_priority_effect().short_description.endswith("*") or not pat._variant.variant.is_snv:
+        return False
+    else:
+        return True
+    
+def is_nonsense(pat):
+    if pat.variant.variant.effects().top_priority_effect().short_description.endswith("*") and pat._variant.variant.is_snv:
+        return True
+    else:
+        return False
         
-    @property
-    def variant(self):
-        return self._variant
-    
-    @property
-    def top_var_effect(self):
-        return self._topVar.short_description
-    
-    @property
-    def is_missense(self):
-        if self._topVar.short_description.endswith("*") or not self._myVar.is_snv:
-            return False
-        else:
+def is_deletion(pat):
+    if pat.variant.variant is not None:
+        return pat.variant.variant.is_deletion
+    elif pat.disease_label is not None:
+        if 'deletion' in pat.disease_label:
             return True
-    
-    @property
-    def is_nonsense(self):
-        if self._topVar.short_description.endswith("*") and self._myVar.is_snv:
-            return True
-        else:
-            return False
-        
-    @property 
-    def is_deletion(self):
-        return self._myVar.is_deletion
-    
-    @property
-    def is_insertion(self):
-        return self._myVar.is_insertion
-    
-    @property
-    def is_transition(self):
-        return self._myVar.is_transition
-    
-    @property
-    def is_transversion(self):
-        return self._myVar.is_transversion
-    
-    @property
-    def is_indel(self):
-        return self._myVar.is_indel
-    
-    @property
-    def is_duplication(self):
-        if 'dup' in self._myVar.short_description:
+    else:
+        return False
+
+def is_insertion(pat):
+    return pat.variant.variant.is_insertion
+
+def is_transition(pat):
+    return pat.variant.variant.is_transition
+
+def is_transversion(pat):
+    return pat.variant.variant.is_transversion
+
+def is_indel(pat):
+    return pat.variant.variant.is_indel
+
+def is_duplication(pat):
+    if pat.variant.variant is not None:
+        if 'dup' in pat.variant.variant.effects().top_priority_effect().short_description:
             return True
         else:
             return False
-    
+    elif pat.disease_label is not None:
+        if 'duplication' in pat.disease_label:
+            return True
+    else:
+        return False
+

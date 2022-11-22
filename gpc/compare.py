@@ -1,5 +1,6 @@
 import scipy
 import numpy as np
+import pandas as pd
 
 def has_hpo(pat, hpo):
     for h in pat.phenotype_ids:
@@ -7,33 +8,19 @@ def has_hpo(pat, hpo):
             return True
     return False
 
-def is_vartype(pat, vartype):
-    if vartype == 'missense':
-        return pat.var_is_missense[0]
-    elif vartype == 'nonsense':
-        return pat.var_is_nonsense[0]
-    elif vartype == 'deletion':
-        if pat.var_is_deletion[0] is not None:
-            return pat.var_is_deletion[0]
-        else:
-            return False
-    elif vartype == 'duplication':
-        if pat.var_is_duplication[0] is not None:
-            return pat.var_is_duplication[0]
-        else:
-            return False
-
-
-def RunStats(PatientList, VarType1, VarType2):
+def RunStats(PatientList, Fun1, Fun2): 
     all_hpo = PatientList.list_all_phenotypes()
     print(f"Total hpo terms: {len(all_hpo)}")
+    results = pd.DataFrame({'counts':['1 w/ hpo', '1 w/o hpo', '2 w/ hpo', '2 w/o hpo', 'pval']})
     for hpo_id in all_hpo:
-        var1_with_hpo = len([ pat for pat in PatientList.all_patients.values() if has_hpo(pat, hpo_id) and is_vartype(pat, VarType1)])
-        var1_without_hpo = len([ pat for pat in  PatientList.all_patients.values() if not has_hpo(pat, hpo_id) and is_vartype(pat, VarType1)])
-        var2_with_hpo = len([ pat  for pat in PatientList.all_patients.values() if has_hpo(pat, hpo_id) and is_vartype(pat, VarType2)])
-        var2_without_hpo = len([ pat for pat in PatientList.all_patients.values() if not has_hpo(pat, hpo_id) and is_vartype(pat, VarType2)])
-        print(f"HPO {hpo_id}:\n {VarType1} with HPO: {var1_with_hpo}\n {VarType1} without HPO: {var1_without_hpo}\n {VarType2} with HPO: {var2_with_hpo}\n {VarType2} without HPO: {var2_without_hpo}")
+        var1_with_hpo = len([ pat for pat in PatientList.all_patients.values() if has_hpo(pat, hpo_id) and Fun1(pat)])
+        var1_without_hpo = len([ pat for pat in  PatientList.all_patients.values() if not has_hpo(pat, hpo_id) and Fun1(pat)])
+        var2_with_hpo = len([ pat  for pat in PatientList.all_patients.values() if has_hpo(pat, hpo_id) and Fun2(pat)])
+        var2_without_hpo = len([ pat for pat in PatientList.all_patients.values() if not has_hpo(pat, hpo_id) and Fun2(pat)])
         table = np.array([[var1_with_hpo, var1_without_hpo], [var2_with_hpo, var2_without_hpo]])
         oddsr, p =  scipy.stats.fisher_exact(table, alternative='two-sided') ##Add option for chi2
-        print(f"p for {hpo_id}: {p}")
+        results.insert(1, hpo_id[0] + '-'+hpo_id[1], [var1_with_hpo, var1_without_hpo, var2_with_hpo, var2_without_hpo, p])
+    results = results.set_index('counts')
+    return results
+
         
