@@ -2,6 +2,7 @@ import pyensembl
 import varcode as vc
 from .patient_class import Patient
 import re
+import warnings
 
     
 def is_missense(pat, holder = None):
@@ -75,13 +76,21 @@ def verify_var(variant):
     return var
 
 def in_domain(pat, domain):
-    loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
+    try:
+        loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
+    except (ValueError):
+        #warnings.warn('This effect has no location, skipping variant ' + pat.variant.variant_string + ' with effect ' + pat.variant.top_effect.short_description)
+        return False
     if domain[0] <= loc <= domain[1]:
         return True
     return False
 
 def is_motif_match(pat, motif):
-    loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
+    try:
+        loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
+    except (ValueError):
+        #warnings.warn('This effect has no location, skipping variant ' + pat.variant.variant_string + ' with effect ' + pat.variant.top_effect.short_description)
+        return False
     if motif[0] <= loc <= motif[1]:
             return True
     return False
