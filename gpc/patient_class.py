@@ -87,6 +87,6 @@ class Patient:
             "Disease": self.disease_label,
             "Phenotypic Features": self.phenotype_labels,
             "Variant": self.variant.variant_string,
-            "Effect of Variant": self.variant.effect
+            "Effect of Variant": self.variant.effects
         }
         return stats

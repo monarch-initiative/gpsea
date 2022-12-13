@@ -41,6 +41,10 @@ class AllPatients:
     def all_variants(self):
         return self._variant_list
 
+    @property
+    def count_patients(self):
+        return len(self.all_patients.keys())
+
     def list_all_diseases(self):
         return [[key.id, key.label] for key in self._disease_list.values()]
 
@@ -49,3 +53,14 @@ class AllPatients:
 
     def list_all_variants(self):
         return [[key[0], key[1]] for key in self.variants]
+
+
+    def split_by_disease(self):
+        split_patients = defaultdict(AllPatients)
+        for dis in self.all_diseases.values():
+            split_patients[dis.id] = AllPatients()
+        for pat in self.all_patients.values():
+            split_patients[pat.disease_id].add(pat)
+        return split_patients
+
+    
