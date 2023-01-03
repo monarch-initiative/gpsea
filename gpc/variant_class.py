@@ -1,26 +1,35 @@
 import varcode as vc
 import pyensembl
-from .proteins_class import Protein
+import re
 
 class Variant:
-    def __init__(self, phenopack = None):
+    def __init__(self,ref, phenopack = None):
         if phenopack is not None:
             self._phenopack = phenopack
-            self._variant = self.__find_variant()
+            self._variant = self.__find_variant(reference = ref)
         else:
             self._variant = None
         
-    def __find_variant(self):
+    def __find_variant(self, reference):
         if len(self._phenopack.interpretations) != 0:
             Interp = self._phenopack.interpretations[0]
             try:
                 genInterp = Interp.diagnosis.genomic_interpretations[0]
                 varInterp = genInterp.variant_interpretation.variation_descriptor.vcf_record
-                contig = varInterp.chrom
+                contig = re.sub(r'[^0-9]', '', varInterp.chrom)
+                if len(contig) == 0:
+                    contig = re.sub(r'[^XYM]', '', varInterp.chrom)
+                if len(contig) == 0:
+                    print(f"Contig did not work: {varInterp.chrom}")
+                    return None
                 start = varInterp.pos
                 ref = varInterp.ref
                 alt = varInterp.alt
-                myVar = vc.Variant(str(contig), start, ref, alt, ensembl = pyensembl.ensembl_grch37)
+                if reference == 'hg37':
+                    ens = pyensembl.ensembl_grch37
+                else:
+                    ens = pyensembl.ensembl_grch38
+                myVar = vc.Variant(contig, start, ref, alt, ensembl = ens)
                 return myVar
             except AttributeError:
                 print('Could not find Variants')
@@ -36,6 +45,35 @@ class Variant:
     def variant_string(self):
         if self._variant is not None:
             return self.variant.short_description
+        else:
+            return None
+
+    @property
+    def variant_type(self):
+        if self.top_effect.short_description.endswith("*") or not self.variant.is_snv:
+            return 'missense'
+        elif self.top_effect.short_description.endswith("*") and self.variant.is_snv:
+            return 'nonsense'
+        elif 'dup' in self.top_effect.short_description:
+            return 'duplication'
+        elif self.variant.is_deletion:
+            return 'deletion'
+        elif self.variant.is_insertion:
+            return 'insertion'
+        elif self.variant.is_transition:
+            return 'transition'
+        elif self.variant.is_transversion:
+            return 'transversion'
+        elif self.variant.is_indel:
+            return 'indel'
+        else:
+            return None
+
+
+    @property
+    def genomic_location(self):
+        if self._variant is not None:
+            return self._variant.start
         else:
             return None
 
@@ -62,7 +100,7 @@ class Variant:
 
     @property
     def all_transcript_ids(self):
-        if self.transcripts is not None:
+        if self.variant.transcripts is not None:
             return self.variant.transcript_ids
         else:
             return None
@@ -73,14 +111,20 @@ class Variant:
             return self.top_effect.transcript
         else:
             return None
-    
+
     @property
-    def protein(self):
+    def top_effected_protein(self):
         if self.top_effect_transcript is not None:
-            if self.top_effect_transcript.is_protein_coding:
-                return Protein(self.top_effect_transcript)
-            else:
-                print('WARNING - Transcript associated with top effect does not code for a protein.')
-                print('Will use top coding effect for protein analysis.')
-                effect = self.variant.effects().drop_silent_and_noncoding().top_priority_effect()
-                return Protein(effect.transcript)
+            return self.top_effect_transcript.protein_id
+        else:
+            return None
+
+    @property
+    def protein_effect_location(self):
+        loc = None
+        if self.top_effected_protein is not None:
+            pattern = re.compile(r'p\.[A-Z](\d+)[A-Z]')
+            if pattern.match(self.top_effect.short_description):
+                loc = int(re.sub(pattern, '\\g<1>', self.top_effect.short_description))
+        return loc
+            

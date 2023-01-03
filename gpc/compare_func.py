@@ -5,57 +5,74 @@ import re
 import warnings
 
     
-def is_missense(pat, holder = None):
-    if pat.variant.variant.effects().top_priority_effect().short_description.endswith("*") or not pat._variant.variant.is_snv:
+def is_var_type(pat, varType):
+    """"" Determines if the given Patient has a variant of the given variant type
+
+    Args:
+        pat (Patient) : Patient Class
+        varType (str) : Options include - 
+                        missense
+                        nonsense
+                        duplication
+                        deletion
+                        insertion
+                        transition
+                        transversion
+                        indel
+
+    Returns:
+        boolean :   True if the Patient does have a variant with given variant type
+    """""
+
+    if pat.variant.variant_type == varType:
+        return True
+    else:
+        return False
+
+def is_not_var_type(pat, varType):
+    """"" Determines if the given Patient does not have a variant of the given variant type
+
+    Args:
+        pat (Patient) : Patient Class
+        varType (str) : Options include - 
+                        missense
+                        nonsense
+                        duplication
+                        deletion
+                        insertion
+                        transition
+                        transversion
+                        indel
+
+    Returns:
+        boolean :   True if the Patient does NOT have a variant with given variant type
+    """""
+
+    if pat.variant.variant_type == varType:
         return False
     else:
         return True
-    
-def is_nonsense(pat, holder = None):
-    if pat.variant.variant.effects().top_priority_effect().short_description.endswith("*") and pat._variant.variant.is_snv:
-        return True
-    else:
-        return False
-        
-def is_deletion(pat, holder = None):
-    if pat.variant.variant is not None:
-        return pat.variant.variant.is_deletion
-    elif pat.disease_label is not None:
-        if 'deletion' in pat.disease_label:
-            return True
-    else:
-        return False
 
-def is_insertion(pat, holder = None):
-    return pat.variant.variant.is_insertion
-
-def is_transition(pat, holder = None):
-    return pat.variant.variant.is_transition
-
-def is_transversion(pat, holder = None):
-    return pat.variant.variant.is_transversion
-
-def is_indel(pat, holder = None):
-    return pat.variant.variant.is_indel
-
-def is_duplication(pat, holder = None):
-    if pat.variant.variant is not None:
-        if 'dup' in pat.variant.variant.effects().top_priority_effect().short_description:
-            return True
-        else:
-            return False
-    elif pat.disease_label is not None:
-        if 'duplication' in pat.disease_label:
-            return True
-    else:
-        return False
 
 def is_var_match(pat, variant):
+    """ Determines if the given Patient has the given Variant
+
+    Args:
+        pat (Patient) : Patient Class
+        variant (str OR Variant) : Either a string formatted 
+                                'chr:start:reference:alternative'
+                                OR a class Variant
+
+    Returns:
+        boolean : True if the Patient does have the given Variant
+    
+    """
+
     if pat.variant.variant is not None:
-        if not type(variant) == vc.Variant:
+        if isinstance(variant, str):
             test_var = verify_var(variant)
         else:
-            test_var = variant
+            test_var = variant.variant
         if pat.variant.variant == test_var:
             return True
         else:
@@ -63,35 +80,98 @@ def is_var_match(pat, variant):
     else:
         return False
 
+def is_not_var_match(pat, variant):
+    """ Determines if the given Patient does NOT have the given Variant
+
+    Args:
+        pat (Patient) : Patient Class
+        variant (str OR Variant) : Either a string formatted 
+                                'chr:start:reference:alternative'
+                                OR a class Variant
+
+    Returns:
+        boolean : True if the Patient does NOT have the given Variant
+    
+    """
+
+    if pat.variant.variant is not None:
+        if isinstance(variant, str):
+            test_var = verify_var(variant)
+        else:
+            test_var = variant.variant
+        if pat.variant.variant == test_var:
+            return False
+        else:
+            return True
+    else:
+        return False
+
 def verify_var(variant):
     """
-    Variant is a String formatted:
-    'chr:start:reference:alternative"
-    i.e.    - '3:12345:A:G'
-            - '3:15432:AG:A'
-            - '3:98765:A:AG'
+    Args:
+        variant (str) : 'chr:start:reference:alternative'
+            i.e.    - '3:12345:A:G'
+                    - '3:15432:AG:A'
+                    - '3:98765:A:AG'
+
+    Returns:
+        Variant : a variant of class Variant 
     """
+
     contig, start, ref, alt = variant.split(':')
     var = vc.Variant(contig, start, ref, alt, ensembl = pyensembl.ensembl_grch37)
     return var
 
-def in_domain(pat, domain):
-    try:
-        loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
-    except (ValueError):
-        #warnings.warn('This effect has no location, skipping variant ' + pat.variant.variant_string + ' with effect ' + pat.variant.top_effect.short_description)
-        return False
-    if domain[0] <= loc <= domain[1]:
-        return True
-    return False
+def in_feature(pat, feature):
+    """Given a specific patient and feature, determine True
+    or False that the variant effect is within that feature
+    
+    Args:
+        pat (Patient) : Patient Class 
+        feature (str) : Either a feature ID or a feature type
+                        feature types include:
+                                Domain
+                                Region
+                                Motif
+                                Repeat
+    Returns:
+        boolean : True if the variant location is in the 
+                    specified feature or feature type
+    """
 
-def is_motif_match(pat, motif):
-    try:
-        loc = int(re.sub(r'[^0-9]', '', pat.variant.top_effect.short_description))
-    except (ValueError):
-        #warnings.warn('This effect has no location, skipping variant ' + pat.variant.variant_string + ' with effect ' + pat.variant.top_effect.short_description)
-        return False
-    if motif[0] <= loc <= motif[1]:
-            return True
-    return False
+    featureDF = pat.protein.features
+    loc = pat.variant.protein_effect_location
+    isIn = False
+    if loc is not None and not featureDF.empty:
+        for row in featureDF.iterrows():
+            if row[0] == feature or row[1]['type'] == feature:
+                if row[1]['start'] <= loc <= row[1]['end']:
+                    isIn = True
+    return isIn
 
+def not_in_feature(pat, feature):
+    """ Given a specific patient and feature, determine True
+    or False that the variant effect is NOT within that feature
+
+    Args:
+        pat (Patient) : Patient Class 
+        feature (str) : Either a feature ID or a feature type
+                        feature types include:
+                                Domain
+                                Region
+                                Motif
+                                Repeat
+    Returns:
+        boolean : True if the variant location is NOT in the 
+                    specified feature or feature type
+    """
+
+    featureDF = pat.protein.features
+    loc = pat.variant.protein_effect_location
+    isIn = False
+    if loc is not None and not featureDF.empty:
+        for row in featureDF.iterrows():
+            if row[0] == feature or row[1]['type'] == feature:
+                if not row[1]['start'] <= loc <= row[1]['end']:
+                    isIn = True
+    return isIn

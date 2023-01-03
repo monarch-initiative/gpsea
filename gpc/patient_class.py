@@ -6,9 +6,11 @@ import pyensembl
 from .disease_class import Disease
 from .phenotype_class import Phenotype 
 from .variant_class import Variant
+from .proteins_class import Protein
+
 
 class Patient:
-    def __init__(self, phenopackJson):
+    def __init__(self, phenopackJson, ref):
         if not isfile(phenopackJson):
             raise FileNotFoundError("Could not find phenopacket")
             
@@ -24,7 +26,8 @@ class Patient:
             self._diseases = Disease(phenopack.diseases[0])
         else:
             self._diseases = None
-        self._variant = Variant(phenopack)
+        self._variant = Variant(ref = ref, phenopack = phenopack)
+        self._protein = Protein(self._variant.top_effected_protein)
         
     def __get_hpids(self):
         hp_ids = []
@@ -81,12 +84,17 @@ class Patient:
     def variant(self):
         return self._variant
 
+    @property
+    def protein(self):
+        return self._protein
+
     def describe(self):
         stats = {
             "ID": self.id,
             "Disease": self.disease_label,
             "Phenotypic Features": self.phenotype_labels,
             "Variant": self.variant.variant_string,
-            "Effect of Variant": self.variant.effects
-        }
+            "Top effect of Variant": self.variant.top_effect,
+            "Protein affected by Top Effect": self.protein.id
+                }
         return stats

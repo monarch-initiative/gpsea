@@ -1,0 +1,86 @@
+{
+  "id": "13",
+  "subject": {
+    "id": "13",
+    "timeAtLastEncounter": {
+      "age": {
+        "iso8601duration": "P19Y"
+      }
+    },
+    "sex": "FEMALE"
+  },
+  "phenotypicFeatures": [
+    {
+      "type": {
+        "id": "HP:0002317",
+        "label": "Unsteady gait"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0007301",
+        "label": "Oromotor apraxia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002370",
+        "label": "Poor coordination"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002342",
+        "label": "Intellectual disability, moderate"
+      }
+    }
+  ],
+  "interpretations": [
+    {
+      "id": "13",
+      "progressStatus": "SOLVED",
+      "diagnosis": {
+        "disease": {
+          "id": "618443",
+          "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+        },
+        "genomicInterpretations": [
+          {
+            "subjectOrBiosampleId": "13",
+            "interpretationStatus": "CAUSATIVE",
+            "variantInterpretation": {
+              "variationDescriptor": {
+                "geneContext": {
+                  "valueId": "HGNC:6884",
+                  "symbol": "MAPK8IP3"
+                },
+                "expressions": [
+                  {
+                    "syntax": "hgvs.c",
+                    "value": "NM_015133.4:c.3436C>T"
+                  },
+                  {
+                    "syntax": "hgvs.g",
+                    "value": "NC_000016.10:g.1767834C>T"
+                  }
+                ],
+                "vcfRecord": {
+                  "genomeAssembly": "hg38",
+                  "chrom": "chr16",
+                  "pos": "1767834",
+                  "ref": "C",
+                  "alt": "T"
+                },
+                "moleculeContext": "genomic",
+                "allelicState": {
+                  "id": "GENO:0000135",
+                  "label": "heterozygous"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
