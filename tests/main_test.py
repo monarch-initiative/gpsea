@@ -1,7 +1,7 @@
 import pytest
 import sys
 import pandas as pd
-from ..src.genophenocorr import *
+from genophenocorr import *
 
 
 @pytest.fixture
