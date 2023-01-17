@@ -50,24 +50,24 @@ class Variant:
 
     @property
     def variant_type(self):
-        if self.top_effect.short_description.endswith("*") or not self.variant.is_snv:
-            return 'missense'
-        elif self.top_effect.short_description.endswith("*") and self.variant.is_snv:
-            return 'nonsense'
-        elif 'dup' in self.top_effect.short_description:
-            return 'duplication'
-        elif self.variant.is_deletion:
-            return 'deletion'
-        elif self.variant.is_insertion:
-            return 'insertion'
-        elif self.variant.is_transition:
-            return 'transition'
-        elif self.variant.is_transversion:
-            return 'transversion'
-        elif self.variant.is_indel:
-            return 'indel'
-        else:
-            return None
+        all_types = []
+        if not self.top_effect.short_description.endswith("*") and self.variant.is_snv:
+            all_types.append('missense')
+        if self.top_effect.short_description.endswith("*") and self.variant.is_snv:
+            all_types.append('nonsense')
+        if 'dup' in self.top_effect.short_description:
+            all_types.append('duplication')
+        if self.variant.is_deletion:
+            all_types.append('deletion')
+        if self.variant.is_insertion:
+            all_types.append('insertion')
+        if self.variant.is_transition:
+            all_types.append('transition')
+        if self.variant.is_transversion:
+            all_types.append('transversion')
+        if self.variant.is_indel:
+            all_types.append('indel')
+        return all_types
 
 
     @property
@@ -121,6 +121,7 @@ class Variant:
 
     @property
     def protein_effect_location(self):
+        # Currently only works with single amino acid substitutions
         loc = None
         if self.top_effected_protein is not None:
             pattern = re.compile(r'p\.[A-Z](\d+)[A-Z]')

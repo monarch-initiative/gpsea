@@ -62,6 +62,8 @@ class AllPatients:
     def all_proteins(self):
         return self._protein_list
 
+    def list_all_patients(self):
+        return [key.id for key in self.all_patients.values()]
 
     def list_all_diseases(self):
         return [[key.id, key.label] for key in self._disease_list.values()]
@@ -70,7 +72,7 @@ class AllPatients:
         return [[key.id, key.label] for key in self.all_phenotypes.values()]
 
     def list_all_variants(self):
-        return [[key[0], key[1]] for key in self.variants]
+        return [key.variant_string for key in self.all_variants]
 
     def list_all_proteins(self):
         return [[key.id, key.label] for key in self.all_proteins.values()]
@@ -79,7 +81,7 @@ class AllPatients:
     def all_var_types(self):
         types = set()
         for var in self.all_variants:
-            types.add(var.variant_type)
+            for v in var.variant_type: types.add(v)
         return types
 
 
@@ -107,7 +109,7 @@ class AllPatients:
                 varCounts = pd.Series(0, name='variants', index=prot.features.index)
                 for key, row in prot.features.iterrows():
                     for var in self.all_variants:
-                        loc = var.protien_effect_location
+                        loc = var.protein_effect_location
                         if loc is not None and row.at['start'] is not None and row.at['end'] is not None:
                             if row.at['start'] <= loc <= row.at['end']:
                                 varCounts.at[key] += 1
