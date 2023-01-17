@@ -1,8 +1,7 @@
 import pytest
 import sys
 import pandas as pd
-sys.path.insert(0, '/Users/rekerl/Documents/Programs/gpc')
-from gpc import *
+from genophenocorr import *
 
 @pytest.fixture
 def outputVars():
