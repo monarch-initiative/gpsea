@@ -1,3 +1,4 @@
+# __init__.py
 
 from .patient_class import Patient
 from .disease_class import Disease

@@ -24,7 +24,7 @@ def is_var_type(pat, varType):
         boolean :   True if the Patient does have a variant with given variant type
     """""
 
-    if pat.variant.variant_type == varType:
+    if varType in pat.variant.variant_type:
         return True
     else:
         return False
@@ -48,7 +48,7 @@ def is_not_var_type(pat, varType):
         boolean :   True if the Patient does NOT have a variant with given variant type
     """""
 
-    if pat.variant.variant_type == varType:
+    if varType in pat.variant.variant_type:
         return False
     else:
         return True
