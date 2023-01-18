@@ -62,6 +62,18 @@ class Cohort:
     def all_proteins(self):
         return self._protein_list
 
+    def describe_all(self):
+        tempDict = {'Patient ID': [], 'Disease': [], 'Gene':[], 'Variant':[], 'Protein':[], 'HPO Terms':[]}
+        for pat in self.all_patients.values():
+            tempDict['Patient ID'].append(pat.id)
+            tempDict['Disease'].append(pat.disease_id)
+            tempDict['Gene'].append(pat.variant.variant.gene_names)
+            tempDict['Variant'].append(pat.variant.variant_string)
+            tempDict['Protein'].append(pat.protein.id)
+            tempDict['HPO Terms'].append(pat.phenotype_ids)
+        enddf = pd.DataFrame(tempDict)
+        return enddf
+
     def list_all_patients(self):
         return [key.id for key in self.all_patients.values()]
 
