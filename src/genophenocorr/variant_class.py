@@ -16,12 +16,11 @@ class Variant:
             try:
                 genInterp = Interp.diagnosis.genomic_interpretations[0]
                 varInterp = genInterp.variant_interpretation.variation_descriptor.vcf_record
-                contig = re.sub(r'[^0-9]', '', varInterp.chrom)
+                contig = re.sub(r'\d+', '', varInterp.chrom)
                 if len(contig) == 0:
                     contig = re.sub(r'[^XYM]', '', varInterp.chrom)
                 if len(contig) == 0:
-                    print(f"Contig did not work: {varInterp.chrom}")
-                    return None
+                    raise ValueError(f"Contig did not work: {varInterp.chrom}")
                 start = varInterp.pos
                 ref = varInterp.ref
                 alt = varInterp.alt

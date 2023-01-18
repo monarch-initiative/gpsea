@@ -9,6 +9,7 @@ def has_hpo(pat, hpo):
             return True
     return False
 
+# TODO change to run_stats
 def RunStats(PatientList, Fun1, Fun2, extraVar_1 = None, extraVar_2 = None, show = 5, chi2 = False): 
     all_hpo = PatientList.list_all_phenotypes()
     print(f"Total hpo terms: {len(all_hpo)}")
