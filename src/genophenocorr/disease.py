@@ -1,5 +1,5 @@
 
-
+# TODO ADJUST LIKE Phenotype. Check that disease id is OMIM, MONDO, or ORPHA, or DECIPHER
 class Disease:
     def __init__(self, phenopacket):
         self._diseaseID = phenopacket.term.id

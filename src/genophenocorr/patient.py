@@ -3,6 +3,7 @@ from phenopackets import Phenopacket
 from google.protobuf.json_format import Parse
 import json
 import pyensembl
+import pandas as pd
 from .disease_class import Disease
 from .phenotype_class import Phenotype 
 from .variant_class import Variant
@@ -88,13 +89,21 @@ class Patient:
     def protein(self):
         return self._protein
 
+    @property
+    def gene(self):
+        return self._variant.variant.genes[0]
+
     def describe(self):
-        stats = {
+        stats = pd.Series({
             "ID": self.id,
-            "Disease": self.disease_label,
-            "Phenotypic Features": self.phenotype_labels,
+            "Disease ID": self.disease_id,
+            "Disease Label": self.disease_label,
+            "HPO IDs": str(self.phenotype_ids),
+            "HPO Terms": str(self.phenotype_labels),
             "Variant": self.variant.variant_string,
-            "Top effect of Variant": self.variant.top_effect,
-            "Protein affected by Top Effect": self.protein.id
-                }
-        return stats
+            "Gene Affected": self.gene.gene_name,
+            "Effect of Variant": self.variant.top_effect.short_description,
+            "Protein Affected": self.protein.label,
+            "Protein ID": self.protein.id
+                })
+        return stats.T

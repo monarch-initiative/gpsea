@@ -21,3 +21,16 @@ pyensembl install --release 107 --species homo_sapiens
 pip install phenopackets
 pip install pandas
 ```
+
+
+## Running notebooks
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install .
+pip install jupyter
+python -m ipykernel install --name "venv" --display-name "venv"
+cd notebooks
+jupyter-notebook
+```

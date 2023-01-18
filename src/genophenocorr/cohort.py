@@ -1,13 +1,13 @@
 from collections import defaultdict
-from .patient_class import Patient
-from .disease_class import Disease
-from .phenotype_class import Phenotype
+from .patient import Patient
+from .disease import Disease
+from .phenotype import Phenotype
 from .proteins_class import Protein
 import glob
 import pandas as pd
 import re
 
-class AllPatients:
+class Cohort:
     """
     This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
@@ -61,6 +61,18 @@ class AllPatients:
     @property
     def all_proteins(self):
         return self._protein_list
+
+    def describe_all(self):
+        tempDict = {'Patient ID': [], 'Disease': [], 'Gene':[], 'Variant':[], 'Protein':[], 'HPO Terms':[]}
+        for pat in self.all_patients.values():
+            tempDict['Patient ID'].append(pat.id)
+            tempDict['Disease'].append(pat.disease_id)
+            tempDict['Gene'].append(pat.variant.variant.gene_names)
+            tempDict['Variant'].append(pat.variant.variant_string)
+            tempDict['Protein'].append(pat.protein.id)
+            tempDict['HPO Terms'].append(pat.phenotype_ids)
+        enddf = pd.DataFrame(tempDict)
+        return enddf
 
     def list_all_patients(self):
         return [key.id for key in self.all_patients.values()]
