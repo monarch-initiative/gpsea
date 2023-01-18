@@ -1,10 +1,20 @@
 import pyensembl
 import varcode as vc
-from .patient_class import Patient
+from .patient import Patient
 import re
 import warnings
 
-    
+
+ALLOWED_VARIANT_TYPES = {'missense',
+                        'nonsense',
+                        'duplication',
+                        'deletion',
+                        'insertion',
+                        'transition',
+                        'transversion',
+                        'indel'}
+
+
 def is_var_type(pat, varType):
     """"" Determines if the given Patient has a variant of the given variant type
 
@@ -23,7 +33,8 @@ def is_var_type(pat, varType):
     Returns:
         boolean :   True if the Patient does have a variant with given variant type
     """""
-
+    if varType not in ALLOWED_VARIANT_TYPES:
+        raise ValueError(f"Did not recognize variant type {varType}")
     if varType in pat.variant.variant_type:
         return True
     else:
@@ -47,7 +58,8 @@ def is_not_var_type(pat, varType):
     Returns:
         boolean :   True if the Patient does NOT have a variant with given variant type
     """""
-
+    if varType not in ALLOWED_VARIANT_TYPES:
+        raise ValueError(f"Did not recognize variant type {varType}")
     if varType in pat.variant.variant_type:
         return False
     else:
@@ -67,12 +79,13 @@ def is_var_match(pat, variant):
         boolean : True if the Patient does have the given Variant
     
     """
-
     if pat.variant.variant is not None:
         if isinstance(variant, str):
             test_var = verify_var(variant)
-        else:
+        elif isinstance(variant, vc.Variant):
             test_var = variant.variant
+        else:
+            raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
         if pat.variant.variant == test_var:
             return True
         else:
