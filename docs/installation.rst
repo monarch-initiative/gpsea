@@ -4,4 +4,9 @@
 Installation of genophenocorr
 =============================
 
-Todo 
+Todo
+
+Installation of genophenocorr as a Python package
+-------------------------------------------------
+	$ pip install genophenocorr
+
