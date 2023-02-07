@@ -1,13 +1,14 @@
 from os.path import isfile
-from phenopackets import Phenopacket
+from phenopackets import OntologyClass
+from phenopackets import Phenopacket 
 from google.protobuf.json_format import Parse
 import json
 import pyensembl
 import pandas as pd
-from .disease_class import Disease
-from .phenotype_class import Phenotype 
-from .variant_class import Variant
-from .proteins_class import Protein
+from .disease import Disease
+from .phenotype import Phenotype 
+from .variant import Variant
+from .proteins import Protein
 
 
 class Patient:
@@ -24,7 +25,11 @@ class Patient:
         self._phenopack = phenopack
         self._phenotype = self.__get_hpids()
         if len(phenopack.diseases) != 0:
-            self._diseases = Disease(phenopack.diseases[0])
+            dis = phenopack.diseases[0]
+            self._diseases = Disease(dis.term.id, dis.term.label)
+        elif isinstance(phenopack.interpretations[0].diagnosis.disease, OntologyClass):
+            dis = phenopack.interpretations[0].diagnosis.disease
+            self._diseases = Disease(dis.id, dis.label)
         else:
             self._diseases = None
         self._variant = Variant(ref = ref, phenopack = phenopack)
@@ -34,7 +39,7 @@ class Patient:
         hp_ids = []
         for x in self._phenopack.phenotypic_features:
              if not x.excluded:
-                hp_ids.append(Phenotype(x))
+                hp_ids.append(Phenotype(x.type.id, x.type.label))
         return hp_ids
       
     @property
@@ -101,8 +106,11 @@ class Patient:
             "HPO IDs": str(self.phenotype_ids),
             "HPO Terms": str(self.phenotype_labels),
             "Variant": self.variant.variant_string,
+            "Variant Type": str(self.variant.variant_type),
             "Gene Affected": self.gene.gene_name,
+            "Gene ID": self.gene.gene_id,
             "Effect of Variant": self.variant.top_effect.short_description,
+            "Transcript ID": self.variant.top_effect_transcript.id,
             "Protein Affected": self.protein.label,
             "Protein ID": self.protein.id
                 })

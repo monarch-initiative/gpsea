@@ -2,7 +2,7 @@ from collections import defaultdict
 from .patient import Patient
 from .disease import Disease
 from .phenotype import Phenotype
-from .proteins_class import Protein
+from .proteins import Protein
 import glob
 import pandas as pd
 import re
@@ -16,10 +16,10 @@ class Cohort:
     
     """
     def __init__(self, fileList = None, ref = 'hg38'):
-        self._patient_list = defaultdict(Patient)
-        self._disease_list = defaultdict(Disease)
-        self._phenotype_list = defaultdict(Phenotype)
-        self._protein_list = defaultdict(Protein)
+        self._patient_list = defaultdict()
+        self._disease_list = defaultdict()
+        self._phenotype_list = defaultdict()
+        self._protein_list = defaultdict()
         self._variant_list = []
         if fileList is not None:
             for file in glob.glob(fileList):
@@ -98,24 +98,24 @@ class Cohort:
 
 
     def split_by_disease(self):
-        split_patients = defaultdict(AllPatients)
+        split_patients = defaultdict()
         for dis in self.all_diseases.values():
-            split_patients[dis.id] = AllPatients()
+            split_patients[dis.id] = Cohort()
         for pat in self.all_patients.values():
             split_patients[pat.disease_id].add(pat)
         return split_patients
 
     def split_by_protein(self):
-        split_patients = defaultdict(AllPatients)
+        split_patients = defaultdict()
         for prot in self.all_proteins.keys():
-            split_patients[prot] = AllPatients()
+            split_patients[prot] = Cohort()
         for pat in self.all_patients.values():
             split_patients[pat.protein.id].add(pat)
         return split_patients
 
 
     def count_vars_per_feature(self, addToFeatures = False):
-        result = defaultdict(pd.Series)
+        result = defaultdict()
         for prot in self.all_proteins.values():
             if not prot.features.empty:
                 varCounts = pd.Series(0, name='variants', index=prot.features.index)

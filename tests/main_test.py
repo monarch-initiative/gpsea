@@ -6,7 +6,7 @@ from genophenocorr import *
 
 @pytest.fixture
 def goodTestCohort():
-    allPatients = AllPatients('testSamples/*.json', 'hg37')
+    allPatients = Cohort('testSamples/*.json', 'hg37')
     return allPatients
 
 def test_all_properties(goodTestCohort):

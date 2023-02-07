@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import json
 import re
 
 class Protein:

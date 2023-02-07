@@ -5,7 +5,7 @@ from genophenocorr import *
 
 @pytest.fixture
 def outputVars():
-    out = pd.read_csv('testSamples/testing_outputs.tsv', sep='\t')
+    out = pd.read_csv('testSamples/patient_outputs.tsv', sep='\t')
     out['disease'] = out['disease'].apply(eval)
     out['protein'] = out['protein'].apply(eval)
     out['phenotypes'] = out['phenotypes'].apply(eval)

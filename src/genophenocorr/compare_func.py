@@ -83,7 +83,7 @@ def is_var_match(pat, variant):
         if isinstance(variant, str):
             test_var = verify_var(variant)
         elif isinstance(variant, vc.Variant):
-            test_var = variant.variant
+            test_var = variant
         else:
             raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
         if pat.variant.variant == test_var:
@@ -91,7 +91,7 @@ def is_var_match(pat, variant):
         else:
             return False
     else:
-        return False
+        raise ValueError(f"No variant found for patient {pat.id}")
 
 def is_not_var_match(pat, variant):
     """ Determines if the given Patient does NOT have the given Variant
@@ -110,14 +110,16 @@ def is_not_var_match(pat, variant):
     if pat.variant.variant is not None:
         if isinstance(variant, str):
             test_var = verify_var(variant)
+        elif isinstance(variant, vc.Variant):
+            test_var = variant
         else:
-            test_var = variant.variant
+            raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
         if pat.variant.variant == test_var:
             return False
         else:
             return True
     else:
-        return False
+        raise ValueError(f"No variant found for patient {pat.id}")
 
 def verify_var(variant):
     """
@@ -132,7 +134,7 @@ def verify_var(variant):
     """
 
     contig, start, ref, alt = variant.split(':')
-    var = vc.Variant(contig, start, ref, alt, ensembl = pyensembl.ensembl_grch37)
+    var = vc.Variant(contig, start, ref, alt, ensembl = pyensembl.ensembl_grch38)
     return var
 
 def in_feature(pat, feature):
