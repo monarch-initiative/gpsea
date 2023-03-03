@@ -183,20 +183,20 @@ class Cohort:
         
         """
         hpo_counts = self.count_patients_per_hpo()
-        all_hpo = []
+        hpo_ids_to_compare = []
         for row in hpo_counts.iterrows():
             if row[1].at['Percent'] >= (percent_patients/100):
-                all_hpo.append(row[0])
-        if len(all_hpo) == 0:
+                hpo_ids_to_compare.append(row[0])
+        if len(hpo_ids_to_compare) == 0:
             raise ValueError(f'No HPO term is present in over {percent_patients}% of the patients.')
         if combine_like_hpos:
-            all_hpo = self.__group_similar_hpos(all_hpo)
+            hpo_ids_to_compare = self.__group_similar_hpos(hpo_ids_to_compare)
         allSeries = []
-        for hpo_id in all_hpo:
-            var1_with_hpo = len([ pat for pat in self.all_patients_d.values() if pat.has_hpo(hpo_id, all_hpo) and Function_1(pat, Func1_Variable)])
-            var1_without_hpo = len([ pat for pat in  self.all_patients_d.values() if not pat.has_hpo(hpo_id, all_hpo) and Function_1(pat,Func1_Variable)])
-            var2_with_hpo = len([ pat  for pat in self.all_patients_d.values() if pat.has_hpo(hpo_id, all_hpo) and Function_2(pat,Func2_Variable)])
-            var2_without_hpo = len([ pat for pat in self.all_patients_d.values() if not pat.has_hpo(hpo_id, all_hpo) and Function_2(pat,Func2_Variable)])
+        for hpo_id in hpo_ids_to_compare:
+            var1_with_hpo = len([ pat for pat in self.all_patients_d.values() if pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_1(pat, Func1_Variable)])
+            var1_without_hpo = len([ pat for pat in  self.all_patients_d.values() if not pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_1(pat,Func1_Variable)])
+            var2_with_hpo = len([ pat  for pat in self.all_patients_d.values() if pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_2(pat,Func2_Variable)])
+            var2_without_hpo = len([ pat for pat in self.all_patients_d.values() if not pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_2(pat,Func2_Variable)])
             table = np.array([[var1_with_hpo, var1_without_hpo], [var2_with_hpo, var2_without_hpo]])
             oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
             allSeries.append(pd.Series([var1_with_hpo, var1_without_hpo, var2_with_hpo, var2_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['1 w/ hpo', '1 w/o hpo', '2 w/ hpo', '2 w/o hpo', 'pval']))
