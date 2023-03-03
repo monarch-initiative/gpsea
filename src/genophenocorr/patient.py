@@ -1,6 +1,7 @@
 from os.path import isfile
 from phenopackets import OntologyClass
 from phenopackets import Phenopacket 
+from collections import defaultdict
 from google.protobuf.json_format import Parse
 import json
 import pyensembl
@@ -24,10 +25,11 @@ class Patient:
         self._id = phenopack.id
         self._phenopack = phenopack
         self._phenotype = self.__get_hpids()
+        self._reference = ref
         if len(phenopack.diseases) != 0:
             dis = phenopack.diseases[0]
             self._diseases = Disease(dis.term.id, dis.term.label)
-        elif isinstance(phenopack.interpretations[0].diagnosis.disease, OntologyClass):
+        elif len(phenopack.interpretations[0].diagnosis.disease.id) != 0:
             dis = phenopack.interpretations[0].diagnosis.disease
             self._diseases = Disease(dis.id, dis.label)
         else:
@@ -39,7 +41,7 @@ class Patient:
         hp_ids = []
         for x in self._phenopack.phenotypic_features:
              if not x.excluded:
-                hp_ids.append(Phenotype(x.type.id, x.type.label))
+                hp_ids.append(Phenotype(x.type.id))
         return hp_ids
       
     @property
@@ -52,6 +54,10 @@ class Patient:
             return self._diseases.id
         else:
             return None
+
+    @property
+    def hg_reference(self):
+        return self._reference
     
     @property
     def disease_label(self):
@@ -98,7 +104,7 @@ class Patient:
     def gene(self):
         return self._variant.variant.genes[0]
 
-    def describe(self):
+    def get_patient_description_df(self):
         stats = pd.Series({
             "ID": self.id,
             "Disease ID": self.disease_id,
@@ -115,3 +121,16 @@ class Patient:
             "Protein ID": self.protein.id
                 })
         return stats.T
+
+
+    def has_hpo(self, hpo, all_hpo):
+        if not isinstance(all_hpo, defaultdict):
+            for h in self.phenotype_ids:
+                if h == hpo:
+                    return True
+            return False
+        else:
+            for h in self.phenotype_ids:
+                if h in all_hpo.get(hpo):
+                    return True
+            return False

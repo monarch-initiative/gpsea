@@ -33,9 +33,13 @@ class Protein:
             fields = "accession,id,gene_names,gene_primary,protein_name,feature_count,ft_domain,ft_motif,ft_region,ft_repeat,xref_ensembl,cc_alternative_products" 
             # Additional features we could add - ,ft_zn_fing,ft_chain,ft_coiled,ft_compbias,ft_mod_res,ft_crosslnk,ft_var_seq,ft_variant,ft_conflict,ft_helix
             url = 'https://rest.uniprot.org/uniprotkb/search?query=xref:ensembl-'+ protein_id +'&fields=' + fields
-            json = requests.get(url).json()
+            try:
+                json = requests.get(url, timeout=10).json()
+            except requests.exceptions.Timeout:
+                print(f'Timeout Occurred with Protein ID {protein_id}')
+                protein = None
             if len(json['results']) > 0:
-                protein = requests.get(url).json()['results'][0]
+                protein = json['results'][0]
             else:
                 print(f'No Protein found with ID {protein_id}')
                 protein = None
