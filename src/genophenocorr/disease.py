@@ -1,9 +1,16 @@
 
-# TODO ADJUST LIKE Phenotype. Check that disease id is OMIM, MONDO, or ORPHA, or DECIPHER
+
 class Disease:
-    def __init__(self, phenopacket):
-        self._diseaseID = phenopacket.term.id
-        self._diseaseLabel = phenopacket.term.label
+    def __init__(self, id, label):
+        if id is not None or len(id) == 0:
+            if any(x in id for x in ['OMIM','MONDO', 'ORPHA', 'DECIPHER']):
+                self._diseaseID = id
+                self._diseaseLabel = label
+            else:
+                raise ValueError("Disease ID must include 'OMIM','MONDO', 'ORPHA', or 'DECIPHER'.")
+        else:
+            self._diseaseID = None
+            self._diseaseLabel = None
         
     @property
     def id(self):

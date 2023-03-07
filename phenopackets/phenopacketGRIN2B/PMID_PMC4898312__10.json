@@ -1,0 +1,202 @@
+{
+  "id": "PMID_PMC4898312__10",
+  "subject": {
+    "id": " 10",
+    "sex": "MALE"
+  },
+  "phenotypicFeatures": [
+    {
+      "type": {
+        "id": "HP:0010864",
+        "label": "Intellectual disability, severe"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001249",
+        "label": "Intellectual disability"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0100022",
+        "label": "Abnormality of movement"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001250",
+        "label": "Seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0004322",
+        "label": "Short stature"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001347",
+        "label": "Hyperreflexia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002072",
+        "label": "Chorea"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000733",
+        "label": "Motor stereotypy"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002059",
+        "label": "Cerebral atrophy"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002360",
+        "label": "Sleep disturbance"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0004881",
+        "label": "Episodic hypoventilation"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0010850",
+        "label": "EEG with spike-wave complexes"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002392",
+        "label": "EEG with polyspike wave complexes"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0011193",
+        "label": "EEG with focal spikes"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0012010",
+        "label": "EEG with frontal focal spike waves"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000478",
+        "label": "Abnormality of the eye"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001250",
+        "label": "Seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002059",
+        "label": "Cerebral atrophy"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002072",
+        "label": "Chorea"
+      }
+    }
+  ],
+  "interpretations": [
+    {
+      "id": " 10",
+      "progressStatus": "SOLVED",
+      "diagnosis": {
+        "genomicInterpretations": [
+          {
+            "subjectOrBiosampleId": " 10",
+            "interpretationStatus": "CAUSATIVE",
+            "variantInterpretation": {
+              "variationDescriptor": {
+                "geneContext": {
+                  "valueId": "HGNC:4584",
+                  "symbol": "GRIN1"
+                },
+                "expressions": [
+                  {
+                    "syntax": "hgvs.c",
+                    "value": "NM_007327.4:c.1923G>A"
+                  },
+                  {
+                    "syntax": "hgvs.g",
+                    "value": "NC_000009.12:g.137162649G>A"
+                  }
+                ],
+                "vcfRecord": {
+                  "genomeAssembly": "hg38",
+                  "chrom": "chr9",
+                  "pos": "137162649",
+                  "ref": "G",
+                  "alt": "A"
+                },
+                "moleculeContext": "genomic"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metaData": {
+    "created": "2023-02-22T20:34:29.486145019Z",
+    "createdBy": "ORCID:0000-0003-2598-6622",
+    "resources": [
+      {
+        "id": "geno",
+        "name": "Genotype Ontology",
+        "url": "http://purl.obolibrary.org/obo/geno.owl",
+        "version": "2022-03-05",
+        "namespacePrefix": "GENO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/GENO_"
+      },
+      {
+        "id": "hgnc",
+        "name": "HUGO Gene Nomenclature Committee",
+        "url": "https://www.genenames.org",
+        "version": "06/01/23",
+        "namespacePrefix": "HGNC",
+        "iriPrefix": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/"
+      },
+      {
+        "id": "omim",
+        "name": "An Online Catalog of Human Genes and Genetic Disorders",
+        "url": "https://www.omim.org",
+        "version": "January 4, 2023",
+        "namespacePrefix": "OMIM",
+        "iriPrefix": "https://www.omim.org/entry/"
+      },
+      {
+        "id": "hp",
+        "name": "human phenotype ontology",
+        "url": "http://purl.obolibrary.org/obo/hp.owl",
+        "version": "2023-01-27",
+        "namespacePrefix": "HP",
+        "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
+      }
+    ],
+    "phenopacketSchemaVersion": "2.0"
+  }
+}

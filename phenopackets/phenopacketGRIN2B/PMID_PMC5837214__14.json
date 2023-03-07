@@ -1,0 +1,190 @@
+{
+  "id": "PMID_PMC5837214__14",
+  "subject": {
+    "id": " 14",
+    "sex": "MALE"
+  },
+  "phenotypicFeatures": [
+    {
+      "type": {
+        "id": "HP:0011344",
+        "label": "Severe global developmental delay"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001250",
+        "label": "Seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0032792",
+        "label": "Tonic seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002650",
+        "label": "Scoliosis"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0025646",
+        "label": "Bilateral polymicrogyria"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0006956",
+        "label": "Lateral ventricle dilatation"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002013",
+        "label": "Vomiting"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002835",
+        "label": "Aspiration"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001188",
+        "label": "Hand clenching"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001336",
+        "label": "Myoclonus"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002069",
+        "label": "Bilateral tonic-clonic seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0011968",
+        "label": "Feeding difficulties"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0006532",
+        "label": "Recurrent pneumonia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001250",
+        "label": "Seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002013",
+        "label": "Vomiting"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002835",
+        "label": "Aspiration"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0012469",
+        "label": "Infantile spasms"
+      }
+    }
+  ],
+  "interpretations": [
+    {
+      "id": " 14",
+      "progressStatus": "SOLVED",
+      "diagnosis": {
+        "genomicInterpretations": [
+          {
+            "subjectOrBiosampleId": " 14",
+            "interpretationStatus": "CAUSATIVE",
+            "variantInterpretation": {
+              "variationDescriptor": {
+                "geneContext": {
+                  "valueId": "HGNC:4584",
+                  "symbol": "GRIN1"
+                },
+                "expressions": [
+                  {
+                    "syntax": "hgvs.c",
+                    "value": "NM_007327.3:c.1975C>T"
+                  },
+                  {
+                    "syntax": "hgvs.g",
+                    "value": "NC_000009.12:g.137162701C>T"
+                  }
+                ],
+                "vcfRecord": {
+                  "genomeAssembly": "hg38",
+                  "chrom": "chr9",
+                  "pos": "137162701",
+                  "ref": "C",
+                  "alt": "T"
+                },
+                "moleculeContext": "genomic"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metaData": {
+    "created": "2023-02-22T20:36:04.090543031Z",
+    "createdBy": "ORCID:0000-0003-2598-6622",
+    "resources": [
+      {
+        "id": "geno",
+        "name": "Genotype Ontology",
+        "url": "http://purl.obolibrary.org/obo/geno.owl",
+        "version": "2022-03-05",
+        "namespacePrefix": "GENO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/GENO_"
+      },
+      {
+        "id": "hgnc",
+        "name": "HUGO Gene Nomenclature Committee",
+        "url": "https://www.genenames.org",
+        "version": "06/01/23",
+        "namespacePrefix": "HGNC",
+        "iriPrefix": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/"
+      },
+      {
+        "id": "omim",
+        "name": "An Online Catalog of Human Genes and Genetic Disorders",
+        "url": "https://www.omim.org",
+        "version": "January 4, 2023",
+        "namespacePrefix": "OMIM",
+        "iriPrefix": "https://www.omim.org/entry/"
+      },
+      {
+        "id": "hp",
+        "name": "human phenotype ontology",
+        "url": "http://purl.obolibrary.org/obo/hp.owl",
+        "version": "2023-01-27",
+        "namespacePrefix": "HP",
+        "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
+      }
+    ],
+    "phenopacketSchemaVersion": "2.0"
+  }
+}
