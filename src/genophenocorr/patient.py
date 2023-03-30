@@ -26,23 +26,42 @@ class Patient:
         self._phenopack = phenopack
         self._phenotype = self.__get_hpids()
         self._reference = ref
+        self._protein = []
         if len(phenopack.diseases) != 0:
             dis = phenopack.diseases[0]
             self._diseases = Disease(dis.term.id, dis.term.label)
-        elif len(phenopack.interpretations[0].diagnosis.disease.id) != 0:
-            dis = phenopack.interpretations[0].diagnosis.disease
-            self._diseases = Disease(dis.id, dis.label)
+        elif len(phenopack.interpretations) != 0:
+            if len(phenopack.interpretations[0].diagnosis.disease.id) > 0:
+                dis = phenopack.interpretations[0].diagnosis.disease
+                self._diseases = Disease(dis.id, dis.label)
+            else:
+                self._diseases = None
         else:
             self._diseases = None
-        self._variant = Variant(ref = ref, phenopack = phenopack)
-        self._protein = Protein(self._variant.top_effected_protein)
+        self._variants = self.__get_vars()
+        for var in self._variants:
+            self._protein.append(Protein(var.top_effected_protein))
         
     def __get_hpids(self):
-        hp_ids = []
+        hp_ids = defaultdict(Phenotype)
         for x in self._phenopack.phenotypic_features:
-             if not x.excluded:
-                hp_ids.append(Phenotype(x.type.id))
+            if not x.excluded:
+                hp_ids[x.type.id] = Phenotype(x.type.id)
+            elif x.excluded:
+                hp_ids[x.type.id] = Phenotype(x.type.id, excluded=True)
         return hp_ids
+
+    def __get_vars(self):
+        allVars = []
+        if len(self._phenopack.interpretations) > 0:
+            Interp = self._phenopack.interpretations[0]
+            if len(Interp.diagnosis.genomic_interpretations) > 0:
+                for genoInterp in Interp.diagnosis.genomic_interpretations:
+                    allVars.append(Variant(ref = self._reference, genoInterp = genoInterp))
+            else: raise ValueError('No genomic interpretations found in phenopacket.')
+        else: ValueError('No interpretations found in phenopacket.')
+        return allVars
+
       
     @property
     def id(self):
@@ -77,14 +96,14 @@ class Patient:
     @property
     def phenotype_ids(self):
         if self._phenotype is not None:
-            return [phenotype.id for phenotype in self._phenotype]
+            return [phenotype.id for phenotype in self._phenotype.values() if not phenotype.excluded]
         else:
             return None
     
     @property
     def phenotype_labels(self):
         if self._phenotype is not None:
-            return [phenotype.label for phenotype in self._phenotype]
+            return [phenotype.label for phenotype in self._phenotype.values() if not phenotype.excluded]
         else:
             return None
     
@@ -93,32 +112,44 @@ class Patient:
         return self._phenotype
     
     @property
-    def variant(self):
-        return self._variant
+    def variants(self):
+        return self._variants
 
     @property
-    def protein(self):
+    def variant_strings(self):
+        return [var.variant_string for var in self.variants]
+    
+    @property
+    def variant_types(self):
+        return [var.variant_types for var in self.variants]
+
+    @property
+    def proteins(self):
         return self._protein
 
     @property
-    def gene(self):
-        return self._variant.variant.genes[0]
+    def protein_ids(self):
+        return [p.id for p in self.proteins]
 
-    def get_patient_description_df(self):
+    @property
+    def genes(self):
+        return [var.variant.genes for var in self.variants]
+
+    def get_patient_description_df(self): 
         stats = pd.Series({
             "ID": self.id,
             "Disease ID": self.disease_id,
             "Disease Label": self.disease_label,
             "HPO IDs": str(self.phenotype_ids),
             "HPO Terms": str(self.phenotype_labels),
-            "Variant": self.variant.variant_string,
-            "Variant Type": str(self.variant.variant_type),
-            "Gene Affected": self.gene.gene_name,
-            "Gene ID": self.gene.gene_id,
-            "Effect of Variant": self.variant.top_effect.short_description,
-            "Transcript ID": self.variant.top_effect_transcript.id,
-            "Protein Affected": self.protein.label,
-            "Protein ID": self.protein.id
+            "Variant": self.variant_strings,
+            "Variant Type": self.variant_types,
+            "Gene Affected": [g.gene_name for gs in self.genes for g in gs],
+            "Gene ID": [g.gene_id for gs in self.genes for g in gs],
+            "Effect of Variant": [v.top_effect.short_description for v in self.variants],
+            "Transcript ID": [v.top_effect_transcript.id for v in self.variants],
+            "Protein Affected": [p.label for p in self.proteins],
+            "Protein ID": [p.id for p in self.proteins]
                 })
         return stats.T
 

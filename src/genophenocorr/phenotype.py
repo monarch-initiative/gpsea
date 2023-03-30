@@ -27,6 +27,10 @@ class Phenotype:
         return self._hpo_term.name
 
     @property
+    def excluded(self):
+        return self._excluded
+
+    @property
     def full_definition(self):
         return self._hpo_term.definition
     

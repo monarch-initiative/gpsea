@@ -22,13 +22,5 @@ def outputVars():
     ('testSamples/Bhoj-2016-TBCK-8-1.json', 9)
     ])
 
-def test_patient(patient, num, outputVars):
-    patTest = Patient(patient, 'hg37')
-    assert isinstance(patTest, Patient)
-    assert patTest.id == outputVars.at[num, 'id']
-    assert patTest.variant.variant_string == outputVars.at[num, 'variant']
-    assert patTest.disease_id == outputVars.at[num, 'disease'][0]
-    assert patTest.disease_label == outputVars.at[num, 'disease'][1]
-    assert patTest.protein.id == outputVars.at[num, 'protein'][0]
-    assert patTest.protein.label == outputVars.at[num, 'protein'][1]
-    assert patTest.phenotype_ids == outputVars.at[num, 'phenotypes']
+def test_compare(patient, num):
+	

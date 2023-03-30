@@ -35,7 +35,7 @@ def is_var_type(pat, varType):
     """""
     if varType not in ALLOWED_VARIANT_TYPES:
         raise ValueError(f"Did not recognize variant type {varType}")
-    if varType in pat.variant.variant_type:
+    if varType in [typ for var in pat.variant_types for typ in var]:
         return True
     else:
         return False
@@ -60,7 +60,7 @@ def is_not_var_type(pat, varType):
     """""
     if varType not in ALLOWED_VARIANT_TYPES:
         raise ValueError(f"Did not recognize variant type {varType}")
-    if varType in pat.variant.variant_type:
+    if varType in [typ for var in pat.variant_types for typ in var]:
         return False
     else:
         return True
@@ -79,14 +79,14 @@ def is_var_match(pat, variant):
         boolean : True if the Patient does have the given Variant
     
     """
-    if pat.variant.variant is not None:
+    if pat.variants is not None:
         if isinstance(variant, str):
             test_var = verify_var(variant, pat)
         elif isinstance(variant, vc.Variant):
             test_var = variant
         else:
             raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-        if pat.variant.variant == test_var:
+        if test_var in [var.variant for var in pat.variants]:
             return True
         else:
             return False
@@ -107,14 +107,14 @@ def is_not_var_match(pat, variant):
     
     """
 
-    if pat.variant.variant is not None:
+    if pat.variants is not None:
         if isinstance(variant, str):
             test_var = verify_var(variant, pat)
         elif isinstance(variant, vc.Variant):
             test_var = variant
         else:
             raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-        if pat.variant.variant == test_var:
+        if test_var in [var.variant for var in pat.variants]:
             return False
         else:
             return True
@@ -159,14 +159,15 @@ def in_feature(pat, feature):
         boolean : True if the variant location is in the 
                     specified feature or feature type
     """
-
-    featureDF = pat.protein.features
-    loc = pat.variant.protein_effect_location
-    if loc is not None and not featureDF.empty:
-        for row in featureDF.iterrows():
-            if row[0] == feature or row[1]['type'] == feature:
-                if row[1]['start'] <= loc <= row[1]['end']:
-                    return True
+    for prot in pat.proteins:
+        featureDF = prot.features
+        for var in pat.variants:
+            loc = var.protein_effect_location
+            if loc is not None and not featureDF.empty:
+                for row in featureDF.iterrows():
+                    if row[0] == feature or row[1]['type'] == feature:
+                        if row[1]['start'] <= loc <= row[1]['end']:
+                            return True
     return False
 
 def not_in_feature(pat, feature):
@@ -185,13 +186,13 @@ def not_in_feature(pat, feature):
         boolean : True if the variant location is NOT in the 
                     specified feature or feature type
     """
-
-    featureDF = pat.protein.features
-    loc = pat.variant.protein_effect_location
-    isIn = False
-    if loc is not None and not featureDF.empty:
-        for row in featureDF.iterrows():
-            if row[0] == feature or row[1]['type'] == feature:
-                if not row[1]['start'] <= loc <= row[1]['end']:
-                    isIn = True
-    return isIn
+    for prot in pat.proteins:
+        featureDF = prot.features
+        for var in pat.variants:
+            loc = var.protein_effect_location
+            if loc is not None and not featureDF.empty:
+                for row in featureDF.iterrows():
+                    if row[0] == feature or row[1]['type'] == feature:
+                        if row[1]['start'] <= loc <= row[1]['end']:
+                            return False
+    return True

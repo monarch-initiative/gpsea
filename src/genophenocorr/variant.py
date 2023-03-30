@@ -4,35 +4,28 @@ import pyensembl
 import re
 
 class Variant:
-    def __init__(self,ref, phenopack):
-        self._phenopack = phenopack
+    def __init__(self,ref, genoInterp):
+        self._genoInterp = genoInterp
         self._variant = self.__find_variant(reference = ref)
         
     def __find_variant(self, reference):
-        if len(self._phenopack.interpretations) != 0:
-            Interp = self._phenopack.interpretations[0]
-            try:
-                genInterp = Interp.diagnosis.genomic_interpretations[0]
-                varInterp = genInterp.variant_interpretation.variation_descriptor.vcf_record
-                contig = re.sub(r'[^0-9MXY]', '', varInterp.chrom)
-                if len(contig) == 0 or (contig.isdigit() and (int(contig) == 0 or int(contig) >= 24)):
-                    ## Chromosome can only be values 1-23, X, Y, or M
-                    raise ValueError(f"Contig did not work: {varInterp.chrom}")
-                start = varInterp.pos
-                ref = varInterp.ref
-                alt = varInterp.alt
-                if reference.lower() == 'hg37' or reference.lower() == 'grch37' or reference.lower() == 'hg19':
-                    ens = pyensembl.ensembl_grch37
-                elif reference.lower() == 'hg38' or reference.lower() == 'grch38':
-                    ens = pyensembl.ensembl_grch38
-                else:
-                    raise ValueError(f'Unknown Reference {reference}. Please use hg37 or hg38.')
-                myVar = vc.Variant(contig, start, ref, alt, ensembl = ens)
-                return myVar
-            except AttributeError:
-                raise AttributeError('Could not find Variants')
+        varInterp = self._genoInterp.variant_interpretation.variation_descriptor.vcf_record
+        contig = re.sub(r'[^0-9MXY]', '', varInterp.chrom)
+        if len(contig) == 0 or (contig.isdigit() and (int(contig) == 0 or int(contig) >= 24)):
+            ## Chromosome can only be values 1-23, X, Y, or M
+            raise ValueError(f"Contig did not work: {varInterp.chrom}")
+        start = varInterp.pos
+        ref = varInterp.ref
+        alt = varInterp.alt
+        if reference.lower() == 'hg37' or reference.lower() == 'grch37' or reference.lower() == 'hg19':
+            ens = pyensembl.ensembl_grch37
+        elif reference.lower() == 'hg38' or reference.lower() == 'grch38':
+            ens = pyensembl.ensembl_grch38
         else:
-            raise ValueError('No Genomic Interpretations. Cannot find Variant.')
+            raise ValueError(f'Unknown Reference {reference}. Please use hg19 or hg38.')
+        myVar = vc.Variant(contig, start, ref, alt, ensembl = ens)
+        return myVar
+
 
     @property
     def variant(self):
@@ -43,7 +36,7 @@ class Variant:
         return self.variant.short_description
 
     @property
-    def variant_type(self):
+    def variant_types(self):
         all_types = []
         if not self.top_effect.short_description.endswith("*") and self.variant.is_snv:
             all_types.append('missense')
@@ -66,14 +59,14 @@ class Variant:
 
     @property
     def genomic_location(self):
-        if self._variant is not None:
-            return self._variant.start
+        if self.variant is not None:
+            return self.variant.start
         else:
             return None
 
     @property
     def effects(self):
-        if self._variant is not None:
+        if self.variant is not None:
             return self.variant.effects()
         else:
             return None
@@ -81,7 +74,7 @@ class Variant:
     @property
     def top_effect(self):
         if self.effects is not None:
-            return self.effects.top_priority_effect()
+            return self.variant.effects().top_priority_effect() 
         else:
             return None
 
