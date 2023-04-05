@@ -2,7 +2,9 @@ import hpotk
 from hpotk.ontology import Ontology
 from hpotk.ontology.load.obographs import load_ontology
 from hpotk.validate import ObsoleteTermIdsValidator
-ont = load_ontology('https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.json')
+## ont was previously https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.json
+## but file no longer exists
+ont = load_ontology('../../notebooks/hpo_data/hp.json')
 
 class Phenotype:
     def __init__(self, id, excluded=False, measured=True) -> None:

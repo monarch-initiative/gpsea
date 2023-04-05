@@ -4,19 +4,21 @@ import pyensembl
 import re
 
 class Variant:
-    def __init__(self,ref, genoInterp):
+    def __init__(self,ref, genoInterp, transcript):
         self._genoInterp = genoInterp
         self._variant = self.__find_variant(reference = ref)
+        self._transcript = transcript
         
     def __find_variant(self, reference):
-        varInterp = self._genoInterp.variant_interpretation.variation_descriptor.vcf_record
-        contig = re.sub(r'[^0-9MXY]', '', varInterp.chrom)
+        varInterp = self._genoInterp.variant_interpretation.variation_descriptor
+        self._allelic_state = varInterp.allelic_state.label
+        contig = re.sub(r'[^0-9MXY]', '', varInterp.vcf_record.chrom)
         if len(contig) == 0 or (contig.isdigit() and (int(contig) == 0 or int(contig) >= 24)):
             ## Chromosome can only be values 1-23, X, Y, or M
-            raise ValueError(f"Contig did not work: {varInterp.chrom}")
-        start = varInterp.pos
-        ref = varInterp.ref
-        alt = varInterp.alt
+            raise ValueError(f"Contig did not work: {varInterp.vcf_record.chrom}")
+        start = varInterp.vcf_record.pos
+        ref = varInterp.vcf_record.ref
+        alt = varInterp.vcf_record.alt
         if reference.lower() == 'hg37' or reference.lower() == 'grch37' or reference.lower() == 'hg19':
             ens = pyensembl.ensembl_grch37
         elif reference.lower() == 'hg38' or reference.lower() == 'grch38':
@@ -56,6 +58,12 @@ class Variant:
             all_types.append('indel')
         return all_types
 
+    @property
+    def genotype(self):
+        if self._allelic_state is not None:
+            return self._allelic_state
+        else:
+            return None
 
     @property
     def genomic_location(self):
@@ -65,16 +73,18 @@ class Variant:
             return None
 
     @property
-    def effects(self):
+    def all_effects(self):
         if self.variant is not None:
-            return self.variant.effects()
+            return self.variant.effects().short_string()
         else:
             return None
 
     @property
     def top_effect(self):
-        if self.effects is not None:
-            return self.variant.effects().top_priority_effect() 
+        if self.all_effects is not None and self._transcript is None:
+            return self.variant.effects().top_priority_effect()
+        elif self.all_effects is not None and self._transcript is not None:
+            return self.variant.effects().top_priority_effect_per_transcript_id().get(self._transcript)
         else:
             return None
 
@@ -94,8 +104,10 @@ class Variant:
 
     @property
     def top_effect_transcript(self):
-        if self.top_effect is not None:
+        if self.top_effect is not None and self._transcript is None:
             return self.top_effect.transcript
+        elif self.top_effect is not None and self._transcript is not None:
+            return [trans for trans in self.variant.transcripts if trans.id == self._transcript][0]
         else:
             return None
 

@@ -15,7 +15,7 @@ ALLOWED_VARIANT_TYPES = {'missense',
                         'indel'}
 
 
-def is_var_type(pat, varType):
+def is_var_type(var, pat, varType):
     """"" Determines if the given Patient has a variant of the given variant type
 
     Args:
@@ -35,12 +35,12 @@ def is_var_type(pat, varType):
     """""
     if varType not in ALLOWED_VARIANT_TYPES:
         raise ValueError(f"Did not recognize variant type {varType}")
-    if varType in [typ for var in pat.variant_types for typ in var]:
+    if varType in var.variant_types:
         return True
     else:
         return False
 
-def is_not_var_type(pat, varType):
+def is_not_var_type(var, pat, varType):
     """"" Determines if the given Patient does not have a variant of the given variant type
 
     Args:
@@ -60,13 +60,13 @@ def is_not_var_type(pat, varType):
     """""
     if varType not in ALLOWED_VARIANT_TYPES:
         raise ValueError(f"Did not recognize variant type {varType}")
-    if varType in [typ for var in pat.variant_types for typ in var]:
+    if varType in var.variant_types:
         return False
     else:
         return True
 
 
-def is_var_match(pat, variant):
+def is_var_match(var, pat, variant):
     """ Determines if the given Patient has the given Variant
 
     Args:
@@ -79,21 +79,18 @@ def is_var_match(pat, variant):
         boolean : True if the Patient does have the given Variant
     
     """
-    if pat.variants is not None:
-        if isinstance(variant, str):
-            test_var = verify_var(variant, pat)
-        elif isinstance(variant, vc.Variant):
-            test_var = variant
-        else:
-            raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-        if test_var in [var.variant for var in pat.variants]:
-            return True
-        else:
-            return False
+    if isinstance(variant, str):
+        test_var = verify_var(variant, pat)
+    elif isinstance(variant, vc.Variant):
+        test_var = variant
     else:
-        raise ValueError(f"No variant found for patient {pat.id}")
+        raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
+    if test_var == var.variant:
+        return True
+    else:
+        return False
 
-def is_not_var_match(pat, variant):
+def is_not_var_match(var, pat, variant):
     """ Determines if the given Patient does NOT have the given Variant
 
     Args:
@@ -106,20 +103,17 @@ def is_not_var_match(pat, variant):
         boolean : True if the Patient does NOT have the given Variant
     
     """
-
-    if pat.variants is not None:
-        if isinstance(variant, str):
-            test_var = verify_var(variant, pat)
-        elif isinstance(variant, vc.Variant):
-            test_var = variant
-        else:
-            raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-        if test_var in [var.variant for var in pat.variants]:
-            return False
-        else:
-            return True
+    if isinstance(variant, str):
+        test_var = verify_var(variant, pat)
+    elif isinstance(variant, vc.Variant):
+        test_var = variant
     else:
-        raise ValueError(f"No variant found for patient {pat.id}")
+        raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
+    if test_var == var.variant:
+        return False
+    else:
+        return True
+
 
 def verify_var(variant, pat):
     """
@@ -137,13 +131,13 @@ def verify_var(variant, pat):
     elif pat.hg_reference.lower() == 'hg38' or pat.hg_reference.lower() == 'grch38':
         ens = pyensembl.ensembl_grch38
     else:
-        raise ValueError(f'Unknown Reference {pat.hg_reference}. Please use hg37 or hg38.')
+        raise ValueError(f'Unknown Reference {pat.hg_reference}. Please use hg19 or hg38.')
 
     contig, start, ref, alt = variant.split(':')
     var = vc.Variant(contig, start, ref, alt, ensembl = ens)
     return var
 
-def in_feature(pat, feature):
+def in_feature(var, pat, feature):
     """Given a specific patient and feature, determine True
     or False that the variant effect is within that feature
     
@@ -161,16 +155,15 @@ def in_feature(pat, feature):
     """
     for prot in pat.proteins:
         featureDF = prot.features
-        for var in pat.variants:
-            loc = var.protein_effect_location
-            if loc is not None and not featureDF.empty:
-                for row in featureDF.iterrows():
-                    if row[0] == feature or row[1]['type'] == feature:
-                        if row[1]['start'] <= loc <= row[1]['end']:
-                            return True
+        loc = var.protein_effect_location
+        if loc is not None and not featureDF.empty:
+            for row in featureDF.iterrows():
+                if row[0] == feature or row[1]['type'] == feature:
+                    if row[1]['start'] <= loc <= row[1]['end']:
+                        return True
     return False
 
-def not_in_feature(pat, feature):
+def not_in_feature(var, pat, feature):
     """ Given a specific patient and feature, determine True
     or False that the variant effect is NOT within that feature
 
@@ -188,11 +181,10 @@ def not_in_feature(pat, feature):
     """
     for prot in pat.proteins:
         featureDF = prot.features
-        for var in pat.variants:
-            loc = var.protein_effect_location
-            if loc is not None and not featureDF.empty:
-                for row in featureDF.iterrows():
-                    if row[0] == feature or row[1]['type'] == feature:
-                        if row[1]['start'] <= loc <= row[1]['end']:
-                            return False
+        loc = var.protein_effect_location
+        if loc is not None and not featureDF.empty:
+            for row in featureDF.iterrows():
+                if row[0] == feature or row[1]['type'] == feature:
+                    if row[1]['start'] <= loc <= row[1]['end']:
+                        return False
     return True

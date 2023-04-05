@@ -20,7 +20,7 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, fileList = None, ref = 'hg38'):
+    def __init__(self, fileList = None, ref = 'hg38', transcript = None):
         self._patient_dict = defaultdict(Patient)
         self._disease_dict = defaultdict(Disease)
         self._phenotype_dict = defaultdict(Phenotype)
@@ -30,7 +30,7 @@ class Cohort:
 
         if fileList is not None:
             for file in glob.glob(fileList):
-                current = Patient(file, ref)
+                current = Patient(file, ref, transcript)
                 self.__add(current)
 
     def __add(self, Patient):
@@ -158,7 +158,8 @@ class Cohort:
 
     def run_stats(  self, Function_1, Function_2, Func1_Variable, Func2_Variable, 
                     percent_patients = 10, adjusted_pval_method = 'fdr_bh', 
-                    combine_like_hpos = False, remove_not_measured = False): 
+                    combine_like_hpos = False, remove_not_measured = False,
+                    recessive = False): 
                     ## ADD WAY TO DO MULTI CHROMOSOMES
         """ Runs the Genotype-Phenotype Correlation calculations
 
@@ -195,35 +196,80 @@ class Cohort:
         
         """
         hpo_counts = self.count_patients_per_hpo(remove_not_measured)
-        hpo_ids_to_compare = []
+        compare_hpos_d = []
         for row in hpo_counts.iterrows():
             if row[1].at['Percent'] >= (percent_patients/100):
-                hpo_ids_to_compare.append(row[0])
-        if len(hpo_ids_to_compare) == 0:
+                compare_hpos_d.append(row[0])
+        if len(compare_hpos_d) == 0:
             raise ValueError(f'No HPO term is present in over {percent_patients}% of the patients.')
         if combine_like_hpos:
-            hpo_ids_to_compare = self.__group_similar_hpos(hpo_ids_to_compare)
+            compare_hpos_d = self.__group_similar_hpos(compare_hpos_d)
+        if not recessive:
+            allSeries = self.__dominant_test(compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
+        elif recessive:
+            allSeries = self.__recessive_test(compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
+        results = pd.concat(allSeries, axis=1)
+        results = results.transpose() 
+        results = results.sort_values(['pval'])
+        pval_adjusted = multipletests(results['pval'].to_list(), alpha=0.05, method=adjusted_pval_method) 
+        results['adjusted pval'] = np.array(pval_adjusted[1])
+        results = results.convert_dtypes()
+        
+        return results
+
+    def __dominant_test(self, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
         allSeries = []
-        for hpo_id in hpo_ids_to_compare:
+        for hpo_id in compare_hpos_d:
             if remove_not_measured:
                 tested_patients_d = [patient for patient in self.all_patients_d.values() if hpo_id in patient.phenotypes.keys()]
             else:
                 tested_patients_d = self.all_patients_d.values()
-            var1_with_hpo = len([ pat for pat in tested_patients_d if pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_1(pat, Func1_Variable)])
-            var1_without_hpo = len([ pat for pat in  tested_patients_d if not pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_1(pat,Func1_Variable)])
-            var2_with_hpo = len([ pat  for pat in tested_patients_d if pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_2(pat,Func2_Variable)])
-            var2_without_hpo = len([ pat for pat in tested_patients_d if not pat.has_hpo(hpo_id, hpo_ids_to_compare) and Function_2(pat,Func2_Variable)])
+            var1_with_hpo = len([ pat for pat in tested_patients_d if pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat, Func1_Variable) for var in pat.variants]])
+            var1_without_hpo = len([ pat for pat in  tested_patients_d if not pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat, Func1_Variable) for var in pat.variants]])
+            var2_with_hpo = len([ pat  for pat in tested_patients_d if pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat, Func2_Variable) for var in pat.variants]])
+            var2_without_hpo = len([ pat for pat in tested_patients_d if not pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat, Func2_Variable) for var in pat.variants]])
             table = np.array([[var1_with_hpo, var1_without_hpo], [var2_with_hpo, var2_without_hpo]])
             oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
             allSeries.append(pd.Series([var1_with_hpo, var1_without_hpo, var2_with_hpo, var2_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['1 w/ hpo', '1 w/o hpo', '2 w/ hpo', '2 w/o hpo', 'pval']))
-        results = pd.concat(allSeries, axis=1)
-        results = results.transpose()
-        ## Make columns that are not P-Vals as int 
-        results = results.sort_values(['pval'])
-        pval_adjusted = multipletests(results['pval'].to_list(), alpha=0.05, method=adjusted_pval_method) 
-        results['adjusted pval'] = np.array(pval_adjusted[1])
-        
-        return results
+        return allSeries
+
+    def __recessive_test(self, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
+        allSeries = []
+        for hpo_id in compare_hpos_d:
+            AA_with_hpo = 0
+            AA_without_hpo = 0
+            AB_with_hpo = 0
+            AB_without_hpo = 0
+            BB_with_hpo = 0
+            BB_without_hpo = 0
+            if remove_not_measured:
+                tested_patients_d = [patient for patient in self.all_patients_d.values() if hpo_id in patient.phenotypes.keys()]
+            else:
+                tested_patients_d = self.all_patients_d.values()
+            for pat in tested_patients_d:
+                if len(pat.variants) == 2:
+                    var1 = pat.variants[0]
+                    var2 = pat.variants[1]
+                    if pat.has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat, Func1_Variable) != Function_1(var2, pat, Func1_Variable)) and (Function_2(var1, pat, Func2_Variable) != Function_2(var2, pat, Func2_Variable)):
+                        AB_with_hpo += 1
+                    if not pat.has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat, Func1_Variable) != Function_1(var2, pat, Func1_Variable)) and (Function_2(var1, pat, Func2_Variable) != Function_2(var2, pat, Func2_Variable)):
+                        AB_without_hpo += 1
+                elif len(pat.variants) == 1:
+                    var1 = pat.variants[0]
+                    var2 = pat.variants[0]
+                if pat.has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat, Func1_Variable) and Function_1(var2, pat, Func1_Variable):
+                    AA_with_hpo += 1
+                if not pat.has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat, Func1_Variable) and Function_1(var2, pat, Func1_Variable):
+                    AA_without_hpo += 1
+                if pat.has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat,Func2_Variable) and Function_2(var2, pat, Func2_Variable):
+                    BB_with_hpo += 1
+                if not pat.has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat,Func2_Variable) and Function_2(var2, pat, Func2_Variable):
+                    BB_without_hpo += 1
+            table = np.array([[AA_with_hpo, AA_without_hpo],[AB_with_hpo, AB_without_hpo], [BB_with_hpo, BB_without_hpo]])
+            #oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
+            p = 1
+            allSeries.append(pd.Series([AA_with_hpo, AA_without_hpo, AB_with_hpo, AB_without_hpo, BB_with_hpo, BB_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['AA w/ hpo', 'AA w/o hpo', 'AB w/ hpo', 'AB w/o hpo', 'BB w/ hpo', 'BB w/o hpo', 'pval']))
+        return allSeries
 
     def __group_similar_hpos(self, test_hpo_list):
         full_hpo_dict = self.all_phenotypes_d
