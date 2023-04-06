@@ -5,7 +5,7 @@ from .disease import Disease
 from .phenotype import Phenotype
 from .cohort import Cohort
 from .compare_func import *
-from .compare import run_stats
+#from .compare import run_stats
 from .proteins import Protein
 
 __ALL__ = ["Patient", "Disease", "Phenotype", "Cohort", "Protein", "run_stats",

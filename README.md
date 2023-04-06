@@ -16,10 +16,13 @@ pyensembl install --release 107 --species homo_sapiens
 
 
 
-# Set up phenopackets
+# Set up dependencies
 ```
 pip install phenopackets
 pip install pandas
+pip install hpo-toolkit
+pip install scipy
+pip install statsmodels
 ```
 
 
