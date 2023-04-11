@@ -7,7 +7,8 @@ from .variant import Variant
 import glob
 import pandas as pd
 import re
-from scipy import stats 
+from scipy import stats
+from FisherExact import fisher_exact
 from statsmodels.sandbox.stats.multicomp import multipletests
 import numpy as np
 import pandas as pd
@@ -76,12 +77,17 @@ class Cohort:
         for pat in self.all_patients_d.values():
             tempDict['Patient ID'].append(pat.id)
             tempDict['Disease'].append(pat.disease_id)
-            tempDict['Gene'].append(set([g.name for gs in pat.genes for g in gs]))
+            tempDict['Gene'].append(set(pat.genes))
             tempDict['Variant'].append(set(pat.variant_strings))
             tempDict['Protein'].append(set(pat.protein_ids))
             tempDict['HPO Terms'].append(set(pat.phenotype_ids))
         enddf = pd.DataFrame(tempDict)
         return enddf
+
+    def list_possible_tests(self):
+        ## TODO: Create a table that goes into detail what tests we offer that would work with the 
+        ## data that they have in their cohort
+        return None
 
     def list_all_patients(self):
         return [key.id for key in self.all_patients_d.values()]
@@ -102,7 +108,7 @@ class Cohort:
     def all_var_types(self):
         types = set()
         for var in self.all_variants_d.values():
-            for v in var.variant_types: types.add(v)
+            types.add(var.variant_types)
         return types
 
 
@@ -266,8 +272,8 @@ class Cohort:
                 if not pat.has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat,Func2_Variable) and Function_2(var2, pat, Func2_Variable):
                     BB_without_hpo += 1
             table = np.array([[AA_with_hpo, AA_without_hpo],[AB_with_hpo, AB_without_hpo], [BB_with_hpo, BB_without_hpo]])
+            p = fisher_exact(table)
             #oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
-            p = 1
             allSeries.append(pd.Series([AA_with_hpo, AA_without_hpo, AB_with_hpo, AB_without_hpo, BB_with_hpo, BB_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['AA w/ hpo', 'AA w/o hpo', 'AB w/ hpo', 'AB w/o hpo', 'BB w/ hpo', 'BB w/o hpo', 'pval']))
         return allSeries
 
@@ -283,6 +289,7 @@ class Cohort:
                     if hpo_id2 in grouping_list:
                         similar_hpos.append([hpo_id2, len(full_hpo_dict[hpo_id2].list_ancestors())])
                 smallest = ['tempID', 1000000]
+                smallest_2 = ['tempID', 100000]
                 for hpo_id3 in similar_hpos:
                     if int(hpo_id3[1]) < int(smallest[1]):
                         smallest = hpo_id3

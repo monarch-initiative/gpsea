@@ -1,62 +1,41 @@
 from curses.ascii import isdigit
-import varcode as vc
-import pyensembl
 import re
+import requests
+import pandas as pd
+
+URL = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
 
 class Variant:
-    def __init__(self,ref, genoInterp, transcript):
+    def __init__(self, genoInterp, transcript):
         self._genoInterp = genoInterp
-        self._variant = self.__find_variant(reference = ref)
-        self._transcript = transcript
-        
-    def __find_variant(self, reference):
+        self._variant_json = self.__find_variant()
+        self.__set_transcript(transcript)
+
+    def __find_variant(self):
         varInterp = self._genoInterp.variant_interpretation.variation_descriptor
         self._allelic_state = varInterp.allelic_state.label
-        contig = re.sub(r'[^0-9MXY]', '', varInterp.vcf_record.chrom)
+        chrom = varInterp.vcf_record.chrom
+        contig = re.sub(r'[^0-9MXY]', '', chrom)
         if len(contig) == 0 or (contig.isdigit() and (int(contig) == 0 or int(contig) >= 24)):
             ## Chromosome can only be values 1-23, X, Y, or M
-            raise ValueError(f"Contig did not work: {varInterp.vcf_record.chrom}")
-        start = varInterp.vcf_record.pos
-        ref = varInterp.vcf_record.ref
-        alt = varInterp.vcf_record.alt
-        if reference.lower() == 'hg37' or reference.lower() == 'grch37' or reference.lower() == 'hg19':
-            ens = pyensembl.ensembl_grch37
-        elif reference.lower() == 'hg38' or reference.lower() == 'grch38':
-            ens = pyensembl.ensembl_grch38
-        else:
-            raise ValueError(f'Unknown Reference {reference}. Please use hg19 or hg38.')
-        myVar = vc.Variant(contig, start, ref, alt, ensembl = ens)
-        return myVar
+            raise ValueError(f"Chromosome unknown: {chrom}")
+        HGVS = varInterp.expressions[1]
+        var_input = HGVS.value.split(':')[1]
+        api_url = URL % (chrom, var_input)
+        r = requests.get(api_url, headers={'Content-Type':'application/json'})
+        if not r.ok:
+            r.raise_for_status()
+        varJson = r.json()
+        return varJson[0]
 
-
+## TODO: Change All Variable to work with new JSON version
     @property
-    def variant(self):
-        return self._variant
+    def variant_json(self):
+        return self._variant_json
 
     @property
     def variant_string(self):
-        return self.variant.short_description
-
-    @property
-    def variant_types(self):
-        all_types = []
-        if not self.top_effect.short_description.endswith("*") and self.variant.is_snv:
-            all_types.append('missense')
-        if self.top_effect.short_description.endswith("*") and self.variant.is_snv:
-            all_types.append('nonsense')
-        if 'dup' in self.top_effect.short_description:
-            all_types.append('duplication')
-        if self.variant.is_deletion:
-            all_types.append('deletion')
-        if self.variant.is_insertion:
-            all_types.append('insertion')
-        if self.variant.is_transition:
-            all_types.append('transition')
-        if self.variant.is_transversion:
-            all_types.append('transversion')
-        if self.variant.is_indel:
-            all_types.append('indel')
-        return all_types
+        return self.variant_json.get('id')
 
     @property
     def genotype(self):
@@ -67,64 +46,71 @@ class Variant:
 
     @property
     def genomic_location(self):
-        if self.variant is not None:
-            return self.variant.start
-        else:
-            return None
+        return self._variant_json.get('start')
 
     @property
-    def all_effects(self):
-        if self.variant is not None:
-            return self.variant.effects().short_string()
-        else:
-            return None
+    def variant_types(self):
+        all_types = []
+        all_types.append(self._variant_json.get('variant_class'))
+        for typ in self._canonical.get('consequence_terms'):
+            all_types.append(typ)
+        return all_types
 
     @property
-    def top_effect(self):
-        if self.all_effects is not None and self._transcript is None:
-            return self.variant.effects().top_priority_effect()
-        elif self.all_effects is not None and self._transcript is not None:
-            return self.variant.effects().top_priority_effect_per_transcript_id().get(self._transcript)
-        else:
-            return None
+    def transcript(self):
+        return self._transcript
 
     @property
-    def all_transcripts(self):
-        if self._variant is not None:
-            return self.variant.transcripts
-        else:
-            return None
+    def gene_name(self):
+        return self._canonical.get('gene_symbol')
 
     @property
-    def all_transcript_ids(self):
-        if self.variant.transcripts is not None:
-            return self.variant.transcript_ids
-        else:
-            return None
-
-    @property
-    def top_effect_transcript(self):
-        if self.top_effect is not None and self._transcript is None:
-            return self.top_effect.transcript
-        elif self.top_effect is not None and self._transcript is not None:
-            return [trans for trans in self.variant.transcripts if trans.id == self._transcript][0]
-        else:
-            return None
-
-    @property
-    def top_effected_protein(self):
-        if self.top_effect_transcript is not None:
-            return self.top_effect_transcript.protein_id
-        else:
-            return None
+    def effected_protein(self):
+        return self._canonical.get('protein_id')
 
     @property
     def protein_effect_location(self):
-        # Currently only works with single amino acid substitutions
-        loc = None
-        if self.top_effected_protein is not None:
-            pattern = re.compile(r'p\.[A-Z](\d+)[A-Z]')
-            if pattern.match(self.top_effect.short_description):
-                loc = int(re.sub(pattern, '\\g<1>', self.top_effect.short_description))
-        return loc
+        return self._canonical.get('protein_start')
+
+    @property
+    def protein_effect(self):
+        return self._canonical.get('hgvsp').split(':')[1]
+
+
+    def list_all_variant_effects_df(self):
+        allSeries = []
+        varID = self._variant_json.get('id')
+        varClass = self._variant_json.get('variant_class')
+        for trans in self._variant_json.get('transcript_consequences'):
+            transID = trans.get('transcript_id')
+            if not transID.startswith('NM'):
+                continue
+            exonEffected = trans.get('exon').split('/')[0]
+            proteinEffect = trans.get('hgvsp').split(':')[1]
+            consequence = trans.get('consequence_terms')
+            geneName = trans.get('gene_symbol')
+            proteinID = trans.get('protein_id')
+            siftScore = trans.get('sift_score')
+            polyphenScore = trans.get('polyphen_score')
+            if trans.get('canonical') == 1:
+                canon = True
+            else:
+                canon = False
+            allSeries.append(pd.Series([consequence, geneName, proteinID, proteinEffect, exonEffected, siftScore, polyphenScore, canon], name = transID, index=['Variant Type', 'Gene Name', 'Protein ID', 'Effect on Protein', 'Exon Effected', 'Sift Score', 'Polyphen Score', 'Current Transcript']))
+        results = pd.concat(allSeries, axis=1)
+        results = results.transpose()
+        results.Name = varID + ' - Class: ' + varClass
+        return results 
             
+    def __set_transcript(self, transcript = None):
+        if transcript is not None:
+            self._transcript = transcript
+            for trans in self._variant_json.get('transcript_consequences'):
+                if trans.get('transcript_id') == transcript:
+                    self._canonical = trans
+        else:
+            for trans in self._variant_json.get('transcript_consequences'):
+                if trans.get('canonical') == 1:
+                    self._transcript = trans.get('transcript_id')
+                    self._canonical = trans
+        return None

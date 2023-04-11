@@ -40,7 +40,7 @@ class Patient:
             self._diseases = None
         self._variants = self.__get_vars(transcript)
         for var in self._variants:
-            self._protein.append(Protein(var.top_effected_protein))
+            self._protein.append(Protein(var.effected_protein))
         
     def __get_hpids(self):
         hp_ids = defaultdict(Phenotype)
@@ -57,7 +57,7 @@ class Patient:
             Interp = self._phenopack.interpretations[0]
             if len(Interp.diagnosis.genomic_interpretations) > 0:
                 for genoInterp in Interp.diagnosis.genomic_interpretations:
-                    allVars.append(Variant(ref = self._reference, genoInterp = genoInterp, transcript = transcript))
+                    allVars.append(Variant(genoInterp = genoInterp, transcript = transcript))
             else: raise ValueError('No genomic interpretations found in phenopacket.')
         else: ValueError('No interpretations found in phenopacket.')
         return allVars
@@ -133,7 +133,7 @@ class Patient:
 
     @property
     def genes(self):
-        return [var.variant.genes for var in self.variants]
+        return [var.gene_name for var in self.variants]
 
     def get_patient_description_df(self): 
         stats = pd.Series({
@@ -142,12 +142,12 @@ class Patient:
             "Disease Label": self.disease_label,
             "HPO IDs": str(self.phenotype_ids),
             "HPO Terms": str(self.phenotype_labels),
-            "Variant": self.variant_strings,
-            "Variant Type": self.variant_types,
-            "Gene Affected": [g.gene_name for gs in self.genes for g in gs],
-            "Gene ID": [g.gene_id for gs in self.genes for g in gs],
-            "Effect of Variant": [v.top_effect.short_description for v in self.variants],
-            "Transcript ID": [v.top_effect_transcript.id for v in self.variants],
+            "Variants": self.variant_strings,
+            "Variant Types": self.variant_types,
+            "Gene Affected": [v.gene_name for v in self.variants],
+            ##"Gene ID": [g.gene_id for gs in self.genes for g in gs],
+            "Effect of Variant": [v.protein_effect for v in self.variants],
+            "Transcript ID": [v.transcript for v in self.variants],
             "Protein Affected": [p.label for p in self.proteins],
             "Protein ID": [p.id for p in self.proteins]
                 })

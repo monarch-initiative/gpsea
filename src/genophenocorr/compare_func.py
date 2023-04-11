@@ -5,14 +5,12 @@ import re
 import warnings
 
 
-ALLOWED_VARIANT_TYPES = {'missense',
-                        'nonsense',
-                        'duplication',
+ALLOWED_VARIANT_TYPES = {'stop_gained',
+                        'frameshift_variant',
+                        'missense_variant',
+                        'SNV',
                         'deletion',
-                        'insertion',
-                        'transition',
-                        'transversion',
-                        'indel'}
+                        'insertion'}
 
 
 def is_var_type(var, pat, varType):
