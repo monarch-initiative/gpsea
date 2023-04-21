@@ -21,18 +21,24 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, fileList = None, ref = 'hg38', transcript = None):
+    def __init__(self, fileList = None, transcript = None, recessive = False):
         self._patient_dict = defaultdict(Patient)
         self._disease_dict = defaultdict(Disease)
         self._phenotype_dict = defaultdict(Phenotype)
         self._protein_dict = defaultdict(Protein)
         self._variant_dict = defaultdict(Variant)
-        self._reference = ref
+        self._recessive = recessive
 
         if fileList is not None:
+            total = len(glob.glob(fileList))
+            count = 0
             for file in glob.glob(fileList):
-                current = Patient(file, ref, transcript)
+                percent = (count / total) * 100
+                if percent == 25 or percent == 50 or percent == 75 or percent == 90 or percent == 100:
+                    print(f"{percent}% completed")
+                current = Patient(file, transcript)
                 self.__add(current)
+        self.__add_proteins()
 
     def __add(self, Patient):
         self._patient_dict[Patient.id] = Patient
@@ -44,9 +50,16 @@ class Cohort:
         if Patient.variants is not None:
             for v in Patient.variants:
                 self._variant_dict[v.variant_string] = v
-        if Patient.proteins is not None:
-            for p in Patient.proteins:
-                self._protein_dict[p.id] = p
+
+    def __add_proteins(self):
+        all_prots = {}
+        for var in self._variant_dict.values():
+            if var.effected_protein in all_prots.keys():
+                all_prots[var.effected_protein].append(var.variant_string)
+            else:
+                all_prots[var.effected_protein] = [var.variant_string]
+        for prot in all_prots.keys():
+            self._protein_dict[prot] = Protein(prot, all_prots[prot])
 
     @property
     def all_patients_d(self):
@@ -79,15 +92,42 @@ class Cohort:
             tempDict['Disease'].append(pat.disease_id)
             tempDict['Gene'].append(set(pat.genes))
             tempDict['Variant'].append(set(pat.variant_strings))
-            tempDict['Protein'].append(set(pat.protein_ids))
+            proteins = []
+            for prot in self.all_proteins_d.values():
+                for var in pat.variant_strings:
+                    if var in prot.variants_in_protein:
+                        proteins.append(prot.id)
+            tempDict['Protein'].append(set(proteins))
             tempDict['HPO Terms'].append(set(pat.phenotype_ids))
         enddf = pd.DataFrame(tempDict)
         return enddf
 
     def list_possible_tests(self):
-        ## TODO: Create a table that goes into detail what tests we offer that would work with the 
-        ## data that they have in their cohort
-        return None
+        all_tests = {'variant_types': {},
+                    'variants': {},
+                    'protein_features': {}}
+        for pat in self.all_patients_d.values():
+            for var in pat.variants:
+                if var.variant_string in all_tests.get('variants').keys():
+                    all_tests.get('variants')[var.variant_string] += 1
+                else:
+                    all_tests.get('variants')[var.variant_string] = 1
+                for prot in self.all_proteins_d.values():
+                    if var.variant_string in prot.variants_in_protein:
+                        var_loc = var.protein_effect_location
+                        if var_loc is not None:
+                            for feat, vals in prot.features.iterrows():
+                                if vals.get('start') is not None and vals.get('end') is not None:
+                                    if feat in all_tests.get('protein_features') and vals.get('start') <= var_loc <= vals.get('end'):
+                                        all_tests.get('protein_features')[feat] += 1
+                                    elif feat not in all_tests.get('protein_features') and vals.get('start') <= var_loc <= vals.get('end'):
+                                        all_tests.get('protein_features')[feat] = 1
+                for vt in var.variant_types:
+                    if vt in all_tests.get('variant_types').keys():
+                        all_tests.get('variant_types')[vt] = all_tests.get('variant_types')[vt] + 1
+                    else:
+                        all_tests.get('variant_types')[vt] = 1
+        return all_tests
 
     def list_all_patients(self):
         return [key.id for key in self.all_patients_d.values()]
@@ -108,7 +148,8 @@ class Cohort:
     def all_var_types(self):
         types = set()
         for var in self.all_variants_d.values():
-            types.add(var.variant_types)
+            for vt in var.variant_types:
+                types.add(vt)
         return types
 
 
@@ -147,25 +188,30 @@ class Cohort:
         finalDF = pd.concat(list(result.values()), keys = list(result.keys()),names=['Protein', 'Feature ID'])
         return finalDF
 
-    def count_patients_per_hpo(self, remove_not_measured):
+    def count_patients_per_hpo(self, remove_not_measured, include_CNV):
         patCounts = pd.DataFrame(0, index=self.all_phenotypes_d.keys(), columns=['TotalWith', 'TotalTested', 'Percent', 'Class'])
+        allPatsV1 = [pat for pat in self.all_patients_d.items() if len(pat[1]._variants) > 0]
+        if include_CNV:
+            allPats = allPatsV1
+        else:
+            allPats = [pat for pat in allPatsV1 if not pat[1]._variants[0]._structural]
         for hpo in self.all_phenotypes_d.values():
             patCounts.at[hpo.id, 'Class'] = hpo
-            for pat in self.all_patients_d.values():
-                if hpo.id in [phenotype.id for phenotype in pat.phenotypes.values() if not phenotype.excluded]:
+            for pat in allPats:
+                if hpo.id in [phenotype.id for phenotype in pat[1].phenotypes.values() if not phenotype.excluded]:
                     patCounts.at[hpo.id, 'TotalWith'] += 1
                     patCounts.at[hpo.id, 'TotalTested'] += 1
-                elif hpo.id in [phenotype.id for phenotype in pat.phenotypes.values() if phenotype.excluded]:
+                elif hpo.id in [phenotype.id for phenotype in pat[1].phenotypes.values() if phenotype.excluded]:
                     patCounts.at[hpo.id, 'TotalTested'] += 1
             if not remove_not_measured:
-                patCounts.at[hpo.id, 'TotalTested'] = self.patient_count
+                patCounts.at[hpo.id, 'TotalTested'] = len(allPats)
             patCounts.at[hpo.id, 'Percent'] = patCounts.at[hpo.id, 'TotalWith'] / patCounts.at[hpo.id, 'TotalTested']
-        return patCounts
+        return patCounts, allPats
 
     def run_stats(  self, Function_1, Function_2, Func1_Variable, Func2_Variable, 
                     percent_patients = 10, adjusted_pval_method = 'fdr_bh', 
                     combine_like_hpos = False, remove_not_measured = False,
-                    recessive = False): 
+                    recessive = False, include_structural_vars = True): 
                     ## ADD WAY TO DO MULTI CHROMOSOMES
         """ Runs the Genotype-Phenotype Correlation calculations
 
@@ -201,7 +247,7 @@ class Cohort:
                         'adjusted pval' - p-value after adjusted_pval_method adjusted it
         
         """
-        hpo_counts = self.count_patients_per_hpo(remove_not_measured)
+        hpo_counts, testing_patients = self.count_patients_per_hpo(remove_not_measured, include_structural_vars)
         compare_hpos_d = []
         for row in hpo_counts.iterrows():
             if row[1].at['Percent'] >= (percent_patients/100):
@@ -211,9 +257,9 @@ class Cohort:
         if combine_like_hpos:
             compare_hpos_d = self.__group_similar_hpos(compare_hpos_d)
         if not recessive:
-            allSeries = self.__dominant_test(compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
+            allSeries = self.__dominant_test(testing_patients, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
         elif recessive:
-            allSeries = self.__recessive_test(compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
+            allSeries = self.__recessive_test(testing_patients, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
         results = pd.concat(allSeries, axis=1)
         results = results.transpose() 
         results = results.sort_values(['pval'])
@@ -223,23 +269,23 @@ class Cohort:
         
         return results
 
-    def __dominant_test(self, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
+    def __dominant_test(self, testing_patients_d, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
         allSeries = []
         for hpo_id in compare_hpos_d:
             if remove_not_measured:
-                tested_patients_d = [patient for patient in self.all_patients_d.values() if hpo_id in patient.phenotypes.keys()]
+                tested_patients_d = [patient for patient in testing_patients_d if hpo_id in patient[1].phenotypes.keys()]
             else:
-                tested_patients_d = self.all_patients_d.values()
-            var1_with_hpo = len([ pat for pat in tested_patients_d if pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat, Func1_Variable) for var in pat.variants]])
-            var1_without_hpo = len([ pat for pat in  tested_patients_d if not pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat, Func1_Variable) for var in pat.variants]])
-            var2_with_hpo = len([ pat  for pat in tested_patients_d if pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat, Func2_Variable) for var in pat.variants]])
-            var2_without_hpo = len([ pat for pat in tested_patients_d if not pat.has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat, Func2_Variable) for var in pat.variants]])
+                tested_patients_d = testing_patients_d
+            var1_with_hpo = len([ pat for pat in tested_patients_d if pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat[1], Func1_Variable) for var in pat[1].variants]])
+            var1_without_hpo = len([ pat for pat in  tested_patients_d if not pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat[1], Func1_Variable) for var in pat[1].variants]])
+            var2_with_hpo = len([ pat  for pat in tested_patients_d if pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat[1], Func2_Variable) for var in pat[1].variants]])
+            var2_without_hpo = len([ pat for pat in tested_patients_d if not pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat[1], Func2_Variable) for var in pat[1].variants]])
             table = np.array([[var1_with_hpo, var1_without_hpo], [var2_with_hpo, var2_without_hpo]])
             oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
             allSeries.append(pd.Series([var1_with_hpo, var1_without_hpo, var2_with_hpo, var2_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['1 w/ hpo', '1 w/o hpo', '2 w/ hpo', '2 w/o hpo', 'pval']))
         return allSeries
 
-    def __recessive_test(self, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
+    def __recessive_test(self, testing_patients_d, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
         allSeries = []
         for hpo_id in compare_hpos_d:
             AA_with_hpo = 0
@@ -249,27 +295,27 @@ class Cohort:
             BB_with_hpo = 0
             BB_without_hpo = 0
             if remove_not_measured:
-                tested_patients_d = [patient for patient in self.all_patients_d.values() if hpo_id in patient.phenotypes.keys()]
+                tested_patients_d = [patient for patient in testing_patients_d if hpo_id in patient[1].phenotypes.keys()]
             else:
-                tested_patients_d = self.all_patients_d.values()
+                tested_patients_d = testing_patients_d
             for pat in tested_patients_d:
-                if len(pat.variants) == 2:
-                    var1 = pat.variants[0]
-                    var2 = pat.variants[1]
-                    if pat.has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat, Func1_Variable) != Function_1(var2, pat, Func1_Variable)) and (Function_2(var1, pat, Func2_Variable) != Function_2(var2, pat, Func2_Variable)):
+                if len(pat[1].variants) == 2:
+                    var1 = pat[1].variants[0]
+                    var2 = pat[1].variants[1]
+                    if pat[1].has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat[1], Func1_Variable) != Function_1(var2, pat[1], Func1_Variable)) and (Function_2(var1, pat[1], Func2_Variable) != Function_2(var2, pat[1], Func2_Variable)):
                         AB_with_hpo += 1
-                    if not pat.has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat, Func1_Variable) != Function_1(var2, pat, Func1_Variable)) and (Function_2(var1, pat, Func2_Variable) != Function_2(var2, pat, Func2_Variable)):
+                    if not pat[1].has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat[1], Func1_Variable) != Function_1(var2, pat[1], Func1_Variable)) and (Function_2(var1, pat[1], Func2_Variable) != Function_2(var2, pat[1], Func2_Variable)):
                         AB_without_hpo += 1
-                elif len(pat.variants) == 1:
-                    var1 = pat.variants[0]
-                    var2 = pat.variants[0]
-                if pat.has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat, Func1_Variable) and Function_1(var2, pat, Func1_Variable):
+                elif len(pat[1].variants) == 1:
+                    var1 = pat[1].variants[0]
+                    var2 = pat[1].variants[0]
+                if pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat[1], Func1_Variable) and Function_1(var2, pat[1], Func1_Variable):
                     AA_with_hpo += 1
-                if not pat.has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat, Func1_Variable) and Function_1(var2, pat, Func1_Variable):
+                if not pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat[1], Func1_Variable) and Function_1(var2, pat[1], Func1_Variable):
                     AA_without_hpo += 1
-                if pat.has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat,Func2_Variable) and Function_2(var2, pat, Func2_Variable):
+                if pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat[1],Func2_Variable) and Function_2(var2, pat[1], Func2_Variable):
                     BB_with_hpo += 1
-                if not pat.has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat,Func2_Variable) and Function_2(var2, pat, Func2_Variable):
+                if not pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat[1],Func2_Variable) and Function_2(var2, pat[1], Func2_Variable):
                     BB_without_hpo += 1
             table = np.array([[AA_with_hpo, AA_without_hpo],[AB_with_hpo, AB_without_hpo], [BB_with_hpo, BB_without_hpo]])
             p = fisher_exact(table)

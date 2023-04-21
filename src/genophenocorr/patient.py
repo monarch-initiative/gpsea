@@ -13,7 +13,7 @@ from .proteins import Protein
 
 
 class Patient:
-    def __init__(self, phenopackJson, ref, transcript):
+    def __init__(self, phenopackJson, transcript):
         if not isfile(phenopackJson):
             raise FileNotFoundError("Could not find phenopacket")
             
@@ -25,7 +25,6 @@ class Patient:
         self._id = phenopack.id
         self._phenopack = phenopack
         self._phenotype = self.__get_hpids()
-        self._reference = ref
         self._protein = []
         if len(phenopack.diseases) != 0:
             dis = phenopack.diseases[0]
@@ -39,8 +38,6 @@ class Patient:
         else:
             self._diseases = None
         self._variants = self.__get_vars(transcript)
-        for var in self._variants:
-            self._protein.append(Protein(var.effected_protein))
         
     def __get_hpids(self):
         hp_ids = defaultdict(Phenotype)
@@ -73,10 +70,6 @@ class Patient:
             return self._diseases.id
         else:
             return None
-
-    @property
-    def hg_reference(self):
-        return self._reference
     
     @property
     def disease_label(self):
@@ -124,14 +117,6 @@ class Patient:
         return [var.variant_types for var in self.variants]
 
     @property
-    def proteins(self):
-        return self._protein
-
-    @property
-    def protein_ids(self):
-        return [p.id for p in self.proteins]
-
-    @property
     def genes(self):
         return [var.gene_name for var in self.variants]
 
@@ -145,11 +130,9 @@ class Patient:
             "Variants": self.variant_strings,
             "Variant Types": self.variant_types,
             "Gene Affected": [v.gene_name for v in self.variants],
-            ##"Gene ID": [g.gene_id for gs in self.genes for g in gs],
             "Effect of Variant": [v.protein_effect for v in self.variants],
             "Transcript ID": [v.transcript for v in self.variants],
-            "Protein Affected": [p.label for p in self.proteins],
-            "Protein ID": [p.id for p in self.proteins]
+            "Protein ID": [v.effected_protein for v in self.variants]
                 })
         return stats.T
 

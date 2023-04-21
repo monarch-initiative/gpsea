@@ -4,8 +4,9 @@ import json
 import re
 
 class Protein:
-    def __init__(self, protein_id):
+    def __init__(self, protein_id, variantss_in_protein):
         self._protein_id = protein_id
+        self._variants_in_protein = variantss_in_protein
         self._protein_json = Protein.findProtein(protein_id)
         if self._protein_json is not None:
             if not self.__verify_isoforms():
@@ -102,6 +103,10 @@ class Protein:
     @property
     def label(self):
         return self._protein_name
+
+    @property
+    def variants_in_protein(self):
+        return self._variants_in_protein
 
     @property
     def features(self):

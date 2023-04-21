@@ -10,7 +10,10 @@ ALLOWED_VARIANT_TYPES = {'stop_gained',
                         'missense_variant',
                         'SNV',
                         'deletion',
-                        'insertion'}
+                        'insertion',
+                        'copy_number_change',
+                        'copy_number_decrease',
+                        'copy_number_increase'}
 
 
 def is_var_type(var, pat, varType):
@@ -77,13 +80,7 @@ def is_var_match(var, pat, variant):
         boolean : True if the Patient does have the given Variant
     
     """
-    if isinstance(variant, str):
-        test_var = verify_var(variant, pat)
-    elif isinstance(variant, vc.Variant):
-        test_var = variant
-    else:
-        raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-    if test_var == var.variant:
+    if variant == var.variant_string:
         return True
     else:
         return False
@@ -101,39 +98,23 @@ def is_not_var_match(var, pat, variant):
         boolean : True if the Patient does NOT have the given Variant
     
     """
-    if isinstance(variant, str):
-        test_var = verify_var(variant, pat)
-    elif isinstance(variant, vc.Variant):
-        test_var = variant
-    else:
-        raise ValueError(f"'variant' argument must be string or varcode Variant class but was {type(variant)}")
-    if test_var == var.variant:
+    if variant == var.variant_string:
         return False
     else:
         return True
 
-
-def verify_var(variant, pat):
-    """
-    Args:
-        variant (str) : 'chr:start:reference:alternative'
-            i.e.    - '3:12345:A:G'
-                    - '3:15432:AG:A'
-                    - '3:98765:A:AG'
-
-    Returns:
-        Variant : a variant of class Variant 
-    """
-    if pat.hg_reference.lower() == 'hg37' or pat.hg_reference.lower() == 'grch37' or pat.hg_reference.lower() == 'hg19':
-        ens = pyensembl.ensembl_grch37
-    elif pat.hg_reference.lower() == 'hg38' or pat.hg_reference.lower() == 'grch38':
-        ens = pyensembl.ensembl_grch38
+def in_exon(var, pat, exon):
+    if exon in var.exons_effected:
+        return True
     else:
-        raise ValueError(f'Unknown Reference {pat.hg_reference}. Please use hg19 or hg38.')
+        return False
 
-    contig, start, ref, alt = variant.split(':')
-    var = vc.Variant(contig, start, ref, alt, ensembl = ens)
-    return var
+def not_in_exon(var, pat, exon):
+    if exon in var.exons_effected:
+        return False
+    else:
+        return True
+
 
 def in_feature(var, pat, feature):
     """Given a specific patient and feature, determine True
