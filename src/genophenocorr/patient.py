@@ -13,7 +13,7 @@ from .proteins import Protein
 
 
 class Patient:
-    def __init__(self, phenopackJson, transcript):
+    def __init__(self, phenopackJson, transcript, pickled_dir):
         if not isfile(phenopackJson):
             raise FileNotFoundError("Could not find phenopacket")
             
@@ -37,7 +37,7 @@ class Patient:
                 self._diseases = None
         else:
             self._diseases = None
-        self._variants = self.__get_vars(transcript)
+        self._variants = self.__get_vars(transcript, pickled_dir)
         
     def __get_hpids(self):
         hp_ids = defaultdict(Phenotype)
@@ -48,13 +48,13 @@ class Patient:
                 hp_ids[x.type.id] = Phenotype(x.type.id, excluded=True)
         return hp_ids
 
-    def __get_vars(self, transcript):
+    def __get_vars(self, transcript, pickled_dir):
         allVars = []
         if len(self._phenopack.interpretations) > 0:
             Interp = self._phenopack.interpretations[0]
             if len(Interp.diagnosis.genomic_interpretations) > 0:
                 for genoInterp in Interp.diagnosis.genomic_interpretations:
-                    allVars.append(Variant(genoInterp = genoInterp, transcript = transcript))
+                    allVars.append(Variant(genoInterp = genoInterp, transcript = transcript, pickled_dir=pickled_dir))
             else: raise ValueError('No genomic interpretations found in phenopacket.')
         else: ValueError('No interpretations found in phenopacket.')
         return allVars

@@ -21,7 +21,7 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, fileList = None, transcript = None, recessive = False):
+    def __init__(self, fileList = None, transcript = None, recessive = False, pickled_dir = None):
         self._patient_dict = defaultdict(Patient)
         self._disease_dict = defaultdict(Disease)
         self._phenotype_dict = defaultdict(Phenotype)
@@ -36,7 +36,7 @@ class Cohort:
                 percent = (count / total) * 100
                 if percent == 25 or percent == 50 or percent == 75 or percent == 90 or percent == 100:
                     print(f"{percent}% completed")
-                current = Patient(file, transcript)
+                current = Patient(file, transcript, pickled_dir)
                 self.__add(current)
         self.__add_proteins()
 
