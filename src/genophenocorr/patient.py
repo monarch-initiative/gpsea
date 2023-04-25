@@ -1,4 +1,6 @@
 from os.path import isfile
+
+import hpotk.model
 from phenopackets import OntologyClass
 from phenopackets import Phenopacket 
 from collections import defaultdict
@@ -14,6 +16,13 @@ from .proteins import Protein
 
 class Patient:
     def __init__(self, phenopackJson, transcript, pickled_dir):
+        # TODO(lnrekerle) - instance/type check
+        # id
+        # list of Phenotype
+        # list of Variant
+        # TODO - ask Peter if we need >1 disease and >1 protein
+        # one disease
+        # TODO - continue to work on the class
         if not isfile(phenopackJson):
             raise FileNotFoundError("Could not find phenopacket")
             

@@ -10,15 +10,69 @@ URL = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&n
 STRUCT_URL = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:%s/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
 OUTPUT_DIR = os.getcwd()
 
+
+class TranscriptAnnotation:
+    """
+    Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
+    """
+
+    def __init__(self, gene_id: str,
+                 tx_id: str,
+                 variant_effects,
+                 affected_exons: list[int]):
+        self._gene_id = gene_id
+        self._tx_id = tx_id
+        self._variant_effects = variant_effects
+        self._affected_exons = affected_exons
+
+    @property
+    def gene_id(self) -> str:
+        """
+        Get the gene symbol (e.g. SURF1)
+        """
+        return self._gene_id
+
+    @property
+    def transcript_id(self) -> str:
+        """
+        Get the transcript identifier (e.g. NM_123456.7)
+        """
+        return self._tx_id
+
+    @property
+    def variant_effects(self):
+        """
+        Get a sequence of variant effects.
+        """
+        return self._variant_effects
+
+    @property
+    def overlapping_exons(self) -> list[int]:
+        """
+        Get a sequence of IDs of the exons that overlap with the variant.
+        """
+        return self._affected_exons
+
+
 class Variant:
-    def __init__(self, genoInterp, transcript, pickled_dir):
-        self._transcript = transcript
-        self._genoInterp = genoInterp
-        self._pickled_dir = pickled_dir
-        self._varInterp = genoInterp.variant_interpretation.variation_descriptor
-        self._structural = False
-        self._variant_json = self.__find_variant()
-        self.__set_canon(transcript)
+
+    # NM_123456.7:c.1243T>C
+
+    # Attributes:
+    #  - id
+    #  - list of TranscriptAnnotations
+
+    def __init__(self, var_id, tx_annotations, genotype):
+        self._id = var_id
+        self._tx_annotations = tx_annotations
+        self._genotype = genotype  # This is optional
+        # self._transcript = transcript
+        # self._genoInterp = genoInterp
+        # self._pickled_dir = pickled_dir
+        # self._varInterp = genoInterp.variant_interpretation.variation_descriptor
+        # self._structural = False
+        # self._variant_json = self.__find_variant()
+        # self.__set_canon(transcript)
 
     def __find_variant(self):
         self._allelic_state = self._varInterp.allelic_state.label
@@ -88,12 +142,13 @@ class Variant:
                 pickle.dump(varJson, f)
         return varJson
 
-    @property
-    def variant_json(self):
-        return self._variant_json
+    # @property
+    # def variant_json(self):
+    #     return self._variant_json
 
     @property
     def variant_string(self):
+        # __str__
         if self._structural:
             return self._varInterp.description
         else:
@@ -101,22 +156,25 @@ class Variant:
 
     @property
     def genotype(self):
-        if self._allelic_state is not None:
-            return self._allelic_state
-        else:
-            return None
+        return self._genotype
+        # if self._allelic_state is not None:
+        #     return self._allelic_state
+        # else:
+        #     return None
 
-    @property
-    def genomic_start(self):
-        return self._variant_json.get('start')
-    
-    @property
-    def genomic_end(self):
-        return self._variant_json.get('end')
+    # @property
+    # def genomic_start(self):
+    #     return self._variant_json.get('start')
+    #
+    # @property
+    # def genomic_end(self):
+    #     return self._variant_json.get('end')
 
-    @property
-    def variant_class(self):
-        return self._variant_json.get('variant_class')
+    # TODO - decide if we want to store SNV, SV, or any other classes
+    #  perhaps make it optional
+    # @property
+    # def variant_class(self):
+    #     return self._variant_json.get('variant_class')
 
     @property
     def variant_types(self):
