@@ -1,7 +1,134 @@
+import enum
+import abc
+import logging
+import typing
+
 import requests
-import pandas as pd
-import json
-import re
+
+
+class ProteinRegion:
+
+    def __init__(self, start: int, end: int):
+        # TODO(lnrekerle) - check instance and that it is non-negative and start <= end
+        self._start = start
+        self._end = end
+
+    @property
+    def start(self) -> int:
+        """
+        Get a 0-based (excluded) start coordinate of the protein region.
+        """
+        return self._start
+
+    @property
+    def end(self) -> int:
+        """
+        Get a 0-based (included) end coordinate of the protein region.
+        """
+        return self._end
+
+    def __len__(self):
+        return self._end - self._start
+
+    # TODO - eq, hash, str, repr, __gt__
+
+
+class ProteinFeatureType(enum.Enum):
+    # TODO - add python doc strings with a little description, if possible.
+    REPEAT = enum.auto()
+    MOTIF = enum.auto()
+    DOMAIN = enum.auto()
+    REGION = enum.auto()
+
+
+class ProteinFeature(metaclass=abc.ABCMeta):
+
+    @property
+    @abc.abstractmethod
+    def region(self) -> ProteinRegion:
+        pass
+
+    @property
+    @abc.abstractmethod
+    def feature_type(self) -> ProteinFeatureType:
+        pass
+
+
+class SimpleProteinFeature(ProteinFeature):
+
+    def __init__(self, region: ProteinRegion, feature_type: ProteinFeatureType):
+        # TODO - add instance checks
+        self._region = region
+        self._type = feature_type
+
+    @property
+    def region(self) -> ProteinRegion:
+        return self._region
+
+    @property
+    def feature_type(self) -> ProteinFeatureType:
+        return self._type
+
+    # TODO - eq, hash, str, repr
+
+
+class ProteinMetadata:
+
+    def __init__(self, protein_id: str, label: str, protein_features: typing.Sequence[ProteinFeature]):
+        # TODO - add instance checks
+        self._id = protein_id
+        self._label = label
+        self._features = protein_features
+
+    @property
+    def protein_id(self) -> str:
+        return self._id
+
+    @property
+    def label(self) -> str:
+        return self._label
+
+    @property
+    def protein_features(self) -> typing.Sequence[ProteinFeature]:
+        return self._features
+
+    def domains(self) -> typing.Sequence[ProteinFeature]:
+        return list(filter(lambda f: f.feature_type == ProteinFeatureType.DOMAIN, self.protein_features))
+
+    # TODO(lnrekerle) - implement for other enum types if you think it is appropriate
+
+    # TODO - eq, hash, str, repr
+
+
+class ProteinMetadataService(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
+        """
+        Get metadata for given protein ID (e.g. NP_037407.4).
+
+        The function returns an empty sequence if there is no info for the protein ID.
+        """
+        pass
+
+
+class UniprotProteinMetadataService(ProteinMetadataService):
+
+    def __init__(self):
+        self._logger = logging.getLogger(__name__)
+
+    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
+        if not isinstance(protein_id, str):
+            # TODO - log a warning?
+            self._logger.debug(f'Protein ID must be a str but it was {type(protein_id)}')
+            return []
+
+        # TODO - implement using the code below
+
+        return []
+
+# TODO - caching protein annotations?
+
 
 class Protein:
     def __init__(self, protein_id, variantss_in_protein):
@@ -26,7 +153,7 @@ class Protein:
             self._features = self.__seperate_by_feature()
         else:
             self._protein_name = None
-            self._features = pd.DataFrame()
+            # self._features = pd.DataFrame()
 
     @staticmethod
     def findProtein(protein_id):
@@ -70,30 +197,30 @@ class Protein:
                         result = True
         return result
 
-    def __seperate_by_feature(self):
-        if self._protein_json is not None:
-            outputDict = {}
-            try:
-                for feat in self._protein_json.get('features'):
-                    if feat.get('location').get('start').get('modifier') == 'EXACT':
-                        key = feat.get('type') + ': ' + feat.get('description')
-                        i = 1
-                        startKey = key
-                        while key in outputDict.keys():
-                            key = startKey + " " + str(i)
-                            i+=1
-                        outputDict[key] = {'type': feat.get('type'), 'start':feat.get('location').get('start').get('value'),'end':feat.get('location').get('end').get('value')}
-                finalOut = pd.DataFrame.from_dict(outputDict)
-                return finalOut.T
-            except(TypeError):
-                print('Protein has no features')
-                return pd.DataFrame()
-        else:
-            return pd.DataFrame()
-
-    def add_vars_to_features(self, varSeries):
-        self._features = pd.concat([self._features,varSeries], axis=1)
-        #return self._features
+    # def __seperate_by_feature(self):
+    #     if self._protein_json is not None:
+    #         outputDict = {}
+    #         try:
+    #             for feat in self._protein_json.get('features'):
+    #                 if feat.get('location').get('start').get('modifier') == 'EXACT':
+    #                     key = feat.get('type') + ': ' + feat.get('description')
+    #                     i = 1
+    #                     startKey = key
+    #                     while key in outputDict.keys():
+    #                         key = startKey + " " + str(i)
+    #                         i+=1
+    #                     outputDict[key] = {'type': feat.get('type'), 'start':feat.get('location').get('start').get('value'),'end':feat.get('location').get('end').get('value')}
+    #             finalOut = pd.DataFrame.from_dict(outputDict)
+    #             return finalOut.T
+    #         except(TypeError):
+    #             print('Protein has no features')
+    #             return pd.DataFrame()
+    #     else:
+    #         return pd.DataFrame()
+    #
+    # def add_vars_to_features(self, varSeries):
+    #     self._features = pd.concat([self._features,varSeries], axis=1)
+    #     #return self._features
 
 
     @property

@@ -32,6 +32,9 @@ class Disease(hpotk.model.Identified, hpotk.model.Named):
             and self.identifier == other.identifier \
             and self.name == other.name
 
+    def __hash__(self):
+        return hash((self._term_id, self._label))
+
     def __str__(self):
         return f"Disease(identifier={self.identifier}, " \
                f"name={self.name})"

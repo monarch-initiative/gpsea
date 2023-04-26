@@ -1,14 +1,90 @@
-from curses.ascii import isdigit
+import abc
+import typing
 import re
 import requests
 import pandas as pd
-import json
 import pickle
 import os
 
 URL = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
 STRUCT_URL = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:%s/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
 OUTPUT_DIR = os.getcwd()
+
+
+class VariantCoordinates:
+    """A representation of coordinates of sequence and symbolic variants.
+
+    The breakend variants are not supported.
+    """
+
+    def __init__(self, chrom, start, end, ref, alt, change_length):
+        # TODO(lnrekerle) - instance/type check
+        # TODO - id?
+        self._chrom = chrom
+        self._start = start
+        self._end = end
+        self._ref = ref
+        self._alt = alt
+        self._change_length = change_length
+
+    @property
+    def chrom(self) -> str:
+        """
+        Get label of the chromosome/contig where the variant is located.
+        """
+        return self._chrom
+
+    @property
+    def start(self) -> int:
+        """
+        Get 0-based start coordinate (excluded) of the ref allele.
+        """
+        return self._start
+
+    @property
+    def end(self) -> int:
+        """
+        Get 0-based end coordinate (included) of the ref allele.
+        """
+        return self._end
+
+    @property
+    def ref(self) -> str:
+        """
+        Get reference allele (e.g. "A", "N"). The allele may be an empty string.
+        """
+        return self._ref
+
+    @property
+    def alt(self) -> str:
+        """
+        Get alternate allele (e.g. "A", "GG", "<DEL>"). The allele may be an empty string for sequence variants.
+        The symbolic alternate allele follow the VCF notation and use the `<` and `>` characters
+        (e.g. "<DEL>", "<INS:ME:SINE>").
+        """
+        return self._alt
+
+    @property
+    def change_length(self) -> int:
+        """
+        Get the change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,
+        deletions and insertions/duplications lead to negative and positive change lengths, respectively.
+        """
+        return self._change_length
+
+    def is_structural(self) -> bool:
+        """
+        Return `True` if the variant coordinates describe a structural variant.
+        """
+        return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
+
+    def __len__(self):
+        """
+        Get the number of bases on the ref allele that are affected by the variant.
+        """
+        return self._end - self._start
+
+    # TODO - eq, hash, repr, str
 
 
 class TranscriptAnnotation:
@@ -54,6 +130,65 @@ class TranscriptAnnotation:
         return self._affected_exons
 
 
+class FunctionalAnnotator(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+        pass
+
+
+class VepFunctionalAnnotator(FunctionalAnnotator):
+
+    def __init__(self):
+        self._seq_url = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
+        self._structural_url = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:%s/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
+
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+        if variant_coordinates.is_structural():
+            # TODO(lnrekerle) implement:
+            #  - parametrize & call the structural URL
+            #  - process the results into a sequence of TranscriptAnnotation
+            #  - return the results
+            return []
+        else:
+            # TODO(lnrekerle) implement:
+            #  - parametrize & call the sequence URL
+            #  - process the results into a sequence of TranscriptAnnotation
+            #  - return the results
+            return []
+
+
+class VariantAnnotationCache:
+
+    # TODO - implement the persistence strategy (e.g. pickle)
+
+    def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[typing.Sequence[TranscriptAnnotation]]:
+        # TODO - implement
+        return None
+
+    def store_annotations(self, variant_coordinates: VariantCoordinates, annotations: typing.Sequence[TranscriptAnnotation]):
+        # TODO - implement
+        pass
+
+
+class CachingFunctionalAnnotator(FunctionalAnnotator):
+
+    def __init__(self, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
+        # TODO(lnrekerle) - instance/type check
+        self._cache = cache
+        self._fallback = fallback
+
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+        annotations = self._cache.get_annotations(variant_coordinates)
+        if annotations is not None:
+            # we had cached annotations
+            return annotations
+        else:
+            ann = self._fallback.annotate(variant_coordinates)
+            self._cache.store_annotations(variant_coordinates, ann)
+            return ann
+
+
 class Variant:
 
     # NM_123456.7:c.1243T>C
@@ -62,8 +197,9 @@ class Variant:
     #  - id
     #  - list of TranscriptAnnotations
 
-    def __init__(self, var_id, tx_annotations, genotype):
+    def __init__(self, var_id, var_coordinates: VariantCoordinates, tx_annotations, genotype):
         self._id = var_id
+        self._var_coordinates = var_coordinates
         self._tx_annotations = tx_annotations
         self._genotype = genotype  # This is optional
         # self._transcript = transcript
@@ -147,6 +283,10 @@ class Variant:
     #     return self._variant_json
 
     @property
+    def variant_coordinates(self) -> VariantCoordinates:
+        return self._var_coordinates
+
+    @property
     def variant_string(self):
         # __str__
         if self._structural:
@@ -161,6 +301,10 @@ class Variant:
         #     return self._allelic_state
         # else:
         #     return None
+
+    @property
+    def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
+        return self._tx_annotations
 
     # @property
     # def genomic_start(self):
