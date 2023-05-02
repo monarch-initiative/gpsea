@@ -3,8 +3,6 @@ import logging
 import typing
 import re
 import requests
-import pandas as pd
-import pickle
 import os
 from phenopackets import Phenopacket
 
@@ -19,20 +17,15 @@ class VariantCoordinates:
     The breakend variants are not supported.
     """
 
-    def __init__(self, hgvs, chrom, start, end, ref, alt, change_length):
+    def __init__(self, chrom, start, end, ref, alt, change_length):
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
-        self._hgvs = hgvs
         self._chrom = chrom
         self._start = start
         self._end = end
         self._ref = ref
         self._alt = alt
         self._change_length = change_length
-
-    @property
-    def hgvs(self) -> str | None:
-        return self._hgvs
 
     @property
     def chrom(self) -> str:
@@ -79,14 +72,13 @@ class VariantCoordinates:
         """
         return self._change_length
 
-    # def is_structural(self) -> bool:
-    #     """
-    #     Return `True` if the variant coordinates describe a structural variant.
-    #     """
-    #     return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
-
-    def is_cnv(self) -> bool:
-        return len(self) >= 1000
+    def is_structural(self) -> bool:
+        """
+        Return `True` if the variant coordinates use structural variant notation
+        (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
+        as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).
+        """
+        return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
 
     def __len__(self):
         """
@@ -101,37 +93,36 @@ class VariantCoordinates:
             and self.chrom == other.chrom \
             and self.start == other.start \
             and self.end == other.end \
-            and self.hgvs == other.hgvs \
-            and self.change_length == other.change_length 
-            #and self.is_structural() == other.is_structural()
+            and self.change_length == other.change_length
 
     def __str__(self) -> str:
         return f"VariantCoordinates(chrom={self.chrom}, " \
             f"start={self.start}, end={self.end}, " \
             f"ref={self.ref}, alt={self.alt}, " \
-            f"change_length={self.change_length} " 
-            #f"is_structural={self.is_structural()}"
+            f"change_length={self.change_length} "
 
     def __repr__(self) -> str:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self._hgvs, self._chrom, self._start, self._end, self._ref, self._alt, self._change_length))
-    # TODO - eq, hash, repr, str
+        return hash((self._chrom, self._start, self._end, self._ref, self._alt, self._change_length))
 
-class VariantCoordinateFinder(abc.ABCMeta):
+
+class VariantCoordinateFinder(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def find_coordinates(self, object) -> VariantCoordinates:
+    def find_coordinates(self, item) -> VariantCoordinates:
         pass
 
+
 class PhenopacketVariantCoordnateFinder(VariantCoordinateFinder):
+
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
-    def find_coordinates(self, phenopacket):
-        if not isinstance(phenopacket, Phenopacket()):
-            raise ValueError(f"phenopacket must be a Phenopacket but was type {type(phenopacket)}")
-        genomic_interpretations = phenopacket.interpretations[0].diagnosis.genomicInterpretations
+    def find_coordinates(self, item):
+        if not isinstance(item, Phenopacket):
+            raise ValueError(f"item must be a Phenopacket but was type {type(item)}")
+        genomic_interpretations = item.interpretations[0].diagnosis.genomicInterpretations
         variants_list = []
         for gi in genomic_interpretations:
             chrom, ref, alt, hgvs = '', '', '', ''
@@ -176,8 +167,11 @@ class PhenopacketVariantCoordnateFinder(VariantCoordinateFinder):
                         start = int(variant_descriptor.vcf_record.pos)
                         end = int(variant_descriptor.vcf_record.pos) + len(alt)
                 chrom = variant_descriptor.vcf_record.chrom[3:]
-            variants_list.append(VariantCoordinates(hgvs, chrom, start, end, ref, alt, len(alt) - len(ref)))
+            variants_list.append(VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref)))
+
+        # TODO(lnrekerle) - test if it works for the strange dup in ankyrin (phenopacket)
         return variants_list
+
 
 class TranscriptAnnotation:
     """
