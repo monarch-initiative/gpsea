@@ -9,24 +9,18 @@ import requests
 class FeatureInfo:
 
     def __init__(self, name: str, start: int, end: int):
-        # TODO(lnrekerle) - check instance and that it is non-negative and start <= end
         if not isinstance(name, str):
             raise ValueError(f"name must be type string but was type {type(name)}")
         self._name = name
         if not isinstance(start, int):
-            if start.isdigit():
-                start = int(start)
-            else:
-                raise ValueError(f"start must be an integer but was type {type(start)}")
+            raise ValueError(f"start must be an integer but was type {type(start)}")
         self._start = start
         if not isinstance(end, int):
-            if end.isdigit():
-                end = int(end)
-            else:
-                raise ValueError(f"end must be an integer but was type {type(end)}")
+            raise ValueError(f"end must be an integer but was type {type(end)}")
         self._end = end
-        if start > end:
-            raise ValueError(f"The start value must come before end but {start} is greater than {end}")
+
+        if self._start > self._end:
+            raise ValueError(f"The start value must come before end but {self._start} is greater than {self._end}")
 
     @property
     def name(self) -> str:
@@ -70,7 +64,6 @@ class FeatureType(enum.Enum):
     MOTIF = enum.auto()
     DOMAIN = enum.auto()
     REGION = enum.auto()
-    NONE = enum.auto()
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
@@ -126,7 +119,7 @@ class ProteinMetadata:
         if not isinstance(protein_id, str):
             raise ValueError(f"Protein ID must be type string but is type {type(protein_id)}")
         self._id = protein_id
-        if not isinstance(label, str): ##Add None type? 
+        if not isinstance(label, str):
             raise ValueError(f"Protein label must be type string but is type {type(label)}")
         self._label = label
         if not all(isinstance(x, ProteinFeature) for x in protein_features):
@@ -169,7 +162,7 @@ class ProteinMetadata:
             and self.protein_id == other.protein_id
     
     def __hash__(self) -> int:
-        return hash((self.protein_id, self.label))
+        return hash((self.protein_id, self.label, self.protein_features))
 
     def __repr__(self) -> str:
         return str(self)
@@ -202,7 +195,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         results = r['results']
         if len(results) == 0:
             self._logger.warning(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
-            return [ProteinMetadata(protein_id, 'Unknown, verify refseq ID', [SimpleProteinFeature(FeatureInfo('None', 0, 0), FeatureType.NONE)])]
+            return []
         protein_list = []
         for protein in results:
             protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
@@ -210,14 +203,12 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             for feature in protein['features']:
                 feat_type = feature['type']
                 feat_name = feature['description']
-                feat_start = feature['location']['start']['value']
-                feat_end = feature['location']['end']['value']
+                feat_start = int(feature['location']['start']['value'])
+                feat_end = int(feature['location']['end']['value'])
                 feat = SimpleProteinFeature(FeatureInfo(feat_name, feat_start, feat_end), feat_type.upper())
                 all_features_list.append(feat)
-            if len(all_features_list) == 0:
-                self._logger.warning(f"No features found for ID {protein_id}")
-                all_features_list.append(SimpleProteinFeature(FeatureInfo('None', 0, 0), FeatureType.NONE))
             protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
+
         return protein_list
 
 # TODO - caching protein annotations?
