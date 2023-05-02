@@ -6,12 +6,31 @@ import typing
 import requests
 
 
-class ProteinRegion:
+class FeatureInfo:
 
-    def __init__(self, start: int, end: int):
+    def __init__(self, name: str, start: int, end: int):
         # TODO(lnrekerle) - check instance and that it is non-negative and start <= end
+        if not isinstance(name, str):
+            raise ValueError(f"name must be type string but was type {type(name)}")
+        self._name = name
+        if not isinstance(start, int):
+            if start.isdigit():
+                start = int(start)
+            else:
+                raise ValueError(f"start must be an integer but was type {type(start)}")
         self._start = start
+        if not isinstance(end, int):
+            if end.isdigit():
+                end = int(end)
+            else:
+                raise ValueError(f"end must be an integer but was type {type(end)}")
         self._end = end
+        if start > end:
+            raise ValueError(f"The start value must come before end but {start} is greater than {end}")
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def start(self) -> int:
@@ -30,54 +49,88 @@ class ProteinRegion:
     def __len__(self):
         return self._end - self._start
 
-    # TODO - eq, hash, str, repr, __gt__
+    def __eq__(self, other) -> bool:
+        return isinstance(other, FeatureInfo) \
+            and self.name == other.name \
+            and self.start == other.start \
+            and self.end == other.end
+
+    def __str__(self) -> str:
+        return f"FeatureInfo(name={self.name}, start={self.start}, end={self.end})"
+    
+    def __repr__(self) -> str:
+        return str(self)
 
 
-class ProteinFeatureType(enum.Enum):
-    # TODO - add python doc strings with a little description, if possible.
+class FeatureType(enum.Enum):
+    """
+    
+    """
     REPEAT = enum.auto()
     MOTIF = enum.auto()
     DOMAIN = enum.auto()
     REGION = enum.auto()
+    NONE = enum.auto()
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def region(self) -> ProteinRegion:
+    def info(self) -> FeatureInfo:
         pass
 
     @property
     @abc.abstractmethod
-    def feature_type(self) -> ProteinFeatureType:
+    def feature_type(self) -> FeatureType:
         pass
 
 
 class SimpleProteinFeature(ProteinFeature):
 
-    def __init__(self, region: ProteinRegion, feature_type: ProteinFeatureType):
-        # TODO - add instance checks
-        self._region = region
+    def __init__(self, info: FeatureInfo, feature_type: FeatureType):
+        if not isinstance(info, FeatureInfo):
+            raise ValueError(f"info must be type FeatureInfo but was type {type(info)}")
+        self._info = info
+        if not isinstance(feature_type, FeatureType):
+            raise ValueError(f"feature_type must be type FeatureType but was type {type(feature_type)}")
         self._type = feature_type
 
     @property
-    def region(self) -> ProteinRegion:
-        return self._region
+    def info(self) -> FeatureInfo:
+        return self._info
 
     @property
-    def feature_type(self) -> ProteinFeatureType:
+    def feature_type(self) -> FeatureType:
         return self._type
 
-    # TODO - eq, hash, str, repr
+    def __str__(self) -> str:
+        return f"SimpleProteinFeature(type={self.feature_type}, " \
+            f"info={str(self.info)})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, ProteinFeature) \
+            and self.feature_type == other.feature_type \
+            and self.info == other.info
+
+    def __hash__(self) -> int:
+        return hash((self.feature_type, self.info))
 
 
 class ProteinMetadata:
 
     def __init__(self, protein_id: str, label: str, protein_features: typing.Sequence[ProteinFeature]):
-        # TODO - add instance checks
+        if not isinstance(protein_id, str):
+            raise ValueError(f"Protein ID must be type string but is type {type(protein_id)}")
         self._id = protein_id
+        if not isinstance(label, str): ##Add None type? 
+            raise ValueError(f"Protein label must be type string but is type {type(label)}")
         self._label = label
+        if not all(isinstance(x, ProteinFeature) for x in protein_features):
+            raise ValueError(f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
         self._features = protein_features
 
     @property
@@ -93,11 +146,33 @@ class ProteinMetadata:
         return self._features
 
     def domains(self) -> typing.Sequence[ProteinFeature]:
-        return list(filter(lambda f: f.feature_type == ProteinFeatureType.DOMAIN, self.protein_features))
+        return list(filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features))
 
-    # TODO(lnrekerle) - implement for other enum types if you think it is appropriate
+    def repeats(self) -> typing.Sequence[ProteinFeature]:
+        return list(filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features))
 
-    # TODO - eq, hash, str, repr
+    def regions(self) -> typing.Sequence[ProteinFeature]:
+        return list(filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features))
+
+    def motifs(self) -> typing.Sequence[ProteinFeature]:
+        return list(filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features))
+
+    def __str__(self) -> str:
+        return f"ProteinMetadata(id={self.protein_id}, " \
+            f"label={self.label}, " \
+            f"features={str(self.protein_features)})"
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, ProteinMetadata) \
+            and self.label == other.label \
+            and self.protein_features == other.protein_features \
+            and self.protein_id == other.protein_id
+    
+    def __hash__(self) -> int:
+        return hash((self.protein_id, self.label))
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class ProteinMetadataService(metaclass=abc.ABCMeta):
@@ -116,157 +191,35 @@ class UniprotProteinMetadataService(ProteinMetadataService):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
+        self._url = 'https://rest.uniprot.org/uniprotkb/search?query=%s&fields=accession,id,gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq'
 
     def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
         if not isinstance(protein_id, str):
             # TODO - log a warning?
-            self._logger.debug(f'Protein ID must be a str but it was {type(protein_id)}')
-            return []
-
-        # TODO - implement using the code below
-
-        return []
+            raise ValueError(f'Protein ID must be a str but it was {type(protein_id)}')
+        api_url = self._url % (protein_id)
+        r = requests.get(api_url).json()
+        results = r['results']
+        if len(results) == 0:
+            self._logger.warning(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
+            return [ProteinMetadata(protein_id, 'Unknown, verify refseq ID', [SimpleProteinFeature(FeatureInfo('None', 0, 0), FeatureType.NONE)])]
+        protein_list = []
+        for protein in results:
+            protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
+            all_features_list = []
+            for feature in protein['features']:
+                feat_type = feature['type']
+                feat_name = feature['description']
+                feat_start = feature['location']['start']['value']
+                feat_end = feature['location']['end']['value']
+                feat = SimpleProteinFeature(FeatureInfo(feat_name, feat_start, feat_end), feat_type.upper())
+                all_features_list.append(feat)
+            if len(all_features_list) == 0:
+                self._logger.warning(f"No features found for ID {protein_id}")
+                all_features_list.append(SimpleProteinFeature(FeatureInfo('None', 0, 0), FeatureType.NONE))
+            protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
+        return protein_list
 
 # TODO - caching protein annotations?
-
-
-class Protein:
-    def __init__(self, protein_id, variantss_in_protein):
-        self._protein_id = protein_id
-        self._variants_in_protein = variantss_in_protein
-        self._protein_json = Protein.findProtein(protein_id)
-        if self._protein_json is not None:
-            if not self.__verify_isoforms():
-                print("WARNING - Current Protein ID or Transcript ID does not match with Described Isoform")
-            if self._protein_json.get('proteinDescription') is None or len(self._protein_json.get('proteinDescription')) == 0:
-                self._protein_name = self._protein_id
-            else:
-                if self._protein_json.get('proteinDescription').get('recommendedName') is None: 
-                    if self._protein_json.get('proteinDescription').get('submissionNames') is None:
-                        self._protein_name = self._protein_id
-                    elif len(self._protein_json.get('proteinDescription').get('submissionNames')) > 0:
-                        self._protein_name = self._protein_json.get('proteinDescription').get('submissionNames')[0].get('fullName').get('value')
-                elif len(self._protein_json.get('proteinDescription').get('recommendedName')) > 0:
-                        self._protein_name = self._protein_json.get('proteinDescription').get('recommendedName').get('fullName').get('value') 
-                else:
-                    self._protein_name = self._protein_id
-            self._features = self.__seperate_by_feature()
-        else:
-            self._protein_name = None
-            # self._features = pd.DataFrame()
-
-    @staticmethod
-    def findProtein(protein_id):
-        if protein_id is not None:
-            fields = "accession,id,gene_names,gene_primary,protein_name,feature_count,ft_domain,ft_motif,ft_region,ft_repeat,xref_ensembl,cc_alternative_products" 
-            # Additional features we could add - ,ft_zn_fing,ft_chain,ft_coiled,ft_compbias,ft_mod_res,ft_crosslnk,ft_var_seq,ft_variant,ft_conflict,ft_helix
-            url = 'https://rest.uniprot.org/uniprotkb/search?query='+ protein_id +'&fields=' + fields
-            try:
-                json = requests.get(url, timeout=10).json()
-            except requests.exceptions.Timeout:
-                print(f'Timeout Occurred with Protein ID {protein_id}')
-                protein = None
-            if len(json['results']) > 0:
-                protein = json['results'][0]
-            else:
-                print(f'No Protein found with ID {protein_id}')
-                protein = None
-        else:
-            protein = None
-        return protein
-
-    def __verify_isoforms(self):
-        result = False
-        if self._protein_json.get('comments') is not None:
-            if len(self._protein_json.get('comments')) > 0:
-                Isoforms = self._protein_json.get('comments')[0].get('isoforms')
-            else:
-                return True
-        else:
-            return False
-        defaultIso = None
-        for iso in Isoforms:
-            if iso.get('isoformSequenceStatus') == 'Displayed':
-                defaultIso = iso.get('isoformIds')[0]
-                break
-        ref = self._protein_json.get('uniProtKBCrossReferences')
-        for r in ref:
-            if r.get('database') == "Ensembl" and r.get('isoformId') == defaultIso:
-                for k in r.get('properties'):
-                    if k.get('key') == 'ProteinId' and k.get('value').split('.')[0] == self.id:
-                        result = True
-        return result
-
-    # def __seperate_by_feature(self):
-    #     if self._protein_json is not None:
-    #         outputDict = {}
-    #         try:
-    #             for feat in self._protein_json.get('features'):
-    #                 if feat.get('location').get('start').get('modifier') == 'EXACT':
-    #                     key = feat.get('type') + ': ' + feat.get('description')
-    #                     i = 1
-    #                     startKey = key
-    #                     while key in outputDict.keys():
-    #                         key = startKey + " " + str(i)
-    #                         i+=1
-    #                     outputDict[key] = {'type': feat.get('type'), 'start':feat.get('location').get('start').get('value'),'end':feat.get('location').get('end').get('value')}
-    #             finalOut = pd.DataFrame.from_dict(outputDict)
-    #             return finalOut.T
-    #         except(TypeError):
-    #             print('Protein has no features')
-    #             return pd.DataFrame()
-    #     else:
-    #         return pd.DataFrame()
-    #
-    # def add_vars_to_features(self, varSeries):
-    #     self._features = pd.concat([self._features,varSeries], axis=1)
-    #     #return self._features
-
-
-    @property
-    def id(self):
-        return self._protein_id
-
-    @property
-    def label(self):
-        return self._protein_name
-
-    @property
-    def variants_in_protein(self):
-        return self._variants_in_protein
-
-    @property
-    def features(self):
-        return self._features
-
-    @property
-    def domains(self):
-        if 'Domain' in self.features.keys():
-            return self.features.get('Domain')
-        else:
-            return None
-
-    @property
-    def regions(self):
-        if 'Region' in self.features.keys():
-            return self.features.get('Region')
-        else:
-            return None
-
-    @property
-    def motifs(self):
-        if 'Motif' in self.features.keys():
-            return self.features.get('Motif')
-        else:
-            return None
-
-    @property
-    def repeats(self):
-        if 'Repeat' in self.features.keys():
-            return self.features.get('Repeat')
-        else:
-            return None
-
-
 
             

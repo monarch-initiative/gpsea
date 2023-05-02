@@ -1,23 +1,16 @@
+import logging
 import hpotk
 
 
 class Disease(hpotk.model.Identified, hpotk.model.Named):
 
     def __init__(self, term_id: hpotk.model.TermId, label: str):
-        # TODO(lnrekerle) - instance/type check
+        if not isinstance(term_id, hpotk.model.TermId):
+            raise ValueError(f'term_id must be type TermID but was type {type(term_id)}')
         self._term_id = term_id
+        if not isinstance(label, str):
+            raise ValueError(f'label must be type string but was type {type(label)}')
         self._label = label
-
-        # TODO(lnrekerle) - move the checks to a class that loads and/or prepares the diseases & samples
-        # if id is not None or len(id) == 0:
-        #     #if any(x in id for x in ['OMIM','MONDO', 'ORPHA', 'DECIPHER']):
-        #     self._diseaseID = id
-        #     self._diseaseLabel = label
-        #     #else:
-        #     #    raise ValueError("Disease ID must include 'OMIM','MONDO', 'ORPHA', or 'DECIPHER'.")
-        # else:
-        #     self._diseaseID = None
-        #     self._diseaseLabel = None
 
     @property
     def identifier(self) -> hpotk.model.TermId:
@@ -41,3 +34,15 @@ class Disease(hpotk.model.Identified, hpotk.model.Named):
 
     def __repr__(self):
         return str(self)
+
+
+class DiseaseCreator:
+
+    def __init__(self):
+        self._logger = logging.getLogger(__name__)
+
+    def create_disease(self, id, label):
+        term_id = hpotk.model.TermId.from_curie(id)
+        if term_id.prefix not in ['OMIM','MONDO', 'ORPHA', 'DECIPHER']:
+            raise ValueError(f'Disease ID must be an \'OMIM\',\'MONDO\', \'ORPHA\', or \'DECIPHER\' ID but was {id}')
+        return Disease(term_id, label)

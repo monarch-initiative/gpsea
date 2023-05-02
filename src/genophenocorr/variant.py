@@ -1,10 +1,12 @@
 import abc
+import logging
 import typing
 import re
 import requests
 import pandas as pd
 import pickle
 import os
+from phenopackets import Phenopacket
 
 URL = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
 STRUCT_URL = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:%s/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
@@ -17,15 +19,20 @@ class VariantCoordinates:
     The breakend variants are not supported.
     """
 
-    def __init__(self, chrom, start, end, ref, alt, change_length):
+    def __init__(self, hgvs, chrom, start, end, ref, alt, change_length):
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
+        self._hgvs = hgvs
         self._chrom = chrom
         self._start = start
         self._end = end
         self._ref = ref
         self._alt = alt
         self._change_length = change_length
+
+    @property
+    def hgvs(self) -> str | None:
+        return self._hgvs
 
     @property
     def chrom(self) -> str:
@@ -72,11 +79,14 @@ class VariantCoordinates:
         """
         return self._change_length
 
-    def is_structural(self) -> bool:
-        """
-        Return `True` if the variant coordinates describe a structural variant.
-        """
-        return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
+    # def is_structural(self) -> bool:
+    #     """
+    #     Return `True` if the variant coordinates describe a structural variant.
+    #     """
+    #     return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
+
+    def is_cnv(self) -> bool:
+        return len(self) >= 1000
 
     def __len__(self):
         """
@@ -84,8 +94,90 @@ class VariantCoordinates:
         """
         return self._end - self._start
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, VariantCoordinates) \
+            and self.alt == other.alt \
+            and self.ref == other.ref \
+            and self.chrom == other.chrom \
+            and self.start == other.start \
+            and self.end == other.end \
+            and self.hgvs == other.hgvs \
+            and self.change_length == other.change_length 
+            #and self.is_structural() == other.is_structural()
+
+    def __str__(self) -> str:
+        return f"VariantCoordinates(chrom={self.chrom}, " \
+            f"start={self.start}, end={self.end}, " \
+            f"ref={self.ref}, alt={self.alt}, " \
+            f"change_length={self.change_length} " 
+            #f"is_structural={self.is_structural()}"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __hash__(self) -> int:
+        return hash((self._hgvs, self._chrom, self._start, self._end, self._ref, self._alt, self._change_length))
     # TODO - eq, hash, repr, str
 
+class VariantCoordinateFinder(abc.ABCMeta):
+    @abc.abstractmethod
+    def find_coordinates(self, object) -> VariantCoordinates:
+        pass
+
+class PhenopacketVariantCoordnateFinder(VariantCoordinateFinder):
+    def __init__(self):
+        self._logger = logging.getLogger(__name__)
+
+    def find_coordinates(self, phenopacket):
+        if not isinstance(phenopacket, Phenopacket()):
+            raise ValueError(f"phenopacket must be a Phenopacket but was type {type(phenopacket)}")
+        genomic_interpretations = phenopacket.interpretations[0].diagnosis.genomicInterpretations
+        variants_list = []
+        for gi in genomic_interpretations:
+            chrom, ref, alt, hgvs = '', '', '', ''
+            start, end = 0, 0
+            variant_descriptor = gi.variant_interpretation.variation_descriptor
+            if len(variant_descriptor.vcf_record.chrom) == 0 and len(variant_descriptor.variation.copy_number.sequence_location.sequence_id) != 0:
+                ref = '-'
+                start = variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value
+                end = variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value
+                number = variant_descriptor.variation.copy_number.number.value
+                if number > 2:
+                    alt = '<DUP>'
+                else:
+                    alt = '<DEL>'
+                chrom = re.findall(r'NC_0000(\d{2}).\d\d', variant_descriptor.variation.copy_number.sequence_location.sequence_id)[0]
+                if chrom.startswith('0'):
+                    chrom = str(int(chrom))
+                elif chrom == '23':
+                    chrom = 'X'
+                elif chrom == '24':
+                    chrom = 'Y'
+            elif len(variant_descriptor.vcf_record.chrom) != 0 and len(variant_descriptor.variation.copy_number.sequence_location.sequence_id) == 0:
+                expressions = variant_descriptor.expressions
+                hgvs = ''
+                for ex in expressions:
+                    if ex.syntax == 'hgvs.g':
+                        hgvs = ex.value.split(':')[1]
+                ref = variant_descriptor.vcf_record.ref
+                alt = variant_descriptor.vcf_record.alt
+                #TODO: Verify these Starts and Ends are correct
+                if len(ref) == len(alt) and len(ref) == 1:
+                    start = int(variant_descriptor.vcf_record.pos) - 1
+                    end = int(variant_descriptor.vcf_record.pos)
+                elif len(ref) > len(alt):
+                    start = int(variant_descriptor.vcf_record.pos) + 1
+                    end = int(variant_descriptor.vcf_record.pos) + len(ref)
+                elif len(ref) < len(alt):
+                    if hgvs.endswith('dup'):
+                        start = int(variant_descriptor.vcf_record.pos) + 1
+                        end = int(variant_descriptor.vcf_record.pos) + len(alt) + 1
+                    else:
+                        start = int(variant_descriptor.vcf_record.pos)
+                        end = int(variant_descriptor.vcf_record.pos) + len(alt)
+                chrom = variant_descriptor.vcf_record.chrom[3:]
+            variants_list.append(VariantCoordinates(hgvs, chrom, start, end, ref, alt, len(alt) - len(ref)))
+        return variants_list
 
 class TranscriptAnnotation:
     """
@@ -95,11 +187,16 @@ class TranscriptAnnotation:
     def __init__(self, gene_id: str,
                  tx_id: str,
                  variant_effects,
-                 affected_exons: list[int]):
+                 affected_exons: list[int],
+                 affected_protein: str,
+                 protein_effect_start: int,
+                 protein_effect_end: int):
         self._gene_id = gene_id
         self._tx_id = tx_id
         self._variant_effects = variant_effects
         self._affected_exons = affected_exons
+        self._affected_protein = affected_protein
+        self._protein_effect_location = [protein_effect_start, protein_effect_end]
 
     @property
     def gene_id(self) -> str:
@@ -129,6 +226,49 @@ class TranscriptAnnotation:
         """
         return self._affected_exons
 
+    @property
+    def protein_affected(self) -> str:
+        return self._affected_protein
+
+    @property
+    def protein_effect_location(self) -> list[int]:
+        return self.protein_effect_location
+
+class Variant:
+
+    # NM_123456.7:c.1243T>C
+
+    # Attributes:
+    #  - id
+    #  - list of TranscriptAnnotations
+
+    def __init__(self, var_id, var_class, var_coordinates: VariantCoordinates, tx_annotations, genotype):
+        self._id = var_id
+        self._var_coordinates = var_coordinates
+        self._var_class = var_class
+        self._tx_annotations = tx_annotations
+        self._genotype = genotype  # This is optional
+
+    @property
+    def variant_coordinates(self) -> VariantCoordinates:
+        return self._var_coordinates
+
+    @property
+    def variant_string(self):
+        return self._id
+
+    @property
+    def genotype(self):
+        return self._genotype
+
+    @property
+    def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
+        return self._tx_annotations
+
+    @property
+    def variant_class(self):
+        return self._var_class
+
 
 class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
@@ -140,22 +280,44 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
 class VepFunctionalAnnotator(FunctionalAnnotator):
 
     def __init__(self):
-        self._seq_url = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
-        self._structural_url = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:%s/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
+        self._logging = logging.getLogger(__name__)
+        self._hgvs_url = 'https://rest.ensembl.org/vep/human/hgvs/%s:%s?protein=1&variant_class=1&numbers=1&LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&refseq=1&transcript_version=1'
+        self._other_url = 'https://rest.ensembl.org/vep/human/region/%s:%s-%s:1/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
-    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
-        if variant_coordinates.is_structural():
-            # TODO(lnrekerle) implement:
-            #  - parametrize & call the structural URL
-            #  - process the results into a sequence of TranscriptAnnotation
-            #  - return the results
-            return []
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[Variant]:
+        if variant_coordinates.hgvs is None:
+            api_url = self._other_url % (variant_coordinates.chrom, variant_coordinates.start, variant_coordinates.end, variant_coordinates.ref)
         else:
-            # TODO(lnrekerle) implement:
-            #  - parametrize & call the sequence URL
-            #  - process the results into a sequence of TranscriptAnnotation
-            #  - return the results
-            return []
+            api_url = self._hgvs_url % (variant_coordinates.chrom, variant_coordinates.hgvs)
+        r = requests.get(api_url, headers={'Content-Type':'application/json'})
+        if not r.ok:
+            r.raise_for_status()
+        results = r.json()
+        variant_list = []
+        for variants in results:
+            variant_id = results.get('id')
+            variant_class = results.get('variant_class')
+            transcript_list = []
+            for trans in variants.get('transcript_consequences'):
+                trans_id = trans.get('transcript_id')
+                if not trans_id.startswith('NM'):
+                    self._logging.info(f'We will not be using this transcript: {trans_id}')
+                    continue
+                consequences = trans.get('consequence_terms')
+                gene_name = trans.get('gene_symbol')
+                protein_id = trans.get('protein_id')
+                protein_effect_start = trans.get('protein_start')
+                protein_effect_end = trans.get('protein_end')
+                exons_effected = trans.get('exon').split('/')[0].split('-')
+                if len(exons_effected) == 2:
+                    exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
+                exons_effected = [int(x) for x in exons_effected]
+                transcript_list.append(TranscriptAnnotation(gene_name, trans_id, consequences, exons_effected,
+                protein_id, int(protein_effect_start), int(protein_effect_end)))
+            variant_list.append(Variant(variant_id, variant_class, variant_coordinates, transcript_list, None))
+        return variant_list
+
+
 
 
 class VariantAnnotationCache:
@@ -187,225 +349,3 @@ class CachingFunctionalAnnotator(FunctionalAnnotator):
             ann = self._fallback.annotate(variant_coordinates)
             self._cache.store_annotations(variant_coordinates, ann)
             return ann
-
-
-class Variant:
-
-    # NM_123456.7:c.1243T>C
-
-    # Attributes:
-    #  - id
-    #  - list of TranscriptAnnotations
-
-    def __init__(self, var_id, var_coordinates: VariantCoordinates, tx_annotations, genotype):
-        self._id = var_id
-        self._var_coordinates = var_coordinates
-        self._tx_annotations = tx_annotations
-        self._genotype = genotype  # This is optional
-        # self._transcript = transcript
-        # self._genoInterp = genoInterp
-        # self._pickled_dir = pickled_dir
-        # self._varInterp = genoInterp.variant_interpretation.variation_descriptor
-        # self._structural = False
-        # self._variant_json = self.__find_variant()
-        # self.__set_canon(transcript)
-
-    def __find_variant(self):
-        self._allelic_state = self._varInterp.allelic_state.label
-        if len(self._varInterp.structural_type.id) != 0:
-            self._structural = True
-            return self.__structure_variant()
-        else:
-            chrom = self._varInterp.vcf_record.chrom
-            contig = re.sub(r'[^0-9MXY]', '', chrom)
-            if len(contig) == 0 or (contig.isdigit() and (int(contig) == 0 or int(contig) >= 24)):
-                ## Chromosome can only be values 1-23, X, Y, or M
-                raise ValueError(f"Chromosome unknown: {chrom}")
-            HGVS = self._varInterp.expressions[1]
-            if self._pickled_dir is not None:
-                if not os.path.isdir(os.path.join(OUTPUT_DIR, self._pickled_dir)) and self._pickled_dir is not None:
-                    os.mkdir(os.path.join(OUTPUT_DIR, self._pickled_dir))
-                if os.path.isfile(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{HGVS}.pkl')) and self._pickled_dir is not None:
-                    with open(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{HGVS}.pkl'), 'rb') as f:
-                        varJson = pickle.load(f)
-                        return varJson
-            var_input = HGVS.value.split(':')[1]
-            api_url = URL % (chrom, var_input)
-            r = requests.get(api_url, headers={'Content-Type':'application/json'})
-            if not r.ok:
-                r.raise_for_status()
-            varJson = r.json()
-            if self._pickled_dir is not None:
-                with open(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{HGVS}.pkl'), 'wb') as f:
-                    pickle.dump(varJson[0], f)
-            return varJson[0]
-
-    def __structure_variant(self):
-        chrom = self._varInterp.description.split('q')[0]
-        start = self._varInterp.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value
-        end = self._varInterp.variation.copy_number.allele.sequence_location.sequence_interval.end_number.value
-        if self._varInterp.variation.copy_number.number.value == 1:
-            copy_type = 'DEL'
-            times = 1
-            finalConsequence = 'copy_number_decrease'
-        elif self._varInterp.variation.copy_number.number.value >= 3:
-            copy_type = 'DUP'
-            times = self._varInterp.variation.copy_number.number.value - 2
-            finalConsequence = 'copy_number_increase'
-        if self._pickled_dir is not None:
-            if not os.path.isdir(os.path.join(OUTPUT_DIR, self._pickled_dir)):
-                os.mkdir(os.path.join(OUTPUT_DIR, self._pickled_dir))
-            if os.path.isfile(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{self._varInterp.description}.pkl')) and self._pickled_dir is not None:
-                with open(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{self._varInterp.description}.pkl'), 'rb') as f:
-                    varJson = pickle.load(f)
-                    return varJson
-        api_url = STRUCT_URL % (chrom,start,end,times,copy_type,self._transcript)
-        r = requests.get(api_url, headers={ "Content-Type" : "application/json"})
-        if not r.ok:
-            r.raise_for_status()
-        results = r.json()
-        varJson = results[0]
-        if varJson.get('transcript_consequences') is None:
-            varJson['transcript_consequences'] = [{
-                'canonical': 1,
-                'consequence_terms':[],
-                'gene_symbol': self._varInterp.gene_context.symbol
-            }]
-        varJson['transcript_consequences'][0]['consequence_terms'].append('copy_number_change')
-        varJson['transcript_consequences'][0]['consequence_terms'].append(finalConsequence)
-        if self._pickled_dir is not None:
-            with open(os.path.join(OUTPUT_DIR, f'{self._pickled_dir}/{self._varInterp.description}.pkl'), 'wb') as f:
-                pickle.dump(varJson, f)
-        return varJson
-
-    # @property
-    # def variant_json(self):
-    #     return self._variant_json
-
-    @property
-    def variant_coordinates(self) -> VariantCoordinates:
-        return self._var_coordinates
-
-    @property
-    def variant_string(self):
-        # __str__
-        if self._structural:
-            return self._varInterp.description
-        else:
-            return self.variant_json.get('id')
-
-    @property
-    def genotype(self):
-        return self._genotype
-        # if self._allelic_state is not None:
-        #     return self._allelic_state
-        # else:
-        #     return None
-
-    @property
-    def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
-        return self._tx_annotations
-
-    # @property
-    # def genomic_start(self):
-    #     return self._variant_json.get('start')
-    #
-    # @property
-    # def genomic_end(self):
-    #     return self._variant_json.get('end')
-
-    # TODO - decide if we want to store SNV, SV, or any other classes
-    #  perhaps make it optional
-    # @property
-    # def variant_class(self):
-    #     return self._variant_json.get('variant_class')
-
-    @property
-    def variant_types(self):
-        return self._canonical.get('consequence_terms')
-         
-    @property
-    def transcript(self):
-        return self._transcript
-
-    @property
-    def gene_name(self):
-        return self._canonical.get('gene_symbol')
-
-    @property
-    def effected_protein(self):
-        return self._canonical.get('protein_id')
-
-    @property
-    def protein_effect_location(self):
-        return self._canonical.get('protein_end')
-
-    @property
-    def protein_effect(self):
-        return self._canonical.get('hgvsp').split(':')[1]
-
-    @property
-    def exons_effected(self):
-        if self._canonical.get('exon') is not None:
-            if '-' in self._canonical.get('exon'):
-                exon_range = self._canonical.get('exon').split('/')[0].split('-')
-                exons = [x for x in range(int(exon_range[0]), int(exon_range[1]) + 1)]
-            else:
-                exons = [int(self._canonical.get('exon').split('/')[0])]
-            return exons
-        else:
-            return []
-
-
-    def list_all_variant_effects_df(self):
-        allSeries = []
-        varID = self._variant_json.get('id')
-        varClass = self._variant_json.get('variant_class')
-        for trans in self._variant_json.get('transcript_consequences'):
-            transID = trans.get('transcript_id')
-            if not transID.startswith('NM'):
-                continue
-            consequence = trans.get('consequence_terms')
-            geneName = trans.get('gene_symbol')
-            proteinID = trans.get('protein_id')
-            exonEffected = trans.get('exon').split('/')[0]
-            proteinEffect = trans.get('hgvsp').split(':')[1]
-            siftScore = trans.get('sift_score')
-            polyphenScore = trans.get('polyphen_score')
-            if trans.get('canonical') == 1:
-                canon = True
-            else:
-                canon = False
-            allSeries.append(pd.Series([consequence, geneName, proteinID, proteinEffect, exonEffected, siftScore, polyphenScore, canon], name = transID, index=['Variant Type', 'Gene Name', 'Protein ID', 'Effect on Protein', 'Exon Effected', 'Sift Score', 'Polyphen Score', 'Current Transcript']))
-        if len(allSeries) > 1:
-            results = pd.concat(allSeries, axis=1)
-            results = results.transpose()
-            results.Name = varID + ' - Class: ' + varClass
-        else:
-            results = allSeries[0]
-            results.name = varID + ' - Class: ' + varClass
-        return results 
-            
-    def __set_canon(self, transcript = None):
-        self._canonical = None
-        if transcript is not None:
-            self._transcript = transcript
-            if self._variant_json.get('transcript_consequences') is not None:
-                for trans in self._variant_json.get('transcript_consequences'):
-                    if trans.get('transcript_id') == transcript:
-                        self._canonical = trans
-                if self._canonical is None:
-                    self._canonical = self._variant_json.get('transcript_consequences')[0]
-            else:
-                raise ValueError(f"{self.variant_string} has no transcript consequences:\n {self._variant_json}")
-        else:
-            if self._variant_json.get('transcript_consequences') is not None:
-                for trans in self._variant_json.get('transcript_consequences'):
-                    if trans.get('canonical') == 1:
-                        self._transcript = trans.get('transcript_id')
-                        self._canonical = trans
-                if self._canonical is None:
-                    self._canonical = self._variant_json.get('transcript_consequences')[0]
-            else:
-                raise ValueError(f"{self.variant_string} has no transcript consequences:\n {self._variant_json}")
-        return None
