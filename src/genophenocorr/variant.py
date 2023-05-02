@@ -114,7 +114,7 @@ class VariantCoordinateFinder(metaclass=abc.ABCMeta):
         pass
 
 
-class PhenopacketVariantCoordnateFinder(VariantCoordinateFinder):
+class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
@@ -122,8 +122,12 @@ class PhenopacketVariantCoordnateFinder(VariantCoordinateFinder):
     def find_coordinates(self, item):
         if not isinstance(item, Phenopacket):
             raise ValueError(f"item must be a Phenopacket but was type {type(item)}")
+        if len(item.interpretations) != 1:
+            raise ValueError(f'Phenopackets with not exactly one interpretation are not yet supported.')
         genomic_interpretations = item.interpretations[0].diagnosis.genomicInterpretations
         variants_list = []
+        # TODO(lnrekerle) - prepare a unit test for testing PhenopacketVariantCoordinateFinder
+        # TODO(ielis & lnrekerle) - debug the code below
         for gi in genomic_interpretations:
             chrom, ref, alt, hgvs = '', '', '', ''
             start, end = 0, 0
