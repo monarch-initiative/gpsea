@@ -1,4 +1,6 @@
-import logging
+import sys
+import typing
+
 import hpotk
 
 
@@ -36,13 +38,22 @@ class Disease(hpotk.model.Identified, hpotk.model.Named):
         return str(self)
 
 
-class DiseaseCreator:
+# TODO(lnrekerle) - use the disease prefixes in the client code
+# ['OMIM', 'MONDO', 'ORPHA', 'DECIPHER']
+def create_disease(term_id: str,
+                   label: str,
+                   valid_prefixes: list[str]) -> typing.Optional[Disease]:
+    """
+    Create a `Disease` or raise an Exception if the `term_id` is invalid or if the `term_id` prefix
+    is not present in `valid_prefixes`.
+    """
+    try:
+        term_id = hpotk.model.TermId.from_curie(term_id)
+    except ValueError as e:
+        print(f'Cannot create a Disease: {e}', file=sys.stderr)
+        return None
 
-    def __init__(self):
-        self._logger = logging.getLogger(__name__)
-
-    def create_disease(self, id, label):
-        term_id = hpotk.model.TermId.from_curie(id)
-        if term_id.prefix not in ['OMIM','MONDO', 'ORPHA', 'DECIPHER']:
-            raise ValueError(f'Disease ID must be an \'OMIM\',\'MONDO\', \'ORPHA\', or \'DECIPHER\' ID but was {id}')
-        return Disease(term_id, label)
+    if term_id.prefix not in valid_prefixes:
+        print(f'Disease ID must be in {", ".join(valid_prefixes)} ID but was {term_id.prefix}', file=sys.stderr)
+        return None
+    return Disease(term_id, label)
