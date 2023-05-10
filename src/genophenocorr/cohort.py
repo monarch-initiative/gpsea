@@ -2,7 +2,6 @@ from collections import defaultdict
 from .patient import Patient
 from .disease import Disease
 from .phenotype import Phenotype
-from .proteins import Protein
 from .variant import Variant
 import glob
 import pandas as pd
@@ -323,7 +322,7 @@ class Cohort:
             allSeries.append(pd.Series([AA_with_hpo, AA_without_hpo, AB_with_hpo, AB_without_hpo, BB_with_hpo, BB_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['AA w/ hpo', 'AA w/o hpo', 'AB w/ hpo', 'AB w/o hpo', 'BB w/ hpo', 'BB w/o hpo', 'pval']))
         return allSeries
 
-    def __group_similar_hpos(self, test_hpo_list):
+    def __group_similar_hpos(self, test_hpo_list, ontology): #Pull from term ID rather than having ancesters/descendants
         full_hpo_dict = self.all_phenotypes_d
         hpo_grouping = defaultdict(list)
         skip_done_hpos = []

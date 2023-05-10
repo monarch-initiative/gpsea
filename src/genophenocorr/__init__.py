@@ -6,6 +6,7 @@ from .phenotype import Phenotype
 from .cohort import Cohort
 from .compare_func import *
 from .proteins import ProteinMetadata
+from .variant import *
 
 ## all is for when 'from genophenocorr import *' is used, these classes are what are imported
 ## I personally feel this may no longer be needed, but can be evaluated later.

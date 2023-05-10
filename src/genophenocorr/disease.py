@@ -40,7 +40,7 @@ class Disease(hpotk.model.Identified, hpotk.model.Named):
 
 # TODO(lnrekerle) - use the disease prefixes in the client code
 # ['OMIM', 'MONDO', 'ORPHA', 'DECIPHER']
-def create_disease(term_id: str,
+def create_disease(term_id_str: str,
                    label: str,
                    valid_prefixes: list[str]) -> typing.Optional[Disease]:
     """
@@ -48,7 +48,7 @@ def create_disease(term_id: str,
     is not present in `valid_prefixes`.
     """
     try:
-        term_id = hpotk.model.TermId.from_curie(term_id)
+        term_id = hpotk.model.TermId.from_curie(term_id_str)
     except ValueError as e:
         print(f'Cannot create a Disease: {e}', file=sys.stderr)
         return None

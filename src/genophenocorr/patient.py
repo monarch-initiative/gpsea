@@ -11,7 +11,7 @@ import pandas as pd
 from .disease import Disease
 from .phenotype import Phenotype 
 from .variant import Variant
-from .proteins import Protein
+
 
 
 class Patient:
