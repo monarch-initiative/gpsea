@@ -145,8 +145,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder):
         elif len(variant_descriptor.vcf_record.chrom) != 0 and len(variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
             ref = variant_descriptor.vcf_record.ref
             alt = variant_descriptor.vcf_record.alt
-            start = int(variant_descriptor.vcf_record.pos) 
-            end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref)) 
+            start = int(variant_descriptor.vcf_record.pos)
+            end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref))
             chrom = variant_descriptor.vcf_record.chrom[3:]
         return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref))
 
@@ -326,6 +326,62 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
         pass
 
 
+def verify_start_end_coordinates(vc: VariantCoordinates):
+    # 1 2 3 4 5
+    # A C G T A
+
+    # VCF
+    # 3  G  GG
+
+    # VariantCoordinates
+    # 2 3 G  GG
+
+    # VEP
+    # 4 3 - G
+    chrom = vc.chrom
+    start = None
+    end = None
+    alt = None
+    if vc.is_structural():
+        start = vc.start + 1
+        end = vc.end
+        alt = vc.alt[1:-1]
+        # TODO - we must trim INS and shift the coordinates.
+    else:
+        if len(vc.ref) == 0 or len(vc.alt) == 0:
+            # trimmed!
+            raise ValueError(f'Trimmed alleles are not yet supported!')
+        else:
+            if len(vc.ref) == 1 and len(vc.alt) == 1:
+                # SNP
+                start = vc.start + 1
+                end = vc.end
+                alt = vc.alt
+            elif len(vc.alt) == 1:
+                # DEL
+                start = vc.start + 2  # we must "trim"
+                end = vc.end
+                alt = ''
+            elif len(vc.ref) == 1:
+                # INS/DUP
+                start = vc.start + 2  # we must "trim"
+                end = vc.end
+                alt = vc.alt[1:]
+            else:
+                # 100 AC AGT
+                # MNV
+                start = vc.start + 1
+                end = vc.end
+                alt = vc.alt
+    # if len(vc.alt) > len(vc.ref) \
+    #         and vc.alt != '<DEL>' \
+    #         and vc.alt != '<DUP>':
+    #     return f"{vc.chrom}:{vc.start + 1}-{vc.start}/{vc.alt[1:]}"
+    # else:
+    #     return f"{vc.chrom}:{vc.start}-{vc.end}/{vc.alt.replace('<', '').replace('>', '')}"
+
+    return f'{chrom}:{start}-{end}/{alt}'
+
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
 
@@ -333,16 +389,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         self._logging = logging.getLogger(__name__)
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
-    def _verify_start_end_coordinates(self, variant_coordinates: VariantCoordinates):
-        if len(variant_coordinates.alt) > len(variant_coordinates.ref) and variant_coordinates.alt != '<DEL>' and variant_coordinates.alt != '<DUP>':
-            return f"{variant_coordinates.chrom}:{variant_coordinates.start + 1}-{variant_coordinates.start}/{variant_coordinates.alt[1:]}"
-        else:
-            return f"{variant_coordinates.chrom}:{variant_coordinates.start}-{variant_coordinates.end}/{variant_coordinates.alt.replace('<', '').replace('>', '')}"
-        
-
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
-
-        api_url = self._url % (self._verify_start_end_coordinates(variant_coordinates))
+        api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type':'application/json'})
         if not r.ok:
             r.raise_for_status()
