@@ -42,7 +42,7 @@ class Disease(hpotk.model.Identified, hpotk.model.Named):
 # ['OMIM', 'MONDO', 'ORPHA', 'DECIPHER']
 def create_disease(term_id_str: str,
                    label: str,
-                   valid_prefixes: list[str]) -> typing.Optional[Disease]:
+                   valid_prefixes: list[str] = ['OMIM', 'MONDO', 'ORPHA', 'DECIPHER']) -> typing.Optional[Disease]:
     """
     Create a `Disease` or raise an Exception if the `term_id` is invalid or if the `term_id` prefix
     is not present in `valid_prefixes`.

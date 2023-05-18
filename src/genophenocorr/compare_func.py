@@ -1,6 +1,6 @@
 import pyensembl
 import varcode as vc
-from .patient import Patient
+from .patient._patient_data import Patient
 import re
 import warnings
 

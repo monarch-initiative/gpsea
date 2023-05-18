@@ -15,7 +15,7 @@ def VariantAnnotatorFixure():
 
 @pytest.fixture
 def CachingAnnotator():
-    return variant.CachingFunctionalAnnotator('/Users/rekerl/Documents/Programs/genophenocorr/tests/testSamples', variant.VariantAnnotationCache(), variant.VepFunctionalAnnotator())
+    return variant.CachingFunctionalAnnotator('testSamples', variant.VariantAnnotationCache(), variant.VepFunctionalAnnotator())
     
 
 @pytest.mark.parametrize('patient, start, hgvsc, effects',
@@ -52,7 +52,7 @@ def test_caching(VariantCoordFinder, VariantAnnotatorFixure, CachingAnnotator):
     test_patient = 'testSamples/deletion_test.json'
     with open(test_patient) as f:
         data = f.read()
-        data = json.loads(data)
+    data = json.loads(data)
     phenopack = Parse(json.dumps(data), GenomicInterpretation())
     var_coords = VariantCoordFinder.find_coordinates(phenopack)
     var_anno_uncached = VariantAnnotatorFixure.annotate(var_coords)

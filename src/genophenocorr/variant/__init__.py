@@ -1,4 +1,3 @@
-from ._variant import VariantCoordinates, Variant, TranscriptAnnotation
-from ._variant import VariantCoordinateFinder, PhenopacketVariantCoordinateFinder
-from ._variant import FunctionalAnnotator, VepFunctionalAnnotator, CachingFunctionalAnnotator
-from ._variant import VariantAnnotationCache
+from ._variant_data import VariantCoordinates, Variant, TranscriptAnnotation
+from ._models import FunctionalAnnotator, VariantCoordinateFinder
+from ._annotators import VariantAnnotationCache, VepFunctionalAnnotator, CachingFunctionalAnnotator, PhenopacketVariantCoordinateFinder
