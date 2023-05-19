@@ -1,30 +1,42 @@
-
 import os
-from ._model import CohortCreator
+
+import hpotk.util
+from google.protobuf.json_format import Parse
+from phenopackets import Phenopacket
+
+from genophenocorr.patient import PhenopacketPatientCreator
 from ._cohort_data import Cohort
-from ..patient import PhenopacketPatientCreator
+from ._model import CohortCreator
 
 
 class PhenopacketCohortCreator(CohortCreator):
 
-    def __init__(self, output_path, hpo_ontology_path) -> None:
-        self._patient_creator = PhenopacketPatientCreator(output_path, hpo_ontology_path)
+    def __init__(self, patient_creator: PhenopacketPatientCreator):
+        self._patient_creator = hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator,
+                                                             'patient_creator')
 
-    def create_cohort(self, phenopacket_directory:str) -> Cohort:
+    def create_cohort(self, phenopacket_directory: str) -> Cohort:
         if not os.path.isdir(phenopacket_directory):
             raise ValueError("Could not find directory of Phenopackets.")
-        cohort = []
+        patients = []
         for patient_file in os.listdir(phenopacket_directory):
             if patient_file.endswith('.json'):
-                full_file = os.path.join(phenopacket_directory, patient_file)
-                cohort.append(self._patient_creator.create_patient(full_file))
-        if len(cohort) == 0:
+                phenopacket_path = os.path.join(phenopacket_directory, patient_file)
+                pp = self._load_phenopacket(phenopacket_path)
+                patient = self._patient_creator.create_patient(pp)
+                patients.append(patient)
+        if len(patients) == 0:
             raise ValueError(f"No JSON Phenopackets were found in {phenopacket_directory}")
-        cohort_variants, cohort_phenotypes, cohort_proteins, cohort_disease = set()
-        for patient in cohort:
+
+        cohort_variants, cohort_phenotypes, cohort_proteins = set()
+        for patient in patients:
             cohort_variants.update(patient.variants)
             cohort_phenotypes.update(patient.phenotypes)
             cohort_proteins.update(patient.proteins)
-            cohort_disease.update(patient.diseases)
 
-        return Cohort(cohort, cohort_phenotypes, cohort_variants, cohort_proteins, cohort_disease)
+        return Cohort(patients, cohort_phenotypes, cohort_variants, cohort_proteins)
+
+    @staticmethod
+    def _load_phenopacket(phenopacket_path: str) -> Phenopacket:
+        with open(phenopacket_path) as f:
+            return Parse(f.read(), Phenopacket())

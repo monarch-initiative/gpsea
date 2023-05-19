@@ -7,7 +7,7 @@ class VariantCoordinates:
     The breakend variants are not supported.
     """
 
-    def __init__(self, chrom, start, end, ref, alt, change_length, genotype):
+    def __init__(self, chrom: str, start: int, end: int, ref: str, alt: str, change_length: int, genotype: str):
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
         self._chrom = chrom
@@ -65,6 +65,8 @@ class VariantCoordinates:
 
     @property
     def genotype(self) -> str:
+        # TODO - add a doc string with an example. Do we return `0/1`, or `HET`, or GENO_0000135
+        #  (http://purl.obolibrary.org/obo/GENO_0000135)? All these are strings.
         return self._genotype
 
     def is_structural(self) -> bool:
@@ -106,6 +108,7 @@ class VariantCoordinates:
 
     def __hash__(self) -> int:
         return hash((self._chrom, self._start, self._end, self._ref, self._alt, self._change_length, self._genotype))
+
 
 class TranscriptAnnotation:
     """
@@ -203,18 +206,24 @@ class TranscriptAnnotation:
     def __hash__(self) -> int:
         return hash((self.gene_id, self.hgvsc_id, self.transcript_id, self.overlapping_exons, self.variant_effects, self.protein_affected, self.protein_effect_location))
 
+
 class Variant:
     """
     Class that represents results of the functional annotation of a variant with all included transcripts.
     """
 
-    def __init__(self, var_id, var_class, var_coordinates: VariantCoordinates, current_tx, tx_annotations, genotype):
+    def __init__(self, var_id: str,
+                 var_class: str,
+                 var_coordinates: VariantCoordinates,
+                 current_tx: str,
+                 tx_annotations: typing.Sequence[TranscriptAnnotation],
+                 genotype: str):
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
         self._current_tx = current_tx
         self._tx_annotations = tx_annotations
-        self._genotype = genotype  # This is optional
+        self._genotype = genotype
 
     @property
     def variant_coordinates(self) -> VariantCoordinates:
@@ -224,7 +233,7 @@ class Variant:
         return self._var_coordinates
 
     @property
-    def variant_string(self):
+    def variant_string(self) -> str:
         """
         A readable representation of the variant's coordinates. 
         Format - "Chromosome_Start_Reference/Alternative" or
@@ -233,7 +242,7 @@ class Variant:
         return self._id
 
     @property
-    def genotype(self):
+    def genotype(self) -> str:
         """
         Optional parameter. Required for recessive tests. 
         Possible values: Heterozygous, Homozygous, Hemizygous
@@ -241,7 +250,7 @@ class Variant:
         return self._genotype
 
     @property
-    def selected_transcript(self):
+    def selected_transcript(self) -> str:
         """
         The ID of either the canonical transcript given by VEP or the transcript chosen by the user.
         """
@@ -256,19 +265,14 @@ class Variant:
         return self._tx_annotations
 
     @property
-    def variant_class(self):
-        "The variant class. (e.g. Duplication, SNV, Deletion, etc.)"
+    def variant_class(self) -> str:
+        """
+        The variant class. (e.g. Duplication, SNV, Deletion, etc.)
+        """
         return self._var_class
 
-    def __str__(self) -> str:
-        return f"Variant(variant_coordinates:{str(self.variant_coordinates)}," \
-            f"variant_string:{self.variant_string}," \
-            f"genotype:{self.genotype}," \
-            f"tx_annotations:{self.tx_annotations}," \
-            f"variant_class:{self.variant_class})"
-
-
     def __eq__(self, other) -> bool:
+        # TODO - this seems a bit odd. Investigate.
         return isinstance(other, Variant) \
             and self.variant_string == other.variant_string \
             and self.genotype == other.genotype \
@@ -276,11 +280,16 @@ class Variant:
             and self.variant_coordinates == other.variant_coordinates 
             #and self.tx_annotations == other.tx_annotations
 
+    def __hash__(self) -> int:
+        # TODO - this seems a bit odd. Investigate.
+        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
+
     def __repr__(self) -> str:
         return str(self)
 
-    def __hash__(self) -> int:
-        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
-
-
-
+    def __str__(self) -> str:
+        return f"Variant(variant_coordinates:{str(self.variant_coordinates)}," \
+            f"variant_string:{self.variant_string}," \
+            f"genotype:{self.genotype}," \
+            f"tx_annotations:{self.tx_annotations}," \
+            f"variant_class:{self.variant_class})"
