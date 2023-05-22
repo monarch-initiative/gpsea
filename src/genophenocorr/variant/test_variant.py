@@ -1,11 +1,13 @@
-import json
+
 
 import pytest
 from google.protobuf.json_format import Parse
 # pyright: reportGeneralTypeIssues=false
-from phenopackets import GenomicInterpretation
+from phenopackets import Phenopacket, GenomicInterpretation
 
 from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder
+
+from pkg_resources import resource_filename
 
 
 @pytest.mark.parametrize('contig, start, end, ref, alt, chlen, expected',
@@ -53,11 +55,11 @@ def test_verify_start_end_coordinates(contig, start, end, ref, alt, chlen, expec
 
 
 @pytest.fixture
-def PhenopackFinder():
+def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
     return PhenopacketVariantCoordinateFinder()
 
 
-@pytest.mark.parametrize("patient, expected",
+@pytest.mark.parametrize("pp_path, expected",
                          [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C'),
                           ('test_data/insertion_test.json', '16_89280828_89280830_C_CA'),
                           ('test_data/missense_test.json', '16_89279134_89279135_G_C'),
@@ -66,10 +68,13 @@ def PhenopackFinder():
                           ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>'),
                           ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>')
                           ])
-def test_find_coordinates(patient, expected, PhenopackFinder):
-    with open(patient) as f:
-        data = f.read()
-        data = json.loads(data)
-    phenopack = Parse(json.dumps(data), GenomicInterpretation())
-    coords = PhenopackFinder.find_coordinates(phenopack)
-    assert coords.as_string() == expected
+def test_find_coordinates(pp_path, expected, pp_vc_finder):
+    fname = resource_filename(__name__, pp_path)
+    gi = read_genomic_interpretation_json(fname)
+
+    assert pp_vc_finder.find_coordinates(gi).as_string() == expected
+
+
+def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
+    with open(fpath) as fh:
+        return Parse(fh.read(), GenomicInterpretation())

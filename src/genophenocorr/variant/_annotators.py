@@ -169,26 +169,26 @@ class VariantAnnotationCache:
         self._datadir = datadir
 
     def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[Variant]:
-        # TODO - EXPLAIN - removed `directory` param. A fine example of class state instead of parameter.
-        fname = f'{variant_coordinates.as_string()}.pickle'
-        fpath = os.path.join(self._datadir, fname)
-        if os.path.exists(fpath):
+        fpath = self._create_file_name(variant_coordinates)
+        if os.path.isfile(fpath):
             with open(fpath, 'rb') as fh:
                 return pickle.load(fh)
         else:
             return None
 
     def store_annotations(self, variant_coordinates: VariantCoordinates, annotation: Variant):
-        fname = f'{variant_coordinates.as_string()}.pickle'
-        fpath = os.path.join(self._datadir, fname)
+        fpath = self._create_file_name(variant_coordinates)
         with open(fpath, 'wb') as f:
             pickle.dump(annotation, f)
+
+    def _create_file_name(self, variant_coordinates: VariantCoordinates) -> str:
+        fname = f'{variant_coordinates.as_string()}.pickle'
+        return os.path.join(self._datadir, fname)
 
 
 class CachingFunctionalAnnotator(FunctionalAnnotator):
 
     def __init__(self, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
-        # TODO - EXPLAIN - removed output_directory. The caching annotator does not care about the cache internals.
         self._cache = hpotk.util.validate_instance(cache, VariantAnnotationCache, 'cache')
         self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
