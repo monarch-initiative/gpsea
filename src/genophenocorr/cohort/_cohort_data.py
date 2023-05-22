@@ -1,16 +1,16 @@
-from collections import defaultdict
-from ..patient._patient_data import Patient
-from ..disease import Disease
-from ..phenotype._phenotype_data import Phenotype
-from ..variant import Variant
-import glob
-import pandas as pd
-import re
-from scipy import stats
-from FisherExact import fisher_exact
-from statsmodels.sandbox.stats.multicomp import multipletests
-import numpy as np
-import pandas as pd
+# TODO(lnrekerle) - the imports below should probably be removed. Please do that if you think it's OK.
+# from collections import defaultdict
+# from ..patient._patient_data import Patient
+# from ..disease import Disease
+# from ..phenotype._phenotype_data import Phenotype
+# from ..variant import Variant
+# import glob
+# import pandas as pd
+# import re
+# from scipy import stats
+# from statsmodels.sandbox.stats.multicomp import multipletests
+# import numpy as np
+# import pandas as pd
 
 class Cohort:
     """
@@ -20,9 +20,8 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, disease_set, recessive = False):
+    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, recessive = False):
         self._patient_set = patient_set
-        self._disease_set = disease_set
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
         self._variant_set = variant_set
@@ -31,11 +30,7 @@ class Cohort:
     @property
     def all_patients(self):
         return self._patient_set
-    
-    @property
-    def all_diseases(self):
-        return self._disease_set
-    
+
     @property
     def all_phenotypes(self):
         return self._phenotype_set
@@ -54,9 +49,6 @@ class Cohort:
 
     def list_all_patients(self):
         return [pat.patient_id for pat in self.all_patients]
-
-    def list_all_diseases(self):
-        return [(dis.identifier, dis.label) for dis in self.all_diseases]
 
     def list_all_phenotypes(self):
         return [pheno.identifier for pheno in self.all_phenotypes]

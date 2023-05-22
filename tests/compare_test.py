@@ -1,7 +1,5 @@
 import pytest
-import sys
 import pandas as pd
-from genophenocorr import *
 
 @pytest.fixture
 def outputVars():
@@ -21,6 +19,5 @@ def outputVars():
     ('testSamples/Bhoj-2016-TBCK-6-2.json', 8),
     ('testSamples/Bhoj-2016-TBCK-8-1.json', 9)
     ])
-
 def test_compare(patient, num):
-	
+    pass

@@ -1,12 +1,15 @@
 import json
-from google.protobuf.json_format import Parse
-from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder
+
 import pytest
+from google.protobuf.json_format import Parse
 # pyright: reportGeneralTypeIssues=false
-from phenopackets import GenomicInterpretation 
+from phenopackets import GenomicInterpretation
+
+from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder
+
 
 @pytest.mark.parametrize('contig, start, end, ref, alt, chlen, expected',
-                          (['1', 100, 101, 'G', 'C', 0, '1:101-101/C'],  # SNP
+                         (['1', 100, 101, 'G', 'C', 0, '1:101-101/C'],  # SNP
 
                           ['1', 100, 102, 'GG', 'G', -1, '1:101-102/G'],  # DEL
                           ['16', 89_284_128, 89_284_134, 'CTTTTT', 'C', 5, '16:89284129-89284134/C'],  # DEL
@@ -36,32 +39,33 @@ from phenopackets import GenomicInterpretation
                           # In practical terms, the `cdna_start` and `cdna_end` fields of the VEP response will change
                           # depending on the trimming status.
 
-                          #TODO: 
-                          #['1', 100, 101, 'N', '<INS>', 19, '1:102-101/INS'],
-                          ['1', 101, 101, '',  '<INS>', 20, '1:102-101/INS'],
+                          # TODO:
+                          # ['1', 100, 101, 'N', '<INS>', 19, '1:102-101/INS'],
+                          ['1', 101, 101, '', '<INS>', 20, '1:102-101/INS'],
 
-                          #['9', 133_359_999, 133_360_000, 'N', '<INS>', 29, '9:133360001-133360000/INS'])
+                          # ['9', 133_359_999, 133_360_000, 'N', '<INS>', 29, '9:133360001-133360000/INS'])
                           ['9', 133_360_000, 133_360_000, '', '<INS>', 30, '9:133360001-133360000/INS'])
-                          )
+                         )
 def test_verify_start_end_coordinates(contig, start, end, ref, alt, chlen, expected):
-    vc = VariantCoordinates(contig, start, end, ref, alt, chlen, None)
+    vc = VariantCoordinates(contig, start, end, ref, alt, chlen, 'Whatever')
     out = verify_start_end_coordinates(vc)
     assert out == expected
+
 
 @pytest.fixture
 def PhenopackFinder():
     return PhenopacketVariantCoordinateFinder()
 
-@pytest.mark.parametrize("patient, expected",
-                        [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C'),
-                        ('test_data/insertion_test.json', '16_89280828_89280830_C_CA'),
-                        ('test_data/missense_test.json', '16_89279134_89279135_G_C'),
-                        ('test_data/duplication_test.json', '16_89279849_89279851_G_GC'),
-                        ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A'),
-                        ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>'),
-                        ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>')
-                        ])
 
+@pytest.mark.parametrize("patient, expected",
+                         [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C'),
+                          ('test_data/insertion_test.json', '16_89280828_89280830_C_CA'),
+                          ('test_data/missense_test.json', '16_89279134_89279135_G_C'),
+                          ('test_data/duplication_test.json', '16_89279849_89279851_G_GC'),
+                          ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A'),
+                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>'),
+                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>')
+                          ])
 def test_find_coordinates(patient, expected, PhenopackFinder):
     with open(patient) as f:
         data = f.read()

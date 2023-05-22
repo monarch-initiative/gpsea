@@ -1,6 +1,5 @@
 import hpotk
 import typing
-import logging
 
 
 class Phenotype(hpotk.model.Identified):
@@ -15,7 +14,6 @@ class Phenotype(hpotk.model.Identified):
                 raise ValueError(f"observed variable must be type boolean, but is type {type(observed)}")
         self._observed = observed
 
-
     @property
     def identifier(self) -> hpotk.model.TermId:
         return self._term.identifier
@@ -23,7 +21,6 @@ class Phenotype(hpotk.model.Identified):
     @property
     def observed(self):
         return self._observed
-
 
     def __eq__(self, other):
         return isinstance(other, Phenotype) \

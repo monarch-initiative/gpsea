@@ -13,17 +13,14 @@ class PhenotypeValidationException(BaseException):
     def issues(self):
         return self._issues
 
+
 class PhenotypeCreator:
 
     def __init__(self, hpo: hpotk.ontology.MinimalOntology,
                  validator: hpotk.validate.ValidationRunner):
         self._logger = logging.getLogger(__name__)
-        if not isinstance(hpo, hpotk.ontology.MinimalOntology):
-            raise ValueError(f'hpo must be hpotk.ontology.MinimalOntology but was {type(hpo)}')
-        self._hpo = hpo
-        if not isinstance(validator, hpotk.validate.ValidationRunner):
-            raise ValueError(f'validator must be hpotk.validate.ValidationRunner but was {type(validator)}')
-        self._validator = validator
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.ontology.MinimalOntology, 'hpo')
+        self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
     def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> list[Phenotype]:
         """
@@ -37,8 +34,6 @@ class PhenotypeCreator:
             term = self._hpo.get_term(term_id)
             if term is None:
                 raise ValueError(f'Term ID {term_id} is not present in HPO v{self._hpo.version}')
-            if not isinstance(term, hpotk.model.Term) and not isinstance(term, hpotk.model._term.DefaultMinimalTerm):
-                raise ValueError(f"Term must be type Term but is type {type(term)}")
             terms.append((term, observed))
         validation_results = self._validator.validate_all([term[0] for term in terms])
         if validation_results.is_ok:

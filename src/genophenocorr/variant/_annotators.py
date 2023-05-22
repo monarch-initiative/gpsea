@@ -1,51 +1,62 @@
-import abc
 import logging
-import pickle
-import typing
-import re
-import requests
 import os
+import pickle
+import re
+import typing
+
+import hpotk
+import requests
 # pyright: reportGeneralTypeIssues=false
 from phenopackets import GenomicInterpretation
+
 from ._models import FunctionalAnnotator, VariantCoordinateFinder
 from ._variant_data import VariantCoordinates, TranscriptAnnotation, Variant
 
-OUTPUT_DIR = os.getcwd()
 
-class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder):
+class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
-    def find_coordinates(self, genomic_interp):
-        if not isinstance(genomic_interp, GenomicInterpretation):
-            raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(genomic_interp)}")
-        chrom, ref, alt, genotype = '', '', '', None
+    def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
+        # TODO(ielis&lnrekerle) - we need to write tests for this logic
+        if not isinstance(item, GenomicInterpretation):
+            raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
+        chrom, ref, alt, genotype = None, None, None, None
         start, end = 0, 0
-        variant_descriptor = genomic_interp.variant_interpretation.variation_descriptor
-        if len(variant_descriptor.vcf_record.chrom) == 0 and len(variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
+        variant_descriptor = item.variant_interpretation.variation_descriptor
+        if len(variant_descriptor.vcf_record.chrom) == 0 and len(
+                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
             ref = 'N'
-            start = int(variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value)
-            end = int(variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.end_number.value)
+            start = int(
+                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value)
+            end = int(
+                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.end_number.value)
             number = int(variant_descriptor.variation.copy_number.number.value)
             if number > 2:
                 alt = '<DUP>'
             else:
                 alt = '<DEL>'
-            chrom = re.findall(r'NC_0000(\d{2}).\d\d', variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id)[0]
+            chrom = re.findall(r'NC_0000(\d{2}).\d\d',
+                               variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id)[0]
             if chrom.startswith('0'):
                 chrom = str(int(chrom))
             elif chrom == '23':
                 chrom = 'X'
             elif chrom == '24':
                 chrom = 'Y'
-        elif len(variant_descriptor.vcf_record.chrom) != 0 and len(variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
+        elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
+                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
             ref = variant_descriptor.vcf_record.ref
             alt = variant_descriptor.vcf_record.alt
             start = int(variant_descriptor.vcf_record.pos) - 1
             end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref))
             chrom = variant_descriptor.vcf_record.chrom[3:]
         genotype = variant_descriptor.allelic_state.label
+
+        if any(field is None for field in (chrom, ref, alt, genotype)):
+            raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
+
         return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
 
 
@@ -66,7 +77,7 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
     alt = vc.alt
     if vc.is_structural():
         alt = vc.alt[1:-1]
-        #TODO: Verify <INS> are working correctly
+        # TODO: Verify <INS> are working correctly
     else:
         if len(vc.ref) == 0 or len(vc.alt) == 0:
             raise ValueError(f'Trimmed alleles are not yet supported!')
@@ -77,7 +88,6 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
             alt = vc.alt[1:]
             # 100 AC AGT
             # MNV
-            
 
     return f'{chrom}:{start}-{end}/{alt}'
 
@@ -86,24 +96,14 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
     def __init__(self):
         self._logging = logging.getLogger(__name__)
-        self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
+        self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
+                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
-        api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
-        r = requests.get(api_url, headers={'Content-Type':'application/json'})
-        if not r.ok:
-            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.as_string()}")
-            r.raise_for_status()
-        results = r.json()
-        if not isinstance(results, list):
-            self._logging.error(results.get('error'))
-            raise ConnectionError(f"Expected a result but got an Error. See log for details.")
-        if len(results) > 1:
-            self._logging.error([re.id for re in results])
-            raise ValueError(f"Expected only one variant per request but received {len(results)} different variants.")
-        variant = results[0]
+        variant = self._query_vep(variant_coordinates)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
+        # TODO - which one is the MANE transcript?
         canon_tx = None
         transcript_list = []
         for trans in variant.get('transcript_consequences'):
@@ -131,50 +131,74 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                 if len(exons_effected) == 2:
                     exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
                 exons_effected = [int(x) for x in exons_effected]
-            transcript_list.append(TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected,
-                protein_id, protein_effect_start, protein_effect_end))
-        return Variant(variant_id, variant_class, variant_coordinates, canon_tx, transcript_list, variant_coordinates.genotype)
+            transcript_list.append(
+                TranscriptAnnotation(gene_name,
+                                     trans_id,
+                                     hgvsc_id,
+                                     consequences,
+                                     exons_effected,
+                                     protein_id,
+                                     protein_effect_start,
+                                     protein_effect_end)
+            )
+
+        return Variant(variant_id, variant_class, variant_coordinates, canon_tx, transcript_list,
+                       variant_coordinates.genotype)
+
+    def _query_vep(self, variant_coordinates) -> dict:
+        api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
+        r = requests.get(api_url, headers={'Content-Type': 'application/json'})
+        if not r.ok:
+            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.as_string()}")
+            r.raise_for_status()
+        results = r.json()
+        if not isinstance(results, list):
+            self._logging.error(results.get('error'))
+            raise ConnectionError(f"Expected a result but got an Error. See log for details.")
+        if len(results) > 1:
+            self._logging.error([result.id for result in results])
+            raise ValueError(f"Expected only one variant per request but received {len(results)} different variants.")
+        return results[0]
 
 
 class VariantAnnotationCache:
 
-    def get_annotations(self, variant_coordinates: VariantCoordinates, directory) -> typing.Optional[Variant]:
-        if os.path.exists(f'{directory}/{variant_coordinates.as_string()}.pickle'):
-            with open(f'{directory}/{variant_coordinates.as_string()}.pickle', 'rb') as f:
-                variant = pickle.load(f)
-        else:
-            variant = None
-        return variant
+    def __init__(self, datadir: str):
+        if not os.path.isdir(datadir):
+            raise ValueError(f'datadir {datadir} must be an existing directory')
+        self._datadir = datadir
 
-    def store_annotations(self, variant_coordinates: VariantCoordinates, annotation: Variant, directory):
-        with open(f'{directory}/{variant_coordinates.as_string()}.pickle', 'wb') as f:
+    def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[Variant]:
+        # TODO - EXPLAIN - removed `directory` param. A fine example of class state instead of parameter.
+        fname = f'{variant_coordinates.as_string()}.pickle'
+        fpath = os.path.join(self._datadir, fname)
+        if os.path.exists(fpath):
+            with open(fpath, 'rb') as fh:
+                return pickle.load(fh)
+        else:
+            return None
+
+    def store_annotations(self, variant_coordinates: VariantCoordinates, annotation: Variant):
+        fname = f'{variant_coordinates.as_string()}.pickle'
+        fpath = os.path.join(self._datadir, fname)
+        with open(fpath, 'wb') as f:
             pickle.dump(annotation, f)
-        return None
 
 
 class CachingFunctionalAnnotator(FunctionalAnnotator):
 
-    def __init__(self, output_directory: str, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
-        if not os.path.exists(output_directory):
-            raise ValueError(f"Invalid path: {output_directory}")
-        directory = os.path.join(output_directory, 'annotations')
-        os.makedirs(directory, exist_ok=True)
-        self._output = directory
-        if not isinstance(cache, VariantAnnotationCache):
-            raise ValueError(f"cache must be type VariantAnnotationCache but was type {type(cache)}")
-        self._cache = cache
-        if not isinstance(fallback, FunctionalAnnotator):
-            raise ValueError(f"fallback must be type FunctionalAnnotator but was type {type(fallback)}")
-        self._fallback = fallback
+    def __init__(self, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
+        # TODO - EXPLAIN - removed output_directory. The caching annotator does not care about the cache internals.
+        self._cache = hpotk.util.validate_instance(cache, VariantAnnotationCache, 'cache')
+        self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
-        if not isinstance(variant_coordinates, VariantCoordinates):
-            raise ValueError(f"variant_coordinates must be type VariantCoordinates but was type {type(variant_coordinates)}")
-        annotations = self._cache.get_annotations(variant_coordinates, self._output)
+        hpotk.util.validate_instance(variant_coordinates, VariantCoordinates, 'variant_coordinates')
+        annotations = self._cache.get_annotations(variant_coordinates)
         if annotations is not None:
             # we had cached annotations
             return annotations
         else:
             ann = self._fallback.annotate(variant_coordinates)
-            self._cache.store_annotations(variant_coordinates, ann, self._output)
+            self._cache.store_annotations(variant_coordinates, ann)
             return ann
