@@ -29,7 +29,7 @@ class PhenopacketCohortCreator(CohortCreator):
             raise ValueError(f"No JSON Phenopackets were found in {phenopacket_directory}")
 
         cohort_variants, cohort_phenotypes, cohort_proteins, cohort_disease = set(), set(), set(), set()
-        for patient in cohort:
+        for patient in patients:
             cohort_variants.update(patient.variants)
             cohort_phenotypes.update(patient.phenotypes)
             cohort_proteins.update(patient.proteins)
