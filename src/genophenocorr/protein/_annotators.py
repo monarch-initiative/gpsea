@@ -1,5 +1,7 @@
 import abc
 import logging
+import os
+import pickle
 import typing
 import requests
 
@@ -56,3 +58,46 @@ class UniprotProteinMetadataService(ProteinMetadataService):
 
         # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list
+
+class ProteinAnnotationCache:
+
+    def get_annotations(self, protein_id: str, directory) -> typing.Optional[typing.Sequence[ProteinMetadata]]:
+        if os.path.exists(f'{directory}/{protein_id}.pickle'):
+            with open(f'{directory}/{protein_id}.pickle', 'rb') as f:
+                protein = pickle.load(f)
+        else:
+            protein = None
+        return protein
+
+    def store_annotations(self, protein_id: str, annotation: typing.Sequence[ProteinMetadata], directory):
+        with open(f'{directory}/{protein_id}.pickle', 'wb') as f:
+            pickle.dump(annotation, f)
+        return None
+
+
+class CachingFunctionalAnnotator(ProteinMetadataService):
+
+    def __init__(self, output_directory: str, cache: ProteinAnnotationCache, fallback: ProteinMetadataService):
+        if not os.path.exists(output_directory):
+            raise ValueError(f"Invalid path: {output_directory}")
+        directory = os.path.join(output_directory, 'annotations')
+        os.makedirs(directory, exist_ok=True)
+        self._output = directory
+        if not isinstance(cache, ProteinAnnotationCache):
+            raise ValueError(f"cache must be type VariantAnnotationCache but was type {type(cache)}")
+        self._cache = cache
+        if not isinstance(fallback, ProteinMetadataService):
+            raise ValueError(f"fallback must be type FunctionalAnnotator but was type {type(fallback)}")
+        self._fallback = fallback
+
+    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
+        if not isinstance(protein_id, str):
+            raise ValueError(f"protein_id must be type VariantCoordinates but was type {type(protein_id)}")
+        annotations = self._cache.get_annotations(protein_id, self._output)
+        if annotations is not None:
+            # we had cached annotations
+            return annotations
+        else:
+            ann = self._fallback.annotate(protein_id)
+            self._cache.store_annotations(protein_id, ann, self._output)
+            return ann

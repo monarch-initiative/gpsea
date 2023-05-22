@@ -1,2 +1,2 @@
-from ._annotators import ProteinMetadataService, UniprotProteinMetadataService
+from ._annotators import ProteinMetadataService, UniprotProteinMetadataService, CachingFunctionalAnnotator, ProteinAnnotationCache
 from ._protein_data import ProteinMetadata, ProteinFeature, SimpleProteinFeature
