@@ -280,7 +280,8 @@ class Variant:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
+        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype))
+        #, self.tx_annotations
 
 
 

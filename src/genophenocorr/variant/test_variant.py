@@ -44,7 +44,7 @@ from phenopackets import GenomicInterpretation
                           ['9', 133_360_000, 133_360_000, '', '<INS>', 30, '9:133360001-133360000/INS'])
                           )
 def test_verify_start_end_coordinates(contig, start, end, ref, alt, chlen, expected):
-    vc = VariantCoordinates(contig, start, end, ref, alt, chlen)
+    vc = VariantCoordinates(contig, start, end, ref, alt, chlen, None)
     out = verify_start_end_coordinates(vc)
     assert out == expected
 
