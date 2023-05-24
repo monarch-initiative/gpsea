@@ -1,15 +1,16 @@
 import abc
 import logging
-import typing
 
 import hpotk
+import typing
 # pyright: reportGeneralTypeIssues=false
 from phenopackets import Phenopacket
 
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
-from genophenocorr.protein import ProteinMetadataService, ProteinMetadata
-from genophenocorr.variant import FunctionalAnnotator, PhenopacketVariantCoordinateFinder, Variant
+from genophenocorr.protein import ProteinMetadata, ProteinMetadataService
+from genophenocorr.variant import PhenopacketVariantCoordinateFinder, Variant, FunctionalAnnotator
 from ._patient_data import Patient
+
 
 T = typing.TypeVar('T')
 
@@ -23,28 +24,32 @@ class PatientCreator(typing.Generic[T], metaclass=abc.ABCMeta):
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
     def __init__(self, phenotype_creator: PhenotypeCreator,
-                 func_ann: FunctionalAnnotator,
-                 protein_meta: ProteinMetadataService):
+                 var_func_ann: FunctionalAnnotator,
+                 protein_func_ann: ProteinMetadataService):
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder()
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
-        self._func_ann = hpotk.util.validate_instance(func_ann, FunctionalAnnotator, 'func_ann')
-        self._protein_creator = hpotk.util.validate_instance(protein_meta, ProteinMetadataService, 'protein_meta')
+        self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
+        self._protein_creator = hpotk.util.validate_instance(protein_func_ann, ProteinMetadataService, 'protein_func_ann')
 
-    def create_patient(self, item: Phenopacket) -> Patient:
+    def create_patient(self, item: Phenopacket, tx_id:str, prot_id:str) -> Patient:
+        if tx_id is None or tx_id == "":
+            raise ValueError(f"We expected a transcript id but got nothing.")
+        if prot_id is None or prot_id == '':
+            raise ValueError(f"We expected a protein id but got nothing.")
         phenotypes = self._add_phenotypes(item)
-        variants = self._add_variants(item)
-        protein_data = self._add_protein_data(variants)
+        variants = self._add_variants(item, tx_id)
+        protein_data = self._add_protein_data(prot_id)
         return Patient(item.id, phenotypes, variants, protein_data)
 
-    def _add_variants(self, pp: Phenopacket) -> typing.List[Variant]:
+    def _add_variants(self, pp: Phenopacket, tx_id:str) -> typing.List[Variant]:
         variants_list = []
         for i, interp in enumerate(pp.interpretations):
-            if hasattr('diagnosis', interp) and interp.diagnosis is not None:
+            if hasattr(interp, 'diagnosis') and interp.diagnosis is not None:
                 for genomic_interp in interp.diagnosis.genomic_interpretations:
                     vc = self._coord_finder.find_coordinates(genomic_interp)
-                    variant = self._func_ann.annotate(vc)
+                    variant = self._func_ann.annotate(vc, tx_id)
                     variants_list.append(variant)
             else:
                 self._logger.warning(f'No diagnosis in interpretation #{i} of phenopacket {pp.id}')
@@ -61,13 +66,5 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return []  # a little shortcut. The line below would return an empty list anyway.
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
-    def _add_protein_data(self, variants) -> typing.List[ProteinMetadata]:
-        all_prot_ids = set()
-        for var in variants:
-            for tx_ann in var.tx_annotations:
-                all_prot_ids.add(tx_ann.protein_affected)
-
-        protein_list = []
-        for prot_id in all_prot_ids:
-            protein_list.extend(self._protein_creator.annotate(prot_id))
-        return protein_list
+    def _add_protein_data(self, prot_id) -> ProteinMetadata:
+        return self._protein_creator.annotate(prot_id)

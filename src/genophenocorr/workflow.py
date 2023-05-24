@@ -4,12 +4,14 @@
 import typing
 
 import hpotk
+# pyright: reportGeneralTypeIssues=false
 from phenopackets import Phenopacket
 
 from genophenocorr.patient import PhenopacketPatientCreator
 from genophenocorr.phenotype import PhenotypeCreator
-from genophenocorr.protein import UniprotProteinMetadataService
-from genophenocorr.variant import CachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
+from genophenocorr.protein import UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
+from genophenocorr.variant import VarCachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
+from genophenocorr.cohort import PhenopacketCohortCreator
 
 # These are the analysis parameters. We'll expect these parameters to be provided from the user, either in a notebook
 # or in CLI.
@@ -33,19 +35,24 @@ phenotype_creator = PhenotypeCreator(hpo, hpotk.validate.ValidationRunner(valida
 # Functional annotator
 vac = VariantAnnotationCache(cache_datadir)
 vep = VepFunctionalAnnotator()
-fa = CachingFunctionalAnnotator(vac, vep)
+vfa = VarCachingFunctionalAnnotator(vac, vep)
 
 # Protein metadata
 pm = UniprotProteinMetadataService()
+pac = ProteinAnnotationCache(cache_datadir)
+pfa = ProtCachingFunctionalAnnotator(pac, pm)
 
 # Assemble the patient creator
-pc = PhenopacketPatientCreator(phenotype_creator, fa, pm)
+pc = PhenopacketPatientCreator(phenotype_creator, vfa, pfa)
+cc = PhenopacketCohortCreator(pc)
 
 # Next, load the patients from phenopackets
-phenopackets: typing.List[Phenopacket] = []  # TODO - implement real parsing based on a path above
+##phenopackets: typing.List[Phenopacket] = []  # TODO - implement real parsing based on a path above
 
-patients = [pc.create_patient(pp) for pp in phenopackets]
+##patients = [pc.create_patient(pp) for pp in phenopackets]
 
+# Daniel - Is below okay? Or should we remove cohort all together and have is like you do above? 
+patientCohort = cc.create_cohort(fpath_phenopackets, tx_identifier, protein_identifier)
 
 # TODO - implement the rest below
 

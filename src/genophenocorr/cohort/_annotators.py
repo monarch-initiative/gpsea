@@ -15,7 +15,7 @@ class PhenopacketCohortCreator(CohortCreator):
         self._patient_creator = hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator,
                                                              'patient_creator')
 
-    def create_cohort(self, phenopacket_directory: str) -> Cohort:
+    def create_cohort(self, phenopacket_directory: str, tx_id:str, prot_id:str) -> Cohort:
         if not os.path.isdir(phenopacket_directory):
             raise ValueError("Could not find directory of Phenopackets.")
         patients = []
@@ -23,7 +23,7 @@ class PhenopacketCohortCreator(CohortCreator):
             if patient_file.endswith('.json'):
                 phenopacket_path = os.path.join(phenopacket_directory, patient_file)
                 pp = self._load_phenopacket(phenopacket_path)
-                patient = self._patient_creator.create_patient(pp)
+                patient = self._patient_creator.create_patient(pp, tx_id, prot_id)
                 patients.append(patient)
         if len(patients) == 0:
             raise ValueError(f"No JSON Phenopackets were found in {phenopacket_directory}")

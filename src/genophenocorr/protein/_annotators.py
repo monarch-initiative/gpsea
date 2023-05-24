@@ -4,6 +4,7 @@ import os
 import pickle
 import typing
 import requests
+import hpotk
 
 from ._protein_data import FeatureInfo, ProteinMetadata, SimpleProteinFeature, FeatureType
 
@@ -56,48 +57,46 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                 self._logger.warning(f"No features for {protein_id}")
             protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
 
-        # TODO: DD would like to discuss an example when there are >1 items in this list.
+        # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list
 
 class ProteinAnnotationCache:
 
-    def get_annotations(self, protein_id: str, directory) -> typing.Optional[typing.Sequence[ProteinMetadata]]:
-        if os.path.exists(f'{directory}/{protein_id}.pickle'):
-            with open(f'{directory}/{protein_id}.pickle', 'rb') as f:
-                protein = pickle.load(f)
+    def __init__(self, datadir:str) -> None:
+        if not os.path.isdir(datadir):
+            raise ValueError(f'datadir {datadir} must be an existing directory')
+        self._datadir = datadir
+
+    def get_annotations(self, protein_id: str) -> typing.Optional[typing.Sequence[ProteinMetadata]]:
+        fpath = self._create_file_name(protein_id)
+        if os.path.isfile(fpath):
+            with open(fpath, 'rb') as fh:
+                return pickle.load(fh)
         else:
-            protein = None
-        return protein
+            return None
 
-    def store_annotations(self, protein_id: str, annotation: typing.Sequence[ProteinMetadata], directory):
-        with open(f'{directory}/{protein_id}.pickle', 'wb') as f:
+    def store_annotations(self, protein_id: str, annotation: typing.Sequence[ProteinMetadata]):
+        fpath = self._create_file_name(protein_id)
+        with open(fpath, 'wb') as f:
             pickle.dump(annotation, f)
-        return None
 
+    def _create_file_name(self, prot_id: str) -> str:
+        fname = f'{prot_id}.pickle'
+        return os.path.join(self._datadir, fname)
 
-class CachingFunctionalAnnotator(ProteinMetadataService):
+class ProtCachingFunctionalAnnotator(ProteinMetadataService):
 
-    def __init__(self, output_directory: str, cache: ProteinAnnotationCache, fallback: ProteinMetadataService):
-        if not os.path.exists(output_directory):
-            raise ValueError(f"Invalid path: {output_directory}")
-        directory = os.path.join(output_directory, 'annotations')
-        os.makedirs(directory, exist_ok=True)
-        self._output = directory
-        if not isinstance(cache, ProteinAnnotationCache):
-            raise ValueError(f"cache must be type VariantAnnotationCache but was type {type(cache)}")
-        self._cache = cache
-        if not isinstance(fallback, ProteinMetadataService):
-            raise ValueError(f"fallback must be type FunctionalAnnotator but was type {type(fallback)}")
-        self._fallback = fallback
+    def __init__(self, cache: ProteinAnnotationCache, fallback: ProteinMetadataService):
+        self._cache = hpotk.util.validate_instance(cache, ProteinAnnotationCache, 'cache')
+        self._fallback = hpotk.util.validate_instance(fallback, ProteinMetadataService, 'fallback')
 
-    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
-        if not isinstance(protein_id, str):
-            raise ValueError(f"protein_id must be type VariantCoordinates but was type {type(protein_id)}")
-        annotations = self._cache.get_annotations(protein_id, self._output)
+    def annotate(self, protein_id: str) -> ProteinMetadata:
+        hpotk.util.validate_instance(protein_id, str, 'variant_coordinates')
+        annotations = self._cache.get_annotations(protein_id)
         if annotations is not None:
             # we had cached annotations
             return annotations
         else:
             ann = self._fallback.annotate(protein_id)
-            self._cache.store_annotations(protein_id, ann, self._output)
+            self._cache.store_annotations(protein_id, ann)
             return ann
