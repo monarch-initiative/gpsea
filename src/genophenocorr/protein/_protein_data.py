@@ -46,6 +46,9 @@ class FeatureInfo:
             and self.start == other.start \
             and self.end == other.end
 
+    def __hash__(self):
+        return hash((self._name, self._start, self._end))
+
     def __str__(self) -> str:
         return f"FeatureInfo(name={self.name}, start={self.start}, end={self.end})"
     
@@ -159,8 +162,7 @@ class ProteinMetadata:
             and self.protein_id == other.protein_id
     
     def __hash__(self) -> int:
-        # TODO - With self.protein_features, I get an error "Unhashable type - List"
-        return hash((self.protein_id, self.label)) # self.protein_features))
+        return hash((self._id, self._label, self._features))
 
     def __repr__(self) -> str:
         return str(self)

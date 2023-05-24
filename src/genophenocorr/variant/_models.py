@@ -20,4 +20,5 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def annotate(self, variant_coordinates: VariantCoordinates, tx_id:str) -> Variant:
+        # TODO - revert, remove `tx_id`
         pass

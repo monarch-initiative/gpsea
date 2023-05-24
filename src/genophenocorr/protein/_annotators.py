@@ -91,6 +91,7 @@ class ProtCachingFunctionalAnnotator(ProteinMetadataService):
         self._fallback = hpotk.util.validate_instance(fallback, ProteinMetadataService, 'fallback')
 
     def annotate(self, protein_id: str) -> ProteinMetadata:
+        # TODO - the signature mismatch!
         hpotk.util.validate_instance(protein_id, str, 'variant_coordinates')
         annotations = self._cache.get_annotations(protein_id)
         if annotations is not None:
@@ -99,4 +100,5 @@ class ProtCachingFunctionalAnnotator(ProteinMetadataService):
         else:
             ann = self._fallback.annotate(protein_id)
             self._cache.store_annotations(protein_id, ann)
+
             return ann

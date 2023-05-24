@@ -18,6 +18,7 @@ from genophenocorr.cohort import PhenopacketCohortCreator
 fpath_hpo = 'path/to/hp.json'
 cache_datadir = '/path/to/cache/dir'
 fpath_phenopackets = '/path/to/folder/with/phenopackets'
+genes_in_focus = {'SURF1', 'FBN1'}
 tx_identifier = 'NM_003172.4'  # The ID of the transcript to use for the analysis (e.g. `NM_003172.4` for *SURF1*)
 protein_identifier = 'Q15526'  # The ID of the protein to restrict the analysis into (e.g. `Q15526` for *SURF1*)
 
@@ -33,12 +34,14 @@ validators = [
 phenotype_creator = PhenotypeCreator(hpo, hpotk.validate.ValidationRunner(validators))
 
 # Functional annotator
+# TODO - it may be a good idea to create a `cache_datadir/variant` subfolder for the variants data
 vac = VariantAnnotationCache(cache_datadir)
 vep = VepFunctionalAnnotator()
 vfa = VarCachingFunctionalAnnotator(vac, vep)
 
 # Protein metadata
 pm = UniprotProteinMetadataService()
+# TODO - it may be a good idea to create a `cache_datadir/protein` subfolder for the proteins data
 pac = ProteinAnnotationCache(cache_datadir)
 pfa = ProtCachingFunctionalAnnotator(pac, pm)
 
@@ -51,7 +54,10 @@ cc = PhenopacketCohortCreator(pc)
 
 ##patients = [pc.create_patient(pp) for pp in phenopackets]
 
-# Daniel - Is below okay? Or should we remove cohort all together and have is like you do above? 
+# Daniel - Is below okay? Or should we remove cohort all together and have is like you do above?
+# In principle yes, we can work with a cohort or a sequence of Patients.
+# I would not, however, restrict the annotation to a particular tx and protein IDs, I favor getting all available data.
+# I also outlined this in other parts of the code.
 patientCohort = cc.create_cohort(fpath_phenopackets, tx_identifier, protein_identifier)
 
 # TODO - implement the rest below

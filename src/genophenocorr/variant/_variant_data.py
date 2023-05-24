@@ -218,6 +218,7 @@ class Variant:
                  current_tx: str,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
                  genotype: typing.Optional[str]):
+        # TODO - revert
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
@@ -283,6 +284,7 @@ class Variant:
     def __hash__(self) -> int:
         # TODO - this seems a bit odd. Investigate.
         # TODO - With self.tx_annotations, I get an error "Unhashable type - List"
+        #  We need to use tuples to store transcript annotations.
         return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype)) # self.tx_annotations))
 
     def __repr__(self) -> str:

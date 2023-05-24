@@ -34,17 +34,22 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._protein_creator = hpotk.util.validate_instance(protein_func_ann, ProteinMetadataService, 'protein_func_ann')
 
     def create_patient(self, item: Phenopacket, tx_id:str, prot_id:str) -> Patient:
+        # TODO - revert to the original signature.
+        #  `tx_id` and `prot_id` are not part of the annotation (1st workflow step)
         if tx_id is None or tx_id == "":
             raise ValueError(f"We expected a transcript id but got nothing.")
         if prot_id is None or prot_id == '':
             raise ValueError(f"We expected a protein id but got nothing.")
         phenotypes = self._add_phenotypes(item)
         variants = self._add_variants(item, tx_id)
-        ## Should proteins even be added here since we will only have one protein for all patients? 
+        ## Should proteins even be added here since we will only have one protein for all patients?
+        ## Yes, the idea of the 1st step is to gather and cache all data.
+        # It can be convenient to be able to quickly redo analysis for a different isoform.
         protein_data = self._add_protein_data(prot_id)
         return Patient(item.id, phenotypes, variants, protein_data)
 
     def _add_variants(self, pp: Phenopacket, tx_id:str) -> typing.List[Variant]:
+        # TODO - revert
         variants_list = []
         for i, interp in enumerate(pp.interpretations):
             if hasattr(interp, 'diagnosis') and interp.diagnosis is not None:
@@ -67,5 +72,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return []  # a little shortcut. The line below would return an empty list anyway.
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
-    def _add_protein_data(self, prot_id) -> ProteinMetadata:
+    def _add_protein_data(self, prot_id: str) -> ProteinMetadata:
+        # TODO - I would revert this as well.
+        # TODO - figure out the signature
         return self._protein_creator.annotate(prot_id)

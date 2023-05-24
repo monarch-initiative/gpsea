@@ -16,6 +16,8 @@ class PhenopacketCohortCreator(CohortCreator):
                                                              'patient_creator')
 
     def create_cohort(self, phenopacket_directory: str, tx_id:str, prot_id:str) -> Cohort:
+        # TODO - revert to the original signature.
+        #  `tx_id` and `prot_id` are not part of the annotation (1st workflow step)
         if not os.path.isdir(phenopacket_directory):
             raise ValueError("Could not find directory of Phenopackets.")
         patients = []

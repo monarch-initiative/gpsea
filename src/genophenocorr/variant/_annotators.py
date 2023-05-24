@@ -99,9 +99,12 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
 
     def annotate(self, variant_coordinates: VariantCoordinates, tx_id: str) -> Variant:
+        # TODO - revert, remove `tx_id`
+        #  I don't think limiting ourselves to one `tx_id` here is a good idea.
         variant = self._query_vep(variant_coordinates, tx_id)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
+
         chosen_tx = None
         for trans in variant.get('transcript_consequences'):
             if trans.get('transcript_id') == tx_id:
@@ -135,7 +138,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                             protein_id,
                             protein_effect_start,
                             protein_effect_end)
-        # Should we have transcripts as a single object rather than a list? 
+        # Should we have transcripts as a single object rather than a list?
+        # We need to have a tuple of transcripts here.
         return Variant(variant_id, variant_class, variant_coordinates, chosen_tx, [final_trans],
                        variant_coordinates.genotype)
 
@@ -156,7 +160,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
 
 
-## TODO: Do you think that we could combine the Protein and Variant Caching? 
+## TODO: Do you think that we could combine the Protein and Variant Caching?
+## No, I think we should recommend keeping them separate but in the end it should not matter.
 class VariantAnnotationCache:
 
     def __init__(self, datadir: str):
@@ -189,12 +194,14 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
         self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
     def annotate(self, variant_coordinates: VariantCoordinates, tx_id: str) -> Variant:
+        # TODO - revert, remove `tx_id`
         hpotk.util.validate_instance(variant_coordinates, VariantCoordinates, 'variant_coordinates')
         annotations = self._cache.get_annotations(variant_coordinates)
         if annotations is not None:
             # we had cached annotations
             return annotations
         else:
+            # TODO - revert, remove `tx_id`
             ann = self._fallback.annotate(variant_coordinates, tx_id)
             self._cache.store_annotations(variant_coordinates, ann)
             return ann
