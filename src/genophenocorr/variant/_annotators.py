@@ -19,7 +19,6 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         self._logger = logging.getLogger(__name__)
 
     def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
-        # TODO(ielis&lnrekerle) - we need to write tests for this logic
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
         chrom, ref, alt, genotype = None, None, None, None
@@ -97,16 +96,19 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     def __init__(self):
         self._logging = logging.getLogger(__name__)
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
-                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
+                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
 
     def annotate(self, variant_coordinates: VariantCoordinates, tx_id: str) -> Variant:
-        variant = self._query_vep(variant_coordinates)
+        variant = self._query_vep(variant_coordinates, tx_id)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
         chosen_tx = None
         for trans in variant.get('transcript_consequences'):
             if trans.get('transcript_id') == tx_id:
-                chosen_tx = trans 
+                chosen_tx = trans
+        if chosen_tx is None:
+            self._logging.warning(f"Transcript:{tx_id} not found for Variant:{variant_coordinates.as_string()}")
+            return Variant(variant_id, variant_class, variant_coordinates, chosen_tx, None, variant_coordinates.genotype)
         hgvsc_id = chosen_tx.get('hgvsc')
         consequences = chosen_tx.get('consequence_terms')
         gene_name = chosen_tx.get('gene_symbol')
@@ -153,6 +155,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         return results[0]
 
 
+
+## TODO: Do you think that we could combine the Protein and Variant Caching? 
 class VariantAnnotationCache:
 
     def __init__(self, datadir: str):

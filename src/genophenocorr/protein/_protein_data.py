@@ -159,14 +159,10 @@ class ProteinMetadata:
             and self.protein_id == other.protein_id
     
     def __hash__(self) -> int:
-        return hash((self.protein_id, self.label, self.protein_features))
+        # TODO - With self.protein_features, I get an error "Unhashable type - List"
+        return hash((self.protein_id, self.label)) # self.protein_features))
 
     def __repr__(self) -> str:
         return str(self)
-
-
-
-
-# TODO - caching protein annotations?
 
             

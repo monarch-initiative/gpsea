@@ -40,6 +40,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             raise ValueError(f"We expected a protein id but got nothing.")
         phenotypes = self._add_phenotypes(item)
         variants = self._add_variants(item, tx_id)
+        ## Should proteins even be added here since we will only have one protein for all patients? 
         protein_data = self._add_protein_data(prot_id)
         return Patient(item.id, phenotypes, variants, protein_data)
 
