@@ -98,7 +98,8 @@ def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator)
 
 @pytest.fixture
 def oldfile_cache_annotator(variant_annotator):
-    vac = VariantAnnotationCache('test_data/annotations')
+    data = resource_filename(__name__, 'test_data/annotations')
+    vac = VariantAnnotationCache(data)
     return VarCachingFunctionalAnnotator(vac, variant_annotator)
 
 def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_annotator):
