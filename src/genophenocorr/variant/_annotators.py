@@ -101,7 +101,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         variant = self._query_vep(variant_coordinates)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
-        # TODO - which one is the MANE transcript?
         canon_tx = None
         transcript_list = []
         for trans in variant.get('transcript_consequences'):
