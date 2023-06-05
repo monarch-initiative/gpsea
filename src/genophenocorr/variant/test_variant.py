@@ -1,11 +1,10 @@
 
-
 import pytest
 from google.protobuf.json_format import Parse
 # pyright: reportGeneralTypeIssues=false
 from phenopackets import Phenopacket, GenomicInterpretation
 
-from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder
+from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder, VepFunctionalAnnotator, VariantAnnotationCache, VarCachingFunctionalAnnotator
 
 from pkg_resources import resource_filename
 
@@ -78,3 +77,35 @@ def test_find_coordinates(pp_path, expected, pp_vc_finder):
 def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
     with open(fpath) as fh:
         return Parse(fh.read(), GenomicInterpretation())
+
+@pytest.fixture
+def variant_annotator():
+    return VepFunctionalAnnotator()
+
+@pytest.fixture
+def caching_annotator(variant_annotator, tmp_path):
+    vac = VariantAnnotationCache(tmp_path)
+    return VarCachingFunctionalAnnotator(vac, variant_annotator)
+
+def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator):
+    fname = resource_filename(__name__, 'test_data/missense_test.json')
+    gi = read_genomic_interpretation_json(fname)
+    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_anno_results = variant_annotator.annotate(var_coords)
+    cache_anno_results = caching_annotator.annotate(var_coords)
+    assert var_anno_results == cache_anno_results
+    assert cache_anno_results == caching_annotator.annotate(var_coords)
+
+@pytest.fixture
+def oldfile_cache_annotator(variant_annotator):
+    vac = VariantAnnotationCache('test_data/annotations')
+    return VarCachingFunctionalAnnotator(vac, variant_annotator)
+
+def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_annotator):
+    fname = resource_filename(__name__, 'test_data/missense_test.json')
+    gi = read_genomic_interpretation_json(fname)
+    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_anno_results = variant_annotator.annotate(var_coords)
+    cached_file_results = oldfile_cache_annotator.annotate(var_coords)
+    assert var_anno_results == cached_file_results
+

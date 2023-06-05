@@ -52,6 +52,9 @@ class FeatureInfo:
     def __repr__(self) -> str:
         return str(self)
 
+    def __hash__(self) -> int:
+        return hash((self.name, self.start, self.end))
+
 
 class FeatureType(enum.Enum):
     """
@@ -61,6 +64,7 @@ class FeatureType(enum.Enum):
     MOTIF = enum.auto()
     DOMAIN = enum.auto()
     REGION = enum.auto()
+
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
@@ -121,7 +125,7 @@ class ProteinMetadata:
         self._label = label
         if not all(isinstance(x, ProteinFeature) for x in protein_features):
             raise ValueError(f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
-        self._features = protein_features
+        self._features = tuple(protein_features)
 
     @property
     def protein_id(self) -> str:
@@ -136,16 +140,16 @@ class ProteinMetadata:
         return self._features
 
     def domains(self) -> typing.Sequence[ProteinFeature]:
-        return list(filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features))
+        return tuple(filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features))
 
     def repeats(self) -> typing.Sequence[ProteinFeature]:
-        return list(filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features))
+        return tuple(filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features))
 
     def regions(self) -> typing.Sequence[ProteinFeature]:
-        return list(filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features))
+        return tuple(filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features))
 
     def motifs(self) -> typing.Sequence[ProteinFeature]:
-        return list(filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features))
+        return tuple(filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features))
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
@@ -160,7 +164,7 @@ class ProteinMetadata:
     
     def __hash__(self) -> int:
         # TODO - With self.protein_features, I get an error "Unhashable type - List"
-        return hash((self.protein_id, self.label)) # self.protein_features))
+        return hash((self.protein_id, self.label, tuple(self.protein_features)))
 
     def __repr__(self) -> str:
         return str(self)

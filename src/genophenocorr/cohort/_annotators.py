@@ -15,7 +15,7 @@ class PhenopacketCohortCreator(CohortCreator):
         self._patient_creator = hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator,
                                                              'patient_creator')
 
-    def create_cohort(self, phenopacket_directory: str, tx_id:str, prot_id:str) -> Cohort:
+    def create_cohort(self, phenopacket_directory: str) -> Cohort:
         if not os.path.isdir(phenopacket_directory):
             raise ValueError("Could not find directory of Phenopackets.")
         patients = []
@@ -23,16 +23,25 @@ class PhenopacketCohortCreator(CohortCreator):
             if patient_file.endswith('.json'):
                 phenopacket_path = os.path.join(phenopacket_directory, patient_file)
                 pp = self._load_phenopacket(phenopacket_path)
-                patient = self._patient_creator.create_patient(pp, tx_id, prot_id)
+                patient = self._patient_creator.create_patient(pp)
                 patients.append(patient)
         if len(patients) == 0:
             raise ValueError(f"No JSON Phenopackets were found in {phenopacket_directory}")
 
-        cohort_variants, cohort_phenotypes, cohort_proteins, cohort_disease = set(), set(), set(), set()
+        cohort_variants, cohort_phenotypes, cohort_proteins = {},{},{}
         for patient in patients:
-            cohort_variants.update(patient.variants)
-            cohort_phenotypes.update(patient.phenotypes)
-            cohort_proteins.update(patient.proteins)
+            for var in patient.variants:
+                if var not in cohort_variants.keys():
+                    cohort_variants[var] = 0
+                cohort_variants[var] += 1
+            for pheno in patient.phenotypes:
+                if pheno not in cohort_phenotypes.keys():
+                    cohort_phenotypes[pheno] = 0
+                cohort_phenotypes[pheno] += 1
+            for prot in patient.proteins:
+                if prot not in cohort_proteins.keys():
+                    cohort_proteins[prot] = 0
+                cohort_proteins[prot] += 1
 
         return Cohort(patients, cohort_phenotypes, cohort_variants, cohort_proteins)
 
