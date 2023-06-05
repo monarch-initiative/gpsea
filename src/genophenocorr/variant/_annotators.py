@@ -19,7 +19,6 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         self._logger = logging.getLogger(__name__)
 
     def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
-        # TODO(ielis&lnrekerle) - we need to write tests for this logic
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
         chrom, ref, alt, genotype = None, None, None, None
