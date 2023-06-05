@@ -68,7 +68,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         prot_ids = set()
         for var in variants:
             if var.tx_annotations is None:
-                return set()
+                return tuple()
             for trans in var.tx_annotations:
                 prot_ids.update([trans.protein_affected])
         final_prots = set()
