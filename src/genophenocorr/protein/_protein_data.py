@@ -142,14 +142,14 @@ class ProteinMetadata:
     def domains(self) -> typing.Iterable[ProteinFeature]:
         return filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features)
 
-    def repeats(self) -> typing.Sequence[ProteinFeature]:
-        return tuple(filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features))
+    def repeats(self) -> typing.Iterable[ProteinFeature]:
+        return filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features)
 
-    def regions(self) -> typing.Sequence[ProteinFeature]:
-        return tuple(filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features))
+    def regions(self) -> typing.Iterable[ProteinFeature]:
+        return filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features)
 
-    def motifs(self) -> typing.Sequence[ProteinFeature]:
-        return tuple(filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features))
+    def motifs(self) -> typing.Iterable[ProteinFeature]:
+        return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
