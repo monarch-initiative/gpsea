@@ -55,9 +55,6 @@ class FeatureInfo:
     def __repr__(self) -> str:
         return str(self)
 
-    def __hash__(self) -> int:
-        return hash((self.name, self.start, self.end))
-
 
 class FeatureType(enum.Enum):
     """
@@ -142,8 +139,8 @@ class ProteinMetadata:
     def protein_features(self) -> typing.Sequence[ProteinFeature]:
         return self._features
 
-    def domains(self) -> typing.Sequence[ProteinFeature]:
-        return tuple(filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features))
+    def domains(self) -> typing.Iterable[ProteinFeature]:
+        return filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features)
 
     def repeats(self) -> typing.Sequence[ProteinFeature]:
         return tuple(filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features))
@@ -166,7 +163,7 @@ class ProteinMetadata:
             and self.protein_id == other.protein_id
     
     def __hash__(self) -> int:
-        return hash((self.protein_id, self.label, tuple(self.protein_features)))
+        return hash((self.protein_id, self.label, self._features))
 
 
     def __repr__(self) -> str:

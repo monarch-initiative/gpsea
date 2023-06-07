@@ -55,10 +55,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                     all_features_list.append(feat)
             except KeyError:
                 self._logger.warning(f"No features for {protein_id}")
-            protein_list.append(ProteinMetadata(protein_id, protein_name, tuple(all_features_list)))
+            protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
 
         # TODO - DD would like to discuss an example when there are >1 items in this list.
-        return tuple(protein_list)
+        return protein_list
 
 class ProteinAnnotationCache:
 

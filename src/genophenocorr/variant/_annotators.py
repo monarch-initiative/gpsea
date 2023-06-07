@@ -83,6 +83,7 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
         if len(vc.ref) == 1 and len(vc.alt) != 1:
             # INS/DUP
             start = start + 1  # we must "trim"
+            end = end - 1
             alt = vc.alt[1:]
             # 100 AC AGT
             # MNV

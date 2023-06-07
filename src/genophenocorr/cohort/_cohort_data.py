@@ -1,5 +1,4 @@
-import tabulate
-
+from collections import Counter
 class Cohort:
     """
     This class creates a collection of patients and makes it easier to determine overlapping diseases, 
@@ -8,11 +7,12 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, patient_set, phenotype_dict, variant_dict, protein_dict, recessive = False):
+    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False):
         self._patient_set = patient_set
-        self._phenotype_dict = phenotype_dict
-        self._protein_dict = protein_dict
-        self._variant_dict = variant_dict
+        self._phenotype_set = phenotype_set
+        self._protein_set = protein_set
+        self._variant_set = variant_set
+        self._all_counts_dict = counts_dict
         self._recessive = recessive
 
     @property
@@ -21,31 +21,54 @@ class Cohort:
 
     @property
     def all_phenotypes(self):
-        return self._phenotype_dict.keys()
+        return self._phenotype_set
 
     @property
     def all_variants(self):
-        return self._variant_dict.keys()
-
-    @property
-    def total_patient_count(self):
-        return len(self.all_patients)
+        return self._variant_set
 
     @property
     def all_proteins(self):
-        return self._protein_dict.keys()
+        return self._protein_set
+
+    @property
+    def all_transcripts(self):
+        all_trans = set()
+        for var in self.all_variants:
+            all_trans.update([trans.transcript_id for trans in var.tx_annotations])
+        return all_trans
+
+    @property
+    def total_patient_count(self):
+        return self._all_counts_dict.get('patients')
 
     def list_all_patients(self):
         return [pat.patient_id for pat in self.all_patients]
 
-    def list_all_phenotypes(self):
-        headers = ["HPO ID", "Total Patients"]
-        print(tabulate.tabulate(sorted([(k.identifier.value, v) for k, v in self._phenotype_dict.items() if k.observed == True], key=lambda row: row[1], reverse=True), headers = headers))
+    def list_all_phenotypes(self, top = None):
+        return self._all_counts_dict.get('phenotypes').most_common(top)
 
-    def list_all_variants(self):
-        headers = ["Variant", "Total Patients"]
-        print(tabulate.tabulate(sorted([(k.variant_string, v) for k, v in self._variant_dict.items()], key=lambda row: row[1], reverse=True), headers = headers))
+    def list_all_variants(self, top = None):
+        return self._all_counts_dict.get('variants').most_common(top)
 
-    def list_all_proteins(self):
-        headers = ["Protein ID", "Total Patients"]
-        print(tabulate.tabulate(sorted([(k.protein_id, v) for k, v in self._protein_dict.items()], key=lambda row: row[1], reverse=True), headers = headers))
+    def list_all_proteins(self, top = None):
+        return self._all_counts_dict.get('proteins').most_common(top)
+
+    def list_vartypes_by_tx(self, transcript = None):
+        if transcript is not None:
+            var_type_dict = {transcript:Counter()}
+        else:
+            var_type_dict = dict(zip(self.all_transcripts, [Counter() for x in range(0, len(self.all_transcripts))]))
+        for var in self.all_variants:
+            for trans in var.tx_annotations:
+                if trans.transcript_id in var_type_dict:
+                    var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
+        too_small = []
+        for k, v in var_type_dict.items():
+            if len(v) <= 2:
+                too_small.append(k)
+        for k in too_small:
+            del var_type_dict[k]
+        return var_type_dict
+
+    

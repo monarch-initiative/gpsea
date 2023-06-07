@@ -132,7 +132,7 @@ class TranscriptAnnotation:
         else:
             self._affected_exons = None
         self._affected_protein = affected_protein
-        self._protein_effect_location = tuple([protein_effect_start, protein_effect_end])
+        self._protein_effect_location = (protein_effect_start, protein_effect_end)
 
     @property
     def gene_id(self) -> str:
@@ -178,7 +178,7 @@ class TranscriptAnnotation:
         return self._affected_protein
 
     @property
-    def protein_effect_location(self):
+    def protein_effect_location(self) -> typing.Tuple[int, int]:
         """
         Get the start and end position on the protein sequence that the variant effects. (e.g. [1234, 1235])
         """
@@ -226,7 +226,10 @@ class Variant:
         self._var_coordinates = var_coordinates
         self._var_class = var_class
         self._current_tx = current_tx
-        self._tx_annotations = tx_annotations
+        if tx_annotations is not None:
+            self._tx_annotations = tuple(tx_annotations)
+        else:
+            self._tx_annotations = None
         self._genotype = genotype
 
     @property
@@ -285,7 +288,7 @@ class Variant:
             #and self.tx_annotations == other.tx_annotations
 
     def __hash__(self) -> int:
-        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, tuple(self.tx_annotations)))
+        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
 
     def __repr__(self) -> str:
         return str(self)

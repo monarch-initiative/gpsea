@@ -13,7 +13,7 @@ class Patient:
         self._id = patient_id
         self._phenotypes = phenotypes
         self._variants = variants
-        self._proteins = tuple(proteins)
+        self._proteins = proteins
 
     @property
     def patient_id(self) -> str:

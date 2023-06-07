@@ -4,8 +4,8 @@ import typing
 
 class Phenotype(hpotk.model.Identified):
 
-    def __init__(self, term: hpotk.model.Term, observed: typing.Optional[bool]) -> None:
-        if not isinstance(term, hpotk.model.Term):
+    def __init__(self, term: hpotk.model.MinimalTerm, observed: typing.Optional[bool]) -> None:
+        if not isinstance(term, hpotk.model.MinimalTerm):
             raise ValueError(f"term must be type 'Term' not type {type(term)}")
         self._term = term
         if observed is not None:
