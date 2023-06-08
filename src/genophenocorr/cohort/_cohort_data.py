@@ -58,7 +58,7 @@ class Cohort:
         if transcript is not None:
             var_type_dict = {transcript:Counter()}
         else:
-            var_type_dict = dict(zip(self.all_transcripts, [Counter() for x in range(0, len(self.all_transcripts))]))
+            var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
         for var in self.all_variants:
             for trans in var.tx_annotations:
                 if trans.transcript_id in var_type_dict:
