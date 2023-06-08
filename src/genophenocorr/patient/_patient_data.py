@@ -11,6 +11,8 @@ class Patient:
                  variants: typing.Sequence[Variant],
                  proteins: typing.Sequence[ProteinMetadata]):
         self._id = patient_id
+        # TODO(lnrekerle) - We should wrap the sequences below in a tuple, otherwise the `__hash__` will explode if the
+        #  caller provides a list.
         self._phenotypes = phenotypes
         self._variants = variants
         self._proteins = proteins

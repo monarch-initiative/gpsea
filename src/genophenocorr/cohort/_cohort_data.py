@@ -1,5 +1,6 @@
 from collections import Counter
 class Cohort:
+    # TODO(lnrekerle) - update the class doc string.
     """
     This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
@@ -64,6 +65,11 @@ class Cohort:
                 if trans.transcript_id in var_type_dict:
                     var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
         too_small = []
+        # TODO(lnrekerle) - please add more descriptive variable names.
+        #  While using `k`, `v` is OK for the computer, names like these make it harder for the others including
+        #  the future yourself to understand the code.
+        #  In this case, I would do the line below:
+        # for tx_id, var_effect_counter in var_type_dict.items():
         for k, v in var_type_dict.items():
             if len(v) <= 2:
                 too_small.append(k)
