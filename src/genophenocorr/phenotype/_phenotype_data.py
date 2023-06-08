@@ -4,7 +4,7 @@ import typing
 
 class Phenotype(hpotk.model.Identified):
 
-    def __init__(self, term_id: typing.Optional[hpotk.model.Identified, hpotk.model.TermId],
+    def __init__(self, term_id: typing.Union[hpotk.model.Identified, hpotk.model.TermId],
                  observed: typing.Optional[bool]) -> None:
         if isinstance(term_id, hpotk.model.Identified):
             # Covers Term, MinimalTerm, well, anything that has a `TermId`.
