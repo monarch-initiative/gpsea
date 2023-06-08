@@ -180,7 +180,7 @@ class TranscriptAnnotation:
     @property
     def protein_effect_location(self) -> typing.Tuple[int, int]:
         """
-        Get the start and end position on the protein sequence that the variant effects. (e.g. [1234, 1235])
+        Get the start and end position on the protein sequence that the variant effects. (e.g. (1234, 1235))
         """
         return self._protein_effect_location
 
