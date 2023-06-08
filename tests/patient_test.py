@@ -23,7 +23,7 @@ def outputVars():
     ])
 
 def test_patient(patient, num, outputVars):
-    patTest = Patient(patient, 'hg37',,
+    patTest = Patient(patient, 'hg37')
     assert isinstance(patTest, Patient)
     assert patTest.id == outputVars.at[num, 'id']
     assert patTest.variant.variant_string == outputVars.at[num, 'variant']

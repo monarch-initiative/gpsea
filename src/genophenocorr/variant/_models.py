@@ -19,6 +19,5 @@ class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
 class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def annotate(self, variant_coordinates: VariantCoordinates, tx_id:str) -> Variant:
-        # TODO - revert, remove `tx_id`
+    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
         pass

@@ -1,18 +1,6 @@
-# TODO(lnrekerle) - the imports below should probably be removed. Please do that if you think it's OK.
-# from collections import defaultdict
-# from ..patient._patient_data import Patient
-# from ..disease import Disease
-# from ..phenotype._phenotype_data import Phenotype
-# from ..variant import Variant
-# import glob
-# import pandas as pd
-# import re
-# from scipy import stats
-# from statsmodels.sandbox.stats.multicomp import multipletests
-# import numpy as np
-# import pandas as pd
-
+from collections import Counter
 class Cohort:
+    # TODO(lnrekerle) - update the class doc string.
     """
     This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
@@ -20,11 +8,12 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, recessive = False):
+    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False):
         self._patient_set = patient_set
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
         self._variant_set = variant_set
+        self._all_counts_dict = counts_dict
         self._recessive = recessive
 
     @property
@@ -40,113 +29,52 @@ class Cohort:
         return self._variant_set
 
     @property
-    def total_patient_count(self):
-        return len(self.all_patients)
-
-    @property
     def all_proteins(self):
         return self._protein_set
+
+    @property
+    def all_transcripts(self):
+        all_trans = set()
+        for var in self.all_variants:
+            all_trans.update([trans.transcript_id for trans in var.tx_annotations])
+        return all_trans
+
+    @property
+    def total_patient_count(self):
+        return self._all_counts_dict.get('patients')
 
     def list_all_patients(self):
         return [pat.patient_id for pat in self.all_patients]
 
-    def list_all_phenotypes(self):
-        return [pheno.identifier for pheno in self.all_phenotypes]
+    def list_all_phenotypes(self, top = None):
+        return self._all_counts_dict.get('phenotypes').most_common(top)
 
-    def list_all_variants(self):
-        return [var.variant_string for var in self.all_variants]
+    def list_all_variants(self, top = None):
+        return self._all_counts_dict.get('variants').most_common(top)
 
-    def list_all_proteins(self):
-        return [(prot.protein_id, prot.label) for prot in self.all_proteins]
+    def list_all_proteins(self, top = None):
+        return self._all_counts_dict.get('proteins').most_common(top)
 
-    #def list_phenotypes_by_percent_patients(self):
+    def list_vartypes_by_tx(self, transcript = None):
+        if transcript is not None:
+            var_type_dict = {transcript:Counter()}
+        else:
+            var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
+        for var in self.all_variants:
+            for trans in var.tx_annotations:
+                if trans.transcript_id in var_type_dict:
+                    var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
+        too_small = []
+        # TODO(lnrekerle) - please add more descriptive variable names.
+        #  While using `k`, `v` is OK for the computer, names like these make it harder for the others including
+        #  the future yourself to understand the code.
+        #  In this case, I would do the line below:
+        # for tx_id, var_effect_counter in var_type_dict.items():
+        for k, v in var_type_dict.items():
+            if len(v) <= 2:
+                too_small.append(k)
+        for k in too_small:
+            del var_type_dict[k]
+        return var_type_dict
 
-
-    # def get_cohort_description_df(self):
-    #     tempDict = {'Patient ID': [], 'Disease': [], 'Gene':[], 'Variant':[], 'Protein':[], 'HPO Terms':[]}
-    #     for pat in self.all_patients_d.values():
-    #         tempDict['Patient ID'].append(pat.id)
-    #         tempDict['Disease'].append(pat.disease_id)
-    #         tempDict['Gene'].append(set(pat.genes))
-    #         tempDict['Variant'].append(set(pat.variant_strings))
-    #         proteins = []
-    #         for prot in self.all_proteins_d.values():
-    #             for var in pat.variant_strings:
-    #                 if var in prot.variants_in_protein:
-    #                     proteins.append(prot.id)
-    #         tempDict['Protein'].append(set(proteins))
-    #         tempDict['HPO Terms'].append(set(pat.phenotype_ids))
-    #     enddf = pd.DataFrame(tempDict)
-    #     return enddf
-
-    # def list_possible_tests(self):
-    #     all_tests = {'variant_types': {},
-    #                 'variants': {},
-    #                 'protein_features': {}}
-    #     for pat in self.all_patients_d.values():
-    #         for var in pat.variants:
-    #             if var.variant_string in all_tests.get('variants').keys():
-    #                 all_tests.get('variants')[var.variant_string] += 1
-    #             else:
-    #                 all_tests.get('variants')[var.variant_string] = 1
-    #             for prot in self.all_proteins_d.values():
-    #                 if var.variant_string in prot.variants_in_protein:
-    #                     var_loc = var.protein_effect_location
-    #                     if var_loc is not None:
-    #                         for feat, vals in prot.features.iterrows():
-    #                             if vals.get('start') is not None and vals.get('end') is not None:
-    #                                 if feat in all_tests.get('protein_features') and vals.get('start') <= var_loc <= vals.get('end'):
-    #                                     all_tests.get('protein_features')[feat] += 1
-    #                                 elif feat not in all_tests.get('protein_features') and vals.get('start') <= var_loc <= vals.get('end'):
-    #                                     all_tests.get('protein_features')[feat] = 1
-    #             for vt in var.variant_types:
-    #                 if vt in all_tests.get('variant_types').keys():
-    #                     all_tests.get('variant_types')[vt] = all_tests.get('variant_types')[vt] + 1
-    #                 else:
-    #                     all_tests.get('variant_types')[vt] = 1
-    #     return all_tests
-
-
-    # @property
-    # def all_var_types(self):
-    #     types = set()
-    #     for var in self.all_variants_d.values():
-    #         for vt in var.variant_types:
-    #             types.add(vt)
-    #     return types
-
-
-    # def split_by_disease(self):
-    #     split_patients = defaultdict(Cohort)
-    #     for dis in self.all_diseases_d.values():
-    #         split_patients[dis.id] = Cohort()
-    #     for pat in self.all_patients_d.values():
-    #         split_patients[pat.disease_id].__add(pat)
-    #     return split_patients
-
-    # def split_by_protein(self):
-    #     split_patients = defaultdict(Cohort)
-    #     for prot in self.all_proteins_d.keys():
-    #         split_patients[prot] = Cohort()
-    #     for pat in self.all_patients_d.values():
-    #         for prot in pat.proteins:
-    #             split_patients[prot.id].__add(pat)
-    #     return split_patients
-
-
-    # def count_vars_per_feature(self, addToFeatures = False):
-    #     result = defaultdict()
-    #     for prot in self.all_proteins_d.values():
-    #         if not prot.features.empty:
-    #             varCounts = pd.Series(0, name='variants', index=prot.features.index)
-    #             for key, row in prot.features.iterrows():
-    #                 for var in self.all_variants_d.values():
-    #                     loc = var.protein_effect_location
-    #                     if loc is not None and row.at['start'] is not None and row.at['end'] is not None:
-    #                         if row.at['start'] <= loc <= row.at['end']:
-    #                             varCounts.at[key] += 1
-    #             if addToFeatures:        
-    #                 prot.add_vars_to_features(varCounts)
-    #             result[prot.id] = pd.concat([prot.features, varCounts], axis= 1)
-    #     finalDF = pd.concat(list(result.values()), keys = list(result.keys()),names=['Protein', 'Feature ID'])
-    #     return finalDF
+    

@@ -96,51 +96,49 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     def __init__(self):
         self._logging = logging.getLogger(__name__)
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
-                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1&transcript_id=%s'
+                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
-    def annotate(self, variant_coordinates: VariantCoordinates, tx_id: str) -> Variant:
-        # TODO - revert, remove `tx_id`
-        #  I don't think limiting ourselves to one `tx_id` here is a good idea.
-        variant = self._query_vep(variant_coordinates, tx_id)
+    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
+        variant = self._query_vep(variant_coordinates)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
-
-        chosen_tx = None
+        canon_tx = None
+        transcript_list = []
         for trans in variant.get('transcript_consequences'):
-            if trans.get('transcript_id') == tx_id:
-                chosen_tx = trans
-        if chosen_tx is None:
-            self._logging.warning(f"Transcript:{tx_id} not found for Variant:{variant_coordinates.as_string()}")
-            return Variant(variant_id, variant_class, variant_coordinates, chosen_tx, None, variant_coordinates.genotype)
-        hgvsc_id = chosen_tx.get('hgvsc')
-        consequences = chosen_tx.get('consequence_terms')
-        gene_name = chosen_tx.get('gene_symbol')
-        protein_id = chosen_tx.get('protein_id')
-        protein_effect_start = chosen_tx.get('protein_start')
-        protein_effect_end = chosen_tx.get('protein_end')
-        if protein_effect_start is None and protein_effect_end is not None:
-            protein_effect_start = 1
-        if protein_effect_end is not None:
-            protein_effect_end = int(protein_effect_end)
-        if protein_effect_start is not None:
-            protein_effect_start = int(protein_effect_start)
-        exons_effected = trans.get('exon')
-        if exons_effected is not None:
-            exons_effected = exons_effected.split('/')[0].split('-')
-            if len(exons_effected) == 2:
-                exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
-            exons_effected = [int(x) for x in exons_effected]
-        final_trans = TranscriptAnnotation(gene_name,
-                            chosen_tx,
-                            hgvsc_id,
-                            consequences,
-                            exons_effected,
-                            protein_id,
-                            protein_effect_start,
-                            protein_effect_end)
-        # Should we have transcripts as a single object rather than a list?
-        # We need to have a tuple of transcripts here.
-        return Variant(variant_id, variant_class, variant_coordinates, chosen_tx, [final_trans],
+            trans_id = trans.get('transcript_id')
+            if not trans_id.startswith('NM'):
+                continue
+            if trans.get('canonical') == 1:
+                canon_tx = trans_id
+            hgvsc_id = trans.get('hgvsc')
+            consequences = trans.get('consequence_terms')
+            gene_name = trans.get('gene_symbol')
+            protein_id = trans.get('protein_id')
+            protein_effect_start = trans.get('protein_start')
+            protein_effect_end = trans.get('protein_end')
+            if protein_effect_start is None and protein_effect_end is not None:
+                protein_effect_start = 1
+            if protein_effect_end is not None:
+                protein_effect_end = int(protein_effect_end)
+            if protein_effect_start is not None:
+                protein_effect_start = int(protein_effect_start)
+            exons_effected = trans.get('exon')
+            if exons_effected is not None:
+                exons_effected = exons_effected.split('/')[0].split('-')
+                if len(exons_effected) == 2:
+                    exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
+                exons_effected = [int(x) for x in exons_effected]
+            transcript_list.append(
+                TranscriptAnnotation(gene_name,
+                                     trans_id,
+                                     hgvsc_id,
+                                     consequences,
+                                     exons_effected,
+                                     protein_id,
+                                     protein_effect_start,
+                                     protein_effect_end)
+            )
+        return Variant(variant_id, variant_class, variant_coordinates, canon_tx, transcript_list,
                        variant_coordinates.genotype)
 
     def _query_vep(self, variant_coordinates) -> dict:
@@ -159,9 +157,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         return results[0]
 
 
-
-## TODO: Do you think that we could combine the Protein and Variant Caching?
-## No, I think we should recommend keeping them separate but in the end it should not matter.
 class VariantAnnotationCache:
 
     def __init__(self, datadir: str):
@@ -193,15 +188,13 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
         self._cache = hpotk.util.validate_instance(cache, VariantAnnotationCache, 'cache')
         self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
-    def annotate(self, variant_coordinates: VariantCoordinates, tx_id: str) -> Variant:
-        # TODO - revert, remove `tx_id`
+    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
         hpotk.util.validate_instance(variant_coordinates, VariantCoordinates, 'variant_coordinates')
         annotations = self._cache.get_annotations(variant_coordinates)
         if annotations is not None:
             # we had cached annotations
             return annotations
         else:
-            # TODO - revert, remove `tx_id`
-            ann = self._fallback.annotate(variant_coordinates, tx_id)
+            ann = self._fallback.annotate(variant_coordinates)
             self._cache.store_annotations(variant_coordinates, ann)
             return ann

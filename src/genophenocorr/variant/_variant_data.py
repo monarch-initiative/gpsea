@@ -119,17 +119,20 @@ class TranscriptAnnotation:
                  tx_id: str,
                  hgvsc: typing.Optional[str],
                  variant_effects,
-                 affected_exons: typing.Optional[list[int]],
+                 affected_exons: typing.Optional[typing.Sequence[int]],
                  affected_protein: str,
                  protein_effect_start: typing.Optional[int],
                  protein_effect_end: typing.Optional[int]):
         self._gene_id = gene_id
         self._tx_id = tx_id
         self._hgvsc_id = hgvsc
-        self._variant_effects = variant_effects
-        self._affected_exons = affected_exons
+        self._variant_effects = tuple(variant_effects)
+        if affected_exons is not None:
+            self._affected_exons = tuple(affected_exons)
+        else:
+            self._affected_exons = None
         self._affected_protein = affected_protein
-        self._protein_effect_location = [protein_effect_start, protein_effect_end]
+        self._protein_effect_location = (protein_effect_start, protein_effect_end)
 
     @property
     def gene_id(self) -> str:
@@ -175,11 +178,11 @@ class TranscriptAnnotation:
         return self._affected_protein
 
     @property
-    def protein_effect_location(self) -> list[int]:
+    def protein_effect_location(self) -> typing.Tuple[int, int]:
         """
-        Get the start and end position on the protein sequence that the variant effects. (e.g. [1234, 1235])
+        Get the start and end position on the protein sequence that the variant effects. (e.g. (1234, 1235))
         """
-        return self.protein_effect_location
+        return self._protein_effect_location
 
     def __str__(self) -> str:
         return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
@@ -218,12 +221,14 @@ class Variant:
                  current_tx: str,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
                  genotype: typing.Optional[str]):
-        # TODO - revert
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
         self._current_tx = current_tx
-        self._tx_annotations = tx_annotations
+        if tx_annotations is None:
+            self._tx_annotations = None
+        else:
+            self._tx_annotations = tuple(tx_annotations)
         self._genotype = genotype
 
     @property
@@ -282,10 +287,7 @@ class Variant:
             #and self.tx_annotations == other.tx_annotations
 
     def __hash__(self) -> int:
-        # TODO - this seems a bit odd. Investigate.
-        # TODO - With self.tx_annotations, I get an error "Unhashable type - List"
-        #  We need to use tuples to store transcript annotations.
-        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype)) # self.tx_annotations))
+        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
 
     def __repr__(self) -> str:
         return str(self)
