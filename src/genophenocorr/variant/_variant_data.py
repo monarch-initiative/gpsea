@@ -221,15 +221,14 @@ class Variant:
                  current_tx: str,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
                  genotype: typing.Optional[str]):
-        # TODO - revert
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
         self._current_tx = current_tx
-        if tx_annotations is not None:
-            self._tx_annotations = tuple(tx_annotations)
-        else:
+        if tx_annotations is None:
             self._tx_annotations = None
+        else:
+            self._tx_annotations = tuple(tx_annotations)
         self._genotype = genotype
 
     @property
