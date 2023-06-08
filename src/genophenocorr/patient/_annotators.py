@@ -63,11 +63,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return []  # a little shortcut. The line below would return an empty list anyway.
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
-    def _add_protein_data(self, variants) -> typing.Sequence[ProteinMetadata]:
+    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Sequence[ProteinMetadata]:
         prot_ids = set()
         for var in variants:
             for trans in var.tx_annotations:
-                prot_ids.update([trans.protein_affected])
+                prot_ids.add(trans.protein_affected)
         final_prots = set()
         for prot in prot_ids:
             final_prots.update(self._protein_creator.annotate(prot))
