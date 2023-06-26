@@ -8,7 +8,7 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False):
+    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False): 
         self._patient_set = patient_set
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
@@ -55,7 +55,7 @@ class Cohort:
     def list_all_proteins(self, top = None):
         return self._all_counts_dict.get('proteins').most_common(top)
 
-    def list_vartypes_by_tx(self, transcript = None):
+    def list_data_by_tx(self, transcript = None):
         if transcript is not None:
             var_type_dict = {transcript:Counter()}
         else:
@@ -65,16 +65,9 @@ class Cohort:
                 if trans.transcript_id in var_type_dict:
                     var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
         too_small = []
-        # TODO(lnrekerle) - please add more descriptive variable names.
-        #  While using `k`, `v` is OK for the computer, names like these make it harder for the others including
-        #  the future yourself to understand the code.
-        #  In this case, I would do the line below:
-        # for tx_id, var_effect_counter in var_type_dict.items():
-        for k, v in var_type_dict.items():
-            if len(v) <= 2:
-                too_small.append(k)
-        for k in too_small:
-            del var_type_dict[k]
+        for tx_id, var_effect_counter in var_type_dict.items():
+            if len(var_effect_counter) <= 2:
+                too_small.append(tx_id)
+        for tx_id in too_small:
+            del var_type_dict[tx_id]
         return var_type_dict
-
-    

@@ -16,10 +16,10 @@ class PhenotypeValidationException(BaseException):
 
 class PhenotypeCreator:
 
-    def __init__(self, hpo: hpotk.ontology.MinimalOntology,
+    def __init__(self, hpo: hpotk.ontology.Ontology,
                  validator: hpotk.validate.ValidationRunner):
         self._logger = logging.getLogger(__name__)
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.ontology.MinimalOntology, 'hpo')
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.ontology.Ontology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
     def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> list[Phenotype]:

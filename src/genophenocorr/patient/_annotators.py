@@ -24,19 +24,17 @@ class PatientCreator(typing.Generic[T], metaclass=abc.ABCMeta):
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
     def __init__(self, phenotype_creator: PhenotypeCreator,
-                 var_func_ann: FunctionalAnnotator,
-                 protein_func_ann: ProteinMetadataService):
+                 var_func_ann: FunctionalAnnotator):  #protein_func_ann: ProteinMetadataService
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder()
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
-        self._protein_creator = hpotk.util.validate_instance(protein_func_ann, ProteinMetadataService, 'protein_func_ann')
+        #self._protein_creator = hpotk.util.validate_instance(protein_func_ann, ProteinMetadataService, 'protein_func_ann')
 
     def create_patient(self, item: Phenopacket) -> Patient:
         phenotypes = self._add_phenotypes(item)
         variants = self._add_variants(item)
-        ## Should proteins even be added here since we will only have one protein for all patients? 
         protein_data = self._add_protein_data(variants)
         return Patient(item.id, phenotypes, variants, protein_data)
 
@@ -60,15 +58,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
         if len(hpo_id_list) == 0:
             self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
-            return []  # a little shortcut. The line below would return an empty list anyway.
+            return []  
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
     def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Sequence[ProteinMetadata]:
-        prot_ids = set()
+        final_prots = set()        
         for var in variants:
             for trans in var.tx_annotations:
-                prot_ids.add(trans.protein_affected)
-        final_prots = set()
-        for prot in prot_ids:
-            final_prots.update(self._protein_creator.annotate(prot))
+                for prot in trans.protein_affected:
+                    final_prots.add(prot)
         return final_prots

@@ -1,12 +1,12 @@
 # __init__.py
 
-from .patient._patient_data import Patient
-from .disease import Disease
-from .phenotype._phenotype_data import Phenotype
-from .cohort._cohort_data import Cohort
-from .compare_func import *
-from .protein._protein_data import ProteinMetadata
+from .patient import *
+from .phenotype import *
+from .cohort import *
+from .protein import *
 from .variant import *
+from .constants import *
+from .predicate import *
 
 ## all is for when 'from genophenocorr import *' is used, these classes are what are imported
 ## I personally feel this may no longer be needed, but can be evaluated later.

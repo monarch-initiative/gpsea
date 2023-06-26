@@ -13,9 +13,9 @@ class Patient:
         self._id = patient_id
         # TODO(lnrekerle) - We should wrap the sequences below in a tuple, otherwise the `__hash__` will explode if the
         #  caller provides a list.
-        self._phenotypes = phenotypes
-        self._variants = variants
-        self._proteins = proteins
+        self._phenotypes = tuple(phenotypes)
+        self._variants = tuple(variants)
+        self._proteins = tuple(proteins)
 
     @property
     def patient_id(self) -> str:
@@ -49,8 +49,8 @@ class Patient:
     def __str__(self) -> str:
         return f"Patient(patient_id:{self.patient_id}, " \
             f"variants:{[var.variant_string for var in self.variants]}, " \
-            f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, " \
-            f"proteins:{[prot.protein_id for prot in self.proteins]})"
+            f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, " 
+            #f"proteins:{[prot.protein_id for prot in self.proteins]})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -59,8 +59,8 @@ class Patient:
         return isinstance(other, Patient) \
             and self.patient_id == other.patient_id \
             and self.variants == other.variants \
-            and self.phenotypes == other.phenotypes \
-            and self.proteins == other.proteins
+            and self.phenotypes == other.phenotypes 
+            #and self.proteins == other.proteins
     
     def __hash__(self) -> int:
-        return hash((self.patient_id, self.variants, self.phenotypes, self.proteins))
+        return hash((self.patient_id, self.variants, self.phenotypes)) #self.proteins))

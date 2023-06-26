@@ -1,4 +1,5 @@
 import typing
+from genophenocorr.protein import ProteinMetadata
 
 
 class VariantCoordinates:
@@ -120,7 +121,7 @@ class TranscriptAnnotation:
                  hgvsc: typing.Optional[str],
                  variant_effects,
                  affected_exons: typing.Optional[typing.Sequence[int]],
-                 affected_protein: str,
+                 affected_protein: typing.Sequence[ProteinMetadata],
                  protein_effect_start: typing.Optional[int],
                  protein_effect_end: typing.Optional[int]):
         self._gene_id = gene_id
@@ -131,7 +132,7 @@ class TranscriptAnnotation:
             self._affected_exons = tuple(affected_exons)
         else:
             self._affected_exons = None
-        self._affected_protein = affected_protein
+        self._affected_protein = tuple(affected_protein)
         self._protein_effect_location = (protein_effect_start, protein_effect_end)
 
     @property
@@ -171,7 +172,7 @@ class TranscriptAnnotation:
         return self._affected_exons
 
     @property
-    def protein_affected(self) -> str:
+    def protein_affected(self) -> ProteinMetadata:
         """
         Get the protein ID that is affected by the alteration of this transcript (e.g. NP_037407.4)
         """
@@ -218,13 +219,11 @@ class Variant:
     def __init__(self, var_id: str,
                  var_class: str,
                  var_coordinates: VariantCoordinates,
-                 current_tx: str,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
                  genotype: typing.Optional[str]):
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
-        self._current_tx = current_tx
         if tx_annotations is None:
             self._tx_annotations = None
         else:
@@ -256,13 +255,6 @@ class Variant:
         return self._genotype
 
     @property
-    def selected_transcript(self) -> str:
-        """
-        The ID of either the canonical transcript given by VEP or the transcript chosen by the user.
-        """
-        return self._current_tx
-
-    @property
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
         """
         A collection of TranscriptAnnotations that each represent results of the functional annotation 
@@ -278,13 +270,12 @@ class Variant:
         return self._var_class
 
     def __eq__(self, other) -> bool:
-        # TODO - this seems a bit odd. Investigate.
         return isinstance(other, Variant) \
             and self.variant_string == other.variant_string \
             and self.genotype == other.genotype \
             and self.variant_class == other.variant_class \
-            and self.variant_coordinates == other.variant_coordinates 
-            #and self.tx_annotations == other.tx_annotations
+            and self.variant_coordinates == other.variant_coordinates \
+            and self.tx_annotations == other.tx_annotations
 
     def __hash__(self) -> int:
         return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
