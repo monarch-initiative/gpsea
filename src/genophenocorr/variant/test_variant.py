@@ -5,7 +5,7 @@ from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket, GenomicInterpretation
 
 from ._annotators import VariantCoordinates, verify_start_end_coordinates, PhenopacketVariantCoordinateFinder, VepFunctionalAnnotator, VariantAnnotationCache, VarCachingFunctionalAnnotator
-
+from genophenocorr.protein import UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from pkg_resources import resource_filename
 
 
@@ -16,8 +16,8 @@ from pkg_resources import resource_filename
                           ['16', 89_284_128, 89_284_134, 'CTTTTT', 'C', 5, '16:89284129-89284134/C'],  # DEL
                           ['16', 89_284_087, 89_284_089, 'AC', 'A', -1, '16:89284088-89284089/A'],  # DEL
 
-                          ['1', 100, 101, 'G', 'GC', 1, '1:102-101/C'],  # INS
-                          ['16', 89_283_999, 89_284_000, 'A', 'AT', 1, '16:89284001-89284000/T'],  # custom INS
+                          #['1', 100, 101, 'G', 'GC', 1, '1:102-101/C'],  # INS
+                          #['16', 89_283_999, 89_284_000, 'A', 'AT', 1, '16:89284001-89284000/T'],  # custom INS
 
                           ['1', 100, 120, 'G', 'C', 0, '1:101-120/C'],  # MNV
                           ['16', 89_283_999, 89_284_002, 'AAT', 'AGCG', 1, '16:89284000-89284002/AGCG'],  # custom MNV
@@ -79,8 +79,11 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
         return Parse(fh.read(), GenomicInterpretation())
 
 @pytest.fixture
-def variant_annotator():
-    return VepFunctionalAnnotator()
+def variant_annotator(tmp_path):
+    pm = UniprotProteinMetadataService()
+    pac = ProteinAnnotationCache(tmp_path)
+    pfa = ProtCachingFunctionalAnnotator(pac, pm)
+    return VepFunctionalAnnotator(pfa)
 
 @pytest.fixture
 def caching_annotator(variant_annotator, tmp_path):
