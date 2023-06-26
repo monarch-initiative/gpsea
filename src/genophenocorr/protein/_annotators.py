@@ -25,7 +25,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._url = 'https://rest.uniprot.org/uniprotkb/search?query=%s&fields=accession,id,' \
+        self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
                     'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq'
 
     def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
@@ -40,22 +40,30 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             return []
         protein_list = []
         for protein in results:
-            try:
-                protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
-            except KeyError:
-                protein_name = protein['proteinDescription']['submissionNames'][0]['fullName']['value']
-            all_features_list = []
-            try:
-                for feature in protein['features']:
-                    feat_type = feature['type']
-                    feat_name = feature['description']
-                    feat_start = int(feature['location']['start']['value'])
-                    feat_end = int(feature['location']['end']['value'])
-                    feat = SimpleProteinFeature(FeatureInfo(feat_name, feat_start, feat_end), FeatureType[feat_type.upper()])
-                    all_features_list.append(feat)
-            except KeyError:
-                self._logger.warning(f"No features for {protein_id}")
-            protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
+            verify = False
+            for uni in protein['uniProtKBCrossReferences']:
+                if uni['id'] == protein_id:
+                    verify = True
+            if verify:
+                try:
+                    protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
+                except KeyError:
+                    protein_name = protein['proteinDescription']['submissionNames'][0]['fullName']['value']
+                all_features_list = []
+                try:
+                    for feature in protein['features']:
+                        feat_type = feature['type']
+                        feat_name = feature['description']
+                        feat_start = int(feature['location']['start']['value'])
+                        feat_end = int(feature['location']['end']['value'])
+                        feat = SimpleProteinFeature(FeatureInfo(feat_name, feat_start, feat_end), FeatureType[feat_type.upper()])
+                        all_features_list.append(feat)
+                except KeyError:
+                    self._logger.warning(f"No features for {protein_id}")
+                protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
+            else:
+                self._logger.warning(f"ID {protein_id} did not match")
+        self._logger.warning(f'Protein ID {protein_id} got {len(protein_list)} results')
 
         # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list
@@ -92,7 +100,8 @@ class ProtCachingFunctionalAnnotator(ProteinMetadataService):
 
     def annotate(self, protein_id: str) -> ProteinMetadata:
         # TODO - the signature mismatch!
-        hpotk.util.validate_instance(protein_id, str, 'variant_coordinates')
+        # Changed to protein_id, is that
+        hpotk.util.validate_instance(protein_id, str, 'protein_id')
         annotations = self._cache.get_annotations(protein_id)
         if annotations is not None:
             # we had cached annotations

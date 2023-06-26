@@ -58,9 +58,12 @@ cc = PhenopacketCohortCreator(pc)
 # In principle yes, we can work with a cohort or a sequence of Patients.
 # I would not, however, restrict the annotation to a particular tx and protein IDs, I favor getting all available data.
 # I also outlined this in other parts of the code.
-patientCohort = cc.create_cohort(fpath_phenopackets, tx_identifier, protein_identifier)
+patientCohort = cc.create_cohort(fpath_phenopackets)
 
 # TODO - implement the rest below
+## remove empty variant/hpo patients
+## Remove or identify 
+
 
 # ## Preview
 # function per table

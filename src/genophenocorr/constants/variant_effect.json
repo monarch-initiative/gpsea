@@ -1,0 +1,242 @@
+[
+    {
+        "label": "protein altering variant",
+        "SO_accession": "SO:0001818",
+        "description": "A sequence_variant which is predicted to change the protein encoded in the coding sequence",
+        "SO_term": "protein_altering_variant"
+    },
+    {
+        "SO_term": "inframe_insertion",
+        "description": "An inframe non synonymous variant that inserts bases into in the coding sequence",
+        "SO_accession": "SO:0001821",
+        "label": "inframe insertion"
+    },
+    {
+        "SO_term": "regulatory_region_amplification",
+        "label": "regulatory region amplification",
+        "SO_accession": "SO:0001891",
+        "description": "A feature amplification of a region containing a regulatory region"
+    },
+    {
+        "description": "A sequence variant, that changes one or more bases, resulting in a different amino acid sequence but where the length is preserved",
+        "label": "missense variant",
+        "SO_accession": "SO:0001583",
+        "SO_term": "missense_variant"
+    },
+    {
+        "SO_term": "synonymous_variant",
+        "SO_accession": "SO:0001819",
+        "label": "synonymous variant",
+        "description": "A sequence variant where there is no resulting change to the encoded amino acid"
+    },
+    {
+        "SO_accession": "SO:0001906",
+        "label": "feature truncation",
+        "description": "A sequence variant that causes the reduction of a genomic feature, with regard to the reference sequence",
+        "SO_term": "feature_truncation"
+    },
+    {
+        "description": "A transcript variant located with the sequence of the mature miRNA",
+        "SO_accession": "SO:0001620",
+        "label": "mature miRNA variant",
+        "SO_term": "mature_miRNA_variant"
+    },
+    {
+        "SO_term": "splice_donor_5th_base_variant",
+        "description": "A sequence variant that causes a change at the 5th base pair after the start of the intron in the orientation of the transcript",
+        "label": "splice donor 5th base variant",
+        "SO_accession": "SO:0001787"
+    },
+    {
+        "SO_term": "regulatory_region_variant",
+        "SO_accession": "SO:0001566",
+        "label": "regulatory region variant",
+        "description": "A sequence variant located within a regulatory region"
+    },
+    {
+        "label": "splice acceptor variant",
+        "SO_accession": "SO:0001574",
+        "description": "A splice variant that changes the 2 base region at the 3' end of an intron",
+        "SO_term": "splice_acceptor_variant"
+    },
+    {
+        "SO_accession": "SO:0001822",
+        "label": "inframe deletion",
+        "description": "An inframe non synonymous variant that deletes bases from the coding sequence",
+        "SO_term": "inframe_deletion"
+    },
+    {
+        "SO_term": "NMD_transcript_variant",
+        "SO_accession": "SO:0001621",
+        "label": "NMD transcript variant",
+        "description": "A variant in a transcript that is the target of NMD"
+    },
+    {
+        "SO_term": "start_lost",
+        "description": "A codon variant that changes at least one base of the canonical start codon",
+        "SO_accession": "SO:0002012",
+        "label": "start lost"
+    },
+    {
+        "SO_term": "downstream_gene_variant",
+        "description": "A sequence variant located 3' of a gene",
+        "label": "downstream gene variant",
+        "SO_accession": "SO:0001632"
+    },
+    {
+        "SO_term": "splice_region_variant",
+        "description": "A sequence variant in which a change has occurred within the region of the splice site, either within 1-3 bases of the exon or 3-8 bases of the intron",
+        "SO_accession": "SO:0001630",
+        "label": "splice region variant"
+    },
+    {
+        "SO_term": "intron_variant",
+        "description": "A transcript variant occurring within an intron",
+        "SO_accession": "SO:0001627",
+        "label": "intron variant"
+    },
+    {
+        "SO_term": "transcript_amplification",
+        "description": "A feature amplification of a region containing a transcript",
+        "SO_accession": "SO:0001889",
+        "label": "transcript amplification"
+    },
+    {
+        "SO_term": "splice_donor_variant",
+        "SO_accession": "SO:0001575",
+        "label": "splice donor variant",
+        "description": "A splice variant that changes the 2 base region at the 5' end of an intron"
+    },
+    {
+        "SO_term": "upstream_gene_variant",
+        "description": "A sequence variant located 5' of a gene",
+        "label": "upstream gene variant",
+        "SO_accession": "SO:0001631"
+    },
+    {
+        "SO_term": "coding_sequence_variant",
+        "label": "coding sequence variant",
+        "SO_accession": "SO:0001580",
+        "description": "A sequence variant that changes the coding sequence"
+    },
+    {
+        "SO_term": "incomplete_terminal_codon_variant",
+        "description": "A sequence variant where at least one base of the final codon of an incompletely annotated transcript is changed",
+        "label": "incomplete terminal codon variant",
+        "SO_accession": "SO:0001626"
+    },
+    {
+        "SO_term": "frameshift_variant",
+        "label": "frameshift variant",
+        "SO_accession": "SO:0001589",
+        "description": "A sequence variant which causes a disruption of the translational reading frame, because the number of nucleotides inserted or deleted is not a multiple of three"
+    },
+    {
+        "SO_term": "3_prime_UTR_variant",
+        "SO_accession": "SO:0001624",
+        "label": "3 prime UTR variant",
+        "description": "A UTR variant of the 3' UTR"
+    },
+    {
+        "SO_accession": "SO:0001587",
+        "label": "stop gained",
+        "description": "A sequence variant whereby at least one base of a codon is changed, resulting in a premature stop codon, leading to a shortened transcript",
+        "SO_term": "stop_gained"
+    },
+    {
+        "SO_term": "stop_retained_variant",
+        "SO_accession": "SO:0001567",
+        "label": "stop retained variant",
+        "description": "A sequence variant where at least one base in the terminator codon is changed, but the terminator remains"
+    },
+    {
+        "SO_term": "TFBS_ablation",
+        "label": "TFBS ablation",
+        "SO_accession": "SO:0001895",
+        "description": "A feature ablation whereby the deleted region includes a transcription factor binding site"
+    },
+    {
+        "description": "A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration",
+        "SO_accession": "SO:0001060",
+        "label": "sequence variant",
+        "SO_term": "sequence_variant"
+    },
+    {
+        "SO_term": "TF_binding_site_variant",
+        "description": "A sequence variant located within a transcription factor binding site",
+        "label": "TF binding site",
+        "SO_accession": "SO:0001782"
+    },
+    {
+        "SO_term": "feature_elongation",
+        "description": "A sequence variant that causes the extension of a genomic feature, with regard to the reference sequence",
+        "label": "feature elongation",
+        "SO_accession": "SO:0001907"
+    },
+    {
+        "description": "A sequence variant where at least one base in the start codon is changed, but the start remains",
+        "SO_accession": "SO:0002019",
+        "label": "start retained variant",
+        "SO_term": "start_retained_variant"
+    },
+    {
+        "label": "non coding transcript variant",
+        "SO_accession": "SO:0001619",
+        "description": "A transcript variant of a non coding RNA gene",
+        "SO_term": "non_coding_transcript_variant"
+    },
+    {
+        "SO_term": "stop_lost",
+        "SO_accession": "SO:0001578",
+        "label": "stop lost",
+        "description": "A sequence variant where at least one base of the terminator codon (stop) is changed, resulting in an elongated transcript"
+    },
+    {
+        "description": "A feature amplification of a region containing a transcription factor binding site",
+        "SO_accession": "SO:0001892",
+        "label": "TFBS amplification",
+        "SO_term": "TFBS_amplification"
+    },
+    {
+        "label": "regulatory region ablation",
+        "SO_accession": "SO:0001894",
+        "description": "A feature ablation whereby the deleted region includes a regulatory region",
+        "SO_term": "regulatory_region_ablation"
+    },
+    {
+        "SO_term": "non_coding_transcript_exon_variant",
+        "label": "non coding transcript exon variant",
+        "SO_accession": "SO:0001792",
+        "description": "A sequence variant that changes non-coding exon sequence in a non-coding transcript"
+    },
+    {
+        "description": "A UTR variant of the 5' UTR",
+        "label": "5 prime UTR variant",
+        "SO_accession": "SO:0001623",
+        "SO_term": "5_prime_UTR_variant"
+    },
+    {
+        "description": "A sequence variant that falls in the region between the 3rd and 6th base after splice junction (5' end of intron).",
+        "SO_accession": "SO:0002170",
+        "label": "splice donor region variant",
+        "SO_term": "splice_donor_region_variant"
+    },
+    {
+        "description": "A feature ablation whereby the deleted region includes a transcript feature",
+        "label": "transcript ablation",
+        "SO_accession": "SO:0001893",
+        "SO_term": "transcript_ablation"
+    },
+    {
+        "SO_term": "splice_polypyrimidine_tract_variant",
+        "SO_accession": "SO:0002169",
+        "label": "splice polypyrimidine tract variant",
+        "description": "A sequence variant that falls in the polypyrimidine tract at 3' end of intron between 17 and 3 bases from the end (acceptor -3 to acceptor -17)"
+    },
+    {
+        "SO_accession": "SO:0001628",
+        "label": "intergenic variant",
+        "description": "A sequence variant located in the intergenic region, between genes",
+        "SO_term": "intergenic_variant"
+    }
+]

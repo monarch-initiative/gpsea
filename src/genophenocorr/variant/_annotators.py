@@ -3,6 +3,7 @@ import os
 import pickle
 import re
 import typing
+from genophenocorr.protein import ProteinMetadataService
 
 import hpotk
 import requests
@@ -57,7 +58,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
 
         return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
-
+        
 
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
@@ -93,8 +94,9 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
 
-    def __init__(self):
+    def __init__(self, protein_annotator: ProteinMetadataService):
         self._logging = logging.getLogger(__name__)
+        self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
@@ -114,6 +116,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             consequences = trans.get('consequence_terms')
             gene_name = trans.get('gene_symbol')
             protein_id = trans.get('protein_id')
+            protein = self._protein_annotator.annotate(protein_id)
             protein_effect_start = trans.get('protein_start')
             protein_effect_end = trans.get('protein_end')
             if protein_effect_start is None and protein_effect_end is not None:
@@ -134,11 +137,11 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                      hgvsc_id,
                                      consequences,
                                      exons_effected,
-                                     protein_id,
+                                     protein,
                                      protein_effect_start,
                                      protein_effect_end)
             )
-        return Variant(variant_id, variant_class, variant_coordinates, canon_tx, transcript_list,
+        return Variant(variant_id, variant_class, variant_coordinates, transcript_list,
                        variant_coordinates.genotype)
 
     def _query_vep(self, variant_coordinates) -> dict:
