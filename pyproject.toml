@@ -39,25 +39,20 @@ dependencies = [
     "xmltodict>=0.12.0",
     "pandas",
     "phenopackets",
-    "pyensembl",
-    "pytest",
     "requests",
     "scipy",
-    "statsmodels",
-    "varcode"
+    "statsmodels"
 ]
 
+[project.optional-dependencies]
+test = ["pytest"]
 
-
-
-#[project.optional-dependencies]
-#dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
 
 [project.urls]
-homepage = "https://github.com/monarch-initiative/pyphetools"
-repository = "https://github.com/monarch-initiative/pyphetools.git"
-documentation = "https://github.com/monarch-initiative/pyphetools"
-bugtracker = "https://github.com/monarch-initiative/pyphetools/issues"
+homepage = "https://github.com/monarch-initiative/genophenocorr"
+repository = "https://github.com/monarch-initiative/genophenocorr.git"
+documentation = "https://github.com/monarch-initiative/genophenocorr"
+bugtracker = "https://github.com/monarch-initiative/genophenocorr/issues"
 
 #[project.scripts]
 # ... = "reader.__main__:main"
