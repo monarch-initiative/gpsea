@@ -1,3 +1,4 @@
+import logging
 from ._cohort_data import Cohort
 import typing
 from genophenocorr.constants import VariantEffect
@@ -14,6 +15,7 @@ class CohortAnalysis():
     def __init__(self, cohort, transcript, recessive = False, include_unmeasured = True,  include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
+        ## IF TRANSCRIPT DOES NOT EXIST, GIVE ERROR
         self._cohort = cohort
         self._transcript = transcript
         self._recessive = recessive
@@ -26,6 +28,7 @@ class CohortAnalysis():
         self._hpo_present_test = HPOPresentPredicate()
         self._testing_hpo_terms = self._remove_low_hpo_terms()
         self._patients_by_hpo = self._sort_patients_by_hpo()
+        self._logger = logging.getLogger(__name__)
         
     @property
     def analysis_cohort(self):
@@ -105,6 +108,9 @@ class CohortAnalysis():
                 else:
                     with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2)])
                     not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2)])
+                if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
+                    self._logger.warning(f"Error with HPO {hpo.identifier.value}, not included in this analysis.")
+                    continue
                 p_val = self._run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
                 final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_count, (with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100, with_hpo_var2_count, (with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100, p_val]     
         return final_dict
@@ -112,7 +118,7 @@ class CohortAnalysis():
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
         var_effect_test = VariantEffectPredicate(self.analysis_transcript)
         final_dict = self._run_analysis(var_effect_test, var_type1, var_type2)
-        if var_type2 == None:
+        if var_type2 is None:
             col_name = f'without {var_type1.effect_name}'
         else:
             col_name = f'with {var_type2.effect_name}'
@@ -122,7 +128,7 @@ class CohortAnalysis():
     def compare_by_variant(self, variant1:str, variant2:str = None):
         variant_test = VariantPredicate(self.analysis_transcript)
         final_dict = self._run_analysis(variant_test, variant1, variant2)
-        if variant2 == None:
+        if variant2 is None:
             col_name = f'without {variant1}'
         else:
             col_name = f'with {variant2}'
@@ -132,7 +138,7 @@ class CohortAnalysis():
     def compare_by_exon(self, exon1:int, exon2:int = None):
         exon_test = ExonPredicate(self.analysis_transcript)
         final_dict = self._run_analysis(exon_test, exon1, exon2)
-        if exon2 == None:
+        if exon2 is None:
             col_name = f'outside exon {exon1}'
         else:
             col_name = f'inside exon {exon2}'
@@ -142,7 +148,7 @@ class CohortAnalysis():
     def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
         feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript)
         final_dict = self._run_analysis(feat_type_test, feature1, feature2)
-        if feature2 == None:
+        if feature2 is None:
             col_name = f'outside exon {feature1}'
         else:
             col_name = f'inside exon {feature2}'
@@ -153,7 +159,7 @@ class CohortAnalysis():
     def compare_by_protein_feature(self, feature1:str, feature2:str = None):
         domain_test = ProtFeaturePredicate(self.analysis_transcript)
         final_dict = self._run_analysis(domain_test, feature1, feature2)
-        if feature2 == None:
+        if feature2 is None:
             col_name = f'outside exon {feature1}'
         else:
             col_name = f'inside exon {feature2}'
