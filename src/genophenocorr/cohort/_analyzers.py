@@ -1,4 +1,7 @@
 import logging
+
+import numpy as np
+
 from ._cohort_data import Cohort
 import typing
 from genophenocorr.constants import VariantEffect
@@ -10,7 +13,7 @@ from scipy import stats
 from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
 from enum import Flag
-from FisherExact import fisher_exact
+from fexact import fexact
 
 
 class CohortAnalysis():
@@ -268,4 +271,7 @@ class CohortAnalysis():
         return p
 
     def _run_recessive_fisher_exact(self, two_by_three_table: typing.Sequence[typing.Sequence[int]]):
-        return fisher_exact(two_by_three_table)
+        a = np.array(two_by_three_table, dtype=np.intc)
+        val = fexact(a)
+        print(val)
+        return val
