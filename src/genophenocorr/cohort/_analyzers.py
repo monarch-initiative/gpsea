@@ -15,7 +15,6 @@ from scipy import stats
 from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
 from enum import Flag
-from fexact import fexact
 
 
 class CohortAnalysis():
@@ -273,8 +272,9 @@ class CohortAnalysis():
         return p
 
     def _run_recessive_fisher_exact(self, two_by_three_table: typing.Sequence[typing.Sequence[int]]):
-        a = np.array(two_by_three_table, dtype=np.intc)
-        val = fexact(a)
+        a = np.array(two_by_three_table, dtype=np.int64)
+        test_class = PythonMultiFisherExact()
+        val = test_class.calculate(a)
         print(val)
         return val
 
@@ -295,6 +295,9 @@ class MultiFisherExact(metaclass=abc.ABCMeta):
             raise ValueError(f'Expected a numpy array but got {type(a)}')
         if not a.shape == (3, 2):
             raise ValueError(f'Shape of the array must be (3, 2) but got {a.shape}')
+        if np.array_equal(a, np.zeros_like(a)):
+            raise ValueError(f'Array is all zeros, cannot run analysis')
+        
 
 
 class PythonMultiFisherExact(MultiFisherExact):
