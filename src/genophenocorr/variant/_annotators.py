@@ -56,8 +56,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
 
         if any(field is None for field in (chrom, ref, alt, genotype)):
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
-
         return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
+
         
 
 def verify_start_end_coordinates(vc: VariantCoordinates):

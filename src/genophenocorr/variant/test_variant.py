@@ -59,13 +59,13 @@ def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
 
 
 @pytest.mark.parametrize("pp_path, expected",
-                         [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C'),
-                          ('test_data/insertion_test.json', '16_89280828_89280830_C_CA'),
-                          ('test_data/missense_test.json', '16_89279134_89279135_G_C'),
-                          ('test_data/duplication_test.json', '16_89279849_89279851_G_GC'),
-                          ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A'),
-                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>'),
-                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>')
+                         [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C_heterozygous'),
+                          ('test_data/insertion_test.json', '16_89280828_89280830_C_CA_heterozygous'),
+                          ('test_data/missense_test.json', '16_89279134_89279135_G_C_heterozygous'),
+                          ('test_data/duplication_test.json', '16_89279849_89279851_G_GC_heterozygous'),
+                          ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A_heterozygous'),
+                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>_heterozygous'),
+                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>_heterozygous')
                           ])
 def test_find_coordinates(pp_path, expected, pp_vc_finder):
     fname = resource_filename(__name__, pp_path)

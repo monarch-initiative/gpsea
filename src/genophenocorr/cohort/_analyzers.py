@@ -1,21 +1,31 @@
+import abc
 import logging
+import math
+
+import numpy as np
+
 from ._cohort_data import Cohort
 import typing
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType, ProteinFeature
-from genophenocorr.predicate import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from genophenocorr.predicate import VariantEffectPredicate, HPOPresentPredicate, \
+    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HasVariantResults
 from genophenocorr.variant import Variant
 from scipy import stats
-from pandas import DataFrame
+from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
+from enum import Flag
 
 
 class CohortAnalysis():
 
-    def __init__(self, cohort, transcript, recessive = False, include_unmeasured = True,  include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
+    def __init__(self, cohort, transcript, recessive = False, include_unmeasured = True,  
+                include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
         ## IF TRANSCRIPT DOES NOT EXIST, GIVE ERROR
+        if transcript not in cohort.all_transcripts:
+            raise ValueError(f"Transcript {transcript} not found in Cohort")
         self._cohort = cohort
         self._transcript = transcript
         self._recessive = recessive
@@ -96,150 +106,307 @@ class CohortAnalysis():
         patientsByHPO = namedtuple('patientByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
         return patientsByHPO(all_with_hpo, all_without_hpo)
 
-    def _run_analysis(self, predicate, variable1, variable2):
+    def _run_dom_analysis(self, predicate, variable1, variable2):
         final_dict = dict()
         if not self.is_recessive:
             for hpo in self._testing_hpo_terms:
-                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1)])
-                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1)])
+                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
+                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
                 if variable2 is None:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if not predicate.test(pat, variable1)])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if not predicate.test(pat, variable1)])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
                 else:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2)])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2)])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
                 if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
-                    self._logger.warning(f"Error with HPO {hpo.identifier.value}, not included in this analysis.")
+                    self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
                 p_val = self._run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
-                final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_count, (with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100, with_hpo_var2_count, (with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100, p_val]     
+                final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_count, "{:0.2f}%".format((with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100), with_hpo_var2_count, "{:0.2f}%".format((with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100), p_val]
+        else:
+            return ValueError(f"Run a recessive analysis")
         return final_dict
+
+    def _run_rec_analysis(self, predicate, variable1, variable2):
+        final_dict = dict()
+        if self.is_recessive:
+            for hpo in self._testing_hpo_terms:
+                if variable2 is None:
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                else:
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
+                if with_hpo_var1_var1 + no_hpo_var1_var1 == 0 or with_hpo_var1_var2 + no_hpo_var1_var2 == 0 or with_hpo_var2_var2 + no_hpo_var2_var2 == 0:
+                    self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
+                    continue
+                p_val = self._run_recessive_fisher_exact([[with_hpo_var1_var1, no_hpo_var1_var1], [with_hpo_var1_var2, no_hpo_var1_var2], [with_hpo_var2_var2, no_hpo_var2_var2]] )
+                final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_var1, "{:0.2f}%".format((with_hpo_var1_var1/(with_hpo_var1_var1 + no_hpo_var1_var1)) * 100), with_hpo_var1_var2, "{:0.2f}%".format((with_hpo_var1_var2/(no_hpo_var1_var2 + with_hpo_var1_var2)) * 100), with_hpo_var2_var2, "{:0.2f}%".format((with_hpo_var2_var2/(with_hpo_var2_var2 + no_hpo_var2_var2)) * 100), p_val] 
+        else:
+            return ValueError("Run a dominant analysis")
+        return final_dict
+
 
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
         var_effect_test = VariantEffectPredicate(self.analysis_transcript)
-        final_dict = self._run_analysis(var_effect_test, var_type1, var_type2)
-        if var_type2 is None:
-            col_name = f'without {var_type1.effect_name}'
+        if self.is_recessive:
+            final_dict = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
+            if var_type2 is None:
+                col_name1 = f'Heterozygous {str(var_type1)}'
+                col_name2 = f'No {str(var_type1)}'
+            else:
+                col_name1 = f'Heterozygous {str(var_type1)} and {str(var_type2)}'
+                col_name2 = f'Homozygous {str(var_type2)}'
+            index = MultiIndex.from_product([[f'Homozygous {str(var_type1)}', col_name1, col_name2], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', "p-value")))
         else:
-            col_name = f'with {var_type2.effect_name}'
-        final_df = DataFrame.from_dict(final_dict, orient='index', columns=['with count', f'% with {var_type1.effect_name}', 'count', f'% {col_name}', 'p-value'])
-        return final_df.sort_values('p-value')
+            final_dict = self._run_dom_analysis(var_effect_test, var_type1, var_type2)
+            if var_type2 is None:
+                col_name = f'Without {str(var_type1)}'
+            else:
+                col_name = f'With {str(var_type2)}'
+            index = MultiIndex.from_product([[f'With {str(var_type1)}', col_name], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
+        return final_df.sort_values(('', 'p-value'))
 
     def compare_by_variant(self, variant1:str, variant2:str = None):
         variant_test = VariantPredicate(self.analysis_transcript)
-        final_dict = self._run_analysis(variant_test, variant1, variant2)
-        if variant2 is None:
-            col_name = f'without {variant1}'
+        if self.is_recessive:
+            final_dict = self._run_rec_analysis(variant_test, variant1, variant2)
+            if variant2 is None:
+                col_name1 = f'Heterozygous {variant1}'
+                col_name2 = f'No {variant1}'
+            else:
+                col_name1 = f'Heterozygous {variant1} and {variant2}'
+                col_name2 = f'Homozygous {variant2}'
+            index = MultiIndex.from_product([[f'Homozygous {variant1}', col_name1, col_name2], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
         else:
-            col_name = f'with {variant2}'
-        final_df = DataFrame.from_dict(final_dict, orient='index', columns=['with count', f'% with {variant1}', 'count' ,f'% {col_name}', 'p-value'])
-        return final_df.sort_values('p-value')
+            final_dict = self._run_dom_analysis(variant_test, variant1, variant2)  
+            if variant2 is None:
+                col_name = f'Without {variant1}'
+            else:
+                col_name = f'With {variant2}'
+            index = MultiIndex.from_product([[f'With {variant1}', col_name], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
+        return final_df.sort_values(('', 'p-value'))
 
     def compare_by_exon(self, exon1:int, exon2:int = None):
         exon_test = ExonPredicate(self.analysis_transcript)
-        final_dict = self._run_analysis(exon_test, exon1, exon2)
-        if exon2 is None:
-            col_name = f'outside exon {exon1}'
-        else:
-            col_name = f'inside exon {exon2}'
-        final_df = DataFrame.from_dict(final_dict, orient='index', columns=['with count', f'% inside exon {exon1}', 'count', f'% {col_name}', 'p-value'])
-        return final_df.sort_values('p-value')
+        if self.is_recessive:
+            final_dict = self._run_rec_analysis(exon_test, exon1, exon2)
+            if exon2 is None:
+                col_name1 = f'Heterozygous {exon1}'
+                col_name2 = f'No {exon1}'
+            else:
+                col_name1 = f'Heterozygous {exon1} and {exon2}'
+                col_name2 = f'Homozygous {exon2}'
+            index = MultiIndex.from_product([[f'Homozygous {exon1}', col_name1, col_name2], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
+        else: 
+            final_dict = self._run_dom_analysis(exon_test, exon1, exon2)
+            if exon2 is None:
+                col_name = f'Outside Exon {exon1}'
+            else:
+                col_name = f'Inside Exon {exon2}'
+            index = MultiIndex.from_product([[f'Inside Exon {exon1}', col_name], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
+        return final_df.sort_values(('', 'p-value'))
 
     def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
         feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript)
-        final_dict = self._run_analysis(feat_type_test, feature1, feature2)
-        if feature2 is None:
-            col_name = f'outside exon {feature1}'
+        if self.is_recessive:
+            final_dict = self._run_rec_analysis(feat_type_test, feature1, feature2)
+            if feature2 is None:
+                col_name1 = f'Heterozygous {feature1}'
+                col_name2 = f'No {feature1}'
+            else:
+                col_name1 = f'Heterozygous {feature1} and {feature2}'
+                col_name2 = f'Homozygous {feature2}'
+            index = MultiIndex.from_product([[f'Homozygous {feature1}', col_name1, col_name2], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
         else:
-            col_name = f'inside exon {feature2}'
-        final_df = DataFrame.from_dict(final_dict, orient='index', columns=['with count', f'% inside {feature1}', 'count', f'% {col_name}', 'p-value'])
-        return final_df.sort_values('p-value')
+            final_dict = self._run_dom_analysis(feat_type_test, feature1, feature2)
+            if feature2 is None:
+                col_name = f'Outside {feature1.name}'
+            else:
+                col_name = f'Inside {feature2.name}'
+            index = MultiIndex.from_product([[f'Inside {feature1.name}', col_name], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
+        return final_df.sort_values(('', 'p-value'))
 
 
     def compare_by_protein_feature(self, feature1:str, feature2:str = None):
         domain_test = ProtFeaturePredicate(self.analysis_transcript)
-        final_dict = self._run_analysis(domain_test, feature1, feature2)
-        if feature2 is None:
-            col_name = f'outside exon {feature1}'
+        if self.is_recessive:
+            final_dict = self._run_rec_analysis(domain_test, feature1, feature2)
+            if feature2 is None:
+                col_name1 = f'Heterozygous {feature1}'
+                col_name2 = f'No {feature1}'
+            else:
+                col_name1 = f'Heterozygous {feature1} and {feature2}'
+                col_name2 = f'Homozygous {feature2}'
+            index = MultiIndex.from_product([[f'Homozygous {feature1}', col_name1, col_name2], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
         else:
-            col_name = f'inside exon {feature2}'
-        final_df = DataFrame.from_dict(final_dict, orient='index', columns=['with count', f'% inside {feature1}', 'count', f'% {col_name}', 'p-value'])
-        return final_df.sort_values('p-value')
+            final_dict = self._run_dom_analysis(domain_test, feature1, feature2)
+            if feature2 is None:
+                col_name = f'Outside {feature1}'
+            else:
+                col_name = f'Inside {feature2}'
+            index = MultiIndex.from_product([[f'Inside {feature1}', col_name], ['Count', 'Percent']])
+            final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
+        return final_df.sort_values(('', 'p-value'))
     
 
     def _run_fisher_exact(self, two_by_two_table: typing.Sequence[typing.Sequence[int]]):
         oddsr, p = stats.fisher_exact(two_by_two_table, alternative='two-sided')
         return p
 
+    def _run_recessive_fisher_exact(self, two_by_three_table: typing.Sequence[typing.Sequence[int]]):
+        a = np.array(two_by_three_table, dtype=np.int64)
+        test_class = PythonMultiFisherExact()
+        val = test_class.calculate(a)
+        return val
 
 
-    # def _count_patients_with(self, variable, without = False):
+class MultiFisherExact(metaclass=abc.ABCMeta):
 
+    @abc.abstractmethod
+    def calculate(self, a: np.ndarray) -> float:
+        """
+        :param a: a 2x3 int array with counts
+        :returns: a p value calculated with Fisher's exact test
+        """
+        pass
 
-    #     # if not recessive:
-    #     #     allSeries = self.__dominant_test(testing_patients, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
-    #     # elif recessive:
-    #     #     allSeries = self.__recessive_test(testing_patients, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable)
-    #     # results = pd.concat(allSeries, axis=1)
-    #     # results = results.transpose() 
-    #     # results = results.sort_values(['pval'])
-    #     # pval_adjusted = multipletests(results['pval'].to_list(), alpha=0.05, method=adjusted_pval_method) 
-    #     # results['adjusted pval'] = np.array(pval_adjusted[1])
-    #     # results = results.convert_dtypes()
+    @staticmethod
+    def _check_input(a: np.ndarray):
+        if not isinstance(a, np.ndarray):
+            raise ValueError(f'Expected a numpy array but got {type(a)}')
+        if not a.shape == (3, 2):
+            raise ValueError(f'Shape of the array must be (3, 2) but got {a.shape}')
+        if np.array_equal(a, np.zeros_like(a)):
+            raise ValueError(f'Array is all zeros, cannot run analysis')
         
-    #     # return results
 
-    # def __dominant_test(self, testing_hpos, ):
-    #     allSeries = []
-    #     for hpo_id in compare_hpos_d:
-    #         if remove_not_measured:
-    #             tested_patients_d = [patient for patient in testing_patients_d if hpo_id in patient[1].phenotypes.keys()]
-    #         else:
-    #             tested_patients_d = testing_patients_d
-    #         var1_with_hpo = len([ pat for pat in tested_patients_d if pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat[1], Func1_Variable) for var in pat[1].variants]])
-    #         var1_without_hpo = len([ pat for pat in  tested_patients_d if not pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_1(var, pat[1], Func1_Variable) for var in pat[1].variants]])
-    #         var2_with_hpo = len([ pat  for pat in tested_patients_d if pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat[1], Func2_Variable) for var in pat[1].variants]])
-    #         var2_without_hpo = len([ pat for pat in tested_patients_d if not pat[1].has_hpo(hpo_id, compare_hpos_d) and True in [Function_2(var, pat[1], Func2_Variable) for var in pat[1].variants]])
-    #         table = np.array([[var1_with_hpo, var1_without_hpo], [var2_with_hpo, var2_without_hpo]])
-    #         oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
-    #         allSeries.append(pd.Series([var1_with_hpo, var1_without_hpo, var2_with_hpo, var2_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['1 w/ hpo', '1 w/o hpo', '2 w/ hpo', '2 w/o hpo', 'pval']))
-    #     return allSeries
 
-    # # def __recessive_test(self, testing_patients_d, compare_hpos_d, hpo_counts, remove_not_measured, Function_1, Func1_Variable, Function_2, Func2_Variable):
-    # #     allSeries = []
-    # #     for hpo_id in compare_hpos_d:
-    # #         AA_with_hpo = 0
-    # #         AA_without_hpo = 0
-    # #         AB_with_hpo = 0
-    # #         AB_without_hpo = 0
-    # #         BB_with_hpo = 0
-    # #         BB_without_hpo = 0
-    # #         if remove_not_measured:
-    # #             tested_patients_d = [patient for patient in testing_patients_d if hpo_id in patient[1].phenotypes.keys()]
-    # #         else:
-    # #             tested_patients_d = testing_patients_d
-    # #         for pat in tested_patients_d:
-    # #             if len(pat[1].variants) == 2:
-    # #                 var1 = pat[1].variants[0]
-    # #                 var2 = pat[1].variants[1]
-    # #                 if pat[1].has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat[1], Func1_Variable) != Function_1(var2, pat[1], Func1_Variable)) and (Function_2(var1, pat[1], Func2_Variable) != Function_2(var2, pat[1], Func2_Variable)):
-    # #                     AB_with_hpo += 1
-    # #                 if not pat[1].has_hpo(hpo_id, compare_hpos_d) and (Function_1(var1, pat[1], Func1_Variable) != Function_1(var2, pat[1], Func1_Variable)) and (Function_2(var1, pat[1], Func2_Variable) != Function_2(var2, pat[1], Func2_Variable)):
-    # #                     AB_without_hpo += 1
-    # #             elif len(pat[1].variants) == 1:
-    # #                 var1 = pat[1].variants[0]
-    # #                 var2 = pat[1].variants[0]
-    # #             if pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat[1], Func1_Variable) and Function_1(var2, pat[1], Func1_Variable):
-    # #                 AA_with_hpo += 1
-    # #             if not pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_1(var1, pat[1], Func1_Variable) and Function_1(var2, pat[1], Func1_Variable):
-    # #                 AA_without_hpo += 1
-    # #             if pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat[1],Func2_Variable) and Function_2(var2, pat[1], Func2_Variable):
-    # #                 BB_with_hpo += 1
-    # #             if not pat[1].has_hpo(hpo_id, compare_hpos_d) and Function_2(var1, pat[1],Func2_Variable) and Function_2(var2, pat[1], Func2_Variable):
-    # #                 BB_without_hpo += 1
-    # #         table = np.array([[AA_with_hpo, AA_without_hpo],[AB_with_hpo, AB_without_hpo], [BB_with_hpo, BB_without_hpo]])
-    # #         p = fisher_exact(table)
-    # #         #oddsr, p =  stats.fisher_exact(table, alternative='two-sided') 
-    # #         allSeries.append(pd.Series([AA_with_hpo, AA_without_hpo, AB_with_hpo, AB_without_hpo, BB_with_hpo, BB_without_hpo, p], name= hpo_id + ' - ' + hpo_counts.at[hpo_id, 'Class'].label, index=['AA w/ hpo', 'AA w/o hpo', 'AB w/ hpo', 'AB w/o hpo', 'BB w/ hpo', 'BB w/o hpo', 'pval']))
-    # #     return allSeries
+class PythonMultiFisherExact(MultiFisherExact):
 
+    def calculate(self, a: np.ndarray) -> float:
+        MultiFisherExact._check_input(a)
+        return self._fisher_exact(a)
+
+    def _fisher_exact(self, table):
+        row_sum = []
+        col_sum = []
+
+        for i in range(len(table)):
+            temp = 0
+            for j in range(len(table[0])):
+                temp += table[i][j]
+            row_sum.append(temp)
+
+        for j in range(len(table[0])):
+            temp = 0
+            for i in range(len(table)):
+                temp += table[i][j]
+            col_sum.append(temp)
+
+        mat = [[0] * len(col_sum)] * len(row_sum)
+        pos = (0, 0)
+
+        p_0 = 1
+
+        for x in row_sum:
+            p_0 *= math.factorial(x)
+        for y in col_sum:
+            p_0 *= math.factorial(y)
+
+        n = 0
+        for x in row_sum:
+            n += x
+        p_0 /= math.factorial(n)
+
+        for i in range(len(table)):
+            for j in range(len(table[0])):
+                p_0 /= math.factorial(table[i][j])
+
+        p = [0]
+        self._dfs(mat, pos, row_sum, col_sum, p_0, p)
+
+        return p[0]
+
+    def _dfs(self, mat, pos, r_sum, c_sum, p_0, p):
+
+        (xx, yy) = pos
+        (r, c) = (len(r_sum), len(c_sum))
+
+        mat_new = []
+
+        for i in range(len(mat)):
+            temp = []
+            for j in range(len(mat[0])):
+                temp.append(mat[i][j])
+            mat_new.append(temp)
+
+        if xx == -1 and yy == -1:
+            for i in range(r - 1):
+                temp = r_sum[i]
+                for j in range(c - 1):
+                    temp -= mat_new[i][j]
+                mat_new[i][c - 1] = temp
+            for j in range(c - 1):
+                temp = c_sum[j]
+                for i in range(r - 1):
+                    temp -= mat_new[i][j]
+                mat_new[r - 1][j] = temp
+            temp = r_sum[r - 1]
+            for j in range(c - 1):
+                temp -= mat_new[r - 1][j]
+            if temp < 0:
+                return
+            mat_new[r - 1][c - 1] = temp
+
+            p_1 = 1
+            for x in r_sum:
+                p_1 *= math.factorial(x)
+            for y in c_sum:
+                p_1 *= math.factorial(y)
+
+            n = 0
+            for x in r_sum:
+                n += x
+            p_1 /= math.factorial(n)
+
+            for i in range(len(mat_new)):
+                for j in range(len(mat_new[0])):
+                    p_1 /= math.factorial(mat_new[i][j])
+            if p_1 <= p_0 + 0.00000001:
+                # print(mat_new)
+                # print(p_1)
+                p[0] += p_1
+        else:
+            max_1 = r_sum[xx]
+            max_2 = c_sum[yy]
+            for j in range(c):
+                max_1 -= mat_new[xx][j]
+            for i in range(r):
+                max_2 -= mat_new[i][yy]
+            for k in range(min(max_1, max_2) + 1):
+                mat_new[xx][yy] = k
+                if xx == r - 2 and yy == c - 2:
+                    pos_new = (-1, -1)
+                elif xx == r - 2:
+                    pos_new = (0, yy + 1)
+                else:
+                    pos_new = (xx + 1, yy)
+                self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)

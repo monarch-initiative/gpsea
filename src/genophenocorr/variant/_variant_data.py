@@ -79,7 +79,7 @@ class VariantCoordinates:
         return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
 
     def as_string(self) -> str:
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}"
+        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}"
 
     def __len__(self):
         """
