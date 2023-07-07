@@ -160,20 +160,20 @@ class CohortAnalysis():
         if self.is_recessive:
             final_dict = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
             if var_type2 is None:
-                col_name1 = f'Heterozygous {var_type1.effect_name}'
-                col_name2 = f'No {var_type1.effect_name}'
+                col_name1 = f'Heterozygous {str(var_type1)}'
+                col_name2 = f'No {str(var_type1)}'
             else:
-                col_name1 = f'Heterozygous {var_type1.effect_name} and {var_type2.effect_name}'
-                col_name2 = f'Homozygous {var_type2.effect_name}'
-            index = MultiIndex.from_product([[f'Homozygous {var_type1.effect_name}', col_name1, col_name2], ['Count', 'Percent']])
+                col_name1 = f'Heterozygous {str(var_type1)} and {str(var_type2)}'
+                col_name2 = f'Homozygous {str(var_type2)}'
+            index = MultiIndex.from_product([[f'Homozygous {str(var_type1)}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', "p-value")))
         else:
             final_dict = self._run_dom_analysis(var_effect_test, var_type1, var_type2)
             if var_type2 is None:
-                col_name = f'Without {var_type1.effect_name}'
+                col_name = f'Without {str(var_type1)}'
             else:
-                col_name = f'With {var_type2.effect_name}'
-            index = MultiIndex.from_product([[f'With {var_type1.effect_name}', col_name], ['Count', 'Percent']])
+                col_name = f'With {str(var_type2)}'
+            index = MultiIndex.from_product([[f'With {str(var_type1)}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
         return final_df.sort_values(('', 'p-value'))
 
@@ -275,7 +275,6 @@ class CohortAnalysis():
         a = np.array(two_by_three_table, dtype=np.int64)
         test_class = PythonMultiFisherExact()
         val = test_class.calculate(a)
-        print(val)
         return val
 
 

@@ -56,7 +56,7 @@ class VariantEffectPredicate(SimplePredicate):
             for trans in var.tx_annotations:
                 if trans.transcript_id == self._transcript:
                     for var_eff in trans.variant_effects:
-                        if var_eff == variant_effect.effect_id:
+                        if var_eff == str(variant_effect):
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:
