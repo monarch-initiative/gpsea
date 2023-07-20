@@ -23,7 +23,8 @@ class CohortViewer:
     @staticmethod
     def hpo_anchor(hpo_id, label):
         url = f"https://hpo.jax.org/app/browse/term/{hpo_id}"
-        return CohortViewer.anchor(url, label)
+        hpo_label = f"{label} ({hpo_id})"
+        return CohortViewer.anchor(url, hpo_label)
 
     def hpo_term_counts_table(self, min_count=1):
         rows = list()
