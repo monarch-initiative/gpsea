@@ -1,0 +1,93 @@
+{
+  "id": "PMID_10595634_Attali_LY04",
+  "subject": {
+    "id": "Attali_LY04"
+  },
+  "phenotypicFeatures": [
+    {
+      "type": {
+        "id": "HP:0011858",
+        "label": "Reduced factor IX activity"
+      }
+    }
+  ],
+  "interpretations": [
+    {
+      "id": "Attali_LY04",
+      "progressStatus": "SOLVED",
+      "diagnosis": {
+        "genomicInterpretations": [
+          {
+            "subjectOrBiosampleId": "Attali_LY04",
+            "interpretationStatus": "CAUSATIVE",
+            "variantInterpretation": {
+              "variationDescriptor": {
+                "geneContext": {
+                  "valueId": "HGNC:3551",
+                  "symbol": "F9"
+                },
+                "expressions": [
+                  {
+                    "syntax": "hgvs.c",
+                    "value": "NM_000133.4:c.127C>T"
+                  },
+                  {
+                    "syntax": "hgvs.g",
+                    "value": "NC_000023.10:g.138619207C>T"
+                  }
+                ],
+                "vcfRecord": {
+                  "genomeAssembly": "hg19",
+                  "chrom": "chrX",
+                  "pos": "138619207",
+                  "ref": "C",
+                  "alt": "T"
+                },
+                "moleculeContext": "genomic"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metaData": {
+    "created": "2023-02-20T22:41:02.102638006Z",
+    "createdBy": "ORCID:0000-0003-2598-6622",
+    "resources": [
+      {
+        "id": "geno",
+        "name": "Genotype Ontology",
+        "url": "http://purl.obolibrary.org/obo/geno.owl",
+        "version": "2022-03-05",
+        "namespacePrefix": "GENO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/GENO_"
+      },
+      {
+        "id": "hgnc",
+        "name": "HUGO Gene Nomenclature Committee",
+        "url": "https://www.genenames.org",
+        "version": "06/01/23",
+        "namespacePrefix": "HGNC",
+        "iriPrefix": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/"
+      },
+      {
+        "id": "omim",
+        "name": "An Online Catalog of Human Genes and Genetic Disorders",
+        "url": "https://www.omim.org",
+        "version": "January 4, 2023",
+        "namespacePrefix": "OMIM",
+        "iriPrefix": "https://www.omim.org/entry/"
+      },
+      {
+        "id": "hp",
+        "name": "human phenotype ontology",
+        "url": "http://purl.obolibrary.org/obo/hp.owl",
+        "version": "2023-01-27",
+        "namespacePrefix": "HP",
+        "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
+      }
+    ],
+    "phenopacketSchemaVersion": "2.0"
+  }
+}

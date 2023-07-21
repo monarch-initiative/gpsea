@@ -1,13 +1,10 @@
 # __init__.py
 
-from .patient import Patient
-from .disease import Disease
-from .phenotype import Phenotype
-from .cohort import Cohort
-from .compare_func import *
-from .compare import run_stats
-from .proteins import Protein
+from .patient import Patient, PatientCreator, PhenopacketPatientCreator
+from .phenotype import Phenotype, PhenotypeCreator, PhenotypeValidationException
+from .cohort import Cohort, CohortAnalysis, PhenopacketCohortCreator
+from .protein import ProtCachingFunctionalAnnotator, ProteinAnnotationCache, ProteinFeature, ProteinMetadata, ProteinMetadataService, SimpleProteinFeature, UniprotProteinMetadataService
+from .variant import VarCachingFunctionalAnnotator, Variant, VariantAnnotationCache, VariantCoordinateFinder, VariantCoordinates, VepFunctionalAnnotator, PhenopacketVariantCoordinateFinder, FunctionalAnnotator, TranscriptAnnotation
+from .constants import VariantEffect
+from .predicate import ProtFeaturePredicate, ProtFeatureTypePredicate, ExonPredicate, VariantPredicate, HPOPresentPredicate, VariantEffectPredicate
 
-__ALL__ = ["Patient", "Disease", "Phenotype", "Cohort", "Protein", "run_stats",
-"is_var_type", "is_not_var_type", "is_var_match", "is_not_var_match", "verify_var",
-"in_feature", "not_in_feature"]
