@@ -1,4 +1,6 @@
 from collections import Counter
+
+
 class Cohort:
     # TODO(lnrekerle) - update the class doc string.
     """
@@ -8,7 +10,8 @@ class Cohort:
     the self.add(Patient) function. 
     
     """
-    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False): 
+
+    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive=False):
         self._patient_set = patient_set
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
@@ -46,18 +49,18 @@ class Cohort:
     def list_all_patients(self):
         return [pat.patient_id for pat in self.all_patients]
 
-    def list_all_phenotypes(self, top = None):
+    def list_all_phenotypes(self, top=None):
         return self._all_counts_dict.get('phenotypes').most_common(top)
 
-    def list_all_variants(self, top = None):
+    def list_all_variants(self, top=None):
         return self._all_counts_dict.get('variants').most_common(top)
 
-    def list_all_proteins(self, top = None):
+    def list_all_proteins(self, top=None):
         return self._all_counts_dict.get('proteins').most_common(top)
 
-    def list_data_by_tx(self, transcript = None):
+    def list_data_by_tx(self, transcript=None):
         if transcript is not None:
-            var_type_dict = {transcript:Counter()}
+            var_type_dict = {transcript: Counter()}
         else:
             var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
         for var in self.all_variants:
