@@ -11,12 +11,29 @@ from ._model import CohortCreator
 
 
 class PhenopacketCohortCreator(CohortCreator):
+    """A class that creates a Cohort object from a directory of Phenopacket formatted JSON files
+
+    Methods:
+        create_cohort(phenopacket_directory:string): Creates a Patient object for each JSON file and collects them into a Cohort object
+    """
 
     def __init__(self, patient_creator: PhenopacketPatientCreator):
+        """Constructs all necessary attributes for a PhenopacketCohortCreator object
+        
+        Args:
+            patient_creator (PhenopacketPatientCreator): A PhenopacketPatientCreator object
+        """
         self._patient_creator = hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator,
                                                              'patient_creator')
 
     def create_cohort(self, phenopacket_directory: str) -> Cohort:
+        """Creates a Patient object for each Phenopacket formatted JSON file in the given directory
+
+        Args:
+            phenopacket_directory (string): The path to a directory with Phenopackets, each file representing a different patient
+        Returns:
+            Cohort: A Cohort object
+        """
         if not os.path.isdir(phenopacket_directory):
             raise ValueError("Could not find directory of Phenopackets.")
         patients = []

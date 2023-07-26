@@ -18,7 +18,7 @@ def MultiExact() -> PythonMultiFisherExact:
                         [[[6,6], [0,5], [0,8]], does_not_raise(), 0.0233],
                         [[[],[],[]], pytest.raises(ValueError), None]
 ))
-def test_multiFisherExact_Works(table, raise_error, pVal, MultiExact):
+def test_multiFisherExact(table, raise_error, pVal, MultiExact):
     with raise_error:
         np_table = np.array(table, dtype=np.int64)
         final_pval = MultiExact.calculate(np_table)

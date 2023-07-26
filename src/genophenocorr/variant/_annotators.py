@@ -15,11 +15,23 @@ from ._variant_data import VariantCoordinates, TranscriptAnnotation, Variant
 
 
 class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
+    """A class that creates VariantCoordinates from a Phenopacket
 
+    Methods:
+        find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket
+    """
     def __init__(self):
+        """Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object"""
         self._logger = logging.getLogger(__name__)
 
     def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
+        """Creates a VariantCoordinates object from the data in a given Phenopacket
+
+        Args:
+            item (GenomicInterpretation): A Phenopacket object
+        Returns:
+            VariantCoordinates: A VariantCoordinates object
+        """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
         chrom, ref, alt, genotype = None, None, None, None
@@ -69,6 +81,11 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
     A C G T A
 
     0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G 
+
+    Args:
+        vc (VariantCoordinates): A VariantCoordinates object
+    Returns:
+        string: The variant coordinates formatted to work with VEP
     """
 
     chrom = vc.chrom
@@ -93,14 +110,31 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
+    """A class that creates a Variant object using variant coordinates and Variant Effect Predictor (VEP) REST API
+
+    Methods:
+        annotate(variant_coordinates: VariantCoordinates): Creates a Variant object from VariantCoordinates
+    """
 
     def __init__(self, protein_annotator: ProteinMetadataService):
+        """Constructs all necessary attributes for a VepFunctionalAnnotator object
+
+        Args:
+            protein_annotator (ProteinMetadataService): A ProteinMetadataService object for ProteinMetadata creation
+        """
         self._logging = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
+        """Creates a Variant object by searching variant coordinates with Variant Effect Predictor (VEP) REST API. 
+
+        Args:
+            variant_coordinates (VariantCoordinates): A VariantCoordinates object
+        Returns:
+            Variant: A Variant object
+        """
         variant = self._query_vep(variant_coordinates)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
@@ -161,13 +195,29 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
 
 class VariantAnnotationCache:
+    """A class that stores or retrieves Variant objects using pickle format
+
+    Methods:
+        get_annotations(variant_coordinates:VariantCoordinates): Searches a given data directory for a pickle file with variant coordinates and returns a Variant object
+        store_annotations(variant_coordinates:VariantCoordinates, annotation:Variant): Creates a pickle file with variant coordinates and stores the given Variant object into that file  
+    """
 
     def __init__(self, datadir: str):
+        """Constructs all necessary attributes for a VariantAnnotationCache object
+
+        Args:
+            datadir (string): A string that references an existing directory that does or will contain all pickle files being stored
+        """
         if not os.path.isdir(datadir):
             raise ValueError(f'datadir {datadir} must be an existing directory')
         self._datadir = datadir
 
     def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[Variant]:
+        """Searches a given data directory for a pickle file with given variant coordinates and returns Variant from file. Returns None if no file is found.
+
+        Args:
+            variant_coordinates (VariantCoordinates): The variant_coordinates associated with the desired Variant
+        """
         fpath = self._create_file_name(variant_coordinates)
         if os.path.isfile(fpath):
             with open(fpath, 'rb') as fh:
@@ -176,22 +226,51 @@ class VariantAnnotationCache:
             return None
 
     def store_annotations(self, variant_coordinates: VariantCoordinates, annotation: Variant):
+        """Creates a pickle file with the given variant coordinates in the file name. Loads the Variant object given into the file for storage.
+
+        Args:
+            variant_coordinates (VariantCoordinates): The variant_coordinates associated with the desired Variant
+            annotation (Variant): A Variant object that will be stored under the given variant coordinates
+        """
         fpath = self._create_file_name(variant_coordinates)
         with open(fpath, 'wb') as f:
             pickle.dump(annotation, f)
 
     def _create_file_name(self, variant_coordinates: VariantCoordinates) -> str:
+        """Creates a file name with full location and the variant coordinates (e.g. "/path/to/desired/directory/1_2345_G_C_heterozygous.pickle")
+
+        Args:
+            variant_coordinates (VariantCoordinates): The variant coordinates associated with the Variant
+        """
         fname = f'{variant_coordinates.as_string()}.pickle'
         return os.path.join(self._datadir, fname)
 
 
 class VarCachingFunctionalAnnotator(FunctionalAnnotator):
+    """A class that retrieves a Variant object if it exists or will run the fallback Fuctional Annotator if it does not exist.
+
+    Methods:
+        annotate(variant_coordinates:VariantCoordinates): Gets data and returns a Variant object for given variant coordinates
+    """
 
     def __init__(self, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
+        """Constructs all necessary attributes for a VarCachingFunctionalAnnotator object
+
+        Args:
+            cache (VariantAnnotationCache): A VariantAnnotationCache object
+            fallback (FunctionalAnnotator): A FunctionalAnnotator object
+        """
         self._cache = hpotk.util.validate_instance(cache, VariantAnnotationCache, 'cache')
         self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
+        """Gets Variant for given variant coordinates
+
+        Args:
+            variant_coordinates (VariantCoordinates): A VariantCoordinates object
+        Returns:
+            Variant: A Variant object
+        """
         hpotk.util.validate_instance(variant_coordinates, VariantCoordinates, 'variant_coordinates')
         annotations = self._cache.get_annotations(variant_coordinates)
         if annotations is not None:

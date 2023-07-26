@@ -7,10 +7,14 @@ from genophenocorr.variant import VariantCoordinates
 from genophenocorr.protein import FeatureType
 import typing
 from collections import namedtuple
-from enum import Flag
+from enum import Flag, auto
 import os
 
-PatientCategory = namedtuple('PatientCategory', field_names=['cat_id', 'name'])
+class PatientCategory(Flag):
+    OBSERVED = auto()
+    NOTOBSERVED = auto()
+    NOTMEASURED = auto()
+    NOTINCLUDED = NOTOBSERVED | NOTMEASURED
 
 
 class HPOPresentPredicate(PolyPredicate):
@@ -27,16 +31,16 @@ class HPOPresentPredicate(PolyPredicate):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         for pheno in patient.phenotypes:
             if hpo == pheno and pheno.observed == True:
-                return PatientCategory('HasHPO', 'Observed')
+                return PatientCategory.OBSERVED
             elif hpo == pheno and pheno.observed == False:
-                return PatientCategory('HasHPO', 'NotObserved')
-        return PatientCategory('HasHPO', 'NotMeasured')
+                return PatientCategory.NOTOBSERVED
+        return PatientCategory.NOTMEASURED
 
 
 class HasVariantResults(Flag):
-    NOVARIANT = 0
-    HETEROVARIANT = 1
-    HOMOVARIANT = 2
+    NOVARIANT = auto()
+    HETEROVARIANT = auto()
+    HOMOVARIANT = auto()
     DOMINANTVARIANTS = HETEROVARIANT | HOMOVARIANT
 
 

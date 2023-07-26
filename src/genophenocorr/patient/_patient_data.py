@@ -6,45 +6,62 @@ from genophenocorr.protein import ProteinMetadata
 
 
 class Patient:
+    """A class that represents an individual patient
+
+    Attributes:
+        patient_id (string): A string unique to this Patient object
+        phenotypes (Sequence[Phenotype]): A list of Phenotype objects
+        variants (Sequence[Variant]): A list of Variant objects
+        proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
+    """
     def __init__(self, patient_id: str,
                  phenotypes: typing.Sequence[Phenotype],
                  variants: typing.Sequence[Variant],
                  proteins: typing.Sequence[ProteinMetadata]):
+        """Constructs all necessary attributes for a Patient object
+
+        Args:
+            patient_id (string): A string unique to this Patient object
+            phenotypes (Sequence[Phenotype]): A list of Phenotype objects
+            variants (Sequence[Variant]): A list of Variant objects
+            proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
+        """
         self._id = patient_id
-        # TODO(lnrekerle) - We should wrap the sequences below in a tuple, otherwise the `__hash__` will explode if the
-        #  caller provides a list.
         self._phenotypes = tuple(phenotypes)
         self._variants = tuple(variants)
         self._proteins = tuple(proteins)
 
     @property
     def patient_id(self) -> str:
+        """
+        Returns:
+            string: Patient ID unique to this Patient object
+        """
         return self._id
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
+        """
+        Returns:
+            Sequence[Phenotype]: A list of Phenotype objects associated with this Patient object
+        """
         return self._phenotypes
     
     @property
     def variants(self) -> typing.Sequence[Variant]:
+        """
+        Returns:
+            Sequence[Variant]: A list of Variant objects associated with this Patient object
+        """
         return self._variants
 
     @property
     def proteins(self) -> typing.Sequence[ProteinMetadata]:
+        """
+        Returns:
+            Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with this Patient object
+        """
         return self._proteins
-
-
-    # def has_hpo(self, hpo, all_hpo):
-    #     if not isinstance(all_hpo, defaultdict):
-    #         for h in self.phenotype_ids:
-    #             if h == hpo:
-    #                 return True
-    #         return False
-    #     else:
-    #         for h in self.phenotype_ids:
-    #             if h in all_hpo.get(hpo):
-    #                 return True
-    #         return False
 
     def __str__(self) -> str:
         return f"Patient(patient_id:{self.patient_id}, " \
