@@ -1,4 +1,6 @@
 from collections import Counter
+
+
 class Cohort:
     """This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
@@ -18,6 +20,7 @@ class Cohort:
         list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it. 
         list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.
     """
+
     def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False): 
         """Constructs all necessary attributes for a Cohort object
         
@@ -28,7 +31,7 @@ class Cohort:
             protein_set (Sequence[ProteinMetadata]): A set of all ProteinMetadata objects in the Cohort
             counts_dict (Dictionary{String, Counter()}): A Dictionary with counts for Phenotypes, Variant, and Proteins objects represented in all Patients
             recessive (boolean, Optional): True if the Cohort is focused on a recessive allele. Defaults to False.
-            """
+        """
         self._patient_set = patient_set
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
@@ -129,7 +132,7 @@ class Cohort:
             dictionary: Each transcript ID references a Counter(), with the variant effect as the key and total variants with that effect as the count value
         """
         if transcript is not None:
-            var_type_dict = {transcript:Counter()}
+            var_type_dict = {transcript: Counter()}
         else:
             var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
         for var in self.all_variants:
