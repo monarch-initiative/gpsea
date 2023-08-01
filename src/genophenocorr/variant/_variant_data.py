@@ -113,7 +113,7 @@ class VariantCoordinates:
         Returns:
             string: A readable representation of the variant coordinates
         """
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}"
+        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}".replace('<', '').replace('>', '')
 
     def __len__(self):
         """
