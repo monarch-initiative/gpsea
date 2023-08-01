@@ -63,10 +63,10 @@ class Phenotype(hpotk.model.Identified):
             #and self.observed == other.observed 
 
     def __hash__(self):
-        return hash((self._term_id))
+        return hash((self._term_id.id))
 
     def __str__(self):
-        return f"Phenotype(identifier={self._term_id}, " \
+        return f"Phenotype(identifier={self._term_id.id}, " \
                f"observed={self._observed})"
 
     def __repr__(self):
