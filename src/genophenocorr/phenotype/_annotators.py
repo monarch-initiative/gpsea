@@ -51,7 +51,7 @@ class PhenotypeCreator:
             terms.append((term, observed))
         validation_results = self._validator.validate_all([term[0] for term in terms])
         if validation_results.is_ok:
-            return [Phenotype(term, observed) for term, observed in terms]
+            return [Phenotype.from_term(term, observed) for term, observed in terms]
         else:
             # We return the messages for now. We may provide more details in future, if necessary.
             issues = [r.message for r in validation_results.results]

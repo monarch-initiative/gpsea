@@ -1,4 +1,6 @@
-from genophenocorr.predicate import SimplePredicate, PolyPredicate
+import hpotk
+
+from genophenocorr.predicate import SimplePredicate, PolyPredicate, PatientCategory
 from genophenocorr.patient import Patient
 #from genophenocorr.cohort import Cohort
 from genophenocorr.constants import VariantEffect
@@ -6,35 +8,65 @@ from genophenocorr.phenotype import Phenotype
 from genophenocorr.variant import VariantCoordinates
 from genophenocorr.protein import FeatureType
 import typing
-from collections import namedtuple
 from enum import Flag, auto
-import os
-
-class PatientCategory(Flag):
-    OBSERVED = auto()
-    NOTOBSERVED = auto()
-    NOTMEASURED = auto()
-    NOTINCLUDED = NOTOBSERVED | NOTMEASURED
 
 
 class HPOPresentPredicate(PolyPredicate):
-    def __init__(self) -> None:
-        self._categories = self.categories()
+
+    OBSERVED = PatientCategory(cat_id=0,
+                               name='Observed',
+                               description="""
+                               The sample *is* annotated with the tested phenotype feature `q`.
+                               
+                               This is either because the sample is annotated with `q` (exact match),
+                               or because one of sample's annotations is a descendant `q` (annotation propagation).
+                               For instance, we tested for a Seizure and the sample did *not* have any Seizure.
+                               """)
+
+    NOT_OBSERVED = PatientCategory(cat_id=1,
+                                   name='Not observed',
+                                   description="""
+                                   We are particular about the sample *not* having the tested feature `q`.
+                                   
+                                   In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.
+                                   
+                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies 
+                                   *not* Clonic seizure.  
+                                   """)
+
+    NOT_MEASURED = PatientCategory(cat_id=2,
+                                   name='Not measured',
+                                   description="""
+                                   We do not know if the sample has or has not the tested feature.
+                                   """)
+
+    def __init__(self, query: hpotk.TermId,
+                 hpo: hpotk.MinimalOntology) -> None:
+        self._query = hpotk.util.validate_instance(query, hpotk.TermId, 'query')
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
 
     def categories(self) -> typing.Sequence[PatientCategory]:
-        pass
+        return self.OBSERVED, self.NOT_OBSERVED, self.NOT_MEASURED
 
-    def test(self, patient: Patient, hpo:Phenotype) -> typing.Optional[PatientCategory]:
-        if not isinstance(hpo, Phenotype):
-            raise ValueError(f"hpo must be type Phenotype but was type {type(hpo)}")
+    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
+        if len(patient.phenotypes) == 0:
+            return None
+
         for pheno in patient.phenotypes:
-            if hpo == pheno and pheno.observed == True:
-                return PatientCategory.OBSERVED
-            elif hpo == pheno and pheno.observed == False:
-                return PatientCategory.NOTOBSERVED
-        return PatientCategory.NOTMEASURED
+            if pheno.observed is None:
+                continue
+            if pheno.observed:
+                if any((self._query == ancestor
+                        for ancestor in self._hpo.graph.get_ancestors(pheno, include_source=True))):
+                    return self.OBSERVED
+            else:
+                if any((self._query == descendant
+                        for descendant in self._hpo.graph.get_descendants(pheno, include_source=True))):
+                    return self.NOT_OBSERVED
+
+        return self.NOT_MEASURED
 
 
 class HasVariantResults(Flag):

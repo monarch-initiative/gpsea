@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from collections import namedtuple
+import hpotk.util
 
 #from genophenocorr.cohort import Cohort
 from genophenocorr.patient import Patient
@@ -20,7 +20,43 @@ class SimplePredicate(metaclass=abc.ABCMeta):
         pass
 
 
-PatientCategory = namedtuple('PatientCategory', field_names=['cat_id', 'name'])
+class PatientCategory:
+
+    def __init__(self, cat_id: int,
+                 name: str,
+                 description: typing.Optional[str] = None):
+        self._cat_id = hpotk.util.validate_instance(cat_id, int, 'cat_id')
+        self._name = hpotk.util.validate_instance(name, str, 'name')
+        self._description = hpotk.util.validate_optional_instance(description, str, 'description')
+
+    @property
+    def cat_id(self) -> int:
+        return self._cat_id
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> typing.Optional[str]:
+        return self._description
+
+    def __str__(self) -> str:
+        return f"PatientCategory(cat_id={self.cat_id}, " \
+               f"name={self.name}, " \
+               f"description={self.description})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, PatientCategory) \
+            and self.cat_id == other.cat_id \
+            and self.name == other.name \
+            and self.description == other.description
+
+    def __hash__(self) -> int:
+        return hash((self.cat_id, self.name, self.description))
 
 
 class PolyPredicate(metaclass=abc.ABCMeta):

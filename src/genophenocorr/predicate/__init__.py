@@ -1,2 +1,2 @@
-from ._api import SimplePredicate, PolyPredicate
+from ._api import SimplePredicate, PolyPredicate, PatientCategory
 from ._all_predicates import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HasVariantResults, PatientCategory

@@ -15,16 +15,16 @@ class Patient:
         proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
     """
     def __init__(self, patient_id: str,
-                 phenotypes: typing.Sequence[Phenotype],
-                 variants: typing.Sequence[Variant],
-                 proteins: typing.Sequence[ProteinMetadata]):
+                 phenotypes: typing.Iterable[Phenotype],
+                 variants: typing.Iterable[Variant],
+                 proteins: typing.Iterable[ProteinMetadata]):
         """Constructs all necessary attributes for a Patient object
 
         Args:
             patient_id (string): A string unique to this Patient object
-            phenotypes (Sequence[Phenotype]): A list of Phenotype objects
-            variants (Sequence[Variant]): A list of Variant objects
-            proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
+            phenotypes (Iterable[Phenotype]): A list of Phenotype objects
+            variants (Iterable[Variant]): A list of Variant objects
+            proteins (Iterable[ProteinMetadata]): A list of ProteinMetadata objects
         """
         self._id = patient_id
         self._phenotypes = tuple(phenotypes)

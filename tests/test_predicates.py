@@ -1,5 +1,6 @@
 from genophenocorr.predicate import *
-from genophenocorr.phenotype import PhenotypeCreator
+from genophenocorr.patient import Patient
+from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType
 import hpotk
@@ -9,7 +10,13 @@ import pytest
 
 def CreateSmallCohort():
     with open(os.path.join(os.getcwd(), 'tests/samplePatients/testingCohort.pickle'), 'rb') as fh:
-        return pickle.load(fh)    
+        return pickle.load(fh)
+
+@pytest.fixture
+def hpo():
+    path = os.path.join(os.getcwd(), 'tests/testingDefaults/hp.toy.json')
+    return hpotk.ontology.load.obographs.load_ontology(path)
+
 
 @pytest.fixture
 def PatientList():
@@ -20,8 +27,7 @@ def PatientList():
     return patDict
 
 @pytest.fixture
-def PhenotypeTest():
-    hpo = hpotk.ontology.load.obographs.load_ontology(os.path.join(os.getcwd(), 'tests/testingDefaults/hp.json'))
+def PhenotypeTest(hpo: hpotk.MinimalOntology):
     validators = [
         hpotk.validate.AnnotationPropagationValidator(hpo),
         hpotk.validate.ObsoleteTermIdsValidator(hpo),
@@ -30,19 +36,52 @@ def PhenotypeTest():
     phenoCreator = PhenotypeCreator(hpo, hpotk.validate.ValidationRunner(validators))
     return phenoCreator.create_phenotype([('HP:0000729', True)])
 
-@pytest.fixture
-def HPOPresentTest():
-    return HPOPresentPredicate()
 
-@pytest.mark.parametrize('patient_id, patientCategory', 
-                        (['KBG7', PatientCategory.OBSERVED],
-                        ['KBG6', PatientCategory.NOTOBSERVED],
-                        ['KBG6', PatientCategory.NOTINCLUDED],
-                        ['KBG4', PatientCategory.NOTMEASURED],
-                        ['KBG4', PatientCategory.NOTINCLUDED]))
-def test_HPOPresentPredicate(patient_id, patientCategory, HPOPresentTest, PatientList, PhenotypeTest):
-    result = HPOPresentTest.test(PatientList[patient_id], PhenotypeTest[0])
-    assert result in patientCategory
+def create_phenotypes(hpo: hpotk.MinimalOntology, observed: str, excluded: str):
+    phenotypes = []
+    for o in observed.split(';'):
+        o = hpotk.TermId.from_curie(o)
+        name = hpo.get_term(o).name
+        phenotypes.append(Phenotype(o, name=name,  observed=True))
+
+    for e in excluded.split(';'):
+        e = hpotk.TermId.from_curie(e)
+        name = hpo.get_term(e).name
+        phenotypes.append(Phenotype(e, name=name, observed=False))
+
+    return phenotypes
+
+
+@pytest.mark.parametrize('query, observed, excluded, expected',
+                         [
+                             # Test exact match
+                             ('HP:0001166',  # Arachnodactyly
+                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
+                              'HP:0010677',  # not Enuresis nocturna
+                              HPOPresentPredicate.OBSERVED),
+                             # Test inferred annotations
+                             ('HP:0001250',  # Seizure
+                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
+                              'HP:0010677',  # not Enuresis nocturna
+                              HPOPresentPredicate.OBSERVED),
+
+                             # Test excluded feature
+                             # TODO - query based on the excluded feature.
+                             ('HP:0001250',  # Seizure
+                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
+                              'HP:0010677',  # not Enuresis nocturna
+                              HPOPresentPredicate.OBSERVED),
+                         ])
+def test_HPOPresentPredicate(hpo: hpotk.MinimalOntology,
+                             query: str,
+                             observed: str,
+                             excluded: str,
+                             expected: PatientCategory):
+    predicate = HPOPresentPredicate(query=hpotk.TermId.from_curie(query), hpo=hpo)
+    phenotypes = create_phenotypes(hpo, observed, excluded)
+    patient = Patient(patient_id='whatever', phenotypes=phenotypes, variants=[], proteins=[])
+    actual = predicate.test(patient)
+    assert actual == expected
 
 
 @pytest.fixture
