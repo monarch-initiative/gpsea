@@ -1,40 +1,28 @@
 from genophenocorr.predicate import *
-from genophenocorr.patient import Patient
+from genophenocorr.patient import Patient, BasicPatientCreator
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.constants import VariantEffect
-from genophenocorr.protein import FeatureType
+from genophenocorr.protein import FeatureType, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
+from genophenocorr.variant import VarCachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
 import hpotk
 import pickle
 import os
 import pytest
-
-def CreateSmallCohort():
-    with open(os.path.join(os.getcwd(), 'tests/samplePatients/testingCohort.pickle'), 'rb') as fh:
-        return pickle.load(fh)
 
 @pytest.fixture
 def hpo():
     path = os.path.join(os.getcwd(), 'tests/testingDefaults/hp.toy.json')
     return hpotk.ontology.load.obographs.load_ontology(path)
 
-
 @pytest.fixture
-def PatientList():
-    patList = CreateSmallCohort().all_patients
-    patDict = {}
-    for pat in patList:
-        patDict[pat.patient_id] = pat
-    return patDict
-
-@pytest.fixture
-def PhenotypeTest(hpo: hpotk.MinimalOntology):
+def PhenotypeCreate(hpo: hpotk.MinimalOntology):
     validators = [
         hpotk.validate.AnnotationPropagationValidator(hpo),
         hpotk.validate.ObsoleteTermIdsValidator(hpo),
         hpotk.validate.PhenotypicAbnormalityValidator(hpo)
     ]
     phenoCreator = PhenotypeCreator(hpo, hpotk.validate.ValidationRunner(validators))
-    return phenoCreator.create_phenotype([('HP:0000729', True)])
+    return phenoCreator
 
 
 def create_phenotypes(hpo: hpotk.MinimalOntology, observed: str, excluded: str):
@@ -77,28 +65,54 @@ def test_HPOPresentPredicate(hpo: hpotk.MinimalOntology,
                              observed: str,
                              excluded: str,
                              expected: PatientCategory):
-    predicate = HPOPresentPredicate(query=hpotk.TermId.from_curie(query), hpo=hpo)
+    predicate = HPOPresentPredicate(hpo=hpo)
     phenotypes = create_phenotypes(hpo, observed, excluded)
     patient = Patient(patient_id='whatever', phenotypes=phenotypes, variants=[], proteins=[])
-    actual = predicate.test(patient)
+    actual = predicate.test(patient, query=hpotk.TermId.from_curie(query))
     assert actual == expected
 
+
+@pytest.fixture
+def PatientDict(PhenotypeCreate):
+    pat_id_list = {'HetSingleVar':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89279849', '89279851', 'G', 'GC', 'heterozygous']]},
+                'HetDoubleVar1':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89284600', '89284602', 'GG', 'A', 'heterozygous'],['16', '89280751', '89280752', 'G', 'T', 'heterozygous']]},
+                'HetDoubleVar2':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89275127', '89275128', 'G', 'A', 'heterozygous'], ['16', '89279707', '89279725', 'AGTGTTCGGGGCGGGGCC', 'A', 'heterozygous']]},
+                'HomoVar':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89279457', '89279459', 'TG', 'T', 'homozygous']]},
+                'LargeCNV':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89190070', '89439815', 'N', '<DEL>', 'heterozygous']]}
+                }
+    pat_dict = {}
+    pheno_creator = PhenotypeCreate
+    path = os.path.join(os.getcwd(), 'tests/sampleAnnotations')
+    pm = UniprotProteinMetadataService()
+    pac = ProteinAnnotationCache(path)
+    pfa = ProtCachingFunctionalAnnotator(pac, pm)
+    vac = VariantAnnotationCache(path)
+    vep = VepFunctionalAnnotator(pfa)
+    vfa = VarCachingFunctionalAnnotator(vac, vep)
+    pat_creator = BasicPatientCreator(pheno_creator, vfa)
+    for pat, val in pat_id_list.items():
+        pat_dict[pat] = pat_creator.create_patient(pat, val['hpos'], val['vars'])
+    return pat_dict
 
 @pytest.fixture
 def VariantEffectTest():
     return VariantEffectPredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, variantEffect, hasVarResult', 
-                        (['KBG6', VariantEffect.FRAMESHIFT_VARIANT, HasVariantResults.HETEROVARIANT],
-                        ['KBG6', VariantEffect.MISSENSE_VARIANT, HasVariantResults.NOVARIANT],
-                        ['KBG7', VariantEffect.STOP_GAINED, HasVariantResults.HETEROVARIANT],
-                        ['KBG4', VariantEffect.FRAMESHIFT_VARIANT, HasVariantResults.HOMOVARIANT],
-                        ['KBG4', VariantEffect.FRAMESHIFT_VARIANT, HasVariantResults.DOMINANTVARIANTS],
-                        ['KBG2', VariantEffect.STOP_LOST, HasVariantResults.DOMINANTVARIANTS],
-                        ['KBG2', VariantEffect.FEATURE_TRUNCATION, HasVariantResults.DOMINANTVARIANTS]))
-def test_VariantEffectPredicate(patient_id, variantEffect, hasVarResult, VariantEffectTest, PatientList):
-    result = VariantEffectTest.test(PatientList[patient_id], variantEffect)
-    assert result in hasVarResult
+@pytest.mark.parametrize('patient_id, variantEffect, expected_result', 
+                        (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, HETEROZYGOUS],
+                        ['HetSingleVar', VariantEffect.MISSENSE_VARIANT, NO_VARIANT],
+                        ['HetDoubleVar1', VariantEffect.STOP_GAINED, HETEROZYGOUS],
+                        ['HomoVar', VariantEffect.FRAMESHIFT_VARIANT, HOMOZYGOUS],
+                        ['LargeCNV', VariantEffect.STOP_LOST, HETEROZYGOUS],
+                        ['LargeCNV', VariantEffect.FEATURE_TRUNCATION, HETEROZYGOUS]))
+def test_VariantEffectPredicate(patient_id: str, 
+                                variantEffect: VariantEffect,
+                                expected_result: PatientCategory, 
+                                VariantEffectTest: VariantEffectPredicate, 
+                                PatientDict
+                                ):
+    result = VariantEffectTest.test(PatientDict[patient_id], variantEffect)
+    assert result == expected_result
 
 
 @pytest.fixture
@@ -106,17 +120,16 @@ def VariantTest():
     return VariantPredicate('NM_013275.6')
 
 @pytest.mark.parametrize('patient_id, variant, hasVarResult', 
-                        (['KBG6', '16_89279851_-/C', HasVariantResults.HETEROVARIANT],
-                        ['KBG6', '16_89279708_AGTGTTCGGGGCGGGGCC/A', HasVariantResults.NOVARIANT],
-                        ['KBG7', '16_89284601_GG/A', HasVariantResults.HETEROVARIANT],
-                        ['KBG7', '16_89280752_G/T', HasVariantResults.HETEROVARIANT],
-                        ['KBG4', '16_89280752_G/T', HasVariantResults.NOVARIANT],
-                        ['KBG4', '16_89279458_TG/T', HasVariantResults.HOMOVARIANT],
-                        ['KBG4', '16_89279458_TG/T', HasVariantResults.DOMINANTVARIANTS],
-                        ['KBG2', '16_89190071_deletion', HasVariantResults.DOMINANTVARIANTS]))
-def test_VariantPredicate(patient_id, variant, hasVarResult, VariantTest, PatientList):
-    result = VariantTest.test(PatientList[patient_id], variant)
-    assert result in hasVarResult
+                        (['HetSingleVar', '16_89279851_-/C', HETEROZYGOUS],
+                        ['HetSingleVar', '16_89279708_AGTGTTCGGGGCGGGGCC/A', NO_VARIANT],
+                        ['HetDoubleVar1', '16_89284601_GG/A', HETEROZYGOUS],
+                        ['HetDoubleVar1', '16_89280752_G/T', HETEROZYGOUS],
+                        ['HomoVar', '16_89280752_G/T', NO_VARIANT],
+                        ['HomoVar', '16_89279459_G/-', HOMOZYGOUS],
+                        ['LargeCNV', '16_89190071_deletion', HETEROZYGOUS]))
+def test_VariantPredicate(patient_id, variant, hasVarResult, VariantTest, PatientDict):
+    result = VariantTest.test(PatientDict[patient_id], variant)
+    assert result == hasVarResult
 
 
 @pytest.fixture
@@ -124,19 +137,18 @@ def ExonTest():
     return ExonPredicate('NM_013275.6')
 
 @pytest.mark.parametrize('patient_id, exon, hasVarResult', 
-                        (['KBG6', 9, HasVariantResults.HETEROVARIANT],
-                        ['KBG6', 13, HasVariantResults.NOVARIANT],
-                        ['KBG7', 9, HasVariantResults.HOMOVARIANT],
-                        ['KBG46', 10, HasVariantResults.HETEROVARIANT],
-                        ['KBG46', 9, HasVariantResults.HETEROVARIANT],
-                        ['KBG4', 10, HasVariantResults.NOVARIANT],
-                        ['KBG4', 9, HasVariantResults.DOMINANTVARIANTS],
-                        ['KBG4', 9, HasVariantResults.HOMOVARIANT],
-                        ['KBG2', 1, HasVariantResults.NOVARIANT],
-                        ['KBG2', 13, HasVariantResults.DOMINANTVARIANTS]))
-def test_ExonPredicate(patient_id, exon, hasVarResult, ExonTest, PatientList):
-    result = ExonTest.test(PatientList[patient_id], exon)
-    assert result in hasVarResult
+                        (['HetSingleVar', 9, HETEROZYGOUS],
+                        ['HetSingleVar', 13, NO_VARIANT],
+                        ['HetDoubleVar1', 9, HOMOZYGOUS],
+                        ['HetDoubleVar2', 10, HETEROZYGOUS],
+                        ['HetDoubleVar2', 9, HETEROZYGOUS],
+                        ['HomoVar', 10, NO_VARIANT],
+                        ['HomoVar', 9, HOMOZYGOUS],
+                        ['LargeCNV', 1, NO_VARIANT],
+                        ['LargeCNV', 13, HETEROZYGOUS]))
+def test_ExonPredicate(patient_id, exon, hasVarResult, ExonTest, PatientDict):
+    result = ExonTest.test(PatientDict[patient_id], exon)
+    assert result == hasVarResult
 
 
 @pytest.fixture
@@ -144,16 +156,16 @@ def ProteinFeatureTypeTest():
     return ProtFeatureTypePredicate('NM_013275.6')
 
 @pytest.mark.parametrize('patient_id, featureType, hasVarResult', 
-                        (['KBG46', FeatureType.REGION, HasVariantResults.HETEROVARIANT],
-                        ['KBG46', FeatureType.REPEAT, HasVariantResults.NOVARIANT],
-                        ['KBG6', FeatureType.DOMAIN, HasVariantResults.NOVARIANT],
-                        ['KBG4', FeatureType.REGION, HasVariantResults.HOMOVARIANT],
-                        ['KBG7', FeatureType.REPEAT, HasVariantResults.NOVARIANT]))
+                        (['HetDoubleVar2', FeatureType.REGION, HOMOZYGOUS],
+                        ['HetDoubleVar2', FeatureType.REPEAT, NO_VARIANT],
+                        ['HetSingleVar', FeatureType.REGION, HETEROZYGOUS],
+                        ['HomoVar', FeatureType.REGION, HOMOZYGOUS],
+                        ['HetDoubleVar1', FeatureType.REPEAT, NO_VARIANT]))
                         ## TODO Why do CNV not show as affecting a feature? 
-                        ##['KBG2', FeatureType.REGION , HasVariantResults.DOMINANTVARIANTS]))
-def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, ProteinFeatureTypeTest, PatientList):
-    result = ProteinFeatureTypeTest.test(PatientList[patient_id], featureType)
-    assert result in hasVarResult
+                        ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
+def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, ProteinFeatureTypeTest, PatientDict):
+    result = ProteinFeatureTypeTest.test(PatientDict[patient_id], featureType)   
+    assert result == hasVarResult 
 
 
 @pytest.fixture
@@ -161,12 +173,12 @@ def ProteinFeatureTest():
     return ProtFeaturePredicate('NM_013275.6')
 
 @pytest.mark.parametrize('patient_id, feature, hasVarResult', 
-                        (['KBG46', 'Disordered', HasVariantResults.HETEROVARIANT],
-                        ['KBG46', 'BadFeature', HasVariantResults.NOVARIANT],
-                        ['KBG6', 'Disordered', HasVariantResults.NOVARIANT],
-                        ['KBG4', 'Disordered', HasVariantResults.HOMOVARIANT],
-                        ['KBG7', 'Disordered', HasVariantResults.NOVARIANT]))
-def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, ProteinFeatureTest, PatientList):
-    result = ProteinFeatureTest.test(PatientList[patient_id], feature)
-    assert result in hasVarResult
+                        (['HetDoubleVar2', 'Disordered', HETEROZYGOUS],
+                        ['HetDoubleVar2', 'BadFeature', NO_VARIANT],
+                        ['HetSingleVar', 'Disordered', HETEROZYGOUS],
+                        ['HomoVar', 'Disordered', HOMOZYGOUS],
+                        ['HetDoubleVar1', 'Disordered', HETEROZYGOUS]))
+def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, ProteinFeatureTest, PatientDict):
+    result = ProteinFeatureTest.test(PatientDict[patient_id], feature)
+    assert result == hasVarResult
 

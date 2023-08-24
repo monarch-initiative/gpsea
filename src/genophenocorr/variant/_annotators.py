@@ -70,6 +70,17 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
         return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
 
+class BasicVariantCoordinateFinder(VariantCoordinateFinder[typing.Iterable[str]]):
+    def __init__(self) -> None:
+        self._logger = logging.getLogger(__name__)
+
+    def find_coordinates(self, chrom, start, end, ref, alt, genotype) -> VariantCoordinates:
+        if any(field is None for field in (chrom, start, end, ref, alt, genotype)):
+            raise ValueError(f'All inputs are required to create variant')
+        if not start.isdigit() or not end.isdigit():
+            return ValueError(f'Start and End values must be a number')
+        return VariantCoordinates(chrom, int(start), int(end), ref, alt, len(alt) - len(ref), genotype)
+
         
 
 def verify_start_end_coordinates(vc: VariantCoordinates):

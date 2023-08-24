@@ -9,7 +9,7 @@ import typing
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType, ProteinFeature
 from genophenocorr.predicate import VariantEffectPredicate, HPOPresentPredicate, \
-    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HasVariantResults, PatientCategory
+    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 from genophenocorr.variant import Variant
 from scipy import stats
 from pandas import DataFrame, MultiIndex
@@ -35,7 +35,7 @@ class CohortAnalysis():
         compare_by_variant_type(feature1:FeatureType, feature2:Optional FeatureType): Runs Fisher Exact analysis, finds any correlation between given protein feature types and phenotypes
         compare_by_variant_type(feature1:string, feature2:Optional string): Runs Fisher Exact analysis, finds any correlation between given protein features and phenotypes
     """
-    def __init__(self, cohort, transcript, recessive = False, include_unmeasured = True,  
+    def __init__(self, cohort, transcript, hpo, recessive = False, include_unmeasured = True,  
                 include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
         """Constructs all necessary attributes for a CohortAnalysis object 
 
@@ -60,7 +60,7 @@ class CohortAnalysis():
         if not isinstance(min_perc_patients_w_hpo, int) or min_perc_patients_w_hpo <= 0 or min_perc_patients_w_hpo > 100:
             raise ValueError(f"hpo_percent_of_patients must be an integer between 1 & 100 but was {min_perc_patients_w_hpo}")
         self._percent_pats = min_perc_patients_w_hpo
-        self._hpo_present_test = HPOPresentPredicate()
+        self._hpo_present_test = HPOPresentPredicate(hpo)
         self._testing_hpo_terms = self._remove_low_hpo_terms()
         self._patients_by_hpo = self._sort_patients_by_hpo()
         self._logger = logging.getLogger(__name__)
@@ -150,11 +150,11 @@ class CohortAnalysis():
         all_without_hpo = {}
         for hpo in self._testing_hpo_terms:
             if self.include_unmeasured:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo) in PatientCategory.OBSERVED]
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo) in PatientCategory.NOTINCLUDED]
+                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
+                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_MEASURED]
             else:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo) in PatientCategory.OBSERVED]
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo) in PatientCategory.NOTOBSERVED]
+                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
+                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_OBSERVED]
             all_with_hpo[hpo] = with_hpo
             all_without_hpo[hpo] = not_hpo
         patientsByHPO = namedtuple('patientByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -164,14 +164,14 @@ class CohortAnalysis():
         final_dict = dict()
         if not self.is_recessive:
             for hpo in self._testing_hpo_terms:
-                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
-                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
+                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in (HOMOZYGOUS, HETEROZYGOUS)])
+                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) in (HOMOZYGOUS, HETEROZYGOUS)])
                 if variable2 is None:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
                 else:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
                 if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
@@ -186,19 +186,19 @@ class CohortAnalysis():
         if self.is_recessive:
             for hpo in self._testing_hpo_terms:
                 if variable2 is None:
-                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
-                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
-                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
-                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
                 else:
-                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
-                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
-                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS and predicate.test(pat, variable2) == HETEROZYGOUS])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS and predicate.test(pat, variable2) == HETEROZYGOUS])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
                 if with_hpo_var1_var1 + no_hpo_var1_var1 == 0 or with_hpo_var1_var2 + no_hpo_var1_var2 == 0 or with_hpo_var2_var2 + no_hpo_var2_var2 == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
