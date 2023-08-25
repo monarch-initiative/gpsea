@@ -5,8 +5,8 @@ import hpotk
 from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket
 
-from genophenocorr.cohort import Cohort
 from genophenocorr.patient import PhenopacketPatientCreator
+from ._cohort_data import Cohort
 
 
 def load_phenopacket_folder(pp_directory: str,
