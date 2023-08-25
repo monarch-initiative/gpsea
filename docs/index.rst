@@ -50,6 +50,7 @@ The best place to leave feedback, ask questions, and report bugs is the `genophe
 
     installation
     tutorial
+    user-guide/index
     apidocs/modules
 
 ..  Comment out the below for now
