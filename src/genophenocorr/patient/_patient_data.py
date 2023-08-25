@@ -66,18 +66,18 @@ class Patient:
     def __str__(self) -> str:
         return f"Patient(patient_id:{self.patient_id}, " \
             f"variants:{[var.variant_string for var in self.variants]}, " \
-            f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, " 
-            #f"proteins:{[prot.protein_id for prot in self.proteins]})"
+            f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, " \ 
+            f"proteins:{[prot.protein_id for prot in self.proteins]})"
 
     def __repr__(self) -> str:
         return str(self)
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, Patient) \
-            and self.patient_id == other.patient_id \
-            and self.variants == other.variants \
-            and self.phenotypes == other.phenotypes 
-            #and self.proteins == other.proteins
+        return (isinstance(other, Patient)
+                and self.patient_id == other.patient_id
+                and self.variants == other.variants
+                and self.phenotypes == other.phenotypes
+                and self.proteins == other.proteins)
     
     def __hash__(self) -> int:
-        return hash((self.patient_id, self.variants, self.phenotypes)) #self.proteins))
+        return hash((self.patient_id, self.variants, self.phenotypes, self.proteins))

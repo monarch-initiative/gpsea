@@ -1,8 +1,8 @@
 .. _installation:
 
-=============================
-Installation of genophenocorr
-=============================
+============
+Installation
+============
 
 Todo
 

@@ -1,7 +1,35 @@
+import typing
+
 from collections import Counter
+
+from genophenocorr.patient import Patient
 
 
 class Cohort:
+
+    @staticmethod
+    def from_patients(members: typing.Sequence[Patient]):
+        """
+        Create a cohort from a sequence of patients.
+
+        :param members: a sequence of cohort members.
+        :return: the cohort
+        """
+        cohort_variants, cohort_phenotypes, cohort_proteins = set(), set(), set()  # , cohort_proteins
+        var_counts, pheno_count, prot_counts = Counter(), Counter(), Counter()  # , prot_counts
+        members = set(members)
+        for patient in members:
+            cohort_variants.update(patient.variants)
+            var_counts.update([var.variant_string for var in patient.variants])
+            cohort_phenotypes.update(patient.phenotypes)
+            pheno_count.update([pheno.identifier.value for pheno in patient.phenotypes if pheno.observed == True])
+            cohort_proteins.update(patient.proteins)
+            prot_counts.update([prot.protein_id for prot in patient.proteins])
+        all_counts = {'patients': len(members), 'variants': var_counts, 'phenotypes': pheno_count,
+                      'proteins': prot_counts}  # 'proteins':prot_counts
+        return Cohort(members, cohort_phenotypes, cohort_variants, cohort_proteins,
+                      all_counts)  # cohort_proteins, all_counts
+
     """This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
     add each file as a patient into the grouping.
@@ -21,7 +49,7 @@ class Cohort:
         list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.
     """
 
-    def __init__(self, patient_set, phenotype_set, variant_set, protein_set, counts_dict, recessive = False): 
+    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict, recessive = False):
         """Constructs all necessary attributes for a Cohort object
         
         Args:
@@ -32,7 +60,11 @@ class Cohort:
             counts_dict (Dictionary{String, Counter()}): A Dictionary with counts for Phenotypes, Variant, and Proteins objects represented in all Patients
             recessive (boolean, Optional): True if the Cohort is focused on a recessive allele. Defaults to False.
         """
-        self._patient_set = patient_set
+        if not isinstance(patient_set, set):
+            raise ValueError(f'`patient_set` must be a set but got {type(patient_set)}')
+        else:
+            self._patient_set = frozenset(patient_set)
+
         self._phenotype_set = phenotype_set
         self._protein_set = protein_set
         self._variant_set = variant_set
@@ -40,10 +72,10 @@ class Cohort:
         self._recessive = recessive
 
     @property
-    def all_patients(self):
+    def all_patients(self) -> typing.FrozenSet:
         """
         Returns:
-            set: A set of all the Patient objects in the Cohort
+            set: A frozen set of all the Patient objects in the Cohort
         """
         return self._patient_set
 

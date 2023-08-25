@@ -3,7 +3,6 @@ import typing
 
 import hpotk.util
 
-#from genophenocorr.cohort import Cohort
 from genophenocorr.patient import Patient
 
 

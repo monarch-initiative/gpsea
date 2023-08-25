@@ -36,18 +36,17 @@ keywords = [
 dependencies = [
     "hpo-toolkit>=0.2.0",
     "protobuf>=3.15.0",
-    "xmltodict>=0.12.0",
-    "pandas",
+    "pandas>=2.0.0",
     "phenopackets",
     "requests",
-    "scipy",
+    "scipy>=1.11",
     "statsmodels",
     "numpy"
 ]
 
 [project.optional-dependencies]
 test = ["pytest"]
-
+docs = ["sphinx", "sphinx-rtd-theme", "sphinx-copybutton"]
 
 [project.urls]
 homepage = "https://github.com/monarch-initiative/genophenocorr"
