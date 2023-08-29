@@ -48,16 +48,20 @@ The best place to leave feedback, ask questions, and report bugs is the `genophe
     :maxdepth: 1
     :hidden:
 
-    install
+    installation
+    tutorial
+    user-guide/index
+    apidocs/modules
 
-.. toctree::
+..  Comment out the below for now
+
+..  .. toctree::
     :caption: Project Info
     :name: project-info
     :maxdepth: 1
     :hidden:
 
-    contributing
+..    contributing
     authors
     history
     LICENSE
-  #  release_howto

@@ -64,8 +64,8 @@ def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
                           ('test_data/missense_test.json', '16_89279134_89279135_G_C_heterozygous'),
                           ('test_data/duplication_test.json', '16_89279849_89279851_G_GC_heterozygous'),
                           ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A_heterozygous'),
-                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_<DUP>_heterozygous'),
-                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_<DEL>_heterozygous')
+                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_DUP_heterozygous'),
+                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_DEL_heterozygous')
                           ])
 def test_find_coordinates(pp_path, expected, pp_vc_finder):
     fname = resource_filename(__name__, pp_path)

@@ -4,11 +4,33 @@ from genophenocorr.protein import ProteinMetadata
 
 class VariantCoordinates:
     """A representation of coordinates of sequence and symbolic variants.
-
     The breakend variants are not supported.
+
+    Attributes:
+        chrom (string): Chromosome variant coordinates are located on
+        start (integer): The 0-based starting coordinate of the ref allele
+        end (integer): The 0-based ending coordinate of the ref allele
+        ref (string): The reference allele
+        alt (string): The alternate allele
+        change_length (integer): The change between the ref and alt alleles due to the variant presence
+        genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)
+    Methods:
+        is_structural: Returns True if the variant coordinates use structural variant notation
+        as_string: Returns a readable representation of the variant coordinate
     """
 
     def __init__(self, chrom: str, start: int, end: int, ref: str, alt: str, change_length: int, genotype: str):
+        """Constructs all necessary attributes for a VariantCoordinates object
+
+        Args:
+            chrom (string): Chromosome variant coordinates are located on
+            start (integer): The 0-based starting coordinate of the ref allele
+            end (integer): The 0-based ending coordinate of the ref allele
+            ref (string): The reference allele
+            alt (string): The alternate allele
+            change_length (integer): The change between the ref and alt alleles due to the variant presence
+            genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)
+        """
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
         self._chrom = chrom
@@ -22,45 +44,51 @@ class VariantCoordinates:
     @property
     def chrom(self) -> str:
         """
-        Get label of the chromosome/contig where the variant is located.
+        Returns:
+            string: The label of the chromosome/contig where the variant is located.
         """
         return self._chrom
 
     @property
     def start(self) -> int:
         """
-        Get 0-based start coordinate (excluded) of the ref allele.
+        Returns:
+            integer: The 0-based start coordinate (excluded) of the ref allele.
         """
         return self._start
 
     @property
     def end(self) -> int:
         """
-        Get 0-based end coordinate (included) of the ref allele.
+        Returns:
+            integer: The 0-based end coordinate (included) of the ref allele.
         """
         return self._end
 
     @property
     def ref(self) -> str:
         """
-        Get reference allele (e.g. "A", "N"). The allele may be an empty string.
+        Returns:
+            string: The reference allele (e.g. "A", "N"). The allele may be an empty string.
         """
         return self._ref
 
     @property
     def alt(self) -> str:
         """
-        Get alternate allele (e.g. "A", "GG", "<DEL>"). The allele may be an empty string for sequence variants.
-        The symbolic alternate allele follow the VCF notation and use the `<` and `>` characters
-        (e.g. "<DEL>", "<INS:ME:SINE>").
+        Returns:
+            string: The alternate allele (e.g. "A", "GG", "<DEL>"). The allele may be an empty string for sequence variants.
+            The symbolic alternate allele follow the VCF notation and use the `<` and `>` characters
+            (e.g. "<DEL>", "<INS:ME:SINE>").
         """
         return self._alt
 
     @property
     def change_length(self) -> int:
         """
-        Get the change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,
-        deletions and insertions/duplications lead to negative and positive change lengths, respectively.
+        Returns:
+            integer: The change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,
+            deletions and insertions/duplications lead to negative and positive change lengths, respectively.
         """
         return self._change_length
 
@@ -71,15 +99,21 @@ class VariantCoordinates:
         return self._genotype
 
     def is_structural(self) -> bool:
-        """
-        Return `True` if the variant coordinates use structural variant notation
+        """Checks if the variant coordinates use structural variant notation
         (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
         as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).
+        
+        Returns:
+            boolean: True if the variant coordinates use structural variant notation
         """
         return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
 
     def as_string(self) -> str:
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}"
+        """
+        Returns:
+            string: A readable representation of the variant coordinates
+        """
+        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}".replace('<', '').replace('>', '')
 
     def __len__(self):
         """
@@ -112,10 +146,17 @@ class VariantCoordinates:
 
 
 class TranscriptAnnotation:
-    """
-    Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
-    """
+    """Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
 
+    Attributes:
+        gene_id (string): The gene symbol associated with the transcript
+        transcript_id (string): The transcript ID
+        hgvsc_id (string): The HGVS "coding-DNA" ID if available, else None
+        variant_effects (Sequence[string]): A sequence of predicted effects given by VEP
+        overlapping_exons (Sequence[integer]): A sequence of exons affected by the variant. Returns None if none are affected.
+        protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript
+        protein_effect_location (Tuple(integer, integer)): The start and end coordinates of the effect on the protein sequence.
+    """
     def __init__(self, gene_id: str,
                  tx_id: str,
                  hgvsc: typing.Optional[str],
@@ -124,6 +165,18 @@ class TranscriptAnnotation:
                  affected_protein: typing.Sequence[ProteinMetadata],
                  protein_effect_start: typing.Optional[int],
                  protein_effect_end: typing.Optional[int]):
+        """Constructs all necessary attributes for a TranscriptAnnotation object
+
+        Args:
+            gene_id (string): The gene symbol associated with the transcript
+            tx_id (string): The transcript ID
+            hgvsc (string, Optional): The HGVS "coding-DNA" ID if available, else None
+            variant_effects (Sequence[string]): A sequence of predicted effects given by VEP
+            affected_exons (Sequence[integer], Optional): A sequence of exons affected by the variant. Returns None if none are affected.
+            affected_protein (Sequence[ProteinMetadata]): A ProteinMetadata object representing the protein affected by this transcript
+            protein_effect_start (integer, Optional): The start coordinate of the effect on the protein sequence.
+            protein_effect_end (integer, Optional): The end coordinate of the effect on the protein sequence.
+        """
         self._gene_id = gene_id
         self._tx_id = tx_id
         self._hgvsc_id = hgvsc
@@ -138,50 +191,57 @@ class TranscriptAnnotation:
     @property
     def gene_id(self) -> str:
         """
-        Get the gene symbol (e.g. SURF1)
+        Returns:
+            string: The gene symbol (e.g. SURF1)
         """
         return self._gene_id
 
     @property
     def transcript_id(self) -> str:
         """
-        Get the transcript identifier (e.g. NM_123456.7)
+        Returns:
+            string: The transcript RefSeq identifier (e.g. NM_123456.7)
         """
         return self._tx_id
 
     @property
     def hgvsc_id(self):
         """
-        Get the HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
+        Returns:
+            string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
         """
         return self._hgvsc_id
 
     @property
     def variant_effects(self):
         """
-        Get a sequence of variant effects. 
-        Definitions of these can be found at: http://www.sequenceontology.org/
+        Returns:
+            Sequence[string]: A sequence of variant effects. 
+                    Definitions of these can be found at: http://www.sequenceontology.org/
         """
         return self._variant_effects
 
     @property
     def overlapping_exons(self):
         """
-        Get a sequence of IDs of the exons that overlap with the variant.
+        Returns:
+            Sequence[integer]: A sequence of IDs of the exons that overlap with the variant.
         """
         return self._affected_exons
 
     @property
     def protein_affected(self) -> ProteinMetadata:
         """
-        Get the protein ID that is affected by the alteration of this transcript (e.g. NP_037407.4)
+        Returns:
+            ProteinMetadata: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
         """
         return self._affected_protein
 
     @property
     def protein_effect_location(self) -> typing.Tuple[int, int]:
         """
-        Get the start and end position on the protein sequence that the variant effects. (e.g. (1234, 1235))
+        Returns:
+            Tuple(integer, integer): The start and end position on the protein sequence that the variant effects. (e.g. (1234, 1235))
         """
         return self._protein_effect_location
 
@@ -212,8 +272,14 @@ class TranscriptAnnotation:
 
 
 class Variant:
-    """
-    Class that represents results of the functional annotation of a variant with all included transcripts.
+    """Class that represents results of the functional annotation of a variant with all included transcripts.
+
+    Attributes:
+        variant_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
+        variant_string (string): A readable representation of the variant coordinates
+        genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)
+        tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
+        variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
     """
 
     def __init__(self, var_id: str,
@@ -221,6 +287,15 @@ class Variant:
                  var_coordinates: VariantCoordinates,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
                  genotype: typing.Optional[str]):
+        """Constructs all necessary attributes for a Variant object
+
+        Args:
+            var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
+            var_id (string): A readable representation of the variant coordinates
+            genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)
+            tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
+            var_class (string): The variant class (e.g. Duplication, SNV, etc.)
+        """
         self._id = var_id
         self._var_coordinates = var_coordinates
         self._var_class = var_class
@@ -233,39 +308,46 @@ class Variant:
     @property
     def variant_coordinates(self) -> VariantCoordinates:
         """
-        A representation of coordinates of a sequence and symbolic variant.
+        Returns:
+            VariantCoordinates: A representation of coordinates of a sequence and symbolic variant.
         """
         return self._var_coordinates
 
     @property
     def variant_string(self) -> str:
         """
-        A readable representation of the variant's coordinates. 
-        Format - "Chromosome_Start_Reference/Alternative" or
-                 "Chromosome_Start_StructuralType"
+        Returns:
+            string: A readable representation of the variant's coordinates. 
+                Format - "Chromosome_Start_Reference/Alternative" or
+                "Chromosome_Start_StructuralType"
         """
         return self._id
 
     @property
     def genotype(self) -> str:
-        """
-        Optional parameter. Required for recessive tests. 
+        """Optional parameter. Required for recessive tests. 
         Possible values: Heterozygous, Homozygous, Hemizygous
+        
+        Returns:
+            string: Genotype of the variant
         """
         return self._genotype
 
     @property
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
-        """
-        A collection of TranscriptAnnotations that each represent results of the functional annotation 
+        """A collection of TranscriptAnnotations that each represent results of the functional annotation 
         of a variant with respect to single transcript of a gene.
+
+        Returns:
+            Sequence[TranscriptAnnotation]: A sequence of TranscriptAnnotation objects
         """
         return self._tx_annotations
 
     @property
     def variant_class(self) -> str:
         """
-        The variant class. (e.g. Duplication, SNV, Deletion, etc.)
+        Returns:
+            string: The variant class. (e.g. Duplication, SNV, Deletion, etc.)
         """
         return self._var_class
 

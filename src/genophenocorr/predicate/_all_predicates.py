@@ -1,4 +1,6 @@
-from genophenocorr.predicate import SimplePredicate, PolyPredicate
+import hpotk
+
+from genophenocorr.predicate import SimplePredicate, PolyPredicate, PatientCategory
 from genophenocorr.patient import Patient
 #from genophenocorr.cohort import Cohort
 from genophenocorr.constants import VariantEffect
@@ -6,47 +8,97 @@ from genophenocorr.phenotype import Phenotype
 from genophenocorr.variant import VariantCoordinates
 from genophenocorr.protein import FeatureType
 import typing
-from collections import namedtuple
-from enum import Flag
-import os
-
-PatientCategory = namedtuple('PatientCategory', field_names=['cat_id', 'name'])
+from enum import Flag, auto
 
 
 class HPOPresentPredicate(PolyPredicate):
-    def __init__(self) -> None:
-        self._categories = self.categories()
+
+    OBSERVED = PatientCategory(cat_id=0,
+                               name='Observed',
+                               description="""
+                               The sample *is* annotated with the tested phenotype feature `q`.
+                               
+                               This is either because the sample is annotated with `q` (exact match),
+                               or because one of sample's annotations is a descendant `q` (annotation propagation).
+                               For instance, we tested for a Seizure and the sample did *not* have any Seizure.
+                               """)
+
+    NOT_OBSERVED = PatientCategory(cat_id=1,
+                                   name='Not observed',
+                                   description="""
+                                   We are particular about the sample *not* having the tested feature `q`.
+                                   
+                                   In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.
+                                   
+                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies 
+                                   *not* Clonic seizure.  
+                                   """)
+
+    NOT_MEASURED = PatientCategory(cat_id=2,
+                                   name='Not measured',
+                                   description="""
+                                   We do not know if the sample has or has not the tested feature.
+                                   """)
+
+    def __init__(self, 
+                 hpo: hpotk.MinimalOntology) -> None:
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
 
     def categories(self) -> typing.Sequence[PatientCategory]:
-        pass
+        return self.OBSERVED, self.NOT_OBSERVED, self.NOT_MEASURED
 
-    def test(self, patient: Patient, hpo:Phenotype) -> typing.Optional[PatientCategory]:
-        if not isinstance(hpo, Phenotype):
-            raise ValueError(f"hpo must be type Phenotype but was type {type(hpo)}")
+    def test(self, patient: Patient, query: hpotk.TermId) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
+        query = hpotk.util.validate_instance(query, hpotk.TermId, 'query')
+
+        if len(patient.phenotypes) == 0:
+            return None
+
         for pheno in patient.phenotypes:
-            if hpo == pheno and pheno.observed == True:
-                return PatientCategory('HasHPO', 'Observed')
-            elif hpo == pheno and pheno.observed == False:
-                return PatientCategory('HasHPO', 'NotObserved')
-        return PatientCategory('HasHPO', 'NotMeasured')
+            if pheno.observed is None:
+                continue
+            if pheno.observed:
+                if any((query == ancestor
+                        for ancestor in self._hpo.graph.get_ancestors(pheno, include_source=True))):
+                    return self.OBSERVED
+            else:
+                if any((query == descendant
+                        for descendant in self._hpo.graph.get_descendants(pheno, include_source=True))):
+                    return self.NOT_OBSERVED
+
+        return self.NOT_MEASURED
 
 
-class HasVariantResults(Flag):
-    NOVARIANT = 0
-    HETEROVARIANT = 1
-    HOMOVARIANT = 2
-    DOMINANTVARIANTS = HETEROVARIANT | HOMOVARIANT
+HETEROZYGOUS = PatientCategory(cat_id=0,
+                            name='Heterozygous',
+                            description="""
+                            This sample has the tested attribute on one allele. 
+                            """)
+
+HOMOZYGOUS = PatientCategory(cat_id=1,
+                                name='Homozygous',
+                                description="""
+                                This sample has the tested attribute on both alleles. 
+                                """)
+
+NO_VARIANT = PatientCategory(cat_id=2,
+                                name='No Variant',
+                                description="""
+                                The sample does not have the tested attribute.
+                                """)
 
 
 
-class VariantEffectPredicate(SimplePredicate):
+class VariantEffectPredicate(PolyPredicate):
     
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
 
-    def test(self, patient: Patient, variant_effect:VariantEffect) -> HasVariantResults:
+    def categories(self) -> typing.Sequence[PatientCategory]:
+        return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
+
+    def test(self, patient: Patient, variant_effect:VariantEffect) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(variant_effect, VariantEffect):
@@ -61,49 +113,56 @@ class VariantEffectPredicate(SimplePredicate):
         if len(vars) == 1:
             for v in vars:
                 if v.genotype == "heterozygous":
-                    return HasVariantResults.HETEROVARIANT
+                    return HETEROZYGOUS
                 elif v.genotype == "homozygous":
-                    return HasVariantResults.HOMOVARIANT
+                    return HOMOZYGOUS
                 else:
-                    return HasVariantResults.DOMINANTVARIANTS
+                    return HETEROZYGOUS
         elif len(vars) > 1:
-            return HasVariantResults.HOMOVARIANT
+            return HOMOZYGOUS
         else:
-            return HasVariantResults.NOVARIANT
+            return NO_VARIANT
 
-class VariantPredicate(SimplePredicate):
+class VariantPredicate(PolyPredicate):
 
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
 
-    def test(self, patient: Patient, variant: str) -> HasVariantResults:
+    def categories(self) -> typing.Sequence[PatientCategory]:
+        return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
+
+    def test(self, patient: Patient, variant: str) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(variant, str):
             raise ValueError(f"variant must be type string but was type {type(variant)}")
         vars = set()
         for var in patient.variants:
+            print(f"{var.variant_string} == {variant}")
             if var.variant_string == variant:
                 vars.add(var)
         if len(vars) == 1:
             for v in vars:
                 if v.genotype == "heterozygous":
-                    return HasVariantResults.HETEROVARIANT
+                    return HETEROZYGOUS
                 elif v.genotype == "homozygous":
-                    return HasVariantResults.HOMOVARIANT
+                    return HOMOZYGOUS
                 else:
-                    return HasVariantResults.DOMINANTVARIANTS
+                    return HETEROZYGOUS
         elif len(vars) > 1:
-            return HasVariantResults.HOMOVARIANT
+            return HOMOZYGOUS
         else:
-            return HasVariantResults.NOVARIANT
+            return NO_VARIANT
 
-class ExonPredicate(SimplePredicate):
+class ExonPredicate(PolyPredicate):
 
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
 
-    def test(self, patient: Patient, exon: int) -> HasVariantResults:
+    def categories(self) -> typing.Sequence[PatientCategory]:
+        return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
+
+    def test(self, patient: Patient, exon: int) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(exon, int):
@@ -118,26 +177,29 @@ class ExonPredicate(SimplePredicate):
         if len(vars) == 1:
             for v in vars:
                 if v.genotype == "heterozygous":
-                    return HasVariantResults.HETEROVARIANT
+                    return HETEROZYGOUS
                 elif v.genotype == "homozygous":
-                    return HasVariantResults.HOMOVARIANT
+                    return HOMOZYGOUS
                 else:
-                    return HasVariantResults.DOMINANTVARIANTS
+                    return HETEROZYGOUS
         elif len(vars) > 1:
-            return HasVariantResults.HOMOVARIANT
+            return HOMOZYGOUS
         else:
-            return HasVariantResults.NOVARIANT
+            return NO_VARIANT
 
-class ProtFeatureTypePredicate(SimplePredicate):
+class ProtFeatureTypePredicate(PolyPredicate):
 
     def __init__(self, transcript:str) -> None:
          self._transcript = transcript
 
-    def test(self, patient: Patient, feature:FeatureType) -> HasVariantResults:
+    def categories(self) -> typing.Sequence[PatientCategory]:
+        return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
+
+    def test(self, patient: Patient, feature:FeatureType) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(feature, FeatureType):
-            raise ValueError(f"domain must be type FeatureType but was type {type(feature)}")
+            raise ValueError(f"feature must be type FeatureType but was type {type(feature)}")
         vars = set()
         for var in patient.variants:
             for trans in var.tx_annotations:
@@ -146,27 +208,30 @@ class ProtFeatureTypePredicate(SimplePredicate):
                         for prot in trans.protein_affected:
                             for feat in prot.protein_features:
                                 if feat.feature_type == feature:
-                                    if any(check in range(trans.protein_effect_location[0], trans.protein_effect_location[1]) for check in range(feat.info.start, feat.info.end)):
+                                    if len(list(range(max(trans.protein_effect_location[0], feat.info.start), min(trans.protein_effect_location[1], feat.info.end) + 1))) > 0:
                                         vars.add(var)
         if len(vars) == 1:
             for v in vars:
                 if v.genotype == "heterozygous":
-                    return HasVariantResults.HETEROVARIANT
+                    return HETEROZYGOUS
                 elif v.genotype == "homozygous":
-                    return HasVariantResults.HOMOVARIANT
+                    return HOMOZYGOUS
                 else:
-                    return HasVariantResults.DOMINANTVARIANTS
+                    return HETEROZYGOUS
         elif len(vars) > 1:
-            return HasVariantResults.HOMOVARIANT
+            return HOMOZYGOUS
         else:
-            return HasVariantResults.NOVARIANT
+            return NO_VARIANT
 
-class ProtFeaturePredicate(SimplePredicate):
+class ProtFeaturePredicate(PolyPredicate):
 
     def __init__(self, transcript:str) -> None:
          self._transcript = transcript
 
-    def test(self, patient: Patient, feature:str) -> HasVariantResults:
+    def categories(self) -> typing.Sequence[PatientCategory]:
+        return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
+
+    def test(self, patient: Patient, feature:str) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(feature, str):
@@ -179,17 +244,17 @@ class ProtFeaturePredicate(SimplePredicate):
                         for prot in trans.protein_affected:
                             for feat in prot.protein_features:
                                 if feat.info.name == feature:
-                                    if any(check in range(trans.protein_effect_location[0], trans.protein_effect_location[1]) for check in range(feat.info.start, feat.info.end)):
+                                    if len(list(range(max(trans.protein_effect_location[0], feat.info.start), min(trans.protein_effect_location[1], feat.info.end) + 1))) > 0:
                                         vars.add(var)
         if len(vars) == 1:
             for v in vars:
                 if v.genotype == "heterozygous":
-                    return HasVariantResults.HETEROVARIANT
+                    return HETEROZYGOUS
                 elif v.genotype == "homozygous":
-                    return HasVariantResults.HOMOVARIANT
+                    return HOMOZYGOUS
                 else:
-                    return HasVariantResults.DOMINANTVARIANTS
+                    return HETEROZYGOUS
         elif len(vars) > 1:
-            return HasVariantResults.HOMOVARIANT
+            return HOMOZYGOUS
         else:
-            return HasVariantResults.NOVARIANT
+            return NO_VARIANT

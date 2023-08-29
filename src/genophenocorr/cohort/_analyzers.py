@@ -9,7 +9,7 @@ import typing
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType, ProteinFeature
 from genophenocorr.predicate import VariantEffectPredicate, HPOPresentPredicate, \
-    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HasVariantResults
+    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 from genophenocorr.variant import Variant
 from scipy import stats
 from pandas import DataFrame, MultiIndex
@@ -18,12 +18,37 @@ from enum import Flag
 
 
 class CohortAnalysis():
+    """This class can be used to run different analyses of a given Cohort. 
 
-    def __init__(self, cohort, transcript, recessive = False, include_unmeasured = True,  
+    Attributes:
+        analysis_cohort (Cohort): The Cohort object given for this analysis
+        analysis_patients (list): A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.
+        analysis_transcript (string): The given transcript ID that will be used in this analysis
+        is_recessive (boolean): True if the variant is recessive. Default is False. 
+        include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. 
+        include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.
+        min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).
+    Methods:
+        compare_by_variant_type(var_type1:VariantEffect, var_type2:Optional VariantEffect): Runs Fisher Exact analysis, finds any correlation between given variant effects and phenotypes
+        compare_by_variant_type(variant1:string, variant2:Optional string): Runs Fisher Exact analysis, finds any correlation between given variants and phenotypes
+        compare_by_variant_type(exon1:integer, exon2:Optional integer): Runs Fisher Exact analysis, finds any correlation between given affected exons and phenotypes
+        compare_by_variant_type(feature1:FeatureType, feature2:Optional FeatureType): Runs Fisher Exact analysis, finds any correlation between given protein feature types and phenotypes
+        compare_by_variant_type(feature1:string, feature2:Optional string): Runs Fisher Exact analysis, finds any correlation between given protein features and phenotypes
+    """
+    def __init__(self, cohort, transcript, hpo, recessive = False, include_unmeasured = True,  
                 include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
+        """Constructs all necessary attributes for a CohortAnalysis object 
+
+        Args:
+            cohort (Cohort): The Cohort object that will be analyzed
+            transcript (string): The transcript ID that will be used in this analysis
+            recessive (boolean): True if the variant is recessive. Default is False. 
+            include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. 
+            include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.
+            min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).
+        """
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
-        ## IF TRANSCRIPT DOES NOT EXIST, GIVE ERROR
         if transcript not in cohort.all_transcripts:
             raise ValueError(f"Transcript {transcript} not found in Cohort")
         self._cohort = cohort
@@ -35,37 +60,66 @@ class CohortAnalysis():
         if not isinstance(min_perc_patients_w_hpo, int) or min_perc_patients_w_hpo <= 0 or min_perc_patients_w_hpo > 100:
             raise ValueError(f"hpo_percent_of_patients must be an integer between 1 & 100 but was {min_perc_patients_w_hpo}")
         self._percent_pats = min_perc_patients_w_hpo
-        self._hpo_present_test = HPOPresentPredicate()
+        self._hpo_present_test = HPOPresentPredicate(hpo)
         self._testing_hpo_terms = self._remove_low_hpo_terms()
         self._patients_by_hpo = self._sort_patients_by_hpo()
         self._logger = logging.getLogger(__name__)
         
     @property
     def analysis_cohort(self):
+        """
+        Returns:
+            Cohort: The Cohort object being analyzed
+        """
         return self._cohort
     
     @property
     def analysis_patients(self):
+        """
+        Returns:
+            list: A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.
+        """
         return self._patient_list
     
     @property
     def analysis_transcript(self):
+        """
+        Returns:
+            string: The given transcript ID that will be used in this analysis
+        """
         return self._transcript
 
     @property
     def is_recessive(self):
+        """
+        Returns:
+            boolean: True if the variant is recessive.
+        """
         return self._recessive
 
     @property
     def include_unmeasured(self):
+        """
+        Returns:
+            boolean: True if we want to assume a patient without a specific phenotype listed does not have that phenotype. 
+            Otherwise, will only include those that explicitely say the phenotype was not observed. 
+        """
         return self._in_unmeasured
 
     @property
     def include_large_SV(self):
+        """
+        Returns:
+            boolean: True if we want to include large structural variants in the analysis.
+        """
         return self._include_SV
 
     @property
     def min_perc_patients_w_hpo(self):
+        """
+        Returns:
+            integer: Will only test phenotypes that are listed in at least this percent of patients. 
+        """
         return self._percent_pats
 
     def _remove_low_hpo_terms(self):
@@ -96,11 +150,11 @@ class CohortAnalysis():
         all_without_hpo = {}
         for hpo in self._testing_hpo_terms:
             if self.include_unmeasured:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo).name == 'Observed']
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo).name in ('NotObserved', 'NotMeasured')]
+                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
+                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_MEASURED]
             else:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo).name == 'Observed']
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo).name == 'NotObserved']
+                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
+                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_OBSERVED]
             all_with_hpo[hpo] = with_hpo
             all_without_hpo[hpo] = not_hpo
         patientsByHPO = namedtuple('patientByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -110,14 +164,14 @@ class CohortAnalysis():
         final_dict = dict()
         if not self.is_recessive:
             for hpo in self._testing_hpo_terms:
-                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
-                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) in HasVariantResults.DOMINANTVARIANTS])
+                with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in (HOMOZYGOUS, HETEROZYGOUS)])
+                not_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) in (HOMOZYGOUS, HETEROZYGOUS)])
                 if variable2 is None:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
                 else:
-                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
-                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in HasVariantResults.DOMINANTVARIANTS])
+                    with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
+                    not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
                 if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
@@ -132,19 +186,19 @@ class CohortAnalysis():
         if self.is_recessive:
             for hpo in self._testing_hpo_terms:
                 if variable2 is None:
-                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
-                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT])
-                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
-                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.NOVARIANT])
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == NO_VARIANT])
                 else:
-                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HOMOVARIANT])
-                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
-                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HasVariantResults.HETEROVARIANT and predicate.test(pat, variable2) == HasVariantResults.HETEROVARIANT])
-                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
-                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HasVariantResults.HOMOVARIANT])
+                    with_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    no_hpo_var1_var1 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HOMOZYGOUS])
+                    with_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS and predicate.test(pat, variable2) == HETEROZYGOUS])
+                    no_hpo_var1_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable1) == HETEROZYGOUS and predicate.test(pat, variable2) == HETEROZYGOUS])
+                    with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
+                    no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
                 if with_hpo_var1_var1 + no_hpo_var1_var1 == 0 or with_hpo_var1_var2 + no_hpo_var1_var2 == 0 or with_hpo_var2_var2 + no_hpo_var2_var2 == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
@@ -156,6 +210,14 @@ class CohortAnalysis():
 
 
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
+        """Runs Fisher Exact analysis, finds any correlation between given variant effects across phenotypes.
+        
+        Args:
+            var_type1 (VariantEffect): 
+            var_type2 (VariantEffect, Optional): If None, we compare between those with var_type1 and those without var_type1
+        Returns:
+            DataFrame: A pandas DataFrame showing the results of the analysis
+        """
         var_effect_test = VariantEffectPredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
@@ -178,6 +240,14 @@ class CohortAnalysis():
         return final_df.sort_values(('', 'p-value'))
 
     def compare_by_variant(self, variant1:str, variant2:str = None):
+        """Runs Fisher Exact analysis, finds any correlation between given variants across phenotypes.
+        
+        Args:
+            variant1 (string): 
+            variant2 (string, Optional): If None, we compare between those with variant1 and those without variant1
+        Returns:
+            DataFrame: A pandas DataFrame showing the results of the analysis
+        """
         variant_test = VariantPredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict = self._run_rec_analysis(variant_test, variant1, variant2)
@@ -200,6 +270,14 @@ class CohortAnalysis():
         return final_df.sort_values(('', 'p-value'))
 
     def compare_by_exon(self, exon1:int, exon2:int = None):
+        """Runs Fisher Exact analysis, finds any correlation between given exons across phenotypes.
+        
+        Args:
+            exon1 (integer): 
+            exon2 (integer, Optional): If None, we compare between those within exon1 and those outside exon1
+        Returns:
+            DataFrame: A pandas DataFrame showing the results of the analysis
+        """
         exon_test = ExonPredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict = self._run_rec_analysis(exon_test, exon1, exon2)
@@ -222,6 +300,14 @@ class CohortAnalysis():
         return final_df.sort_values(('', 'p-value'))
 
     def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
+        """Runs Fisher Exact analysis, finds any correlation between given feature type across phenotypes.
+        
+        Args:
+            feature1 (FeatureType): 
+            feature2 (FeatureType, Optional): If None, we compare between those with feature1 and those without feature1
+        Returns:
+            DataFrame: A pandas DataFrame showing the results of the analysis
+        """
         feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict = self._run_rec_analysis(feat_type_test, feature1, feature2)
@@ -245,6 +331,14 @@ class CohortAnalysis():
 
 
     def compare_by_protein_feature(self, feature1:str, feature2:str = None):
+        """Runs Fisher Exact analysis, finds any correlation between given feature and phenotypes.
+        
+        Args:
+            feature1 (string): 
+            feature2 (string, Optional): If None, we compare between those within feature1 and those outside feature1
+        Returns:
+            DataFrame: A pandas DataFrame showing the results of the analysis
+        """
         domain_test = ProtFeaturePredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict = self._run_rec_analysis(domain_test, feature1, feature2)

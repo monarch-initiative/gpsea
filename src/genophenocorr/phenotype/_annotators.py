@@ -15,19 +15,33 @@ class PhenotypeValidationException(BaseException):
 
 
 class PhenotypeCreator:
+    """A class that creates a Phenotype object 
 
+    Methods:
+        create_phenotype(term_ids:Iterable[Tuple[str, bool]]): Creates a list of Phenotype objects from a list of tuples.
+                                                               Each tuple has the HPO ID and a boolean on if the phenotype is observed.
+    """
     def __init__(self, hpo: hpotk.ontology.Ontology,
                  validator: hpotk.validate.ValidationRunner):
+        """Constructs all necessary attributes for a PhenotypeCreator object
+
+        Args:
+            hpo (hpotk.ontology.Ontology): An Ontology object 
+            validator (hpotk.validate.ValidationRunner): A ValidationRunner object 
+        """
         self._logger = logging.getLogger(__name__)
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.ontology.Ontology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
     def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> list[Phenotype]:
-        """
-        Create a list of Phenotype instances from term IDs and check if the term IDs satisfy the validation requirements.
+        """Creates a list of Phenotype objects from term IDs and checks if the term IDs satisfy the validation requirements.
 
-        The method returns a list if the term IDs are valid or raises :class:`PhenotypeValidationException`
-        with the validation issues.
+        Args:
+            term_ids (Iterable[Tuple[str, bool]]): A list of Tuples, structured (HPO IDs, boolean- True if observed)
+        Returns:
+            list[Phenotype]: A list of Phenotype objects
+        Error:
+            PhenotypeValidationException: An instance of an issue with the ValidationRunner
         """
         terms = []
         for term_id, observed in term_ids:
@@ -37,7 +51,7 @@ class PhenotypeCreator:
             terms.append((term, observed))
         validation_results = self._validator.validate_all([term[0] for term in terms])
         if validation_results.is_ok:
-            return [Phenotype(term, observed) for term, observed in terms]
+            return [Phenotype.from_term(term, observed) for term, observed in terms]
         else:
             # We return the messages for now. We may provide more details in future, if necessary.
             issues = [r.message for r in validation_results.results]
