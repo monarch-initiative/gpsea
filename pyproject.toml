@@ -11,8 +11,7 @@ exclude = ["notebooks", "test"]
 
 [project]
 name = "genophenocorr"
-#version = "0.0.5"
-
+#version set in __init__.py file
 
 
 
@@ -47,7 +46,7 @@ dependencies = [
     "statsmodels",
     "numpy"
 ]
-
+dynamic = ["version"]
 [project.optional-dependencies]
 test = ["pytest"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-copybutton"]
@@ -58,7 +57,9 @@ repository = "https://github.com/monarch-initiative/genophenocorr.git"
 documentation = "https://github.com/monarch-initiative/genophenocorr"
 bugtracker = "https://github.com/monarch-initiative/genophenocorr/issues"
 
-dynamic = ["version"]
+[tool.setuptools]
+package-dir = { "" = "src" }
+
 [tool.setuptools.dynamic]
 version = { attr = "genophenocorr.__version__" }
 
