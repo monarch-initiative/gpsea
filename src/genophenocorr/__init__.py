@@ -9,3 +9,4 @@ from .variant import VarCachingFunctionalAnnotator, Variant, VariantAnnotationCa
 from .constants import VariantEffect
 from .predicate import ProtFeaturePredicate, ProtFeatureTypePredicate, ExonPredicate, VariantPredicate, HPOPresentPredicate, VariantEffectPredicate
 
+__version__ = "0.1.0"
