@@ -81,8 +81,6 @@ class BasicVariantCoordinateFinder(VariantCoordinateFinder[typing.Iterable[str]]
             return ValueError(f'Start and End values must be a number')
         return VariantCoordinates(chrom, int(start), int(end), ref, alt, len(alt) - len(ref), genotype)
 
-        
-
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
     Converts the 0-based VariantCoordinates to ones that will be interpreted correctly by VEP

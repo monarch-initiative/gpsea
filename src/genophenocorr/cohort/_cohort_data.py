@@ -173,7 +173,7 @@ class Cohort:
                     var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
         too_small = []
         for tx_id, var_effect_counter in var_type_dict.items():
-            if len(var_effect_counter) <= 2:
+            if len(var_effect_counter) <= 1:
                 too_small.append(tx_id)
         for tx_id in too_small:
             del var_type_dict[tx_id]

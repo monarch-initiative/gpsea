@@ -11,7 +11,7 @@ import typing
 from enum import Flag, auto
 
 
-class HPOPresentPredicate(PolyPredicate):
+class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
 
     OBSERVED = PatientCategory(cat_id=0,
                                name='Observed',
@@ -90,7 +90,7 @@ NO_VARIANT = PatientCategory(cat_id=2,
 
 
 
-class VariantEffectPredicate(PolyPredicate):
+class VariantEffectPredicate(PolyPredicate[VariantEffect]):
     
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
@@ -98,17 +98,17 @@ class VariantEffectPredicate(PolyPredicate):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, variant_effect:VariantEffect) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query:VariantEffect) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-        if not isinstance(variant_effect, VariantEffect):
-            raise ValueError(f"variant_effect must be type VariantEffect but was type {type(variant_effect)}")
+        if not isinstance(query, VariantEffect):
+            raise ValueError(f"query must be type VariantEffect but was type {type(query)}")
         vars = set()
         for var in patient.variants:
             for trans in var.tx_annotations:
                 if trans.transcript_id == self._transcript:
                     for var_eff in trans.variant_effects:
-                        if var_eff == str(variant_effect):
+                        if var_eff == str(query):
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:
@@ -123,7 +123,7 @@ class VariantEffectPredicate(PolyPredicate):
         else:
             return NO_VARIANT
 
-class VariantPredicate(PolyPredicate):
+class VariantPredicate(PolyPredicate[str]):
 
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
@@ -131,15 +131,15 @@ class VariantPredicate(PolyPredicate):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, variant: str) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query: str) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-        if not isinstance(variant, str):
-            raise ValueError(f"variant must be type string but was type {type(variant)}")
+        if not isinstance(query, str):
+            raise ValueError(f"query must be type string but was type {type(query)}")
         vars = set()
         for var in patient.variants:
-            print(f"{var.variant_string} == {variant}")
-            if var.variant_string == variant:
+            print(f"{var.variant_string} == {query}")
+            if var.variant_string == query:
                 vars.add(var)
         if len(vars) == 1:
             for v in vars:
@@ -154,7 +154,7 @@ class VariantPredicate(PolyPredicate):
         else:
             return NO_VARIANT
 
-class ExonPredicate(PolyPredicate):
+class ExonPredicate(PolyPredicate[int]):
 
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
@@ -162,17 +162,17 @@ class ExonPredicate(PolyPredicate):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, exon: int) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query: int) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-        if not isinstance(exon, int):
-            raise ValueError(f"exon must be type integer but was type {type(exon)}")
+        if not isinstance(query, int):
+            raise ValueError(f"query must be type integer but was type {type(query)}")
         vars = set()
         for var in patient.variants:
             for trans in var.tx_annotations:
                 if trans.transcript_id == self._transcript:
                     if trans.overlapping_exons is not None:
-                        if exon in trans.overlapping_exons:
+                        if query in trans.overlapping_exons:
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:
@@ -187,7 +187,7 @@ class ExonPredicate(PolyPredicate):
         else:
             return NO_VARIANT
 
-class ProtFeatureTypePredicate(PolyPredicate):
+class ProtFeatureTypePredicate(PolyPredicate[FeatureType]):
 
     def __init__(self, transcript:str) -> None:
          self._transcript = transcript
@@ -195,11 +195,11 @@ class ProtFeatureTypePredicate(PolyPredicate):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, feature:FeatureType) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query:FeatureType) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-        if not isinstance(feature, FeatureType):
-            raise ValueError(f"feature must be type FeatureType but was type {type(feature)}")
+        if not isinstance(query, FeatureType):
+            raise ValueError(f"query must be type FeatureType but was type {type(query)}")
         vars = set()
         for var in patient.variants:
             for trans in var.tx_annotations:
@@ -207,7 +207,7 @@ class ProtFeatureTypePredicate(PolyPredicate):
                     if trans.protein_effect_location is not None and trans.protein_effect_location[0] is not None and trans.protein_effect_location[1] is not None:
                         for prot in trans.protein_affected:
                             for feat in prot.protein_features:
-                                if feat.feature_type == feature:
+                                if feat.feature_type == query:
                                     if len(list(range(max(trans.protein_effect_location[0], feat.info.start), min(trans.protein_effect_location[1], feat.info.end) + 1))) > 0:
                                         vars.add(var)
         if len(vars) == 1:
@@ -223,7 +223,7 @@ class ProtFeatureTypePredicate(PolyPredicate):
         else:
             return NO_VARIANT
 
-class ProtFeaturePredicate(PolyPredicate):
+class ProtFeaturePredicate(PolyPredicate[str]):
 
     def __init__(self, transcript:str) -> None:
          self._transcript = transcript
@@ -231,11 +231,11 @@ class ProtFeaturePredicate(PolyPredicate):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, feature:str) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query:str) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-        if not isinstance(feature, str):
-            raise ValueError(f"domain must be type string but was type {type(feature)}")
+        if not isinstance(query, str):
+            raise ValueError(f"query must be type string but was type {type(query)}")
         vars = set()
         for var in patient.variants:
             for trans in var.tx_annotations:
@@ -243,7 +243,7 @@ class ProtFeaturePredicate(PolyPredicate):
                     if trans.protein_effect_location is not None and trans.protein_effect_location[0] is not None and trans.protein_effect_location[1] is not None:
                         for prot in trans.protein_affected:
                             for feat in prot.protein_features:
-                                if feat.info.name == feature:
+                                if feat.info.name == query:
                                     if len(list(range(max(trans.protein_effect_location[0], feat.info.start), min(trans.protein_effect_location[1], feat.info.end) + 1))) > 0:
                                         vars.add(var)
         if len(vars) == 1:

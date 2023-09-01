@@ -1,13 +1,13 @@
 from ._cohort_data import Cohort
-from hpotk import Ontology
+from hpotk import MinimalOntology
 
 
 class CohortViewer:
     def __init__(self, cohort, hpo):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort argument must be a Cohort object but we got a {type(cohort)} object")
-        if not isinstance(hpo, Ontology):
-            raise ValueError(f"cohort argument must be an Ontology but we got a {type(cohort)} object")
+        if not isinstance(hpo, MinimalOntology):
+            raise ValueError(f"hpo argument must be a MinimalOntology but we got a {type(hpo)} object")
         self._cohort = cohort
         self._hpo = hpo
 

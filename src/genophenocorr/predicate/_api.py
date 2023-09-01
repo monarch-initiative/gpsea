@@ -5,6 +5,7 @@ import hpotk.util
 
 from genophenocorr.patient import Patient
 
+T = typing.TypeVar('T')
 
 class SimplePredicate(metaclass=abc.ABCMeta):
     """
@@ -58,7 +59,7 @@ class PatientCategory:
         return hash((self.cat_id, self.name, self.description))
 
 
-class PolyPredicate(metaclass=abc.ABCMeta):
+class PolyPredicate(typing.Generic[T], metaclass=abc.ABCMeta):
     """
     Predicate for categorizing a :class:`Patient` into one of discrete groups.
     """
@@ -72,7 +73,7 @@ class PolyPredicate(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query: T) -> typing.Optional[PatientCategory]:
         """
         Assign patient into a category.
 

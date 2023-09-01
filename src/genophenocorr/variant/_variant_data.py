@@ -282,6 +282,21 @@ class Variant:
         variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
     """
 
+    @staticmethod
+    def create_variant_from_scratch(variant_id: str, 
+                                variant_class: str, 
+                                variant_coordinates: VariantCoordinates, 
+                                gene_name: str,
+                                trans_id: str,
+                                hgvsc_id: str,
+                                consequences: typing.Sequence[str],
+                                exons_effected: typing.Sequence[int],
+                                protein: typing.Sequence[ProteinMetadata],
+                                protein_effect_start: int,
+                                protein_effect_end: int):
+        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected, protein, protein_effect_start, protein_effect_end)
+        return Variant(variant_id, variant_class, variant_coordinates, [transcript], variant_coordinates.genotype)
+
     def __init__(self, var_id: str,
                  var_class: str,
                  var_coordinates: VariantCoordinates,
