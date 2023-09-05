@@ -21,3 +21,4 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
         pass
+

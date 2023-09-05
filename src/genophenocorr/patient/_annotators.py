@@ -8,7 +8,7 @@ from phenopackets import Phenopacket
 
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.protein import ProteinMetadata
-from genophenocorr.variant import PhenopacketVariantCoordinateFinder, Variant, FunctionalAnnotator, BasicVariantCoordinateFinder
+from genophenocorr.variant import PhenopacketVariantCoordinateFinder, Variant, FunctionalAnnotator
 from ._patient_data import Patient
 
 
@@ -127,6 +127,7 @@ class BasicPatientCreator(PatientCreator[typing.Iterable[str]]):
     Methods:
         create_patient(item:Iterable[str]): Creates a Patient from the data in a given list
     """
+    # TODO[lnrekerle] - remove the class and its usages.
 
     def __init__(self, phenotype_creator: PhenotypeCreator,
                  var_func_ann: FunctionalAnnotator):
@@ -137,8 +138,6 @@ class BasicPatientCreator(PatientCreator[typing.Iterable[str]]):
             var_func_ann (FunctionalAnnotator): A FunctionalAnnotator object for Variant creation
         """
         self._logger = logging.getLogger(__name__)
-        # Violates DI, but it is specific to this class, so I'll leave it "as is".
-        self._coord_finder = BasicVariantCoordinateFinder()
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 
@@ -165,8 +164,8 @@ class BasicPatientCreator(PatientCreator[typing.Iterable[str]]):
         """
         variants_list = []
         for var in variants:
-            variant = self._coord_finder.find_coordinates(var[0], var[1], var[2], var[3], var[4], var[5])
-            variants_list.append(self._func_ann.annotate(variant))
+            vc = self._coord_finder.find_coordinates(var[0], var[1], var[2], var[3], var[4], var[5])
+            variants_list.append(self._func_ann.annotate(vc))
         return variants_list
 
     def _add_phenotypes(self, phenotypes) -> typing.Sequence[Phenotype]:

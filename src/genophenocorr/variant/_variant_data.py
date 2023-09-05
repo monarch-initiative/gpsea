@@ -205,7 +205,7 @@ class TranscriptAnnotation:
         return self._tx_id
 
     @property
-    def hgvsc_id(self):
+    def hgvsc_id(self) -> str:
         """
         Returns:
             string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
@@ -213,7 +213,7 @@ class TranscriptAnnotation:
         return self._hgvsc_id
 
     @property
-    def variant_effects(self):
+    def variant_effects(self) -> typing.Sequence[str]:
         """
         Returns:
             Sequence[string]: A sequence of variant effects. 
@@ -222,7 +222,7 @@ class TranscriptAnnotation:
         return self._variant_effects
 
     @property
-    def overlapping_exons(self):
+    def overlapping_exons(self) -> typing.Sequence[int]:
         """
         Returns:
             Sequence[integer]: A sequence of IDs of the exons that overlap with the variant.
@@ -230,10 +230,10 @@ class TranscriptAnnotation:
         return self._affected_exons
 
     @property
-    def protein_affected(self) -> ProteinMetadata:
+    def protein_affected(self) -> typing.Sequence[ProteinMetadata]:
         """
         Returns:
-            ProteinMetadata: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
+            Sequence[ProteinMetadata]: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
         """
         return self._affected_protein
 
@@ -281,6 +281,21 @@ class Variant:
         tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
         variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
     """
+
+    @staticmethod
+    def create_variant_from_scratch(variant_id: str, 
+                                variant_class: str, 
+                                variant_coordinates: VariantCoordinates, 
+                                gene_name: str,
+                                trans_id: str,
+                                hgvsc_id: str,
+                                consequences: typing.Sequence[str],
+                                exons_effected: typing.Sequence[int],
+                                protein: typing.Sequence[ProteinMetadata],
+                                protein_effect_start: int,
+                                protein_effect_end: int):
+        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected, protein, protein_effect_start, protein_effect_end)
+        return Variant(variant_id, variant_class, variant_coordinates, [transcript], variant_coordinates.genotype)
 
     def __init__(self, var_id: str,
                  var_class: str,

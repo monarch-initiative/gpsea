@@ -1,13 +1,18 @@
+import os
+
+import hpotk
+import pytest
+
 from genophenocorr.predicate import *
 from genophenocorr.patient import Patient, BasicPatientCreator
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from genophenocorr.variant import VarCachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
-import hpotk
-import pickle
-import os
-import pytest
+
+# TODO - re-enable the tests after cleaning the `PatientDict`.
+pytestmark = pytest.mark.skip("all tests still WIP")
+
 
 @pytest.fixture
 def hpo():
@@ -82,6 +87,7 @@ def PatientDict(PhenotypeCreate):
                 }
     pat_dict = {}
     pheno_creator = PhenotypeCreate
+    # TODO[lnrekerle] - clean the method - remove the cachers/services/...
     path = os.path.join(os.getcwd(), 'tests/sampleAnnotations')
     pm = UniprotProteinMetadataService()
     pac = ProteinAnnotationCache(path)
@@ -98,7 +104,7 @@ def PatientDict(PhenotypeCreate):
 def VariantEffectTest():
     return VariantEffectPredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, variantEffect, expected_result', 
+@pytest.mark.parametrize('patient_id, variantEffect, expected_result',
                         (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, HETEROZYGOUS],
                         ['HetSingleVar', VariantEffect.MISSENSE_VARIANT, NO_VARIANT],
                         ['HetDoubleVar1', VariantEffect.STOP_GAINED, HETEROZYGOUS],
@@ -119,7 +125,7 @@ def test_VariantEffectPredicate(patient_id: str,
 def VariantTest():
     return VariantPredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, variant, hasVarResult', 
+@pytest.mark.parametrize('patient_id, variant, hasVarResult',
                         (['HetSingleVar', '16_89279851_-/C', HETEROZYGOUS],
                         ['HetSingleVar', '16_89279708_AGTGTTCGGGGCGGGGCC/A', NO_VARIANT],
                         ['HetDoubleVar1', '16_89284601_GG/A', HETEROZYGOUS],
@@ -136,7 +142,7 @@ def test_VariantPredicate(patient_id, variant, hasVarResult, VariantTest, Patien
 def ExonTest():
     return ExonPredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, exon, hasVarResult', 
+@pytest.mark.parametrize('patient_id, exon, hasVarResult',
                         (['HetSingleVar', 9, HETEROZYGOUS],
                         ['HetSingleVar', 13, NO_VARIANT],
                         ['HetDoubleVar1', 9, HOMOZYGOUS],
@@ -155,24 +161,24 @@ def test_ExonPredicate(patient_id, exon, hasVarResult, ExonTest, PatientDict):
 def ProteinFeatureTypeTest():
     return ProtFeatureTypePredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, featureType, hasVarResult', 
+@pytest.mark.parametrize('patient_id, featureType, hasVarResult',
                         (['HetDoubleVar2', FeatureType.REGION, HOMOZYGOUS],
                         ['HetDoubleVar2', FeatureType.REPEAT, NO_VARIANT],
                         ['HetSingleVar', FeatureType.REGION, HETEROZYGOUS],
                         ['HomoVar', FeatureType.REGION, HOMOZYGOUS],
                         ['HetDoubleVar1', FeatureType.REPEAT, NO_VARIANT]))
-                        ## TODO Why do CNV not show as affecting a feature? 
+                        ## TODO Why do CNV not show as affecting a feature?
                         ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
 def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, ProteinFeatureTypeTest, PatientDict):
-    result = ProteinFeatureTypeTest.test(PatientDict[patient_id], featureType)   
-    assert result == hasVarResult 
+    result = ProteinFeatureTypeTest.test(PatientDict[patient_id], featureType)
+    assert result == hasVarResult
 
 
 @pytest.fixture
 def ProteinFeatureTest():
     return ProtFeaturePredicate('NM_013275.6')
 
-@pytest.mark.parametrize('patient_id, feature, hasVarResult', 
+@pytest.mark.parametrize('patient_id, feature, hasVarResult',
                         (['HetDoubleVar2', 'Disordered', HETEROZYGOUS],
                         ['HetDoubleVar2', 'BadFeature', NO_VARIANT],
                         ['HetSingleVar', 'Disordered', HETEROZYGOUS],

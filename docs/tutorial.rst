@@ -36,6 +36,50 @@ with the package:
 
   See :ref:`input-data` section to learn about preparing your data for the analysis.
 
+We can then view the data using the list commands. 
 
-TODO - move the code from `workflow` and the notebook here.
+.. doctest:: tutorial
+  
+  >>> sorted(cohort.list_all_patients())
+  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+  >>> sorted(cohort.list_all_phenotypes())
+  [('HP:0001166', 14), ('HP:0001250', 20), ('HP:0001257', 17)]
+  >>> sorted(cohort.list_all_variants())
+  [('HetVar1', 13), ('HetVar2', 11), ('HomVar1', 3), ('HomVar2', 2)]
+  >>> sorted(cohort.list_all_proteins())
+  [('NP_09876.5', 26)]
+  >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
+  >>> sorted(tx_dict['NM_1234.5'].items())
+  [('frameshift_variant', 2), ('missense_variant', 2)]
+
+Using the counts, we can choose and run what analyses we want.
+For instance, compare *frameshift* variants:
+
+.. doctest:: tutorial
+
+  >>> from pprint import pprint
+  >>> from genophenocorr.cohort import CohortAnalysis
+  >>> from genophenocorr.constants import VariantEffect
+  >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
+  >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
+  >>> pprint(frameshift) # doctest: +NORMALIZE_WHITESPACE
+                              With frameshift_variant         Without frameshift_variant
+                                                Count Percent                      Count Percent  p-value
+  HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
+  HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472
+  HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
+
+
+or *missense* variants:
+
+.. doctest:: tutorial
+
+  >>> missense = cohort_analysis.compare_by_variant_type(VariantEffect.MISSENSE_VARIANT)
+  >>> pprint(missense) # doctest: +NORMALIZE_WHITESPACE
+                                With missense_variant         Without missense_variant
+                                                Count Percent                    Count Percent   p-value
+    HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781
+    HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449
+    HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000
+
 
