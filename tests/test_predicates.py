@@ -5,7 +5,6 @@ from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from genophenocorr.variant import VarCachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
 import hpotk
-import pickle
 import os
 import pytest
 
@@ -82,6 +81,7 @@ def PatientDict(PhenotypeCreate):
                 }
     pat_dict = {}
     pheno_creator = PhenotypeCreate
+    # TODO[lnrekerle] - clean the method - remove the cachers/services/...
     path = os.path.join(os.getcwd(), 'tests/sampleAnnotations')
     pm = UniprotProteinMetadataService()
     pac = ProteinAnnotationCache(path)

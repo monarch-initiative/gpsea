@@ -1,14 +1,11 @@
+import typing
+
 import hpotk
 
-from genophenocorr.predicate import SimplePredicate, PolyPredicate, PatientCategory
-from genophenocorr.patient import Patient
-#from genophenocorr.cohort import Cohort
 from genophenocorr.constants import VariantEffect
-from genophenocorr.phenotype import Phenotype
-from genophenocorr.variant import VariantCoordinates
+from genophenocorr.patient import Patient
+from genophenocorr.predicate import PolyPredicate, PatientCategory
 from genophenocorr.protein import FeatureType
-import typing
-from enum import Flag, auto
 
 
 class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
@@ -224,6 +221,12 @@ class ProtFeatureTypePredicate(PolyPredicate[FeatureType]):
             return NO_VARIANT
 
 class ProtFeaturePredicate(PolyPredicate[str]):
+    """
+    Test if the patient has a variant that overlaps with a protein feature.
+
+    The predicate is generic over a string that represents the name of the protein feature.
+    For instance, `EGF-like 2` for `FBN1 <https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains>`_
+    """
 
     def __init__(self, transcript:str) -> None:
          self._transcript = transcript
@@ -231,7 +234,7 @@ class ProtFeaturePredicate(PolyPredicate[str]):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, query:str) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query: str) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(query, str):

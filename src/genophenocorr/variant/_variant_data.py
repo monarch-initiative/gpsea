@@ -205,7 +205,7 @@ class TranscriptAnnotation:
         return self._tx_id
 
     @property
-    def hgvsc_id(self):
+    def hgvsc_id(self) -> str:
         """
         Returns:
             string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
@@ -213,7 +213,7 @@ class TranscriptAnnotation:
         return self._hgvsc_id
 
     @property
-    def variant_effects(self):
+    def variant_effects(self) -> typing.Sequence[str]:
         """
         Returns:
             Sequence[string]: A sequence of variant effects. 
@@ -222,7 +222,7 @@ class TranscriptAnnotation:
         return self._variant_effects
 
     @property
-    def overlapping_exons(self):
+    def overlapping_exons(self) -> typing.Sequence[int]:
         """
         Returns:
             Sequence[integer]: A sequence of IDs of the exons that overlap with the variant.
@@ -230,10 +230,10 @@ class TranscriptAnnotation:
         return self._affected_exons
 
     @property
-    def protein_affected(self) -> ProteinMetadata:
+    def protein_affected(self) -> typing.Sequence[ProteinMetadata]:
         """
         Returns:
-            ProteinMetadata: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
+            Sequence[ProteinMetadata]: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
         """
         return self._affected_protein
 

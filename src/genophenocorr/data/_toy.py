@@ -1,6 +1,6 @@
 from hpotk import TermId
 
-from genophenocorr.variant import Variant, BasicVariantCoordinateFinder
+from genophenocorr.variant import Variant, VariantCoordinates
 from genophenocorr.phenotype import Phenotype
 from genophenocorr.protein import ProteinMetadata, SimpleProteinFeature, FeatureType, FeatureInfo
 from genophenocorr.patient import Patient
@@ -29,17 +29,40 @@ def get_toy_cohort() -> Cohort:
     spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
 
 
-    # TODO - make variants
-    basic_var = BasicVariantCoordinateFinder()
     prot_feat_1 = SimpleProteinFeature(FeatureInfo('domain', 1, 75), FeatureType.DOMAIN)
     prot_feat_2 = SimpleProteinFeature(FeatureInfo('region', 50, 100), FeatureType.REGION)
     prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
-    het_snv = Variant.create_variant_from_scratch('HetVar1', 'SNV', basic_var.find_coordinates('chr1', '280', '281', 'A', 'G', 'heterozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'], [1], [prot], 60, 60)
-    het_del = Variant.create_variant_from_scratch('HetVar2', 'indel', basic_var.find_coordinates('chr1', '360', '363', 'TTC', 'T', 'heterozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'], [2], [prot], 86, 87)
-    het_dup = Variant.create_variant_from_scratch('HetVar3', 'insertion', basic_var.find_coordinates('chr1', '175', '177', 'T', 'TG', 'heterozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'], [1], [prot], 25, 25)
-    hom_snv = Variant.create_variant_from_scratch('HomVar1', 'SNV', basic_var.find_coordinates('chr1', '280', '281', 'A', 'G', 'homozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'], [1], [prot], 60, 60)
-    hom_del = Variant.create_variant_from_scratch('HomVar2', 'indel', basic_var.find_coordinates('chr1', '360', '363', 'TTC', 'T', 'homozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'], [2], [prot], 86, 87)
-    hom_dup = Variant.create_variant_from_scratch('HomVar3', 'insertion', basic_var.find_coordinates('chr1', '175', '177', 'T', 'TG', 'homozygous'), 'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'], [1], [prot], 25, 25)
+
+    het_snv = Variant.create_variant_from_scratch(
+        'HetVar1', 'SNV',
+        VariantCoordinates('chr1', 280, 281, 'A', 'G', 0, 'heterozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'],
+        [1], [prot], 60, 60)
+    het_del = Variant.create_variant_from_scratch(
+        'HetVar2', 'indel',
+        VariantCoordinates('chr1', 360, 363, 'TTC', 'T', -2,  'heterozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'],
+        [2], [prot], 86, 87)
+    het_dup = Variant.create_variant_from_scratch(
+        'HetVar3', 'insertion',
+        VariantCoordinates('chr1', 175, 176, 'T', 'TG', 1, 'heterozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'],
+        [1], [prot], 25, 25)
+    hom_snv = Variant.create_variant_from_scratch(
+        'HomVar1', 'SNV',
+        VariantCoordinates('chr1', 280, 281, 'A', 'G', 0, 'homozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'],
+        [1], [prot], 60, 60)
+    hom_del = Variant.create_variant_from_scratch(
+        'HomVar2', 'indel',
+        VariantCoordinates('chr1', 360, 363, 'TTC', 'T', -2, 'homozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'],
+        [2], [prot], 86, 87)
+    hom_dup = Variant.create_variant_from_scratch(
+        'HomVar3', 'insertion',
+        VariantCoordinates('chr1', 175, 176, 'T', 'TG', 1,'homozygous'),
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'],
+        [1], [prot], 25, 25)
 
     patients = (
         Patient('A',
@@ -151,7 +174,7 @@ def get_toy_cohort() -> Cohort:
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
                 variants=[het_snv],
                 proteins=[prot]
-                ),        
+                ),
         Patient('W',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
                 variants=[het_del],
