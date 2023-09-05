@@ -11,7 +11,10 @@ exclude = ["notebooks", "test"]
 
 [project]
 name = "genophenocorr"
-version = "0.0.5"
+#version set in __init__.py file
+
+
+
 requires-python = ">=3.5"
 description = "Search for genotype-phenotype correlations with GA4GH phenopackets"
 readme = "README.md"
@@ -43,7 +46,7 @@ dependencies = [
     "statsmodels",
     "numpy"
 ]
-
+dynamic = ["version"]
 [project.optional-dependencies]
 test = ["pytest"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-copybutton"]
@@ -53,6 +56,13 @@ homepage = "https://github.com/monarch-initiative/genophenocorr"
 repository = "https://github.com/monarch-initiative/genophenocorr.git"
 documentation = "https://github.com/monarch-initiative/genophenocorr"
 bugtracker = "https://github.com/monarch-initiative/genophenocorr/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.dynamic]
+version = { attr = "genophenocorr.__version__" }
+
 
 #[project.scripts]
 # ... = "reader.__main__:main"
