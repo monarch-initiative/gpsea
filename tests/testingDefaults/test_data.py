@@ -1,4 +1,5 @@
-from hpotk import TermId
+import os
+import hpotk
 
 from genophenocorr.variant import Variant, VariantCoordinates, TranscriptAnnotation
 from genophenocorr.phenotype import Phenotype
@@ -8,13 +9,6 @@ from genophenocorr.cohort import Cohort
 
 
 def get_test_cohort() -> Cohort:
-
-    arachnodactyly_T = Phenotype(TermId.from_curie('HP:0001166'), 'Arachnodactyly', True)
-    seizure_T = Phenotype(TermId.from_curie('HP:0001250'), 'Seizure', True)
-    spasticity_T = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', True)
-    arachnodactyly_F = Phenotype(TermId.from_curie('HP:0001166'), 'Arachnodactyly', False)
-    seizure_F = Phenotype(TermId.from_curie('HP:0001250'), 'Seizure', False)
-    spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
 
     prot = ProteinMetadata(protein_id='NP_037407.4', label='Ankyrin repeat domain-containing protein 11', 
             protein_features=(SimpleProteinFeature(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 1', start=167, end=196)), 
@@ -63,33 +57,57 @@ def get_test_cohort() -> Cohort:
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', None, ['stop_lost', 'feature_truncation', 'coding_sequence_variant', '5_prime_UTR_variant', '3_prime_UTR_variant', 'intron_variant'], 
                 [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [prot], None, None)],genotype='heterozygous')]
 
+    phenos = get_test_phenotypes()
 
     patients = (
         Patient('HetSingleVar',
-                phenotypes=(arachnodactyly_T, spasticity_F, seizure_T),
+                phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_F'], phenos['focal_clonic_seizure_T']),
                 variants=HetSingleVar,
                 proteins=[prot]
                 ),
         Patient('HetDoubleVar1',
-                phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
+                phenotypes=(phenos['arachnodactyly_T'], phenos['seizure_T'], phenos['spasticity_T']),
                 variants=HetDoubleVar1,
                 proteins=[prot]
                 ),
         Patient('HetDoubleVar2',
-                phenotypes=(arachnodactyly_F, spasticity_T, seizure_T),
+                phenotypes=(phenos['arachnodactyly_F'], phenos['spasticity_T'], phenos['seizure_T']),
                 variants=HetDoubleVar2,
                 proteins=[prot]
                 ),
         Patient('HomoVar',
-                phenotypes=(arachnodactyly_T, spasticity_T, seizure_T),
+                phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_T']),
                 variants=HomoVar,
                 proteins=[prot]
                 ),
         Patient('LargeCNV',
-                phenotypes=(arachnodactyly_T, spasticity_T, seizure_F),
+                phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_F']),
                 variants=LargeCNV,
                 proteins=[prot]
                 ),
     )
 
     return Cohort.from_patients(patients)
+
+
+def get_test_phenotypes():
+    hpo = get_toy_hpo()
+
+    phenotypes = {}
+
+    phenotypes['arachnodactyly_T'] = Phenotype(hpotk.TermId.from_curie('HP:0001166'), hpo.get_term('HP:0001166').name, True)
+    phenotypes['seizure_T'] = Phenotype(hpotk.TermId.from_curie('HP:0001250'), hpo.get_term('HP:0001250').name, True)
+    phenotypes['focal_clonic_seizure_T'] = Phenotype(hpotk.TermId.from_curie('HP:0002266'), hpo.get_term('HP:0002266').name, True)
+    phenotypes['spasticity_T'] = Phenotype(hpotk.TermId.from_curie('HP:0001257'), hpo.get_term('HP:0001257').name, True)
+    phenotypes['arachnodactyly_F'] = Phenotype(hpotk.TermId.from_curie('HP:0001166'), hpo.get_term('HP:0001166').name, False)
+    phenotypes['seizure_F'] = Phenotype(hpotk.TermId.from_curie('HP:0001250'), hpo.get_term('HP:0001250').name, False)
+    phenotypes['spasticity_F'] = Phenotype(hpotk.TermId.from_curie('HP:0001257'), hpo.get_term('HP:0001257').name, False)
+    phenotypes['focal_clonic_seizure_F'] = Phenotype(hpotk.TermId.from_curie('HP:0002266'), hpo.get_term('HP:0002266').name, False)
+
+    return phenotypes
+
+
+def get_toy_hpo():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hp.toy.json')
+    hpo = hpotk.ontology.load.obographs.load_ontology(str(path))
+    return hpo

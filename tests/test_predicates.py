@@ -4,90 +4,61 @@ import hpotk
 import pytest
 
 from genophenocorr.predicate import *
+from genophenocorr.cohort import Cohort
 from genophenocorr.patient import Patient
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType
-from tests import get_test_cohort
+from tests import get_test_cohort, get_toy_hpo
 
 # TODO - re-enable the tests after cleaning the `TestCohort`.
 #pytestmark = pytest.mark.skip("all tests still WIP")
 
 @pytest.fixture
-def hpo():
-    path = os.path.join(os.getcwd(), 'testingDefaults/hp.toy.json')
-    return hpotk.ontology.load.obographs.load_ontology(path)
-
-@pytest.fixture
-def PhenotypeCreate(hpo: hpotk.MinimalOntology):
-    validators = [
-        hpotk.validate.AnnotationPropagationValidator(hpo),
-        hpotk.validate.ObsoleteTermIdsValidator(hpo),
-        hpotk.validate.PhenotypicAbnormalityValidator(hpo)
-    ]
-    phenoCreator = PhenotypeCreator(hpo, hpotk.validate.ValidationRunner(validators))
-    return phenoCreator
-
-
-def create_phenotypes(hpo: hpotk.MinimalOntology, observed: str, excluded: str):
-    phenotypes = []
-    for o in observed.split(';'):
-        o = hpotk.TermId.from_curie(o)
-        name = hpo.get_term(o).name
-        phenotypes.append(Phenotype(o, name=name,  observed=True))
-
-    for e in excluded.split(';'):
-        e = hpotk.TermId.from_curie(e)
-        name = hpo.get_term(e).name
-        phenotypes.append(Phenotype(e, name=name, observed=False))
-
-    return phenotypes
-
-
-@pytest.mark.parametrize('query, observed, excluded, expected',
-                         [
-                             # Test exact match
-                             ('HP:0001166',  # Arachnodactyly
-                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
-                              'HP:0010677',  # not Enuresis nocturna
-                              HPOPresentPredicate.OBSERVED),
-                             # Test inferred annotations
-                             ('HP:0001250',  # Seizure
-                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
-                              'HP:0010677',  # not Enuresis nocturna
-                              HPOPresentPredicate.OBSERVED),
-
-                             # Test excluded feature
-                             # TODO - query based on the excluded feature.
-                             ('HP:0001250',  # Seizure
-                              'HP:0001166;HP:0002266',  # Arachnodactyly, Focal clonic seizure
-                              'HP:0010677',  # not Enuresis nocturna
-                              HPOPresentPredicate.OBSERVED),
-                         ])
-def test_HPOPresentPredicate(hpo: hpotk.MinimalOntology,
-                             query: str,
-                             observed: str,
-                             excluded: str,
-                             expected: PatientCategory):
-    predicate = HPOPresentPredicate(hpo=hpo)
-    phenotypes = create_phenotypes(hpo, observed, excluded)
-    patient = Patient(patient_id='whatever', phenotypes=phenotypes, variants=[], proteins=[])
-    actual = predicate.test(patient, query=hpotk.TermId.from_curie(query))
-    assert actual == expected
-
-
-@pytest.fixture
 def TestCohort():
     return get_test_cohort()
-
-@pytest.fixture
-def VariantEffectTest():
-    return VariantEffectPredicate('NM_013275.6')
 
 def find_patient(pat_id, cohort):
     for pat in cohort.all_patients:
         if pat.patient_id == pat_id:
             return pat
+
+
+@pytest.mark.parametrize('query, patient_id, expected',
+                        # Patient "HetSingleVar" has Phenotypes:
+                        # Measured and Observed - 'HP:0001166;HP:0002266',  # Arachnodactyly;Focal clonic seizure
+                        # Measured but not Observed - 'HP:0001257',  # Spasticity
+                        # Not Measured and not Observed - 'HP:0006280',  # Chronic pancreatitis
+                         [
+                             # Test exact match
+                             ('HP:0001166',  # Arachnodactyly
+                             'HetSingleVar',
+                              HPOPresentPredicate.OBSERVED),
+                             # Test inferred annotations
+                             ('HP:0001250',  # Seizure
+                              'HetSingleVar',
+                              HPOPresentPredicate.OBSERVED),
+                             # Test excluded feature
+                             ('HP:0001257',  # Spasticity
+                              'HetSingleVar',
+                              HPOPresentPredicate.NOT_OBSERVED),
+                            ('HP:0006280',  # Chronic pancreatitis
+                              'HetSingleVar',
+                              HPOPresentPredicate.NOT_MEASURED),
+                         ])
+def test_HPOPresentPredicate(TestCohort: Cohort,
+                             query: str,
+                             patient_id: str,
+                             expected: PatientCategory):
+    predicate = HPOPresentPredicate(hpo=get_toy_hpo())
+    patient = find_patient(patient_id, TestCohort)
+    actual = predicate.test(patient, query=hpotk.TermId.from_curie(query))
+    assert actual == expected
+
+
+@pytest.fixture
+def VariantEffectTest():
+    return VariantEffectPredicate('NM_013275.6')
 
 @pytest.mark.parametrize('patient_id, variantEffect, expected_result',
                         (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, HETEROZYGOUS],
