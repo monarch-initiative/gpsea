@@ -71,7 +71,7 @@ class Phenotype(hpotk.model.Identified, hpotk.model.Named):
 
     def __str__(self):
         return f"Phenotype(" \
-               "identifier={self.identifier}, " \
+               f"identifier={self.identifier}, " \
                f"name={self.name}, " \
                f"observed={self._observed})"
 

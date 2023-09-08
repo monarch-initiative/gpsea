@@ -4,19 +4,18 @@ import hpotk
 import pytest
 
 from genophenocorr.predicate import *
-from genophenocorr.patient import Patient, BasicPatientCreator
+from genophenocorr.patient import Patient
 from genophenocorr.phenotype import PhenotypeCreator, Phenotype
 from genophenocorr.constants import VariantEffect
-from genophenocorr.protein import FeatureType, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingFunctionalAnnotator
-from genophenocorr.variant import VarCachingFunctionalAnnotator, VariantAnnotationCache, VepFunctionalAnnotator
+from genophenocorr.protein import FeatureType
+from tests import get_test_cohort
 
-# TODO - re-enable the tests after cleaning the `PatientDict`.
-pytestmark = pytest.mark.skip("all tests still WIP")
-
+# TODO - re-enable the tests after cleaning the `TestCohort`.
+#pytestmark = pytest.mark.skip("all tests still WIP")
 
 @pytest.fixture
 def hpo():
-    path = os.path.join(os.getcwd(), 'tests/testingDefaults/hp.toy.json')
+    path = os.path.join(os.getcwd(), 'testingDefaults/hp.toy.json')
     return hpotk.ontology.load.obographs.load_ontology(path)
 
 @pytest.fixture
@@ -78,31 +77,17 @@ def test_HPOPresentPredicate(hpo: hpotk.MinimalOntology,
 
 
 @pytest.fixture
-def PatientDict(PhenotypeCreate):
-    pat_id_list = {'HetSingleVar':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89279849', '89279851', 'G', 'GC', 'heterozygous']]},
-                'HetDoubleVar1':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89284600', '89284602', 'GG', 'A', 'heterozygous'],['16', '89280751', '89280752', 'G', 'T', 'heterozygous']]},
-                'HetDoubleVar2':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89275127', '89275128', 'G', 'A', 'heterozygous'], ['16', '89279707', '89279725', 'AGTGTTCGGGGCGGGGCC', 'A', 'heterozygous']]},
-                'HomoVar':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89279457', '89279459', 'TG', 'T', 'homozygous']]},
-                'LargeCNV':{'hpos': [['HP:0001250', True]], 'vars': [['16', '89190070', '89439815', 'N', '<DEL>', 'heterozygous']]}
-                }
-    pat_dict = {}
-    pheno_creator = PhenotypeCreate
-    # TODO[lnrekerle] - clean the method - remove the cachers/services/...
-    path = os.path.join(os.getcwd(), 'tests/sampleAnnotations')
-    pm = UniprotProteinMetadataService()
-    pac = ProteinAnnotationCache(path)
-    pfa = ProtCachingFunctionalAnnotator(pac, pm)
-    vac = VariantAnnotationCache(path)
-    vep = VepFunctionalAnnotator(pfa)
-    vfa = VarCachingFunctionalAnnotator(vac, vep)
-    pat_creator = BasicPatientCreator(pheno_creator, vfa)
-    for pat, val in pat_id_list.items():
-        pat_dict[pat] = pat_creator.create_patient(pat, val['hpos'], val['vars'])
-    return pat_dict
+def TestCohort():
+    return get_test_cohort()
 
 @pytest.fixture
 def VariantEffectTest():
     return VariantEffectPredicate('NM_013275.6')
+
+def find_patient(pat_id, cohort):
+    for pat in cohort.all_patients:
+        if pat.patient_id == pat_id:
+            return pat
 
 @pytest.mark.parametrize('patient_id, variantEffect, expected_result',
                         (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, HETEROZYGOUS],
@@ -115,9 +100,9 @@ def test_VariantEffectPredicate(patient_id: str,
                                 variantEffect: VariantEffect,
                                 expected_result: PatientCategory, 
                                 VariantEffectTest: VariantEffectPredicate, 
-                                PatientDict
+                                TestCohort
                                 ):
-    result = VariantEffectTest.test(PatientDict[patient_id], variantEffect)
+    result = VariantEffectTest.test(find_patient(patient_id, TestCohort), variantEffect)
     assert result == expected_result
 
 
@@ -131,10 +116,10 @@ def VariantTest():
                         ['HetDoubleVar1', '16_89284601_GG/A', HETEROZYGOUS],
                         ['HetDoubleVar1', '16_89280752_G/T', HETEROZYGOUS],
                         ['HomoVar', '16_89280752_G/T', NO_VARIANT],
-                        ['HomoVar', '16_89279459_G/-', HOMOZYGOUS],
+                        ['HomoVar', '16_89279458_TG/T', HOMOZYGOUS],
                         ['LargeCNV', '16_89190071_deletion', HETEROZYGOUS]))
-def test_VariantPredicate(patient_id, variant, hasVarResult, VariantTest, PatientDict):
-    result = VariantTest.test(PatientDict[patient_id], variant)
+def test_VariantPredicate(patient_id, variant, hasVarResult, VariantTest, TestCohort):
+    result = VariantTest.test(find_patient(patient_id, TestCohort), variant)
     assert result == hasVarResult
 
 
@@ -152,8 +137,8 @@ def ExonTest():
                         ['HomoVar', 9, HOMOZYGOUS],
                         ['LargeCNV', 1, NO_VARIANT],
                         ['LargeCNV', 13, HETEROZYGOUS]))
-def test_ExonPredicate(patient_id, exon, hasVarResult, ExonTest, PatientDict):
-    result = ExonTest.test(PatientDict[patient_id], exon)
+def test_ExonPredicate(patient_id, exon, hasVarResult, ExonTest, TestCohort):
+    result = ExonTest.test(find_patient(patient_id, TestCohort), exon)
     assert result == hasVarResult
 
 
@@ -169,8 +154,8 @@ def ProteinFeatureTypeTest():
                         ['HetDoubleVar1', FeatureType.REPEAT, NO_VARIANT]))
                         ## TODO Why do CNV not show as affecting a feature?
                         ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
-def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, ProteinFeatureTypeTest, PatientDict):
-    result = ProteinFeatureTypeTest.test(PatientDict[patient_id], featureType)
+def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, ProteinFeatureTypeTest, TestCohort):
+    result = ProteinFeatureTypeTest.test(find_patient(patient_id, TestCohort), featureType)
     assert result == hasVarResult
 
 
@@ -184,7 +169,7 @@ def ProteinFeatureTest():
                         ['HetSingleVar', 'Disordered', HETEROZYGOUS],
                         ['HomoVar', 'Disordered', HOMOZYGOUS],
                         ['HetDoubleVar1', 'Disordered', HETEROZYGOUS]))
-def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, ProteinFeatureTest, PatientDict):
-    result = ProteinFeatureTest.test(PatientDict[patient_id], feature)
+def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, ProteinFeatureTest, TestCohort):
+    result = ProteinFeatureTest.test(find_patient(patient_id, TestCohort), feature)
     assert result == hasVarResult
 
