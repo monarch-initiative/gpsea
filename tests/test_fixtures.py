@@ -32,31 +32,31 @@ def test_cohort() -> Cohort:
             SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Important for protein degradation', start=2369, end=2663))))
 
     HetSingleVar = [Variant('16_89279851_-/C', 'insertion', 
-                VariantCoordinates(chrom=16, start=89279849, end=89279851, ref='G', alt='GC', change_length=1, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89279849, end=89279851, ref='G', alt='GC', change_length=1, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', ['frameshift_variant'], 
                 [9], [prot], 2231, 2231)],genotype='heterozygous')]
     HetDoubleVar1 = [Variant('16_89284601_GG/A', 'indel', 
-                VariantCoordinates(chrom=16, start=89284600, end=89284602, ref='GG', alt='A', change_length=-1, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89284600, end=89284602, ref='GG', alt='A', change_length=-1, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', ['frameshift_variant'], 
                 [9], [prot], 647, 647)],genotype='heterozygous'),
                 Variant('16_89280752_G/T', 'SNV', 
-                VariantCoordinates(chrom=16, start=89280751, end=89280752, ref='G', alt='T', change_length=0, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89280751, end=89280752, ref='G', alt='T', change_length=0, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', ['stop_gained'], 
                 [9], [prot], 1930, 1930)],genotype='heterozygous')]
     HetDoubleVar2 = [Variant('16_89275128_G/A', 'SNV', 
-                VariantCoordinates(chrom=16, start=89275127, end=89275128, ref='G', alt='A', change_length=0, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89275127, end=89275128, ref='G', alt='A', change_length=0, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', ['missense_variant'], 
                 [10], [prot], 2512, 2512)],genotype='heterozygous'),
                 Variant('16_89279708_AGTGTTCGGGGCGGGGCC/A', 'indel', 
-                VariantCoordinates(chrom=16, start=89279707, end=89279725, ref='AGTGTTCGGGGCGGGGCC', alt='A', change_length=-17, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89279707, end=89279725, ref='AGTGTTCGGGGCGGGGCC', alt='A', change_length=-17, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', ['frameshift_variant'], 
                 [9], [prot], 2273, 2278)],genotype='heterozygous')]
     HomoVar = [Variant('16_89279458_TG/T', 'indel', 
-                VariantCoordinates(chrom=16, start=89279457, end=89279459, ref='TG', alt='T', change_length=-1, genotype='homozygous'), 
+                VariantCoordinates(chrom="16", start=89279457, end=89279459, ref='TG', alt='T', change_length=-1, genotype='homozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', ['frameshift_variant'], 
                 [9], [prot], 2361, 2362)],genotype='homozygous')]
     LargeCNV = [Variant('16_89190071_deletion', 'deletion', 
-                VariantCoordinates(chrom=16, start=89190070, end=89439815, ref='N', alt='<DEL>', change_length=4, genotype='heterozygous'), 
+                VariantCoordinates(chrom="16", start=89190070, end=89439815, ref='N', alt='<DEL>', change_length=4, genotype='heterozygous'),
                 [TranscriptAnnotation('ANKRD11', 'NM_013275.6', None, ['stop_lost', 'feature_truncation', 'coding_sequence_variant', '5_prime_UTR_variant', '3_prime_UTR_variant', 'intron_variant'], 
                 [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [prot], None, None)],genotype='heterozygous')]
 
