@@ -72,7 +72,7 @@ class Cohort:
         self._recessive = recessive
 
     @property
-    def all_patients(self) -> typing.FrozenSet:
+    def all_patients(self) -> typing.FrozenSet[Patient]:
         """
         Returns:
             set: A frozen set of all the Patient objects in the Cohort
