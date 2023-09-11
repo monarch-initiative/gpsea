@@ -10,9 +10,6 @@ from genophenocorr.constants import VariantEffect
 from genophenocorr.protein import FeatureType
 from .test_fixtures import toy_hpo, test_cohort
 
-# TODO - re-enable the tests after cleaning the `TestCohort`.
-#pytestmark = pytest.mark.skip("all tests still WIP")
-
 
 def find_patient(pat_id, cohort) -> typing.Optional[Patient]:
     for pat in cohort.all_patients:
