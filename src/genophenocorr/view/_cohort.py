@@ -1,5 +1,6 @@
-from ._cohort_data import Cohort
 from hpotk import MinimalOntology
+
+from genophenocorr.model import Cohort
 
 
 class CohortViewer:

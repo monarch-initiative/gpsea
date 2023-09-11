@@ -1,6 +1,6 @@
-import hpotk
 import typing
 
+import hpotk
 
 class Phenotype(hpotk.model.Identified, hpotk.model.Named):
     """A class that represents an HPO verified phenotype
@@ -77,5 +77,3 @@ class Phenotype(hpotk.model.Identified, hpotk.model.Named):
 
     def __repr__(self):
         return str(self)
-
-

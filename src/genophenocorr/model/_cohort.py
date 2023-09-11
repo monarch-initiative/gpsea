@@ -1,8 +1,89 @@
 import typing
-
 from collections import Counter
 
-from genophenocorr.patient import Patient
+from ._phenotype import Phenotype
+from ._protein import ProteinMetadata
+from ._variant import Variant
+
+
+class Patient:
+    """A class that represents an individual patient
+
+    Attributes:
+        patient_id (string): A string unique to this Patient object
+        phenotypes (Sequence[Phenotype]): A list of Phenotype objects
+        variants (Sequence[Variant]): A list of Variant objects
+        proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
+    """
+
+    def __init__(self, patient_id: str,
+                 phenotypes: typing.Iterable[Phenotype],
+                 variants: typing.Iterable[Variant],
+                 proteins: typing.Iterable[ProteinMetadata]):
+        """Constructs all necessary attributes for a Patient object
+
+        Args:
+            patient_id (string): A string unique to this Patient object
+            phenotypes (Iterable[Phenotype]): A list of Phenotype objects
+            variants (Iterable[Variant]): A list of Variant objects
+            proteins (Iterable[ProteinMetadata]): A list of ProteinMetadata objects
+        """
+        self._id = patient_id
+        self._phenotypes = tuple(phenotypes)
+        self._variants = tuple(variants)
+        self._proteins = tuple(proteins)
+
+    @property
+    def patient_id(self) -> str:
+        """
+        Returns:
+            string: Patient ID unique to this Patient object
+        """
+        return self._id
+
+    @property
+    def phenotypes(self) -> typing.Sequence[Phenotype]:
+        """
+        Returns:
+            Sequence[Phenotype]: A list of Phenotype objects associated with this Patient object
+        """
+        return self._phenotypes
+
+    @property
+    def variants(self) -> typing.Sequence[Variant]:
+        """
+        Returns:
+            Sequence[Variant]: A list of Variant objects associated with this Patient object
+        """
+        return self._variants
+
+    @property
+    def proteins(self) -> typing.Sequence[ProteinMetadata]:
+        """
+        Returns:
+            Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with this Patient object
+        """
+        return self._proteins
+
+    def __str__(self) -> str:
+        return (f"Patient("
+                f"patient_id:{self.patient_id}, "
+                f"variants:{[var.variant_string for var in self.variants]}, "
+                f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
+                f"proteins:{[prot.protein_id for prot in self.proteins]})")
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __eq__(self, other) -> bool:
+        return (isinstance(other, Patient)
+                and self.patient_id == other.patient_id
+                and self.variants == other.variants
+                and self.phenotypes == other.phenotypes
+                and self.proteins == other.proteins)
+
+    def __hash__(self) -> int:
+        return hash((self.patient_id, self.variants, self.phenotypes, self.proteins))
 
 
 class Cohort:
@@ -33,7 +114,7 @@ class Cohort:
     """This class creates a collection of patients and makes it easier to determine overlapping diseases, 
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
     add each file as a patient into the grouping.
-    
+
     Attributes:
         all_patients (Sequence[Patient]): A set of all Patient objects in the Cohort
         all_phenotypes (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort
@@ -49,9 +130,10 @@ class Cohort:
         list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.
     """
 
-    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict, recessive = False):
+    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict,
+                 recessive=False):
         """Constructs all necessary attributes for a Cohort object
-        
+
         Args:
             patient_set (Sequence[Patient]): A set of all Patient objects in the Cohort
             phenotype_set (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort
@@ -129,34 +211,34 @@ class Cohort:
         """
         return [pat.patient_id for pat in self.all_patients]
 
-    def list_all_phenotypes(self, top = None):
+    def list_all_phenotypes(self, top=None):
         """
         Args:
             top (integer, Optional): If not given, lists all phenotypes. Otherwise, lists only the `top` highest counts
         Returns:
-            list: A list of tuples, formatted (phenotype ID, number of patients with that phenotype) 
+            list: A list of tuples, formatted (phenotype ID, number of patients with that phenotype)
         """
         return self._all_counts_dict.get('phenotypes').most_common(top)
 
-    def list_all_variants(self, top = None):
+    def list_all_variants(self, top=None):
         """
         Args:
             top (integer, Optional): If not given, lists all variants. Otherwise, lists only the `top` highest counts
         Returns:
-            list: A list of tuples, formatted (variant string, number of patients with that variant) 
+            list: A list of tuples, formatted (variant string, number of patients with that variant)
         """
         return self._all_counts_dict.get('variants').most_common(top)
 
-    def list_all_proteins(self, top = None):
+    def list_all_proteins(self, top=None):
         """
         Args:
             top (integer, Optional): If not given, lists all proteins. Otherwise, lists only the `top` highest counts
         Returns:
-            list: A list of tuples, formatted (protein ID, number of patients with that protein) 
+            list: A list of tuples, formatted (protein ID, number of patients with that protein)
         """
         return self._all_counts_dict.get('proteins').most_common(top)
 
-    def list_data_by_tx(self, transcript = None):
+    def list_data_by_tx(self, transcript=None):
         """
         Args:
             transcript (string, Optional): If not given, lists all transcripts. Otherwise, will only list the given transcript

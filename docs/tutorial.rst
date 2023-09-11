@@ -58,7 +58,7 @@ For instance, compare *frameshift* variants:
 .. doctest:: tutorial
 
   >>> from pprint import pprint
-  >>> from genophenocorr.cohort import CohortAnalysis
+  >>> from genophenocorr.analysis import CohortAnalysis
   >>> from genophenocorr.constants import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
   >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)

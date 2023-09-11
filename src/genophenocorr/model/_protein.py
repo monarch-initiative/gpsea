@@ -1,10 +1,10 @@
-import enum
 import abc
+import enum
 import typing
 
 
 class FeatureInfo:
-    """A class that represents a protein feature 
+    """A class that represents a protein feature
     (e.g. a repeated sequence given the name "ANK 1" in protein "Ankyrin repeat domain-containing protein 11")
 
     Attributes:
@@ -72,7 +72,7 @@ class FeatureInfo:
 
     def __str__(self) -> str:
         return f"FeatureInfo(name={self.name}, start={self.start}, end={self.end})"
-    
+
     def __repr__(self) -> str:
         return str(self)
 
@@ -92,8 +92,11 @@ class FeatureType(enum.Enum):
     REGION = enum.auto()
 
 
-
 class ProteinFeature(metaclass=abc.ABCMeta):
+
+    @staticmethod
+    def create(info: FeatureInfo, feature_type: FeatureType):
+        return SimpleProteinFeature(info, feature_type)
 
     @property
     @abc.abstractmethod
@@ -113,6 +116,7 @@ class SimpleProteinFeature(ProteinFeature):
         info (FeatureInfo): A FeatureInfo object, describing name and location of the feature
         feature_type (FeatureType): A FeatureType object, limited to specific feature types
     """
+    # Not part of the public API.
 
     def __init__(self, info: FeatureInfo, feature_type: FeatureType):
         """Constructs all necessary attributes for a SimpleProteinFeature
@@ -146,7 +150,7 @@ class SimpleProteinFeature(ProteinFeature):
 
     def __str__(self) -> str:
         return f"SimpleProteinFeature(type={self.feature_type}, " \
-            f"info={str(self.info)})"
+               f"info={str(self.info)})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -164,8 +168,8 @@ class ProteinMetadata:
     """A class that represents a specific protein
 
     Attributes:
-        protein_id (string): A string unique to this protein 
-        label (string): Full name of the protein 
+        protein_id (string): A string unique to this protein
+        label (string): Full name of the protein
         protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
     Methods:
         domains (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "DOMAIN"
@@ -178,8 +182,8 @@ class ProteinMetadata:
         """Constructs all necessary attributes for a ProteinMetadata object
 
         Args:
-            protein_id (string): A string unique to this protein 
-            label (string): Full name of the protein 
+            protein_id (string): A string unique to this protein
+            label (string): Full name of the protein
             protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
         """
         if not isinstance(protein_id, str):
@@ -189,7 +193,8 @@ class ProteinMetadata:
             raise ValueError(f"Protein label must be type string but is type {type(label)}")
         self._label = label
         if not all(isinstance(x, ProteinFeature) for x in protein_features):
-            raise ValueError(f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
+            raise ValueError(
+                f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
         self._features = tuple(protein_features)
 
     @property
@@ -246,20 +251,17 @@ class ProteinMetadata:
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
-            f"label={self.label}, " \
-            f"features={str(self.protein_features)})"
+               f"label={self.label}, " \
+               f"features={str(self.protein_features)})"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, ProteinMetadata) \
             and self.label == other.label \
             and self.protein_features == other.protein_features \
             and self.protein_id == other.protein_id
-    
+
     def __hash__(self) -> int:
         return hash((self.protein_id, self.label, self._features))
 
-
     def __repr__(self) -> str:
         return str(self)
-
-            

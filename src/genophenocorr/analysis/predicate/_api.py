@@ -3,7 +3,7 @@ import typing
 
 import hpotk.util
 
-from genophenocorr.patient import Patient
+from genophenocorr.model import Patient
 
 T = typing.TypeVar('T')
 

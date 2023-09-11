@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from contextlib import nullcontext as does_not_raise
-from genophenocorr.cohort._analyzers import PythonMultiFisherExact
+from ._analyzers import PythonMultiFisherExact
 
 
 @pytest.fixture

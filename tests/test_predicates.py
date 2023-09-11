@@ -3,11 +3,9 @@ import typing
 import hpotk
 import pytest
 
-from genophenocorr.predicate import *
-from genophenocorr.cohort import Cohort
-from genophenocorr.patient import Patient
+from genophenocorr.analysis.predicate import *
 from genophenocorr.constants import VariantEffect
-from genophenocorr.protein import FeatureType
+from genophenocorr.model import Cohort, Patient, FeatureType
 from .test_fixtures import toy_hpo, test_cohort
 
 

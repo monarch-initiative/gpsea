@@ -3,33 +3,29 @@ import os
 import hpotk
 import pytest
 
-from genophenocorr.variant import Variant, VariantCoordinates, TranscriptAnnotation
-from genophenocorr.phenotype import Phenotype
-from genophenocorr.protein import ProteinMetadata, SimpleProteinFeature, FeatureType, FeatureInfo
-from genophenocorr.patient import Patient
-from genophenocorr.cohort import Cohort
+from genophenocorr.model import *
 
 
 @pytest.fixture
 def test_cohort() -> Cohort:
 
     prot = ProteinMetadata(protein_id='NP_037407.4', label='Ankyrin repeat domain-containing protein 11', 
-            protein_features=(SimpleProteinFeature(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 1', start=167, end=196)), 
-            SimpleProteinFeature(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 2', start=200, end=229)), 
-            SimpleProteinFeature(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 3', start=233, end=262)), 
-            SimpleProteinFeature(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 4', start=266, end=292)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1, end=90)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=128, end=169)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=289, end=380)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=398, end=647)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=723, end=783)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=881, end=1043)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1059, end=1393)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1424, end=1710)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1814, end=1836)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1988, end=2019)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=2131, end=2406)), 
-            SimpleProteinFeature(feature_type=FeatureType.REGION, info=FeatureInfo(name='Important for protein degradation', start=2369, end=2663))))
+            protein_features=(ProteinFeature.create(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 1', start=167, end=196)),
+            ProteinFeature.create(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 2', start=200, end=229)),
+            ProteinFeature.create(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 3', start=233, end=262)),
+            ProteinFeature.create(feature_type=FeatureType.REPEAT, info=FeatureInfo(name='ANK 4', start=266, end=292)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1, end=90)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=128, end=169)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=289, end=380)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=398, end=647)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=723, end=783)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=881, end=1043)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1059, end=1393)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1424, end=1710)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1814, end=1836)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=1988, end=2019)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Disordered', start=2131, end=2406)),
+            ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo(name='Important for protein degradation', start=2369, end=2663))))
 
     HetSingleVar = [Variant('16_89279851_-/C', 'insertion', 
                 VariantCoordinates(chrom="16", start=89279849, end=89279851, ref='G', alt='GC', change_length=1, genotype='heterozygous'),

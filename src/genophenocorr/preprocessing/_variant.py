@@ -1,85 +1,16 @@
 import logging
 import os
 import pickle
-import re
 import typing
-from genophenocorr.protein import ProteinMetadataService
 
 import hpotk
 import requests
-# pyright: reportGeneralTypeIssues=false
-from phenopackets import GenomicInterpretation
-
-from ._models import FunctionalAnnotator, VariantCoordinateFinder
-from ._variant_data import VariantCoordinates, TranscriptAnnotation, Variant
 
 
-class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
-    """A class that creates VariantCoordinates from a Phenopacket
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant
 
-    Methods:
-        find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket
-    """
-    def __init__(self):
-        """Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object"""
-        self._logger = logging.getLogger(__name__)
+from ._api import FunctionalAnnotator, ProteinMetadataService
 
-    def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
-        """Creates a VariantCoordinates object from the data in a given Phenopacket
-
-        Args:
-            item (GenomicInterpretation): A Phenopacket object
-        Returns:
-            VariantCoordinates: A VariantCoordinates object
-        """
-        if not isinstance(item, GenomicInterpretation):
-            raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
-        chrom, ref, alt, genotype = None, None, None, None
-        start, end = 0, 0
-        variant_descriptor = item.variant_interpretation.variation_descriptor
-        if len(variant_descriptor.vcf_record.chrom) == 0 and len(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
-            ref = 'N'
-            start = int(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value)
-            end = int(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.end_number.value)
-            number = int(variant_descriptor.variation.copy_number.number.value)
-            if number > 2:
-                alt = '<DUP>'
-            else:
-                alt = '<DEL>'
-            chrom = re.findall(r'NC_0000(\d{2}).\d\d',
-                               variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id)[0]
-            if chrom.startswith('0'):
-                chrom = str(int(chrom))
-            elif chrom == '23':
-                chrom = 'X'
-            elif chrom == '24':
-                chrom = 'Y'
-        elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
-            ref = variant_descriptor.vcf_record.ref
-            alt = variant_descriptor.vcf_record.alt
-            start = int(variant_descriptor.vcf_record.pos) - 1
-            end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref))
-            chrom = variant_descriptor.vcf_record.chrom[3:]
-        genotype = variant_descriptor.allelic_state.label
-
-        if any(field is None for field in (chrom, ref, alt, genotype)):
-            raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
-        return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
-
-class BasicVariantCoordinateFinder(VariantCoordinateFinder[typing.Iterable[str]]):
-    def __init__(self) -> None:
-        self._logger = logging.getLogger(__name__)
-
-    def find_coordinates(self, chrom, start, end, ref, alt, genotype) -> VariantCoordinates:
-        if any(field is None for field in (chrom, start, end, ref, alt, genotype)):
-            raise ValueError(f'All inputs are required to create variant')
-        if not start.isdigit() or not end.isdigit():
-            return ValueError(f'Start and End values must be a number')
-        return VariantCoordinates(chrom, int(start), int(end), ref, alt, len(alt) - len(ref), genotype)
 
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
