@@ -17,7 +17,8 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
                                
                                This is either because the sample is annotated with `q` (exact match),
                                or because one of sample's annotations is a descendant `q` (annotation propagation).
-                               For instance, we tested for a Seizure and the sample did *not* have any Seizure.
+                               For instance, we tested for a Seizure and the sample *had* a Clonic seizure 
+                               (a descendant of Seizure).
                                """)
 
     NOT_OBSERVED = PatientCategory(cat_id=1,
