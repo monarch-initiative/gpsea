@@ -30,7 +30,7 @@ jobs:
             python-version: "3.11"
         - name: Install package
           run: |
-            pip install ".[test]"
+            python3 -m pip install .[test]
         - name: Run pytest tests
           run: |
             pytest
