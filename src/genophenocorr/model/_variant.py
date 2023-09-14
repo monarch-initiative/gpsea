@@ -1,5 +1,6 @@
 import typing
-from genophenocorr.protein import ProteinMetadata
+
+from ._protein import ProteinMetadata
 
 
 class VariantCoordinates:
@@ -102,7 +103,7 @@ class VariantCoordinates:
         """Checks if the variant coordinates use structural variant notation
         (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
         as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).
-        
+
         Returns:
             boolean: True if the variant coordinates use structural variant notation
         """
@@ -113,7 +114,8 @@ class VariantCoordinates:
         Returns:
             string: A readable representation of the variant coordinates
         """
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}".replace('<', '').replace('>', '')
+        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}".replace('<', '').replace(
+            '>', '')
 
     def __len__(self):
         """
@@ -133,10 +135,10 @@ class VariantCoordinates:
 
     def __str__(self) -> str:
         return f"VariantCoordinates(chrom={self.chrom}, " \
-            f"start={self.start}, end={self.end}, " \
-            f"ref={self.ref}, alt={self.alt}, " \
-            f"change_length={self.change_length}, " \
-            f"genotype={self.genotype})"
+               f"start={self.start}, end={self.end}, " \
+               f"ref={self.ref}, alt={self.alt}, " \
+               f"change_length={self.change_length}, " \
+               f"genotype={self.genotype})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -157,6 +159,7 @@ class TranscriptAnnotation:
         protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript
         protein_effect_location (Tuple(integer, integer)): The start and end coordinates of the effect on the protein sequence.
     """
+
     def __init__(self, gene_id: str,
                  tx_id: str,
                  hgvsc: typing.Optional[str],
@@ -216,7 +219,7 @@ class TranscriptAnnotation:
     def variant_effects(self) -> typing.Sequence[str]:
         """
         Returns:
-            Sequence[string]: A sequence of variant effects. 
+            Sequence[string]: A sequence of variant effects.
                     Definitions of these can be found at: http://www.sequenceontology.org/
         """
         return self._variant_effects
@@ -247,12 +250,12 @@ class TranscriptAnnotation:
 
     def __str__(self) -> str:
         return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
-            f"transcript_id:{self.transcript_id}," \
-            f"hgvsc_id:{self.hgvsc_id}," \
-            f"variant_effects:{self.variant_effects}," \
-            f"overlapping_exons:{self.overlapping_exons}," \
-            f"protein_affected:{self.protein_affected}," \
-            f"protein_effect_location:{self.protein_effect_location})"
+               f"transcript_id:{self.transcript_id}," \
+               f"hgvsc_id:{self.hgvsc_id}," \
+               f"variant_effects:{self.variant_effects}," \
+               f"overlapping_exons:{self.overlapping_exons}," \
+               f"protein_affected:{self.protein_affected}," \
+               f"protein_effect_location:{self.protein_effect_location})"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, TranscriptAnnotation) \
@@ -268,7 +271,8 @@ class TranscriptAnnotation:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvsc_id, self.transcript_id, self.overlapping_exons, self.variant_effects, self.protein_affected, self.protein_effect_location))
+        return hash((self.gene_id, self.hgvsc_id, self.transcript_id, self.overlapping_exons, self.variant_effects,
+                     self.protein_affected, self.protein_effect_location))
 
 
 class Variant:
@@ -283,18 +287,19 @@ class Variant:
     """
 
     @staticmethod
-    def create_variant_from_scratch(variant_id: str, 
-                                variant_class: str, 
-                                variant_coordinates: VariantCoordinates, 
-                                gene_name: str,
-                                trans_id: str,
-                                hgvsc_id: str,
-                                consequences: typing.Sequence[str],
-                                exons_effected: typing.Sequence[int],
-                                protein: typing.Sequence[ProteinMetadata],
-                                protein_effect_start: int,
-                                protein_effect_end: int):
-        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected, protein, protein_effect_start, protein_effect_end)
+    def create_variant_from_scratch(variant_id: str,
+                                    variant_class: str,
+                                    variant_coordinates: VariantCoordinates,
+                                    gene_name: str,
+                                    trans_id: str,
+                                    hgvsc_id: str,
+                                    consequences: typing.Sequence[str],
+                                    exons_effected: typing.Sequence[int],
+                                    protein: typing.Sequence[ProteinMetadata],
+                                    protein_effect_start: int,
+                                    protein_effect_end: int):
+        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected, protein,
+                                          protein_effect_start, protein_effect_end)
         return Variant(variant_id, variant_class, variant_coordinates, [transcript], variant_coordinates.genotype)
 
     def __init__(self, var_id: str,
@@ -332,7 +337,7 @@ class Variant:
     def variant_string(self) -> str:
         """
         Returns:
-            string: A readable representation of the variant's coordinates. 
+            string: A readable representation of the variant's coordinates.
                 Format - "Chromosome_Start_Reference/Alternative" or
                 "Chromosome_Start_StructuralType"
         """
@@ -340,9 +345,9 @@ class Variant:
 
     @property
     def genotype(self) -> str:
-        """Optional parameter. Required for recessive tests. 
+        """Optional parameter. Required for recessive tests.
         Possible values: Heterozygous, Homozygous, Hemizygous
-        
+
         Returns:
             string: Genotype of the variant
         """
@@ -350,7 +355,7 @@ class Variant:
 
     @property
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
-        """A collection of TranscriptAnnotations that each represent results of the functional annotation 
+        """A collection of TranscriptAnnotations that each represent results of the functional annotation
         of a variant with respect to single transcript of a gene.
 
         Returns:
@@ -375,14 +380,16 @@ class Variant:
             and self.tx_annotations == other.tx_annotations
 
     def __hash__(self) -> int:
-        return hash((self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
+        return hash(
+            (self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
 
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
         return f"Variant(variant_coordinates:{str(self.variant_coordinates)}," \
-            f"variant_string:{self.variant_string}," \
-            f"genotype:{self.genotype}," \
-            f"tx_annotations:{self.tx_annotations}," \
-            f"variant_class:{self.variant_class})"
+               f"variant_string:{self.variant_string}," \
+               f"genotype:{self.genotype}," \
+               f"tx_annotations:{self.tx_annotations}," \
+               f"variant_class:{self.variant_class})"
+

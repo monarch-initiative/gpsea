@@ -1,7 +1,8 @@
 import hpotk
 import typing
 import logging
-from ._phenotype_data import Phenotype
+
+from genophenocorr.model import Phenotype
 
 
 class PhenotypeValidationException(BaseException):

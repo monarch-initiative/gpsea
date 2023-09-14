@@ -1,20 +1,19 @@
 import abc
 import logging
 import math
+import typing
 
 import numpy as np
 
-from ._cohort_data import Cohort
-import typing
-from genophenocorr.constants import VariantEffect
-from genophenocorr.protein import FeatureType, ProteinFeature
-from genophenocorr.predicate import VariantEffectPredicate, HPOPresentPredicate, \
-    VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
-from genophenocorr.variant import Variant
 from scipy import stats
 from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
-from enum import Flag
+
+from genophenocorr.constants import VariantEffect
+from genophenocorr.model import Cohort, FeatureType
+
+from .predicate import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 
 
 class CohortAnalysis():

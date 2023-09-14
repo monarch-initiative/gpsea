@@ -1,10 +1,6 @@
 from hpotk import TermId
 
-from genophenocorr.variant import Variant, VariantCoordinates
-from genophenocorr.phenotype import Phenotype
-from genophenocorr.protein import ProteinMetadata, SimpleProteinFeature, FeatureType, FeatureInfo
-from genophenocorr.patient import Patient
-from genophenocorr.cohort import Cohort
+from genophenocorr.model import *
 
 
 def get_toy_cohort() -> Cohort:
@@ -29,8 +25,8 @@ def get_toy_cohort() -> Cohort:
     spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
 
 
-    prot_feat_1 = SimpleProteinFeature(FeatureInfo('domain', 1, 75), FeatureType.DOMAIN)
-    prot_feat_2 = SimpleProteinFeature(FeatureInfo('region', 50, 100), FeatureType.REGION)
+    prot_feat_1 = ProteinFeature.create(FeatureInfo('domain', 1, 75), FeatureType.DOMAIN)
+    prot_feat_2 = ProteinFeature.create(FeatureInfo('region', 50, 100), FeatureType.REGION)
     prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
 
     het_snv = Variant.create_variant_from_scratch(

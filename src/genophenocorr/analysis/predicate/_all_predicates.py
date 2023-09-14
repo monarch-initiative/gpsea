@@ -3,9 +3,8 @@ import typing
 import hpotk
 
 from genophenocorr.constants import VariantEffect
-from genophenocorr.patient import Patient
-from genophenocorr.predicate import PolyPredicate, PatientCategory
-from genophenocorr.protein import FeatureType
+from genophenocorr.model import Patient, FeatureType
+from ._api import PolyPredicate, PatientCategory
 
 
 class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
