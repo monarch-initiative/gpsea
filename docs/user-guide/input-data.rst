@@ -58,7 +58,7 @@ For the purpose of this example, we will use a folder `simple_cohort` with 5 exa
 
 .. doctest:: input-data
 
-  >>> simple_cohort_path = '../data/simple_cohort'
+  >>> simple_cohort_path = 'data/simple_cohort'
 
 Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
 :class:`genophenocorr.model.Patient`:
@@ -74,13 +74,14 @@ Here we walk the file system, load all phenopacket JSON files, and transform the
   ...   for filename in filenames:
   ...     if filename.endswith('.json'):
   ...       pp_path = os.path.join(dirpath, filename)
-  ...       pp = Phenopacket()
   ...       with open(pp_path) as fh:
-  ...         Parse(fh.read(), pp)
-  ...       patient = patient_creator.create_patient(pp)
-  ...       patients.append(pp)
+  ...         pp = Parse(fh.read(), Phenopacket())
+  ...     patient = patient_creator.create_patient(pp)
+  ...     patients.append(patient)
 
-  >>> print(f'Loaded {len(patients)} phenopackets')
+
+  >>> f'Loaded {len(patients)} phenopackets'
+  'Loaded 5 phenopackets'
 
 Now we can construct a `Cohort`:
 
@@ -89,7 +90,8 @@ Now we can construct a `Cohort`:
   >>> from genophenocorr.model import Cohort
 
   >>> cohort = Cohort.from_patients(patients)
-  >>> print(f'Created a cohort with {len(cohort)} members')
+  >>> f'Created a cohort with {len(cohort)} members'
+  'Created a cohort with 5 members'
 
 
 Create a cohort from other data
