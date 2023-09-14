@@ -86,7 +86,7 @@ class Patient:
         return hash((self.patient_id, self.variants, self.phenotypes, self.proteins))
 
 
-class Cohort:
+class Cohort(typing.Sized):
 
     @staticmethod
     def from_patients(members: typing.Sequence[Patient]):
@@ -260,3 +260,6 @@ class Cohort:
         for tx_id in too_small:
             del var_type_dict[tx_id]
         return var_type_dict
+
+    def __len__(self) -> int:
+        return len(self._patient_set)
