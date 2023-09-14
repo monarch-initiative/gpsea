@@ -1,4 +1,5 @@
 from ._api import VariantCoordinateFinder, FunctionalAnnotator, ProteinMetadataService
+from ._config import configure_caching_patient_creator
 from ._patient import PatientCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator, load_phenopacket_folder
 from ._phenotype import PhenotypeCreator, PhenotypeValidationException
@@ -13,5 +14,6 @@ __all__ = [
     'PhenotypeCreator', 'PhenotypeValidationException',
     'ProteinAnnotationCache', 'ProtCachingFunctionalAnnotator',
     'UniprotProteinMetadataService',
-    'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator'
+    'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
+    'configure_caching_patient_creator'
 ]

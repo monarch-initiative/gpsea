@@ -22,7 +22,7 @@ class PhenotypeCreator:
         create_phenotype(term_ids:Iterable[Tuple[str, bool]]): Creates a list of Phenotype objects from a list of tuples.
                                                                Each tuple has the HPO ID and a boolean on if the phenotype is observed.
     """
-    def __init__(self, hpo: hpotk.ontology.Ontology,
+    def __init__(self, hpo: hpotk.MinimalOntology,
                  validator: hpotk.validate.ValidationRunner):
         """Constructs all necessary attributes for a PhenotypeCreator object
 
@@ -31,7 +31,7 @@ class PhenotypeCreator:
             validator (hpotk.validate.ValidationRunner): A ValidationRunner object 
         """
         self._logger = logging.getLogger(__name__)
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.ontology.Ontology, 'hpo')
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
     def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> list[Phenotype]:
