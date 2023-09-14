@@ -4,10 +4,11 @@ name: CI
 # [![CI](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
 
 on:
-    push:
-      branches: [ develop ]
-    pull_request:
-      branches: [ main, develop ]
+    workflow_dispatch:
+    # push:
+    #   branches: [ develop ]
+    # pull_request:
+    #   branches: [ main, develop ]
 
 jobs:
     build:
@@ -16,7 +17,10 @@ jobs:
       strategy:
         fail-fast: false
         matrix:
-          os: [ windows-latest, macOS-latest, ubuntu-latest ]
+          os:
+            - ubuntu-latest
+            # - windows-latest
+            # - macOS-latest
 
       steps:
         - uses: actions/checkout@v2
