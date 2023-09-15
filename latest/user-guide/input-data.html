@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input data &mdash; genophenocorr 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=35a8b989"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../apidocs/modules.html" />
+    <link rel="prev" title="User guide" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-cohort-from-ga4gh-phenopackets">Create a cohort from GA4GH phenopackets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-cohort-from-other-data">Create a cohort from other data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">Input data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/input-data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="input-data">
+<span id="id1"></span><h1>Input data<a class="headerlink" href="#input-data" title="Link to this heading"></a></h1>
+<p>The <cite>genophenocorr</cite> analysis needs to be provided with a standardized form of genotype and phenotype data.
+The analyses require an instance of <a class="reference internal" href="../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Cohort</span></code></a> that consists
+of <a class="reference internal" href="../apidocs/genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Patient</span></code></a>s - the cohort members. The cohort and the members
+hold the standardized data and provide convenience functions for dataset exploration.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>See the <a class="reference internal" href="exploratory.html#cohort-exploratory"><span class="std std-ref">Cohort exploratory analysis</span></a> section for more info.</p>
+</div>
+<p>The first step of the <cite>genophenocorr</cite> analysis involves standardization of the genotype and phenotype data
+and performing functional annotation of the variants. Here we describe how to prepare a <cite>Cohort</cite>
+for the exploratory and downstream analysis.</p>
+<section id="create-a-cohort-from-ga4gh-phenopackets">
+<h2>Create a cohort from GA4GH phenopackets<a class="headerlink" href="#create-a-cohort-from-ga4gh-phenopackets" title="Link to this heading"></a></h2>
+<p>The easiest way to input data into <cite>genophenocorr</cite> is to use the
+<a class="reference external" href="https://phenopacket-schema.readthedocs.io/en/latest">GA4GH Phenopacket Schema</a> phenopackets.
+<cite>genophenocorr</cite> provides <a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketPatientCreator" title="genophenocorr.preprocessing.PhenopacketPatientCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.PhenopacketPatientCreator</span></code></a>,
+an out-of-the-box class for loading phenopackets.</p>
+<p>Let’s start with loading Human Phenotype Ontology, a requisite for the input Q/C steps. We’ll use the amazing
+<a class="reference external" href="https://github.com/TheJacksonLaboratory/hpo-toolkit">hpo-toolkit</a> library which is installed along with
+the standard <cite>genophenocorr</cite> installation:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">load_minimal_ontology</span><span class="p">(</span><span class="s1">&#39;http://purl.obolibrary.org/obo/hp.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, let’s create the <cite>PhenopacketPatientCreator</cite>. We use a convenience method
+<a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_patient_creator" title="genophenocorr.preprocessing.configure_caching_patient_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_patient_creator()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_patient_creator</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patient_creator</span> <span class="o">=</span> <span class="n">configure_caching_patient_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, the method creates the patient creator that will call Variant Effect Predictor
+and Uniprot APIs to perform the functional annotation and protein annotation and cache the responses
+in the current working directory to save the bandwidth.
+See the <a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_patient_creator" title="genophenocorr.preprocessing.configure_caching_patient_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_patient_creator()</span></code></a> for more configuration options.</p>
+</div>
+<p>We can create a cohort starting from a folder with phenopackets stored as JSON files.
+For the purpose of this example, we will use a folder <cite>simple_cohort</cite> with 5 example phenopackets located in
+<a class="reference external" href="https://github.com/monarch-initiative/genophenocorr/tree/main/docs/data/simple_cohort">genophenocorr’s repository</a></p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">simple_cohort_path</span> <span class="o">=</span> <span class="s1">&#39;data/simple_cohort&#39;</span>
+</pre></div>
+</div>
+<p>Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
+<a class="reference internal" href="../apidocs/genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Patient</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">simple_cohort_path</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+<span class="gp">... </span>      <span class="n">pp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+<span class="gp">... </span>      <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pp_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">pp</span> <span class="o">=</span> <span class="n">Parse</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Phenopacket</span><span class="p">())</span>
+<span class="gp">... </span>    <span class="n">patient</span> <span class="o">=</span> <span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+
+<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1"> phenopackets&#39;</span>
+<span class="go">&#39;Loaded 5 phenopackets&#39;</span>
+</pre></div>
+</div>
+<p>Now we can construct a <cite>Cohort</cite>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s1">&#39;Created a cohort with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s1"> members&#39;</span>
+<span class="go">&#39;Created a cohort with 5 members&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-cohort-from-other-data">
+<h2>Create a cohort from other data<a class="headerlink" href="#create-a-cohort-from-other-data" title="Link to this heading"></a></h2>
+<p>TODO - describe how to construct a Patient from raw HPO terms and variant coordinates.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="User guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../apidocs/modules.html" class="btn btn-neutral float-right" title="API reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

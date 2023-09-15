@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.analysis._analyzers &mdash; genophenocorr 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=35a8b989"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.analysis._analyzers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.analysis._analyzers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">MultiIndex</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">namedtuple</span>
+
+<span class="kn">from</span> <span class="nn">genophenocorr.constants</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">FeatureType</span>
+
+<span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">VariantEffectPredicate</span><span class="p">,</span> <span class="n">HPOPresentPredicate</span><span class="p">,</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">ExonPredicate</span><span class="p">,</span> <span class="n">ProtFeatureTypePredicate</span><span class="p">,</span> <span class="n">ProtFeaturePredicate</span>
+<span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">HOMOZYGOUS</span><span class="p">,</span> <span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">NO_VARIANT</span>
+
+
+<div class="viewcode-block" id="CohortAnalysis">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis">[docs]</a>
+<span class="k">class</span> <span class="nc">CohortAnalysis</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class can be used to run different analyses of a given Cohort. </span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        analysis_cohort (Cohort): The Cohort object given for this analysis</span>
+<span class="sd">        analysis_patients (list): A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.</span>
+<span class="sd">        analysis_transcript (string): The given transcript ID that will be used in this analysis</span>
+<span class="sd">        is_recessive (boolean): True if the variant is recessive. Default is False. </span>
+<span class="sd">        include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. </span>
+<span class="sd">        include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.</span>
+<span class="sd">        min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).</span>
+<span class="sd">    Methods:</span>
+<span class="sd">        compare_by_variant_type(var_type1:VariantEffect, var_type2:Optional VariantEffect): Runs Fisher Exact analysis, finds any correlation between given variant effects and phenotypes</span>
+<span class="sd">        compare_by_variant_type(variant1:string, variant2:Optional string): Runs Fisher Exact analysis, finds any correlation between given variants and phenotypes</span>
+<span class="sd">        compare_by_variant_type(exon1:integer, exon2:Optional integer): Runs Fisher Exact analysis, finds any correlation between given affected exons and phenotypes</span>
+<span class="sd">        compare_by_variant_type(feature1:FeatureType, feature2:Optional FeatureType): Runs Fisher Exact analysis, finds any correlation between given protein feature types and phenotypes</span>
+<span class="sd">        compare_by_variant_type(feature1:string, feature2:Optional string): Runs Fisher Exact analysis, finds any correlation between given protein features and phenotypes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">transcript</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">recessive</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">include_unmeasured</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>  
+                <span class="n">include_large_SV</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a CohortAnalysis object </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cohort (Cohort): The Cohort object that will be analyzed</span>
+<span class="sd">            transcript (string): The transcript ID that will be used in this analysis</span>
+<span class="sd">            recessive (boolean): True if the variant is recessive. Default is False. </span>
+<span class="sd">            include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. </span>
+<span class="sd">            include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.</span>
+<span class="sd">            min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort must be type Cohort but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transcript</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_transcripts</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transcript </span><span class="si">{</span><span class="n">transcript</span><span class="si">}</span><span class="s2"> not found in Cohort&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cohort</span> <span class="o">=</span> <span class="n">cohort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span> <span class="o">=</span> <span class="n">transcript</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recessive</span> <span class="o">=</span> <span class="n">recessive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_unmeasured</span> <span class="o">=</span> <span class="n">include_unmeasured</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_include_SV</span> <span class="o">=</span> <span class="n">include_large_SV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patient_list</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span> <span class="k">if</span> <span class="n">include_large_SV</span> <span class="k">else</span> <span class="p">[</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">is_structural</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span><span class="p">])]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hpo_percent_of_patients must be an integer between 1 &amp; 100 but was </span><span class="si">{</span><span class="n">min_perc_patients_w_hpo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_percent_pats</span> <span class="o">=</span> <span class="n">min_perc_patients_w_hpo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_present_test</span> <span class="o">=</span> <span class="n">HPOPresentPredicate</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_testing_hpo_terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_low_hpo_terms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_patients_by_hpo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">analysis_cohort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Cohort: The Cohort object being analyzed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">analysis_patients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_list</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">analysis_transcript</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The given transcript ID that will be used in this analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_recessive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean: True if the variant is recessive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recessive</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">include_unmeasured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean: True if we want to assume a patient without a specific phenotype listed does not have that phenotype. </span>
+<span class="sd">            Otherwise, will only include those that explicitely say the phenotype was not observed. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_unmeasured</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">include_large_SV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean: True if we want to include large structural variants in the analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_SV</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min_perc_patients_w_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            integer: Will only test phenotypes that are listed in at least this percent of patients. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_percent_pats</span>
+
+    <span class="k">def</span> <span class="nf">_remove_low_hpo_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">final_hpo_list</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">all_hpo_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="n">all_no_hpo_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span><span class="p">:</span>
+            <span class="n">all_hpo_counts</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">hpo</span> <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">phenotypes</span> <span class="k">if</span> <span class="n">hpo</span><span class="o">.</span><span class="n">observed</span> <span class="o">==</span> <span class="kc">True</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_unmeasured</span><span class="p">:</span>
+                <span class="n">all_no_hpo_counts</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">hpo</span> <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">phenotypes</span> <span class="k">if</span> <span class="n">hpo</span><span class="o">.</span><span class="n">observed</span> <span class="o">==</span> <span class="kc">False</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_unmeasured</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">all_hpo_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="k">if</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span> <span class="o">/</span> <span class="mi">100</span><span class="p">):</span>
+                    <span class="n">final_hpo_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">all_hpo_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">no_count</span> <span class="o">=</span> <span class="n">all_no_hpo_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">all_no_hpo_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">/</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="n">no_count</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span> <span class="o">/</span> <span class="mi">100</span><span class="p">):</span>
+                    <span class="n">final_hpo_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_hpo_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No HPO terms found in over </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="si">}</span><span class="s2">% of patients.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_hpo_list</span>
+
+    <span class="k">def</span> <span class="nf">_sort_patients_by_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_with_hpo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">all_without_hpo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testing_hpo_terms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_unmeasured</span><span class="p">:</span>
+                <span class="n">with_hpo</span> <span class="o">=</span> <span class="p">[</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_present_test</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">HPOPresentPredicate</span><span class="o">.</span><span class="n">OBSERVED</span><span class="p">]</span>
+                <span class="n">not_hpo</span> <span class="o">=</span> <span class="p">[</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_present_test</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">HPOPresentPredicate</span><span class="o">.</span><span class="n">NOT_MEASURED</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">with_hpo</span> <span class="o">=</span> <span class="p">[</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_present_test</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">HPOPresentPredicate</span><span class="o">.</span><span class="n">OBSERVED</span><span class="p">]</span>
+                <span class="n">not_hpo</span> <span class="o">=</span> <span class="p">[</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_patients</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_present_test</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="n">HPOPresentPredicate</span><span class="o">.</span><span class="n">NOT_OBSERVED</span><span class="p">]</span>
+            <span class="n">all_with_hpo</span><span class="p">[</span><span class="n">hpo</span><span class="p">]</span> <span class="o">=</span> <span class="n">with_hpo</span>
+            <span class="n">all_without_hpo</span><span class="p">[</span><span class="n">hpo</span><span class="p">]</span> <span class="o">=</span> <span class="n">not_hpo</span>
+        <span class="n">patientsByHPO</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;patientByHPO&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all_with_hpo&#39;</span><span class="p">,</span> <span class="s1">&#39;all_without_hpo&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">patientsByHPO</span><span class="p">(</span><span class="n">all_with_hpo</span><span class="p">,</span> <span class="n">all_without_hpo</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_dom_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">variable1</span><span class="p">,</span> <span class="n">variable2</span><span class="p">):</span>
+        <span class="n">final_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testing_hpo_terms</span><span class="p">:</span>
+                <span class="n">with_hpo_var1_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HOMOZYGOUS</span><span class="p">,</span> <span class="n">HETEROZYGOUS</span><span class="p">)])</span>
+                <span class="n">not_hpo_var1_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HOMOZYGOUS</span><span class="p">,</span> <span class="n">HETEROZYGOUS</span><span class="p">)])</span>
+                <span class="k">if</span> <span class="n">variable2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">with_hpo_var2_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">NO_VARIANT</span><span class="p">])</span>
+                    <span class="n">not_hpo_var2_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">NO_VARIANT</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">with_hpo_var2_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HOMOZYGOUS</span><span class="p">,</span> <span class="n">HETEROZYGOUS</span><span class="p">)])</span>
+                    <span class="n">not_hpo_var2_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HOMOZYGOUS</span><span class="p">,</span> <span class="n">HETEROZYGOUS</span><span class="p">)])</span>
+                <span class="k">if</span> <span class="n">with_hpo_var1_count</span> <span class="o">+</span> <span class="n">not_hpo_var1_count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">with_hpo_var2_count</span> <span class="o">+</span> <span class="n">not_hpo_var2_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Divide by 0 error with HPO </span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">, not included in this analysis.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">p_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_fisher_exact</span><span class="p">([[</span><span class="n">with_hpo_var1_count</span><span class="p">,</span> <span class="n">not_hpo_var1_count</span><span class="p">],</span> <span class="p">[</span><span class="n">with_hpo_var2_count</span><span class="p">,</span> <span class="n">not_hpo_var2_count</span><span class="p">]])</span>
+                <span class="n">final_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">with_hpo_var1_count</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">with_hpo_var1_count</span><span class="o">/</span><span class="p">(</span><span class="n">with_hpo_var1_count</span> <span class="o">+</span> <span class="n">not_hpo_var1_count</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">with_hpo_var2_count</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">with_hpo_var2_count</span><span class="o">/</span><span class="p">(</span><span class="n">with_hpo_var2_count</span> <span class="o">+</span> <span class="n">not_hpo_var2_count</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">p_val</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run a recessive analysis&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_dict</span>
+
+    <span class="k">def</span> <span class="nf">_run_rec_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">variable1</span><span class="p">,</span> <span class="n">variable2</span><span class="p">):</span>
+        <span class="n">final_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testing_hpo_terms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">variable2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">with_hpo_var1_var1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                    <span class="n">no_hpo_var1_var1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                    <span class="n">with_hpo_var1_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span><span class="p">])</span>
+                    <span class="n">no_hpo_var1_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span><span class="p">])</span>
+                    <span class="n">with_hpo_var2_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">NO_VARIANT</span><span class="p">])</span>
+                    <span class="n">no_hpo_var2_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">NO_VARIANT</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">with_hpo_var1_var1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                    <span class="n">no_hpo_var1_var1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                    <span class="n">with_hpo_var1_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span> <span class="ow">and</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span><span class="p">])</span>
+                    <span class="n">no_hpo_var1_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable1</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span> <span class="ow">and</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="o">==</span> <span class="n">HETEROZYGOUS</span><span class="p">])</span>
+                    <span class="n">with_hpo_var2_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_with_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                    <span class="n">no_hpo_var2_var2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">pat</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patients_by_hpo</span><span class="o">.</span><span class="n">all_without_hpo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span> <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">variable2</span><span class="p">)</span> <span class="o">==</span> <span class="n">HOMOZYGOUS</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">with_hpo_var1_var1</span> <span class="o">+</span> <span class="n">no_hpo_var1_var1</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">with_hpo_var1_var2</span> <span class="o">+</span> <span class="n">no_hpo_var1_var2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">with_hpo_var2_var2</span> <span class="o">+</span> <span class="n">no_hpo_var2_var2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Divide by 0 error with HPO </span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">, not included in this analysis.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">p_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_recessive_fisher_exact</span><span class="p">([[</span><span class="n">with_hpo_var1_var1</span><span class="p">,</span> <span class="n">no_hpo_var1_var1</span><span class="p">],</span> <span class="p">[</span><span class="n">with_hpo_var1_var2</span><span class="p">,</span> <span class="n">no_hpo_var1_var2</span><span class="p">],</span> <span class="p">[</span><span class="n">with_hpo_var2_var2</span><span class="p">,</span> <span class="n">no_hpo_var2_var2</span><span class="p">]]</span> <span class="p">)</span>
+                <span class="n">final_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">with_hpo_var1_var1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">with_hpo_var1_var1</span><span class="o">/</span><span class="p">(</span><span class="n">with_hpo_var1_var1</span> <span class="o">+</span> <span class="n">no_hpo_var1_var1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">with_hpo_var1_var2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">with_hpo_var1_var2</span><span class="o">/</span><span class="p">(</span><span class="n">no_hpo_var1_var2</span> <span class="o">+</span> <span class="n">with_hpo_var1_var2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">with_hpo_var2_var2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">with_hpo_var2_var2</span><span class="o">/</span><span class="p">(</span><span class="n">with_hpo_var2_var2</span> <span class="o">+</span> <span class="n">no_hpo_var2_var2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">p_val</span><span class="p">]</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Run a dominant analysis&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_dict</span>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_type">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_variant_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_type1</span><span class="p">:</span><span class="n">VariantEffect</span><span class="p">,</span> <span class="n">var_type2</span><span class="p">:</span><span class="n">VariantEffect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Fisher Exact analysis, finds any correlation between given variant effects across phenotypes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            var_type1 (VariantEffect): </span>
+<span class="sd">            var_type2 (VariantEffect, Optional): If None, we compare between those with var_type1 and those without var_type1</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: A pandas DataFrame showing the results of the analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">var_effect_test</span> <span class="o">=</span> <span class="n">VariantEffectPredicate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_transcript</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_rec_analysis</span><span class="p">(</span><span class="n">var_effect_test</span><span class="p">,</span> <span class="n">var_type1</span><span class="p">,</span> <span class="n">var_type2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">var_type2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type2</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type2</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name1</span><span class="p">,</span> <span class="n">col_name2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s2">&quot;p-value&quot;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_dom_analysis</span><span class="p">(</span><span class="n">var_effect_test</span><span class="p">,</span> <span class="n">var_type1</span><span class="p">,</span> <span class="n">var_type2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">var_type2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Without </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;With </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type2</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;With </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">var_type1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">final_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant1</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">variant2</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Fisher Exact analysis, finds any correlation between given variants across phenotypes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            variant1 (string): </span>
+<span class="sd">            variant2 (string, Optional): If None, we compare between those with variant1 and those without variant1</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: A pandas DataFrame showing the results of the analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">variant_test</span> <span class="o">=</span> <span class="n">VariantPredicate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_transcript</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_rec_analysis</span><span class="p">(</span><span class="n">variant_test</span><span class="p">,</span> <span class="n">variant1</span><span class="p">,</span> <span class="n">variant2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">variant2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">variant2</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">variant2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name1</span><span class="p">,</span> <span class="n">col_name2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_dom_analysis</span><span class="p">(</span><span class="n">variant_test</span><span class="p">,</span> <span class="n">variant1</span><span class="p">,</span> <span class="n">variant2</span><span class="p">)</span>  
+            <span class="k">if</span> <span class="n">variant2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Without </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;With </span><span class="si">{</span><span class="n">variant2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;With </span><span class="si">{</span><span class="n">variant1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">final_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_exon">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_exon">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_exon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exon1</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">exon2</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Fisher Exact analysis, finds any correlation between given exons across phenotypes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            exon1 (integer): </span>
+<span class="sd">            exon2 (integer, Optional): If None, we compare between those within exon1 and those outside exon1</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: A pandas DataFrame showing the results of the analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exon_test</span> <span class="o">=</span> <span class="n">ExonPredicate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_transcript</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_rec_analysis</span><span class="p">(</span><span class="n">exon_test</span><span class="p">,</span> <span class="n">exon1</span><span class="p">,</span> <span class="n">exon2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exon2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">exon2</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">exon2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name1</span><span class="p">,</span> <span class="n">col_name2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_dom_analysis</span><span class="p">(</span><span class="n">exon_test</span><span class="p">,</span> <span class="n">exon1</span><span class="p">,</span> <span class="n">exon2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exon2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Outside Exon </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Inside Exon </span><span class="si">{</span><span class="n">exon2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Inside Exon </span><span class="si">{</span><span class="n">exon1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">final_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_feature_type">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature1</span><span class="p">:</span><span class="n">FeatureType</span><span class="p">,</span> <span class="n">feature2</span><span class="p">:</span><span class="n">FeatureType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Fisher Exact analysis, finds any correlation between given feature type across phenotypes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            feature1 (FeatureType): </span>
+<span class="sd">            feature2 (FeatureType, Optional): If None, we compare between those with feature1 and those without feature1</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: A pandas DataFrame showing the results of the analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">feat_type_test</span> <span class="o">=</span> <span class="n">ProtFeatureTypePredicate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_transcript</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_rec_analysis</span><span class="p">(</span><span class="n">feat_type_test</span><span class="p">,</span> <span class="n">feature1</span><span class="p">,</span> <span class="n">feature2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">feature2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">feature2</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">feature2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name1</span><span class="p">,</span> <span class="n">col_name2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_dom_analysis</span><span class="p">(</span><span class="n">feat_type_test</span><span class="p">,</span> <span class="n">feature1</span><span class="p">,</span> <span class="n">feature2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">feature2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Outside </span><span class="si">{</span><span class="n">feature1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Inside </span><span class="si">{</span><span class="n">feature2</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Inside </span><span class="si">{</span><span class="n">feature1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">final_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_feature">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature1</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">feature2</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Fisher Exact analysis, finds any correlation between given feature and phenotypes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            feature1 (string): </span>
+<span class="sd">            feature2 (string, Optional): If None, we compare between those within feature1 and those outside feature1</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: A pandas DataFrame showing the results of the analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">domain_test</span> <span class="o">=</span> <span class="n">ProtFeaturePredicate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_transcript</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recessive</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_rec_analysis</span><span class="p">(</span><span class="n">domain_test</span><span class="p">,</span> <span class="n">feature1</span><span class="p">,</span> <span class="n">feature2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">feature2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Heterozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">feature2</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">col_name2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">feature2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Homozygous </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name1</span><span class="p">,</span> <span class="n">col_name2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_dom_analysis</span><span class="p">(</span><span class="n">domain_test</span><span class="p">,</span> <span class="n">feature1</span><span class="p">,</span> <span class="n">feature2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">feature2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Outside </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Inside </span><span class="si">{</span><span class="n">feature2</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="sa">f</span><span class="s1">&#39;Inside </span><span class="si">{</span><span class="n">feature1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]])</span>
+            <span class="n">final_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">final_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">final_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;p-value&#39;</span><span class="p">))</span></div>
+
+    
+
+    <span class="k">def</span> <span class="nf">_run_fisher_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">two_by_two_table</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
+        <span class="n">oddsr</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">two_by_two_table</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">_run_recessive_fisher_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">two_by_three_table</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">two_by_three_table</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">test_class</span> <span class="o">=</span> <span class="n">PythonMultiFisherExact</span><span class="p">()</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">test_class</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">MultiFisherExact</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param a: a 2x3 int array with counts</span>
+<span class="sd">        :returns: a p value calculated with Fisher&#39;s exact test</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_input</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected a numpy array but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Shape of the array must be (3, 2) but got </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Array is all zeros, cannot run analysis&#39;</span><span class="p">)</span>
+        
+
+
+<span class="k">class</span> <span class="nc">PythonMultiFisherExact</span><span class="p">(</span><span class="n">MultiFisherExact</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">MultiFisherExact</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fisher_exact</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fisher_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+        <span class="n">row_sum</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col_sum</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">temp</span> <span class="o">+=</span> <span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">row_sum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
+                <span class="n">temp</span> <span class="o">+=</span> <span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">col_sum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="n">mat</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_sum</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">row_sum</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">p_0</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row_sum</span><span class="p">:</span>
+            <span class="n">p_0</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">col_sum</span><span class="p">:</span>
+            <span class="n">p_0</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row_sum</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="n">x</span>
+        <span class="n">p_0</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">p_0</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">row_sum</span><span class="p">,</span> <span class="n">col_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_dfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r_sum</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">c_sum</span><span class="p">))</span>
+
+        <span class="n">mat_new</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat</span><span class="p">)):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">mat_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">xx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">yy</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">r_sum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">temp</span> <span class="o">-=</span> <span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">c_sum</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">temp</span> <span class="o">-=</span> <span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">mat_new</span><span class="p">[</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">r_sum</span><span class="p">[</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">-=</span> <span class="n">mat_new</span><span class="p">[</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">temp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">mat_new</span><span class="p">[</span><span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+
+            <span class="n">p_1</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r_sum</span><span class="p">:</span>
+                <span class="n">p_1</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">c_sum</span><span class="p">:</span>
+                <span class="n">p_1</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r_sum</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">+=</span> <span class="n">x</span>
+            <span class="n">p_1</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat_new</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat_new</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                    <span class="n">p_1</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">p_1</span> <span class="o">&lt;=</span> <span class="n">p_0</span> <span class="o">+</span> <span class="mf">0.00000001</span><span class="p">:</span>
+                <span class="c1"># print(mat_new)</span>
+                <span class="c1"># print(p_1)</span>
+                <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">p_1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_1</span> <span class="o">=</span> <span class="n">r_sum</span><span class="p">[</span><span class="n">xx</span><span class="p">]</span>
+            <span class="n">max_2</span> <span class="o">=</span> <span class="n">c_sum</span><span class="p">[</span><span class="n">yy</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+                <span class="n">max_1</span> <span class="o">-=</span> <span class="n">mat_new</span><span class="p">[</span><span class="n">xx</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+                <span class="n">max_2</span> <span class="o">-=</span> <span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">yy</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">max_1</span><span class="p">,</span> <span class="n">max_2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">mat_new</span><span class="p">[</span><span class="n">xx</span><span class="p">][</span><span class="n">yy</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="k">if</span> <span class="n">xx</span> <span class="o">==</span> <span class="n">r</span> <span class="o">-</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">yy</span> <span class="o">==</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">pos_new</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">xx</span> <span class="o">==</span> <span class="n">r</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">pos_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pos_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">xx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat_new</span><span class="p">,</span> <span class="n">pos_new</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
