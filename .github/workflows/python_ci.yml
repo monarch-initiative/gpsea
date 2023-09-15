@@ -1,14 +1,10 @@
 name: CI
-##
-# Add the line below to README.md and the badge will come alive when we make the repo public.
-# [![CI](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
 
 on:
-    workflow_dispatch:
-    # push:
-    #   branches: [ develop ]
-    # pull_request:
-    #   branches: [ main, develop ]
+    push:
+      branches: [ develop ]
+    pull_request:
+      branches: [ main, develop ]
 
 jobs:
     build:
@@ -19,8 +15,8 @@ jobs:
         matrix:
           os:
             - ubuntu-latest
-            # - windows-latest
-            # - macOS-latest
+            - windows-latest
+            - macOS-latest
 
       steps:
         - uses: actions/checkout@v2

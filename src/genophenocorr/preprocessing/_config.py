@@ -17,7 +17,7 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
                                       variant_fallback: str = 'VEP',
                                       protein_fallback: str = 'UNIPROT') -> PhenopacketPatientCreator:
     """
-    A convenience function for configuring a caching :class:`PhenopacketPatientCreator`.
+    A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
     To create the patient creator, we need hpo-toolkit's representation of HPO, the validator
 
