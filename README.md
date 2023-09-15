@@ -1,5 +1,7 @@
-# gpc
-Genotype Phenotype Correlation 
+# Genophenocorr
+# [![CI](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
+
+A Python library for genotype-phenotype association analysis. 
 
 
 # Set up
