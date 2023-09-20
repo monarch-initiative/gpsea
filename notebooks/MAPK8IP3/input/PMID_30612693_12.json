@@ -1,10 +1,10 @@
 {
-  "id": "9",
+  "id": "PMID_30612693_12",
   "subject": {
-    "id": "9",
+    "id": "12",
     "timeAtLastEncounter": {
       "age": {
-        "iso8601duration": "P6Y"
+        "iso8601duration": "P4Y6M"
       }
     },
     "sex": "FEMALE"
@@ -12,57 +12,38 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0007340",
-        "label": "Lower limb muscle weakness"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+        "id": "HP:0100021",
+        "label": "Cerebral palsy"
       }
     },
     {
       "type": {
-        "id": "HP:0002493",
-        "label": "Upper motor neuron dysfunction"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+        "id": "HP:0001264",
+        "label": "Spastic diplegia"
       }
     },
     {
       "type": {
-        "id": "HP:0001257",
-        "label": "Spasticity"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+        "id": "HP:0010864",
+        "label": "Intellectual disability, severe"
       }
     },
     {
       "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+        "id": "HP:0006970",
+        "label": "Periventricular leukomalacia"
       }
     },
     {
       "type": {
-        "id": "HP:0002342",
-        "label": "Intellectual disability, moderate"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+        "id": "HP:0006989",
+        "label": "Dysplastic corpus callosum"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0500041",
+        "label": "Myopic astigmatism"
       }
     },
     {
@@ -70,63 +51,59 @@
         "id": "HP:0002376",
         "label": "Developmental regression"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0000717",
         "label": "Autism"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0001252",
         "label": "Hypotonia"
       },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
-      }
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0100704",
+        "label": "Cerebral visual impairment"
+      },
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0001250",
         "label": "Seizure"
       },
-      "onset": {
-        "age": {
-          "iso8601duration": "P6Y"
-        }
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     }
   ],
   "interpretations": [
     {
-      "id": "9",
+      "id": "12",
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "618443",
+          "id": "OMIM:618443",
           "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
         },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "9",
+            "subjectOrBiosampleId": "12",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_nPJeCtPOXZXrIyYYyzLjyAkos",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -134,17 +111,17 @@
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_015133.4:c.1732C>T"
+                    "value": "NM_001318852.2:c.3439C>T"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000016.10:g.1762843C>T"
+                    "value": "NC_000016.10:g.1767834C>T"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
                   "chrom": "chr16",
-                  "pos": "1762843",
+                  "pos": "1767834",
                   "ref": "C",
                   "alt": "T"
                 },
@@ -161,7 +138,7 @@
     }
   ],
   "metaData": {
-    "created": "2023-01-10T17:24:09.598505973Z",
+    "created": "2023-09-19T16:34:36.554000377Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -189,14 +166,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2022-12-15",
+        "version": "2023-09-01",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:30612693",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/30612693",
+        "description": "De Novo Variants in MAPK8IP3 Cause Intellectual Disability with Variable Brain Anomalies"
+      }
+    ]
   }
 }

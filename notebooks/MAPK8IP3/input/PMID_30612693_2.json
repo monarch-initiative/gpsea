@@ -1,10 +1,10 @@
 {
-  "id": "5",
+  "id": "PMID_30612693_2",
   "subject": {
-    "id": "5",
+    "id": "2",
     "timeAtLastEncounter": {
       "age": {
-        "iso8601duration": "P10Y"
+        "iso8601duration": "P4Y"
       }
     },
     "sex": "MALE"
@@ -12,13 +12,14 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
+        "id": "HP:0001251",
+        "label": "Ataxia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0010864",
+        "label": "Intellectual disability, severe"
       }
     },
     {
@@ -26,34 +27,19 @@
         "id": "HP:0002376",
         "label": "Developmental regression"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0000717",
         "label": "Autism"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0001252",
         "label": "Hypotonia"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
       }
     },
     {
@@ -61,40 +47,45 @@
         "id": "HP:0100022",
         "label": "Abnormality of movement"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
-      }
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0100704",
+        "label": "Cerebral visual impairment"
+      },
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0001250",
         "label": "Seizure"
       },
-      "onset": {
-        "age": {
-          "iso8601duration": "P10Y"
-        }
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     }
   ],
   "interpretations": [
     {
-      "id": "5",
+      "id": "2",
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "618443",
+          "id": "OMIM:618443",
           "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
         },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "5",
+            "subjectOrBiosampleId": "2",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_mrpOYfIWOOxnCDnhKzNtvPXkh",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -102,19 +93,19 @@
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_015133.4:c.1331T>C"
+                    "value": "NM_001318852.2:c.79G>T"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000016.10:g.1760409T>C"
+                    "value": "NC_000016.10:g.1706418G>T"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
                   "chrom": "chr16",
-                  "pos": "1760409",
-                  "ref": "T",
-                  "alt": "C"
+                  "pos": "1706418",
+                  "ref": "G",
+                  "alt": "T"
                 },
                 "moleculeContext": "genomic",
                 "allelicState": {
@@ -129,7 +120,7 @@
     }
   ],
   "metaData": {
-    "created": "2023-01-10T17:24:09.598505973Z",
+    "created": "2023-09-19T16:34:36.554000377Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -157,14 +148,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2022-12-15",
+        "version": "2023-09-01",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:30612693",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/30612693",
+        "description": "De Novo Variants in MAPK8IP3 Cause Intellectual Disability with Variable Brain Anomalies"
+      }
+    ]
   }
 }

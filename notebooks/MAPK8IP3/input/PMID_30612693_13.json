@@ -1,5 +1,5 @@
 {
-  "id": "13",
+  "id": "PMID_30612693_13",
   "subject": {
     "id": "13",
     "timeAtLastEncounter": {
@@ -12,46 +12,134 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0002317",
-        "label": "Unsteady gait"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
-      }
-    },
-    {
-      "type": {
         "id": "HP:0007301",
         "label": "Oromotor apraxia"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
       }
     },
     {
       "type": {
         "id": "HP:0002370",
         "label": "Poor coordination"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
       }
     },
     {
       "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
+        "id": "HP:0002317",
+        "label": "Unsteady gait"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002342",
+        "label": "Intellectual disability, moderate"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002342",
+        "label": "Intellectual disability, moderate"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002020",
+        "label": "Gastroesophageal reflux"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002240",
+        "label": "Hepatomegaly"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000276",
+        "label": "Long face"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000574",
+        "label": "Thick eyebrow"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0045025",
+        "label": "Narrow palpebral fissure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000486",
+        "label": "Strabismus"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000426",
+        "label": "Prominent nasal bridge"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000463",
+        "label": "Anteverted nares"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000322",
+        "label": "Short philtrum"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000160",
+        "label": "Narrow mouth"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000218",
+        "label": "High palate"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001956",
+        "label": "Truncal obesity"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001238",
+        "label": "Slender finger"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002808",
+        "label": "Kyphosis"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0003307",
+        "label": "Hyperlordosis"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002650",
+        "label": "Scoliosis"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002857",
+        "label": "Genu valgum"
       }
     },
     {
@@ -59,34 +147,19 @@
         "id": "HP:0002376",
         "label": "Developmental regression"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0000717",
         "label": "Autism"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0001252",
         "label": "Hypotonia"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
       }
     },
     {
@@ -94,22 +167,12 @@
         "id": "HP:0100022",
         "label": "Abnormality of movement"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
-      }
+      "excluded": true
     },
     {
       "type": {
         "id": "HP:0100704",
         "label": "Cerebral visual impairment"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
       }
     },
     {
@@ -117,11 +180,12 @@
         "id": "HP:0001250",
         "label": "Seizure"
       },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P19Y"
-        }
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     }
   ],
@@ -131,7 +195,7 @@
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "618443",
+          "id": "OMIM:618443",
           "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
         },
         "genomicInterpretations": [
@@ -140,6 +204,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_yWYRFFJVAieYVxQCmaQlZBcXE",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -147,7 +212,7 @@
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_015133.4:c.3436C>T"
+                    "value": "NM_001318852.2:c.3439C>T"
                   },
                   {
                     "syntax": "hgvs.g",
@@ -174,7 +239,7 @@
     }
   ],
   "metaData": {
-    "created": "2023-01-10T17:24:09.598505973Z",
+    "created": "2023-09-19T16:34:36.554000377Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -202,14 +267,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2022-12-15",
+        "version": "2023-09-01",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:30612693",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/30612693",
+        "description": "De Novo Variants in MAPK8IP3 Cause Intellectual Disability with Variable Brain Anomalies"
+      }
+    ]
   }
 }

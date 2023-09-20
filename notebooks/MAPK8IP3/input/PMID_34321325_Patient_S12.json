@@ -1,124 +1,39 @@
 {
-  "id": "3",
+  "id": "PMID_34321325_Patient_S12",
   "subject": {
-    "id": "3",
-    "timeAtLastEncounter": {
-      "age": {
-        "iso8601duration": "P4Y"
-      }
-    },
+    "id": "Patient S12",
     "sex": "MALE"
   },
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
+        "id": "HP:0001249",
+        "label": "Intellectual disability"
       }
     },
     {
       "type": {
-        "id": "HP:0002342",
-        "label": "Intellectual disability, moderate"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002376",
-        "label": "Developmental regression"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0000717",
-        "label": "Autism"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0001252",
-        "label": "Hypotonia"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0100022",
-        "label": "Abnormality of movement"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0100704",
-        "label": "Cerebral visual impairment"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0001250",
-        "label": "Seizure"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P4Y"
-        }
+        "id": "HP:0034183",
+        "label": "Spastic triplegia"
       }
     }
   ],
   "interpretations": [
     {
-      "id": "3",
+      "id": "Patient S12",
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "618443",
+          "id": "OMIM:618443",
           "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
         },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "3",
+            "subjectOrBiosampleId": "Patient S12",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_BfixpjeiCzVKEAETORjegMQLk",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -126,17 +41,17 @@
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_015133.4:c.111C>G"
+                    "value": "NM_001318852.2:c.45C>G"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000016.10:g.1706450C>G"
+                    "value": "NC_000016.10:g.1706384C>G"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
                   "chrom": "chr16",
-                  "pos": "1706450",
+                  "pos": "1706384",
                   "ref": "C",
                   "alt": "G"
                 },
@@ -153,7 +68,7 @@
     }
   ],
   "metaData": {
-    "created": "2023-01-10T17:24:09.598505973Z",
+    "created": "2023-09-19T16:54:49.641586065Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -181,14 +96,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2022-12-15",
+        "version": "2023-09-01",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:34321325",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/34321325",
+        "description": "Diagnostic yield of chromosomal microarray and trio whole exome sequencing in cryptogenic cerebral palsy"
+      }
+    ]
   }
 }

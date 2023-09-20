@@ -1,111 +1,129 @@
 {
-  "id": "4",
+  "id": "PMID_pending_Individual_A",
   "subject": {
-    "id": "4",
-    "timeAtLastEncounter": {
-      "age": {
-        "iso8601duration": "P5Y11M"
-      }
-    },
-    "sex": "MALE"
+    "id": "Individual A",
+    "sex": "FEMALE"
   },
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0010864",
-        "label": "Intellectual disability, severe"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
+        "id": "HP:0012498",
+        "label": "Nuchal cord"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002333",
+        "label": "Motor deterioration"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000252",
+        "label": "Microcephaly"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001264",
+        "label": "Spastic diplegia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0100021",
+        "label": "Cerebral palsy"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     },
     {
       "type": {
         "id": "HP:0031936",
         "label": "Delayed ability to walk"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
       }
     },
     {
       "type": {
         "id": "HP:0000750",
         "label": "Delayed speech and language development"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
       }
     },
     {
       "type": {
-        "id": "HP:0000729",
-        "label": "Autistic behavior"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
+        "id": "HP:0001321",
+        "label": "Cerebellar hypoplasia"
       }
     },
     {
       "type": {
-        "id": "HP:0002133",
-        "label": "Status epilepticus"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
+        "id": "HP:0006872",
+        "label": "Cerebral hypoplasia"
       }
     },
     {
       "type": {
-        "id": "HP:0001252",
-        "label": "Hypotonia"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P5Y11M"
-        }
+        "id": "HP:0033725",
+        "label": "Thin corpus callosum"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0012110",
+        "label": "Hypoplasia of the pons"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0034295",
+        "label": "Reduced cerebral white matter volume"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0006970",
+        "label": "Periventricular leukomalacia"
       }
     }
   ],
   "interpretations": [
     {
-      "id": "4",
+      "id": "Individual A",
       "progressStatus": "SOLVED",
       "diagnosis": {
+        "disease": {
+          "id": "OMIM:618443",
+          "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+        },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "4",
+            "subjectOrBiosampleId": "Individual A",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_dEqaQhEIdjYadVhQrzydwwalj",
                 "geneContext": {
-                  "valueId": "HGNC:17992",
-                  "symbol": "TRPM3"
+                  "valueId": "HGNC:6884",
+                  "symbol": "MAPK8IP3"
                 },
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_020952.6:c.2509G>A"
+                    "value": "NM_001318852.2:c.1735C>T"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000009.12:g.70598463C>T"
+                    "value": "NC_000016.10:g.1762843C>T"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
-                  "chrom": "chr9",
-                  "pos": "70598463",
+                  "chrom": "chr16",
+                  "pos": "1762843",
                   "ref": "C",
                   "alt": "T"
                 },
@@ -122,7 +140,7 @@
     }
   ],
   "metaData": {
-    "created": "2023-01-10T12:48:33.269112110Z",
+    "created": "2023-09-19T16:54:50.415200948Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -150,14 +168,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2022-12-15",
+        "version": "2023-09-01",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:pending",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/pending",
+        "description": "in preparation"
+      }
+    ]
   }
 }
