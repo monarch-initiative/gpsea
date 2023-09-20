@@ -526,7 +526,8 @@ More info on the Uniprot REST API here - <a class="reference external" href="htt
 <li><p><strong>hpo</strong> – a HPO instance.</p></li>
 <li><p><strong>validation_runner</strong> – an instance of the validation runner.</p></li>
 <li><p><strong>cache_dir</strong> – path to the folder where we will cache the results fetched from the remote APIs or <cite>None</cite>
-if the data should be cached in <cite>.cache</cite> folder in the current working directory.</p></li>
+if the data should be cached in <cite>.cache</cite> folder in the current working directory.
+In any case, the directory will be created if it does not exist (including non-existing parents).</p></li>
 <li><p><strong>variant_fallback</strong> – the fallback variant annotator to use if we cannot find the annotation locally.
 Choose from <code class="docutils literal notranslate"><span class="pre">{'VEP'}</span></code> (just one fallback implementation is available at the moment).</p></li>
 <li><p><strong>protein_fallback</strong> – the fallback protein metadata annotator to use if we cannot find the annotation locally.

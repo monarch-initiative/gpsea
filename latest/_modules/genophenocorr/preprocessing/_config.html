@@ -108,6 +108,7 @@
 <span class="sd">    :param validation_runner: an instance of the validation runner.</span>
 <span class="sd">    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`</span>
 <span class="sd">     if the data should be cached in `.cache` folder in the current working directory.</span>
+<span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
 <span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
 <span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
 <span class="sd">    :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.</span>
