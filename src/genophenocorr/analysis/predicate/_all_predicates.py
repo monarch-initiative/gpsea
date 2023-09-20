@@ -135,7 +135,7 @@ class VariantPredicate(PolyPredicate[str]):
             raise ValueError(f"query must be type string but was type {type(query)}")
         vars = set()
         for var in patient.variants:
-            print(f"{var.variant_string} == {query}")
+            #print(f"{var.variant_string} == {query}")
             if var.variant_string == query:
                 vars.add(var)
         if len(vars) == 1:
