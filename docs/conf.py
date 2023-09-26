@@ -177,6 +177,8 @@ doctest_test_doctest_blocks = ""
 
 # Nothing special here
 doctest_global_setup = """
+import pandas as pd
+pd.set_option('display.width', 200)
 """
 
 # -- Intersphinx setup --------------------------------------------------------
@@ -194,3 +196,5 @@ intersphinx_mapping = {
 # -- Sphinx copybutton setup --------------------------------------------------
 # Exclude `>>>` when copying the cell
 copybutton_exclude = '.linenos, .gp'
+copybutton_prompt_text = ">>> "
+copybutton_only_copy_prompt_lines = True

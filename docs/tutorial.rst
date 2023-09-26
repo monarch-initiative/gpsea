@@ -58,7 +58,6 @@ For instance, we can partition the patients into two groups based on presence/ab
 
 .. doctest:: tutorial
 
-  >>> from pprint import pprint
   >>> from genophenocorr.analysis import CohortAnalysis
   >>> from genophenocorr.constants import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
