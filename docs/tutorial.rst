@@ -4,16 +4,17 @@
 Tutorial
 ========
 
+The tutorial demonstrates how to load an example Phenopacket cohort and perform genotype-phenotype analysis.
 
 Set up analysis
 ^^^^^^^^^^^^^^^
 
-Genophenocorr needs HPO to do the analysis. Let's load the ontology:
+`genophenocorr` needs HPO to do the analysis. Let's load the ontology:
 
 .. doctest:: tutorial
 
   >>> import hpotk
-  >>> hpo = hpotk.ontology.load.obographs.load_minimal_ontology('data/hp.toy.json')
+  >>> hpo = hpotk.load_minimal_ontology('data/hp.toy.json')
 
 .. tip::
 
@@ -53,7 +54,7 @@ We can then view the data using the list commands.
   [('frameshift_variant', 2), ('missense_variant', 2)]
 
 Using the counts, we can choose and run what analyses we want.
-For instance, compare *frameshift* variants:
+For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
 
 .. doctest:: tutorial
 
@@ -70,7 +71,7 @@ For instance, compare *frameshift* variants:
   HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
 
 
-or *missense* variants:
+Or perform similar partitioning based on presence/absence of a *missense* variant:
 
 .. doctest:: tutorial
 
@@ -83,3 +84,5 @@ or *missense* variants:
     HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000
 
 
+The tables present the HPO terms that annotate the cohort members and report their counts and p values
+for each genotype group. The rows are sorted by the p value in ascending order.
