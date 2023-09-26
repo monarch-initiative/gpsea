@@ -63,7 +63,7 @@ For instance, we can partition the patients into two groups based on presence/ab
   >>> from genophenocorr.constants import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
   >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
-  >>> pprint(frameshift) # doctest: +NORMALIZE_WHITESPACE
+  >>> pprint(frameshift) # doctest: +NORMALIZE_WHITESPACE, +ELLIPSIS
                               With frameshift_variant         Without frameshift_variant
                                                 Count Percent                      Count Percent  p-value
   HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
@@ -77,7 +77,7 @@ Or perform similar partitioning based on presence/absence of a *missense* varian
 .. doctest:: tutorial
 
   >>> missense = cohort_analysis.compare_by_variant_type(VariantEffect.MISSENSE_VARIANT)
-  >>> pprint(missense) # doctest: +NORMALIZE_WHITESPACE
+  >>> pprint(missense) # doctest: +NORMALIZE_WHITESPACE, +ELLIPSIS
                               With missense_variant         Without missense_variant
                                               Count Percent                    Count Percent   p-value
   HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781
