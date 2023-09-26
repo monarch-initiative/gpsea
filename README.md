@@ -1,5 +1,7 @@
 # Genophenocorr
-# [![CI](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
+[![Build status](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
+![PyPi downloads](https://img.shields.io/pypi/dm/genophenocorr.svg?label=Pypi%20downloads)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/genophenocorr)
 
 A Python library for genotype-phenotype association analysis. 
 
