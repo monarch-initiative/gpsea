@@ -10,6 +10,7 @@ The document describes how to release `genophenocorr` to *PyPi*.
   the target version (e.g. `TODO[v0.3.0]`)
 - bump versions to a release:
   - `src/genophenocorr/__init__.py`
+  - `docs/conf.py`
 - ensure the CI passes
 - deploy to PyPi (described below)
 - merge to `main`
