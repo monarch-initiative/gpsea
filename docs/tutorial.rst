@@ -58,16 +58,6 @@ For instance, we can partition the patients into two groups based on presence/ab
 
 .. doctest:: tutorial
 
-  >>> import pandas as pd
-  >>> pd.set_option("expand_frame_repr", False)
-  >>> pd.set_option('display.width', 200)
-  >>> pd.get_option('display.width')
-  200
-  >>> pd.get_option('expand_frame_repr')
-  False
-
-.. doctest:: tutorial
-
   >>> from genophenocorr.analysis import CohortAnalysis
   >>> from genophenocorr.constants import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)

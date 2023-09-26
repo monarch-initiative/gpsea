@@ -177,8 +177,9 @@ doctest_test_doctest_blocks = ""
 
 # Nothing special here
 doctest_global_setup = """
-#import pandas as pd
-#pd.get_option('expand_frame_repr')
+# For printing data frames "as is".
+import pandas as pd
+pd.get_option('expand_frame_repr')
 """
 
 # -- Intersphinx setup --------------------------------------------------------
