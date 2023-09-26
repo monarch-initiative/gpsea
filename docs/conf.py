@@ -195,7 +195,5 @@ intersphinx_mapping = {
 }
 
 # -- Sphinx copybutton setup --------------------------------------------------
-# Exclude `>>>` when copying the cell
-copybutton_exclude = '.linenos, .gp'
-copybutton_prompt_text = ">>> "
-copybutton_only_copy_prompt_lines = True
+# Exclude `>>>`, the line numbers, and the output when copying the cell.
+copybutton_exclude = '.linenos, .gp, .go'
