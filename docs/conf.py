@@ -177,8 +177,8 @@ doctest_test_doctest_blocks = ""
 
 # Nothing special here
 doctest_global_setup = """
-import pandas as pd
-pd.set_option('display.width', 200)
+#import pandas as pd
+#pd.get_option('expand_frame_repr')
 """
 
 # -- Intersphinx setup --------------------------------------------------------

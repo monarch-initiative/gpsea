@@ -59,12 +59,12 @@ For instance, we can partition the patients into two groups based on presence/ab
 .. doctest:: tutorial
 
   >>> import pandas as pd
-  >>> pd.set_option("expand_frame_repr", True)
+  >>> pd.set_option("expand_frame_repr", False)
   >>> pd.set_option('display.width', 200)
   >>> pd.get_option('display.width')
   200
   >>> pd.get_option('expand_frame_repr')
-  True
+  False
 
 .. doctest:: tutorial
 
@@ -75,7 +75,7 @@ For instance, we can partition the patients into two groups based on presence/ab
   >>> frameshift # doctest: +NORMALIZE_WHITESPACE
                               With frameshift_variant         Without frameshift_variant
                                                 Count Percent                       Count Percent  p-value
-  HP:0001166 (Arachnodactyly)                       4  30.77%                          10  76.92%  0.04718
+  HP:0001166 (Arachnodactyly)                      40  30.77%                          10  76.92%  0.04718
   HP:0001250 (Seizure)                             11  84.62%                           9  69.23%  0.64472
   HP:0001257 (Spasticity)                           8  61.54%                           9  69.23%  1.00000
 
