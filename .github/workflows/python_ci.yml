@@ -8,25 +8,22 @@ on:
 
 jobs:
     build:
-      runs-on: ${{ matrix.os }}
-
-      strategy:
-        fail-fast: false
-        matrix:
-          os:
-            - ubuntu-latest
-            - windows-latest
-            - macOS-latest
+      runs-on: ubuntu-latest
 
       steps:
-        - uses: actions/checkout@v2
-        - name: Initialize Python ${{ matrix.python }}
+        - uses: actions/checkout@v4
+        - name: Initialize Python 3.11
           uses: actions/setup-python@v4.3.1
           with:
             python-version: "3.11"
         - name: Install package
           run: |
-            python3 -m pip install .[test]
+            python3 -m pip install .[test,docs]
         - name: Run pytest tests
           run: |
             pytest
+        - name: Run documentation tests
+          run: |
+            cd docs
+            sphinx-apidoc --separate --module-first -d 2 -H "API reference" -o apidocs ../src/genophenocorr
+            make doctest
