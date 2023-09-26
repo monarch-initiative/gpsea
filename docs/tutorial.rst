@@ -69,7 +69,7 @@ For instance, we can partition the patients into two groups based on presence/ab
   HP:0001166 (Arachnodactyly)                       4  30.77%                          10  76.92%  0.04718
   HP:0001250 (Seizure)                             11  84.62%                           9  69.23%  0.64472
   HP:0001257 (Spasticity)                           8  61.54%                           9  69.23%  1.00000
-
+  <BLANKLINE>
   [3 rows x 5 columns]
 
 
@@ -84,7 +84,7 @@ Or perform similar partitioning based on presence/absence of a *missense* varian
   HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781
   HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449
   HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000
-
+  <BLANKLINE>
   [3 rows x 5 columns]
 
 
