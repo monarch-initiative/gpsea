@@ -17,7 +17,7 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
                                       variant_fallback: str = 'VEP',
                                       protein_fallback: str = 'UNIPROT') -> PhenopacketPatientCreator:
     """
-    A convenience function for configuring a caching :class:`PhenopacketPatientCreator`.
+    A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
     To create the patient creator, we need hpo-toolkit's representation of HPO, the validator
 
@@ -25,6 +25,7 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
     :param validation_runner: an instance of the validation runner.
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
      if the data should be cached in `.cache` folder in the current working directory.
+     In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.

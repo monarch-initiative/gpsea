@@ -4,16 +4,17 @@
 Tutorial
 ========
 
+The tutorial demonstrates how to load an example Phenopacket cohort and perform genotype-phenotype analysis.
 
 Set up analysis
 ^^^^^^^^^^^^^^^
 
-Genophenocorr needs HPO to do the analysis. Let's load the ontology:
+`genophenocorr` needs HPO to do the analysis. Let's load the ontology:
 
 .. doctest:: tutorial
 
   >>> import hpotk
-  >>> hpo = hpotk.ontology.load.obographs.load_minimal_ontology('data/hp.toy.json')
+  >>> hpo = hpotk.load_minimal_ontology('data/hp.toy.json')
 
 .. tip::
 
@@ -53,33 +54,34 @@ We can then view the data using the list commands.
   [('frameshift_variant', 2), ('missense_variant', 2)]
 
 Using the counts, we can choose and run what analyses we want.
-For instance, compare *frameshift* variants:
+For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
 
 .. doctest:: tutorial
 
-  >>> from pprint import pprint
   >>> from genophenocorr.analysis import CohortAnalysis
   >>> from genophenocorr.constants import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
   >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
-  >>> pprint(frameshift) # doctest: +NORMALIZE_WHITESPACE
+  >>> frameshift # doctest: +NORMALIZE_WHITESPACE
                               With frameshift_variant         Without frameshift_variant
-                                                Count Percent                      Count Percent  p-value
-  HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
-  HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472
-  HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
+                                                Count Percent                      Count Percent  p-value Corrected p-values
+  HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718            0.14154
+  HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472            1.00000
+  HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000            1.00000
 
 
-or *missense* variants:
+Or perform similar partitioning based on presence/absence of a *missense* variant:
 
 .. doctest:: tutorial
 
   >>> missense = cohort_analysis.compare_by_variant_type(VariantEffect.MISSENSE_VARIANT)
-  >>> pprint(missense) # doctest: +NORMALIZE_WHITESPACE
-                                With missense_variant         Without missense_variant
-                                                Count Percent                    Count Percent   p-value
-    HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781
-    HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449
-    HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000
+  >>> missense # doctest: +NORMALIZE_WHITESPACE
+                              With missense_variant         Without missense_variant
+                                              Count Percent                    Count Percent   p-value Corrected p-values
+  HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781           0.002342
+  HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449           1.000000
+  HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000           1.000000
 
 
+The tables present the HPO terms that annotate the cohort members and report their counts and p values
+for each genotype group. The rows are sorted by the p value in ascending order.

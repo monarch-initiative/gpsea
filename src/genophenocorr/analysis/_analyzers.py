@@ -6,6 +6,7 @@ import typing
 import numpy as np
 
 from scipy import stats
+from statsmodels.stats import multitest
 from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
 
@@ -34,7 +35,7 @@ class CohortAnalysis():
         compare_by_variant_type(feature1:FeatureType, feature2:Optional FeatureType): Runs Fisher Exact analysis, finds any correlation between given protein feature types and phenotypes
         compare_by_variant_type(feature1:string, feature2:Optional string): Runs Fisher Exact analysis, finds any correlation between given protein features and phenotypes
     """
-    def __init__(self, cohort, transcript, hpo, recessive = False, include_unmeasured = True,  
+    def __init__(self, cohort, transcript, hpo, recessive = False, include_unmeasured = True, p_val_correction = 'bonferroni', 
                 include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
         """Constructs all necessary attributes for a CohortAnalysis object 
 
@@ -42,6 +43,7 @@ class CohortAnalysis():
             cohort (Cohort): The Cohort object that will be analyzed
             transcript (string): The transcript ID that will be used in this analysis
             recessive (boolean): True if the variant is recessive. Default is False. 
+            p_val_correction (string): Defaults to bonferroni. Options - bonferroni, sidak, holm-sidak, holm, simes-hochberg, hommel, fdr_bh, fdr_by, fdr_tsbh, fdr_tsbky.
             include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. 
             include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.
             min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).
@@ -53,7 +55,7 @@ class CohortAnalysis():
         self._cohort = cohort
         self._transcript = transcript
         self._recessive = recessive
-        self._in_unmeasured = include_unmeasured
+        self._in_unmeasured = include_unmeasured ##TODO: Figure out how to move this out of analysis 
         self._include_SV = include_large_SV
         self._patient_list = cohort.all_patients if include_large_SV else [pat for pat in cohort.all_patients if not all([var.variant_coordinates.is_structural() for var in pat.variants])]
         if not isinstance(min_perc_patients_w_hpo, int) or min_perc_patients_w_hpo <= 0 or min_perc_patients_w_hpo > 100:
@@ -62,6 +64,7 @@ class CohortAnalysis():
         self._hpo_present_test = HPOPresentPredicate(hpo)
         self._testing_hpo_terms = self._remove_low_hpo_terms()
         self._patients_by_hpo = self._sort_patients_by_hpo()
+        self._correction = p_val_correction
         self._logger = logging.getLogger(__name__)
         
     @property
@@ -150,7 +153,7 @@ class CohortAnalysis():
         for hpo in self._testing_hpo_terms:
             if self.include_unmeasured:
                 with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_MEASURED]
+                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_MEASURED] ## and not observed 
             else:
                 with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
                 not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_OBSERVED]
@@ -161,6 +164,7 @@ class CohortAnalysis():
 
     def _run_dom_analysis(self, predicate, variable1, variable2):
         final_dict = dict()
+        all_pvals = []
         if not self.is_recessive:
             for hpo in self._testing_hpo_terms:
                 with_hpo_var1_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable1) in (HOMOZYGOUS, HETEROZYGOUS)])
@@ -175,13 +179,16 @@ class CohortAnalysis():
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
                 p_val = self._run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
+                all_pvals.append(p_val)
                 final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_count, "{:0.2f}%".format((with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100), with_hpo_var2_count, "{:0.2f}%".format((with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100), p_val]
         else:
             return ValueError(f"Run a recessive analysis")
-        return final_dict
+        corrected_pvals = multitest.multipletests(all_pvals, method = self._correction)[1]
+        return final_dict, corrected_pvals
 
     def _run_rec_analysis(self, predicate, variable1, variable2):
         final_dict = dict()
+        all_pvals = []
         if self.is_recessive:
             for hpo in self._testing_hpo_terms:
                 if variable2 is None:
@@ -202,10 +209,12 @@ class CohortAnalysis():
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
                     continue
                 p_val = self._run_recessive_fisher_exact([[with_hpo_var1_var1, no_hpo_var1_var1], [with_hpo_var1_var2, no_hpo_var1_var2], [with_hpo_var2_var2, no_hpo_var2_var2]] )
+                all_pvals.append(p_val)
                 final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_var1, "{:0.2f}%".format((with_hpo_var1_var1/(with_hpo_var1_var1 + no_hpo_var1_var1)) * 100), with_hpo_var1_var2, "{:0.2f}%".format((with_hpo_var1_var2/(no_hpo_var1_var2 + with_hpo_var1_var2)) * 100), with_hpo_var2_var2, "{:0.2f}%".format((with_hpo_var2_var2/(with_hpo_var2_var2 + no_hpo_var2_var2)) * 100), p_val] 
         else:
             return ValueError("Run a dominant analysis")
-        return final_dict
+        corrected_pvals = multitest.multipletests(all_pvals, method = self._correction)[1]
+        return final_dict, corrected_pvals
 
 
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
@@ -219,7 +228,7 @@ class CohortAnalysis():
         """
         var_effect_test = VariantEffectPredicate(self.analysis_transcript)
         if self.is_recessive:
-            final_dict = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
+            final_dict, corrected_pvals = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
             if var_type2 is None:
                 col_name1 = f'Heterozygous {str(var_type1)}'
                 col_name2 = f'No {str(var_type1)}'
@@ -228,15 +237,17 @@ class CohortAnalysis():
                 col_name2 = f'Homozygous {str(var_type2)}'
             index = MultiIndex.from_product([[f'Homozygous {str(var_type1)}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', "p-value")))
+            final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else:
-            final_dict = self._run_dom_analysis(var_effect_test, var_type1, var_type2)
+            final_dict, corrected_pvals = self._run_dom_analysis(var_effect_test, var_type1, var_type2)
             if var_type2 is None:
                 col_name = f'Without {str(var_type1)}'
             else:
                 col_name = f'With {str(var_type2)}'
             index = MultiIndex.from_product([[f'With {str(var_type1)}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
-        return final_df.sort_values(('', 'p-value'))
+            final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
+        return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
     def compare_by_variant(self, variant1:str, variant2:str = None):
         """Runs Fisher Exact analysis, finds any correlation between given variants across phenotypes.
@@ -249,7 +260,7 @@ class CohortAnalysis():
         """
         variant_test = VariantPredicate(self.analysis_transcript)
         if self.is_recessive:
-            final_dict = self._run_rec_analysis(variant_test, variant1, variant2)
+            final_dict, corrected_pvals = self._run_rec_analysis(variant_test, variant1, variant2)
             if variant2 is None:
                 col_name1 = f'Heterozygous {variant1}'
                 col_name2 = f'No {variant1}'
@@ -258,15 +269,17 @@ class CohortAnalysis():
                 col_name2 = f'Homozygous {variant2}'
             index = MultiIndex.from_product([[f'Homozygous {variant1}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
+            final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else:
-            final_dict = self._run_dom_analysis(variant_test, variant1, variant2)  
+            final_dict, corrected_pvals = self._run_dom_analysis(variant_test, variant1, variant2)  
             if variant2 is None:
                 col_name = f'Without {variant1}'
             else:
                 col_name = f'With {variant2}'
             index = MultiIndex.from_product([[f'With {variant1}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
-        return final_df.sort_values(('', 'p-value'))
+            final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
+        return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
     def compare_by_exon(self, exon1:int, exon2:int = None):
         """Runs Fisher Exact analysis, finds any correlation between given exons across phenotypes.
@@ -279,7 +292,7 @@ class CohortAnalysis():
         """
         exon_test = ExonPredicate(self.analysis_transcript)
         if self.is_recessive:
-            final_dict = self._run_rec_analysis(exon_test, exon1, exon2)
+            final_dict, corrected_pvals = self._run_rec_analysis(exon_test, exon1, exon2)
             if exon2 is None:
                 col_name1 = f'Heterozygous {exon1}'
                 col_name2 = f'No {exon1}'
@@ -288,15 +301,17 @@ class CohortAnalysis():
                 col_name2 = f'Homozygous {exon2}'
             index = MultiIndex.from_product([[f'Homozygous {exon1}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
+            final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else: 
-            final_dict = self._run_dom_analysis(exon_test, exon1, exon2)
+            final_dict, corrected_pvals = self._run_dom_analysis(exon_test, exon1, exon2)
             if exon2 is None:
                 col_name = f'Outside Exon {exon1}'
             else:
                 col_name = f'Inside Exon {exon2}'
             index = MultiIndex.from_product([[f'Inside Exon {exon1}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
-        return final_df.sort_values(('', 'p-value'))
+            final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
+        return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
     def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
         """Runs Fisher Exact analysis, finds any correlation between given feature type across phenotypes.
@@ -309,7 +324,7 @@ class CohortAnalysis():
         """
         feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript)
         if self.is_recessive:
-            final_dict = self._run_rec_analysis(feat_type_test, feature1, feature2)
+            final_dict, corrected_pvals = self._run_rec_analysis(feat_type_test, feature1, feature2)
             if feature2 is None:
                 col_name1 = f'Heterozygous {feature1}'
                 col_name2 = f'No {feature1}'
@@ -318,15 +333,17 @@ class CohortAnalysis():
                 col_name2 = f'Homozygous {feature2}'
             index = MultiIndex.from_product([[f'Homozygous {feature1}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
+            final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else:
-            final_dict = self._run_dom_analysis(feat_type_test, feature1, feature2)
+            final_dict, corrected_pvals = self._run_dom_analysis(feat_type_test, feature1, feature2)
             if feature2 is None:
                 col_name = f'Outside {feature1.name}'
             else:
                 col_name = f'Inside {feature2.name}'
             index = MultiIndex.from_product([[f'Inside {feature1.name}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
-        return final_df.sort_values(('', 'p-value'))
+            final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
+        return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
 
     def compare_by_protein_feature(self, feature1:str, feature2:str = None):
@@ -340,7 +357,7 @@ class CohortAnalysis():
         """
         domain_test = ProtFeaturePredicate(self.analysis_transcript)
         if self.is_recessive:
-            final_dict = self._run_rec_analysis(domain_test, feature1, feature2)
+            final_dict, corrected_pvals = self._run_rec_analysis(domain_test, feature1, feature2)
             if feature2 is None:
                 col_name1 = f'Heterozygous {feature1}'
                 col_name2 = f'No {feature1}'
@@ -349,15 +366,17 @@ class CohortAnalysis():
                 col_name2 = f'Homozygous {feature2}'
             index = MultiIndex.from_product([[f'Homozygous {feature1}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
+            final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else:
-            final_dict = self._run_dom_analysis(domain_test, feature1, feature2)
+            final_dict, corrected_pvals = self._run_dom_analysis(domain_test, feature1, feature2)
             if feature2 is None:
                 col_name = f'Outside {feature1}'
             else:
                 col_name = f'Inside {feature2}'
             index = MultiIndex.from_product([[f'Inside {feature1}', col_name], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
-        return final_df.sort_values(('', 'p-value'))
+            final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
+        return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
     
 
     def _run_fisher_exact(self, two_by_two_table: typing.Sequence[typing.Sequence[int]]):

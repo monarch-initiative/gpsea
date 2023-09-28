@@ -1,55 +1,41 @@
-# gpc
-Genotype Phenotype Correlation 
+[![Build status](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
+![PyPi downloads](https://img.shields.io/pypi/dm/genophenocorr.svg?label=Pypi%20downloads)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/genophenocorr)
 
+Genophenocorr is a Python library for genotype-phenotype association analysis. 
 
-# Set up
+An example of simple genotype-phenotype association analysis
+```python
+# Load HPO
+import hpotk
+hpo = hpotk.load_minimal_ontology('http://purl.obolibrary.org/obo/hp.json')
 
-Create a virtual environment. This is an optional step, otherwise the package will be installed into the active 
-Python environment.
+# Load a cohort of phenopackets 
+from genophenocorr.data import get_toy_cohort
+cohort = get_toy_cohort()
 
-```shell
-python3 -m venv venv
-source venv/bin/activate
+# Analyze genotype-phenotype associations 
+from genophenocorr.analysis import CohortAnalysis
+from genophenocorr.constants import VariantEffect
+
+cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo)
+frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
+print(frameshift)
 ```
 
-Install the package into the environment:
+prints a table with genotype-phenotype correlations:
 
-```shell
-python3 -m pip install genophenocorr
+```text
+                            With frameshift_variant         Without frameshift_variant
+                                              Count Percent                      Count Percent  p-value
+HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
+HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472
+HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
 ```
 
-# Run tests
+## Documentation
 
-Tests can be run after checking the source code from GitHub and installing the test dependencies:
+Check out the User guide and the API reference for more info:
 
-```shell
-cd genophenocorr
-python3 -m pip install .[test]
-
-pytest
-```
-
-# Build documentation
-
-First, make sure you have the necessary dependencies:
-
-```shell
-cd genophenocorr
-python3 -m pip install .[docs]
-```
-Setting up dependencies is a one-time action for a given Python environment.
-
-Next, we can run the doc tests and build the HTML documentation:
-
-```shell
-cd docs
-
-# Generate the API reference from Python docstrings
-sphinx-apidoc --separate --module-first -d 2 -H "API reference" --follow-links -o apidocs ../src/genophenocorr
-
-# Run the doc tests and build the documentation
-make doctest html
-```
-
-The code above will run the documentation and fail if the docs are out of sync with the code.
-Then, the docs will be built at `docs/build/html`
+- [Stable documentation](https://thejacksonlaboratory.github.io/genophenocorr/stable) (last release on `main` branch)
+- [Latest documentation](https://thejacksonlaboratory.github.io/genophenocorr/latest) (bleeding edge, latest commit on `development` branch)

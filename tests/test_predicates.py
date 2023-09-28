@@ -6,7 +6,7 @@ import pytest
 from genophenocorr.analysis.predicate import *
 from genophenocorr.constants import VariantEffect
 from genophenocorr.model import Cohort, Patient, FeatureType
-from .test_fixtures import toy_hpo, test_cohort
+from .fixtures import toy_hpo, test_cohort
 
 
 def find_patient(pat_id, cohort) -> typing.Optional[Patient]:

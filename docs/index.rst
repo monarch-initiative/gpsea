@@ -10,16 +10,18 @@ A key question in biology and human genetics concerns the relationships between 
 genetics, the focus is generally placed on the study of whether specific disease-causing alleles are associated with specific phenotypic 
 manifestations of the disease. 
 
-genophenocorr is a Python package designed to support genotype-phenotype correlation analysis. The input to genophenocorr is a collection
-of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_. genophenocorr ingests
-data from these phenopackets and performs analysis of the correlation of specific variants, variant types (e.g., missense vs. premature termination codon),
-or variant location in protein motifs or other features. The phenotypic abnormalities are represented by 
-`Human Phenotype Ontology (HPO) <https://hpo.jax.org/app/>`_ terms. Statistical analysis is performed using a 
-`Fisher Exact Test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_, and 
-results are reported for each tested HPO term.
+`genophenocorr` is a Python package designed to support genotype-phenotype correlation analysis.
+The input to `genophenocorr` is a collection of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_.
+`genophenocorr` ingests data from these phenopackets and performs analysis of the correlation of specific variants,
+variant types (e.g., missense vs. premature termination codon), or variant location in protein motifs or other features.
+The phenotypic abnormalities are represented by `Human Phenotype Ontology (HPO) <https://hpo.jax.org/app/>`_ terms.
+Statistical analysis is performed using a `Fisher Exact Test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_,
+and results are reported for each tested HPO term.
 
-We recommend that users create a Jupyter notebook for each cohort of patients they would like to test. This documentation provides a detailed tutorial.
-It is also possible to use the Python code as a library (TODO create package in PyPI).
+We recommend that users create a Jupyter notebook for each cohort of patients they would like to test.
+
+This documentation includes installation instructions, a brief tutorial, and a comprehensive user guide.
+The technical information is available in API reference.
 
 
 Literature
@@ -27,14 +29,7 @@ Literature
 
 We provide recommended reading for background on the study of genotype-phenotype correlations.
 
-- `Orgogozo V, et al. (2015) <https://pubmed.ncbi.nlm.nih.gov/26042146/>`_ The differential view of genotype-phenotype relationships. 
-
-
-
-Installation
-^^^^^^^^^^^^
-See :ref:`installation` for instructions on how to set up the package. 
-
+- `Orgogozo V, et al. (2015) <https://pubmed.ncbi.nlm.nih.gov/26042146/>`_ The differential view of genotype-phenotype relationships.
 
 --------
 Feedback
