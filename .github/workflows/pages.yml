@@ -58,8 +58,7 @@ jobs:
         }
         
         # We store the docs for `main` in `stable` dir
-        # TODO - enable when the docs make it into `main`
-        #build_docs main stable
+        build_docs main stable
         # We store the docs for `development` in `latest` dir
         build_docs develop latest
 
