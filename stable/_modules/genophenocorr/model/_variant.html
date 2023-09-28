@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.model._variant &mdash; genophenocorr 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.model._variant</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.model._variant</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">._protein</span> <span class="kn">import</span> <span class="n">ProteinMetadata</span>
+
+
+<div class="viewcode-block" id="VariantCoordinates">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantCoordinates</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A representation of coordinates of sequence and symbolic variants.</span>
+<span class="sd">    The breakend variants are not supported.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        chrom (string): Chromosome variant coordinates are located on</span>
+<span class="sd">        start (integer): The 0-based starting coordinate of the ref allele</span>
+<span class="sd">        end (integer): The 0-based ending coordinate of the ref allele</span>
+<span class="sd">        ref (string): The reference allele</span>
+<span class="sd">        alt (string): The alternate allele</span>
+<span class="sd">        change_length (integer): The change between the ref and alt alleles due to the variant presence</span>
+<span class="sd">        genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)</span>
+<span class="sd">    Methods:</span>
+<span class="sd">        is_structural: Returns True if the variant coordinates use structural variant notation</span>
+<span class="sd">        as_string: Returns a readable representation of the variant coordinate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a VariantCoordinates object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chrom (string): Chromosome variant coordinates are located on</span>
+<span class="sd">            start (integer): The 0-based starting coordinate of the ref allele</span>
+<span class="sd">            end (integer): The 0-based ending coordinate of the ref allele</span>
+<span class="sd">            ref (string): The reference allele</span>
+<span class="sd">            alt (string): The alternate allele</span>
+<span class="sd">            change_length (integer): The change between the ref and alt alleles due to the variant presence</span>
+<span class="sd">            genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO(lnrekerle) - instance/type check</span>
+        <span class="c1"># TODO - id?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span> <span class="o">=</span> <span class="n">chrom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">=</span> <span class="n">ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span> <span class="o">=</span> <span class="n">alt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span> <span class="o">=</span> <span class="n">change_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span> <span class="o">=</span> <span class="n">genotype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chrom</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The label of the chromosome/contig where the variant is located.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            integer: The 0-based start coordinate (excluded) of the ref allele.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            integer: The 0-based end coordinate (included) of the ref allele.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The reference allele (e.g. &quot;A&quot;, &quot;N&quot;). The allele may be an empty string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">alt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The alternate allele (e.g. &quot;A&quot;, &quot;GG&quot;, &quot;&lt;DEL&gt;&quot;). The allele may be an empty string for sequence variants.</span>
+<span class="sd">            The symbolic alternate allele follow the VCF notation and use the `&lt;` and `&gt;` characters</span>
+<span class="sd">            (e.g. &quot;&lt;DEL&gt;&quot;, &quot;&lt;INS:ME:SINE&gt;&quot;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">change_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            integer: The change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,</span>
+<span class="sd">            deletions and insertions/duplications lead to negative and positive change lengths, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">genotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># TODO - add a doc string with an example. Do we return `0/1`, or `HET`, or GENO_0000135</span>
+        <span class="c1">#  (http://purl.obolibrary.org/obo/GENO_0000135)? All these are strings.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span>
+
+<div class="viewcode-block" id="VariantCoordinates.is_structural">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.is_structural">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_structural</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the variant coordinates use structural variant notation</span>
+<span class="sd">        (e.g. `chr5  101 . N &lt;DEL&gt; .  .  SVTYPE=DEL;END=120;SVLEN=-10`)</span>
+<span class="sd">        as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean: True if the variant coordinates use structural variant notation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantCoordinates.as_string">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.as_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: A readable representation of the variant coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chrom</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alt</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">genotype</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of bases on the ref allele that are affected by the variant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">alt</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">alt</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">ref</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrom</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">chrom</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_length</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">change_length</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">genotype</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VariantCoordinates(chrom=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chrom</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;start=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">, end=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;ref=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="si">}</span><span class="s2">, alt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alt</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;change_length=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">change_length</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;genotype=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">genotype</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="TranscriptAnnotation">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation">[docs]</a>
+<span class="k">class</span> <span class="nc">TranscriptAnnotation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        gene_id (string): The gene symbol associated with the transcript</span>
+<span class="sd">        transcript_id (string): The transcript ID</span>
+<span class="sd">        hgvsc_id (string): The HGVS &quot;coding-DNA&quot; ID if available, else None</span>
+<span class="sd">        variant_effects (Sequence[string]): A sequence of predicted effects given by VEP</span>
+<span class="sd">        overlapping_exons (Sequence[integer]): A sequence of exons affected by the variant. Returns None if none are affected.</span>
+<span class="sd">        protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript</span>
+<span class="sd">        protein_effect_location (Tuple(integer, integer)): The start and end coordinates of the effect on the protein sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">hgvsc</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">variant_effects</span><span class="p">,</span>
+                 <span class="n">affected_exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+                 <span class="n">affected_protein</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">],</span>
+                 <span class="n">protein_effect_start</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                 <span class="n">protein_effect_end</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a TranscriptAnnotation object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gene_id (string): The gene symbol associated with the transcript</span>
+<span class="sd">            tx_id (string): The transcript ID</span>
+<span class="sd">            hgvsc (string, Optional): The HGVS &quot;coding-DNA&quot; ID if available, else None</span>
+<span class="sd">            variant_effects (Sequence[string]): A sequence of predicted effects given by VEP</span>
+<span class="sd">            affected_exons (Sequence[integer], Optional): A sequence of exons affected by the variant. Returns None if none are affected.</span>
+<span class="sd">            affected_protein (Sequence[ProteinMetadata]): A ProteinMetadata object representing the protein affected by this transcript</span>
+<span class="sd">            protein_effect_start (integer, Optional): The start coordinate of the effect on the protein sequence.</span>
+<span class="sd">            protein_effect_end (integer, Optional): The end coordinate of the effect on the protein sequence.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">=</span> <span class="n">gene_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">tx_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsc_id</span> <span class="o">=</span> <span class="n">hgvsc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">variant_effects</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">affected_exons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">affected_exons</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_affected_protein</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">affected_protein</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span> <span class="o">=</span> <span class="p">(</span><span class="n">protein_effect_start</span><span class="p">,</span> <span class="n">protein_effect_end</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The gene symbol (e.g. SURF1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transcript_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The transcript RefSeq identifier (e.g. NM_123456.7)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hgvsc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The HGVS &quot;coding-DNA&quot; representation of the variant (e.g. NM_123456.7:c.9876G&gt;T)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsc_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[string]: A sequence of variant effects.</span>
+<span class="sd">                    Definitions of these can be found at: http://www.sequenceontology.org/</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">overlapping_exons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[integer]: A sequence of IDs of the exons that overlap with the variant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_affected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[ProteinMetadata]: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_protein</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_effect_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple(integer, integer): The start and end position on the protein sequence that the variant effects. (e.g. (1234, 1235))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TranscriptAnnotation(gene_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;transcript_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;hgvsc_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;variant_effects:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;overlapping_exons:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;protein_affected:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_affected</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;protein_effect_location:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">gene_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">hgvsc_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">transcript_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_effects</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">overlapping_exons</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_affected</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_affected</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_effect_location</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Variant">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Variant">[docs]</a>
+<span class="k">class</span> <span class="nc">Variant</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that represents results of the functional annotation of a variant with all included transcripts.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        variant_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant</span>
+<span class="sd">        variant_string (string): A readable representation of the variant coordinates</span>
+<span class="sd">        genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)</span>
+<span class="sd">        tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant</span>
+<span class="sd">        variant_class (string): The variant class (e.g. Duplication, SNV, etc.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Variant.create_variant_from_scratch">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Variant.create_variant_from_scratch">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_variant_from_scratch</span><span class="p">(</span><span class="n">variant_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
+                                    <span class="n">gene_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">hgvsc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">consequences</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                                    <span class="n">exons_effected</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                                    <span class="n">protein</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">],</span>
+                                    <span class="n">protein_effect_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                    <span class="n">protein_effect_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">transcript</span> <span class="o">=</span> <span class="n">TranscriptAnnotation</span><span class="p">(</span><span class="n">gene_name</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">hgvsc_id</span><span class="p">,</span> <span class="n">consequences</span><span class="p">,</span> <span class="n">exons_effected</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span>
+                                          <span class="n">protein_effect_start</span><span class="p">,</span> <span class="n">protein_effect_end</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span><span class="n">variant_id</span><span class="p">,</span> <span class="n">variant_class</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">,</span> <span class="p">[</span><span class="n">transcript</span><span class="p">],</span> <span class="n">variant_coordinates</span><span class="o">.</span><span class="n">genotype</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">var_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">var_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
+                 <span class="n">tx_annotations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]],</span>
+                 <span class="n">genotype</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a Variant object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant</span>
+<span class="sd">            var_id (string): A readable representation of the variant coordinates</span>
+<span class="sd">            genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)</span>
+<span class="sd">            tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant</span>
+<span class="sd">            var_class (string): The variant class (e.g. Duplication, SNV, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">var_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_coordinates</span> <span class="o">=</span> <span class="n">var_coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_class</span> <span class="o">=</span> <span class="n">var_class</span>
+        <span class="k">if</span> <span class="n">tx_annotations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span> <span class="o">=</span> <span class="n">genotype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantCoordinates</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantCoordinates: A representation of coordinates of a sequence and symbolic variant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_coordinates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: A readable representation of the variant&#39;s coordinates.</span>
+<span class="sd">                Format - &quot;Chromosome_Start_Reference/Alternative&quot; or</span>
+<span class="sd">                &quot;Chromosome_Start_StructuralType&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">genotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional parameter. Required for recessive tests.</span>
+<span class="sd">        Possible values: Heterozygous, Homozygous, Hemizygous</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string: Genotype of the variant</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tx_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A collection of TranscriptAnnotations that each represent results of the functional annotation</span>
+<span class="sd">        of a variant with respect to single transcript of a gene.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[TranscriptAnnotation]: A sequence of TranscriptAnnotation objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The variant class. (e.g. Duplication, SNV, Deletion, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_class</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Variant</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_string</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_string</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">genotype</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_class</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_class</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_coordinates</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">tx_annotations</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variant(variant_coordinates:</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">)</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;variant_string:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_string</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;genotype:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">genotype</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;tx_annotations:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;variant_class:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_class</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

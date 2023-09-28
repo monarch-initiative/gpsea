@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.preprocessing._phenopacket &mdash; genophenocorr 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.preprocessing._phenopacket</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.preprocessing._phenopacket</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="c1"># pyright: reportGeneralTypeIssues=false</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
+<span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span><span class="p">,</span> <span class="n">Phenopacket</span>
+
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Cohort</span>
+
+<span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
+<span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantCoordinateFinder</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span>
+
+
+
+<div class="viewcode-block" id="PhenopacketVariantCoordinateFinder">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder">[docs]</a>
+<span class="k">class</span> <span class="nc">PhenopacketVariantCoordinateFinder</span><span class="p">(</span><span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="n">GenomicInterpretation</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that creates VariantCoordinates from a Phenopacket</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhenopacketVariantCoordinateFinder.find_coordinates">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantCoordinates</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a VariantCoordinates object from the data in a given Phenopacket</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item (GenomicInterpretation): A Phenopacket object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantCoordinates: A VariantCoordinates object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">GenomicInterpretation</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;item must be a Phenopacket GenomicInterpretation but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">chrom</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">genotype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="n">variant_descriptor</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">variant_interpretation</span><span class="o">.</span><span class="n">variation_descriptor</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_interval</span><span class="o">.</span><span class="n">start_number</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_interval</span><span class="o">.</span><span class="n">end_number</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">number</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">alt</span> <span class="o">=</span> <span class="s1">&#39;&lt;DUP&gt;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">alt</span> <span class="o">=</span> <span class="s1">&#39;&lt;DEL&gt;&#39;</span>
+            <span class="n">chrom</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;NC_0000(\d</span><span class="si">{2}</span><span class="s1">).\d\d&#39;</span><span class="p">,</span>
+                               <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">chrom</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+                <span class="n">chrom</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">chrom</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">chrom</span> <span class="o">==</span> <span class="s1">&#39;23&#39;</span><span class="p">:</span>
+                <span class="n">chrom</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span>
+            <span class="k">elif</span> <span class="n">chrom</span> <span class="o">==</span> <span class="s1">&#39;24&#39;</span><span class="p">:</span>
+                <span class="n">chrom</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">ref</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">alt</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">))</span>
+            <span class="n">chrom</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+        <span class="n">genotype</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">allelic_state</span><span class="o">.</span><span class="n">label</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">genotype</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot determine variant coordinate from genomic interpretation </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">),</span> <span class="n">genotype</span><span class="p">)</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="PhenopacketPatientCreator">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketPatientCreator">[docs]</a>
+<span class="k">class</span> <span class="nc">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">PatientCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that creates a Patient object</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        create_patient(item:Phenopacket): Creates a Patient from the data in a given Phenopacket</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">:</span> <span class="n">PhenotypeCreator</span><span class="p">,</span>
+                 <span class="n">var_func_ann</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a PhenopacketPatientCreator object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            phenotype_creator (PhenotypeCreator): A PhenotypeCreator object for Phenotype creation</span>
+<span class="sd">            var_func_ann (FunctionalAnnotator): A FunctionalAnnotator object for Variant creation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="c1"># Violates DI, but it is specific to this class, so I&#39;ll leave it &quot;as is&quot;.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span> <span class="o">=</span> <span class="n">PhenopacketVariantCoordinateFinder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">PhenotypeCreator</span><span class="p">,</span> <span class="s1">&#39;phenotype_creator&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_func_ann</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">var_func_ann</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s1">&#39;var_func_ann&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhenopacketPatientCreator.create_patient">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketPatientCreator.create_patient">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_patient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Patient</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Patient from the data in a given Phenopacket</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item (Phenopacket): A Phenopacket object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Patient: A Patient object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_phenotypes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">protein_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_protein_data</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">phenotypes</span><span class="p">,</span> <span class="n">variants</span><span class="p">,</span> <span class="n">protein_data</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_add_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Variant objects from the data in a given Phenopacket</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pp (Phenopacket): A Phenopacket object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[Variant]: A list of Variant objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">variants_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">interpretations</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">interp</span><span class="p">,</span> <span class="s1">&#39;diagnosis&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">interp</span><span class="o">.</span><span class="n">diagnosis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">genomic_interp</span> <span class="ow">in</span> <span class="n">interp</span><span class="o">.</span><span class="n">diagnosis</span><span class="o">.</span><span class="n">genomic_interpretations</span><span class="p">:</span>
+                    <span class="n">vc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">genomic_interp</span><span class="p">)</span>
+                    <span class="n">variant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func_ann</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">vc</span><span class="p">)</span>
+                    <span class="n">variants_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No diagnosis in interpretation #</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> of phenopacket </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected at least one variant per patient, but received none for patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">variants_list</span>
+
+    <span class="k">def</span> <span class="nf">_add_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Phenotype objects from the data in a given Phenopacket</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pp (Phenopacket): A Phenopacket object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[Phenotype]: A list of Phenotype objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hpo_id_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">hpo_id</span> <span class="ow">in</span> <span class="n">pp</span><span class="o">.</span><span class="n">phenotypic_features</span><span class="p">:</span>
+            <span class="n">hpo_id_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hpo_id</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ow">not</span> <span class="n">hpo_id</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hpo_id_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected at least one HPO term per patient, but received none for patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span><span class="o">.</span><span class="n">create_phenotype</span><span class="p">(</span><span class="n">hpo_id_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_protein_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of ProteinMetadata objects from a given list of Variant objects</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variants (Sequence[Variant]): A list of Variant objects</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[ProteinMetadata]: A list of ProteinMetadata objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">final_prots</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
+                    <span class="n">final_prots</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_prots</span></div>
+
+
+
+<div class="viewcode-block" id="load_phenopacket_folder">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.load_phenopacket_folder">[docs]</a>
+<span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">patient_creator</span><span class="p">:</span> <span class="n">PhenopacketPatientCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.</span>
+
+<span class="sd">    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to</span>
+<span class="sd">      a directory with at least one phenopacket.</span>
+<span class="sd">    :param patient_creator: patient creator for turning a phenopacket into a :class:`genophenocorr.Patient`</span>
+<span class="sd">    :return: a cohort made of the phenopackets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find directory of Phenopackets.&quot;</span><span class="p">)</span>
+    <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">patient_creator</span><span class="p">,</span> <span class="n">PhenopacketPatientCreator</span><span class="p">,</span> <span class="s1">&#39;patient_creator&#39;</span><span class="p">)</span>
+
+    <span class="c1"># load Phenopackets</span>
+    <span class="n">pps</span> <span class="o">=</span> <span class="n">_load_phenopacket_dir</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No JSON Phenopackets were found in </span><span class="si">{</span><span class="n">pp_directory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># turn phenopackets into patients using patient creator</span>
+    <span class="n">patients</span> <span class="o">=</span> <span class="p">[</span><span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span> <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">pps</span><span class="p">]</span>
+
+    <span class="c1"># create cohort from patients</span>
+    <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_load_phenopacket_dir</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+    <span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">patient_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">patient_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="n">phenopacket_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">patient_file</span><span class="p">)</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="n">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">)</span>
+            <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">patients</span>
+
+
+<span class="k">def</span> <span class="nf">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phenopacket</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Parse</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Phenopacket</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
