@@ -177,6 +177,9 @@ doctest_test_doctest_blocks = ""
 
 # Nothing special here
 doctest_global_setup = """
+# For printing data frames "as is".
+import pandas as pd
+pd.set_option('expand_frame_repr', False)
 """
 
 # -- Intersphinx setup --------------------------------------------------------
@@ -192,5 +195,5 @@ intersphinx_mapping = {
 }
 
 # -- Sphinx copybutton setup --------------------------------------------------
-# Exclude `>>>` when copying the cell
-copybutton_exclude = '.linenos, .gp'
+# Exclude `>>>`, the line numbers, and the output when copying the cell.
+copybutton_exclude = '.linenos, .gp, .go'

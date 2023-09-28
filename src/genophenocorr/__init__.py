@@ -1,4 +1,6 @@
-# __init__.py
+"""
+Genophenocorr is a library for analyzing genotype-phenotype correlations in cohorts of rare disease patients.
+"""
 
 from . import analysis
 from . import data
