@@ -37,5 +37,5 @@ HP:0001257 (Spasticity)                           8  61.54%                     
 
 Check out the User guide and the API reference for more info:
 
-- [Stable documentation](https://thejacksonlaboratory.github.io/genophenocorr/stable) (last release on `main` branch)
-- [Latest documentation](https://thejacksonlaboratory.github.io/genophenocorr/latest) (bleeding edge, latest commit on `development` branch)
+- [Stable documentation](https://monarch-initiative.github.io/genophenocorr/stable/) (last release on `main` branch)
+- [Latest documentation](https://monarch-initiative.github.io/genophenocorr/latest) (bleeding edge, latest commit on `development` branch)
