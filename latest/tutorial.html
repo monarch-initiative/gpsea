@@ -19,7 +19,7 @@
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=35a8b989"></script>
+        <script src="_static/copybutton.js?v=6dbb43f8"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -87,11 +87,12 @@
              
   <section id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
+<p>The tutorial demonstrates how to load an example Phenopacket cohort and perform genotype-phenotype analysis.</p>
 <section id="set-up-analysis">
 <h2>Set up analysis<a class="headerlink" href="#set-up-analysis" title="Link to this heading"></a></h2>
-<p>Genophenocorr needs HPO to do the analysis. Let’s load the ontology:</p>
+<p><cite>genophenocorr</cite> needs HPO to do the analysis. Let’s load the ontology:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">obographs</span><span class="o">.</span><span class="n">load_minimal_ontology</span><span class="p">(</span><span class="s1">&#39;data/hp.toy.json&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">load_minimal_ontology</span><span class="p">(</span><span class="s1">&#39;data/hp.toy.json&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -127,30 +128,31 @@ with the package:</p>
 </pre></div>
 </div>
 <p>Using the counts, we can choose and run what analyses we want.
-For instance, compare <em>frameshift</em> variants:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
+For instance, we can partition the patients into two groups based on presence/absence of a <em>frameshift</em> variant:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.constants</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_analysis</span> <span class="o">=</span> <span class="n">CohortAnalysis</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">include_unmeasured</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_type</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">frameshift</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> 
 <span class="go">                            With frameshift_variant         Without frameshift_variant</span>
-<span class="go">                                              Count Percent                      Count Percent  p-value</span>
-<span class="go">HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718</span>
-<span class="go">HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472</span>
-<span class="go">HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000</span>
+<span class="go">                                              Count Percent                       Count Percent  p-value</span>
+<span class="go">HP:0001166 (Arachnodactyly)                       4  30.77%                          10  76.92%  0.04718</span>
+<span class="go">HP:0001250 (Seizure)                             11  84.62%                           9  69.23%  0.64472</span>
+<span class="go">HP:0001257 (Spasticity)                           8  61.54%                           9  69.23%  1.00000</span>
 </pre></div>
 </div>
-<p>or <em>missense</em> variants:</p>
+<p>Or perform similar partitioning based on presence/absence of a <em>missense</em> variant:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_type</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">missense</span><span class="p">)</span> 
-<span class="go">                              With missense_variant         Without missense_variant</span>
-<span class="go">                                              Count Percent                    Count Percent   p-value</span>
-<span class="go">  HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781</span>
-<span class="go">  HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449</span>
-<span class="go">  HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> 
+<span class="go">                            With missense_variant         Without missense_variant</span>
+<span class="go">                                            Count Percent                    Count Percent   p-value</span>
+<span class="go">HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781</span>
+<span class="go">HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449</span>
+<span class="go">HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000</span>
 </pre></div>
 </div>
+<p>The tables present the HPO terms that annotate the cohort members and report their counts and p values
+for each genotype group. The rows are sorted by the p value in ascending order.</p>
 </section>
 </section>
 

@@ -19,7 +19,7 @@
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=35a8b989"></script>
+        <script src="_static/copybutton.js?v=6dbb43f8"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -88,25 +88,22 @@ medical contexts, the word “phenotype” is used to refer to some deviation fr
 A key question in biology and human genetics concerns the relationships between phenotypic abnormalities and genotype. In Mendelian
 genetics, the focus is generally placed on the study of whether specific disease-causing alleles are associated with specific phenotypic
 manifestations of the disease.</p>
-<p>genophenocorr is a Python package designed to support genotype-phenotype correlation analysis. The input to genophenocorr is a collection
-of <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35705716/">Global Alliance for Genomics and Health (GA4GH) Phenopackets</a>. genophenocorr ingests
-data from these phenopackets and performs analysis of the correlation of specific variants, variant types (e.g., missense vs. premature termination codon),
-or variant location in protein motifs or other features. The phenotypic abnormalities are represented by
-<a class="reference external" href="https://hpo.jax.org/app/">Human Phenotype Ontology (HPO)</a> terms. Statistical analysis is performed using a
-<a class="reference external" href="https://en.wikipedia.org/wiki/Fisher%27s_exact_test">Fisher Exact Test</a>, and
-results are reported for each tested HPO term.</p>
-<p>We recommend that users create a Jupyter notebook for each cohort of patients they would like to test. This documentation provides a detailed tutorial.
-It is also possible to use the Python code as a library (TODO create package in PyPI).</p>
+<p><cite>genophenocorr</cite> is a Python package designed to support genotype-phenotype correlation analysis.
+The input to <cite>genophenocorr</cite> is a collection of <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35705716/">Global Alliance for Genomics and Health (GA4GH) Phenopackets</a>.
+<cite>genophenocorr</cite> ingests data from these phenopackets and performs analysis of the correlation of specific variants,
+variant types (e.g., missense vs. premature termination codon), or variant location in protein motifs or other features.
+The phenotypic abnormalities are represented by <a class="reference external" href="https://hpo.jax.org/app/">Human Phenotype Ontology (HPO)</a> terms.
+Statistical analysis is performed using a <a class="reference external" href="https://en.wikipedia.org/wiki/Fisher%27s_exact_test">Fisher Exact Test</a>,
+and results are reported for each tested HPO term.</p>
+<p>We recommend that users create a Jupyter notebook for each cohort of patients they would like to test.</p>
+<p>This documentation includes installation instructions, a brief tutorial, and a comprehensive user guide.
+The technical information is available in API reference.</p>
 <section id="literature">
 <h2>Literature<a class="headerlink" href="#literature" title="Link to this heading"></a></h2>
 <p>We provide recommended reading for background on the study of genotype-phenotype correlations.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/26042146/">Orgogozo V, et al. (2015)</a> The differential view of genotype-phenotype relationships.</p></li>
 </ul>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for instructions on how to set up the package.</p>
 <section id="feedback">
 <h3>Feedback<a class="headerlink" href="#feedback" title="Link to this heading"></a></h3>
 <p>The best place to leave feedback, ask questions, and report bugs is the <a class="reference external" href="https://github.com/monarch-initiative/genophenocorr/issues">genophenocorr Issue Tracker</a>.</p>
