@@ -5,7 +5,7 @@ from ._genome import Contig, GenomeBuild
 
 def read_assembly_report(identifier: str, path: str) -> GenomeBuild:
     contigs = []
-    with importlib.resources.open_text('genophenocorr.model.genome', path) as fp:
+    with importlib.resources.files('genophenocorr.model.genome').joinpath(path).open() as fp:
         for line in fp:
             if line.startswith('#'):
                 continue
