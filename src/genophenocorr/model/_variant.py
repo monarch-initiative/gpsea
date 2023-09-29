@@ -1,3 +1,4 @@
+import abc
 import typing
 
 from ._protein import ProteinMetadata
@@ -147,13 +148,39 @@ class VariantCoordinates:
         return hash((self._chrom, self._start, self._end, self._ref, self._alt, self._change_length, self._genotype))
 
 
-class TranscriptAnnotation:
+class TranscriptInfoAware(metaclass=abc.ABCMeta):
+    """
+    The implementors know about basic gene/transcript identifiers.
+    """
+
+
+    @property
+    @abc.abstractmethod
+    def gene_id(self) -> str:
+        """
+        Returns:
+            string: The gene symbol (e.g. SURF1)
+        """
+        pass
+
+    @property
+    @abc.abstractmethod
+    def transcript_id(self) -> str:
+        """
+        Returns:
+            string: The transcript RefSeq identifier (e.g. NM_123456.7)
+        """
+        pass
+
+
+class TranscriptAnnotation(TranscriptInfoAware):
     """Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
 
     Attributes:
         gene_id (string): The gene symbol associated with the transcript
         transcript_id (string): The transcript ID
         hgvsc_id (string): The HGVS "coding-DNA" ID if available, else None
+        is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.
         variant_effects (Sequence[string]): A sequence of predicted effects given by VEP
         overlapping_exons (Sequence[integer]): A sequence of exons affected by the variant. Returns None if none are affected.
         protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript
@@ -163,6 +190,7 @@ class TranscriptAnnotation:
     def __init__(self, gene_id: str,
                  tx_id: str,
                  hgvsc: typing.Optional[str],
+                 is_preferred: bool,
                  variant_effects,
                  affected_exons: typing.Optional[typing.Sequence[int]],
                  affected_protein: typing.Sequence[ProteinMetadata],
@@ -183,6 +211,7 @@ class TranscriptAnnotation:
         self._gene_id = gene_id
         self._tx_id = tx_id
         self._hgvsc_id = hgvsc
+        self._is_preferred = is_preferred
         self._variant_effects = tuple(variant_effects)
         if affected_exons is not None:
             self._affected_exons = tuple(affected_exons)
@@ -206,6 +235,14 @@ class TranscriptAnnotation:
             string: The transcript RefSeq identifier (e.g. NM_123456.7)
         """
         return self._tx_id
+
+    @property
+    def is_preferred(self) -> bool:
+        """
+        Return `True` if the transcript is the preferred transcript of a gene,
+        such as MANE transcript, canonical Ensembl transcript.
+        """
+        return self._is_preferred
 
     @property
     def hgvsc_id(self) -> str:
@@ -252,6 +289,7 @@ class TranscriptAnnotation:
         return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
                f"transcript_id:{self.transcript_id}," \
                f"hgvsc_id:{self.hgvsc_id}," \
+               f"is_preferred:{self.is_preferred}," \
                f"variant_effects:{self.variant_effects}," \
                f"overlapping_exons:{self.overlapping_exons}," \
                f"protein_affected:{self.protein_affected}," \
@@ -261,6 +299,7 @@ class TranscriptAnnotation:
         return isinstance(other, TranscriptAnnotation) \
             and self.gene_id == other.gene_id \
             and self.hgvsc_id == other.hgvsc_id \
+            and self.is_preferred == other.is_preferred \
             and self.transcript_id == other.transcript_id \
             and self.variant_effects == other.variant_effects \
             and self.overlapping_exons == other.overlapping_exons \
@@ -271,7 +310,7 @@ class TranscriptAnnotation:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvsc_id, self.transcript_id, self.overlapping_exons, self.variant_effects,
+        return hash((self.gene_id, self.hgvsc_id, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
                      self.protein_affected, self.protein_effect_location))
 
 

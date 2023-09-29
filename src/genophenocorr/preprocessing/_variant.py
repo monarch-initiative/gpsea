@@ -7,9 +7,10 @@ import hpotk
 import requests
 
 
-from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware
+from genophenocorr.model.genome import Transcript
 
-from ._api import FunctionalAnnotator, ProteinMetadataService
+from ._api import FunctionalAnnotator, ProteinMetadataService, TranscriptCoordinateService
 
 
 def verify_start_end_coordinates(vc: VariantCoordinates):
@@ -65,7 +66,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         self._logging = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
-                    '&mutfunc=1&numbers=1&protein=1&refseq=1&transcript_version=1&variant_class=1'
+                    '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1&transcript_version=1&variant_class=1'
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
         """Creates a Variant object by searching variant coordinates with Variant Effect Predictor (VEP) REST API. 
@@ -78,14 +79,16 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         variant = self._query_vep(variant_coordinates)
         variant_id = variant.get('id')
         variant_class = variant.get('variant_class')
-        canon_tx = None
+        # canon_tx = None
         transcript_list = []
         for trans in variant.get('transcript_consequences'):
             trans_id = trans.get('transcript_id')
             if not trans_id.startswith('NM'):
                 continue
-            if trans.get('canonical') == 1:
-                canon_tx = trans_id
+            # TODO - implement
+            is_preferred = False
+            # if trans.get('canonical') == 1:
+            #     canon_tx = trans_id
             hgvsc_id = trans.get('hgvsc')
             consequences = trans.get('consequence_terms')
             gene_name = trans.get('gene_symbol')
@@ -109,6 +112,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                 TranscriptAnnotation(gene_name,
                                      trans_id,
                                      hgvsc_id,
+                                     is_preferred,
                                      consequences,
                                      exons_effected,
                                      protein,
@@ -220,3 +224,10 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
             ann = self._fallback.annotate(variant_coordinates)
             self._cache.store_annotations(variant_coordinates, ann)
             return ann
+
+
+class EnsemblTranscriptCoordinateService(TranscriptCoordinateService):
+
+    def fetch(self, tx: TranscriptInfoAware) -> Transcript:
+        # TODO - implement
+        pass
