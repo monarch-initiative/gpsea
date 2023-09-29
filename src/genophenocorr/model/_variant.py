@@ -24,9 +24,7 @@ class VariantCoordinates:
         as_string: Returns a readable representation of the variant coordinate
     """
 
-    # TODO - should use/extend `genophenocorr.model.genome.GenomicRegion`
-
-    def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int, genotype: str):
+    def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int):
         """Constructs all necessary attributes for a VariantCoordinates object
 
         Args:
@@ -36,15 +34,12 @@ class VariantCoordinates:
             ref (string): The reference allele
             alt (string): The alternate allele
             change_length (integer): The change between the ref and alt alleles due to the variant presence
-            genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)
         """
-        # TODO(lnrekerle) - instance/type check
         # TODO - id?
         self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
-        self._ref = ref
-        self._alt = alt
-        self._change_length = change_length
-        self._genotype = genotype
+        self._ref = hpotk.util.validate_instance(ref, str, 'ref')
+        self._alt = hpotk.util.validate_instance(alt, str, 'alt')
+        self._change_length = hpotk.util.validate_instance(change_length, int, 'change_length')
 
     @property
     def chrom(self) -> str:
@@ -105,12 +100,6 @@ class VariantCoordinates:
         """
         return self._change_length
 
-    @property
-    def genotype(self) -> str:
-        # TODO - add a doc string with an example. Do we return `0/1`, or `HET`, or GENO_0000135
-        #  (http://purl.obolibrary.org/obo/GENO_0000135)? All these are strings.
-        return self._genotype
-
     def is_structural(self) -> bool:
         """Checks if the variant coordinates use structural variant notation
         (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
@@ -126,7 +115,7 @@ class VariantCoordinates:
         Returns:
             string: A readable representation of the variant coordinates
         """
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}_{self.genotype}".replace('<', '').replace(
+        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}".replace('<', '').replace(
             '>', '')
 
     def __len__(self):
@@ -142,21 +131,19 @@ class VariantCoordinates:
             and self.chrom == other.chrom \
             and self.start == other.start \
             and self.end == other.end \
-            and self.change_length == other.change_length \
-            and self.genotype == other.genotype
+            and self.change_length == other.change_length
 
     def __str__(self) -> str:
         return f"VariantCoordinates(chrom={self.chrom}, " \
                f"start={self.start}, end={self.end}, " \
                f"ref={self.ref}, alt={self.alt}, " \
-               f"change_length={self.change_length}, " \
-               f"genotype={self.genotype})"
+               f"change_length={self.change_length})"
 
     def __repr__(self) -> str:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self._region, self._ref, self._alt, self._change_length, self._genotype))
+        return hash((self._region, self._ref, self._alt, self._change_length))
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):
@@ -276,7 +263,8 @@ class TranscriptAnnotation(TranscriptInfoAware):
     def overlapping_exons(self) -> typing.Sequence[int]:
         """
         Returns:
-            Sequence[integer]: A sequence of IDs of the exons that overlap with the variant.
+            Sequence[integer]: A sequence of 1-based exon indices (the index of the 1st exon is `1`)
+            that overlap with the variant.
         """
         return self._affected_exons
 
@@ -331,7 +319,7 @@ class Variant:
     Attributes:
         variant_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
         variant_string (string): A readable representation of the variant coordinates
-        genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)
+        genotype (string): The genotype of the variant (e.g. Homozygous, Heterozygous)
         tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
         variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
     """
@@ -344,6 +332,7 @@ class Variant:
                                     trans_id: str,
                                     hgvsc_id: str,
                                     is_preferred: bool,
+                                    genotype: str,
                                     consequences: typing.Sequence[str],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
@@ -351,19 +340,19 @@ class Variant:
                                     protein_effect_end: int):
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, is_preferred, consequences, exons_effected, protein,
                                           protein_effect_start, protein_effect_end)
-        return Variant(variant_id, variant_class, variant_coordinates, [transcript], variant_coordinates.genotype)
+        return Variant(variant_id, variant_class, variant_coordinates, [transcript], genotype)
 
     def __init__(self, var_id: str,
                  var_class: str,
                  var_coordinates: VariantCoordinates,
                  tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
-                 genotype: typing.Optional[str]):
+                 genotype: str):
         """Constructs all necessary attributes for a Variant object
 
         Args:
             var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
             var_id (string): A readable representation of the variant coordinates
-            genotype (string, Optional): The genotype of the variant (e.g. Homozygous, Heterozygous)
+            genotype (string): The genotype of the variant (e.g. Homozygous, Heterozygous)
             tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
             var_class (string): The variant class (e.g. Duplication, SNV, etc.)
         """

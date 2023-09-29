@@ -2,7 +2,7 @@ import typing
 
 import hpotk
 
-from ._genome import GenomicRegion
+from .genome import GenomicRegion
 
 
 class TranscriptCoordinates:
@@ -19,7 +19,7 @@ class TranscriptCoordinates:
         self._id = hpotk.util.validate_instance(identifier, str, 'identifier')
         self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
         self._exons = tuple(exons)
-        # TODO - check
+        # TODO - check CDS
         self._cds_start = cds_start
         self._cds_end = cds_end
 

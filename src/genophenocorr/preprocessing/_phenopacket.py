@@ -39,8 +39,6 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
-        chrom, ref, alt, genotype = None, None, None, None
-        start, end = 0, 0
         variant_descriptor = item.variant_interpretation.variation_descriptor
         if len(variant_descriptor.vcf_record.chrom) == 0 and len(
                 variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
@@ -77,7 +75,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         if any(field is None for field in (contig, ref, alt, genotype)):
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
         region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-        return VariantCoordinates(region, ref, alt, len(alt) - len(ref), genotype)
+        return VariantCoordinates(region, ref, alt, len(alt) - len(ref))
 
 
 

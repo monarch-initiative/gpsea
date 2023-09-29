@@ -7,8 +7,7 @@ import hpotk
 import requests
 
 
-from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware
-from genophenocorr.model.genome import TranscriptCoordinates
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware, TranscriptCoordinates
 
 from ._api import FunctionalAnnotator, ProteinMetadataService, TranscriptCoordinateService
 

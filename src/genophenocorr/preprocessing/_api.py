@@ -1,8 +1,7 @@
 import abc
 import typing
 
-from genophenocorr.model import Variant, VariantCoordinates, ProteinMetadata, TranscriptInfoAware
-from genophenocorr.model.genome import TranscriptCoordinates
+from genophenocorr.model import Variant, VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates
 
 T = typing.TypeVar('T')
 
