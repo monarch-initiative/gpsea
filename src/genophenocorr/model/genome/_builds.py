@@ -1,11 +1,28 @@
-import importlib.resources
+import platform
+import warnings
 
 from ._genome import Contig, GenomeBuild
+
+major, minor, patch = platform.python_version_tuple()
+
+if major == '3':
+    import importlib.resources
+    minor = int(minor)
+    if minor < 9:
+        # Versions 3.7, 3.8
+        def resource_loader(path: str):
+            return importlib.resources.open_text('genophenocorr.model.genome', path)
+    else:
+        def resource_loader(path: str):
+            return importlib.resources.files('genophenocorr.model.genome').joinpath(path).open()
+
+else:
+    warnings.warn(f'Untested Python version v{major}.{minor}.{patch}')
 
 
 def read_assembly_report(identifier: str, path: str) -> GenomeBuild:
     contigs = []
-    with importlib.resources.files('genophenocorr.model.genome').joinpath(path).open() as fp:
+    with resource_loader(path) as fp:
         for line in fp:
             if line.startswith('#'):
                 continue
