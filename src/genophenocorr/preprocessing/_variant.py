@@ -50,10 +50,10 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
-    """A class that creates a Variant object using variant coordinates and Variant Effect Predictor (VEP) REST API
+    """A class that peforms functional annotation of variant coordinates using Variant Effect Predictor (VEP) REST API.
 
     Methods:
-        annotate(variant_coordinates: VariantCoordinates): Creates a Variant object from VariantCoordinates
+        annotate(variant_coordinates: VariantCoordinates): the variant to annotate.
     """
 
     def __init__(self, protein_annotator: ProteinMetadataService):
@@ -67,19 +67,17 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1&transcript_version=1&variant_class=1'
 
-    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
-        """Creates a Variant object by searching variant coordinates with Variant Effect Predictor (VEP) REST API. 
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+        """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
 
         Args:
             variant_coordinates (VariantCoordinates): A VariantCoordinates object
         Returns:
-            Variant: A Variant object
+            typing.Sequence[TranscriptAnnotation]: A sequence of transcript annotations for the variant coordinates
         """
         variant = self._query_vep(variant_coordinates)
-        variant_id = variant.get('id')
-        variant_class = variant.get('variant_class')
         # canon_tx = None
-        transcript_list = []
+        annotations = []
         for trans in variant.get('transcript_consequences'):
             trans_id = trans.get('transcript_id')
             if not trans_id.startswith('NM'):
@@ -107,7 +105,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                 if len(exons_effected) == 2:
                     exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
                 exons_effected = [int(x) for x in exons_effected]
-            transcript_list.append(
+            annotations.append(
                 TranscriptAnnotation(gene_name,
                                      trans_id,
                                      hgvsc_id,
@@ -118,8 +116,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                      protein_effect_start,
                                      protein_effect_end)
             )
-        return Variant(variant_id, variant_class, variant_coordinates, transcript_list,
-                       variant_coordinates.genotype)
+
+        return annotations
 
     def _query_vep(self, variant_coordinates) -> dict:
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
@@ -155,7 +153,7 @@ class VariantAnnotationCache:
             raise ValueError(f'datadir {datadir} must be an existing directory')
         self._datadir = datadir
 
-    def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[Variant]:
+    def get_annotations(self, variant_coordinates: VariantCoordinates) -> typing.Optional[typing.Sequence[TranscriptAnnotation]]:
         """Searches a given data directory for a pickle file with given variant coordinates and returns Variant from file. Returns None if no file is found.
 
         Args:
@@ -168,16 +166,16 @@ class VariantAnnotationCache:
         else:
             return None
 
-    def store_annotations(self, variant_coordinates: VariantCoordinates, annotation: Variant):
+    def store_annotations(self, variant_coordinates: VariantCoordinates, annotations: typing.Sequence[TranscriptAnnotation]):
         """Creates a pickle file with the given variant coordinates in the file name. Loads the Variant object given into the file for storage.
 
         Args:
             variant_coordinates (VariantCoordinates): The variant_coordinates associated with the desired Variant
-            annotation (Variant): A Variant object that will be stored under the given variant coordinates
+            annotations (typing.Sequence[TranscriptAnnotation]): Annotations that will be stored under the given variant coordinates
         """
         fpath = self._create_file_name(variant_coordinates)
         with open(fpath, 'wb') as f:
-            pickle.dump(annotation, f)
+            pickle.dump(annotations, f)
 
     def _create_file_name(self, variant_coordinates: VariantCoordinates) -> str:
         """Creates a file name with full location and the variant coordinates (e.g. "/path/to/desired/directory/1_2345_G_C_heterozygous.pickle")
@@ -206,7 +204,7 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
         self._cache = hpotk.util.validate_instance(cache, VariantAnnotationCache, 'cache')
         self._fallback = hpotk.util.validate_instance(fallback, FunctionalAnnotator, 'fallback')
 
-    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Gets Variant for given variant coordinates
 
         Args:

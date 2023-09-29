@@ -1,7 +1,7 @@
 import abc
 import typing
 
-import hpotk.util
+import hpotk
 
 from .genome import GenomicRegion
 from ._protein import ProteinMetadata
@@ -12,29 +12,13 @@ class VariantCoordinates:
     The breakend variants are not supported.
 
     Attributes:
-        chrom (string): Chromosome name such as `1`, `X`, `MT`
-        start (integer): The 0-based starting coordinate of the ref allele
-        end (integer): The 0-based ending coordinate of the ref allele
+        region (GenomicRegion): The region spanned by the variant reference allele
         ref (string): The reference allele
         alt (string): The alternate allele
         change_length (integer): The change between the ref and alt alleles due to the variant presence
-        genotype (string): The genotype of the variant (e.g. Heterozygous, Homozygous)
-    Methods:
-        is_structural: Returns True if the variant coordinates use structural variant notation
-        as_string: Returns a readable representation of the variant coordinate
     """
 
     def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int):
-        """Constructs all necessary attributes for a VariantCoordinates object
-
-        Args:
-            chrom (string): Chromosome variant coordinates are located on
-            start (integer): The 0-based starting coordinate of the ref allele
-            end (integer): The 0-based ending coordinate of the ref allele
-            ref (string): The reference allele
-            alt (string): The alternate allele
-            change_length (integer): The change between the ref and alt alleles due to the variant presence
-        """
         # TODO - id?
         self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
         self._ref = hpotk.util.validate_instance(ref, str, 'ref')
@@ -319,7 +303,6 @@ class Variant:
     Attributes:
         variant_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
         variant_string (string): A readable representation of the variant coordinates
-        genotype (string): The genotype of the variant (e.g. Homozygous, Heterozygous)
         tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
         variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
     """
@@ -332,7 +315,6 @@ class Variant:
                                     trans_id: str,
                                     hgvsc_id: str,
                                     is_preferred: bool,
-                                    genotype: str,
                                     consequences: typing.Sequence[str],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
@@ -340,19 +322,17 @@ class Variant:
                                     protein_effect_end: int):
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, is_preferred, consequences, exons_effected, protein,
                                           protein_effect_start, protein_effect_end)
-        return Variant(variant_id, variant_class, variant_coordinates, [transcript], genotype)
+        return Variant(variant_id, variant_class, variant_coordinates, [transcript])
 
     def __init__(self, var_id: str,
                  var_class: str,
                  var_coordinates: VariantCoordinates,
-                 tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]],
-                 genotype: str):
+                 tx_annotations: typing.Optional[typing.Sequence[TranscriptAnnotation]]):
         """Constructs all necessary attributes for a Variant object
 
         Args:
             var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
             var_id (string): A readable representation of the variant coordinates
-            genotype (string): The genotype of the variant (e.g. Homozygous, Heterozygous)
             tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
             var_class (string): The variant class (e.g. Duplication, SNV, etc.)
         """
@@ -363,7 +343,6 @@ class Variant:
             self._tx_annotations = None
         else:
             self._tx_annotations = tuple(tx_annotations)
-        self._genotype = genotype
 
     @property
     def variant_coordinates(self) -> VariantCoordinates:
@@ -382,16 +361,6 @@ class Variant:
                 "Chromosome_Start_StructuralType"
         """
         return self._id
-
-    @property
-    def genotype(self) -> str:
-        """Optional parameter. Required for recessive tests.
-        Possible values: Heterozygous, Homozygous, Hemizygous
-
-        Returns:
-            string: Genotype of the variant
-        """
-        return self._genotype
 
     @property
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
@@ -414,14 +383,13 @@ class Variant:
     def __eq__(self, other) -> bool:
         return isinstance(other, Variant) \
             and self.variant_string == other.variant_string \
-            and self.genotype == other.genotype \
             and self.variant_class == other.variant_class \
             and self.variant_coordinates == other.variant_coordinates \
             and self.tx_annotations == other.tx_annotations
 
     def __hash__(self) -> int:
         return hash(
-            (self.variant_coordinates, self.variant_string, self.variant_class, self.genotype, self.tx_annotations))
+            (self.variant_coordinates, self.variant_string, self.variant_class, self.tx_annotations))
 
     def __repr__(self) -> str:
         return str(self)
@@ -429,7 +397,6 @@ class Variant:
     def __str__(self) -> str:
         return f"Variant(variant_coordinates:{str(self.variant_coordinates)}," \
                f"variant_string:{self.variant_string}," \
-               f"genotype:{self.genotype}," \
                f"tx_annotations:{self.tx_annotations}," \
                f"variant_class:{self.variant_class})"
 

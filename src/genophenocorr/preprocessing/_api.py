@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from genophenocorr.model import Variant, VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates
+from genophenocorr.model import VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation
 
 T = typing.TypeVar('T')
 
@@ -19,7 +19,7 @@ class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
 class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def annotate(self, variant_coordinates: VariantCoordinates) -> Variant:
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         pass
 
 

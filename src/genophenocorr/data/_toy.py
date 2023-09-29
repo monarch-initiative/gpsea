@@ -38,12 +38,12 @@ def get_toy_cohort() -> Cohort:
 
     het_snv = Variant.create_variant_from_scratch(
         'HetVar1', 'SNV',
-        VariantCoordinates(make_region(280, 281), 'A', 'G', 0, 'heterozygous'),
+        VariantCoordinates(make_region(280, 281), 'A', 'G', 0),
         'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'],
         [1], [prot], 60, 60)
     het_del = Variant.create_variant_from_scratch(
         'HetVar2', 'indel',
-        VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2,  'heterozygous'),
+        VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
         'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', False, ['frameshift_variant'],
         [2], [prot], 86, 87)
     het_dup = Variant.create_variant_from_scratch(

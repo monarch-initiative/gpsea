@@ -59,8 +59,7 @@ def toy_variants(toy_contig: Contig) -> typing.Sequence[Variant]:
                                          True, (VariantEffect.MISSENSE_VARIANT,),
                                          (2,),
                                          (), None, None),
-                ),
-                'heterozygous'
+                )
                 ),
         Variant('v-two', 'indel',
                 VariantCoordinates(GenomicRegion(toy_contig, 530, 531, Strand.POSITIVE),
@@ -70,8 +69,7 @@ def toy_variants(toy_contig: Contig) -> typing.Sequence[Variant]:
                                          True, (VariantEffect.FRAMESHIFT_VARIANT,),
                                          (3,),
                                          (), None, None),
-                ),
-                'homozygous'
+                )
                 ),
         Variant('v-three', 'snv',
                 VariantCoordinates(GenomicRegion(toy_contig, 160, 161, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
@@ -81,8 +79,7 @@ def toy_variants(toy_contig: Contig) -> typing.Sequence[Variant]:
                                          True, (VariantEffect.SYNONYMOUS_VARIANT,),
                                          (1,),
                                          (), None, None),
-                ),
-                'homozygous'
+                )
                 ),
         Variant('v-four', 'indel',
                 VariantCoordinates(GenomicRegion(toy_contig, 570, 574, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
@@ -92,8 +89,7 @@ def toy_variants(toy_contig: Contig) -> typing.Sequence[Variant]:
                                          True, (VariantEffect.THREE_PRIME_UTR_VARIANT,),
                                          (4,),
                                          (), None, None),
-                ),
-                'heterozygous'
+                )
                 )
 
     )
