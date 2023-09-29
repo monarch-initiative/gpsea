@@ -34,13 +34,13 @@ class PhenotypeCreator:
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
-    def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> list[Phenotype]:
+    def create_phenotype(self, term_ids: typing.Iterable[typing.Tuple[str, bool]]) -> typing.Sequence[Phenotype]:
         """Creates a list of Phenotype objects from term IDs and checks if the term IDs satisfy the validation requirements.
 
         Args:
             term_ids (Iterable[Tuple[str, bool]]): A list of Tuples, structured (HPO IDs, boolean- True if observed)
         Returns:
-            list[Phenotype]: A list of Phenotype objects
+            A sequence of Phenotype objects
         Error:
             PhenotypeValidationException: An instance of an issue with the ValidationRunner
         """
@@ -52,7 +52,7 @@ class PhenotypeCreator:
             terms.append((term, observed))
         validation_results = self._validator.validate_all([term[0] for term in terms])
         if validation_results.is_ok:
-            return [Phenotype.from_term(term, observed) for term, observed in terms]
+            return tuple(Phenotype.from_term(term, observed) for term, observed in terms)
         else:
             # We return the messages for now. We may provide more details in future, if necessary.
             issues = [r.message for r in validation_results.results]
