@@ -1,7 +1,7 @@
 from hpotk import TermId
 
 from genophenocorr.model import *
-from genophenocorr.model.genome import Contig, GenomicRegion, Strand
+from genophenocorr.model.genome import Contig, GenomicRegion, Region, Strand
 
 CONTIG = Contig('1', 'GB_ACC', 'REFSEQ_NAME', 'UCSC_NAME', 1_000)
 
@@ -32,8 +32,8 @@ def get_toy_cohort() -> Cohort:
     spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
 
 
-    prot_feat_1 = ProteinFeature.create(FeatureInfo('domain', 1, 75), FeatureType.DOMAIN)
-    prot_feat_2 = ProteinFeature.create(FeatureInfo('region', 50, 100), FeatureType.REGION)
+    prot_feat_1 = ProteinFeature.create(FeatureInfo('domain', Region(1, 75)), FeatureType.DOMAIN)
+    prot_feat_2 = ProteinFeature.create(FeatureInfo('region', Region(50, 100)), FeatureType.REGION)
     prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
 
     het_snv = Variant.create_variant_from_scratch(

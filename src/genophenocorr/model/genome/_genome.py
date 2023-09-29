@@ -130,6 +130,9 @@ class Region(typing.Sized):
                 and self.start == other.start
                 and self.end == other.end)
 
+    def __hash__(self):
+        return hash((self._start, self._end))
+
     def __str__(self):
         return f'Region(start={self.start}, end={self.end})'
 

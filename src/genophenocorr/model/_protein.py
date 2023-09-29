@@ -2,6 +2,10 @@ import abc
 import enum
 import typing
 
+import hpotk
+
+from .genome import Region
+
 
 class FeatureInfo:
     """A class that represents a protein feature
@@ -9,31 +13,14 @@ class FeatureInfo:
 
     Attributes:
         name (string): The given name or description of the protein feature
-        start (integer): The starting position of the feature on the protein sequence
-        end (integer): The ending position of the feature on the protein sequence
+        region (Region): The protein feature region coordinates
     """
-    # TODO - should have region property (genophenocorr.model.genome.Region)
 
-    def __init__(self, name: str, start: int, end: int):
-        """Constructs all necessary attributes for a FeatureInfo object
-
-        Args:
-            name (string): The given name or description of the protein feature
-            start (integer): The starting position of the feature on the protein sequence
-            end (integer): The ending position of the feature on the protein sequence
-        """
+    def __init__(self, name: str, region: Region):
         if not isinstance(name, str):
             raise ValueError(f"name must be type string but was type {type(name)}")
-        self._name = name
-        if not isinstance(start, int):
-            raise ValueError(f"start must be an integer but was type {type(start)}")
-        self._start = start
-        if not isinstance(end, int):
-            raise ValueError(f"end must be an integer but was type {type(end)}")
-        self._end = end
-
-        if self._start > self._end:
-            raise ValueError(f"The start value must come before end but {self._start} is greater than {self._end}")
+        self._name = hpotk.util.validate_instance(name, str, 'name')
+        self._region = hpotk.util.validate_instance(region, Region, 'region')
 
     @property
     def name(self) -> str:
@@ -44,12 +31,20 @@ class FeatureInfo:
         return self._name
 
     @property
+    def region(self) -> Region:
+        """
+        Returns:
+            Region: a protein region spanned by the feature.
+        """
+        return self._region
+
+    @property
     def start(self) -> int:
         """
         Returns:
             integer: A 0-based (excluded) start coordinate of the protein feature.
         """
-        return self._start
+        return self._region.start
 
     @property
     def end(self) -> int:
@@ -57,19 +52,18 @@ class FeatureInfo:
         Returns:
             integer: A 0-based (included) end coordinate of the protein feature.
         """
-        return self._end
+        return self._region.end
 
     def __len__(self):
-        return self._end - self._start
+        return len(self._region)
 
     def __eq__(self, other) -> bool:
         return isinstance(other, FeatureInfo) \
             and self.name == other.name \
-            and self.start == other.start \
-            and self.end == other.end
+            and self.region == other.region
 
     def __hash__(self):
-        return hash((self._name, self._start, self._end))
+        return hash((self._name, self._region))
 
     def __str__(self) -> str:
         return f"FeatureInfo(name={self.name}, start={self.start}, end={self.end})"
