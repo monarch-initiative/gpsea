@@ -79,8 +79,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for genophenocorr.model._variant</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">import</span> <span class="nn">hpotk.util</span>
+
+<span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">GenomicRegion</span>
 <span class="kn">from</span> <span class="nn">._protein</span> <span class="kn">import</span> <span class="n">ProteinMetadata</span>
 
 
@@ -91,7 +95,7 @@
 <span class="sd">    The breakend variants are not supported.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        chrom (string): Chromosome variant coordinates are located on</span>
+<span class="sd">        chrom (string): Chromosome name such as `1`, `X`, `MT`</span>
 <span class="sd">        start (integer): The 0-based starting coordinate of the ref allele</span>
 <span class="sd">        end (integer): The 0-based ending coordinate of the ref allele</span>
 <span class="sd">        ref (string): The reference allele</span>
@@ -103,7 +107,9 @@
 <span class="sd">        as_string: Returns a readable representation of the variant coordinate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># TODO - should use/extend `genophenocorr.model.genome.GenomicRegion`</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a VariantCoordinates object</span>
 
 <span class="sd">        Args:</span>
@@ -117,9 +123,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO(lnrekerle) - instance/type check</span>
         <span class="c1"># TODO - id?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span> <span class="o">=</span> <span class="n">chrom</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span> <span class="o">=</span> <span class="n">alt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span> <span class="o">=</span> <span class="n">change_length</span>
@@ -131,7 +135,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            string: The label of the chromosome/contig where the variant is located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">contig</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -139,7 +143,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            integer: The 0-based start coordinate (excluded) of the ref allele.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">start</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -147,7 +151,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            integer: The 0-based end coordinate (included) of the ref allele.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">end</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            GenomicRegion: The genomic region spanned by the ref allele.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -210,7 +222,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the number of bases on the ref allele that are affected by the variant.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">)</span> \
@@ -233,19 +245,48 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_chrom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="TranscriptInfoAware">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptInfoAware">[docs]</a>
+<span class="k">class</span> <span class="nc">TranscriptInfoAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The implementors know about basic gene/transcript identifiers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The gene symbol (e.g. SURF1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">transcript_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The transcript RefSeq identifier (e.g. NM_123456.7)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="TranscriptAnnotation">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation">[docs]</a>
-<span class="k">class</span> <span class="nc">TranscriptAnnotation</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">TranscriptAnnotation</span><span class="p">(</span><span class="n">TranscriptInfoAware</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        gene_id (string): The gene symbol associated with the transcript</span>
 <span class="sd">        transcript_id (string): The transcript ID</span>
 <span class="sd">        hgvsc_id (string): The HGVS &quot;coding-DNA&quot; ID if available, else None</span>
+<span class="sd">        is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.</span>
 <span class="sd">        variant_effects (Sequence[string]): A sequence of predicted effects given by VEP</span>
 <span class="sd">        overlapping_exons (Sequence[integer]): A sequence of exons affected by the variant. Returns None if none are affected.</span>
 <span class="sd">        protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript</span>
@@ -255,6 +296,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">hgvsc</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
                  <span class="n">variant_effects</span><span class="p">,</span>
                  <span class="n">affected_exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
                  <span class="n">affected_protein</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">],</span>
@@ -275,6 +317,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">=</span> <span class="n">gene_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">tx_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsc_id</span> <span class="o">=</span> <span class="n">hgvsc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">=</span> <span class="n">is_preferred</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">variant_effects</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">affected_exons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">affected_exons</span><span class="p">)</span>
@@ -298,6 +341,14 @@
 <span class="sd">            string: The transcript RefSeq identifier (e.g. NM_123456.7)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_preferred</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the transcript is the preferred transcript of a gene,</span>
+<span class="sd">        such as MANE transcript, canonical Ensembl transcript.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hgvsc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -344,6 +395,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TranscriptAnnotation(gene_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;transcript_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;hgvsc_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;is_preferred:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span><span class="si">}</span><span class="s2">,&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;variant_effects:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="si">}</span><span class="s2">,&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;overlapping_exons:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="si">}</span><span class="s2">,&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;protein_affected:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_affected</span><span class="si">}</span><span class="s2">,&quot;</span> \
@@ -353,6 +405,7 @@
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">gene_id</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">hgvsc_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">is_preferred</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">transcript_id</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_effects</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">overlapping_exons</span> \
@@ -363,7 +416,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">,</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvsc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">,</span>
                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">))</span></div>
 
 
@@ -390,12 +443,13 @@
                                     <span class="n">gene_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                                     <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                                     <span class="n">hgvsc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                    <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
                                     <span class="n">consequences</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                                     <span class="n">exons_effected</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
                                     <span class="n">protein</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">],</span>
                                     <span class="n">protein_effect_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                                     <span class="n">protein_effect_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">transcript</span> <span class="o">=</span> <span class="n">TranscriptAnnotation</span><span class="p">(</span><span class="n">gene_name</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">hgvsc_id</span><span class="p">,</span> <span class="n">consequences</span><span class="p">,</span> <span class="n">exons_effected</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span>
+        <span class="n">transcript</span> <span class="o">=</span> <span class="n">TranscriptAnnotation</span><span class="p">(</span><span class="n">gene_name</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">hgvsc_id</span><span class="p">,</span> <span class="n">is_preferred</span><span class="p">,</span> <span class="n">consequences</span><span class="p">,</span> <span class="n">exons_effected</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span>
                                           <span class="n">protein_effect_start</span><span class="p">,</span> <span class="n">protein_effect_end</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span><span class="n">variant_id</span><span class="p">,</span> <span class="n">variant_class</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">,</span> <span class="p">[</span><span class="n">transcript</span><span class="p">],</span> <span class="n">variant_coordinates</span><span class="o">.</span><span class="n">genotype</span><span class="p">)</span></div>
 

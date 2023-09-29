@@ -91,6 +91,7 @@
 <span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span><span class="p">,</span> <span class="n">Phenopacket</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 
 <span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
@@ -106,9 +107,10 @@
 <span class="sd">    Methods:</span>
 <span class="sd">        find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">build</span>
 
 <div class="viewcode-block" id="PhenopacketVariantCoordinateFinder.find_coordinates">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">[docs]</a>
@@ -145,18 +147,22 @@
                 <span class="n">chrom</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span>
             <span class="k">elif</span> <span class="n">chrom</span> <span class="o">==</span> <span class="s1">&#39;24&#39;</span><span class="p">:</span>
                 <span class="n">chrom</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+            <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">chrom</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
                 <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">ref</span>
             <span class="n">alt</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">alt</span>
             <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">))</span>
-            <span class="n">chrom</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+            <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">variant_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expected a VCF record or a VRS CNV but did not find one&#39;</span><span class="p">)</span>
         <span class="n">genotype</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">allelic_state</span><span class="o">.</span><span class="n">label</span>
 
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">genotype</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">genotype</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot determine variant coordinate from genomic interpretation </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">),</span> <span class="n">genotype</span><span class="p">)</span></div>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">GenomicRegion</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">),</span> <span class="n">genotype</span><span class="p">)</span></div>
 </div>
 
 
@@ -171,17 +177,19 @@
 <span class="sd">        create_patient(item:Phenopacket): Creates a Patient from the data in a given Phenopacket</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">:</span> <span class="n">PhenotypeCreator</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
+                 <span class="n">phenotype_creator</span><span class="p">:</span> <span class="n">PhenotypeCreator</span><span class="p">,</span>
                  <span class="n">var_func_ann</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a PhenopacketPatientCreator object</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            build (GenomeBuild): A genome build to use to load variant coordinates.</span>
 <span class="sd">            phenotype_creator (PhenotypeCreator): A PhenotypeCreator object for Phenotype creation</span>
 <span class="sd">            var_func_ann (FunctionalAnnotator): A FunctionalAnnotator object for Variant creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="c1"># Violates DI, but it is specific to this class, so I&#39;ll leave it &quot;as is&quot;.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span> <span class="o">=</span> <span class="n">PhenopacketVariantCoordinateFinder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span> <span class="o">=</span> <span class="n">PhenopacketVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">PhenotypeCreator</span><span class="p">,</span> <span class="s1">&#39;phenotype_creator&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_func_ann</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">var_func_ann</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s1">&#39;var_func_ann&#39;</span><span class="p">)</span>
 

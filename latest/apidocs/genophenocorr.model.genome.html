@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; genophenocorr 0.1.1dev documentation</title>
+  <title>genophenocorr.model.genome package &mdash; genophenocorr 0.1.1dev documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
@@ -51,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API reference</a></li>
 </ul>
 
         </div>
@@ -68,8 +69,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview: module code</li>
+      <li class="breadcrumb-item active">genophenocorr.model.genome package</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/apidocs/genophenocorr.model.genome.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -77,27 +79,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="genophenocorr/analysis/_analyzers.html">genophenocorr.analysis._analyzers</a></li>
-<li><a href="genophenocorr/analysis/predicate/_all_predicates.html">genophenocorr.analysis.predicate._all_predicates</a></li>
-<li><a href="genophenocorr/analysis/predicate/_api.html">genophenocorr.analysis.predicate._api</a></li>
-<li><a href="genophenocorr/constants/variant_effects.html">genophenocorr.constants.variant_effects</a></li>
-<li><a href="genophenocorr/data/_toy.html">genophenocorr.data._toy</a></li>
-<li><a href="genophenocorr/model/_cohort.html">genophenocorr.model._cohort</a></li>
-<li><a href="genophenocorr/model/_phenotype.html">genophenocorr.model._phenotype</a></li>
-<li><a href="genophenocorr/model/_protein.html">genophenocorr.model._protein</a></li>
-<li><a href="genophenocorr/model/_variant.html">genophenocorr.model._variant</a></li>
-<li><a href="genophenocorr/preprocessing/_api.html">genophenocorr.preprocessing._api</a></li>
-<li><a href="genophenocorr/preprocessing/_config.html">genophenocorr.preprocessing._config</a></li>
-<li><a href="genophenocorr/preprocessing/_patient.html">genophenocorr.preprocessing._patient</a></li>
-<li><a href="genophenocorr/preprocessing/_phenopacket.html">genophenocorr.preprocessing._phenopacket</a></li>
-<li><a href="genophenocorr/preprocessing/_phenotype.html">genophenocorr.preprocessing._phenotype</a></li>
-<li><a href="genophenocorr/preprocessing/_protein.html">genophenocorr.preprocessing._protein</a></li>
-<li><a href="genophenocorr/preprocessing/_uniprot.html">genophenocorr.preprocessing._uniprot</a></li>
-<li><a href="genophenocorr/preprocessing/_variant.html">genophenocorr.preprocessing._variant</a></li>
-<li><a href="genophenocorr/view/_cohort.html">genophenocorr.view._cohort</a></li>
-<li><a href="genophenocorr/view/_tx.html">genophenocorr.view._tx</a></li>
-</ul>
+  <section id="module-genophenocorr.model.genome">
+<span id="genophenocorr-model-genome-package"></span><h1>genophenocorr.model.genome package<a class="headerlink" href="#module-genophenocorr.model.genome" title="Link to this heading"></a></h1>
+<p><cite>genophenocorr.model.genome</cite> provides data classes to model <code class="xref py py-class docutils literal notranslate"><span class="pre">GenomeBuild</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Contig</span></code>,
+and (genomic) regions (<code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicRegion</span></code>).</p>
+<p>The classes can do basic region arithmetics such as finding intersections, overlaps, and distances between regions.
+Genomic regions are transposable - they can flip the coordinates between DNA strands.</p>
+<p>The module provides <em>GRCh37.p13</em> and <em>GRCh38.p13</em>, the two most commonly used human genome builds.</p>
+<p>Last, we provide models of <code class="xref py py-class docutils literal notranslate"><span class="pre">TranscriptCoordinates</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinCoordinates</span></code> to work with
+their coordinates.</p>
+<p>The classes are largely a port of <a class="reference external" href="https://github.com/exomiser/svart">Svart</a> library.</p>
+</section>
+
 
            </div>
           </div>
