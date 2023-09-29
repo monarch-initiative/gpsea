@@ -21,6 +21,8 @@ class VariantCoordinates:
         as_string: Returns a readable representation of the variant coordinate
     """
 
+    # TODO - should use/extend `genophenocorr.model.genome.GenomicRegion`
+
     def __init__(self, chrom: str, start: int, end: int, ref: str, alt: str, change_length: int, genotype: str):
         """Constructs all necessary attributes for a VariantCoordinates object
 

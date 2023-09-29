@@ -12,6 +12,7 @@ class FeatureInfo:
         start (integer): The starting position of the feature on the protein sequence
         end (integer): The ending position of the feature on the protein sequence
     """
+    # TODO - should have region property (genophenocorr.model.genome.Region)
 
     def __init__(self, name: str, start: int, end: int):
         """Constructs all necessary attributes for a FeatureInfo object
