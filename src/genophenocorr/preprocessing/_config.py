@@ -3,6 +3,8 @@ import typing
 
 import hpotk
 
+from genophenocorr.model.genome import GRCh37, GRCh38
+
 from ._phenotype import PhenotypeCreator
 from ._phenopacket import PhenopacketPatientCreator
 from ._api import FunctionalAnnotator
@@ -12,6 +14,7 @@ from ._variant import VarCachingFunctionalAnnotator, VepFunctionalAnnotator, Var
 
 
 def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
+                                      genome_build: str = 'GRCh38.p13',
                                       validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
                                       cache_dir: typing.Optional[str] = None,
                                       variant_fallback: str = 'VEP',
@@ -22,6 +25,7 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
     To create the patient creator, we need hpo-toolkit's representation of HPO, the validator
 
     :param hpo: a HPO instance.
+    :param genome_build: name of the genome build to use, choose from `{'GRCh37.p13', 'GRCh38.p13'}`.
     :param validation_runner: an instance of the validation runner.
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
      if the data should be cached in `.cache` folder in the current working directory.
@@ -34,9 +38,16 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
     if cache_dir is None:
         cache_dir = os.path.join(os.getcwd(), '.cache')
 
+    if genome_build == 'GRCh38.p13':
+        build = GRCh38
+    elif genome_build == 'GRCh37.p13':
+        build = GRCh37
+    else:
+        raise ValueError(f'Unknown build {genome_build}. Choose from [\'GRCh37.p13\', \'GRCh38.p13\']')
+
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, protein_fallback)
-    return PhenopacketPatientCreator(phenotype_creator, functional_annotator)
+    return PhenopacketPatientCreator(build, phenotype_creator, functional_annotator)
 
 
 def _setup_phenotype_creator(hpo: hpotk.MinimalOntology,
