@@ -10,6 +10,7 @@ from google.protobuf.json_format import Parse
 from phenopackets import GenomicInterpretation, Phenopacket
 
 from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Patient, Cohort
+from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
@@ -23,9 +24,10 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
     Methods:
         find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket
     """
-    def __init__(self):
+    def __init__(self, build: GenomeBuild):
         """Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object"""
         self._logger = logging.getLogger(__name__)
+        self._build = build
 
     def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
         """Creates a VariantCoordinates object from the data in a given Phenopacket
@@ -60,18 +62,22 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 chrom = 'X'
             elif chrom == '24':
                 chrom = 'Y'
+            contig = self._build.contig_by_name(chrom)
         elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
                 variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
             ref = variant_descriptor.vcf_record.ref
             alt = variant_descriptor.vcf_record.alt
             start = int(variant_descriptor.vcf_record.pos) - 1
             end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref))
-            chrom = variant_descriptor.vcf_record.chrom[3:]
+            contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom[3:])
+        else:
+            raise ValueError('Expected a VCF record or a VRS CNV but did not find one')
         genotype = variant_descriptor.allelic_state.label
 
-        if any(field is None for field in (chrom, ref, alt, genotype)):
+        if any(field is None for field in (contig, ref, alt, genotype)):
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
-        return VariantCoordinates(chrom, start, end, ref, alt, len(alt) - len(ref), genotype)
+        region = GenomicRegion(contig, start, end, Strand.POSITIVE)
+        return VariantCoordinates(region, ref, alt, len(alt) - len(ref), genotype)
 
 
 
@@ -82,17 +88,19 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         create_patient(item:Phenopacket): Creates a Patient from the data in a given Phenopacket
     """
 
-    def __init__(self, phenotype_creator: PhenotypeCreator,
+    def __init__(self, build: GenomeBuild,
+                 phenotype_creator: PhenotypeCreator,
                  var_func_ann: FunctionalAnnotator):
         """Constructs all necessary attributes for a PhenopacketPatientCreator object
 
         Args:
+            build (GenomeBuild): A genome build to use to load variant coordinates.
             phenotype_creator (PhenotypeCreator): A PhenotypeCreator object for Phenotype creation
             var_func_ann (FunctionalAnnotator): A FunctionalAnnotator object for Variant creation
         """
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
-        self._coord_finder = PhenopacketVariantCoordinateFinder()
+        self._coord_finder = PhenopacketVariantCoordinateFinder(build)
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 

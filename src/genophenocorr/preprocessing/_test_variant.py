@@ -8,6 +8,7 @@ from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket, GenomicInterpretation
 
 from genophenocorr.model import VariantCoordinates
+from genophenocorr.model.genome import GRCh38, GenomicRegion, Strand
 
 from ._phenopacket import PhenopacketVariantCoordinateFinder
 from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
@@ -15,7 +16,7 @@ from ._uniprot import UniprotProteinMetadataService
 from ._variant import verify_start_end_coordinates, VepFunctionalAnnotator, VariantAnnotationCache, VarCachingFunctionalAnnotator
 
 
-@pytest.mark.parametrize('contig, start, end, ref, alt, chlen, expected',
+@pytest.mark.parametrize('contig_name, start, end, ref, alt, chlen, expected',
                          (['1', 100, 101, 'G', 'C', 0, '1:101-101/C'],  # SNP
 
                           ['1', 100, 102, 'GG', 'G', -1, '1:101-102/G'],  # DEL
@@ -53,15 +54,17 @@ from ._variant import verify_start_end_coordinates, VepFunctionalAnnotator, Vari
                           # ['9', 133_359_999, 133_360_000, 'N', '<INS>', 29, '9:133360001-133360000/INS'])
                           ['9', 133_360_000, 133_360_000, '', '<INS>', 30, '9:133360001-133360000/INS'])
                          )
-def test_verify_start_end_coordinates(contig, start, end, ref, alt, chlen, expected):
-    vc = VariantCoordinates(contig, start, end, ref, alt, chlen, 'Whatever')
+def test_verify_start_end_coordinates(contig_name, start, end, ref, alt, chlen, expected):
+    contig = GRCh38.contig_by_name(contig_name)
+    region = GenomicRegion(contig, start, end, Strand.POSITIVE)
+    vc = VariantCoordinates(region, ref, alt, chlen, 'Whatever')
     out = verify_start_end_coordinates(vc)
     assert out == expected
 
 
 @pytest.fixture
 def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
-    return PhenopacketVariantCoordinateFinder()
+    return PhenopacketVariantCoordinateFinder(GRCh38)
 
 
 @pytest.mark.parametrize("pp_path, expected",

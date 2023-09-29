@@ -3,6 +3,7 @@ import requests
 import typing
 
 from genophenocorr.model import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
+from genophenocorr.model.genome import Region
 
 from ._api import ProteinMetadataService
 
@@ -57,7 +58,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                         feat_name = feature['description']
                         feat_start = int(feature['location']['start']['value'])
                         feat_end = int(feature['location']['end']['value'])
-                        feat = ProteinFeature.create(FeatureInfo(feat_name, feat_start, feat_end), FeatureType[feat_type.upper()])
+                        feat = ProteinFeature.create(FeatureInfo(feat_name, Region(feat_start, feat_end)), FeatureType[feat_type.upper()])
                         all_features_list.append(feat)
                 except KeyError:
                     self._logger.warning(f"No features for {protein_id}")

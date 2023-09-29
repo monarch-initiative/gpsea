@@ -1,5 +1,9 @@
+import abc
 import typing
 
+import hpotk.util
+
+from .genome import GenomicRegion
 from ._protein import ProteinMetadata
 
 
@@ -8,7 +12,7 @@ class VariantCoordinates:
     The breakend variants are not supported.
 
     Attributes:
-        chrom (string): Chromosome variant coordinates are located on
+        chrom (string): Chromosome name such as `1`, `X`, `MT`
         start (integer): The 0-based starting coordinate of the ref allele
         end (integer): The 0-based ending coordinate of the ref allele
         ref (string): The reference allele
@@ -20,7 +24,9 @@ class VariantCoordinates:
         as_string: Returns a readable representation of the variant coordinate
     """
 
-    def __init__(self, chrom: str, start: int, end: int, ref: str, alt: str, change_length: int, genotype: str):
+    # TODO - should use/extend `genophenocorr.model.genome.GenomicRegion`
+
+    def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int, genotype: str):
         """Constructs all necessary attributes for a VariantCoordinates object
 
         Args:
@@ -34,9 +40,7 @@ class VariantCoordinates:
         """
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
-        self._chrom = chrom
-        self._start = start
-        self._end = end
+        self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
         self._ref = ref
         self._alt = alt
         self._change_length = change_length
@@ -48,7 +52,7 @@ class VariantCoordinates:
         Returns:
             string: The label of the chromosome/contig where the variant is located.
         """
-        return self._chrom
+        return self._region.contig.name
 
     @property
     def start(self) -> int:
@@ -56,7 +60,7 @@ class VariantCoordinates:
         Returns:
             integer: The 0-based start coordinate (excluded) of the ref allele.
         """
-        return self._start
+        return self._region.start
 
     @property
     def end(self) -> int:
@@ -64,7 +68,15 @@ class VariantCoordinates:
         Returns:
             integer: The 0-based end coordinate (included) of the ref allele.
         """
-        return self._end
+        return self._region.end
+
+    @property
+    def region(self) -> GenomicRegion:
+        """
+        Returns:
+            GenomicRegion: The genomic region spanned by the ref allele.
+        """
+        return self._region
 
     @property
     def ref(self) -> str:
@@ -121,7 +133,7 @@ class VariantCoordinates:
         """
         Get the number of bases on the ref allele that are affected by the variant.
         """
-        return self._end - self._start
+        return len(self._region)
 
     def __eq__(self, other) -> bool:
         return isinstance(other, VariantCoordinates) \
@@ -144,16 +156,42 @@ class VariantCoordinates:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self._chrom, self._start, self._end, self._ref, self._alt, self._change_length, self._genotype))
+        return hash((self._region, self._ref, self._alt, self._change_length, self._genotype))
 
 
-class TranscriptAnnotation:
+class TranscriptInfoAware(metaclass=abc.ABCMeta):
+    """
+    The implementors know about basic gene/transcript identifiers.
+    """
+
+
+    @property
+    @abc.abstractmethod
+    def gene_id(self) -> str:
+        """
+        Returns:
+            string: The gene symbol (e.g. SURF1)
+        """
+        pass
+
+    @property
+    @abc.abstractmethod
+    def transcript_id(self) -> str:
+        """
+        Returns:
+            string: The transcript RefSeq identifier (e.g. NM_123456.7)
+        """
+        pass
+
+
+class TranscriptAnnotation(TranscriptInfoAware):
     """Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
 
     Attributes:
         gene_id (string): The gene symbol associated with the transcript
         transcript_id (string): The transcript ID
         hgvsc_id (string): The HGVS "coding-DNA" ID if available, else None
+        is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.
         variant_effects (Sequence[string]): A sequence of predicted effects given by VEP
         overlapping_exons (Sequence[integer]): A sequence of exons affected by the variant. Returns None if none are affected.
         protein_affected (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript
@@ -163,6 +201,7 @@ class TranscriptAnnotation:
     def __init__(self, gene_id: str,
                  tx_id: str,
                  hgvsc: typing.Optional[str],
+                 is_preferred: bool,
                  variant_effects,
                  affected_exons: typing.Optional[typing.Sequence[int]],
                  affected_protein: typing.Sequence[ProteinMetadata],
@@ -183,6 +222,7 @@ class TranscriptAnnotation:
         self._gene_id = gene_id
         self._tx_id = tx_id
         self._hgvsc_id = hgvsc
+        self._is_preferred = is_preferred
         self._variant_effects = tuple(variant_effects)
         if affected_exons is not None:
             self._affected_exons = tuple(affected_exons)
@@ -206,6 +246,14 @@ class TranscriptAnnotation:
             string: The transcript RefSeq identifier (e.g. NM_123456.7)
         """
         return self._tx_id
+
+    @property
+    def is_preferred(self) -> bool:
+        """
+        Return `True` if the transcript is the preferred transcript of a gene,
+        such as MANE transcript, canonical Ensembl transcript.
+        """
+        return self._is_preferred
 
     @property
     def hgvsc_id(self) -> str:
@@ -252,6 +300,7 @@ class TranscriptAnnotation:
         return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
                f"transcript_id:{self.transcript_id}," \
                f"hgvsc_id:{self.hgvsc_id}," \
+               f"is_preferred:{self.is_preferred}," \
                f"variant_effects:{self.variant_effects}," \
                f"overlapping_exons:{self.overlapping_exons}," \
                f"protein_affected:{self.protein_affected}," \
@@ -261,6 +310,7 @@ class TranscriptAnnotation:
         return isinstance(other, TranscriptAnnotation) \
             and self.gene_id == other.gene_id \
             and self.hgvsc_id == other.hgvsc_id \
+            and self.is_preferred == other.is_preferred \
             and self.transcript_id == other.transcript_id \
             and self.variant_effects == other.variant_effects \
             and self.overlapping_exons == other.overlapping_exons \
@@ -271,7 +321,7 @@ class TranscriptAnnotation:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvsc_id, self.transcript_id, self.overlapping_exons, self.variant_effects,
+        return hash((self.gene_id, self.hgvsc_id, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
                      self.protein_affected, self.protein_effect_location))
 
 
@@ -293,12 +343,13 @@ class Variant:
                                     gene_name: str,
                                     trans_id: str,
                                     hgvsc_id: str,
+                                    is_preferred: bool,
                                     consequences: typing.Sequence[str],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
                                     protein_effect_start: int,
                                     protein_effect_end: int):
-        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, consequences, exons_effected, protein,
+        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, is_preferred, consequences, exons_effected, protein,
                                           protein_effect_start, protein_effect_end)
         return Variant(variant_id, variant_class, variant_coordinates, [transcript], variant_coordinates.genotype)
 

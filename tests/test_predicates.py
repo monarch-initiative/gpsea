@@ -6,7 +6,7 @@ import pytest
 from genophenocorr.analysis.predicate import *
 from genophenocorr.constants import VariantEffect
 from genophenocorr.model import Cohort, Patient, FeatureType
-from .fixtures import toy_hpo, test_cohort
+from .fixtures import toy_hpo, toy_cohort
 
 
 def find_patient(pat_id, cohort) -> typing.Optional[Patient]:
@@ -37,12 +37,12 @@ def find_patient(pat_id, cohort) -> typing.Optional[Patient]:
                               'HetSingleVar',
                               HPOPresentPredicate.NOT_MEASURED),
                          ])
-def test_HPOPresentPredicate(test_cohort: Cohort,
+def test_HPOPresentPredicate(toy_cohort: Cohort,
                              toy_hpo: hpotk.Ontology,
                              query: str,
                              patient_id: str,
                              expected: PatientCategory):
-    patient = find_patient(patient_id, test_cohort)
+    patient = find_patient(patient_id, toy_cohort)
     predicate = HPOPresentPredicate(hpo=toy_hpo)
     actual = predicate.test(patient, query=hpotk.TermId.from_curie(query))
     assert actual == expected
@@ -58,8 +58,8 @@ def test_HPOPresentPredicate(test_cohort: Cohort,
 def test_VariantEffectPredicate(patient_id: str, 
                                 variantEffect: VariantEffect,
                                 expected_result: PatientCategory,
-                                test_cohort: Cohort):
-    patient = find_patient(patient_id, test_cohort)
+                                toy_cohort: Cohort):
+    patient = find_patient(patient_id, toy_cohort)
     predicate = VariantEffectPredicate('NM_013275.6')
     result = predicate.test(patient, variantEffect)
     assert result == expected_result
@@ -73,9 +73,9 @@ def test_VariantEffectPredicate(patient_id: str,
                         ['HomoVar', '16_89280752_G/T', NO_VARIANT],
                         ['HomoVar', '16_89279458_TG/T', HOMOZYGOUS],
                         ['LargeCNV', '16_89190071_deletion', HETEROZYGOUS]))
-def test_VariantPredicate(patient_id, variant, hasVarResult, test_cohort):
+def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
     predicate = VariantPredicate('NM_013275.6')
-    patient = find_patient(patient_id, test_cohort)
+    patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient, variant)
     assert result == hasVarResult
 
@@ -90,8 +90,8 @@ def test_VariantPredicate(patient_id, variant, hasVarResult, test_cohort):
                         ['HomoVar', 9, HOMOZYGOUS],
                         ['LargeCNV', 1, NO_VARIANT],
                         ['LargeCNV', 13, HETEROZYGOUS]))
-def test_ExonPredicate(patient_id, exon, hasVarResult, test_cohort):
-    patient = find_patient(patient_id, test_cohort)
+def test_ExonPredicate(patient_id, exon, hasVarResult, toy_cohort):
+    patient = find_patient(patient_id, toy_cohort)
     predicate = ExonPredicate('NM_013275.6')
     result = predicate.test(patient, exon)
     assert result == hasVarResult
@@ -105,8 +105,8 @@ def test_ExonPredicate(patient_id, exon, hasVarResult, test_cohort):
                         ['HetDoubleVar1', FeatureType.REPEAT, NO_VARIANT]))
                         ## TODO Why do CNV not show as affecting a feature?
                         ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
-def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, test_cohort):
-    patient = find_patient(patient_id, test_cohort)
+def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, toy_cohort):
+    patient = find_patient(patient_id, toy_cohort)
     predicate = ProtFeatureTypePredicate('NM_013275.6')
     result = predicate.test(patient, featureType)
     assert result == hasVarResult
@@ -118,9 +118,9 @@ def test_ProteinFeatureTypePredicate(patient_id, featureType, hasVarResult, test
                         ['HetSingleVar', 'Disordered', HETEROZYGOUS],
                         ['HomoVar', 'Disordered', HOMOZYGOUS],
                         ['HetDoubleVar1', 'Disordered', HETEROZYGOUS]))
-def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, test_cohort):
+def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort):
     predicate = ProtFeaturePredicate('NM_013275.6')
-    patient = find_patient(patient_id, test_cohort)
+    patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient, feature)
     assert result == hasVarResult
 
