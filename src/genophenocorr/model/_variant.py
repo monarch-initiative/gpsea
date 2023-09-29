@@ -1,6 +1,9 @@
 import abc
 import typing
 
+import hpotk.util
+
+from .genome import GenomicRegion
 from ._protein import ProteinMetadata
 
 
@@ -9,7 +12,7 @@ class VariantCoordinates:
     The breakend variants are not supported.
 
     Attributes:
-        chrom (string): Chromosome variant coordinates are located on
+        chrom (string): Chromosome name such as `1`, `X`, `MT`
         start (integer): The 0-based starting coordinate of the ref allele
         end (integer): The 0-based ending coordinate of the ref allele
         ref (string): The reference allele
@@ -23,7 +26,7 @@ class VariantCoordinates:
 
     # TODO - should use/extend `genophenocorr.model.genome.GenomicRegion`
 
-    def __init__(self, chrom: str, start: int, end: int, ref: str, alt: str, change_length: int, genotype: str):
+    def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int, genotype: str):
         """Constructs all necessary attributes for a VariantCoordinates object
 
         Args:
@@ -37,9 +40,7 @@ class VariantCoordinates:
         """
         # TODO(lnrekerle) - instance/type check
         # TODO - id?
-        self._chrom = chrom
-        self._start = start
-        self._end = end
+        self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
         self._ref = ref
         self._alt = alt
         self._change_length = change_length
@@ -51,7 +52,7 @@ class VariantCoordinates:
         Returns:
             string: The label of the chromosome/contig where the variant is located.
         """
-        return self._chrom
+        return self._region.contig.name
 
     @property
     def start(self) -> int:
@@ -59,7 +60,7 @@ class VariantCoordinates:
         Returns:
             integer: The 0-based start coordinate (excluded) of the ref allele.
         """
-        return self._start
+        return self._region.start
 
     @property
     def end(self) -> int:
@@ -67,7 +68,15 @@ class VariantCoordinates:
         Returns:
             integer: The 0-based end coordinate (included) of the ref allele.
         """
-        return self._end
+        return self._region.end
+
+    @property
+    def region(self) -> GenomicRegion:
+        """
+        Returns:
+            GenomicRegion: The genomic region spanned by the ref allele.
+        """
+        return self._region
 
     @property
     def ref(self) -> str:
@@ -124,7 +133,7 @@ class VariantCoordinates:
         """
         Get the number of bases on the ref allele that are affected by the variant.
         """
-        return self._end - self._start
+        return len(self._region)
 
     def __eq__(self, other) -> bool:
         return isinstance(other, VariantCoordinates) \
@@ -147,7 +156,7 @@ class VariantCoordinates:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self._chrom, self._start, self._end, self._ref, self._alt, self._change_length, self._genotype))
+        return hash((self._region, self._ref, self._alt, self._change_length, self._genotype))
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):

@@ -228,6 +228,9 @@ class GenomicRegion(Transposable, Region):
         super().__init__(start, end)
         self._contig = contig
         self._strand = strand
+        if end > len(self._contig):
+            raise ValueError(f'Genomic region end {end} must not extend '
+                             f'beyond contig {self._contig.name} bounds [0,{len(self._contig)}]')
 
     @property
     def contig(self) -> Contig:
@@ -254,6 +257,16 @@ class GenomicRegion(Transposable, Region):
             return self
         else:
             return GenomicRegion(self.contig, self.start_on_strand(other), self.end_on_strand(other), other)
+
+    def __eq__(self, other):
+        return (isinstance(other, GenomicRegion)
+                and self.contig == other.contig
+                and self.start == other.strand
+                and self.end == other.end
+                and self.strand == other.strand)
+
+    def __hash__(self):
+        return hash((self.contig, self.start, self.end, self.strand))
 
     def __str__(self):
         return f'GenomicRegion(contig={self.contig.name}, start={self.start}, end={self.end}, strand={self.strand})'
