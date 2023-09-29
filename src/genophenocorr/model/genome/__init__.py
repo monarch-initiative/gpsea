@@ -7,11 +7,13 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 
 The module provides *GRCh37.p13* and *GRCh38.p13*, the two most commonly used human genome builds.
 
-Last, we provide model of :class:`TranscriptCoordinates` as a structure to model
+Last, we provide models of :class:`TranscriptCoordinates` and :class:`ProteinCoordinates` to work with
+their coordinates.
 
 The classes are largely a port of `Svart <https://github.com/exomiser/svart>`_ library.
 """
 
 from ._builds import GRCh37, GRCh38
 from ._genome import Contig, GenomeBuild, Strand, Stranded, Transposable, GenomicRegion, Region
+from ._protein import ProteinCoordinates
 from ._tx import TranscriptCoordinates

@@ -52,8 +52,16 @@ class TranscriptCoordinates:
     def cds_end(self) -> int:
         return self._cds_end
 
+    def __eq__(self, other):
+        return (isinstance(other, TranscriptCoordinates)
+                and self.identifier == other.identifier
+                and self.region == other.region
+                and self.exons == other.exons
+                and self.cds_start == other.cds_start
+                and self.cds_end == other.cds_end)
+
     def __str__(self):
-        return f'Transcript(identifier={self.identifier}, region={self.region})'
+        return f'TranscriptCoordinates(identifier={self.identifier}, region={self.region})'
 
     def __repr__(self):
         return str(self)
