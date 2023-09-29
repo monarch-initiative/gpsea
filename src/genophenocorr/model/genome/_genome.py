@@ -102,15 +102,23 @@ class Region(typing.Sized):
             raise ValueError(f'`start` and `end` must be ints but were `{type(start)}`, `{type(end)}`')
         if start < 0 or end < 0:
             raise ValueError(f'`start` and `end` must be positive but were `{start}`, `{end}`')
+        if start > end:
+            raise ValueError(f'`start` {start} must be at or before `end` {end}')
         self._start = start
         self._end = end
 
     @property
     def start(self) -> int:
+        """
+        Get 0-based (excluded) start coordinate of the region.
+        """
         return self._start
 
     @property
     def end(self) -> int:
+        """
+        Get 0-based (included) end coordinate of the region.
+        """
         return self._end
 
     def __len__(self) -> int:
