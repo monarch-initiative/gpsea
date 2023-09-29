@@ -1,4 +1,5 @@
 import abc
+import enum
 import typing
 
 import hpotk
@@ -136,24 +137,84 @@ class Region(typing.Sized):
         return str(self)
 
 
+class Strand(enum.Enum):
+    """
+    `Strand` is an enum to model positive and negative strands of double-stranded sequences, such as DNA.
+    """
+
+    POSITIVE = ('+',)
+    """
+    The positive strand of a double stranded sequence.
+    """
+
+    NEGATIVE = ('-',)
+    """
+    The negative strand of a double stranded sequence.
+    """
+
+    def __init__(self, symbol: str):
+        self._symbol = symbol
+
+    @property
+    def symbol(self) -> str:
+        """
+        Get a `str` with the strand's sign.
+        """
+        return self._symbol
+
+    def is_positive(self):
+        """
+        Return `True` if this is the *positive* strand.
+        """
+        return self == Strand.POSITIVE
+
+    def is_negative(self):
+        """
+        Return `True` if this is the *negative* strand.
+        """
+        return self == Strand.NEGATIVE
+
+    def opposite(self):
+        """
+        Get the opposite strand of the current strand.
+        """
+        return Strand.POSITIVE if self == Strand.NEGATIVE else Strand.NEGATIVE
+
+    def __str__(self):
+        return self._symbol
+
+
 class Stranded(metaclass=abc.ABCMeta):
     """
-    Mixin for classes that are on double-stranded sequence.
+    Mixin for classes that are on double-stranded sequences.
     """
 
     @property
     @abc.abstractmethod
-    def strand(self) -> bool:
+    def strand(self) -> Strand:
         pass
 
-    def is_forward_strand(self) -> bool:
-        return self.strand
 
-    def is_reverse_strand(self) -> bool:
-        return not self.strand
+class Transposable(Stranded, metaclass=abc.ABCMeta):
+    """
+    `Transposable` elements know how to flip themselves to arbitrary :class:`Strand` of a sequence.
+    """
+
+    @abc.abstractmethod
+    def with_strand(self, other: Strand):
+        pass
+
+    def to_opposite_strand(self):
+        return self.with_strand(self.strand.opposite())
+
+    def to_positive_strand(self):
+        return self.with_strand(Strand.POSITIVE)
+
+    def to_negative_strand(self):
+        return self.with_strand(Strand.NEGATIVE)
 
 
-class GenomicRegion(Stranded, Region):
+class GenomicRegion(Transposable, Region):
     """
     `GenomicRegion` represents a region located on strand of a DNA contig.
 
@@ -163,7 +224,7 @@ class GenomicRegion(Stranded, Region):
     :param strand: the strand of the genomic region, `True` for forward strand or `False` for reverse.
     """
 
-    def __init__(self, contig: Contig, start: int, end: int, strand: bool):
+    def __init__(self, contig: Contig, start: int, end: int, strand: Strand):
         super().__init__(start, end)
         self._contig = contig
         self._strand = strand
@@ -172,21 +233,27 @@ class GenomicRegion(Stranded, Region):
     def contig(self) -> Contig:
         return self._contig
 
-    def start_on_strand(self, strand: bool) -> int:
+    def start_on_strand(self, strand: Strand) -> int:
         if self.strand == strand:
             return self.start
         else:
             return len(self.contig) - self.end
 
-    def end_on_strand(self, strand: bool) -> int:
+    def end_on_strand(self, strand: Strand) -> int:
         if self.strand == strand:
             return self.end
         else:
             return len(self.contig) - self.start
 
     @property
-    def strand(self) -> bool:
+    def strand(self) -> Strand:
         return self._strand
+
+    def with_strand(self, other: Strand):
+        if self.strand == other:
+            return self
+        else:
+            return GenomicRegion(self.contig, self.start_on_strand(other), self.end_on_strand(other), other)
 
     def __str__(self):
         return f'GenomicRegion(contig={self.contig.name}, start={self.start}, end={self.end}, strand={self.strand})'

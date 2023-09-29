@@ -2,7 +2,7 @@ import abc
 import typing
 
 from genophenocorr.model import Variant, VariantCoordinates, ProteinMetadata, TranscriptInfoAware
-from genophenocorr.model.genome import Transcript
+from genophenocorr.model.genome import TranscriptCoordinates
 
 T = typing.TypeVar('T')
 
@@ -27,7 +27,7 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
 class TranscriptCoordinateService(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def fetch(self, tx: TranscriptInfoAware) -> Transcript:
+    def fetch(self, tx: TranscriptInfoAware) -> TranscriptCoordinates:
         pass
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from ._builds import read_assembly_report, GRCH37, GRCH38
+from ._builds import read_assembly_report, GRCh37, GRCh38
 
 
 def test_read_assembly_report():
@@ -14,8 +14,8 @@ def test_read_assembly_report():
                              ('X', 'CM000685.1', 'NC_000023.10', 'chrX', 155_270_560),
                           ])
 def test_hg19(name, genbank, refseq, ucsc, length):
-    assert GRCH37.identifier == 'GRCh37.p13'
-    contig = GRCH37.contig_by_name(name)
+    assert GRCh37.identifier == 'GRCh37.p13'
+    contig = GRCh37.contig_by_name(name)
     assert contig.name == name
     assert contig.genbank_acc == genbank
     assert contig.refseq_name == refseq
@@ -29,8 +29,8 @@ def test_hg19(name, genbank, refseq, ucsc, length):
                              ('X', 'CM000685.2', 'NC_000023.11', 'chrX', 156_040_895),
                           ])
 def test_hg38(name, genbank, refseq, ucsc, length):
-    assert GRCH38.identifier == 'GRCh38.p13'
-    contig = GRCH38.contig_by_name(name)
+    assert GRCh38.identifier == 'GRCh38.p13'
+    contig = GRCh38.contig_by_name(name)
     assert contig.name == name
     assert contig.genbank_acc == genbank
     assert contig.refseq_name == refseq

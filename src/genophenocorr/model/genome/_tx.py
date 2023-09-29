@@ -5,7 +5,11 @@ import hpotk
 from ._genome import GenomicRegion
 
 
-class Transcript:
+class TranscriptCoordinates:
+    """
+    `TranscriptCoordinates` knows about genomic region of the transcript, exonic/intronic regions, as well as
+    the coding and non-coding regions.
+    """
 
     def __init__(self, identifier: str,
                  region: GenomicRegion,

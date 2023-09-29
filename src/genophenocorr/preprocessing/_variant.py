@@ -8,7 +8,7 @@ import requests
 
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware
-from genophenocorr.model.genome import Transcript
+from genophenocorr.model.genome import TranscriptCoordinates
 
 from ._api import FunctionalAnnotator, ProteinMetadataService, TranscriptCoordinateService
 
@@ -228,6 +228,6 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
 
 class EnsemblTranscriptCoordinateService(TranscriptCoordinateService):
 
-    def fetch(self, tx: TranscriptInfoAware) -> Transcript:
+    def fetch(self, tx: TranscriptInfoAware) -> TranscriptCoordinates:
         # TODO - implement
         pass

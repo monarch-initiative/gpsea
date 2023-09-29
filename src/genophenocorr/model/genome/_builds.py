@@ -21,5 +21,12 @@ def read_assembly_report(identifier: str, path: str) -> GenomeBuild:
     return GenomeBuild(identifier, contigs)
 
 
-GRCH37 = read_assembly_report('GRCh37.p13', 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
-GRCH38 = read_assembly_report('GRCh38.p13', 'GCF_000001405.39_GRCh38.p13_assembly_report.tsv')
+GRCh37 = read_assembly_report('GRCh37.p13', 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
+"""
+The `GRCh37.p13` genomic build.
+"""
+
+GRCh38 = read_assembly_report('GRCh38.p13', 'GCF_000001405.39_GRCh38.p13_assembly_report.tsv')
+"""
+The `GRCh38.p13` genomic build.
+"""
