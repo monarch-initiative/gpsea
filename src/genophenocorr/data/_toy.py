@@ -32,32 +32,32 @@ def get_toy_cohort() -> Cohort:
     het_snv = Variant.create_variant_from_scratch(
         'HetVar1', 'SNV',
         VariantCoordinates('chr1', 280, 281, 'A', 'G', 0, 'heterozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'],
         [1], [prot], 60, 60)
     het_del = Variant.create_variant_from_scratch(
         'HetVar2', 'indel',
         VariantCoordinates('chr1', 360, 363, 'TTC', 'T', -2,  'heterozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', False, ['frameshift_variant'],
         [2], [prot], 86, 87)
     het_dup = Variant.create_variant_from_scratch(
         'HetVar3', 'insertion',
         VariantCoordinates('chr1', 175, 176, 'T', 'TG', 1, 'heterozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', False, ['frameshift_variant'],
         [1], [prot], 25, 25)
     hom_snv = Variant.create_variant_from_scratch(
         'HomVar1', 'SNV',
         VariantCoordinates('chr1', 280, 281, 'A', 'G', 0, 'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', ['missense_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'],
         [1], [prot], 60, 60)
     hom_del = Variant.create_variant_from_scratch(
         'HomVar2', 'indel',
         VariantCoordinates('chr1', 360, 363, 'TTC', 'T', -2, 'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', ['frameshift_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', False, ['frameshift_variant'],
         [2], [prot], 86, 87)
     hom_dup = Variant.create_variant_from_scratch(
         'HomVar3', 'insertion',
         VariantCoordinates('chr1', 175, 176, 'T', 'TG', 1,'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', ['frameshift_variant'],
+        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', False, ['frameshift_variant'],
         [1], [prot], 25, 25)
 
     patients = (
