@@ -29,7 +29,7 @@ def test_hg19(name, genbank, refseq, ucsc, length):
                              ('X', 'CM000685.2', 'NC_000023.11', 'chrX', 156_040_895),
                           ])
 def test_hg38(name, genbank, refseq, ucsc, length):
-    assert GRCH38 == 'GRCh38.p13'
+    assert GRCH38.identifier == 'GRCh38.p13'
     contig = GRCH38.contig_by_name(name)
     assert contig.name == name
     assert contig.genbank_acc == genbank
