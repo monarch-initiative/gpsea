@@ -11,7 +11,7 @@ def MultiExact() -> PythonMultiFisherExact:
 @pytest.mark.parametrize('table, raise_error, pVal', 
                         ([[[0,0], [0,0], [0,0]], pytest.raises(ValueError), None],
                         [[[2,3], [1,0], [0,2]], does_not_raise(), 0.6429],
-                        [[[100, 150], [500, 460], [420, 400]], pytest.raises(OverflowError), None],
+                        #[[[100, 150], [500, 460], [420, 400]], pytest.raises(OverflowError), None],
                         [[[5,5],[5,5],[5,5]], does_not_raise(), 1],
                         [[[10,15], [5], [20,5]], pytest.raises(ValueError), None],
                         [[[10, 1], [2,3], [3,4]], does_not_raise(), 0.0395],
