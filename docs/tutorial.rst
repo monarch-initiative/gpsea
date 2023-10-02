@@ -46,12 +46,12 @@ We can then view the data using the list commands.
   >>> sorted(cohort.list_all_phenotypes())
   [('HP:0001166', 14), ('HP:0001250', 20), ('HP:0001257', 17)]
   >>> sorted(cohort.list_all_variants())
-  [('HetVar1', 13), ('HetVar2', 11), ('HomVar1', 3), ('HomVar2', 2)]
+  [('1_281_A/G', 16), ('1_361_TTC/T', 13)]
   >>> sorted(cohort.list_all_proteins())
   [('NP_09876.5', 26)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
-  [('frameshift_variant', 2), ('missense_variant', 2)]
+  [('frameshift_variant', 1), ('missense_variant', 1)]
 
 Using the counts, we can choose and run what analyses we want.
 For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
