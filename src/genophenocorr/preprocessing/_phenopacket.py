@@ -180,13 +180,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return []
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
-    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Sequence[ProteinMetadata]:
+    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
         """Creates a list of ProteinMetadata objects from a given list of Variant objects
 
         Args:
             variants (Sequence[Variant]): A list of Variant objects
         Returns:
-            Sequence[ProteinMetadata]: A list of ProteinMetadata objects
+            Collection[ProteinMetadata]: A list of ProteinMetadata objects
         """
         final_prots = set()
         for var in variants:
