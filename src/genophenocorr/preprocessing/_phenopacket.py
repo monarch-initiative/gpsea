@@ -54,7 +54,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 alt = '<DUP>'
             else:
                 alt = '<DEL>'
-            chrom = re.findall(r'NC_0000(\d{2}).\d\d',
+            chrom = re.findall(r'NC_0000(\d{2})\.\d*',
                                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id)[0]
             if chrom.startswith('0'):
                 chrom = str(int(chrom))
@@ -130,6 +130,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             if hasattr(interp, 'diagnosis') and interp.diagnosis is not None:
                 for genomic_interp in interp.diagnosis.genomic_interpretations:
                     vc = self._coord_finder.find_coordinates(genomic_interp)
+                    if "N" in vc.alt:
+                        self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt} and will not be included.')
+                        continue
                     variant = self._func_ann.annotate(vc)
                     variants_list.append(variant)
             else:
