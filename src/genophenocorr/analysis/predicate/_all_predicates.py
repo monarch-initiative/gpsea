@@ -3,7 +3,7 @@ import typing
 import hpotk
 
 from genophenocorr.constants import VariantEffect
-from genophenocorr.model import Patient, FeatureType
+from genophenocorr.model import Patient, FeatureType, Genotype
 from ._api import PolyPredicate, PatientCategory
 
 
@@ -95,7 +95,7 @@ class VariantEffectPredicate(PolyPredicate[VariantEffect]):
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HETEROZYGOUS, HOMOZYGOUS, NO_VARIANT
 
-    def test(self, patient: Patient, query:VariantEffect) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient, query: VariantEffect) -> typing.Optional[PatientCategory]:
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
         if not isinstance(query, VariantEffect):
@@ -109,11 +109,13 @@ class VariantEffectPredicate(PolyPredicate[VariantEffect]):
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:
-                if v.genotype == "heterozygous":
+                gt = v.genotype_for_sample(patient.patient_id)
+                if gt == Genotype.HETEROZYGOUS:
                     return HETEROZYGOUS
-                elif v.genotype == "homozygous":
+                elif gt == Genotype.HOMOZYGOUS_ALTERNATE:
                     return HOMOZYGOUS
                 else:
+                    # TODO - is this really what we want to return here?
                     return HETEROZYGOUS
         elif len(vars) > 1:
             return HOMOZYGOUS
@@ -135,16 +137,17 @@ class VariantPredicate(PolyPredicate[str]):
             raise ValueError(f"query must be type string but was type {type(query)}")
         vars = set()
         for var in patient.variants:
-            #print(f"{var.variant_string} == {query}")
             if var.variant_string == query:
                 vars.add(var)
         if len(vars) == 1:
             for v in vars:
-                if v.genotype == "heterozygous":
+                gt = v.genotype_for_sample(patient.patient_id)
+                if gt == Genotype.HETEROZYGOUS:
                     return HETEROZYGOUS
-                elif v.genotype == "homozygous":
+                elif gt == Genotype.HOMOZYGOUS_ALTERNATE:
                     return HOMOZYGOUS
                 else:
+                    # TODO - is this really what we want to return here?
                     return HETEROZYGOUS
         elif len(vars) > 1:
             return HOMOZYGOUS
@@ -173,11 +176,13 @@ class ExonPredicate(PolyPredicate[int]):
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:
-                if v.genotype == "heterozygous":
+                gt = v.genotype_for_sample(patient.patient_id)
+                if gt == Genotype.HETEROZYGOUS:
                     return HETEROZYGOUS
-                elif v.genotype == "homozygous":
+                elif gt == Genotype.HOMOZYGOUS_ALTERNATE:
                     return HOMOZYGOUS
                 else:
+                    # TODO - is this really what we want to return here?
                     return HETEROZYGOUS
         elif len(vars) > 1:
             return HOMOZYGOUS
@@ -209,11 +214,13 @@ class ProtFeatureTypePredicate(PolyPredicate[FeatureType]):
                                         vars.add(var)
         if len(vars) == 1:
             for v in vars:
-                if v.genotype == "heterozygous":
+                gt = v.genotype_for_sample(patient.patient_id)
+                if gt == Genotype.HETEROZYGOUS:
                     return HETEROZYGOUS
-                elif v.genotype == "homozygous":
+                elif gt == Genotype.HOMOZYGOUS_ALTERNATE:
                     return HOMOZYGOUS
                 else:
+                    # TODO - is this really what we want to return here?
                     return HETEROZYGOUS
         elif len(vars) > 1:
             return HOMOZYGOUS
@@ -251,11 +258,13 @@ class ProtFeaturePredicate(PolyPredicate[str]):
                                         vars.add(var)
         if len(vars) == 1:
             for v in vars:
-                if v.genotype == "heterozygous":
+                gt = v.genotype_for_sample(patient.patient_id)
+                if gt == Genotype.HETEROZYGOUS:
                     return HETEROZYGOUS
-                elif v.genotype == "homozygous":
+                elif gt == Genotype.HOMOZYGOUS_ALTERNATE:
                     return HOMOZYGOUS
                 else:
+                    # TODO - is this really what we want to return here?
                     return HETEROZYGOUS
         elif len(vars) > 1:
             return HOMOZYGOUS

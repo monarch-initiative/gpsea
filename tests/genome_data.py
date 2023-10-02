@@ -3,7 +3,7 @@ import typing
 import pytest
 
 from genophenocorr import VariantEffect
-from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Variant, VariantCoordinates, TranscriptAnnotation
+from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Variant, VariantCoordinates, TranscriptAnnotation, Genotypes
 from genophenocorr.model.genome import Contig, GenomicRegion, Strand
 
 
@@ -51,45 +51,41 @@ def toy_protein_negative() -> ProteinMetadata:
 @pytest.fixture
 def toy_variants(toy_contig: Contig) -> typing.Sequence[Variant]:
     return (
-        Variant('v-one', 'snv',
-                VariantCoordinates(GenomicRegion(toy_contig, 325, 326, Strand.POSITIVE),
-                                   'C', 'T', 0),
-                (
+        Variant(
+            VariantCoordinates(GenomicRegion(toy_contig, 325, 326, Strand.POSITIVE),'C', 'T', 0),
+            (
                     TranscriptAnnotation('some-gene', 'fake-tx-pos', 'fake-tx-pos-hgvsc:v1',
                                          True, (VariantEffect.MISSENSE_VARIANT,),
                                          (2,),
                                          (), None, None),
-                )
+                ), Genotypes.empty()
                 ),
-        Variant('v-two', 'indel',
-                VariantCoordinates(GenomicRegion(toy_contig, 530, 531, Strand.POSITIVE),
+        Variant(VariantCoordinates(GenomicRegion(toy_contig, 530, 531, Strand.POSITIVE),
                                    'C', 'CCT', 2),
                 (
                     TranscriptAnnotation('some-gene', 'fake-tx-pos', 'fake-tx-pos-hgvsc:v2',
                                          True, (VariantEffect.FRAMESHIFT_VARIANT,),
                                          (3,),
                                          (), None, None),
-                )
+                ), Genotypes.empty()
                 ),
-        Variant('v-three', 'snv',
-                VariantCoordinates(GenomicRegion(toy_contig, 160, 161, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
+        Variant(VariantCoordinates(GenomicRegion(toy_contig, 160, 161, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
                                    'G', 'A', 0),
                 (
                     TranscriptAnnotation('other-gene', 'fake-tx-neg', 'fake-tx-neg-hgvsc:v3',
                                          True, (VariantEffect.SYNONYMOUS_VARIANT,),
                                          (1,),
                                          (), None, None),
-                )
+                ), Genotypes.empty()
                 ),
-        Variant('v-four', 'indel',
-                VariantCoordinates(GenomicRegion(toy_contig, 570, 574, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
+        Variant(VariantCoordinates(GenomicRegion(toy_contig, 570, 574, Strand.NEGATIVE).with_strand(Strand.POSITIVE),
                                    'CTGA', 'C', -3),
                 (
                     TranscriptAnnotation('other-gene', 'fake-tx-neg', 'fake-tx-neg-hgvsc:v4',
                                          True, (VariantEffect.THREE_PRIME_UTR_VARIANT,),
                                          (4,),
                                          (), None, None),
-                )
+                ), Genotypes.empty()
                 )
 
     )

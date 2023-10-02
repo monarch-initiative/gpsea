@@ -80,7 +80,8 @@ def test_find_coordinates(pp_path, expected, pp_vc_finder):
     fname = resource_filename(__name__, pp_path)
     gi = read_genomic_interpretation_json(fname)
 
-    actual = pp_vc_finder.find_coordinates(gi).as_string()
+    vc, gt = pp_vc_finder.find_coordinates(gi)
+    actual = vc.as_string()
     assert actual == expected
 
 
@@ -103,7 +104,7 @@ def caching_annotator(variant_annotator, tmp_path):
 def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator):
     fname = resource_filename(__name__, 'test_data/missense_test.json')
     gi = read_genomic_interpretation_json(fname)
-    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)
     cache_anno_results = caching_annotator.annotate(var_coords)
     assert var_anno_results == cache_anno_results
@@ -120,7 +121,7 @@ def oldfile_cache_annotator(variant_annotator):
 def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_annotator):
     fname = resource_filename(__name__, 'test_data/missense_test.json')
     gi = read_genomic_interpretation_json(fname)
-    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)
     cached_file_results = oldfile_cache_annotator.annotate(var_coords)
     assert var_anno_results == cached_file_results

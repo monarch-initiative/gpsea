@@ -239,14 +239,14 @@ class GenomicRegion(Transposable, Region):
     def contig(self) -> Contig:
         return self._contig
 
-    def start_on_strand(self, strand: Strand) -> int:
-        if self.strand == strand:
+    def start_on_strand(self, other: Strand) -> int:
+        if self.strand == other:
             return self.start
         else:
             return len(self.contig) - self.end
 
-    def end_on_strand(self, strand: Strand) -> int:
-        if self.strand == strand:
+    def end_on_strand(self, other: Strand) -> int:
+        if self.strand == other:
             return self.end
         else:
             return len(self.contig) - self.start

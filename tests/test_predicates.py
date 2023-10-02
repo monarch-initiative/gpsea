@@ -66,13 +66,13 @@ def test_VariantEffectPredicate(patient_id: str,
 
 
 @pytest.mark.parametrize('patient_id, variant, hasVarResult',
-                        (['HetSingleVar', '16_89279851_-/C', HETEROZYGOUS],
+                        (['HetSingleVar', '16_89279850_G/GC', HETEROZYGOUS],
                         ['HetSingleVar', '16_89279708_AGTGTTCGGGGCGGGGCC/A', NO_VARIANT],
                         ['HetDoubleVar1', '16_89284601_GG/A', HETEROZYGOUS],
                         ['HetDoubleVar1', '16_89280752_G/T', HETEROZYGOUS],
                         ['HomoVar', '16_89280752_G/T', NO_VARIANT],
                         ['HomoVar', '16_89279458_TG/T', HOMOZYGOUS],
-                        ['LargeCNV', '16_89190071_deletion', HETEROZYGOUS]))
+                        ['LargeCNV', '16_89190071_DEL', HETEROZYGOUS]))
 def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
     predicate = VariantPredicate('NM_013275.6')
     patient = find_patient(patient_id, toy_cohort)

@@ -60,6 +60,9 @@ class TranscriptCoordinates:
                 and self.cds_start == other.cds_start
                 and self.cds_end == other.cds_end)
 
+    def __hash__(self):
+        return hash((self._id, self._region, self._exons, self._cds_start, self._cds_end))
+
     def __str__(self):
         return f'TranscriptCoordinates(identifier={self.identifier}, region={self.region})'
 

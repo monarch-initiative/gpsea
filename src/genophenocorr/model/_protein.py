@@ -17,8 +17,6 @@ class FeatureInfo:
     """
 
     def __init__(self, name: str, region: Region):
-        if not isinstance(name, str):
-            raise ValueError(f"name must be type string but was type {type(name)}")
         self._name = hpotk.util.validate_instance(name, str, 'name')
         self._region = hpotk.util.validate_instance(region, Region, 'region')
 
@@ -29,14 +27,6 @@ class FeatureInfo:
             string: the name of the protein feature
         """
         return self._name
-
-    @property
-    def region(self) -> Region:
-        """
-        Returns:
-            Region: a protein region spanned by the feature.
-        """
-        return self._region
 
     @property
     def start(self) -> int:
@@ -53,6 +43,14 @@ class FeatureInfo:
             integer: A 0-based (included) end coordinate of the protein feature.
         """
         return self._region.end
+
+    @property
+    def region(self) -> Region:
+        """
+        Returns:
+            Region: a protein region spanned by the feature.
+        """
+        return self._region
 
     def __len__(self):
         return len(self._region)

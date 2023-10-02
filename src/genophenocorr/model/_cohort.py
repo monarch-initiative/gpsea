@@ -68,7 +68,7 @@ class Patient:
     def __str__(self) -> str:
         return (f"Patient("
                 f"patient_id:{self.patient_id}, "
-                f"variants:{[var.variant_string for var in self.variants]}, "
+                f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
                 f"proteins:{[prot.protein_id for prot in self.proteins]})")
 

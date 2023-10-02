@@ -36,166 +36,175 @@ def get_toy_cohort() -> Cohort:
     prot_feat_2 = ProteinFeature.create(FeatureInfo('region', Region(50, 100)), FeatureType.REGION)
     prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
 
-    het_snv = Variant.create_variant_from_scratch(
-        'HetVar1', 'SNV',
-        VariantCoordinates(make_region(280, 281), 'A', 'G', 0),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'],
-        [1], [prot], 60, 60)
-    het_del = Variant.create_variant_from_scratch(
-        'HetVar2', 'indel',
-        VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', False, ['frameshift_variant'],
-        [2], [prot], 86, 87)
+    snv = Variant.create_variant_from_scratch(VariantCoordinates(make_region(280, 281), 'A', 'G', 0), 'FakeGene',
+                                                  'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'], [1],
+                                                  [prot], 60, 60,
+                                                  Genotypes.from_mapping({
+                                                      'A': Genotype.HETEROZYGOUS, 'B': Genotype.HETEROZYGOUS,
+                                                      'C': Genotype.HOMOZYGOUS_ALTERNATE,
+                                                      'D': Genotype.HETEROZYGOUS, 'E': Genotype.HETEROZYGOUS,
+                                                      'G': Genotype.HETEROZYGOUS, 'J': Genotype.HETEROZYGOUS,
+                                                      'K': Genotype.HETEROZYGOUS, 'M': Genotype.HETEROZYGOUS,
+                                                      'N': Genotype.HOMOZYGOUS_ALTERNATE,
+                                                      'P': Genotype.HETEROZYGOUS,
+                                                      'Q': Genotype.HOMOZYGOUS_ALTERNATE,
+                                                      'R': Genotype.HETEROZYGOUS, 'T': Genotype.HETEROZYGOUS,
+                                                      'V': Genotype.HETEROZYGOUS, 'Y': Genotype.HETEROZYGOUS,
+                                                  })
+                                              )
+    deletion = Variant.create_variant_from_scratch(VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
+                                                  'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del',
+                                                  False, ['frameshift_variant'],
+                                                  [2], [prot], 86, 87,
+                                                  Genotypes.from_mapping({
+                                                      'D': Genotype.HETEROZYGOUS, 'F': Genotype.HETEROZYGOUS,
+                                                      'G': Genotype.HETEROZYGOUS, 'H': Genotype.HETEROZYGOUS,
+                                                      'I': Genotype.HOMOZYGOUS_ALTERNATE,
+                                                      'L': Genotype.HETEROZYGOUS, 'O': Genotype.HETEROZYGOUS,
+                                                      'R': Genotype.HETEROZYGOUS,
+                                                      'S': Genotype.HOMOZYGOUS_ALTERNATE,
+                                                      'U': Genotype.HETEROZYGOUS, 'W': Genotype.HETEROZYGOUS,
+                                                      'X': Genotype.HETEROZYGOUS, 'Z': Genotype.HETEROZYGOUS,
+                                                  })
+                                                   )
     het_dup = Variant.create_variant_from_scratch(
-        'HetVar3', 'insertion',
-        VariantCoordinates(make_region(175, 176), 'T', 'TG', 1, 'heterozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', False, ['frameshift_variant'],
-        [1], [prot], 25, 25)
-    hom_snv = Variant.create_variant_from_scratch(
-        'HomVar1', 'SNV',
-        VariantCoordinates(make_region(280, 281), 'A', 'G', 0, 'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'],
-        [1], [prot], 60, 60)
-    hom_del = Variant.create_variant_from_scratch(
-        'HomVar2', 'indel',
-        VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2, 'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del', False, ['frameshift_variant'],
-        [2], [prot], 86, 87)
+        VariantCoordinates(make_region(175, 176), 'T', 'TG', 1), 'FakeGene', 'NM_1234.5',
+        'NM_1234.5:c.75A>G', False, ['frameshift_variant'], [1], [prot], 25, 25,
+        Genotypes.empty())  # Not used in the patients below, hence `empty()`.
     hom_dup = Variant.create_variant_from_scratch(
-        'HomVar3', 'insertion',
-        VariantCoordinates(make_region(175, 176), 'T', 'TG', 1,'homozygous'),
-        'FakeGene', 'NM_1234.5', 'NM_1234.5:c.75A>G', False, ['frameshift_variant'],
-        [1], [prot], 25, 25)
+        VariantCoordinates(make_region(175, 176), 'T', 'TG', 1),'FakeGene', 'NM_1234.5',
+        'NM_1234.5:c.75A>G', False, ['frameshift_variant'], [1], [prot], 25, 25,
+        Genotypes.empty())  # Not used in the patients below, hence `empty()`.
 
     patients = (
         Patient('A',
                 phenotypes=(arachnodactyly_T, spasticity_F, seizure_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('B',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('C',
                 phenotypes=(arachnodactyly_F, spasticity_T, seizure_T),
-                variants=[hom_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('D',
                 phenotypes=(arachnodactyly_T, spasticity_T, seizure_T),
-                variants=[het_snv, het_del],
+                variants=[snv, deletion],
                 proteins=[prot]
                 ),
         Patient('E',
                 phenotypes=(arachnodactyly_T, spasticity_T, seizure_F),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('F',
                 phenotypes=(arachnodactyly_F, spasticity_F, seizure_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('G',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[het_snv, het_del],
+                variants=[snv, deletion],
                 proteins=[prot]
                 ),
         Patient('H',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('I',
                 phenotypes=(arachnodactyly_F, spasticity_F, seizure_T),
-                variants=[hom_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('J',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('K',
                 phenotypes=(arachnodactyly_F, spasticity_T, seizure_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('L',
                 phenotypes=(arachnodactyly_F, seizure_F, spasticity_F),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('M',
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('N',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_F),
-                variants=[hom_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('O',
                 phenotypes=(arachnodactyly_F, seizure_F, spasticity_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('P',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('Q',
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_F),
-                variants=[hom_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('R',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[het_snv, het_del],
+                variants=[snv, deletion],
                 proteins=[prot]
                 ),
         Patient('S',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[hom_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('T',
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('U',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('V',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('W',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('X',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
         Patient('Y',
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[het_snv],
+                variants=[snv],
                 proteins=[prot]
                 ),
         Patient('Z',
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[het_del],
+                variants=[deletion],
                 proteins=[prot]
                 ),
     )
