@@ -83,6 +83,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -545,16 +546,16 @@
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row_sum</span><span class="p">:</span>
             <span class="n">n</span> <span class="o">+=</span> <span class="n">x</span>
-        <span class="n">p_0</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">p_0</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
-                <span class="n">p_0</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">p_0</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
 
         <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">row_sum</span><span class="p">,</span> <span class="n">col_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_dfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 
@@ -596,12 +597,12 @@
             <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r_sum</span><span class="p">:</span>
                 <span class="n">n</span> <span class="o">+=</span> <span class="n">x</span>
-            <span class="n">p_1</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">p_1</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat_new</span><span class="p">)):</span>
                 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mat_new</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
-                    <span class="n">p_1</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">p_1</span> <span class="o">&lt;=</span> <span class="n">p_0</span> <span class="o">+</span> <span class="mf">0.00000001</span><span class="p">:</span>
+                    <span class="n">p_1</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">mat_new</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">p_1</span> <span class="o">&lt;=</span> <span class="n">p_0</span> <span class="o">+</span> <span class="n">Decimal</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">):</span>
                 <span class="c1"># print(mat_new)</span>
                 <span class="c1"># print(p_1)</span>
                 <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">p_1</span>
