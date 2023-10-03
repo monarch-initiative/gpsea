@@ -101,7 +101,7 @@ class Cohort(typing.Sized):
         members = set(members)
         for patient in members:
             cohort_variants.update(patient.variants)
-            var_counts.update([var.variant_string for var in patient.variants])
+            var_counts.update([var.variant_coordinates.variant_key for var in patient.variants])
             cohort_phenotypes.update(patient.phenotypes)
             pheno_count.update([pheno.identifier.value for pheno in patient.phenotypes if pheno.observed == True])
             cohort_proteins.update(patient.proteins)

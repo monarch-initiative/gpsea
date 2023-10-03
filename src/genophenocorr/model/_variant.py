@@ -1,5 +1,6 @@
 import abc
 import typing
+import warnings
 
 import hpotk
 
@@ -252,6 +253,41 @@ class VariantCoordinates:
         """
         return self._change_length
 
+    @property
+    def variant_key(self) -> str:
+        """
+        Get a readable representation of the variant's coordinates.
+
+        For instance, `X_12345_12345_C_G` for sequence variant or `22_10001_20000_INV`
+        Note that both start and end coordinates use 1-based (included) coordinate system.
+        """
+        if self.is_structural():
+            return f'{self.chrom}_{self.start + 1}_{self.end}_{self.alt[1:-1]}'
+        else:
+            return f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
+
+    @property
+    def variant_class(self) -> str:
+        """
+        Returns:
+            string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)
+        """
+
+        if self.is_structural():
+            # Expecting a `str` like <DEL>, <INS>, <DUP>, <INV>, ...
+            return self.alt[1:-1]
+        else:
+            if len(self.ref) > len(self.alt):
+                return 'DEL'
+            elif len(self.ref) < len(self.alt):
+                # may also be a duplication, but it's hard to say from this
+                return 'INS'
+            else:
+                if len(self.ref) == 1:
+                    return 'SNV'
+                else:
+                    return 'MNV'
+
     def is_structural(self) -> bool:
         """Checks if the variant coordinates use structural variant notation
         (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
@@ -261,15 +297,6 @@ class VariantCoordinates:
             boolean: True if the variant coordinates use structural variant notation
         """
         return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
-
-    def as_string(self) -> str:
-        """
-        Returns:
-            string: A readable representation of the variant coordinates
-        """
-        # TODO - possible duplicate with `VariantCoordinateAware.variant_string`
-        return f"{self.chrom}_{self.start}_{self.end}_{self.ref}_{self.alt}".replace('<', '').replace(
-            '>', '')
 
     def __len__(self):
         """
@@ -308,18 +335,10 @@ class VariantCoordinateAware(metaclass=abc.ABCMeta):
 
     @property
     def variant_string(self) -> str:
-        """
-        Get a readable representation of the variant's coordinates.
-        Format - "Chromosome_Start_Reference/Alternative" or
-        "Chromosome_Start_StructuralType"
-
-        Note: the start is in 1-based (included) coordinate system.
-        """
-        vc = self.variant_coordinates
-        if vc.is_structural():
-            return f'{vc.chrom}_{vc.start+1}_{vc.alt[1:-1]}'
-        else:
-            return f'{vc.chrom}_{vc.start+1}_{vc.ref}/{vc.alt}'
+        warnings.warn('variant_string` was deprecated and will be removed in v0.2.0. '
+                      'Use `variant_coordinates.variant_key` instead', DeprecationWarning, stacklevel=2)
+        # TODO[0.2.0] - remove
+        return self.variant_coordinates.variant_key
 
     @property
     def variant_class(self) -> str:
@@ -327,21 +346,7 @@ class VariantCoordinateAware(metaclass=abc.ABCMeta):
         Returns:
             string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)
         """
-        vc = self.variant_coordinates
-        if vc.is_structural():
-            # Expecting a `str` like <DEL>, <INS>, <DUP>, <INV>, ...
-            return vc.alt[1:-1]
-        else:
-            if len(vc.ref) > len(vc.alt):
-                return 'DEL'
-            elif len(vc.ref) < len(vc.alt):
-                # may also be a duplication, but it's hard to say from this
-                return 'INS'
-            else:
-                if len(vc.ref) == 1:
-                    return 'SNV'
-                else:
-                    return 'MNV'
+        return self.variant_coordinates.variant_class
 
 
 class FunctionalAnnotationAware(metaclass=abc.ABCMeta):

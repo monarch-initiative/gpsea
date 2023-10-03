@@ -177,16 +177,18 @@ class VariantAnnotationCache:
         with open(fpath, 'wb') as f:
             pickle.dump(annotations, f)
 
-    def _create_file_name(self, variant_coordinates: VariantCoordinates) -> str:
+    def _create_file_name(self, vc: VariantCoordinates) -> str:
         """Creates a file name with full location and the variant coordinates (e.g. "/path/to/desired/directory/1_2345_G_C_heterozygous.pickle")
 
         Args:
-            variant_coordinates (VariantCoordinates): The variant coordinates associated with the Variant
+            vc (VariantCoordinates): The variant coordinates associated with the Variant
         """
-        if len(variant_coordinates.as_string()) <= 50:
-            fname = f'{variant_coordinates.as_string()}.pickle'
+        vk = vc.variant_key
+        if len(vk) <= 50:
+            fname = f'{vk}.pickle'
         else:
-            fname = f'{variant_coordinates.chrom}_{variant_coordinates.start}_{variant_coordinates.end}_{variant_coordinates.genotype}.pickle'
+            # long INDELs in sequence notation
+            fname = f'{vc.chrom}_{vc.start}_{vc.end}_{vc.variant_class}.pickle'
         return os.path.join(self._datadir, fname)
 
 
