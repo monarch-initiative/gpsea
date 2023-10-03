@@ -1,3 +1,6 @@
+import json
+import os
+
 import pytest
 
 from pkg_resources import resource_filename
@@ -126,3 +129,40 @@ def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_an
     cached_file_results = oldfile_cache_annotator.annotate(var_coords)
     assert var_anno_results == cached_file_results
 
+
+class TestVepFunctionalAnnotator:
+
+    TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vep_response'))
+
+    def test__process_item_missense(self, variant_annotator: VepFunctionalAnnotator):
+        response = self._load_response_json('missense.json')
+        first = response[0]
+
+        annotations = list(filter(lambda i: i is not None, map(lambda item: variant_annotator._process_item(item), first['transcript_consequences'])))
+
+        ann_by_tx = {ann.transcript_id: ann for ann in annotations}
+
+        assert {'NM_013275.6', 'NM_001256183.2', 'NM_001256182.2'} == set(ann_by_tx.keys())
+
+        preferred = ann_by_tx['NM_013275.6']
+        assert preferred.transcript_id == 'NM_013275.6'
+        assert preferred.is_preferred == True
+        assert preferred.hgvsc_id == 'NM_013275.6:c.7407C>G'
+        assert preferred.variant_effects == ('stop_gained',)
+
+    def test__process_item_deletion(self, variant_annotator: VepFunctionalAnnotator):
+        response = self._load_response_json('deletion.json')
+        first = response[0]
+
+        annotations = [variant_annotator._process_item(item) for item in first['transcript_consequences']]
+
+        # TODO - finish
+        for a in annotations:
+            if a is not None:
+                print(a)
+        print('Done')
+
+    def _load_response_json(self, test_name: str):
+        response_fpath = os.path.join(self.TEST_DATA_DIR, test_name)
+        with open(response_fpath) as fh:
+            return json.load(fh)

@@ -6,9 +6,8 @@ import typing
 import hpotk
 import requests
 
-
-from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware, TranscriptCoordinates
-
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Variant, TranscriptInfoAware, \
+    TranscriptCoordinates
 from ._api import FunctionalAnnotator, ProteinMetadataService, TranscriptCoordinateService
 
 
@@ -50,22 +49,25 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
-    """A class that peforms functional annotation of variant coordinates using Variant Effect Predictor (VEP) REST API.
+    """A class that performs functional annotation of variant coordinates using Variant Effect Predictor (VEP) REST API.
 
     Methods:
         annotate(variant_coordinates: VariantCoordinates): the variant to annotate.
     """
 
-    def __init__(self, protein_annotator: ProteinMetadataService):
+    def __init__(self, protein_annotator: ProteinMetadataService,
+                 include_computational_txs: bool = False):
         """Constructs all necessary attributes for a VepFunctionalAnnotator object
 
         Args:
             protein_annotator (ProteinMetadataService): A ProteinMetadataService object for ProteinMetadata creation
+            include_computational_txs (bool): Include computational transcripts, such as RefSEq `XM_`.
         """
         self._logging = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1&transcript_version=1&variant_class=1'
+        self._include_computational_txs = include_computational_txs
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
@@ -79,45 +81,49 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         # canon_tx = None
         annotations = []
         for trans in variant.get('transcript_consequences'):
-            trans_id = trans.get('transcript_id')
-            if not trans_id.startswith('NM'):
-                continue
-            # TODO - implement
-            is_preferred = False
-            # if trans.get('canonical') == 1:
-            #     canon_tx = trans_id
-            hgvsc_id = trans.get('hgvsc')
-            consequences = trans.get('consequence_terms')
-            gene_name = trans.get('gene_symbol')
-            protein_id = trans.get('protein_id')
-            protein = self._protein_annotator.annotate(protein_id)
-            protein_effect_start = trans.get('protein_start')
-            protein_effect_end = trans.get('protein_end')
-            if protein_effect_start is None and protein_effect_end is not None:
-                protein_effect_start = 1
-            if protein_effect_end is not None:
-                protein_effect_end = int(protein_effect_end)
-            if protein_effect_start is not None:
-                protein_effect_start = int(protein_effect_start)
-            exons_effected = trans.get('exon')
-            if exons_effected is not None:
-                exons_effected = exons_effected.split('/')[0].split('-')
-                if len(exons_effected) == 2:
-                    exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
-                exons_effected = [int(x) for x in exons_effected]
-            annotations.append(
-                TranscriptAnnotation(gene_name,
-                                     trans_id,
-                                     hgvsc_id,
-                                     is_preferred,
-                                     consequences,
-                                     exons_effected,
-                                     protein,
-                                     protein_effect_start,
-                                     protein_effect_end)
-            )
+            annotation = self._process_item(trans)
+            if annotation is not None:
+                annotations.append(annotation)
 
         return annotations
+
+    def _process_item(self, item) -> typing.Optional[TranscriptAnnotation]:
+        """
+        Parse one transcript annotation from the JSON response.
+        """
+        trans_id = item.get('transcript_id')
+        if not self._include_computational_txs and not trans_id.startswith('NM_'):
+            # Skipping a computational transcript
+            return None
+        is_preferred = True if 'canonical' in item and item['canonical'] else False
+        hgvsc_id = item.get('hgvsc')
+        consequences = item.get('consequence_terms')
+        gene_name = item.get('gene_symbol')
+        protein_id = item.get('protein_id')
+        protein = self._protein_annotator.annotate(protein_id)
+        protein_effect_start = item.get('protein_start')
+        protein_effect_end = item.get('protein_end')
+        if protein_effect_start is None and protein_effect_end is not None:
+            protein_effect_start = 1
+        if protein_effect_end is not None:
+            protein_effect_end = int(protein_effect_end)
+        if protein_effect_start is not None:
+            protein_effect_start = int(protein_effect_start)
+        exons_effected = item.get('exon')
+        if exons_effected is not None:
+            exons_effected = exons_effected.split('/')[0].split('-')
+            if len(exons_effected) == 2:
+                exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
+            exons_effected = [int(x) for x in exons_effected]
+        return TranscriptAnnotation(gene_name,
+                                    trans_id,
+                                    hgvsc_id,
+                                    is_preferred,
+                                    consequences,
+                                    exons_effected,
+                                    protein,
+                                    protein_effect_start,
+                                    protein_effect_end)
 
     def _query_vep(self, variant_coordinates) -> dict:
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
