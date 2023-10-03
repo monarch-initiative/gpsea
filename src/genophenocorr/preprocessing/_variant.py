@@ -183,7 +183,10 @@ class VariantAnnotationCache:
         Args:
             variant_coordinates (VariantCoordinates): The variant coordinates associated with the Variant
         """
-        fname = f'{variant_coordinates.as_string()}.pickle'
+        if len(variant_coordinates.as_string()) <= 50:
+            fname = f'{variant_coordinates.as_string()}.pickle'
+        else:
+            fname = f'{variant_coordinates.chrom}_{variant_coordinates.start}_{variant_coordinates.end}_{variant_coordinates.genotype}.pickle'
         return os.path.join(self._datadir, fname)
 
 

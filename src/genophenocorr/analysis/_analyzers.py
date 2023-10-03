@@ -2,6 +2,7 @@ import abc
 import logging
 import math
 import typing
+from decimal import Decimal
 
 import numpy as np
 
@@ -446,16 +447,16 @@ class PythonMultiFisherExact(MultiFisherExact):
         n = 0
         for x in row_sum:
             n += x
-        p_0 /= math.factorial(n)
+        p_0 /= Decimal(math.factorial(n))
 
         for i in range(len(table)):
             for j in range(len(table[0])):
-                p_0 /= math.factorial(table[i][j])
+                p_0 /= Decimal(math.factorial(table[i][j]))
 
         p = [0]
         self._dfs(mat, pos, row_sum, col_sum, p_0, p)
 
-        return p[0]
+        return float(p[0])
 
     def _dfs(self, mat, pos, r_sum, c_sum, p_0, p):
 
@@ -497,12 +498,12 @@ class PythonMultiFisherExact(MultiFisherExact):
             n = 0
             for x in r_sum:
                 n += x
-            p_1 /= math.factorial(n)
+            p_1 /= Decimal(math.factorial(n))
 
             for i in range(len(mat_new)):
                 for j in range(len(mat_new[0])):
-                    p_1 /= math.factorial(mat_new[i][j])
-            if p_1 <= p_0 + 0.00000001:
+                    p_1 /= Decimal(math.factorial(mat_new[i][j]))
+            if p_1 <= p_0 + Decimal(0.00000001):
                 # print(mat_new)
                 # print(p_1)
                 p[0] += p_1
