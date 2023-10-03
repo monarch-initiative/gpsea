@@ -46,7 +46,7 @@ We can then view the data using the list commands.
   >>> sorted(cohort.list_all_phenotypes())
   [('HP:0001166', 14), ('HP:0001250', 20), ('HP:0001257', 17)]
   >>> sorted(cohort.list_all_variants())
-  [('1_281_A/G', 16), ('1_361_TTC/T', 13)]
+  [('1_281_281_A_G', 16), ('1_361_363_TTC_T', 13)]
   >>> sorted(cohort.list_all_proteins())
   [('NP_09876.5', 26)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
