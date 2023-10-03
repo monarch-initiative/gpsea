@@ -1,7 +1,7 @@
 from ._cohort import CohortViewer
-from ._tx import VariantTranscriptArtist
+from ._txp import VariantTranscriptProteinArtist
 
 __all__ = [
     'CohortViewer',
-    'VariantTranscriptArtist'
+    'VariantTranscriptProteinArtist'
 ]

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import doctest
 import os
 import sys
 
@@ -175,12 +176,16 @@ autodoc_member_order = 'bysource'
 doctest_path = [genophenocorr_src]
 doctest_test_doctest_blocks = ""
 
-# Nothing special here
 doctest_global_setup = """
 # For printing data frames "as is".
 import pandas as pd
 pd.set_option('expand_frame_repr', False)
 """
+
+doctest_default_flags = (doctest.REPORT_ONLY_FIRST_FAILURE
+                         | doctest.ELLIPSIS
+                         | doctest.IGNORE_EXCEPTION_DETAIL
+                         | doctest.DONT_ACCEPT_TRUE_FOR_1)
 
 # -- Intersphinx setup --------------------------------------------------------
 intersphinx_mapping = {

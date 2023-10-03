@@ -57,7 +57,7 @@ from ._variant import verify_start_end_coordinates, VepFunctionalAnnotator, Vari
 def test_verify_start_end_coordinates(contig_name, start, end, ref, alt, chlen, expected):
     contig = GRCh38.contig_by_name(contig_name)
     region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-    vc = VariantCoordinates(region, ref, alt, chlen, 'Whatever')
+    vc = VariantCoordinates(region, ref, alt, chlen)
     out = verify_start_end_coordinates(vc)
     assert out == expected
 
@@ -68,19 +68,21 @@ def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
 
 
 @pytest.mark.parametrize("pp_path, expected",
-                         [('test_data/deletion_test.json', '16_89284128_89284134_CTTTTT_C_heterozygous'),
-                          ('test_data/insertion_test.json', '16_89280828_89280830_C_CA_heterozygous'),
-                          ('test_data/missense_test.json', '16_89279134_89279135_G_C_heterozygous'),
-                          ('test_data/duplication_test.json', '16_89279849_89279851_G_GC_heterozygous'),
-                          ('test_data/delinsert_test.json', '16_89284600_89284602_GG_A_heterozygous'),
-                          ('test_data/CVDup_test.json', '16_89284523_89373231_N_DUP_heterozygous'),
-                          ('test_data/CVDel_test.json', '16_89217281_89506042_N_DEL_heterozygous')
+                         [('test_data/deletion_test.json', '16_89284129_89284134_CTTTTT_C'),
+                          ('test_data/insertion_test.json', '16_89280829_89280830_C_CA'),
+                          ('test_data/missense_test.json', '16_89279135_89279135_G_C'),
+                          ('test_data/duplication_test.json', '16_89279850_89279851_G_GC'),
+                          ('test_data/delinsert_test.json', '16_89284601_89284602_GG_A'),
+                          ('test_data/CVDup_test.json', '16_89284524_89373231_DUP'),
+                          ('test_data/CVDel_test.json', '16_89217282_89506042_DEL')
                           ])
 def test_find_coordinates(pp_path, expected, pp_vc_finder):
     fname = resource_filename(__name__, pp_path)
     gi = read_genomic_interpretation_json(fname)
 
-    assert pp_vc_finder.find_coordinates(gi).as_string() == expected
+    vc, gt = pp_vc_finder.find_coordinates(gi)
+
+    assert expected == vc.variant_key
 
 
 def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
@@ -102,7 +104,7 @@ def caching_annotator(variant_annotator, tmp_path):
 def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator):
     fname = resource_filename(__name__, 'test_data/missense_test.json')
     gi = read_genomic_interpretation_json(fname)
-    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)
     cache_anno_results = caching_annotator.annotate(var_coords)
     assert var_anno_results == cache_anno_results
@@ -119,7 +121,7 @@ def oldfile_cache_annotator(variant_annotator):
 def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_annotator):
     fname = resource_filename(__name__, 'test_data/missense_test.json')
     gi = read_genomic_interpretation_json(fname)
-    var_coords = pp_vc_finder.find_coordinates(gi)
+    var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)
     cached_file_results = oldfile_cache_annotator.annotate(var_coords)
     assert var_anno_results == cached_file_results

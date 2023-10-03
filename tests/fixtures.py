@@ -32,68 +32,76 @@ def toy_cohort() -> Cohort:
             ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo('Disordered', Region(start=2131, end=2406))),
             ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo('Important for protein degradation', Region(start=2369, end=2663)))))
 
-    HetSingleVar = [Variant('16_89279851_-/C', 'insertion', 
-                VariantCoordinates(make_region("16", 89279849, 89279851),
-                                   ref='G', alt='GC', change_length=1, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', False, ['frameshift_variant'],
-                [9], [prot], 2231, 2231)],genotype='heterozygous')]
-    HetDoubleVar1 = [Variant('16_89284601_GG/A', 'indel', 
-                VariantCoordinates(make_region("16", 89284600, 89284602),
-                                   ref='GG', alt='A', change_length=-1, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', False, ['frameshift_variant'],
-                [9], [prot], 647, 647)],genotype='heterozygous'),
-                Variant('16_89280752_G/T', 'SNV', 
-                VariantCoordinates(make_region("16", 89280751, 89280752),
-                                   ref='G', alt='T', change_length=0, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', False, ['stop_gained'],
-                [9], [prot], 1930, 1930)],genotype='heterozygous')]
-    HetDoubleVar2 = [Variant('16_89275128_G/A', 'SNV', 
-                VariantCoordinates(make_region("16", 89275127, 89275128),
-                                   ref='G', alt='A', change_length=0, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', False, ['missense_variant'],
-                [10], [prot], 2512, 2512)],genotype='heterozygous'),
-                Variant('16_89279708_AGTGTTCGGGGCGGGGCC/A', 'indel', 
-                VariantCoordinates(make_region("16", 89279707, 89279725),
-                                   ref='AGTGTTCGGGGCGGGGCC', alt='A', change_length=-17, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', False, ['frameshift_variant'],
-                [9], [prot], 2273, 2278)],genotype='heterozygous')]
-    HomoVar = [Variant('16_89279458_TG/T', 'indel', 
-                VariantCoordinates(make_region("16", 89279457, 89279459),
-                                   ref='TG', alt='T', change_length=-1, genotype='homozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', False, ['frameshift_variant'],
-                [9], [prot], 2361, 2362)],genotype='homozygous')]
-    LargeCNV = [Variant('16_89190071_deletion', 'deletion', 
-                VariantCoordinates(make_region("16", 89190070, 89439815),
-                                   ref='N', alt='<DEL>', change_length=4, genotype='heterozygous'),
-                [TranscriptAnnotation('ANKRD11', 'NM_013275.6', None, False, ['stop_lost', 'feature_truncation', 'coding_sequence_variant', '5_prime_UTR_variant', '3_prime_UTR_variant', 'intron_variant'],
-                [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [prot], None, None)],genotype='heterozygous')]
-
     phenos = get_test_phenotypes()
+
+    dup = Variant(VariantCoordinates(make_region("16", 89279849, 89279850), ref='G', alt='GC', change_length=1),
+                  [
+                      TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', False, ['frameshift_variant'], [9],
+                                           [prot], 2231, 2231)
+                  ],
+                  Genotypes.from_mapping({'HetSingleVar': Genotype.HETEROZYGOUS}))
+    indel = Variant(VariantCoordinates(make_region("16", 89284600, 89284602), ref='GG', alt='A', change_length=-1),
+                    [
+                        TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', False, ['frameshift_variant'],
+                                             [9], [prot], 647, 647)
+                    ],
+                    Genotypes.from_mapping({'HetDoubleVar1': Genotype.HETEROZYGOUS}))
+    snv_stop_gain = Variant(VariantCoordinates(make_region("16", 89280751, 89280752), ref='G', alt='T', change_length=0),
+                            [
+                                TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', False, ['stop_gained'], [9], [prot],
+                             1930, 1930)],
+                            Genotypes.from_mapping({'HetDoubleVar1': Genotype.HETEROZYGOUS}))
+    snv_missense = Variant(VariantCoordinates(make_region("16", 89275127, 89275128), ref='G', alt='A', change_length=0),
+                           [
+                               TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', False, ['missense_variant'], [10],
+                             [prot], 2512, 2512)
+                           ],
+                           Genotypes.from_mapping({'HetDoubleVar2': Genotype.HETEROZYGOUS}))
+    del_frameshift = Variant(VariantCoordinates(make_region("16", 89279707, 89279725), ref='AGTGTTCGGGGCGGGGCC', alt='A', change_length=-17),
+                             [
+                                 TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', False, ['frameshift_variant'],
+                              [9], [prot], 2273, 2278)
+                             ],
+                             Genotypes.from_mapping({'HetDoubleVar2': Genotype.HETEROZYGOUS}))
+    del_small = Variant(VariantCoordinates(make_region("16", 89279457, 89279459), ref='TG', alt='T', change_length=-1),
+                        [
+                            TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', False, ['frameshift_variant'], [9],
+                             [prot], 2361, 2362)
+                        ],
+                        Genotypes.from_mapping({'HomoVar': Genotype.HOMOZYGOUS_ALTERNATE}))
+    del_large = Variant(VariantCoordinates(make_region("16", 89_190_070, 89_439_815), ref='N', alt='<DEL>', change_length=-249_745),
+                        [
+                            TranscriptAnnotation('ANKRD11', 'NM_013275.6', None, False,
+                                 ['stop_lost', 'feature_truncation', 'coding_sequence_variant', '5_prime_UTR_variant',
+                                  '3_prime_UTR_variant', 'intron_variant'], [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                                 [prot], None, None)
+                        ],
+                        Genotypes.from_mapping({'LargeCNV': Genotype.HETEROZYGOUS}))
 
     patients = (
         Patient('HetSingleVar',
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_F'], phenos['focal_clonic_seizure_T']),
-                variants=HetSingleVar,
+                variants=(dup,),
                 proteins=[prot]
                 ),
         Patient('HetDoubleVar1',
                 phenotypes=(phenos['arachnodactyly_T'], phenos['seizure_T'], phenos['spasticity_T']),
-                variants=HetDoubleVar1,
+                variants=(indel, snv_stop_gain),
                 proteins=[prot]
                 ),
         Patient('HetDoubleVar2',
                 phenotypes=(phenos['arachnodactyly_F'], phenos['spasticity_T'], phenos['seizure_T']),
-                variants=HetDoubleVar2,
+                variants=(snv_missense, del_frameshift),
                 proteins=[prot]
                 ),
         Patient('HomoVar',
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_T']),
-                variants=HomoVar,
+                variants=(del_small,),
                 proteins=[prot]
                 ),
         Patient('LargeCNV',
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_F']),
-                variants=LargeCNV,
+                variants=(del_large,),
                 proteins=[prot]
                 ),
     )

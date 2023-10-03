@@ -1,13 +1,8 @@
 import abc
-import logging
 
-import hpotk
 import typing
-# pyright: reportGeneralTypeIssues=false
 
-from genophenocorr.model import ProteinMetadata, Phenotype, Patient, Variant
-from ._phenotype import PhenotypeCreator
-from ._api import FunctionalAnnotator
+from genophenocorr.model import Patient
 
 
 T = typing.TypeVar('T')

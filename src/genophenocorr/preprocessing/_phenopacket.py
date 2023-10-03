@@ -9,7 +9,8 @@ import hpotk
 from google.protobuf.json_format import Parse
 from phenopackets import GenomicInterpretation, Phenopacket
 
-from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Patient, Cohort
+from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
+from genophenocorr.model import Patient, Cohort
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 
 from ._patient import PatientCreator
@@ -29,18 +30,16 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         self._logger = logging.getLogger(__name__)
         self._build = build
 
-    def find_coordinates(self, item: GenomicInterpretation) -> VariantCoordinates:
+    def find_coordinates(self, item: GenomicInterpretation) -> typing.Tuple[VariantCoordinates, Genotype]:
         """Creates a VariantCoordinates object from the data in a given Phenopacket
 
         Args:
-            item (GenomicInterpretation): A Phenopacket object
+            item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema
         Returns:
-            VariantCoordinates: A VariantCoordinates object
+            tuple[VariantCall, Genotype]: A tuple of :class:`VariantCoordinates` and :class:`Genotype`
         """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
-        chrom, ref, alt, genotype = None, None, None, None
-        start, end = 0, 0
         variant_descriptor = item.variant_interpretation.variation_descriptor
         if len(variant_descriptor.vcf_record.chrom) == 0 and len(
                 variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
@@ -77,8 +76,25 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         if any(field is None for field in (contig, ref, alt, genotype)):
             raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
         region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-        return VariantCoordinates(region, ref, alt, len(alt) - len(ref), genotype)
 
+        vc = VariantCoordinates(region, ref, alt, len(alt) - len(ref))
+        gt = self._map_geno_genotype_label(genotype)
+
+        return vc, gt
+
+    @staticmethod
+    def _map_geno_genotype_label(genotype: str) -> Genotype:
+        """
+        Mapping from labels of the relevant GENO terms that is valid as of Oct 2nd, 2023.
+        """
+        if genotype in ('heterozygous', 'compound heterozygous', 'simple heterozygous'):
+            return Genotype.HETEROZYGOUS
+        elif genotype == 'homozygous':
+            return Genotype.HOMOZYGOUS_ALTERNATE
+        elif genotype in ('hemizygous', 'hemizygous X-linked', 'hemizygous Y-linked'):
+            return Genotype.HEMIZYGOUS
+        else:
+            raise ValueError(f'Unknown genotype {genotype}')
 
 
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
@@ -112,12 +128,22 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         Returns:
             Patient: A Patient object
         """
+        sample_id = self._extract_id(item)
         phenotypes = self._add_phenotypes(item)
-        variants = self._add_variants(item)
+        variants = self._add_variants(sample_id, item)
         protein_data = self._add_protein_data(variants)
         return Patient(item.id, phenotypes, variants, protein_data)
 
-    def _add_variants(self, pp: Phenopacket) -> typing.Sequence[Variant]:
+    @staticmethod
+    def _extract_id(pp: Phenopacket):
+        subject = pp.subject
+        if len(subject.id) > 0:
+            return subject.id
+        else:
+            return pp.id
+
+
+    def _add_variants(self, sample_id: str, pp: Phenopacket) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
         Args:
@@ -127,16 +153,16 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """
         variants_list = []
         for i, interp in enumerate(pp.interpretations):
-            if hasattr(interp, 'diagnosis') and interp.diagnosis is not None:
-                for genomic_interp in interp.diagnosis.genomic_interpretations:
-                    vc = self._coord_finder.find_coordinates(genomic_interp)
-                    if "N" in vc.alt:
-                        self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt} and will not be included.')
-                        continue
-                    variant = self._func_ann.annotate(vc)
-                    variants_list.append(variant)
-            else:
-                self._logger.warning(f'No diagnosis in interpretation #{i} of phenopacket {pp.id}')
+            for genomic_interp in interp.diagnosis.genomic_interpretations:
+                vc, gt = self._coord_finder.find_coordinates(genomic_interp)
+                if "N" in vc.alt:
+                    self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt} and will not be included.')
+                    continue
+                tx_annotations = self._func_ann.annotate(vc)
+                genotype = Genotypes.single(sample_id, gt)
+                variant = Variant(vc, tx_annotations, genotype)
+                variants_list.append(variant)
+
         if len(variants_list) == 0:
             self._logger.warning(f'Expected at least one variant per patient, but received none for patient {pp.id}')
         return variants_list
@@ -157,13 +183,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return []
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
-    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Sequence[ProteinMetadata]:
+    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
         """Creates a list of ProteinMetadata objects from a given list of Variant objects
 
         Args:
             variants (Sequence[Variant]): A list of Variant objects
         Returns:
-            Sequence[ProteinMetadata]: A list of ProteinMetadata objects
+            Collection[ProteinMetadata]: A list of ProteinMetadata objects
         """
         final_prots = set()
         for var in variants:

@@ -36,7 +36,7 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
      Choose from ``{'UNIPROT'}`` (just one fallback implementation is available at the moment).
     """
     if cache_dir is None:
-        cache_dir = os.path.join(os.getcwd(), '.cache')
+        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
 
     if genome_build == 'GRCh38.p13':
         build = GRCh38
