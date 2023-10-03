@@ -84,7 +84,7 @@
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.constants</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">Genotype</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span>
 
 
@@ -192,7 +192,7 @@
 
 <div class="viewcode-block" id="VariantEffectPredicate.test">
 <a class="viewcode-back" href="../../../../apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.VariantEffectPredicate.test">[docs]</a>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span><span class="n">VariantEffect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patient</span><span class="p">,</span> <span class="n">Patient</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;patient must be type Patient but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">):</span>
@@ -206,11 +206,13 @@
                             <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;heterozygous&quot;</span><span class="p">:</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype_for_sample</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
-                <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;homozygous&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO - is this really what we want to return here?</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
@@ -241,16 +243,17 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query must be type string but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
-            <span class="c1">#print(f&quot;{var.variant_string} == {query}&quot;)</span>
-            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_string</span> <span class="o">==</span> <span class="n">query</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="n">query</span><span class="p">:</span>
                 <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;heterozygous&quot;</span><span class="p">:</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype_for_sample</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
-                <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;homozygous&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO - is this really what we want to return here?</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
@@ -288,11 +291,13 @@
                             <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;heterozygous&quot;</span><span class="p">:</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype_for_sample</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
-                <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;homozygous&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO - is this really what we want to return here?</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
@@ -333,11 +338,13 @@
                                         <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;heterozygous&quot;</span><span class="p">:</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype_for_sample</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
-                <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;homozygous&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO - is this really what we want to return here?</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
@@ -384,11 +391,13 @@
                                         <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;heterozygous&quot;</span><span class="p">:</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype_for_sample</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
-                <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">&quot;homozygous&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">gt</span> <span class="o">==</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">HOMOZYGOUS</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO - is this really what we want to return here?</span>
                     <span class="k">return</span> <span class="n">HETEROZYGOUS</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">HOMOZYGOUS</span>

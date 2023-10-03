@@ -58,7 +58,8 @@ For the purpose of this example, we will use a folder `simple_cohort` with 5 exa
 
 .. doctest:: input-data
 
-  >>> simple_cohort_path = 'data/simple_cohort'
+  >>> import os
+  >>> simple_cohort_path = os.path.join(os.getcwd(), 'data', 'simple_cohort')
 
 Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
 :class:`genophenocorr.model.Patient`:
@@ -76,8 +77,8 @@ Here we walk the file system, load all phenopacket JSON files, and transform the
   ...       pp_path = os.path.join(dirpath, filename)
   ...       with open(pp_path) as fh:
   ...         pp = Parse(fh.read(), Phenopacket())
-  ...     patient = patient_creator.create_patient(pp)
-  ...     patients.append(patient)
+  ...       patient = patient_creator.create_patient(pp)
+  ...       patients.append(patient)
 
 
   >>> f'Loaded {len(patients)} phenopackets'

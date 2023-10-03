@@ -88,8 +88,7 @@
 <span class="kn">import</span> <span class="nn">requests</span>
 
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">TranscriptCoordinates</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span>
 
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="n">TranscriptCoordinateService</span>
 
@@ -134,10 +133,10 @@
 <div class="viewcode-block" id="VepFunctionalAnnotator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator">[docs]</a>
 <span class="k">class</span> <span class="nc">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">FunctionalAnnotator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that creates a Variant object using variant coordinates and Variant Effect Predictor (VEP) REST API</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that peforms functional annotation of variant coordinates using Variant Effect Predictor (VEP) REST API.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        annotate(variant_coordinates: VariantCoordinates): Creates a Variant object from VariantCoordinates</span>
+<span class="sd">        annotate(variant_coordinates: VariantCoordinates): the variant to annotate.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_annotator</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">):</span>
@@ -153,19 +152,17 @@
 
 <div class="viewcode-block" id="VepFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.annotate">[docs]</a>
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Variant</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Variant object by searching variant coordinates with Variant Effect Predictor (VEP) REST API. </span>
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform functional annotation using Variant Effect Predictor (VEP) REST API.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            variant_coordinates (VariantCoordinates): A VariantCoordinates object</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Variant: A Variant object</span>
+<span class="sd">            typing.Sequence[TranscriptAnnotation]: A sequence of transcript annotations for the variant coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">variant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_vep</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
-        <span class="n">variant_id</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
-        <span class="n">variant_class</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variant_class&#39;</span><span class="p">)</span>
         <span class="c1"># canon_tx = None</span>
-        <span class="n">transcript_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transcript_consequences&#39;</span><span class="p">):</span>
             <span class="n">trans_id</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transcript_id&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">trans_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;NM&#39;</span><span class="p">):</span>
@@ -193,7 +190,7 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exons_effected</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="n">exons_effected</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">exons_effected</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">exons_effected</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">exons_effected</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exons_effected</span><span class="p">]</span>
-            <span class="n">transcript_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">TranscriptAnnotation</span><span class="p">(</span><span class="n">gene_name</span><span class="p">,</span>
                                      <span class="n">trans_id</span><span class="p">,</span>
                                      <span class="n">hgvsc_id</span><span class="p">,</span>
@@ -204,8 +201,8 @@
                                      <span class="n">protein_effect_start</span><span class="p">,</span>
                                      <span class="n">protein_effect_end</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span><span class="n">variant_id</span><span class="p">,</span> <span class="n">variant_class</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">,</span> <span class="n">transcript_list</span><span class="p">,</span>
-                       <span class="n">variant_coordinates</span><span class="o">.</span><span class="n">genotype</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">annotations</span></div>
 
 
     <span class="k">def</span> <span class="nf">_query_vep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -247,7 +244,7 @@
 
 <div class="viewcode-block" id="VariantAnnotationCache.get_annotations">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VariantAnnotationCache.get_annotations">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches a given data directory for a pickle file with given variant coordinates and returns Variant from file. Returns None if no file is found.</span>
 
 <span class="sd">        Args:</span>
@@ -263,28 +260,30 @@
 
 <div class="viewcode-block" id="VariantAnnotationCache.store_annotations">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VariantAnnotationCache.store_annotations">[docs]</a>
-    <span class="k">def</span> <span class="nf">store_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Variant</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">store_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">annotations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a pickle file with the given variant coordinates in the file name. Loads the Variant object given into the file for storage.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            variant_coordinates (VariantCoordinates): The variant_coordinates associated with the desired Variant</span>
-<span class="sd">            annotation (Variant): A Variant object that will be stored under the given variant coordinates</span>
+<span class="sd">            annotations (typing.Sequence[TranscriptAnnotation]): Annotations that will be stored under the given variant coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_file_name</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_create_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_create_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a file name with full location and the variant coordinates (e.g. &quot;/path/to/desired/directory/1_2345_G_C_heterozygous.pickle&quot;)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            variant_coordinates (VariantCoordinates): The variant coordinates associated with the Variant</span>
+<span class="sd">            vc (VariantCoordinates): The variant coordinates associated with the Variant</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">50</span><span class="p">:</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">as_string</span><span class="p">()</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
+        <span class="n">vk</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">variant_key</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vk</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vk</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">chrom</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">genotype</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
+            <span class="c1"># long INDELs in sequence notation</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vc</span><span class="o">.</span><span class="n">chrom</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">vc</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">vc</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">vc</span><span class="o">.</span><span class="n">variant_class</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datadir</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span></div>
 
 
@@ -310,7 +309,7 @@
 
 <div class="viewcode-block" id="VarCachingFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VarCachingFunctionalAnnotator.annotate">[docs]</a>
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Variant</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets Variant for given variant coordinates</span>
 
 <span class="sd">        Args:</span>

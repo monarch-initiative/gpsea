@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>genophenocorr.view._tx &mdash; genophenocorr 0.1.1dev documentation</title>
+  <title>genophenocorr.view._txp &mdash; genophenocorr 0.1.1dev documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
@@ -69,7 +69,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">genophenocorr.view._tx</li>
+      <li class="breadcrumb-item active">genophenocorr.view._txp</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -78,24 +78,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for genophenocorr.view._tx</h1><div class="highlight"><pre>
+  <h1>Source code for genophenocorr.view._txp</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Variant</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">TranscriptCoordinates</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
 
 
-<div class="viewcode-block" id="VariantTranscriptArtist">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptArtist">[docs]</a>
-<span class="k">class</span> <span class="nc">VariantTranscriptArtist</span><span class="p">:</span>
+<div class="viewcode-block" id="VariantTranscriptProteinArtist">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptProteinArtist">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantTranscriptProteinArtist</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `VariantTranscriptArtist` creates a graphic to show distributions of variants across a provided transcript.</span>
+<span class="sd">    `VariantTranscriptProteinArtist` creates a graphic to show distributions of variants across a provided transcript</span>
+<span class="sd">    and its protein product.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="VariantTranscriptArtist.draw_variants">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptArtist.draw_variants">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">]):</span>
-        <span class="c1"># TODO - implement</span>
+<div class="viewcode-block" id="VariantTranscriptProteinArtist.draw_variants">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptProteinArtist.draw_variants">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">],</span>
+                      <span class="n">tx</span><span class="p">:</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span>
+                      <span class="n">protein</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">):</span>
+        <span class="c1"># TODO - Peter implement</span>
         <span class="k">pass</span></div>
 </div>
 

@@ -133,7 +133,8 @@ See the <a class="reference internal" href="../apidocs/genophenocorr.preprocessi
 <p>We can create a cohort starting from a folder with phenopackets stored as JSON files.
 For the purpose of this example, we will use a folder <cite>simple_cohort</cite> with 5 example phenopackets located in
 <a class="reference external" href="https://github.com/monarch-initiative/genophenocorr/tree/main/docs/data/simple_cohort">genophenocorr’s repository</a></p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">simple_cohort_path</span> <span class="o">=</span> <span class="s1">&#39;data/simple_cohort&#39;</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simple_cohort_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;simple_cohort&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
@@ -149,8 +150,8 @@ For the purpose of this example, we will use a folder <cite>simple_cohort</cite>
 <span class="gp">... </span>      <span class="n">pp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 <span class="gp">... </span>      <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pp_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 <span class="gp">... </span>        <span class="n">pp</span> <span class="o">=</span> <span class="n">Parse</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Phenopacket</span><span class="p">())</span>
-<span class="gp">... </span>    <span class="n">patient</span> <span class="o">=</span> <span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+<span class="gp">... </span>      <span class="n">patient</span> <span class="o">=</span> <span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+<span class="gp">... </span>      <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
 
 <span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1"> phenopackets&#39;</span>

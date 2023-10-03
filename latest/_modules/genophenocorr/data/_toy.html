@@ -119,166 +119,175 @@
     <span class="n">prot_feat_2</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">FeatureInfo</span><span class="p">(</span><span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="n">Region</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)),</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span><span class="p">)</span>
     <span class="n">prot</span> <span class="o">=</span> <span class="n">ProteinMetadata</span><span class="p">(</span><span class="s1">&#39;NP_09876.5&#39;</span><span class="p">,</span> <span class="s1">&#39;FakeProtein&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">prot_feat_1</span><span class="p">,</span> <span class="n">prot_feat_2</span><span class="p">])</span>
 
-    <span class="n">het_snv</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HetVar1&#39;</span><span class="p">,</span> <span class="s1">&#39;SNV&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="mi">281</span><span class="p">),</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;heterozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.180A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;missense_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
-    <span class="n">het_del</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HetVar2&#39;</span><span class="p">,</span> <span class="s1">&#39;indel&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">363</span><span class="p">),</span> <span class="s1">&#39;TTC&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>  <span class="s1">&#39;heterozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.261_263del&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">87</span><span class="p">)</span>
+    <span class="n">snv</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span><span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="mi">281</span><span class="p">),</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span>
+                                                  <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.180A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;missense_variant&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                  <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span>
+                                                  <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">({</span>
+                                                      <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                                                      <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;G&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                                                      <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                                                      <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                  <span class="p">})</span>
+                                              <span class="p">)</span>
+    <span class="n">deletion</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span><span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">363</span><span class="p">),</span> <span class="s1">&#39;TTC&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+                                                  <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.261_263del&#39;</span><span class="p">,</span>
+                                                  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span>
+                                                  <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span>
+                                                  <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">({</span>
+                                                      <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;G&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                                                      <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                                                      <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                      <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                                                  <span class="p">})</span>
+                                                   <span class="p">)</span>
     <span class="n">het_dup</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HetVar3&#39;</span><span class="p">,</span> <span class="s1">&#39;insertion&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;heterozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
-    <span class="n">hom_snv</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HomVar1&#39;</span><span class="p">,</span> <span class="s1">&#39;SNV&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="mi">281</span><span class="p">),</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;homozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.180A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;missense_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
-    <span class="n">hom_del</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HomVar2&#39;</span><span class="p">,</span> <span class="s1">&#39;indel&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">363</span><span class="p">),</span> <span class="s1">&#39;TTC&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;homozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.261_263del&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">87</span><span class="p">)</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">())</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
     <span class="n">hom_dup</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="s1">&#39;HomVar3&#39;</span><span class="p">,</span> <span class="s1">&#39;insertion&#39;</span><span class="p">,</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="s1">&#39;homozygous&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span>
-        <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span><span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;frameshift_variant&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">prot</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">())</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
 
     <span class="n">patients</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">hom_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">,</span> <span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">,</span> <span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">hom_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;J&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">hom_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">hom_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">,</span> <span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">hom_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_snv</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
         <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">het_del</span><span class="p">],</span>
+                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
     <span class="p">)</span>
