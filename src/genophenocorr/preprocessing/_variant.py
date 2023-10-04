@@ -77,10 +77,12 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         Returns:
             typing.Sequence[TranscriptAnnotation]: A sequence of transcript annotations for the variant coordinates
         """
-        variant = self._query_vep(variant_coordinates)
-        # canon_tx = None
+        response = self._query_vep(variant_coordinates)
         annotations = []
-        for trans in variant.get('transcript_consequences'):
+        if 'transcript_consequences' not in response:
+            raise ValueError(f'The VEP response lacked the required `transcript_consequences` field')
+
+        for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
                 annotations.append(annotation)
