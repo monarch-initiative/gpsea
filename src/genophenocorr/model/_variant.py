@@ -106,10 +106,11 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._is_preferred
 
     @property
-    def hgvsc_id(self) -> str:
+    def hgvsc_id(self) -> typing.Optional[str]:
         """
         Returns:
             string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
+            or `None` if not available.
         """
         return self._hgvsc_id
 
