@@ -5,7 +5,8 @@ from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatient
 from ._phenotype import PhenotypeCreator, PhenotypeValidationException
 from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
-from ._variant import VepFunctionalAnnotator, VariantAnnotationCache, VarCachingFunctionalAnnotator
+from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
+from ._vep import VepFunctionalAnnotator
 
 __all__ = [
     'VariantCoordinateFinder', 'FunctionalAnnotator', 'ProteinMetadataService',
