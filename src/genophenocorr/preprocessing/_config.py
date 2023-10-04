@@ -10,7 +10,8 @@ from ._phenopacket import PhenopacketPatientCreator
 from ._api import FunctionalAnnotator
 from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
-from ._variant import VarCachingFunctionalAnnotator, VepFunctionalAnnotator, VariantAnnotationCache
+from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
+from ._vep import VepFunctionalAnnotator
 
 
 def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
