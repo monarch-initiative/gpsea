@@ -192,10 +192,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hgvsc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">hgvsc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            string: The HGVS &quot;coding-DNA&quot; representation of the variant (e.g. NM_123456.7:c.9876G&gt;T)</span>
+<span class="sd">            or `None` if not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsc_id</span>
 
