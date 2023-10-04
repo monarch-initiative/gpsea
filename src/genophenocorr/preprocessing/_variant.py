@@ -51,18 +51,13 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 class VepFunctionalAnnotator(FunctionalAnnotator):
     """A class that performs functional annotation of variant coordinates using Variant Effect Predictor (VEP) REST API.
 
-    Methods:
-        annotate(variant_coordinates: VariantCoordinates): the variant to annotate.
+    Args:
+        protein_annotator (ProteinMetadataService): a service for getting protein data
+        include_computational_txs (bool): Include computational transcripts, such as RefSeq `XM_`.
     """
 
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
-        """Constructs all necessary attributes for a VepFunctionalAnnotator object
-
-        Args:
-            protein_annotator (ProteinMetadataService): A ProteinMetadataService object for ProteinMetadata creation
-            include_computational_txs (bool): Include computational transcripts, such as RefSEq `XM_`.
-        """
         self._logging = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
