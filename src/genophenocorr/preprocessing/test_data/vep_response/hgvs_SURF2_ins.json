@@ -1,0 +1,350 @@
+[
+    {
+        "allele_string": "-/AGC",
+        "input": "NM_017503.5:c.333_334insAGC",
+        "assembly_name": "GRCh38",
+        "id": "NM_017503.5:c.333_334insAGC",
+        "seq_region_name": "9",
+        "most_severe_consequence": "inframe_insertion",
+        "strand": 1,
+        "transcript_consequences": [
+            {
+                "cds_start": 333,
+                "protein_end": 112,
+                "consequence_terms": [
+                    "inframe_insertion"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "amino_acids": "-/S",
+                "protein_start": 111,
+                "impact": "MODERATE",
+                "cdna_start": 376,
+                "transcript_id": "NM_001278928.2",
+                "gene_symbol_source": "EntrezGene",
+                "given_ref": "-",
+                "gene_id": "6835",
+                "cds_end": 334,
+                "gene_symbol": "SURF2",
+                "cdna_end": 377,
+                "codons": "-/AGC",
+                "strand": 1,
+                "used_ref": "-"
+            },
+            {
+                "gene_symbol": "SURF1",
+                "impact": "MODIFIER",
+                "transcript_id": "NM_001280787.1",
+                "distance": 1325,
+                "given_ref": "-",
+                "used_ref": "-",
+                "strand": -1,
+                "gene_symbol_source": "EntrezGene",
+                "gene_id": "6834",
+                "bam_edit": "OK",
+                "consequence_terms": [
+                    "upstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC"
+            },
+            {
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "transcript_id": "NM_001280788.2",
+                "distance": 3653,
+                "strand": -1,
+                "given_ref": "-",
+                "used_ref": "-",
+                "gene_symbol_source": "EntrezGene"
+            },
+            {
+                "gene_id": "6836",
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "gene_symbol_source": "EntrezGene",
+                "given_ref": "-",
+                "used_ref": "-",
+                "strand": -1,
+                "transcript_id": "NM_001280789.2",
+                "distance": 3653
+            },
+            {
+                "transcript_id": "NM_001280790.2",
+                "distance": 3653,
+                "strand": -1,
+                "given_ref": "-",
+                "used_ref": "-",
+                "gene_symbol_source": "EntrezGene",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "gene_id": "6836"
+            },
+            {
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "given_ref": "-",
+                "strand": -1,
+                "used_ref": "-",
+                "gene_symbol_source": "EntrezGene",
+                "transcript_id": "NM_001280791.2",
+                "distance": 3653,
+                "gene_id": "6836",
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ]
+            },
+            {
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "transcript_id": "NM_001280792.2",
+                "distance": 3653,
+                "gene_symbol_source": "EntrezGene",
+                "given_ref": "-",
+                "strand": -1,
+                "used_ref": "-"
+            },
+            {
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "gene_id": "6836",
+                "gene_symbol_source": "EntrezGene",
+                "used_ref": "-",
+                "given_ref": "-",
+                "strand": -1,
+                "distance": 3653,
+                "transcript_id": "NM_001280793.2",
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4"
+            },
+            {
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "consequence_terms": [
+                    "upstream_gene_variant"
+                ],
+                "gene_id": "6834",
+                "gene_symbol_source": "EntrezGene",
+                "used_ref": "-",
+                "strand": -1,
+                "given_ref": "-",
+                "distance": 1323,
+                "transcript_id": "NM_003172.4",
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF1"
+            },
+            {
+                "cds_start": 333,
+                "protein_end": 112,
+                "consequence_terms": [
+                    "inframe_insertion"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "amino_acids": "-/S",
+                "protein_start": 111,
+                "impact": "MODERATE",
+                "cdna_start": 376,
+                "transcript_id": "NM_017503.5",
+                "gene_symbol_source": "EntrezGene",
+                "given_ref": "-",
+                "gene_id": "6835",
+                "cds_end": 334,
+                "gene_symbol": "SURF2",
+                "cdna_end": 377,
+                "codons": "-/AGC",
+                "used_ref": "-",
+                "strand": 1
+            },
+            {
+                "gene_id": "6836",
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "given_ref": "-",
+                "used_ref": "-",
+                "strand": -1,
+                "gene_symbol_source": "EntrezGene",
+                "distance": 3653,
+                "transcript_id": "NM_033161.4"
+            },
+            {
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "transcript_id": "XM_011518944.3",
+                "distance": 3653,
+                "used_ref": "-",
+                "given_ref": "-",
+                "strand": -1,
+                "gene_symbol_source": "EntrezGene",
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC"
+            },
+            {
+                "gene_symbol_source": "EntrezGene",
+                "strand": -1,
+                "used_ref": "-",
+                "given_ref": "-",
+                "distance": 3653,
+                "transcript_id": "XM_011518945.4",
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "gene_id": "6836"
+            },
+            {
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "gene_id": "6836",
+                "transcript_id": "XM_047423802.1",
+                "distance": 3653,
+                "gene_symbol_source": "EntrezGene",
+                "strand": -1,
+                "used_ref": "-",
+                "given_ref": "-",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER"
+            },
+            {
+                "gene_id": "6836",
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "gene_symbol_source": "EntrezGene",
+                "used_ref": "-",
+                "given_ref": "-",
+                "strand": -1,
+                "distance": 3653,
+                "transcript_id": "XM_047423803.1"
+            },
+            {
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding",
+                "gene_id": "6836",
+                "distance": 3653,
+                "transcript_id": "XM_047423804.1",
+                "gene_symbol_source": "EntrezGene",
+                "strand": -1,
+                "used_ref": "-",
+                "given_ref": "-",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER"
+            },
+            {
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "distance": 3653,
+                "transcript_id": "XM_047423805.1",
+                "strand": -1,
+                "used_ref": "-",
+                "given_ref": "-",
+                "gene_symbol_source": "EntrezGene",
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC"
+            },
+            {
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "distance": 3653,
+                "transcript_id": "XM_047423806.1",
+                "gene_symbol_source": "EntrezGene",
+                "strand": -1,
+                "given_ref": "-",
+                "used_ref": "-",
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "variant_allele": "AGC",
+                "biotype": "protein_coding"
+            },
+            {
+                "gene_id": "6836",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "gene_symbol": "SURF4",
+                "impact": "MODIFIER",
+                "distance": 3653,
+                "transcript_id": "XM_047423807.1",
+                "given_ref": "-",
+                "strand": -1,
+                "used_ref": "-",
+                "gene_symbol_source": "EntrezGene"
+            },
+            {
+                "gene_id": "6836",
+                "biotype": "protein_coding",
+                "variant_allele": "AGC",
+                "consequence_terms": [
+                    "downstream_gene_variant"
+                ],
+                "impact": "MODIFIER",
+                "gene_symbol": "SURF4",
+                "given_ref": "-",
+                "used_ref": "-",
+                "strand": -1,
+                "gene_symbol_source": "EntrezGene",
+                "transcript_id": "XM_047423808.1",
+                "distance": 3653
+            }
+        ],
+        "end": 133357810,
+        "start": 133357811
+    }
+]
