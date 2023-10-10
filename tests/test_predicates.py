@@ -4,8 +4,7 @@ import hpotk
 import pytest
 
 from genophenocorr.analysis.predicate import *
-from genophenocorr.constants import VariantEffect
-from genophenocorr.model import Cohort, Patient, FeatureType
+from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
 from .fixtures import toy_hpo, toy_cohort
 
 
