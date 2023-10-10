@@ -51,7 +51,7 @@ We can then view the data using the list commands.
   [('NP_09876.5', 26)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
-  [('frameshift_variant', 1), ('missense_variant', 1)]
+  [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 
 Using the counts, we can choose and run what analyses we want.
 For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
