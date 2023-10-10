@@ -171,7 +171,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         for hpo_id in pp.phenotypic_features:
             hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
         if len(hpo_id_list) == 0:
-            self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
+            #self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
             return []
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
@@ -192,7 +192,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
 
 def load_phenopacket_folder(pp_directory: str,
-                            patient_creator: PhenopacketPatientCreator) -> Cohort:
+                            patient_creator: PhenopacketPatientCreator,
+                            include_patients_with_no_HPO: bool = False) -> Cohort:
     """
     Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
 
@@ -214,7 +215,7 @@ def load_phenopacket_folder(pp_directory: str,
     patients = [patient_creator.create_patient(pp) for pp in pps]
 
     # create cohort from patients
-    return Cohort.from_patients(patients)
+    return Cohort.from_patients(patients, include_patients_with_no_HPO)
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:

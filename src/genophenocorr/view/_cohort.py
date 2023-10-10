@@ -130,17 +130,20 @@ class CohortViewer:
         all_variant_counter = {x[0]:x[1] for x in all_variant_tuple_list}
         for variant in cohort.all_variants:
             var_count = all_variant_counter[variant.variant_string]
-            targets = [txa for txa in variant.tx_annotations if txa.transcript_id == "NM_001318852.2"]
+            targets = [txa for txa in variant.tx_annotations if txa.transcript_id == preferred_transcript]
             if len(targets) == 1:
                 target_txa = targets[0]
-                hgvsc_id = target_txa.hgvsc_id
+                if target_txa.hgvsc_id is not None:
+                    hgvsc_id = target_txa.hgvsc_id
+                else:
+                    hgvsc_id = "NA"
                 # split out the variant
                 fields = hgvsc_id.split(":")
                 if len(fields) == 2:
                     hgvs = fields[1]
                 else:
                     hgvs = hgvsc_id
-                effect_tuple = target_txa.variant_effects
+                effect_tuple = [var_eff.name for var_eff in target_txa.variant_effects]
                 variant_count_d[hgvs] = var_count
                 variant_to_effect_d[hgvs] = effect_tuple[0] # for simplicity, just display first effect
                 variant_to_key[hgvs] = variant.variant_string
@@ -160,7 +163,7 @@ class CohortViewer:
         for var in sorted_vars:
             items = []
             var_count = variant_count_d.get(var)
-            print(f"{var} - {var_count}")
+            #print(f"{var} - {var_count}")
             if var_count >= min_count: 
                 variant_key = variant_to_key.get(var)
                 items.append(var)
@@ -176,4 +179,47 @@ class CohortViewer:
             rows.append(f"<p>Additionally, the following variants were observed {min_count-1} or fewer times: ")
             rows.append(f"{var_str}.</p>")
         rows.append("<p>Use the entry in the \"Key\" column to investigate whether specific variants display genotype-phenotype correlations</p>")
+        return "\n".join(rows)
+
+
+    def cohort_summary_table(self, cohort, min_count=1) -> str:
+        """
+        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML
+        Show the number of annotations per HPO terms. Provide an explanation.
+        
+        :param cohort: A cohort of patients to be analyzed
+        :type cohort: Cohort
+        :param min_count: Minimum number of annotations to be displayed in the table
+        :type min_count: int
+        :returns: HTML code for display
+        """
+        if not isinstance(cohort, Cohort):
+            raise ValueError(f"cohort argument must be a Cohort object but we got a {type(cohort)} object")
+        rows = list()
+        rows.append(f"<style>\n{CSS_CODE}</style>\n")
+        rows.append("<table>")
+        header_items = ["Item", "Description"]
+        rows.append(CohortViewer.html_row(header_items))
+        n_individuals = cohort.total_patient_count
+        n_unique_hpo = len(cohort.all_phenotypes)
+        n_unique_variants = len(cohort.all_variants)
+        n_excluded_patients = cohort.get_excluded_count()
+        excluded_patients = cohort.get_excluded_ids()
+
+        cap = "Description of the cohort. "
+        if n_excluded_patients > 0:
+            cap =  cap + f"{n_excluded_patients} individuals were removed from the cohort because they had no HPO terms."
+
+        capt = f"<caption>{cap}</caption>"
+        rows.append(capt)
+        
+        rows.append(CohortViewer.html_row(["Total Individuals", str(n_individuals)]))
+        #TODO: Add Diseases
+        if n_excluded_patients > 0:
+            rows.append(CohortViewer.html_row(["Excluded Individuals", f"{str(n_excluded_patients)}: {';'.join(excluded_patients)}"]))
+        rows.append(CohortViewer.html_row(["Total Unique HPO Terms", str(n_unique_hpo)]))
+        rows.append(CohortViewer.html_row(["Total Unique Variants", str(n_unique_variants)]))
+
+        rows.append("</table>")
+    
         return "\n".join(rows)
