@@ -53,15 +53,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 alt = '<DUP>'
             else:
                 alt = '<DEL>'
-            chrom = re.findall(r'NC_0000(\d{2})\.\d*',
-                               variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id)[0]
-            if chrom.startswith('0'):
-                chrom = str(int(chrom))
-            elif chrom == '23':
-                chrom = 'X'
-            elif chrom == '24':
-                chrom = 'Y'
-            contig = self._build.contig_by_name(chrom)
+            contig = self._build._contig_by_name[variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id.split(':')[1]]
         elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
                 variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
             ref = variant_descriptor.vcf_record.ref

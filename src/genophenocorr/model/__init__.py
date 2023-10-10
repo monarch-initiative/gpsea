@@ -11,6 +11,7 @@ from ._phenotype import Phenotype
 from ._protein import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
 from ._tx import TranscriptCoordinates
 from ._variant import VariantCoordinates, TranscriptAnnotation, TranscriptInfoAware, Variant
+from ._variant_effects import VariantEffect
 
 __all__ = [
     'Cohort', 'Patient',
@@ -18,4 +19,5 @@ __all__ = [
     'Variant', 'VariantCoordinates', 'Genotype', 'Genotypes', 'Genotyped',
     'TranscriptAnnotation', 'TranscriptInfoAware', 'TranscriptCoordinates',
     'ProteinMetadata', 'ProteinFeature', 'FeatureInfo', 'FeatureType',
+    'VariantEffect'
 ]

@@ -2,8 +2,7 @@ import typing
 
 import hpotk
 
-from genophenocorr.constants import VariantEffect
-from genophenocorr.model import Patient, FeatureType, Genotype
+from genophenocorr.model import Patient, FeatureType, Genotype, VariantEffect
 from ._api import PolyPredicate, PatientCategory
 
 
@@ -105,7 +104,7 @@ class VariantEffectPredicate(PolyPredicate[VariantEffect]):
             for trans in var.tx_annotations:
                 if trans.transcript_id == self._transcript:
                     for var_eff in trans.variant_effects:
-                        if var_eff == str(query):
+                        if var_eff == query:
                             vars.add(var)
         if len(vars) == 1:
             for v in vars:

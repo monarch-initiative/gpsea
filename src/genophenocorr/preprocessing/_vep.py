@@ -3,7 +3,7 @@ import typing
 
 import requests
 
-from genophenocorr.model import VariantCoordinates, TranscriptAnnotation
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
 
@@ -90,7 +90,14 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             return None
         is_preferred = True if 'canonical' in item and item['canonical'] else False
         hgvsc_id = item.get('hgvsc')
+        var_effects = []
         consequences = item.get('consequence_terms')
+        for con in consequences:
+            if con[0] == '5':
+                con = "FIVE_PRIME_UTR_VARIANT"
+            if con[0] == '3':
+                con = 'THREE_PRIME_UTR_VARIANT'
+            var_effects.append(VariantEffect[con.upper()])
         gene_name = item.get('gene_symbol')
         protein_id = item.get('protein_id')
         protein = self._protein_annotator.annotate(protein_id)
@@ -112,7 +119,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     trans_id,
                                     hgvsc_id,
                                     is_preferred,
-                                    consequences,
+                                    var_effects,
                                     exons_effected,
                                     protein,
                                     protein_effect_start,

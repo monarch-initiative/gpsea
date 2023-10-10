@@ -7,6 +7,7 @@ import hpotk
 from .genome import GenomicRegion
 from ._gt import Genotyped, Genotypes
 from ._protein import ProteinMetadata
+from ._variant_effects import VariantEffect
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):
@@ -52,7 +53,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
                  tx_id: str,
                  hgvsc: typing.Optional[str],
                  is_preferred: bool,
-                 variant_effects,
+                 variant_effects: typing.Optional[typing.Sequence[VariantEffect]],
                  affected_exons: typing.Optional[typing.Sequence[int]],
                  affected_protein: typing.Sequence[ProteinMetadata],
                  protein_effect_start: typing.Optional[int],
@@ -115,7 +116,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._hgvsc_id
 
     @property
-    def variant_effects(self) -> typing.Sequence[str]:
+    def variant_effects(self) -> typing.Sequence[VariantEffect]:
         """
         Returns:
             Sequence[string]: A sequence of variant effects.
@@ -377,7 +378,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     trans_id: str,
                                     hgvsc_id: str,
                                     is_preferred: bool,
-                                    consequences: typing.Sequence[str],
+                                    consequences: typing.Sequence[VariantEffect],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
                                     protein_effect_start: int,
