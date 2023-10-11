@@ -1,6 +1,26 @@
 from enum import Enum
 
+
 class VariantEffect(Enum):
+    """
+    `VariantEffect` represents consequences of a variant on transcript that are supported by Genophenocorr.
+
+    .. doctest::
+
+      >>> from genophenocorr.model import VariantEffect
+      >>> missense = VariantEffect.MISSENSE_VARIANT
+      >>> print(missense)
+      missense_variant
+
+    The `VariantEffect` has a :prop:`curie` attribute that represents the ontology class from
+    `Sequence Ontology <http://www.sequenceontology.org/>`_.
+
+    .. doctest::
+
+      >>> missense.curie
+      'SO:0001583'
+    """
+
     TRANSCRIPT_ABLATION = "SO:0001893"
     SPLICE_ACCEPTOR_VARIANT = "SO:0001574"
     SPLICE_DONOR_VARIANT =  "SO:0001575"
@@ -42,13 +62,15 @@ class VariantEffect(Enum):
     INTERGENIC_VARIANT = "SO:0001628"
     SEQUENCE_VARIANT = "SO:0001060"
 
+    def __init__(self, curie: str):
+        self._curie = curie
+
+    @property
+    def curie(self) -> str:
+        """
+        Get a compact URI (CURIE) of the variant effect (e.g. `SO:0001583` for a missense variant).
+        """
+        return self._curie
+
     def __str__(self) -> str:
         return self.name.lower()
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, VariantEffect) \
-            and self.value == other.value \
-            and self.name == other.name 
-            
-    def __hash__(self) -> int:
-        return hash((self.value, self.name))
