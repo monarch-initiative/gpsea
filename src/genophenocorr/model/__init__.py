@@ -17,7 +17,6 @@ __all__ = [
     'Cohort', 'Patient',
     'Phenotype',
     'Variant', 'VariantCoordinates', 'Genotype', 'Genotypes', 'Genotyped',
-    'TranscriptAnnotation', 'TranscriptInfoAware', 'TranscriptCoordinates',
+    'TranscriptAnnotation', 'VariantEffect', 'TranscriptInfoAware', 'TranscriptCoordinates',
     'ProteinMetadata', 'ProteinFeature', 'FeatureInfo', 'FeatureType',
-    'VariantEffect'
 ]
