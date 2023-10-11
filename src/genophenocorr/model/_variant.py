@@ -378,7 +378,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     trans_id: str,
                                     hgvsc_id: str,
                                     is_preferred: bool,
-                                    consequences: typing.Sequence[VariantEffect],
+                                    consequences: typing.Iterable[VariantEffect],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
                                     protein_effect_start: int,
