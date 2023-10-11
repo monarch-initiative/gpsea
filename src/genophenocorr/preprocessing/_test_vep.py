@@ -153,7 +153,7 @@ class TestVepHgvsVariantCoordinateFinder:
         assert vc.start == 133_357_812
         assert vc.end == 133_357_813
         assert vc.ref == 'A'
-        assert vc.alt == 'AAA'
+        assert vc.alt == 'AAAA'
         assert vc.change_length == 3
 
     def test_load_hgvs_MC4R_dup(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
