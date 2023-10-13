@@ -82,7 +82,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
     def _parse_variant_effect(self, effect: str) -> typing.Optional[VariantEffect]:
         digit_word_map = {'0': 'ZERO','1': 'ONE','2': 'TWO','3': 'THREE','4': 'FOUR','5': 'FIVE','6': 'SIX','7': 'SEVEN','8': 'EIGHT','9': 'NINE'}
-        for digit, word in digit_word_map:
+        for digit, word in digit_word_map.items():
             effect = effect.replace(digit, word)
         try:
             var_effect = VariantEffect[effect.upper()]
