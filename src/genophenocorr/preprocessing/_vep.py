@@ -80,6 +80,17 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
         return annotations
 
+    def _parse_variant_effect(self, effect: str) -> typing.Optional[VariantEffect]:
+        digit_word_map = {'0': 'ZERO','1': 'ONE','2': 'TWO','3': 'THREE','4': 'FOUR','5': 'FIVE','6': 'SIX','7': 'SEVEN','8': 'EIGHT','9': 'NINE'}
+        for digit, word in digit_word_map:
+            effect = effect.replace(digit, word)
+        try:
+            var_effect = VariantEffect[effect.upper()]
+        except KeyError:
+            self._logging(f"VariantEffect {effect} was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.")
+            return None
+        return var_effect
+
     def _process_item(self, item) -> typing.Optional[TranscriptAnnotation]:
         """
         Parse one transcript annotation from the JSON response.
@@ -93,11 +104,9 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         var_effects = []
         consequences = item.get('consequence_terms')
         for con in consequences:
-            if con[0] == '5':
-                con = "FIVE_PRIME_UTR_VARIANT"
-            if con[0] == '3':
-                con = 'THREE_PRIME_UTR_VARIANT'
-            var_effects.append(VariantEffect[con.upper()])
+            var_effect = self._parse_variant_effect(con)
+            if var_effect is not None:
+                var_effects.append(var_effect)
         gene_name = item.get('gene_symbol')
         protein_id = item.get('protein_id')
         protein = self._protein_annotator.annotate(protein_id)
