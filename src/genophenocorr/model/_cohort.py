@@ -261,7 +261,7 @@ class Cohort(typing.Sized):
         for var in self.all_variants:
             for trans in var.tx_annotations:
                 if trans.transcript_id in var_type_dict:
-                    var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
+                    var_type_dict.get(trans.transcript_id).update([var_eff.name for var_eff in trans.variant_effects])
         too_small = []
         for tx_id, var_effect_counter in var_type_dict.items():
             if len(var_effect_counter) <= 1:
@@ -276,5 +276,25 @@ class Cohort(typing.Sized):
     def get_excluded_count(self):
         return len(self.all_excluded_patients)
 
+    def get_protein_features_affected(self, transcript):
+        all_features = Counter()
+        protein_set = set()
+        var_coords = []
+        for var in self.all_variants:
+            for tx in var.tx_annotations:
+                if tx.transcript_id == transcript:
+                    protein_set.add(tx.protein_affected)
+                    if tx.protein_effect_location is None or tx.protein_effect_location[0] is None or tx.protein_effect_location[1] is None:
+                        continue
+                    else:
+                        var_coords.append(tx.protein_effect_location)
+        if len(protein_set) != 1:
+            raise ValueError(f"Found more than 1 protein: {protein_set}")
+        else:
+            protein = list(protein_set)[0][0]
+        for pair in var_coords:
+            all_features.update(list(protein.get_features_variant_overlaps(pair[0], pair[1])))
+        return all_features
+        
     def __len__(self) -> int:
         return len(self._patient_set)

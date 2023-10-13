@@ -51,7 +51,7 @@ We can then view the data using the list commands.
   [('NP_09876.5', 26)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
-  [(VariantEffect.FRAMESHIFT_VARIANT, 1), (VariantEffect.MISSENSE_VARIANT, 1)]
+  [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 
 Using the counts, we can choose and run what analyses we want.
 For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
@@ -59,7 +59,7 @@ For instance, we can partition the patients into two groups based on presence/ab
 .. doctest:: tutorial
 
   >>> from genophenocorr.analysis import CohortAnalysis
-  >>> from genophenocorr.constants import VariantEffect
+  >>> from genophenocorr.model import VariantEffect
   >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
   >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
   >>> frameshift # doctest: +NORMALIZE_WHITESPACE

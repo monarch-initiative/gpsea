@@ -88,7 +88,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         if not self._include_computational_txs and not trans_id.startswith('NM_'):
             # Skipping a computational transcript
             return None
-        is_preferred = True if 'canonical' in item and item['canonical'] else False
+        is_preferred = True if ('canonical' in item and item['canonical'] == 1) else False
         hgvsc_id = item.get('hgvsc')
         var_effects = []
         consequences = item.get('consequence_terms')

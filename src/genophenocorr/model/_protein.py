@@ -7,6 +7,7 @@ import hpotk
 from .genome import Region
 
 
+
 class FeatureInfo:
     """A class that represents a protein feature
     (e.g. a repeated sequence given the name "ANK 1" in protein "Ankyrin repeat domain-containing protein 11")
@@ -141,6 +142,9 @@ class SimpleProteinFeature(ProteinFeature):
         """
         return self._type
 
+    def to_string(self) -> str:
+        return f"{self.feature_type.name}-{self.info.name}-{self.info.region}"
+
     def __str__(self) -> str:
         return f"SimpleProteinFeature(type={self.feature_type}, " \
                f"info={str(self.info)})"
@@ -241,6 +245,18 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "MOTIF"
         """
         return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
+
+    def get_features_variant_overlaps(self, var_start: int, var_end: int) -> typing.Sequence[ProteinFeature]:
+        affected_features = set()
+        for feat in self.protein_features:
+            if feat.info.start is None or feat.info.end is None:
+                print(f"{feat.info.name} has no start and end info")
+                continue
+            if feat.info.start <= var_start <= feat.info.end:
+                affected_features.add(feat.to_string())
+            elif feat.info.start <= var_end <= feat.info.end:
+                affected_features.add(feat.to_string())
+        return affected_features 
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
