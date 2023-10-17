@@ -1,11 +1,13 @@
 # A module with classes that interact with Variant validator's REST API to fetch required data.
+import re
 import typing
 
 import hpotk
+import requests
 
 from genophenocorr.model import VariantCoordinates, Genotype
-from genophenocorr.model.genome import GenomeBuild
-from ._api import VariantCoordinateFinder
+from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand, GRCh38
+from ._api import VariantCoordinateFinder, T
 
 
 class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, str]]):

@@ -7,9 +7,6 @@ import hpotk
 import requests
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Genotype
-from genophenocorr.model.genome import GenomeBuild
-from genophenocorr.model.genome import GRCh38
-from genophenocorr.model.genome import GenomicRegion, Strand
 
 from genophenocorr.preprocessing._api import FunctionalAnnotator, \
     ProteinMetadataService, \
