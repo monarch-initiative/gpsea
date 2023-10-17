@@ -21,7 +21,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
 
     and extracts the variant coordinates from the response.
     """
-    TIME_OUT = 3  # TODO @ielis: please set this to a value you find reasonable 
+    TIME_OUT = 10  # TODO @ielis: please set this to a value you find reasonable
 
     def __init__(self, genome_build: GenomeBuild):
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild,
