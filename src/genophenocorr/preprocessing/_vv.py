@@ -82,13 +82,13 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  we're practically done! 😎
         response = response[0]
 
-        chrom = int(response['seq_region_name'])
+        chrom = response['seq_region_name']
         transcript_consequences = response['transcript_consequences'][0]
         strand = transcript_consequences['strand']
 
         variant_coordinates = VariantCoordinates(
             region=GenomicRegion(
-                contig=self._build.contigs[chrom-1],
+                contig=self._build.contig_by_name(chrom),
                 start=response['start'],
                 end=response['end'],
                 strand=(
