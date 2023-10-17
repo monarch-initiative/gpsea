@@ -24,6 +24,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
     URL: https://rest.variantvalidator.org/
     """
     TIME_OUT = 10  # TODO @ielis: please set this to a value you find reasonable
+    select_options = ['all', 'raw', 'select', 'mane_select', 'mane', 'refseq_select']
+    SELECT = select_options[2]
 
     def __init__(self, genome_build: GenomeBuild):
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
@@ -47,7 +49,10 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  - process the genotype string into `Genotype` enum member
         #  - return the results in a tuple
         hgvs, genotype = item
-        request_url = self._url % hgvs
+        print(f"URL: {self._url}")
+        print(f"Values: {self._build.identifier}, {hgvs}")
+        request_url = self._url % (self._build.identifier, hgvs, VVHgvsVariantCoordinateFinder.SELECT)
+        print(f"Request URL: {request_url}")
         headers = {'Content-type': 'application/json'}
         if self.hgvs_pattern.match(hgvs):
             try:
