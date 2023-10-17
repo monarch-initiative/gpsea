@@ -26,6 +26,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild,
                                                    'genome_build')
         self._url = 'https://rest.ensembl.org/vep/human/hgvs/%s?refseq=1'
+        self.hgvs_pattern = re.compile(r'^NM_\d+\.\d+:c\.(?:\d+|dup|del|ins)[ACGT]*>[ACGT]*$')
 
     def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
         # TODO - implement
@@ -46,8 +47,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         hgvs, genotype = item
         request_url = self._url % hgvs
         headers = {'Content-type': 'application/json'}
-        pattern = re.compile(r'^NM_\d+\.\d+:c\.(?:\d+|dup|del|ins)[ACGT]*>[ACGT]*$')
-        if pattern.match(hgvs):
+        if self.hgvs_pattern.match(hgvs):
             response = requests.get(request_url, headers=headers)
             response = response.json()
             print(response)
