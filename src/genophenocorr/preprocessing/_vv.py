@@ -85,8 +85,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
                 start=response['start'],
                 end=response['end'],
                 strand=(
-                    Strand['NEGATIVE'] if strand == -1
-                    else Strand['POSITIVE'] if strand == 1
+                    Strand.NEGATIVE if strand == -1
+                    else Strand.POSITIVE if strand == 1
                     else None
                 ),
             ),
