@@ -21,6 +21,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
 
     and extracts the variant coordinates from the response.
     """
+    TIME_OUT = 3  # TODO @ielis: please set this to a value you find reasonable 
 
     def __init__(self, genome_build: GenomeBuild):
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild,
@@ -48,9 +49,13 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         request_url = self._url % hgvs
         headers = {'Content-type': 'application/json'}
         if self.hgvs_pattern.match(hgvs):
-            response = requests.get(request_url, headers=headers)
-            response = response.json()
-            print(response)
+            try:
+                response = requests.get(request_url, headers=headers, timeout=VVHgvsVariantCoordinateFinder.TIME_OUT)
+                response.raise_for_status()
+                response = response.json()
+                print(response)
+            except requests.exceptions.RequestException as e:
+                print(f"Error: {e}")
 
             variant_coordinates = self._extract_variant_coordinates(response)
 
