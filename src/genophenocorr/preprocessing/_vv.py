@@ -49,9 +49,10 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  - process the genotype string into `Genotype` enum member
         #  - return the results in a tuple
         hgvs, genotype = item
+        transcript, _ = hgvs.split(':')
         print(f"URL: {self._url}")
         print(f"Values: {self._build.identifier}, {hgvs}")
-        request_url = self._url % (self._build.identifier, hgvs, VVHgvsVariantCoordinateFinder.SELECT)
+        request_url = self._url % (self._build.identifier, hgvs, transcript)
         print(f"Request URL: {request_url}")
         headers = {'Content-type': 'application/json'}
         if self.hgvs_pattern.match(hgvs):
