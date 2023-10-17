@@ -20,6 +20,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
     * genotype `str` (e.g. `heterozygous`)
 
     and extracts the variant coordinates from the response.
+
+    URL: https://rest.variantvalidator.org/
     """
     TIME_OUT = 10  # TODO @ielis: please set this to a value you find reasonable
 
