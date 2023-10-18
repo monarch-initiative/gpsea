@@ -20,6 +20,11 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         """Constructs all necessary attributes for a UniprotProteinMetadataService object
         """
         self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.INFO)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
         self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
                     'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq'
 
@@ -42,11 +47,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             return []
         protein_list = []
         for protein in results:
-            verify = False
+            unis = []
             for uni in protein['uniProtKBCrossReferences']:
-                if uni['id'] == protein_id:
-                    verify = True
-            if verify:
+                unis.append(uni['id'])
+            if protein_id in unis:
                 try:
                     protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
                 except KeyError:
@@ -64,8 +68,8 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                     self._logger.warning(f"No features for {protein_id}")
                 protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
             else:
-                self._logger.warning(f"ID {protein_id} did not match")
-        self._logger.warning(f'Protein ID {protein_id} got {len(protein_list)} results')
-
+                self._logger.warning(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
+        if len(protein_list) > 1:
+            self._logger.info(f'UniProt found {len(protein_list)} results for ID {protein_id}')
         # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list
