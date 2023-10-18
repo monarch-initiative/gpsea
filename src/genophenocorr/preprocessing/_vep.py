@@ -81,14 +81,15 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         return annotations
 
     def _parse_variant_effect(self, effect: str) -> typing.Optional[VariantEffect]:
-        if effect.upper() == "5_PRIME_UTR_VARIANT":
+        effect = effect.upper()
+        if effect == "5_PRIME_UTR_VARIANT":
             effect = "FIVE_PRIME_UTR_VARIANT"
-        elif effect.upper() == "3_PRIME_UTR_VARIANT":
+        elif effect == "3_PRIME_UTR_VARIANT":
             effect = 'THREE_PRIME_UTR_VARIANT'
         try:
-            var_effect = VariantEffect[effect.upper()]
+            var_effect = VariantEffect[effect]
         except KeyError:
-            self._logging.warning(f"VariantEffect {effect} was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.")
+            self._logging.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub." , effect)
             return None
         return var_effect
 
