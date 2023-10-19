@@ -71,7 +71,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         else:
             raise ValueError(f'Invalid HGVS string: {hgvs}')
 
-    def _extract_variant_coordinates(self, response: typing.List[typing.Dict]) \
+    def _extract_variant_coordinates(self, response: typing.Dict) \
             -> typing.Optional[VariantCoordinates]:
         # TODO - implement
         #  `response` is a dict with JSON response.
@@ -89,23 +89,20 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  we're practically done! 😎
         response = response[0]
 
-        chrom = response['seq_region_name']
-        transcript_consequences = response['transcript_consequences'][0]
-        strand = transcript_consequences['strand']
+        selected_assembly = response['selected_assembly']
+        variant_data = response['primary_assembly_loci'][selected_assembly.lower()]
+        strand = Strand.POSITIVE
+        start, end, change_length = None, None, None
 
         variant_coordinates = VariantCoordinates(
             region=GenomicRegion(
-                contig=self._build.contig_by_name(chrom),
-                start=response['start'],
-                end=response['end'],
-                strand=(
-                    Strand.NEGATIVE if strand == -1
-                    else Strand.POSITIVE if strand == 1
-                    else None
-                ),
+                contig=self._build.contig_by_name(variant_data['chr']),
+                start=start,
+                end=end,
+                strand=strand,
             ),
-            ref=transcript_consequences['given_ref'],
-            alt=transcript_consequences['variant_allele'],
-            change_length=response['end'] - response['start'] + 1,
+            ref=variant_data['ref'],
+            alt=variant_data['alt'],
+            change_length=change_length,
         )
         return variant_coordinates
