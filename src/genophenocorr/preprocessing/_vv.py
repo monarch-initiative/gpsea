@@ -87,7 +87,6 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  and duplication.
         #  If the tests in `_test_vep/TestVepHgvsVariantCoordinateFinder` pass then
         #  we're practically done! 😎
-        response = response[0]
 
         selected_assembly = response['selected_assembly']
         variant_data = response['primary_assembly_loci'][selected_assembly.lower()]
