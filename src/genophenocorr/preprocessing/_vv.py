@@ -89,7 +89,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  we're practically done! 😎
 
         selected_assembly = response['selected_assembly']
-        variant_data = response['primary_assembly_loci'][selected_assembly.lower()]
+        variant_data = response['primary_assembly_loci'][selected_assembly.lower()]['vcf']
         strand = Strand.POSITIVE
         start, end, change_length = None, None, None
 
