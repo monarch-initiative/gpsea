@@ -71,6 +71,10 @@ class GenomeBuild:
         return self._id
 
     @property
+    def identifier_name(self) -> str:
+        return self._id if '.' not in self._id else self._id[:self._id.index('.')]
+
+    @property
     def contigs(self) -> typing.Sequence[Contig]:
         return self._contigs
 
