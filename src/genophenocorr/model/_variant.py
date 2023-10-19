@@ -307,24 +307,21 @@ class VariantCoordinates:
 
     def __eq__(self, other) -> bool:
         return isinstance(other, VariantCoordinates) \
-            and self.alt == other.alt \
+            and self.region == other.region \
             and self.ref == other.ref \
-            and self.chrom == other.chrom \
-            and self.start == other.start \
-            and self.end == other.end \
+            and self.alt == other.alt \
             and self.change_length == other.change_length
 
+    def __hash__(self) -> int:
+        return hash((self._region, self._ref, self._alt, self._change_length))
+
     def __str__(self) -> str:
-        return f"VariantCoordinates(chrom={self.chrom}, " \
-               f"start={self.start}, end={self.end}, " \
+        return f"VariantCoordinates(region={self.region}, " \
                f"ref={self.ref}, alt={self.alt}, " \
                f"change_length={self.change_length})"
 
     def __repr__(self) -> str:
         return str(self)
-
-    def __hash__(self) -> int:
-        return hash((self._region, self._ref, self._alt, self._change_length))
 
 
 class VariantCoordinateAware(metaclass=abc.ABCMeta):
