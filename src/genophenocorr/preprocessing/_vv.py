@@ -64,7 +64,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
             except requests.exceptions.RequestException as e:
                 print(f"Error: {e}")
 
-            variant_coordinates = self._extract_variant_coordinates(response)
+            variant_coordinates = self._extract_variant_coordinates(response[hgvs])
 
             genotype = Genotype[genotype.upper()]
             return variant_coordinates, genotype
