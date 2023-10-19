@@ -91,17 +91,20 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         selected_assembly = response['selected_assembly']
         variant_data = response['primary_assembly_loci'][selected_assembly.lower()]['vcf']
         strand = Strand.POSITIVE
-        start, end, change_length = None, None, None
+        chrom = variant_data['chr']
+        pos = int(variant_data['pos'])
+        ref = variant_data['ref']
+        alt = variant_data['alt']
 
         variant_coordinates = VariantCoordinates(
             region=GenomicRegion(
-                contig=self._build.contig_by_name(variant_data['chr']),
+                contig=self._build.contig_by_name(chrom),
                 start=start,
                 end=end,
                 strand=strand,
             ),
-            ref=variant_data['ref'],
-            alt=variant_data['alt'],
+            ref=ref,
+            alt=alt,
             change_length=change_length,
         )
         return variant_coordinates
