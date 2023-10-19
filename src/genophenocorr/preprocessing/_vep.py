@@ -3,7 +3,7 @@ import typing
 
 import requests
 
-from genophenocorr.model import VariantCoordinates, TranscriptAnnotation
+from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
 
@@ -80,6 +80,19 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
         return annotations
 
+    def _parse_variant_effect(self, effect: str) -> typing.Optional[VariantEffect]:
+        effect = effect.upper()
+        if effect == "5_PRIME_UTR_VARIANT":
+            effect = "FIVE_PRIME_UTR_VARIANT"
+        elif effect == "3_PRIME_UTR_VARIANT":
+            effect = 'THREE_PRIME_UTR_VARIANT'
+        try:
+            var_effect = VariantEffect[effect]
+        except KeyError:
+            self._logging.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub." , effect)
+            return None
+        return var_effect
+
     def _process_item(self, item) -> typing.Optional[TranscriptAnnotation]:
         """
         Parse one transcript annotation from the JSON response.
@@ -90,7 +103,12 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             return None
         is_preferred = True if 'canonical' in item and item['canonical'] else False
         hgvsc_id = item.get('hgvsc')
+        var_effects = []
         consequences = item.get('consequence_terms')
+        for con in consequences:
+            var_effect = self._parse_variant_effect(con)
+            if var_effect is not None:
+                var_effects.append(var_effect)
         gene_name = item.get('gene_symbol')
         protein_id = item.get('protein_id')
         protein = self._protein_annotator.annotate(protein_id)
@@ -112,7 +130,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     trans_id,
                                     hgvsc_id,
                                     is_preferred,
-                                    consequences,
+                                    var_effects,
                                     exons_effected,
                                     protein,
                                     protein_effect_start,

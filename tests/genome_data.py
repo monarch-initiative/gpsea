@@ -2,8 +2,7 @@ import typing
 
 import pytest
 
-from genophenocorr import VariantEffect
-from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Variant, VariantCoordinates, TranscriptAnnotation, Genotypes
+from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Variant, VariantCoordinates, TranscriptAnnotation, Genotypes, VariantEffect
 from genophenocorr.model.genome import Contig, GenomicRegion, Strand
 
 

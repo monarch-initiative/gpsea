@@ -11,8 +11,7 @@ from statsmodels.stats import multitest
 from pandas import DataFrame, MultiIndex
 from collections import Counter, namedtuple
 
-from genophenocorr.constants import VariantEffect
-from genophenocorr.model import Cohort, FeatureType
+from genophenocorr.model import Cohort, FeatureType, VariantEffect
 
 from .predicate import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
