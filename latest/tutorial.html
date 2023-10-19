@@ -124,13 +124,13 @@ with the package:</p>
 <span class="go">[(&#39;NP_09876.5&#39;, 26)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_dict</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_data_by_tx</span><span class="p">(</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">tx_dict</span><span class="p">[</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-<span class="go">[(&#39;frameshift_variant&#39;, 1), (&#39;missense_variant&#39;, 1)]</span>
+<span class="go">[(&#39;FRAMESHIFT_VARIANT&#39;, 1), (&#39;MISSENSE_VARIANT&#39;, 1)]</span>
 </pre></div>
 </div>
 <p>Using the counts, we can choose and run what analyses we want.
 For instance, we can partition the patients into two groups based on presence/absence of a <em>frameshift</em> variant:</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.constants</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_analysis</span> <span class="o">=</span> <span class="n">CohortAnalysis</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">include_unmeasured</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_type</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> 

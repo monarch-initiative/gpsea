@@ -83,8 +83,7 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.constants</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">Genotype</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span>
 
 
@@ -202,7 +201,7 @@
             <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">trans</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">var_eff</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">var_eff</span> <span class="o">==</span> <span class="n">query</span><span class="p">:</span>
                             <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
