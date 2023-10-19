@@ -30,7 +30,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
     def __init__(self, genome_build: GenomeBuild):
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
         self._url = 'https://rest.variantvalidator.org/VariantValidator/variantvalidator/%s/%s/%s'
-        self.hgvs_pattern = re.compile(r'^NM_\d+\.\d+:c.(?:\d+_\d+|dup|del|ins)[ACGT]*>[ACGT]*$')
+        self.hgvs_pattern = re.compile(r'^NM_\d+\.\d+:c.\d+(_\d+)?(dup|del|ins(A|C|G|T)*|(A|C|G|T)*>(A|C|G|T)*)')
 
     def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
         # TODO - implement
