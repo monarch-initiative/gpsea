@@ -53,7 +53,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 alt = '<DUP>'
             else:
                 alt = '<DEL>'
-            contig = self._build._contig_by_name[variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id.split(':')[1]]
+            refseq_contig_name = variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id.split(':')[1]
+            contig = self._build.contig_by_name(refseq_contig_name)
         elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
                 variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
             ref = variant_descriptor.vcf_record.ref
