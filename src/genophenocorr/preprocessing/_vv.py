@@ -51,8 +51,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         hgvs, genotype = item
         transcript, _ = hgvs.split(':')
         print(f"URL: {self._url}")
-        print(f"Values: {self._build.identifier}, {hgvs}")
-        request_url = self._url % (self._build.identifier, hgvs, transcript)
+        print(f"Values: {self._build.identifier_name}, {hgvs}")
+        request_url = self._url % (self._build.identifier_name, hgvs, transcript)
         print(f"Request URL: {request_url}")
         headers = {'Content-type': 'application/json'}
         if self.hgvs_pattern.match(hgvs):
