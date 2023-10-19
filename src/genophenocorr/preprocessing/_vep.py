@@ -122,7 +122,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
-            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.as_string()}")
+            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates}")
             r.raise_for_status()
         results = r.json()
         if not isinstance(results, list):
