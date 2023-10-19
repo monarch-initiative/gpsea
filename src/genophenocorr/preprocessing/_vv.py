@@ -95,6 +95,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         pos = int(variant_data['pos'])
         ref = variant_data['ref']
         alt = variant_data['alt']
+        start, end, change_length = self._extract_0based_mutation_range_from_1based_pos(pos, ref, alt)
 
         variant_coordinates = VariantCoordinates(
             region=GenomicRegion(
