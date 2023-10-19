@@ -112,13 +112,10 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         )
         return variant_coordinates
 
-    def _extract_0based_mutation_range_from_1based_pos(
-            self, pos: int, ref: str, alt: str
-    ) -> typing.Tuple[int, int, int]:
+    def _extract_0based_mutation_range_from_1based_pos(self, pos: int, ref: str, alt: str) -> typing.Tuple[int, int, int]:
         """
         :return: 0-based start, end and change_length
         """
-        change_length = 1  # TODO: determine change length from ref and alt
         change_length = len(alt) - len(ref)
         end = pos
         start = pos - len(ref)
