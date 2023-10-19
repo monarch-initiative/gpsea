@@ -118,7 +118,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     protein_effect_start,
                                     protein_effect_end)
 
-    def _query_vep(self, variant_coordinates) -> dict:
+    def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
