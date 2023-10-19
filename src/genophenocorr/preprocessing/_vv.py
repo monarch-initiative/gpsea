@@ -64,7 +64,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
             except requests.exceptions.RequestException as e:
                 print(f"Error: {e}")
 
-            variant_coordinates = self._extract_variant_coordinates(response[hgvs])
+            variant_coordinates = self._extract_variant_coordinates(response)
 
             genotype = Genotype[genotype.upper()]
             return variant_coordinates, genotype
@@ -87,6 +87,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         #  and duplication.
         #  If the tests in `_test_vep/TestVepHgvsVariantCoordinateFinder` pass then
         #  we're practically done! 😎
+        variant_identifier = list(response.keys())[0]
+        response = response[variant_identifier]
 
         selected_assembly = response['selected_assembly']
         variant_data = response['primary_assembly_loci'][selected_assembly.lower()]['vcf']
