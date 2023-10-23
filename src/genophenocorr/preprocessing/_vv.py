@@ -116,8 +116,9 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         """
         :return: 0-based start, end and change_length
         """
+        print(f'POS: {pos}, REF: {ref}, ALT: {alt}')
         change_length = len(alt) - len(ref)
-        end = pos
-        start = pos - len(ref)
+        start = pos - 1
+        end = start + len(ref)
 
         return start, end, change_length
