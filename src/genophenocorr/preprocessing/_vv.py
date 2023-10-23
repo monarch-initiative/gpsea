@@ -33,21 +33,6 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         self.hgvs_pattern = re.compile(r'^NM_\d+\.\d+:c.\d+(_\d+)?.*')
 
     def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
-        # TODO - implement
-        #  `item` is a tuple described in class docstring.
-        #  - construct a URL to query the VEP endpoint, use the placeholder `self._url`.
-        #    We may want to include sanity check before query execution; we may not
-        #    want to query VEP
-        #    with rubbish values. Perhaps a regexp to check if the input looks
-        #    roughly like a HGVS string?
-        #     - has RefSeq transcript identifier (NM_...) with a version
-        #     - represents annotation with respect to a coding sequence: `c.123C>T`,
-        #     `c.100_110del`, etc.
-        #       (not a protein (p.Met123Gly))
-        #  - query the endpoint to get response
-        #  - extract `VariantCoordinates` from the response
-        #  - process the genotype string into `Genotype` enum member
-        #  - return the results in a tuple
         hgvs, genotype = item
         transcript, _ = hgvs.split(':')
         print(f"URL: {self._url}")
@@ -73,20 +58,6 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
 
     def _extract_variant_coordinates(self, response: typing.Dict) \
             -> typing.Optional[VariantCoordinates]:
-        # TODO - implement
-        #  `response` is a dict with JSON response.
-        #  An example response is at `test_data/vep_response/hgvs_missense.json`,
-        #  see `test_data/vep_response/README.md`
-        #  for more info.
-        #  Here we need to extract the relevant pieces and form `VariantCoordinates`.
-        #  Note, you can get a `Contig` from `self._build`.
-        #
-        #  I prepared unit tests with examples of variants which we we are most
-        #  likely to encounter.
-        #  We have the following variant categories: missense, deletion, insertion,
-        #  and duplication.
-        #  If the tests in `_test_vep/TestVepHgvsVariantCoordinateFinder` pass then
-        #  we're practically done! 😎
         variant_identifier = list(response.keys())[0]
         response = response[variant_identifier]
 
