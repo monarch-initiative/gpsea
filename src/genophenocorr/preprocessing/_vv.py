@@ -63,6 +63,11 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
 
     def _extract_variant_coordinates(self, response: typing.Dict) \
             -> typing.Optional[VariantCoordinates]:
+        """
+        Extracts variant coordinates from a response from Variant Validator's REST API.
+        :param response: Variant Validator's REST API response as a dictionary
+        :return: variant coordinates
+        """
         variant_identifier = list(response.keys())[0]
         response = response[variant_identifier]
 
@@ -90,6 +95,11 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
 
     def _extract_0based_mutation_range_from_1based_pos(self, pos: int, ref: str, alt: str) -> typing.Tuple[int, int, int]:
         """
+        Extracts 0-based start, end and change_length from 1-based position, reference and alternative alleles.
+
+        :param pos: 1-based position
+        :param ref: reference allele
+        :param alt: alternative allele
         :return: 0-based start, end and change_length
         """
         print(f'POS: {pos}, REF: {ref}, ALT: {alt}')
