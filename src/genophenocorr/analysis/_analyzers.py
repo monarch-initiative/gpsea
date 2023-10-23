@@ -13,6 +13,7 @@ from collections import Counter, namedtuple
 
 from genophenocorr.model import Cohort, FeatureType, VariantEffect
 
+from .predicate import PolyPredicate
 from .predicate import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 
@@ -162,7 +163,7 @@ class CohortAnalysis():
         patientsByHPO = namedtuple('patientByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
         return patientsByHPO(all_with_hpo, all_without_hpo)
 
-    def _run_dom_analysis(self, predicate, variable1, variable2):
+    def _run_dom_analysis(self, predicate: PolyPredicate, variable1, variable2):
         final_dict = dict()
         all_pvals = []
         if not self.is_recessive:
