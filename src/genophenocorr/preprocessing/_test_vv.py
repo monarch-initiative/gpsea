@@ -56,10 +56,10 @@ class TestVVHgvsVariantCoordinateFinder:
 
         assert vc is not None
         assert vc.chrom == '9'
-        assert vc.start == 133_357_812
-        assert vc.end == 133_357_813
-        assert vc.ref == 'A'
-        assert vc.alt == 'AAAA'
+        assert vc.start == 133_357_809
+        assert vc.end == 133_357_810
+        assert vc.ref == 'T'
+        assert vc.alt == 'TAAA'
         assert vc.change_length == 3
 
     def test_load_hgvs_MC4R_dup(self, coordinate_finder: VVHgvsVariantCoordinateFinder):
