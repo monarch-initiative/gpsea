@@ -252,7 +252,7 @@ class Cohort(typing.Sized):
         for var in self.all_variants:
             for trans in var.tx_annotations:
                 if trans.transcript_id in var_type_dict:
-                    var_type_dict.get(trans.transcript_id).update(trans.variant_effects)
+                    var_type_dict.get(trans.transcript_id).update([var_eff.name for var_eff in trans.variant_effects])
         too_small = []
         for tx_id, var_effect_counter in var_type_dict.items():
             if len(var_effect_counter) <= 1:

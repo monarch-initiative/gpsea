@@ -7,6 +7,7 @@ import hpotk
 from .genome import GenomicRegion
 from ._gt import Genotyped, Genotypes
 from ._protein import ProteinMetadata
+from ._variant_effects import VariantEffect
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):
@@ -52,7 +53,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
                  tx_id: str,
                  hgvsc: typing.Optional[str],
                  is_preferred: bool,
-                 variant_effects,
+                 variant_effects: typing.Iterable[VariantEffect],
                  affected_exons: typing.Optional[typing.Sequence[int]],
                  affected_protein: typing.Sequence[ProteinMetadata],
                  protein_effect_start: typing.Optional[int],
@@ -63,7 +64,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
             gene_id (string): The gene symbol associated with the transcript
             tx_id (string): The transcript ID
             hgvsc (string, Optional): The HGVS "coding-DNA" ID if available, else None
-            variant_effects (Sequence[string]): A sequence of predicted effects given by VEP
+            variant_effects (Iterable[string]): An iterable of predicted effects given by functional annotator
             affected_exons (Sequence[integer], Optional): A sequence of exons affected by the variant. Returns None if none are affected.
             affected_protein (Sequence[ProteinMetadata]): A ProteinMetadata object representing the protein affected by this transcript
             protein_effect_start (integer, Optional): The start coordinate of the effect on the protein sequence.
@@ -115,7 +116,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._hgvsc_id
 
     @property
-    def variant_effects(self) -> typing.Sequence[str]:
+    def variant_effects(self) -> typing.Sequence[VariantEffect]:
         """
         Returns:
             Sequence[string]: A sequence of variant effects.
@@ -307,24 +308,21 @@ class VariantCoordinates:
 
     def __eq__(self, other) -> bool:
         return isinstance(other, VariantCoordinates) \
-            and self.alt == other.alt \
+            and self.region == other.region \
             and self.ref == other.ref \
-            and self.chrom == other.chrom \
-            and self.start == other.start \
-            and self.end == other.end \
+            and self.alt == other.alt \
             and self.change_length == other.change_length
 
+    def __hash__(self) -> int:
+        return hash((self._region, self._ref, self._alt, self._change_length))
+
     def __str__(self) -> str:
-        return f"VariantCoordinates(chrom={self.chrom}, " \
-               f"start={self.start}, end={self.end}, " \
+        return f"VariantCoordinates(region={self.region}, " \
                f"ref={self.ref}, alt={self.alt}, " \
                f"change_length={self.change_length})"
 
     def __repr__(self) -> str:
         return str(self)
-
-    def __hash__(self) -> int:
-        return hash((self._region, self._ref, self._alt, self._change_length))
 
 
 class VariantCoordinateAware(metaclass=abc.ABCMeta):
@@ -377,7 +375,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     trans_id: str,
                                     hgvsc_id: str,
                                     is_preferred: bool,
-                                    consequences: typing.Sequence[str],
+                                    consequences: typing.Iterable[VariantEffect],
                                     exons_effected: typing.Sequence[int],
                                     protein: typing.Sequence[ProteinMetadata],
                                     protein_effect_start: int,

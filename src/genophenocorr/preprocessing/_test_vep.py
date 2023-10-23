@@ -5,7 +5,7 @@ from pkg_resources import resource_filename
 
 import pytest
 
-from genophenocorr.model import VariantCoordinates
+from genophenocorr.model import VariantCoordinates, VariantEffect
 from genophenocorr.model.genome import GenomicRegion, Strand, GRCh38
 
 from ._vep import verify_start_end_coordinates, VepFunctionalAnnotator, VepHgvsVariantCoordinateFinder
@@ -80,7 +80,7 @@ class TestVepFunctionalAnnotator:
         assert preferred.transcript_id == 'NM_013275.6'
         assert preferred.is_preferred is True
         assert preferred.hgvsc_id == 'NM_013275.6:c.7407C>G'
-        assert preferred.variant_effects == ('stop_gained',)
+        assert preferred.variant_effects == (VariantEffect.STOP_GAINED,)
         assert preferred.overlapping_exons == (9,)
 
     def test__process_item_deletion(self, variant_annotator: VepFunctionalAnnotator):
@@ -101,7 +101,7 @@ class TestVepFunctionalAnnotator:
         assert preferred.transcript_id == 'NM_013275.6'
         assert preferred.is_preferred is True
         assert preferred.hgvsc_id == 'NM_013275.6:c.2408_2412del'
-        assert preferred.variant_effects == ('frameshift_variant',)
+        assert preferred.variant_effects == (VariantEffect.FRAMESHIFT_VARIANT,)
         assert preferred.overlapping_exons == (9,)
 
 

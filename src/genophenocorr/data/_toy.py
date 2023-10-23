@@ -37,7 +37,7 @@ def get_toy_cohort() -> Cohort:
     prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
 
     snv = Variant.create_variant_from_scratch(VariantCoordinates(make_region(280, 281), 'A', 'G', 0), 'FakeGene',
-                                                  'NM_1234.5', 'NM_1234.5:c.180A>G', False, ['missense_variant'], [1],
+                                                  'NM_1234.5', 'NM_1234.5:c.180A>G', False, [VariantEffect.MISSENSE_VARIANT], [1],
                                                   [prot], 60, 60,
                                                   Genotypes.from_mapping({
                                                       'A': Genotype.HETEROZYGOUS, 'B': Genotype.HETEROZYGOUS,
@@ -54,7 +54,7 @@ def get_toy_cohort() -> Cohort:
                                               )
     deletion = Variant.create_variant_from_scratch(VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
                                                   'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del',
-                                                  False, ['frameshift_variant'],
+                                                  False, [VariantEffect.FRAMESHIFT_VARIANT],
                                                   [2], [prot], 86, 87,
                                                   Genotypes.from_mapping({
                                                       'D': Genotype.HETEROZYGOUS, 'F': Genotype.HETEROZYGOUS,
@@ -69,11 +69,11 @@ def get_toy_cohort() -> Cohort:
                                                    )
     het_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1), 'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, ['frameshift_variant'], [1], [prot], 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], [prot], 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
     hom_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1),'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, ['frameshift_variant'], [1], [prot], 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], [prot], 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
 
     patients = (

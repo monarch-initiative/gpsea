@@ -36,44 +36,44 @@ def toy_cohort() -> Cohort:
 
     dup = Variant(VariantCoordinates(make_region("16", 89279849, 89279850), ref='G', alt='GC', change_length=1),
                   [
-                      TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', False, ['frameshift_variant'], [9],
+                      TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', False, [VariantEffect.FRAMESHIFT_VARIANT], [9],
                                            [prot], 2231, 2231)
                   ],
                   Genotypes.from_mapping({'HetSingleVar': Genotype.HETEROZYGOUS}))
     indel = Variant(VariantCoordinates(make_region("16", 89284600, 89284602), ref='GG', alt='A', change_length=-1),
                     [
-                        TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', False, ['frameshift_variant'],
+                        TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', False, [VariantEffect.FRAMESHIFT_VARIANT],
                                              [9], [prot], 647, 647)
                     ],
                     Genotypes.from_mapping({'HetDoubleVar1': Genotype.HETEROZYGOUS}))
     snv_stop_gain = Variant(VariantCoordinates(make_region("16", 89280751, 89280752), ref='G', alt='T', change_length=0),
                             [
-                                TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', False, ['stop_gained'], [9], [prot],
+                                TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', False, [VariantEffect.STOP_GAINED], [9], [prot],
                              1930, 1930)],
                             Genotypes.from_mapping({'HetDoubleVar1': Genotype.HETEROZYGOUS}))
     snv_missense = Variant(VariantCoordinates(make_region("16", 89275127, 89275128), ref='G', alt='A', change_length=0),
                            [
-                               TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', False, ['missense_variant'], [10],
+                               TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', False, [VariantEffect.MISSENSE_VARIANT], [10],
                              [prot], 2512, 2512)
                            ],
                            Genotypes.from_mapping({'HetDoubleVar2': Genotype.HETEROZYGOUS}))
     del_frameshift = Variant(VariantCoordinates(make_region("16", 89279707, 89279725), ref='AGTGTTCGGGGCGGGGCC', alt='A', change_length=-17),
                              [
-                                 TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', False, ['frameshift_variant'],
+                                 TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', False, [VariantEffect.FRAMESHIFT_VARIANT],
                               [9], [prot], 2273, 2278)
                              ],
                              Genotypes.from_mapping({'HetDoubleVar2': Genotype.HETEROZYGOUS}))
     del_small = Variant(VariantCoordinates(make_region("16", 89279457, 89279459), ref='TG', alt='T', change_length=-1),
                         [
-                            TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', False, ['frameshift_variant'], [9],
+                            TranscriptAnnotation('ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', False, [VariantEffect.FRAMESHIFT_VARIANT], [9],
                              [prot], 2361, 2362)
                         ],
                         Genotypes.from_mapping({'HomoVar': Genotype.HOMOZYGOUS_ALTERNATE}))
     del_large = Variant(VariantCoordinates(make_region("16", 89_190_070, 89_439_815), ref='N', alt='<DEL>', change_length=-249_745),
                         [
                             TranscriptAnnotation('ANKRD11', 'NM_013275.6', None, False,
-                                 ['stop_lost', 'feature_truncation', 'coding_sequence_variant', '5_prime_UTR_variant',
-                                  '3_prime_UTR_variant', 'intron_variant'], [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                                 [VariantEffect.STOP_LOST, VariantEffect.FEATURE_TRUNCATION, VariantEffect.CODING_SEQUENCE_VARIANT, VariantEffect.FIVE_PRIME_UTR_VARIANT,
+                                  VariantEffect.THREE_PRIME_UTR_VARIANT, VariantEffect.INTRON_VARIANT], [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
                                  [prot], None, None)
                         ],
                         Genotypes.from_mapping({'LargeCNV': Genotype.HETEROZYGOUS}))
