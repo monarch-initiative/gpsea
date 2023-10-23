@@ -32,7 +32,12 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         self._url = 'https://rest.variantvalidator.org/VariantValidator/variantvalidator/%s/%s/%s'
         self.hgvs_pattern = re.compile(r'^NM_\d+\.\d+:c.\d+(_\d+)?.*')
 
-    def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
+    def find_coordinates(self, item: typing.Tuple[str, str]) -> typing.Tuple[VariantCoordinates, Genotype]:
+        """
+        Extracts variant coordinates from an HGVS string using Variant Validator's REST API.
+        :param item: Tuple of hgvs string and genotype string
+        :return: variant coordinates and genotype
+        """
         hgvs, genotype = item
         transcript, _ = hgvs.split(':')
         print(f"URL: {self._url}")
