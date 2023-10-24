@@ -5,11 +5,6 @@ import hpotk.util
 
 from genophenocorr.model import Patient
 
-T = typing.TypeVar('T')
-"""
-The generic type of an item tested in a PolyPredicate.
-"""
-
 
 class PatientCategory:
     """
@@ -66,9 +61,10 @@ class PatientCategory:
         return hash((self.cat_id, self.name, self.description))
 
 
-class PolyPredicate(typing.Generic[T], metaclass=abc.ABCMeta):
+class PolyPredicate(metaclass=abc.ABCMeta):
     """
-    `PolyPredicate` bins a :class:`Patient` into one of several discrete groups represented by :class:`PatientCategory`.
+    `PolyPredicate` bins a :class:`genophenocorr.model.Patient` into one of several discrete groups represented
+    by :class:`PatientCategory`.
 
     The groups must be *exclusive* - the patient can be binned into one and only one group,
     and *exhaustive* - the groups must cover all possible scenarios.
@@ -88,7 +84,7 @@ class PolyPredicate(typing.Generic[T], metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def test(self, patient: Patient, query: T) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         """
         Assign a `patient` into a category.
 
@@ -96,10 +92,18 @@ class PolyPredicate(typing.Generic[T], metaclass=abc.ABCMeta):
         """
         pass
 
+    @staticmethod
+    def _check_patient(patient: Patient):
+        """
+        Check if the `patient` meets the predicate requirements.
+        """
+        if not isinstance(patient, Patient):
+            raise ValueError(f"patient must be type Patient but was type {type(patient)}")
+
 
 class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
     """
-    `BooleanPredicate` tests if a :class:`Patient` belongs to a group and returns a boolean binning.
+    `BooleanPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to a group and returns a boolean binning.
     """
 
     FALSE = PatientCategory(0, 'False', 'The patient does not belong to the group.')
@@ -115,10 +119,6 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
     @property
     def categories(self) -> typing.Sequence[PatientCategory]:
         """
-        `BooleanPredicate` bins patient into :class:`BooleanPredicate.FALSE` or :class:`BooleanPredicate.TRUE` categories.
+        The predicate bins a patient into :class:`BooleanPredicate.FALSE` or :class:`BooleanPredicate.TRUE` category.
         """
         return BooleanPredicate.FALSE, BooleanPredicate.TRUE
-
-    @abc.abstractmethod
-    def test(self, patient: Patient, query: T) -> bool:
-        pass
