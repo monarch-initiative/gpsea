@@ -8,7 +8,7 @@ import pytest
 from genophenocorr.model import VariantCoordinates, VariantEffect
 from genophenocorr.model.genome import GenomicRegion, Strand, GRCh38
 
-from ._vep import verify_start_end_coordinates, VepFunctionalAnnotator, VepHgvsVariantCoordinateFinder
+from ._vep import verify_start_end_coordinates, VepFunctionalAnnotator
 
 from ._test_variant import variant_annotator
 
@@ -103,86 +103,6 @@ class TestVepFunctionalAnnotator:
         assert preferred.hgvsc_id == 'NM_013275.6:c.2408_2412del'
         assert preferred.variant_effects == (VariantEffect.FRAMESHIFT_VARIANT,)
         assert preferred.overlapping_exons == (9,)
-
-
-@pytest.fixture
-def vep_hgvs_variant_coordinate_finder() -> VepHgvsVariantCoordinateFinder:
-    return VepHgvsVariantCoordinateFinder(genome_build=GRCh38)
-
-
-class TestVepHgvsVariantCoordinateFinder:
-    TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vep_response'))
-
-    def test_load_hgvs_MC4R_missense(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_MC4R_missense.json')
-        response = load_response_json(response_fpath)
-
-        vc = vep_hgvs_variant_coordinate_finder._extract_variant_coordinates(response)
-
-        assert vc is not None
-        assert vc.chrom == '18'
-        assert vc.start == 60_372_096
-        assert vc.end == 60_372_097
-        assert vc.ref == 'T'
-        assert vc.alt == 'C'
-        assert vc.change_length == 0
-
-
-    def test_load_hgvs_SURF2_del(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_SURF2_del.json')
-        response = load_response_json(response_fpath)
-
-        vc = vep_hgvs_variant_coordinate_finder._extract_variant_coordinates(response)
-
-        assert vc is not None
-        assert vc.chrom == '9'
-        assert vc.start == 133_357_809
-        assert vc.end == 133_357_813
-        assert vc.ref == 'TAAA'
-        assert vc.alt == 'T'
-        assert vc.change_length == -3
-
-    def test_load_hgvs_SURF2_dup(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_SURF2_dup.json')
-        response = load_response_json(response_fpath)
-
-        vc = vep_hgvs_variant_coordinate_finder._extract_variant_coordinates(response)
-
-        assert vc is not None
-        assert vc.chrom == '9'
-        assert vc.start == 133_357_812
-        assert vc.end == 133_357_813
-        assert vc.ref == 'A'
-        assert vc.alt == 'AAAA'
-        assert vc.change_length == 3
-
-    def test_load_hgvs_MC4R_dup(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_MC4R_dup.json')
-        response = load_response_json(response_fpath)
-
-        vc = vep_hgvs_variant_coordinate_finder._extract_variant_coordinates(response)
-
-        assert vc is not None
-        assert vc.chrom == '18'
-        assert vc.start == 60_372_345
-        assert vc.end == 60_372_346
-        assert vc.ref == 'C'
-        assert vc.alt == 'CCAT'
-        assert vc.change_length == 3
-
-    def test_load_hgvs_SURF2_ins(self, vep_hgvs_variant_coordinate_finder: VepHgvsVariantCoordinateFinder):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_SURF2_ins.json')
-        response = load_response_json(response_fpath)
-
-        vc = vep_hgvs_variant_coordinate_finder._extract_variant_coordinates(response)
-
-        assert vc is not None
-        assert vc.chrom == '9'
-        assert vc.start == 133_357_809
-        assert vc.end == 133_357_810
-        assert vc.ref == 'T'
-        assert vc.alt == 'TAGC'
-        assert vc.change_length == 3
 
 
 def load_response_json(path: str):
