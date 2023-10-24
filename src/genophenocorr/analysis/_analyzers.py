@@ -16,6 +16,7 @@ from collections import Counter, namedtuple, defaultdict
 from genophenocorr.model import Cohort, FeatureType, VariantEffect, Patient
 
 from .predicate import PolyPredicate
+from .predicate import PropagatingPhenotypePredicate
 from .predicate import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 

@@ -23,18 +23,18 @@ def find_patient(pat_id, cohort) -> typing.Optional[Patient]:
                              # Test exact match
                              ('HP:0001166',  # Arachnodactyly
                              'HetSingleVar',
-                              HPOPresentPredicate.PRESENT),
+                              PropagatingPhenotypePredicate.PRESENT),
                              # Test inferred annotations
                              ('HP:0001250',  # Seizure
                               'HetSingleVar',
-                              HPOPresentPredicate.PRESENT),
+                              PropagatingPhenotypePredicate.PRESENT),
                              # Test excluded feature
                              ('HP:0001257',  # Spasticity
                               'HetSingleVar',
-                              HPOPresentPredicate.EXCLUDED),
+                              PropagatingPhenotypePredicate.EXCLUDED),
                             ('HP:0006280',  # Chronic pancreatitis
                               'HetSingleVar',
-                              HPOPresentPredicate.NOT_MEASURED),
+                             PropagatingPhenotypePredicate.NOT_MEASURED),
                          ])
 def test_HPOPresentPredicate(toy_cohort: Cohort,
                              toy_hpo: hpotk.Ontology,
@@ -42,7 +42,7 @@ def test_HPOPresentPredicate(toy_cohort: Cohort,
                              patient_id: str,
                              expected: PatientCategory):
     patient = find_patient(patient_id, toy_cohort)
-    predicate = HPOPresentPredicate(hpo=toy_hpo, phenotypic_feature=hpotk.TermId.from_curie(query))
+    predicate = PropagatingPhenotypePredicate(hpo=toy_hpo, phenotypic_feature=hpotk.TermId.from_curie(query))
     actual = predicate.test(patient)
     assert actual == expected
 

@@ -7,16 +7,16 @@ from genophenocorr.model import Patient, FeatureType, VariantEffect
 from ._api import PatientCategory, PolyPredicate, BooleanPredicate
 
 
-class HPOPresentPredicate(PolyPredicate):
+class PropagatingPhenotypePredicate(PolyPredicate):
     """
-    `HPOPresentPredicate` tests if the `patient` is annotated with a `query` HPO term.
+    `PropagatingPhenotypePredicate` tests if the `patient` is annotated with a `query` HPO term.
 
     The predicate returns the following results:
 
-    * :attr:`HPOPresentPredicate.PRESENT` if the patient is annotated with the `query` term or its descendant
-    * :attr:`HPOPresentPredicate.EXCLUDED` presence of the `query` term or its ancestor was specifically
+    * :attr:`PropagatingPhenotypePredicate.PRESENT` if the patient is annotated with the `query` term or its descendant
+    * :attr:`PropagatingPhenotypePredicate.EXCLUDED` presence of the `query` term or its ancestor was specifically
       excluded in the patient
-    * :attr:`HPOPresentPredicate.NOT_MEASURED` if the patient is not annotated with the `query` and presence of `query`
+    * :attr:`PropagatingPhenotypePredicate.NOT_MEASURED` if the patient is not annotated with the `query` and presence of `query`
       was *not* excluded
     """
 
@@ -55,6 +55,7 @@ class HPOPresentPredicate(PolyPredicate):
 
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HPOPresentPredicate.PRESENT, HPOPresentPredicate.EXCLUDED, HPOPresentPredicate.NOT_MEASURED
+        return PropagatingPhenotypePredicate.PRESENT, PropagatingPhenotypePredicate.EXCLUDED, PropagatingPhenotypePredicate.NOT_MEASURED
 
     def get_question(self) -> str:
         query_label = self._hpo.get_term(self._query).name
@@ -70,7 +71,7 @@ class HPOPresentPredicate(PolyPredicate):
         for phenotype in patient.phenotypes:
             if phenotype.is_observed:
                 if any(query == anc for anc in self._hpo.graph.get_ancestors(phenotype, include_source=True)):
-                    return HPOPresentPredicate.PRESENT
+                    return PropagatingPhenotypePredicate.PRESENT
             else:
                 if any(query == desc for desc in self._hpo.graph.get_descendants(phenotype, include_source=True)):
                     return self.EXCLUDED
