@@ -60,7 +60,7 @@ For instance, we can partition the patients into two groups based on presence/ab
 
   >>> from genophenocorr.analysis import CohortAnalysis
   >>> from genophenocorr.model import VariantEffect
-  >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
+  >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo)
   >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
   >>> frameshift # doctest: +NORMALIZE_WHITESPACE
                               With frameshift_variant         Without frameshift_variant
