@@ -53,8 +53,8 @@ class PropagatingPhenotypePredicate(PolyPredicate):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._query = hpotk.util.validate_instance(phenotypic_feature, hpotk.TermId, 'phenotypic_feature')
 
-    def categories(self) -> typing.Sequence[PatientCategory]:
-        return HPOPresentPredicate.PRESENT, HPOPresentPredicate.EXCLUDED, HPOPresentPredicate.NOT_MEASURED
+    @staticmethod
+    def get_categories() -> typing.Sequence[PatientCategory]:
         return PropagatingPhenotypePredicate.PRESENT, PropagatingPhenotypePredicate.EXCLUDED, PropagatingPhenotypePredicate.NOT_MEASURED
 
     def get_question(self) -> str:

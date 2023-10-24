@@ -127,3 +127,9 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort):
     result = predicate.test(patient)
     assert result == hasVarResult
 
+
+class TestGenericPredicateMethods:
+
+    def test_get_categories(self):
+        assert len(PropagatingPhenotypePredicate.get_categories()) == PropagatingPhenotypePredicate.n_categories()
+        assert len(BooleanPredicate.get_categories()) == BooleanPredicate.n_categories()

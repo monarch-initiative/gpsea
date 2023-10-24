@@ -75,9 +75,9 @@ class PolyPredicate(metaclass=abc.ABCMeta):
     Predicate will *not* check if, for instance, the patient variants are compatible with a certain mode of inheritance.
     """
 
-    @property
+    @staticmethod
     @abc.abstractmethod
-    def categories(self) -> typing.Sequence[PatientCategory]:
+    def get_categories() -> typing.Sequence[PatientCategory]:
         """
         Get a sequence of all categories which the `PolyPredicate` can produce.
         """
@@ -99,11 +99,12 @@ class PolyPredicate(metaclass=abc.ABCMeta):
         """
         pass
 
-    def n_categories(self) -> int:
+    @classmethod
+    def n_categories(cls) -> int:
         """
         Get the number of categories the predicate can produce.
         """
-        return len(self.categories)
+        return len(cls.get_categories())
 
     @staticmethod
     def _check_patient(patient: Patient):
@@ -129,8 +130,8 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
     Category for a patient who *belongs* to the tested group.
     """
 
-    @property
-    def categories(self) -> typing.Sequence[PatientCategory]:
+    @staticmethod
+    def get_categories() -> typing.Sequence[PatientCategory]:
         """
         The predicate bins a patient into :class:`BooleanPredicate.FALSE` or :class:`BooleanPredicate.TRUE` category.
         """
