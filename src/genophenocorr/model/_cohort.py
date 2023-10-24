@@ -65,6 +65,18 @@ class Patient:
         """
         return self._proteins
 
+    def present_phenotypes(self) -> typing.Iterator[Phenotype]:
+        """
+        Get an iterator over *present* phenotypes of the patient.
+        """
+        return filter(lambda p: p is not None and p.observed, self._phenotypes)
+
+    def excluded_phenotypes(self) -> typing.Iterator[Phenotype]:
+        """
+        Get an iterator over *excluded* phenotypes of the patient.
+        """
+        return filter(lambda p: p is not None and not p.observed, self._phenotypes)
+
     def __str__(self) -> str:
         return (f"Patient("
                 f"patient_id:{self.patient_id}, "

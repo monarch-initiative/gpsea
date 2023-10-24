@@ -2,33 +2,135 @@ import abc
 import logging
 import math
 import typing
+import warnings
 from decimal import Decimal
 
+import hpotk
 import numpy as np
 
 from scipy import stats
 from statsmodels.stats import multitest
 from pandas import DataFrame, MultiIndex
-from collections import Counter, namedtuple
+from collections import Counter, namedtuple, defaultdict
 
-from genophenocorr.model import Cohort, FeatureType, VariantEffect
+from genophenocorr.model import Cohort, FeatureType, VariantEffect, Patient
 
 from .predicate import PolyPredicate
-from .predicate import VariantEffectPredicate, HPOPresentPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from .predicate import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 
 
-class CohortAnalysis():
-    """This class can be used to run different analyses of a given Cohort. 
+PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
+
+
+def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient],
+                                            min_perc_patients_w_hpo: float,
+                                            hpo: hpotk.GraphAware,
+                                            missing_implies_excluded: bool = False) -> typing.Sequence[hpotk.TermId]:
+    """
+            We want to get a corpus of HPO terms that are present in at least certain fraction of the subjects.
+            We will get the IDs of the present features only.
+
+            :param min_perc_patients_w_hpo: the minimum fraction of patients that *must* have the feature.
+              The `float` must be in range :math:`(0,1]`.
+            """
+    # TODO - review the logic with Lauren. Should we also do annotation propagation here?
+    #  What is the meaning of _include_unmeasured in this context?
+    present_count = Counter()
+    excluded_count = Counter()
+
+    for patient in patients:
+        for pf in patient.phenotypes:
+            if pf.observed:
+                # A present phenotypic feature must be counted in.
+                present_count[pf.identifier] += 1
+                # implies presence of its ancestors.
+                for anc in hpo.graph.get_ancestors(pf):
+                    present_count[anc] += 1
+            else:
+                # An excluded phenotypic feature
+                excluded_count[pf.identifier] += 1
+                for desc in hpo.graph.get_descendants(pf):
+                    # implies exclusion of its descendants.
+                    excluded_count[desc] += 1
+
+    if missing_implies_excluded:
+        # We must do another pass to ensure that we account the missing features as excluded.
+        # `present_count` has all phenotypic features that were observed as present among the cohort members.
+        for pf in present_count:
+            for patient in patients:
+                pf_can_be_inferred_as_excluded_for_patient = False
+                for phenotype in patient.phenotypes:
+                    if pf == phenotype.identifier:
+                        # Patient is explicitly annotated with `pf`. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+
+                    if phenotype.observed and hpo.graph.is_ancestor_of(pf, phenotype):
+                        # The `pf` is implicitly observed in the patient. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+                    elif not phenotype.observed and hpo.graph.is_descendant_of(pf, phenotype):
+                        # The `pf` is implicitly excluded in the patient. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+                    else:
+                        # The `pf` is observed or excluded neither implicitly nor explicitly.
+                        # We can infer that it is excluded!
+                        pf_can_be_inferred_as_excluded_for_patient = True
+
+                if pf_can_be_inferred_as_excluded_for_patient:
+                    excluded_count[pf] += 1
+                    for desc in hpo.graph.get_descendants(pf):
+                        excluded_count[desc] += 1
+
+    total_count = Counter()
+    for term_id, count in present_count.items():
+        total_count[term_id] += count
+
+    for term_id, count in excluded_count.items():
+        total_count[term_id] += count
+
+    final_hpo = []
+    for term_id, n_present in present_count.items():
+        n_all = total_count[term_id]
+        ratio = n_present / n_all
+        if ratio >= min_perc_patients_w_hpo:
+            final_hpo.append(term_id)
+
+    if len(final_hpo) == 0:
+        raise ValueError(f"No HPO terms found in over {min_perc_patients_w_hpo * 100}% of patients.")
+
+    return final_hpo
+
+
+# TODO - enable the inspection when we resolve the preparation of HPO terms.
+# noinspection PyUnreachableCode
+class CohortAnalysis:
+    """
+    `CohortAnalysis` supports running a palette of genotype-phenotype correlation analyses for a :class:`Cohort`.
+
+    The genotype-phenotype correlation is run only for the present HPO terms. The excluded phenotypic features are used
+    to calculate the total number of the patients investigated for a term.
+
+    .. note:
+
+      `missing_implies_excluded` option assumes that a patients were investigated for all cohort phenotypic features,
+      and unless the feature is not explicitly present, it is marked as excluded and used in calculating
+      of the total number of the patients investigated for the feature.
+
 
     Attributes:
         analysis_cohort (Cohort): The Cohort object given for this analysis
         analysis_patients (list): A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.
         analysis_transcript (string): The given transcript ID that will be used in this analysis
         is_recessive (boolean): True if the variant is recessive. Default is False. 
-        include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. 
+        missing_implies_excluded (boolean): True if we assume that a patient without a specific phenotype listed
+          *does not* have the phenotype. Otherwise, the only excluded phenotypes are those that are excluded explicitly.
+          Defaults to `False`.
         include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.
-        min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).
+        min_perc_patients_w_hpo (int | float): Will only test phenotypes that are listed in at least this percent of patients.
+          Can be a `float` in range :math:`(0,1]` or a positive `int` with the minimum count (included). Defaults to `.1` (10%).
     Methods:
         compare_by_variant_type(var_type1:VariantEffect, var_type2:Optional VariantEffect): Runs Fisher Exact analysis, finds any correlation between given variant effects and phenotypes
         compare_by_variant_type(variant1:string, variant2:Optional string): Runs Fisher Exact analysis, finds any correlation between given variants and phenotypes
@@ -36,78 +138,96 @@ class CohortAnalysis():
         compare_by_variant_type(feature1:FeatureType, feature2:Optional FeatureType): Runs Fisher Exact analysis, finds any correlation between given protein feature types and phenotypes
         compare_by_variant_type(feature1:string, feature2:Optional string): Runs Fisher Exact analysis, finds any correlation between given protein features and phenotypes
     """
-    def __init__(self, cohort, transcript, hpo, recessive = False, include_unmeasured = True, p_val_correction = 'bonferroni', 
-                include_large_SV = True, min_perc_patients_w_hpo = 10) -> None:
-        """Constructs all necessary attributes for a CohortAnalysis object 
-
-        Args:
-            cohort (Cohort): The Cohort object that will be analyzed
-            transcript (string): The transcript ID that will be used in this analysis
-            recessive (boolean): True if the variant is recessive. Default is False. 
-            p_val_correction (string): Defaults to bonferroni. Options - bonferroni, sidak, holm-sidak, holm, simes-hochberg, hommel, fdr_bh, fdr_by, fdr_tsbh, fdr_tsbky.
-            include_unmeasured (boolean): True if we want to assume a patient without a specific phenotype listed does not have that phenotype. Otherwise, will only include those that explicitely say the phenotype was not observed. Defaults to True. 
-            include_large_SV (boolean): True if we want to include large structural variants in the analysis. Defaults to True.
-            min_perc_patients_w_hpo (integer): Will only test phenotypes that are listed in at least this percent of patients. Defaults to 10 (10%).
-        """
+    def __init__(self, cohort: Cohort, transcript: str, hpo: hpotk.MinimalOntology, recessive: bool = False,
+                 missing_implies_excluded: bool = False, p_val_correction: str = 'bonferroni',
+                include_large_SV: bool = True, min_perc_patients_w_hpo: typing.Union[float, int] = .1) -> None:
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
         if transcript not in cohort.all_transcripts:
             raise ValueError(f"Transcript {transcript} not found in Cohort")
+        self._logger = logging.getLogger(__name__)
         self._cohort = cohort
         self._transcript = transcript
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._recessive = recessive
-        self._in_unmeasured = include_unmeasured ##TODO: Figure out how to move this out of analysis 
+        self._missing_implies_excluded = missing_implies_excluded ##TODO: Figure out how to move this out of analysis
         self._include_SV = include_large_SV
-        self._patient_list = cohort.all_patients if include_large_SV else [pat for pat in cohort.all_patients if not all([var.variant_coordinates.is_structural() for var in pat.variants])]
-        if not isinstance(min_perc_patients_w_hpo, int) or min_perc_patients_w_hpo <= 0 or min_perc_patients_w_hpo > 100:
-            raise ValueError(f"hpo_percent_of_patients must be an integer between 1 & 100 but was {min_perc_patients_w_hpo}")
-        self._percent_pats = min_perc_patients_w_hpo
-        self._hpo_present_test = HPOPresentPredicate(hpo)
-        self._testing_hpo_terms = self._remove_low_hpo_terms()
-        self._patients_by_hpo = self._sort_patients_by_hpo()
+        self._patient_list = list(cohort.all_patients) if include_large_SV else [pat for pat in cohort.all_patients if not all(var.variant_coordinates.is_structural() for var in pat.variants)]
+        if len(self._patient_list) == 0:
+            raise ValueError('No patients left for analysis!')
+        self._percent_pats = self._check_min_perc_patients_w_hpo(min_perc_patients_w_hpo, len(self._patient_list))
+
+        # As of now, `self._testing_hpo_terms` is a Sequence[TermId] with terms that were *present* in >=1 cohort member.
+        # TODO - figure out if we should use the original function or the
+
+        if True:
+            self._testing_hpo_terms = self._remove_low_hpo_terms()
+        else:
+            self._testing_hpo_terms = _filter_rare_phenotypes_using_hierarchy(self._patient_list, self._percent_pats,
+                                                                              self._hpo, self._missing_implies_excluded)
+
+        self._patients_by_hpo = self._group_patients_by_hpo()
         self._correction = p_val_correction
-        self._logger = logging.getLogger(__name__)
         
     @property
-    def analysis_cohort(self):
+    def analysis_cohort(self) -> Cohort:
         """
         Returns:
             Cohort: The Cohort object being analyzed
         """
+        # TODO[0.3.0] - remove
+        # This is because we may actually filter out some patients in the constructor and, in result,
+        # not analyze the ENTIRE cohort. Exposing the cohort is, thus, superfluous and unless there are strong reasons
+        # for keeping the cohort, I think it should be removed.
+        warnings.warn('The `analysis_cohort` will be removed from the CohortAnalyzer API in 0.3.0',
+                      DeprecationWarning, stacklevel=2)
         return self._cohort
     
     @property
-    def analysis_patients(self):
+    def analysis_patients(self) -> typing.Sequence[Patient]:
         """
         Returns:
-            list: A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.
+            Sequence: A sequence of patients that are subject to the analysis.
         """
         return self._patient_list
     
     @property
-    def analysis_transcript(self):
+    def analysis_transcript(self) -> str:
         """
         Returns:
-            string: The given transcript ID that will be used in this analysis
+            string: The accession ID of the transcript that will be used in this analysis.
         """
         return self._transcript
 
     @property
-    def is_recessive(self):
+    def is_recessive(self) -> bool:
         """
         Returns:
-            boolean: True if the variant is recessive.
+            boolean: True if the analysis is assuming a disease with the Autosomal recessive mode of inheritance.
         """
         return self._recessive
 
     @property
-    def include_unmeasured(self):
+    def include_unmeasured(self) -> bool:
         """
         Returns:
             boolean: True if we want to assume a patient without a specific phenotype listed does not have that phenotype. 
-            Otherwise, will only include those that explicitely say the phenotype was not observed. 
+            Otherwise, will only include those that explicitly say the phenotype was not observed.
         """
-        return self._in_unmeasured
+        # TODO[0.3.0] - remove
+        warnings.warn('The `include_unmeasured` will be removed from the CohortAnalyzer API in `v0.3.0`.'
+                      'Use `missing_implies_excluded` instead',
+                      DeprecationWarning, stacklevel=2)
+        return self.missing_implies_excluded
+
+    @property
+    def missing_implies_excluded(self) -> bool:
+        """
+        Returns:
+            boolean: True if we assume that patient without a specific phenotype listed *does not* have the phenotype.
+            Otherwise, the only excluded phenotypes are those that are excluded explicitly.
+        """
+        return self._missing_implies_excluded
 
     @property
     def include_large_SV(self):
@@ -123,9 +243,34 @@ class CohortAnalysis():
         Returns:
             integer: Will only test phenotypes that are listed in at least this percent of patients. 
         """
-        return self._percent_pats
+        # TODO[0.3.0] - remove
+        warnings.warn('The `min_perc_patients_w_hpo` will be removed from the CohortAnalyzer API in 0.3.0',
+                      DeprecationWarning, stacklevel=2)
+        return round(self._percent_pats * 100)
 
-    def _remove_low_hpo_terms(self):
+    @staticmethod
+    def _check_min_perc_patients_w_hpo(min_perc_patients_w_hpo: typing.Union[int, float],
+                                       cohort_size: int) -> float:
+        """
+        Check if the input meets the requirements.
+        """
+        if isinstance(min_perc_patients_w_hpo, int):
+            if min_perc_patients_w_hpo > 0:
+                return min_perc_patients_w_hpo / cohort_size
+            else:
+                raise ValueError(f'`min_perc_patients_w_hpo` must be a positive `int` '
+                                 f'but got {min_perc_patients_w_hpo}')
+        elif isinstance(min_perc_patients_w_hpo, float):
+            if 0 < min_perc_patients_w_hpo <= 1:
+                return min_perc_patients_w_hpo
+            else:
+                raise ValueError(f'`min_perc_patients_w_hpo` must be a `float` in range (0, 1] '
+                                 f'but got {min_perc_patients_w_hpo}')
+        else:
+            raise ValueError(f'`min_perc_patients_w_hpo` must be a positive `int` or a `float` in range (0, 1] '
+                             f'but got {type(min_perc_patients_w_hpo)}')
+
+    def _remove_low_hpo_terms(self) -> typing.Sequence[hpotk.TermId]:
         final_hpo_list = set()
         all_hpo_counts = Counter()
         all_no_hpo_counts = Counter()
@@ -146,22 +291,39 @@ class CohortAnalysis():
                     final_hpo_list.add(hpo)
         if len(final_hpo_list) == 0:
             raise ValueError(f"No HPO terms found in over {self.min_perc_patients_w_hpo}% of patients.")
-        return final_hpo_list
 
-    def _sort_patients_by_hpo(self):
-        all_with_hpo = {}
-        all_without_hpo = {}
-        for hpo in self._testing_hpo_terms:
-            if self.include_unmeasured:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_MEASURED] ## and not observed 
-            else:
-                with_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.OBSERVED]
-                not_hpo = [pat for pat in self.analysis_patients if self._hpo_present_test.test(pat, hpo.identifier) == HPOPresentPredicate.NOT_OBSERVED]
-            all_with_hpo[hpo] = with_hpo
-            all_without_hpo[hpo] = not_hpo
-        patientsByHPO = namedtuple('patientByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
-        return patientsByHPO(all_with_hpo, all_without_hpo)
+        return [p.identifier for p in final_hpo_list]
+
+    def _group_patients_by_hpo(self) -> PatientsByHPO:
+        all_with_hpo = defaultdict(list)
+        all_without_hpo = defaultdict(list)
+        for hpo_term in self._testing_hpo_terms:
+            for patient in self._patient_list:
+                found = False
+                for pf in patient.present_phenotypes():
+                    if hpo_term == pf.identifier or self._hpo.graph.is_ancestor_of(hpo_term, pf):
+                        # Patient is annotated with `hpo_term` because `pf` is equal to `hpo_term`
+                        # or it is a descendant of `hpo_term`.
+                        all_with_hpo[hpo_term].append(patient)
+
+                        # If one `pf` of the patient is found to be a descendant of `hpo`, we must break to prevent
+                        # adding the patient to `present_hpo` more than once due to another descendant!
+                        found = True
+                        break
+                if not found:
+                    # The patient is not annotated by the `hpo_term`.
+
+                    if self._missing_implies_excluded:
+                        # The `hpo_term` annotation is missing, hence implicitly excluded.
+                        all_without_hpo[hpo_term].append(patient)
+                    else:
+                        # The `hpo_term` must be explicitly excluded patient to be accounted for.
+                        for ef in patient.excluded_phenotypes():
+                            if hpo_term == ef.identifier or self._hpo.graph.is_descendant_of(hpo_term, ef):
+                                all_with_hpo[hpo_term].append(patient)
+                                break
+
+        return PatientsByHPO(all_with_hpo, all_without_hpo)
 
     def _run_dom_analysis(self, predicate: PolyPredicate, variable1, variable2):
         final_dict = dict()
@@ -177,11 +339,12 @@ class CohortAnalysis():
                     with_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
                     not_hpo_var2_count = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) in (HOMOZYGOUS, HETEROZYGOUS)])
                 if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
-                    self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
+                    self._logger.warning(f"Divide by 0 error with HPO {hpo.value}, not included in this analysis.")
                     continue
                 p_val = self._run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
                 all_pvals.append(p_val)
-                final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_count, "{:0.2f}%".format((with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100), with_hpo_var2_count, "{:0.2f}%".format((with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100), p_val]
+                term_name = self._hpo.get_term(hpo).name
+                final_dict[f"{hpo.value} ({term_name})"] = [with_hpo_var1_count, "{:0.2f}%".format((with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100), with_hpo_var2_count, "{:0.2f}%".format((with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100), p_val]
         else:
             return ValueError(f"Run a recessive analysis")
         corrected_pvals = multitest.multipletests(all_pvals, method = self._correction)[1]
@@ -207,11 +370,12 @@ class CohortAnalysis():
                     with_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_with_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
                     no_hpo_var2_var2 = len([pat for pat in self._patients_by_hpo.all_without_hpo.get(hpo) if predicate.test(pat, variable2) == HOMOZYGOUS])
                 if with_hpo_var1_var1 + no_hpo_var1_var1 == 0 or with_hpo_var1_var2 + no_hpo_var1_var2 == 0 or with_hpo_var2_var2 + no_hpo_var2_var2 == 0:
-                    self._logger.warning(f"Divide by 0 error with HPO {hpo.identifier.value}, not included in this analysis.")
+                    self._logger.warning(f"Divide by 0 error with HPO {hpo.value}, not included in this analysis.")
                     continue
                 p_val = self._run_recessive_fisher_exact([[with_hpo_var1_var1, no_hpo_var1_var1], [with_hpo_var1_var2, no_hpo_var1_var2], [with_hpo_var2_var2, no_hpo_var2_var2]] )
                 all_pvals.append(p_val)
-                final_dict[f"{hpo.identifier.value} ({hpo.name})"] = [with_hpo_var1_var1, "{:0.2f}%".format((with_hpo_var1_var1/(with_hpo_var1_var1 + no_hpo_var1_var1)) * 100), with_hpo_var1_var2, "{:0.2f}%".format((with_hpo_var1_var2/(no_hpo_var1_var2 + with_hpo_var1_var2)) * 100), with_hpo_var2_var2, "{:0.2f}%".format((with_hpo_var2_var2/(with_hpo_var2_var2 + no_hpo_var2_var2)) * 100), p_val] 
+                term_name = self._hpo.get_term(hpo).name
+                final_dict[f"{hpo.value} ({term_name})"] = [with_hpo_var1_var1, "{:0.2f}%".format((with_hpo_var1_var1/(with_hpo_var1_var1 + no_hpo_var1_var1)) * 100), with_hpo_var1_var2, "{:0.2f}%".format((with_hpo_var1_var2/(no_hpo_var1_var2 + with_hpo_var1_var2)) * 100), with_hpo_var2_var2, "{:0.2f}%".format((with_hpo_var2_var2/(with_hpo_var2_var2 + no_hpo_var2_var2)) * 100), p_val]
         else:
             return ValueError("Run a dominant analysis")
         corrected_pvals = multitest.multipletests(all_pvals, method = self._correction)[1]
@@ -380,11 +544,13 @@ class CohortAnalysis():
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
     
 
-    def _run_fisher_exact(self, two_by_two_table: typing.Sequence[typing.Sequence[int]]):
+    @staticmethod
+    def _run_fisher_exact(two_by_two_table: typing.Sequence[typing.Sequence[int]]):
         oddsr, p = stats.fisher_exact(two_by_two_table, alternative='two-sided')
         return p
 
-    def _run_recessive_fisher_exact(self, two_by_three_table: typing.Sequence[typing.Sequence[int]]):
+    @staticmethod
+    def _run_recessive_fisher_exact(two_by_three_table: typing.Sequence[typing.Sequence[int]]):
         a = np.array(two_by_three_table, dtype=np.int64)
         test_class = PythonMultiFisherExact()
         val = test_class.calculate(a)
