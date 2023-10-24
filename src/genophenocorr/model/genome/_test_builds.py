@@ -1,10 +1,10 @@
 import pytest
 
-from ._builds import read_assembly_report, GRCh37, GRCh38
+from ._builds import read_assembly_report, GRCh37, GRCh38, GenomeBuildIdentifier
 
 
 def test_read_assembly_report():
-    build = read_assembly_report('GRCh37.p13', 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
+    build = read_assembly_report(GenomeBuildIdentifier('GRCh37', 'p13'), 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
     assert build is not None
 
 
@@ -14,7 +14,9 @@ def test_read_assembly_report():
                              ('X', 'CM000685.1', 'NC_000023.10', 'chrX', 155_270_560),
                           ])
 def test_hg19(name, genbank, refseq, ucsc, length):
-    assert GRCh37.identifier == 'GRCh37.p13'
+    assert GRCh37.genome_build_id.major_assembly == 'GRCh37'
+    assert GRCh37.genome_build_id.patch == 'p13'
+    assert GRCh37.genome_build_id.identifier == 'GRCh37.p13'
     contig = GRCh37.contig_by_name(name)
     assert contig.name == name
     assert contig.genbank_acc == genbank
@@ -29,6 +31,8 @@ def test_hg19(name, genbank, refseq, ucsc, length):
                              ('X', 'CM000685.2', 'NC_000023.11', 'chrX', 156_040_895),
                           ])
 def test_hg38(name, genbank, refseq, ucsc, length):
+    assert GRCh38.genome_build_id.major_assembly == 'GRCh38'
+    assert GRCh38.genome_build_id.patch == 'p13'
     assert GRCh38.identifier == 'GRCh38.p13'
     contig = GRCh38.contig_by_name(name)
     assert contig.name == name
