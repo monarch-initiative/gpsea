@@ -412,12 +412,14 @@ More info on the Uniprot REST API here - <a class="reference external" href="htt
 <dt class="sig sig-object py" id="genophenocorr.preprocessing.VepFunctionalAnnotator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.preprocessing.</span></span><span class="sig-name descname"><span class="pre">VepFunctionalAnnotator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_annotator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_computational_txs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_vep.html#VepFunctionalAnnotator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.VepFunctionalAnnotator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#genophenocorr.preprocessing.FunctionalAnnotator" title="genophenocorr.preprocessing._api.FunctionalAnnotator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionalAnnotator</span></code></a></p>
-<p>A <cite>FunctionalAnnotator</cite> that uses Variant Effect Predictor (VEP) REST API to do functional variant annotation.</p>
+<p>A <cite>FunctionalAnnotator</cite> that uses Variant Effect Predictor (VEP) REST API to
+do functional variant annotation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>protein_annotator</strong> (<a class="reference internal" href="#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing.ProteinMetadataService"><em>ProteinMetadataService</em></a>) – a service for getting protein data</p></li>
-<li><p><strong>include_computational_txs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Include computational transcripts, such as RefSeq <cite>XM_</cite>.</p></li>
+<li><p><strong>include_computational_txs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Include computational transcripts, such as</p></li>
+<li><p><strong>XM_.</strong> (<em>RefSeq</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -430,7 +432,8 @@ More info on the Uniprot REST API here - <a class="reference external" href="htt
 <dd class="field-odd"><p><strong>variant_coordinates</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates"><em>VariantCoordinates</em></a>) – A VariantCoordinates object</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A sequence of transcript annotations for the variant coordinates</p>
+<dd class="field-even"><p>A sequence of transcript
+annotations for the variant coordinates</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><em>Sequence</em></a>[<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model.TranscriptAnnotation">TranscriptAnnotation</a>]</p>
