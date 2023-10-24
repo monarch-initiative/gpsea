@@ -48,14 +48,17 @@ class HPOPresentPredicate(PolyPredicate):
                                    We do not know if the sample has or has not the tested feature.
                                    """) #: :meta hide-value:
 
-    def __init__(self, 
-                 hpo: hpotk.MinimalOntology,
+    def __init__(self, hpo: hpotk.MinimalOntology,
                  phenotypic_feature: hpotk.TermId) -> None:
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._query = hpotk.util.validate_instance(phenotypic_feature, hpotk.TermId, 'phenotypic_feature')
 
     def categories(self) -> typing.Sequence[PatientCategory]:
         return HPOPresentPredicate.PRESENT, HPOPresentPredicate.EXCLUDED, HPOPresentPredicate.NOT_MEASURED
+
+    def get_question(self) -> str:
+        query_label = self._hpo.get_term(self._query).name
+        return f'Is \'{query_label}\' present in the patient?'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -64,16 +67,12 @@ class HPOPresentPredicate(PolyPredicate):
         if len(patient.phenotypes) == 0:
             return None
 
-        for pheno in patient.phenotypes:
-            if pheno.observed is None:
-                continue
-            if pheno.observed:
-                if any((query == ancestor
-                        for ancestor in self._hpo.graph.get_ancestors(pheno, include_source=True))):
-                    return self.OBSERVED
+        for phenotype in patient.phenotypes:
+            if phenotype.is_observed:
+                if any(query == anc for anc in self._hpo.graph.get_ancestors(phenotype, include_source=True)):
+                    return HPOPresentPredicate.PRESENT
             else:
-                if any(query == descendant
-                       for descendant in self._hpo.graph.get_descendants(pheno, include_source=True)):
+                if any(query == desc for desc in self._hpo.graph.get_descendants(phenotype, include_source=True)):
                     return self.EXCLUDED
 
         return self.NOT_MEASURED
@@ -113,6 +112,10 @@ class VariantEffectPredicate(BooleanPredicate):
         self._tx_id = transcript_id
         self._effect = hpotk.util.validate_instance(effect, VariantEffect, 'effect')
 
+    def get_question(self) -> str:
+        return (f'Does the patient have a variant with {self._effect.name} '
+                f'on transcript `{self._tx_id}`?')
+
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
 
@@ -142,6 +145,9 @@ class VariantPredicate(BooleanPredicate):
 
     def __init__(self, variant_key: str) -> None:
         self._variant_key = hpotk.util.validate_instance(variant_key, str, 'variant_key')
+
+    def get_question(self) -> str:
+        return f'Does the patient have >=1 allele of the variant `{self._variant_key}`?'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -182,6 +188,10 @@ class ExonPredicate(BooleanPredicate):
         if self._exon_number <= 0:
             raise ValueError(f'`exon_number` must be a positive `int` but got {self._exon_number}')
 
+    def get_question(self) -> str:
+        return (f'Does the patient have a variant that affects exon {self._exon_number} '
+                f'on transcript `{self._tx_id}`?')
+
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
 
@@ -210,6 +220,10 @@ class ProtFeatureTypePredicate(BooleanPredicate):
     def __init__(self, transcript_id: str, feature_type: FeatureType) -> None:
         self._tx_id = transcript_id
         self._feature_type = hpotk.util.validate_instance(feature_type, FeatureType, 'feature_type')
+
+    def get_question(self) -> str:
+        return (f'Does the patient have a variant that affects any {self._feature_type.name} protein feature '
+                f'on transcript `{self._tx_id}`?')
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -245,6 +259,10 @@ class ProtFeaturePredicate(BooleanPredicate):
     def __init__(self, transcript_id: str, protein_feature_name: str) -> None:
         self._tx_id = transcript_id
         self._pf_name = hpotk.util.validate_instance(protein_feature_name, str, 'protein_feature_name')
+
+    def get_question(self) -> str:
+        return (f'Does the patient have a variant that affects a protein feature with name {self._pf_name} '
+                f'on transcript `{self._tx_id}`?')
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)

@@ -84,6 +84,13 @@ class PolyPredicate(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def get_question(self) -> str:
+        """
+        Prepare a `str` with the question the predicate can answer.
+        """
+        pass
+
+    @abc.abstractmethod
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         """
         Assign a `patient` into a category.
@@ -91,6 +98,12 @@ class PolyPredicate(metaclass=abc.ABCMeta):
         Return `None` if the patient cannot be assigned into any meaningful category.
         """
         pass
+
+    def n_categories(self) -> int:
+        """
+        Get the number of categories the predicate can produce.
+        """
+        return len(self.categories)
 
     @staticmethod
     def _check_patient(patient: Patient):
