@@ -69,13 +69,13 @@ class Patient:
         """
         Get an iterator over *present* phenotypes of the patient.
         """
-        return filter(lambda p: p is not None and p.observed, self._phenotypes)
+        return filter(lambda p: p.is_observed, self._phenotypes)
 
     def excluded_phenotypes(self) -> typing.Iterator[Phenotype]:
         """
         Get an iterator over *excluded* phenotypes of the patient.
         """
-        return filter(lambda p: p is not None and not p.observed, self._phenotypes)
+        return filter(lambda p: p.is_excluded, self._phenotypes)
 
     def __str__(self) -> str:
         return (f"Patient("
@@ -115,7 +115,7 @@ class Cohort(typing.Sized):
             cohort_variants.update(patient.variants)
             var_counts.update([var.variant_coordinates.variant_key for var in patient.variants])
             cohort_phenotypes.update(patient.phenotypes)
-            pheno_count.update([pheno.identifier.value for pheno in patient.phenotypes if pheno.observed == True])
+            pheno_count.update([pheno.identifier.value for pheno in patient.present_phenotypes()])
             cohort_proteins.update(patient.proteins)
             prot_counts.update([prot.protein_id for prot in patient.proteins])
         all_counts = {'patients': len(members), 'variants': var_counts, 'phenotypes': pheno_count,

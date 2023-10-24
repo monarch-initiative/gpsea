@@ -41,7 +41,7 @@ def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient]
 
     for patient in patients:
         for pf in patient.phenotypes:
-            if pf.observed:
+            if pf.is_observed:
                 # A present phenotypic feature must be counted in.
                 present_count[pf.identifier] += 1
                 # implies presence of its ancestors.
@@ -66,11 +66,11 @@ def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient]
                         pf_can_be_inferred_as_excluded_for_patient = False
                         break
 
-                    if phenotype.observed and hpo.graph.is_ancestor_of(pf, phenotype):
+                    if phenotype.is_observed and hpo.graph.is_ancestor_of(pf, phenotype):
                         # The `pf` is implicitly observed in the patient. No inference for this patient!
                         pf_can_be_inferred_as_excluded_for_patient = False
                         break
-                    elif not phenotype.observed and hpo.graph.is_descendant_of(pf, phenotype):
+                    elif not phenotype.is_observed and hpo.graph.is_descendant_of(pf, phenotype):
                         # The `pf` is implicitly excluded in the patient. No inference for this patient!
                         pf_can_be_inferred_as_excluded_for_patient = False
                         break
@@ -275,9 +275,9 @@ class CohortAnalysis:
         all_hpo_counts = Counter()
         all_no_hpo_counts = Counter()
         for pat in self.analysis_patients:
-            all_hpo_counts.update([hpo for hpo in pat.phenotypes if hpo.observed == True])
+            all_hpo_counts.update(pat.present_phenotypes())
             if not self.include_unmeasured:
-                all_no_hpo_counts.update([hpo for hpo in pat.phenotypes if hpo.observed == False])
+                all_no_hpo_counts.update(pat.excluded_phenotypes())
         if self.include_unmeasured:
             for hpo, count in all_hpo_counts.items():
                 count = count if not None else 0

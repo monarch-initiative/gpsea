@@ -59,8 +59,8 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
                         for ancestor in self._hpo.graph.get_ancestors(pheno, include_source=True))):
                     return self.OBSERVED
             else:
-                if any((query == descendant
-                        for descendant in self._hpo.graph.get_descendants(pheno, include_source=True))):
+                if any(query == descendant
+                       for descendant in self._hpo.graph.get_descendants(pheno, include_source=True)):
                     return self.NOT_OBSERVED
 
         return self.NOT_MEASURED
