@@ -20,7 +20,6 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         """Constructs all necessary attributes for a UniprotProteinMetadataService object
         """
         self._logger = logging.getLogger(__name__)
-        self._logger.setLevel(logging.INFO)
         handler = logging.FileHandler(f"{__name__}.log", mode='w')
         formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
         handler.setFormatter(formatter)
@@ -43,7 +42,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         r = requests.get(api_url).json()
         results = r['results']
         if len(results) == 0:
-            self._logger.warning(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
+            self._logger.warning("No proteins found for ID %s. Please verify refseq ID.", protein_id)
             return []
         protein_list = []
         for protein in results:
@@ -65,11 +64,11 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                         feat = ProteinFeature.create(FeatureInfo(feat_name, Region(feat_start, feat_end)), FeatureType[feat_type.upper()])
                         all_features_list.append(feat)
                 except KeyError:
-                    self._logger.warning(f"No features for {protein_id}")
+                    self._logger.warning("No features for %s", protein_id)
                 protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
             else:
-                self._logger.warning(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
+                self._logger.warning("UniProt did not return a protein ID that matches the ID we searched for: %s not in %s", protein_id, unis)
         if len(protein_list) > 1:
-            self._logger.info(f'UniProt found {len(protein_list)} results for ID {protein_id}')
+            self._logger.info('UniProt found %d results for ID %s', len(protein_list), protein_id)
         # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list

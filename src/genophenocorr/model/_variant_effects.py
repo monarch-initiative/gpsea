@@ -74,11 +74,3 @@ class VariantEffect(Enum):
 
     def __str__(self) -> str:
         return self.name.lower()
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, VariantEffect) \
-            and self.value == other.value \
-            and self.name == other.name 
-            
-    def __hash__(self) -> int:
-        return hash((self.value, self.name))

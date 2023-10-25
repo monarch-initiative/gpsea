@@ -246,16 +246,16 @@ class ProteinMetadata:
         """
         return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
 
-    def get_features_variant_overlaps(self, var_start: int, var_end: int) -> typing.Sequence[ProteinFeature]:
+    def get_features_variant_overlaps(self, var_start: int, var_end: int) -> typing.Set[ProteinFeature]:
         affected_features = set()
         for feat in self.protein_features:
             if feat.info.start is None or feat.info.end is None:
                 print(f"{feat.info.name} has no start and end info")
                 continue
             if feat.info.start <= var_start <= feat.info.end:
-                affected_features.add(feat.to_string())
+                affected_features.add(feat)
             elif feat.info.start <= var_end <= feat.info.end:
-                affected_features.add(feat.to_string())
+                affected_features.add(feat)
         return affected_features 
 
     def __str__(self) -> str:

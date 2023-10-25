@@ -172,7 +172,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         for hpo_id in pp.phenotypic_features:
             hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
         if len(hpo_id_list) == 0:
-            #self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
+            self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
             return []
         return self._phenotype_creator.create_phenotype(hpo_id_list)
 
