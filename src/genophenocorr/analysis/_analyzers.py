@@ -1,113 +1,24 @@
-import abc
 import logging
-import math
 import typing
 import warnings
-from decimal import Decimal
 
 import hpotk
-import numpy as np
 
-from scipy import stats
 from statsmodels.stats import multitest
 from pandas import DataFrame, MultiIndex
-from collections import Counter, namedtuple, defaultdict
+from collections import Counter
 
 from genophenocorr.model import Cohort, FeatureType, VariantEffect, Patient
 
 from .predicate import PolyPredicate
-from .predicate import PropagatingPhenotypePredicate
-from .predicate import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
-from .predicate import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
+from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from .predicate.genotype import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
+
+from ._api import AbstractCohortAnalysis
+from ._stats import run_recessive_fisher_exact, run_fisher_exact
 
 
-PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
-
-
-def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient],
-                                            min_perc_patients_w_hpo: float,
-                                            hpo: hpotk.GraphAware,
-                                            missing_implies_excluded: bool = False) -> typing.Sequence[hpotk.TermId]:
-    """
-            We want to get a corpus of HPO terms that are present in at least certain fraction of the subjects.
-            We will get the IDs of the present features only.
-
-            :param min_perc_patients_w_hpo: the minimum fraction of patients that *must* have the feature.
-              The `float` must be in range :math:`(0,1]`.
-            """
-    # TODO - review the logic with Lauren. Should we also do annotation propagation here?
-    #  What is the meaning of _include_unmeasured in this context?
-    present_count = Counter()
-    excluded_count = Counter()
-
-    for patient in patients:
-        for pf in patient.phenotypes:
-            if pf.is_observed:
-                # A present phenotypic feature must be counted in.
-                present_count[pf.identifier] += 1
-                # implies presence of its ancestors.
-                for anc in hpo.graph.get_ancestors(pf):
-                    present_count[anc] += 1
-            else:
-                # An excluded phenotypic feature
-                excluded_count[pf.identifier] += 1
-                for desc in hpo.graph.get_descendants(pf):
-                    # implies exclusion of its descendants.
-                    excluded_count[desc] += 1
-
-    if missing_implies_excluded:
-        # We must do another pass to ensure that we account the missing features as excluded.
-        # `present_count` has all phenotypic features that were observed as present among the cohort members.
-        for pf in present_count:
-            for patient in patients:
-                pf_can_be_inferred_as_excluded_for_patient = False
-                for phenotype in patient.phenotypes:
-                    if pf == phenotype.identifier:
-                        # Patient is explicitly annotated with `pf`. No inference for this patient!
-                        pf_can_be_inferred_as_excluded_for_patient = False
-                        break
-
-                    if phenotype.is_observed and hpo.graph.is_ancestor_of(pf, phenotype):
-                        # The `pf` is implicitly observed in the patient. No inference for this patient!
-                        pf_can_be_inferred_as_excluded_for_patient = False
-                        break
-                    elif not phenotype.is_observed and hpo.graph.is_descendant_of(pf, phenotype):
-                        # The `pf` is implicitly excluded in the patient. No inference for this patient!
-                        pf_can_be_inferred_as_excluded_for_patient = False
-                        break
-                    else:
-                        # The `pf` is observed or excluded neither implicitly nor explicitly.
-                        # We can infer that it is excluded!
-                        pf_can_be_inferred_as_excluded_for_patient = True
-
-                if pf_can_be_inferred_as_excluded_for_patient:
-                    excluded_count[pf] += 1
-                    for desc in hpo.graph.get_descendants(pf):
-                        excluded_count[desc] += 1
-
-    total_count = Counter()
-    for term_id, count in present_count.items():
-        total_count[term_id] += count
-
-    for term_id, count in excluded_count.items():
-        total_count[term_id] += count
-
-    final_hpo = []
-    for term_id, n_present in present_count.items():
-        n_all = total_count[term_id]
-        ratio = n_present / n_all
-        if ratio >= min_perc_patients_w_hpo:
-            final_hpo.append(term_id)
-
-    if len(final_hpo) == 0:
-        raise ValueError(f"No HPO terms found in over {min_perc_patients_w_hpo * 100}% of patients.")
-
-    return final_hpo
-
-
-# TODO - enable the inspection when we resolve the preparation of HPO terms.
-# noinspection PyUnreachableCode
-class CohortAnalysis:
+class CohortAnalysis(AbstractCohortAnalysis):
     """
     `CohortAnalysis` supports running a palette of genotype-phenotype correlation analyses for a :class:`Cohort`.
 
@@ -159,15 +70,9 @@ class CohortAnalysis:
         self._percent_pats = self._check_min_perc_patients_w_hpo(min_perc_patients_w_hpo, len(self._patient_list))
 
         # As of now, `self._testing_hpo_terms` is a Sequence[TermId] with terms that were *present* in >=1 cohort member.
-        # TODO - figure out if we should use the original function or the
-
-        if True:
-            self._testing_hpo_terms = self._remove_low_hpo_terms()
-        else:
-            self._testing_hpo_terms = _filter_rare_phenotypes_using_hierarchy(self._patient_list, self._percent_pats,
-                                                                              self._hpo, self._missing_implies_excluded)
-
-        self._patients_by_hpo = self._group_patients_by_hpo()
+        self._testing_hpo_terms = self._remove_low_hpo_terms()
+        self._patients_by_hpo = self._group_patients_by_hpo(self._testing_hpo_terms, self._patient_list,
+                                                            self._hpo, self._missing_implies_excluded)
         self._correction = p_val_correction
         
     @property
@@ -249,28 +154,6 @@ class CohortAnalysis:
                       DeprecationWarning, stacklevel=2)
         return round(self._percent_pats * 100)
 
-    @staticmethod
-    def _check_min_perc_patients_w_hpo(min_perc_patients_w_hpo: typing.Union[int, float],
-                                       cohort_size: int) -> float:
-        """
-        Check if the input meets the requirements.
-        """
-        if isinstance(min_perc_patients_w_hpo, int):
-            if min_perc_patients_w_hpo > 0:
-                return min_perc_patients_w_hpo / cohort_size
-            else:
-                raise ValueError(f'`min_perc_patients_w_hpo` must be a positive `int` '
-                                 f'but got {min_perc_patients_w_hpo}')
-        elif isinstance(min_perc_patients_w_hpo, float):
-            if 0 < min_perc_patients_w_hpo <= 1:
-                return min_perc_patients_w_hpo
-            else:
-                raise ValueError(f'`min_perc_patients_w_hpo` must be a `float` in range (0, 1] '
-                                 f'but got {min_perc_patients_w_hpo}')
-        else:
-            raise ValueError(f'`min_perc_patients_w_hpo` must be a positive `int` or a `float` in range (0, 1] '
-                             f'but got {type(min_perc_patients_w_hpo)}')
-
     def _remove_low_hpo_terms(self) -> typing.Sequence[hpotk.TermId]:
         final_hpo_list = set()
         all_hpo_counts = Counter()
@@ -295,37 +178,6 @@ class CohortAnalysis:
 
         return [p.identifier for p in final_hpo_list]
 
-    def _group_patients_by_hpo(self) -> PatientsByHPO:
-        all_with_hpo = defaultdict(list)
-        all_without_hpo = defaultdict(list)
-        for hpo_term in self._testing_hpo_terms:
-            for patient in self._patient_list:
-                found = False
-                for pf in patient.present_phenotypes():
-                    if hpo_term == pf.identifier or self._hpo.graph.is_ancestor_of(hpo_term, pf):
-                        # Patient is annotated with `hpo_term` because `pf` is equal to `hpo_term`
-                        # or it is a descendant of `hpo_term`.
-                        all_with_hpo[hpo_term].append(patient)
-
-                        # If one `pf` of the patient is found to be a descendant of `hpo`, we must break to prevent
-                        # adding the patient to `present_hpo` more than once due to another descendant!
-                        found = True
-                        break
-                if not found:
-                    # The patient is not annotated by the `hpo_term`.
-
-                    if self._missing_implies_excluded:
-                        # The `hpo_term` annotation is missing, hence implicitly excluded.
-                        all_without_hpo[hpo_term].append(patient)
-                    else:
-                        # The `hpo_term` must be explicitly excluded patient to be accounted for.
-                        for ef in patient.excluded_phenotypes():
-                            if hpo_term == ef.identifier or self._hpo.graph.is_descendant_of(hpo_term, ef):
-                                all_with_hpo[hpo_term].append(patient)
-                                break
-
-        return PatientsByHPO(all_with_hpo, all_without_hpo)
-
     def _run_dom_analysis(self, predicate: PolyPredicate, variable1, variable2):
         final_dict = dict()
         all_pvals = []
@@ -342,7 +194,7 @@ class CohortAnalysis:
                 if with_hpo_var1_count + not_hpo_var1_count == 0 or with_hpo_var2_count + not_hpo_var2_count == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.value}, not included in this analysis.")
                     continue
-                p_val = self._run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
+                p_val = run_fisher_exact([[with_hpo_var1_count, not_hpo_var1_count], [with_hpo_var2_count, not_hpo_var2_count]])
                 all_pvals.append(p_val)
                 term_name = self._hpo.get_term(hpo).name
                 final_dict[f"{hpo.value} ({term_name})"] = [with_hpo_var1_count, "{:0.2f}%".format((with_hpo_var1_count/(with_hpo_var1_count + not_hpo_var1_count)) * 100), with_hpo_var2_count, "{:0.2f}%".format((with_hpo_var2_count/(with_hpo_var2_count + not_hpo_var2_count)) * 100), p_val]
@@ -373,7 +225,7 @@ class CohortAnalysis:
                 if with_hpo_var1_var1 + no_hpo_var1_var1 == 0 or with_hpo_var1_var2 + no_hpo_var1_var2 == 0 or with_hpo_var2_var2 + no_hpo_var2_var2 == 0:
                     self._logger.warning(f"Divide by 0 error with HPO {hpo.value}, not included in this analysis.")
                     continue
-                p_val = self._run_recessive_fisher_exact([[with_hpo_var1_var1, no_hpo_var1_var1], [with_hpo_var1_var2, no_hpo_var1_var2], [with_hpo_var2_var2, no_hpo_var2_var2]] )
+                p_val = run_recessive_fisher_exact([[with_hpo_var1_var1, no_hpo_var1_var1], [with_hpo_var1_var2, no_hpo_var1_var2], [with_hpo_var2_var2, no_hpo_var2_var2]] )
                 all_pvals.append(p_val)
                 term_name = self._hpo.get_term(hpo).name
                 final_dict[f"{hpo.value} ({term_name})"] = [with_hpo_var1_var1, "{:0.2f}%".format((with_hpo_var1_var1/(with_hpo_var1_var1 + no_hpo_var1_var1)) * 100), with_hpo_var1_var2, "{:0.2f}%".format((with_hpo_var1_var2/(no_hpo_var1_var2 + with_hpo_var1_var2)) * 100), with_hpo_var2_var2, "{:0.2f}%".format((with_hpo_var2_var2/(with_hpo_var2_var2 + no_hpo_var2_var2)) * 100), p_val]
@@ -382,6 +234,13 @@ class CohortAnalysis:
         corrected_pvals = multitest.multipletests(all_pvals, method = self._correction)[1]
         return final_dict, corrected_pvals
 
+    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str):
+        # We need to cache the previous transcript
+        previous = self._transcript
+        self._transcript = tx_id
+        result = self.compare_by_variant_type(effect)
+        self._transcript = previous
+        return result
 
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
         """Runs Fisher Exact analysis, finds any correlation between given variant effects across phenotypes.
@@ -392,7 +251,7 @@ class CohortAnalysis:
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
         """
-        var_effect_test = VariantEffectPredicate(self.analysis_transcript)
+        var_effect_test = VariantEffectPredicate(self._transcript, var_type1)
         if self.is_recessive:
             final_dict, corrected_pvals = self._run_rec_analysis(var_effect_test, var_type1, var_type2)
             if var_type2 is None:
@@ -414,6 +273,9 @@ class CohortAnalysis:
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
             final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
+
+    def compare_by_variant_key(self, variant_key: str):
+        return self.compare_by_variant(variant_key)
 
     def compare_by_variant(self, variant1:str, variant2:str = None):
         """Runs Fisher Exact analysis, finds any correlation between given variants across phenotypes.
@@ -456,7 +318,7 @@ class CohortAnalysis:
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
         """
-        exon_test = ExonPredicate(self.analysis_transcript)
+        exon_test = ExonPredicate(self.analysis_transcript, exon1)
         if self.is_recessive:
             final_dict, corrected_pvals = self._run_rec_analysis(exon_test, exon1, exon2)
             if exon2 is None:
@@ -488,7 +350,7 @@ class CohortAnalysis:
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
         """
-        feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript)
+        feat_type_test = ProtFeatureTypePredicate(self.analysis_transcript, feature1)
         if self.is_recessive:
             final_dict, corrected_pvals = self._run_rec_analysis(feat_type_test, feature1, feature2)
             if feature2 is None:
@@ -521,7 +383,7 @@ class CohortAnalysis:
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
         """
-        domain_test = ProtFeaturePredicate(self.analysis_transcript)
+        domain_test = ProtFeaturePredicate(self.analysis_transcript, feature1)
         if self.is_recessive:
             final_dict, corrected_pvals = self._run_rec_analysis(domain_test, feature1, feature2)
             if feature2 is None:
@@ -543,150 +405,3 @@ class CohortAnalysis:
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
             final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
-    
-
-    @staticmethod
-    def _run_fisher_exact(two_by_two_table: typing.Sequence[typing.Sequence[int]]):
-        oddsr, p = stats.fisher_exact(two_by_two_table, alternative='two-sided')
-        return p
-
-    @staticmethod
-    def _run_recessive_fisher_exact(two_by_three_table: typing.Sequence[typing.Sequence[int]]):
-        a = np.array(two_by_three_table, dtype=np.int64)
-        test_class = PythonMultiFisherExact()
-        val = test_class.calculate(a)
-        return val
-
-
-class MultiFisherExact(metaclass=abc.ABCMeta):
-
-    @abc.abstractmethod
-    def calculate(self, a: np.ndarray) -> float:
-        """
-        :param a: a 2x3 int array with counts
-        :returns: a p value calculated with Fisher's exact test
-        """
-        pass
-
-    @staticmethod
-    def _check_input(a: np.ndarray):
-        if not isinstance(a, np.ndarray):
-            raise ValueError(f'Expected a numpy array but got {type(a)}')
-        if not a.shape == (3, 2):
-            raise ValueError(f'Shape of the array must be (3, 2) but got {a.shape}')
-        if np.array_equal(a, np.zeros_like(a)):
-            raise ValueError(f'Array is all zeros, cannot run analysis')
-        
-
-
-class PythonMultiFisherExact(MultiFisherExact):
-
-    def calculate(self, a: np.ndarray) -> float:
-        MultiFisherExact._check_input(a)
-        return self._fisher_exact(a)
-
-    def _fisher_exact(self, table):
-        row_sum = []
-        col_sum = []
-
-        for i in range(len(table)):
-            temp = 0
-            for j in range(len(table[0])):
-                temp += table[i][j]
-            row_sum.append(temp)
-
-        for j in range(len(table[0])):
-            temp = 0
-            for i in range(len(table)):
-                temp += table[i][j]
-            col_sum.append(temp)
-
-        mat = [[0] * len(col_sum)] * len(row_sum)
-        pos = (0, 0)
-
-        p_0 = 1
-
-        for x in row_sum:
-            p_0 *= math.factorial(x)
-        for y in col_sum:
-            p_0 *= math.factorial(y)
-
-        n = 0
-        for x in row_sum:
-            n += x
-        p_0 /= Decimal(math.factorial(n))
-
-        for i in range(len(table)):
-            for j in range(len(table[0])):
-                p_0 /= Decimal(math.factorial(table[i][j]))
-
-        p = [0]
-        self._dfs(mat, pos, row_sum, col_sum, p_0, p)
-
-        return float(p[0])
-
-    def _dfs(self, mat, pos, r_sum, c_sum, p_0, p):
-
-        (xx, yy) = pos
-        (r, c) = (len(r_sum), len(c_sum))
-
-        mat_new = []
-
-        for i in range(len(mat)):
-            temp = []
-            for j in range(len(mat[0])):
-                temp.append(mat[i][j])
-            mat_new.append(temp)
-
-        if xx == -1 and yy == -1:
-            for i in range(r - 1):
-                temp = r_sum[i]
-                for j in range(c - 1):
-                    temp -= mat_new[i][j]
-                mat_new[i][c - 1] = temp
-            for j in range(c - 1):
-                temp = c_sum[j]
-                for i in range(r - 1):
-                    temp -= mat_new[i][j]
-                mat_new[r - 1][j] = temp
-            temp = r_sum[r - 1]
-            for j in range(c - 1):
-                temp -= mat_new[r - 1][j]
-            if temp < 0:
-                return
-            mat_new[r - 1][c - 1] = temp
-
-            p_1 = 1
-            for x in r_sum:
-                p_1 *= math.factorial(x)
-            for y in c_sum:
-                p_1 *= math.factorial(y)
-
-            n = 0
-            for x in r_sum:
-                n += x
-            p_1 /= Decimal(math.factorial(n))
-
-            for i in range(len(mat_new)):
-                for j in range(len(mat_new[0])):
-                    p_1 /= Decimal(math.factorial(mat_new[i][j]))
-            if p_1 <= p_0 + Decimal(0.00000001):
-                # print(mat_new)
-                # print(p_1)
-                p[0] += p_1
-        else:
-            max_1 = r_sum[xx]
-            max_2 = c_sum[yy]
-            for j in range(c):
-                max_1 -= mat_new[xx][j]
-            for i in range(r):
-                max_2 -= mat_new[i][yy]
-            for k in range(min(max_1, max_2) + 1):
-                mat_new[xx][yy] = k
-                if xx == r - 2 and yy == c - 2:
-                    pos_new = (-1, -1)
-                elif xx == r - 2:
-                    pos_new = (0, yy + 1)
-                else:
-                    pos_new = (xx + 1, yy)
-                self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)

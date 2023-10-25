@@ -12,7 +12,6 @@ class PatientCategory:
 
     Patient category has :attr:`cat_id`, a unique numeric identifier of the group,
     :attr:`name` with human-readable group name, and :attr:`description` with an optional verbose description.
-
     """
 
     def __init__(self, cat_id: int,
@@ -43,13 +42,13 @@ class PatientCategory:
         """
         return self._description
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f"PatientCategory(cat_id={self.cat_id}, " \
                f"name={self.name}, " \
                f"description={self.description})"
 
-    def __repr__(self) -> str:
-        return str(self)
+    def __str__(self) -> str:
+        return self.name
 
     def __eq__(self, other) -> bool:
         return isinstance(other, PatientCategory) \
@@ -120,12 +119,12 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
     `BooleanPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to a group and returns a boolean binning.
     """
 
-    FALSE = PatientCategory(0, 'False', 'The patient does not belong to the group.')
+    NO = PatientCategory(0, 'No', 'The patient does not belong to the group.')
     """
     Category for a patient who does *not* belong to the tested group.
     """
 
-    TRUE = PatientCategory(1, 'True', 'The patient belongs to the group.')
+    YES = PatientCategory(1, 'Yes', 'The patient belongs to the group.')
     """
     Category for a patient who *belongs* to the tested group.
     """
@@ -133,6 +132,6 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
     @staticmethod
     def get_categories() -> typing.Sequence[PatientCategory]:
         """
-        The predicate bins a patient into :class:`BooleanPredicate.FALSE` or :class:`BooleanPredicate.TRUE` category.
+        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
         """
-        return BooleanPredicate.FALSE, BooleanPredicate.TRUE
+        return BooleanPredicate.NO, BooleanPredicate.YES

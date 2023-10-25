@@ -3,8 +3,11 @@ import typing
 import hpotk
 import pytest
 
-from genophenocorr.analysis.predicate import *
+from genophenocorr.analysis.predicate import BooleanPredicate, PatientCategory
+from genophenocorr.analysis.predicate.genotype import *
+from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
+
 from .fixtures import toy_hpo, toy_cohort
 
 
@@ -48,12 +51,12 @@ def test_HPOPresentPredicate(toy_cohort: Cohort,
 
 
 @pytest.mark.parametrize('patient_id, variant_effect, expected_result',
-                        (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, BooleanPredicate.TRUE],
-                        ['HetSingleVar', VariantEffect.MISSENSE_VARIANT, BooleanPredicate.FALSE],
-                        ['HetDoubleVar1', VariantEffect.STOP_GAINED, BooleanPredicate.TRUE],
-                        ['HomoVar', VariantEffect.FRAMESHIFT_VARIANT, BooleanPredicate.TRUE],
-                        ['LargeCNV', VariantEffect.STOP_LOST, BooleanPredicate.TRUE],
-                        ['LargeCNV', VariantEffect.FEATURE_TRUNCATION, BooleanPredicate.TRUE]))
+                         (['HetSingleVar', VariantEffect.FRAMESHIFT_VARIANT, BooleanPredicate.YES],
+                        ['HetSingleVar', VariantEffect.MISSENSE_VARIANT, BooleanPredicate.NO],
+                        ['HetDoubleVar1', VariantEffect.STOP_GAINED, BooleanPredicate.YES],
+                        ['HomoVar', VariantEffect.FRAMESHIFT_VARIANT, BooleanPredicate.YES],
+                        ['LargeCNV', VariantEffect.STOP_LOST, BooleanPredicate.YES],
+                        ['LargeCNV', VariantEffect.FEATURE_TRUNCATION, BooleanPredicate.YES]))
 def test_VariantEffectPredicate(patient_id: str,
                                 variant_effect: VariantEffect,
                                 expected_result: PatientCategory,
@@ -65,17 +68,17 @@ def test_VariantEffectPredicate(patient_id: str,
 
 
 @pytest.mark.parametrize('patient_id, variant, hasVarResult',
-                        (['HetSingleVar', '16_89279850_89279850_G_GC', BooleanPredicate.TRUE],
+                         (['HetSingleVar', '16_89279850_89279850_G_GC', BooleanPredicate.YES],
                         # the `HetSingleVar` patient does NOT have the variant.
-                        ['HetSingleVar', '16_89279708_89279725_AGTGTTCGGGGCGGGGCC_A', BooleanPredicate.FALSE],
+                        ['HetSingleVar', '16_89279708_89279725_AGTGTTCGGGGCGGGGCC_A', BooleanPredicate.NO],
                         # but `HetDoubleVar2` below DOES have the variant.
-                        ['HetDoubleVar2', '16_89279708_89279725_AGTGTTCGGGGCGGGGCC_A', BooleanPredicate.TRUE],
-                        ['HetDoubleVar1', '16_89284601_89284602_GG_A', BooleanPredicate.TRUE],
-                        ['HetDoubleVar1', '16_89280752_89280752_G_T', BooleanPredicate.TRUE],
+                        ['HetDoubleVar2', '16_89279708_89279725_AGTGTTCGGGGCGGGGCC_A', BooleanPredicate.YES],
+                        ['HetDoubleVar1', '16_89284601_89284602_GG_A', BooleanPredicate.YES],
+                        ['HetDoubleVar1', '16_89280752_89280752_G_T', BooleanPredicate.YES],
                         # the `HomoVar` patient does NOT have the variant
-                        ['HomoVar', '16_89280752_89280752_G_T', BooleanPredicate.FALSE],
-                        ['HomoVar', '16_89279458_89279459_TG_T', BooleanPredicate.TRUE],
-                        ['LargeCNV', '16_89190071_89439815_DEL', BooleanPredicate.TRUE]))
+                        ['HomoVar', '16_89280752_89280752_G_T', BooleanPredicate.NO],
+                        ['HomoVar', '16_89279458_89279459_TG_T', BooleanPredicate.YES],
+                        ['LargeCNV', '16_89190071_89439815_DEL', BooleanPredicate.YES]))
 def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
     predicate = VariantPredicate(variant_key=variant)
     patient = find_patient(patient_id, toy_cohort)
@@ -84,15 +87,15 @@ def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
 
 
 @pytest.mark.parametrize('patient_id, exon, hasVarResult',
-                        (['HetSingleVar', 9, BooleanPredicate.TRUE],
-                        ['HetSingleVar', 13, BooleanPredicate.FALSE],
-                        ['HetDoubleVar1', 9, BooleanPredicate.TRUE],
-                        ['HetDoubleVar2', 10, BooleanPredicate.TRUE],
-                        ['HetDoubleVar2', 9, BooleanPredicate.TRUE],
-                        ['HomoVar', 10, BooleanPredicate.FALSE],
-                        ['HomoVar', 9, BooleanPredicate.TRUE],
-                        ['LargeCNV', 1, BooleanPredicate.FALSE],
-                        ['LargeCNV', 13, BooleanPredicate.TRUE]))
+                         (['HetSingleVar', 9, BooleanPredicate.YES],
+                        ['HetSingleVar', 13, BooleanPredicate.NO],
+                        ['HetDoubleVar1', 9, BooleanPredicate.YES],
+                        ['HetDoubleVar2', 10, BooleanPredicate.YES],
+                        ['HetDoubleVar2', 9, BooleanPredicate.YES],
+                        ['HomoVar', 10, BooleanPredicate.NO],
+                        ['HomoVar', 9, BooleanPredicate.YES],
+                        ['LargeCNV', 1, BooleanPredicate.NO],
+                        ['LargeCNV', 13, BooleanPredicate.YES]))
 def test_ExonPredicate(patient_id, exon, hasVarResult, toy_cohort):
     patient = find_patient(patient_id, toy_cohort)
     predicate = ExonPredicate('NM_013275.6', exon_number=exon)
@@ -101,11 +104,11 @@ def test_ExonPredicate(patient_id, exon, hasVarResult, toy_cohort):
 
 
 @pytest.mark.parametrize('patient_id, feature_type, hasVarResult',
-                        (['HetDoubleVar2', FeatureType.REGION, BooleanPredicate.TRUE],
-                        ['HetDoubleVar2', FeatureType.REPEAT, BooleanPredicate.FALSE],
-                        ['HetSingleVar', FeatureType.REGION, BooleanPredicate.TRUE],
-                        ['HomoVar', FeatureType.REGION, BooleanPredicate.TRUE],
-                        ['HetDoubleVar1', FeatureType.REPEAT, BooleanPredicate.FALSE]))
+                         (['HetDoubleVar2', FeatureType.REGION, BooleanPredicate.YES],
+                        ['HetDoubleVar2', FeatureType.REPEAT, BooleanPredicate.NO],
+                        ['HetSingleVar', FeatureType.REGION, BooleanPredicate.YES],
+                        ['HomoVar', FeatureType.REGION, BooleanPredicate.YES],
+                        ['HetDoubleVar1', FeatureType.REPEAT, BooleanPredicate.NO]))
                         ## TODO Why do CNV not show as affecting a feature?
                         ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
 def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy_cohort):
@@ -116,11 +119,11 @@ def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy
 
 
 @pytest.mark.parametrize('patient_id, feature, hasVarResult',
-                        (['HetDoubleVar2', 'Disordered', BooleanPredicate.TRUE],
-                        ['HetDoubleVar2', 'BadFeature', BooleanPredicate.FALSE],
-                        ['HetSingleVar', 'Disordered', BooleanPredicate.TRUE],
-                        ['HomoVar', 'Disordered', BooleanPredicate.TRUE],
-                        ['HetDoubleVar1', 'Disordered', BooleanPredicate.TRUE]))
+                         (['HetDoubleVar2', 'Disordered', BooleanPredicate.YES],
+                        ['HetDoubleVar2', 'BadFeature', BooleanPredicate.NO],
+                        ['HetSingleVar', 'Disordered', BooleanPredicate.YES],
+                        ['HomoVar', 'Disordered', BooleanPredicate.YES],
+                        ['HetDoubleVar1', 'Disordered', BooleanPredicate.YES]))
 def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort):
     predicate = ProtFeaturePredicate('NM_013275.6', protein_feature_name=feature)
     patient = find_patient(patient_id, toy_cohort)

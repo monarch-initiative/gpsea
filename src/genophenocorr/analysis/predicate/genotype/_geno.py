@@ -4,81 +4,10 @@ import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
 
-from ._api import PatientCategory, PolyPredicate, BooleanPredicate
+from .._api import PatientCategory, BooleanPredicate
 
 
-class PropagatingPhenotypePredicate(PolyPredicate):
-    """
-    `PropagatingPhenotypePredicate` tests if the `patient` is annotated with a `query` HPO term.
-
-    The predicate returns the following results:
-
-    * :attr:`PropagatingPhenotypePredicate.PRESENT` if the patient is annotated with the `query` term or its descendant
-    * :attr:`PropagatingPhenotypePredicate.EXCLUDED` presence of the `query` term or its ancestor was specifically
-      excluded in the patient
-    * :attr:`PropagatingPhenotypePredicate.NOT_MEASURED` if the patient is not annotated with the `query` and presence of `query`
-      was *not* excluded
-    """
-
-    PRESENT = PatientCategory(cat_id=0,
-                              name='Present',
-                              description="""
-                              The sample *is* annotated with the tested phenotype feature `q`.
-                              
-                              This is either because the sample is annotated with `q` (exact match),
-                              or because one of sample's annotations is a descendant `q` (annotation propagation).
-                              For instance, we tested for a Seizure and the sample *had* a Clonic seizure 
-                              (a descendant of Seizure).
-                              """) #: :meta hide-value:
-
-    EXCLUDED = PatientCategory(cat_id=1,
-                               name='Excluded',
-                               description="""
-                               We are particular about the sample *not* having the tested feature `q`.
-                               
-                               In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.
-                               
-                               For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies 
-                               *not* Clonic seizure.  
-                               """) #: :meta hide-value:
-
-    NOT_MEASURED = PatientCategory(cat_id=2,
-                                   name='Not measured',
-                                   description="""
-                                   We do not know if the sample has or has not the tested feature.
-                                   """) #: :meta hide-value:
-
-    def __init__(self, hpo: hpotk.MinimalOntology,
-                 phenotypic_feature: hpotk.TermId) -> None:
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
-        self._query = hpotk.util.validate_instance(phenotypic_feature, hpotk.TermId, 'phenotypic_feature')
-
-    @staticmethod
-    def get_categories() -> typing.Sequence[PatientCategory]:
-        return PropagatingPhenotypePredicate.PRESENT, PropagatingPhenotypePredicate.EXCLUDED, PropagatingPhenotypePredicate.NOT_MEASURED
-
-    def get_question(self) -> str:
-        query_label = self._hpo.get_term(self._query).name
-        return f'Is \'{query_label}\' present in the patient?'
-
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
-        self._check_patient(patient)
-        query = hpotk.util.validate_instance(self._query, hpotk.TermId, 'query')
-
-        if len(patient.phenotypes) == 0:
-            return None
-
-        for phenotype in patient.phenotypes:
-            if phenotype.is_observed:
-                if any(query == anc for anc in self._hpo.graph.get_ancestors(phenotype, include_source=True)):
-                    return PropagatingPhenotypePredicate.PRESENT
-            else:
-                if any(query == desc for desc in self._hpo.graph.get_descendants(phenotype, include_source=True)):
-                    return self.EXCLUDED
-
-        return self.NOT_MEASURED
-
-
+# TODO - should we remove these three?
 HETEROZYGOUS = PatientCategory(cat_id=0,
                                name='Heterozygous',
                                description="""
@@ -128,9 +57,15 @@ class VariantEffectPredicate(BooleanPredicate):
                 if ann.transcript_id == self._tx_id:
                     for var_eff in ann.variant_effects:
                         if var_eff == self._effect:
-                            return BooleanPredicate.TRUE
+                            return BooleanPredicate.YES
 
-        return BooleanPredicate.FALSE
+        return BooleanPredicate.NO
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'VariantEffectPredicate(transcript_id={self._tx_id}, effect={self._effect})'
 
 
 class VariantPredicate(BooleanPredicate):
@@ -158,9 +93,15 @@ class VariantPredicate(BooleanPredicate):
 
         for variant in patient.variants:
             if variant.variant_coordinates.variant_key == self._variant_key:
-                return BooleanPredicate.TRUE
+                return BooleanPredicate.YES
 
-        return BooleanPredicate.FALSE
+        return BooleanPredicate.NO
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'VariantPredicate(variant_key={self._variant_key})'
 
 
 class ExonPredicate(BooleanPredicate):
@@ -204,9 +145,15 @@ class ExonPredicate(BooleanPredicate):
                 if ann.transcript_id == self._tx_id:
                     if ann.overlapping_exons is not None:
                         if self._exon_number in ann.overlapping_exons:
-                            return BooleanPredicate.TRUE
+                            return BooleanPredicate.YES
 
-        return BooleanPredicate.FALSE
+        return BooleanPredicate.NO
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ExonPredicate(tx_id={self._tx_id}, exon_number={self._exon_number})'
 
 
 class ProtFeatureTypePredicate(BooleanPredicate):
@@ -241,9 +188,15 @@ class ProtFeatureTypePredicate(BooleanPredicate):
                             for feat in prot.protein_features:
                                 if feat.feature_type == self._feature_type:
                                     if len(list(range(max(pe_start, feat.info.start), min(pe_end, feat.info.end) + 1))) > 0:
-                                        return BooleanPredicate.TRUE
+                                        return BooleanPredicate.YES
 
-        return BooleanPredicate.FALSE
+        return BooleanPredicate.NO
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ProtFeatureTypePredicate(tx_id={self._tx_id}, feature_type={self._feature_type})'
 
 
 class ProtFeaturePredicate(BooleanPredicate):
@@ -280,6 +233,13 @@ class ProtFeaturePredicate(BooleanPredicate):
                             for feat in prot.protein_features:
                                 if feat.info.name == self._pf_name:
                                     if len(list(range(max(pe_start, feat.info.start), min(pe_end, feat.info.end) + 1))) > 0:
-                                        return BooleanPredicate.TRUE
+                                        return BooleanPredicate.YES
 
-        return BooleanPredicate.FALSE
+        return BooleanPredicate.NO
+
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ProtFeaturePredicate(tx_id={self._tx_id}, exon_number={self._pf_name})'

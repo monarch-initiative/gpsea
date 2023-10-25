@@ -1,7 +1,9 @@
 from . import predicate
 
+from ._api import AbstractCohortAnalysis, CohortAnalysisResult
 from ._analyzers import CohortAnalysis
+from ._commie import CommunistCohortAnalysis
 
 __all__ = [
-    'CohortAnalysis'
+    'AbstractCohortAnalysis', 'CohortAnalysisResult', 'CohortAnalysis', 'CommunistCohortAnalysis'
 ]

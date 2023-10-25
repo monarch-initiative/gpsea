@@ -1,13 +1,13 @@
 import hpotk
 import pytest
 
-from genophenocorr.analysis import CohortAnalysis
+from genophenocorr.analysis import CommunistCohortAnalysis
 from genophenocorr.data import get_toy_cohort
 from genophenocorr.model import Cohort, VariantEffect
 
 
-@pytest.mark.skip(reason='Disabled unUnless explicitly enabled')
-class TestCohortAnalysis:
+# @pytest.mark.skip(reason='Disabled unUnless explicitly enabled')
+class TestSlimCohortAnalysis:
 
     @pytest.fixture
     def toy_cohort(self) -> Cohort:
@@ -17,6 +17,7 @@ class TestCohortAnalysis:
     def hpo(self) -> hpotk.MinimalOntology:
         return hpotk.load_minimal_ontology('')
 
-    def test_compare_by_variant_type(self, toy_cohort: Cohort, hpo: hpotk.MinimalOntology):
-        cohort_analysis = CohortAnalysis(toy_cohort, 'NM_1234.5', hpo)
-        cohort_analysis.compare_by_variant_type(VariantEffect.MISSENSE_VARIANT)
+    def test_compare_by_variant_effect(self, toy_cohort: Cohort, hpo: hpotk.MinimalOntology):
+        cohort_analysis = CommunistCohortAnalysis(toy_cohort, hpo)
+        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
+        print(results)

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from contextlib import nullcontext as does_not_raise
-from ._analyzers import PythonMultiFisherExact
+from ._stats import PythonMultiFisherExact
 
 
 @pytest.fixture
