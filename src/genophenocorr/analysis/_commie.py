@@ -12,7 +12,7 @@ from .predicate import BooleanPredicate, PolyPredicate
 from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate
 from .predicate.phenotype import PropagatingPhenotypeBooleanPredicateFactory, PhenotypePredicateFactory
 
-from ._api import AbstractCohortAnalysis, CohortAnalysisResult
+from ._api import AbstractCohortAnalysis, GenotypePhenotypeAnalysisResult
 from ._stats import run_fisher_exact
 
 
@@ -129,30 +129,30 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
         self._patients_by_hpo = self._group_patients_by_hpo(self._testing_hpo_terms, self._patient_list,
                                                             self._hpo, missing_implies_excluded)
 
-    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> CohortAnalysisResult:
+    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = VariantEffectPredicate(tx_id, effect)
         return self._apply_boolean_predicate(predicate)
 
-    def compare_by_variant_key(self, variant_key: str) -> CohortAnalysisResult:
+    def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
         predicate = VariantPredicate(variant_key)
         return self._apply_boolean_predicate(predicate)
 
-    def compare_by_exon(self, exon_number: int, tx_id: str) -> CohortAnalysisResult:
+    def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = ExonPredicate(tx_id, exon_number)
         return self._apply_boolean_predicate(predicate)
 
-    def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> CohortAnalysisResult:
+    def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:
         return self._run_gp_analysis(self._patient_list, self._testing_hpo_terms,
                                      self._phenotype_predicate_factory, predicate)
 
-    def _apply_poly_predicate(self, predicate: PolyPredicate) -> CohortAnalysisResult:
+    def _apply_poly_predicate(self, predicate: PolyPredicate) -> GenotypePhenotypeAnalysisResult:
         return self._run_gp_analysis(self._patient_list, self._testing_hpo_terms,
                                      self._phenotype_predicate_factory, predicate)
 
     def _run_gp_analysis(self, patients: typing.Iterable[Patient],
                          phenotypic_features: typing.Iterable[hpotk.TermId],
                          pheno_predicate_factory: PhenotypePredicateFactory,
-                         geno_predicate: PolyPredicate) -> CohortAnalysisResult:
+                         geno_predicate: PolyPredicate) -> GenotypePhenotypeAnalysisResult:
         # 1) Count the patients
         n_usable, all_counts = self._count_patients(patients, phenotypic_features,
                                                     pheno_predicate_factory, geno_predicate)
@@ -171,7 +171,7 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
         corrected_pvals_series = pd.Series(data=pvals_corrected, index=corrected_idx,
                                            name='Corrected p value')
 
-        return CohortAnalysisResult(n_usable, all_counts, pvals, corrected_pvals_series)
+        return GenotypePhenotypeAnalysisResult(n_usable, all_counts, pvals, corrected_pvals_series, geno_predicate.get_question())
 
     @staticmethod
     def _count_patients(patients: typing.Iterable[Patient],

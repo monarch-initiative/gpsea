@@ -6,20 +6,23 @@ import hpotk
 import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient
+from .predicate import PatientCategory
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
 
-class CohortAnalysisResult:
+class GenotypePhenotypeAnalysisResult:
 
     def __init__(self, n_usable: pd.Series,
                  all_counts: pd.DataFrame,
                  pvals: pd.Series,
-                 corrected_pvals: typing.Optional[pd.Series]):
+                 corrected_pvals: typing.Optional[pd.Series],
+                 question: str):
         self._n_usable = n_usable
         self._all_counts = all_counts
         self._pvals = pvals
         self._corrected_pvals = corrected_pvals
+        self._question = question
 
     @property
     def n_usable(self) -> pd.Series:
@@ -37,6 +40,67 @@ class CohortAnalysisResult:
     def corrected_pvals(self) -> typing.Optional[pd.Series]:
         return self._corrected_pvals
 
+    def summarize(self, hpo: hpotk.MinimalOntology,
+                  phenotype_category: PatientCategory) -> pd.DataFrame:
+        """
+        Create a data frame with summary of the genotype phenotype analysis.
+
+        The *rows* of the frame correspond to the analyzed HPO terms.
+
+        The columns of the data frame have `Count` and `Percentage` per used genotype predicate.
+        For instance, if we used :class:`genophenocorr.analysis.predicate.genotype.VariantEffectPredicate`
+        which compares phenotype with and without variants with certain :class:`genophenocorr.model.VariantEffect`,
+        we will have the following columns:
+
+        =====  =======  =====  =======
+        Yes             No
+        --------------  --------------
+        Count  Percent  Count  Percent
+        =====  =======  =====  =======
+
+        The final data frame may look something like this::
+
+            MISSENSE_VARIANT on `NM_1234.5`                       No                  Yes
+                                                                  Count    Percent    Count    Percent   p value   Corrected p value
+            Arachnodactyly [HP:0001166]                           1         3.8461    13       50.0000   0.000781  0.020299
+            Abnormality of the musculature [HP:0003011]           6        35.2941    11       64.7058   1.000000  1.000000
+            Abnormal nervous system physiology [HP:0012638]       9        37.5000    15       62.5000   1.000000  1.000000
+            ...                                                   ...      ...        ...      ...       ...       ...
+        """
+        # Row index: a list of tested HPO terms
+        pheno_idx = pd.Index(self._n_usable.index)
+        # Column index: multiindex of counts and percentages for all genotype predicate groups
+        geno_idx = pd.MultiIndex.from_product(
+            iterables=(self._all_counts.columns, ('Count', 'Percent')),
+            names=(self._question, None))
+
+        # We'll fill this frame with data
+        df = pd.DataFrame(index=pheno_idx, columns=geno_idx)
+
+        # We must choose the counts with the `phenotype_category` of interest.
+        # This depends on the used phenotype predicate.
+        # Usually, we are interested patients who HAVE a feature,
+        # but we can also investigate those who do NOT have the feature.
+        # Hence, we need `phenotype_category`.
+        counts = self._all_counts.loc[(slice(None), phenotype_category), :]
+        counts.set_index(pheno_idx, inplace=True)
+
+        # Fill the frame cells
+        for col in geno_idx.levels[0]:
+            cnt = counts[col]
+            df[col, 'Count'] = cnt
+            df[col, 'Percent'] = cnt * 100 / self._n_usable
+
+        # Add columns with p values and corrected p values
+        df.insert(df.shape[1], ('', self._pvals.name), self._pvals)
+        df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
+
+        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]`
+        labeled_idx = df.index.map(lambda term_id: f'{hpo.get_term(term_id).name} [{term_id.value}]')
+
+        # Last, sort by corrected p value
+        return df.set_index(labeled_idx).sort_values(by=[('', self._corrected_pvals.name)])
+
 
 class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
     # TODO
@@ -44,7 +108,7 @@ class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
     #  - finish splitting predicates to `genotype` and `phenotype`
 
     @abc.abstractmethod
-    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> CohortAnalysisResult:
+    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variants with `effect` vs. variants with all other variant effects.
 
@@ -54,7 +118,7 @@ class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def compare_by_variant_key(self, variant_key: str) -> CohortAnalysisResult:
+    def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variant with `variant_key` vs all the other variants.
 
@@ -67,7 +131,7 @@ class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def compare_by_exon(self, exon_number: int, tx_id: str) -> CohortAnalysisResult:
+    def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variants with `effect` vs. variants with all other variant effects.
 

@@ -43,8 +43,7 @@ class VariantEffectPredicate(BooleanPredicate):
         self._effect = hpotk.util.validate_instance(effect, VariantEffect, 'effect')
 
     def get_question(self) -> str:
-        return (f'Does the patient have a variant with {self._effect.name} '
-                f'on transcript `{self._tx_id}`?')
+        return f'{self._effect.name} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -83,7 +82,7 @@ class VariantPredicate(BooleanPredicate):
         self._variant_key = hpotk.util.validate_instance(variant_key, str, 'variant_key')
 
     def get_question(self) -> str:
-        return f'Does the patient have >=1 allele of the variant `{self._variant_key}`?'
+        return f'>=1 allele of the variant {self._variant_key}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -131,8 +130,7 @@ class ExonPredicate(BooleanPredicate):
             raise ValueError(f'`exon_number` must be a positive `int` but got {self._exon_number}')
 
     def get_question(self) -> str:
-        return (f'Does the patient have a variant that affects exon {self._exon_number} '
-                f'on transcript `{self._tx_id}`?')
+        return f'Variant in exon {self._exon_number} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -170,8 +168,7 @@ class ProtFeatureTypePredicate(BooleanPredicate):
         self._feature_type = hpotk.util.validate_instance(feature_type, FeatureType, 'feature_type')
 
     def get_question(self) -> str:
-        return (f'Does the patient have a variant that affects any {self._feature_type.name} protein feature '
-                f'on transcript `{self._tx_id}`?')
+        return f'Variant that affecting {self._feature_type.name} protein feature on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -215,8 +212,7 @@ class ProtFeaturePredicate(BooleanPredicate):
         self._pf_name = hpotk.util.validate_instance(protein_feature_name, str, 'protein_feature_name')
 
     def get_question(self) -> str:
-        return (f'Does the patient have a variant that affects a protein feature with name {self._pf_name} '
-                f'on transcript `{self._tx_id}`?')
+        return f'Variant in {self._pf_name} of {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
