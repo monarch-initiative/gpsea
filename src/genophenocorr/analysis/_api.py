@@ -12,33 +12,72 @@ PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_wi
 
 
 class GenotypePhenotypeAnalysisResult:
+    """
+    `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.
+    """
 
     def __init__(self, n_usable: pd.Series,
                  all_counts: pd.DataFrame,
                  pvals: pd.Series,
                  corrected_pvals: typing.Optional[pd.Series],
+                 phenotype_categories: typing.Iterable[PatientCategory],
                  question: str):
         self._n_usable = n_usable
         self._all_counts = all_counts
         self._pvals = pvals
         self._corrected_pvals = corrected_pvals
+        self._phenotype_categories = tuple(phenotype_categories)
         self._question = question
 
     @property
     def n_usable(self) -> pd.Series:
+        """
+        Get a :class:`pandas.Series` with mapping from HPO term and number of patients where the term was either
+         present or excluded, and are, thus, usable for genotype-phenotype correlation analysis.
+        """
         return self._n_usable
 
     @property
     def all_counts(self) -> pd.DataFrame:
+        """
+        Get a :class:`pandas.DataFrame` with counts of patients in genotype and phenotype groups.
+
+        An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence
+        of a missense variant in transcript, and phenotype predicate that checks presence/absence of a phenotype term::
+
+                                   Has MISSENSE_VARIANT in NM_123456.7
+                                   No       Yes
+            HPO         Present
+            HP:0001166  Yes        1        13
+            HP:0001166  No         7        5
+            HP:0003011  Yes        3        11
+            HP:0003011  No         7        16
+            HP:0012638  Yes        9        15
+            HP:0012638  No         3        4
+
+        """
         return self._all_counts
 
     @property
     def pvals(self) -> pd.Series:
+        """
+        Get a :class:`pandas.Series` with p values for each tested HPO term.
+        """
         return self._pvals
 
     @property
     def corrected_pvals(self) -> typing.Optional[pd.Series]:
+        """
+        Get an optional :class:`pandas.Series` with p values for each tested HPO term after multiple testing correction.
+        """
         return self._corrected_pvals
+
+    @property
+    def phenotype_categories(self) -> typing.Sequence[PatientCategory]:
+        """
+        Get a sequence of phenotype patient categories that can be investigated.
+        """
+        return self._phenotype_categories
 
     def summarize(self, hpo: hpotk.MinimalOntology,
                   phenotype_category: PatientCategory) -> pd.DataFrame:
@@ -67,6 +106,9 @@ class GenotypePhenotypeAnalysisResult:
             Abnormal nervous system physiology [HP:0012638]       9        37.5000    15       62.5000   1.000000  1.000000
             ...                                                   ...      ...        ...      ...       ...       ...
         """
+        if phenotype_category not in self._phenotype_categories:
+            raise ValueError(f'Unknown phenotype category: {phenotype_category}. Use one of {self._phenotype_categories}')
+
         # Row index: a list of tested HPO terms
         pheno_idx = pd.Index(self._n_usable.index)
         # Column index: multiindex of counts and percentages for all genotype predicate groups
@@ -103,9 +145,6 @@ class GenotypePhenotypeAnalysisResult:
 
 
 class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
-    # TODO
-    #  - factor out convenient methods from `CohortAnalysis`
-    #  - finish splitting predicates to `genotype` and `phenotype`
 
     @abc.abstractmethod
     def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:

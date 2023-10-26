@@ -171,7 +171,8 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
         corrected_pvals_series = pd.Series(data=pvals_corrected, index=corrected_idx,
                                            name='Corrected p value')
 
-        return GenotypePhenotypeAnalysisResult(n_usable, all_counts, pvals, corrected_pvals_series, geno_predicate.get_question())
+        return GenotypePhenotypeAnalysisResult(n_usable, all_counts, pvals, corrected_pvals_series,
+                                               pheno_predicate_factory.get_categories(), geno_predicate.get_question())
 
     @staticmethod
     def _count_patients(patients: typing.Iterable[Patient],
