@@ -6,6 +6,20 @@ import hpotk
 
 
 class Contig(typing.Sized):
+    """
+    `Contig` represents identifiers and length of a contiguous sequence of genome assembly.
+
+    The identifiers include:
+
+    * :attr:`name` e.g. `1`
+    * :attr:`genbank_acc` e.g. `CM000663.2`
+    * :attr:`refseq_name` e.g. `NC_000001.11`
+    * :attr:`ucsc_name` e.g. `chr1`
+
+    The length of a `Contig` represents the number of bases of the contig sequence.
+
+    You should not try to create a `Contig` on your own, but always get it from a :class:`GenomeBuild`.
+    """
 
     def __init__(self, name: str, gb_acc: str, refseq_name: str, ucsc_name: str, length: int):
         self._name = hpotk.util.validate_instance(name, str, 'name')
@@ -54,10 +68,73 @@ class Contig(typing.Sized):
         return hash((self.name, self.refseq_name, self.ucsc_name, len(self)))
 
 
-class GenomeBuild:
+class GenomeBuildIdentifier:
+    """
+    Identifier of the genome build consisting of :attr:`major_assembly` (e.g. GRCh38) and :attr:`patch` (e.g. p13).
 
-    def __init__(self, identifier: str, contigs: typing.Iterable[Contig]):
-        self._id = identifier
+    :param major_assembly: major assembly `str`
+    :param patch: assembly patch `str`
+    """
+
+    def __init__(self, major_assembly: str, patch: str):
+        self._major_assembly = major_assembly
+        self._patch = patch
+
+    @property
+    def major_assembly(self) -> str:
+        """
+        Get major assembly, e.g. `GRCh38`.
+        """
+        return self._major_assembly
+
+    @property
+    def patch(self) -> str:
+        """
+        Get assembly patch , e.g. `p13`.
+        """
+        return self._patch
+
+    @property
+    def identifier(self):
+        """
+        Get genome build identifier consisting of major assembly + patch, e.g. `GRCh38.p13`
+        """
+        return self._major_assembly + '.' + self._patch
+
+    def __eq__(self, other):
+        return (isinstance(other, GenomeBuildIdentifier)
+                and self.major_assembly == other.major_assembly
+                and self.patch == other.patch)
+
+    def __hash__(self):
+        return hash((self.major_assembly, self.patch))
+
+    def __str__(self):
+        return f"GenomeBuildIdentifier(prefix={self._major_assembly}, patch={self._patch})"
+
+    def __repr__(self):
+        return f"GenomeBuildIdentifier(prefix={self._major_assembly}, patch={self._patch})"
+
+
+class GenomeBuild:
+    """
+    `GenomeBuild` is a container for the :attr:`genome_build_id` and the :attr:`contigs` of the build.
+
+    The build supports retrieving contig by various identifiers:
+
+    .. doctest:: genome-build
+
+    >>> from genophenocorr.model.genome import GRCh38
+
+    >>> chr1 = GRCh38.contig_by_name('1')  # by sequence name
+
+    >>> assert chr1 == GRCh38.contig_by_name('CM000663.2')    # by GenBank identifier
+    >>> assert chr1 == GRCh38.contig_by_name('NC_000001.11')  # by RefSeq accession
+    >>> assert chr1 == GRCh38.contig_by_name('chr1')    # by UCSC name
+    """
+
+    def __init__(self, identifier: GenomeBuildIdentifier, contigs: typing.Iterable[Contig]):
+        self._id = hpotk.util.validate_instance(identifier, GenomeBuildIdentifier, 'identifier')
         self._contigs = tuple(contigs)
         self._contig_by_name = {}
         for contig in self._contigs:
@@ -68,6 +145,10 @@ class GenomeBuild:
 
     @property
     def identifier(self) -> str:
+        return self.genome_build_id.identifier
+
+    @property
+    def genome_build_id(self) -> GenomeBuildIdentifier:
         return self._id
 
     @property
@@ -75,16 +156,28 @@ class GenomeBuild:
         return self._contigs
 
     def contig_by_name(self, name: str) -> typing.Optional[Contig]:
+        """
+        Get a contig with `name`.
+
+        The name can come in various formats:
+
+        * sequence name, e.g. `1`
+        * GenBank accession, e.g. `CM000663.2`
+        * RefSeq accession, e.g. `NC_000001.11`
+        * UCSC name, e.g. `chr1`
+
+        :param name: a `str` with contig name.
+        """
         try:
             return self._contig_by_name[name]
         except KeyError:
             return None
 
     def __str__(self):
-        return f"GenomeBuild(identifier={self.identifier}, n_contigs={len(self.contigs)})"
+        return f"GenomeBuild(identifier={self._id.identifier}, n_contigs={len(self.contigs)})"
 
     def __repr__(self):
-        return f"GenomeBuild(identifier={self.identifier}, contigs={self.contigs})"
+        return f"GenomeBuild(identifier={self._id.identifier}, contigs={self.contigs})"
 
 
 class Region(typing.Sized):

@@ -1,6 +1,9 @@
+# A module with classes that interact with Ensembl's REST API to fetch required data.
 import logging
+import re
 import typing
 
+import hpotk
 import requests
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
@@ -9,7 +12,8 @@ from ._api import FunctionalAnnotator, ProteinMetadataService
 
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
-    Converts the 0-based VariantCoordinates to ones that will be interpreted correctly by VEP
+    Converts the 0-based VariantCoordinates to ones that will be interpreted
+    correctly by VEP
 
     Example - an insertion/duplication of G after the given G at coordinate 3:
     1 2 3 4 5
@@ -45,33 +49,40 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
 
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
-    """A `FunctionalAnnotator` that uses Variant Effect Predictor (VEP) REST API to do functional variant annotation.
+    """A `FunctionalAnnotator` that uses Variant Effect Predictor (VEP) REST API to
+    do functional variant annotation.
 
     Args:
         protein_annotator (ProteinMetadataService): a service for getting protein data
-        include_computational_txs (bool): Include computational transcripts, such as RefSeq `XM_`.
+        include_computational_txs (bool): Include computational transcripts, such as
+        RefSeq `XM_`.
     """
 
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
         self._logging = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
-        self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1&domains=1&hgvs=1' \
-                    '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1&transcript_version=1&variant_class=1'
+        self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
+                    '&domains=1&hgvs=1' \
+                    '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
+                    '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
 
-    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[
+        TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
 
         Args:
             variant_coordinates (VariantCoordinates): A VariantCoordinates object
         Returns:
-            typing.Sequence[TranscriptAnnotation]: A sequence of transcript annotations for the variant coordinates
+            typing.Sequence[TranscriptAnnotation]: A sequence of transcript
+            annotations for the variant coordinates
         """
         response = self._query_vep(variant_coordinates)
         annotations = []
         if 'transcript_consequences' not in response:
-            raise ValueError(f'The VEP response lacked the required `transcript_consequences` field')
+            raise ValueError(
+                f'The VEP response lacked the required `transcript_consequences` field')
 
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
@@ -124,7 +135,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         if exons_effected is not None:
             exons_effected = exons_effected.split('/')[0].split('-')
             if len(exons_effected) == 2:
-                exons_effected = range(int(exons_effected[0]), int(exons_effected[1]) + 1)
+                exons_effected = range(int(exons_effected[0]),
+                                       int(exons_effected[1]) + 1)
             exons_effected = [int(x) for x in exons_effected]
         return TranscriptAnnotation(gene_name,
                                     trans_id,
@@ -145,8 +157,11 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         results = r.json()
         if not isinstance(results, list):
             self._logging.error(results.get('error'))
-            raise ConnectionError(f"Expected a result but got an Error. See log for details.")
+            raise ConnectionError(
+                f"Expected a result but got an Error. See log for details.")
         if len(results) > 1:
             self._logging.error([result.id for result in results])
-            raise ValueError(f"Expected only one variant per request but received {len(results)} different variants.")
+            raise ValueError(
+                f"Expected only one variant per request but received {len(results)} "
+                f"different variants.")
         return results[0]

@@ -63,7 +63,8 @@ class TestVepFunctionalAnnotator:
     TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vep_response'))
 
     def test__process_item_missense(self, variant_annotator: VepFunctionalAnnotator):
-        response = self._load_response_json('missense.json')
+        response_fpath = os.path.join(self.TEST_DATA_DIR, 'missense.json')
+        response = load_response_json(response_fpath)
 
         annotations = [variant_annotator._process_item(item) for item in response[0]['transcript_consequences']]
 
@@ -83,7 +84,8 @@ class TestVepFunctionalAnnotator:
         assert preferred.overlapping_exons == (9,)
 
     def test__process_item_deletion(self, variant_annotator: VepFunctionalAnnotator):
-        response = self._load_response_json('deletion.json')
+        response_fpath = os.path.join(self.TEST_DATA_DIR, 'deletion.json')
+        response = load_response_json(response_fpath)
 
         annotations = [variant_annotator._process_item(item) for item in response[0]['transcript_consequences']]
 
@@ -102,7 +104,7 @@ class TestVepFunctionalAnnotator:
         assert preferred.variant_effects == (VariantEffect.FRAMESHIFT_VARIANT,)
         assert preferred.overlapping_exons == (9,)
 
-    def _load_response_json(self, test_name: str):
-        response_fpath = os.path.join(self.TEST_DATA_DIR, test_name)
-        with open(response_fpath) as fh:
-            return json.load(fh)
+
+def load_response_json(path: str):
+    with open(path) as fh:
+        return json.load(fh)

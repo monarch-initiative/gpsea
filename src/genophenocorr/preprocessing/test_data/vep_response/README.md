@@ -2,7 +2,9 @@
 
 The folder contains JSON files with example VEP responses.
 
-## `missense.json`
+## Test `VepFunctionalAnnotator`
+
+### `missense.json`
 
 Corresponds to variant in `../misssense_test.json`.
 ```shell
@@ -10,7 +12,7 @@ curl 'https://rest.ensembl.org/vep/human/region/16:89279135-89279135/C?LoF=1&can
 -H 'Content-type:application/json' | python3 -m json.tool > missense.json
 ```
 
-## `deletion.json`
+### `deletion.json`
 
 Corresponds to variant in `../deletion_test.json`.
 
