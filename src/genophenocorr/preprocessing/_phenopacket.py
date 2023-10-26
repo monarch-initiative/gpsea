@@ -255,11 +255,16 @@ def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith('.json'):
             phenopacket_path = os.path.join(pp_dir, patient_file)
-            pp = _load_phenopacket(phenopacket_path)
+            pp = load_phenopacket(phenopacket_path)
             patients.append(pp)
     return patients
 
 
-def _load_phenopacket(phenopacket_path: str) -> Phenopacket:
+def load_phenopacket(phenopacket_path: str) -> Phenopacket:
+    """
+    Load phenopacket JSON file.
+
+    :param phenopacket_path: a `str` pointing to phenopacket JSON file.
+    """
     with open(phenopacket_path) as f:
         return Parse(f.read(), Phenopacket())
