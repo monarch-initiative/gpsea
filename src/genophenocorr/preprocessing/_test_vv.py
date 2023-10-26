@@ -90,6 +90,11 @@ class TestVVHgvsVariantCoordinateFinder:
         assert vc.alt == 'TAGC'
         assert vc.change_length == 3
 
+    @pytest.mark.skip('Online tests are disabled by default')
+    def test_find_coordinates(self, coordinate_finder: VVHgvsVariantCoordinateFinder):
+        vc = coordinate_finder.find_coordinates('NM_013275.6:c.7407C>G')
+        print(vc)
+
 
 def load_response_json(path: str):
     with open(path) as fh:
