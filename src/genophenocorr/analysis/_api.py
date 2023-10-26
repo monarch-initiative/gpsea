@@ -190,6 +190,20 @@ class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
         """
         pass
 
+    @abc.abstractmethod
+    def compare_by_variant_keys(self, a: str, b: str) -> GenotypePhenotypeAnalysisResult:
+        """
+        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.
+
+        .. seealso::
+
+          :attr:`genophenocorr.model.VariantCoordinates.variant_key`
+
+        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``
+        :param b: a `str` with variant key of variant `b`
+        """
+        pass
+
     @staticmethod
     def _check_min_perc_patients_w_hpo(min_perc_patients_w_hpo: typing.Union[int, float],
                                        cohort_size: int) -> float:

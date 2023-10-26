@@ -405,3 +405,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(4, ('', 'p-value')))
             final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
+
+
+    def compare_by_variant_keys(self, a: str, b: str):
+        raise NotImplementedError()

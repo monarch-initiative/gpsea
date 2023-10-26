@@ -141,6 +141,9 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
         predicate = ExonPredicate(tx_id, exon_number)
         return self._apply_boolean_predicate(predicate)
 
+    def compare_by_variant_keys(self, a: str, b: str) -> GenotypePhenotypeAnalysisResult:
+        raise NotImplementedError()
+
     def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:
         return self._run_gp_analysis(self._patient_list, self._testing_hpo_terms,
                                      self._phenotype_predicate_factory, predicate)
@@ -159,7 +162,7 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
 
         # 2) Statistical tests
         pvals_idx = pd.Index(phenotypic_features, name='p_val')
-        pvals = pd.Series(data=float('nan'), index=pvals_idx, name='p value')
+        pvals = pd.Series(float('nan'), index=pvals_idx, name='p value')
         for pf in phenotypic_features:
             counts = all_counts.loc[pf]
             # TODO - this is where we must fail unless we have the contingency table of the right size!
