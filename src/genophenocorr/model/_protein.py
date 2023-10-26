@@ -252,11 +252,11 @@ class ProteinMetadata:
             if feat.info.start is None or feat.info.end is None:
                 print(f"{feat.info.name} has no start and end info")
                 continue
-            if feat.info.start <= var_start <= feat.info.end:
+
+            if feat.info.region.overlaps_with(var_start, var_end):
                 affected_features.add(feat)
-            elif feat.info.start <= var_end <= feat.info.end:
-                affected_features.add(feat)
-        return affected_features 
+
+        return affected_features
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
