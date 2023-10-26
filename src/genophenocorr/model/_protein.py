@@ -142,9 +142,6 @@ class SimpleProteinFeature(ProteinFeature):
         """
         return self._type
 
-    def to_string(self) -> str:
-        return f"{self.feature_type.name}-{self.info.name}-{self.info.region}"
-
     def __str__(self) -> str:
         return f"SimpleProteinFeature(type={self.feature_type}, " \
                f"info={str(self.info)})"
