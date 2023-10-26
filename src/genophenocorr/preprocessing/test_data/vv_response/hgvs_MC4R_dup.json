@@ -1,0 +1,120 @@
+{
+    "NM_005912.3:c.1_3dup": {
+        "alt_genomic_loci": [],
+        "annotations": {
+            "chromosome": "18",
+            "db_xref": {
+                "CCDS": "CCDS11976.1",
+                "ensemblgene": null,
+                "hgnc": "HGNC:6932",
+                "ncbigene": "4160",
+                "select": "MANE"
+            },
+            "ensembl_select": false,
+            "mane_plus_clinical": false,
+            "mane_select": true,
+            "map": "18q21.32",
+            "note": "melanocortin 4 receptor",
+            "refseq_select": true,
+            "variant": "0"
+        },
+        "gene_ids": {
+            "ccds_ids": [
+                "CCDS11976"
+            ],
+            "ensembl_gene_id": "ENSG00000166603",
+            "entrez_gene_id": "4160",
+            "hgnc_id": "HGNC:6932",
+            "omim_id": [
+                "155541"
+            ],
+            "ucsc_id": "uc002lie.2"
+        },
+        "gene_symbol": "MC4R",
+        "genome_context_intronic_sequence": "",
+        "hgvs_lrg_transcript_variant": "LRG_1346t1:c.1_3dup",
+        "hgvs_lrg_variant": "LRG_1346:g.5420_5422dup",
+        "hgvs_predicted_protein_consequence": {
+            "lrg_slr": "LRG_1346p1:p.(M1?)",
+            "lrg_tlr": "LRG_1346p1:p.(Met1?)",
+            "slr": "NP_005903.2:p.(M1?)",
+            "tlr": "NP_005903.2:p.(Met1?)"
+        },
+        "hgvs_refseqgene_variant": "NG_016441.1:g.5420_5422dup",
+        "hgvs_transcript_variant": "NM_005912.3:c.1_3dup",
+        "primary_assembly_loci": {
+            "grch37": {
+                "hgvs_genomic_description": "NC_000018.9:g.58039580_58039582dup",
+                "vcf": {
+                    "alt": "CCAT",
+                    "chr": "18",
+                    "pos": "58039579",
+                    "ref": "C"
+                }
+            },
+            "grch38": {
+                "hgvs_genomic_description": "NC_000018.10:g.60372347_60372349dup",
+                "vcf": {
+                    "alt": "CCAT",
+                    "chr": "18",
+                    "pos": "60372346",
+                    "ref": "C"
+                }
+            },
+            "hg19": {
+                "hgvs_genomic_description": "NC_000018.9:g.58039580_58039582dup",
+                "vcf": {
+                    "alt": "CCAT",
+                    "chr": "chr18",
+                    "pos": "58039579",
+                    "ref": "C"
+                }
+            },
+            "hg38": {
+                "hgvs_genomic_description": "NC_000018.10:g.60372347_60372349dup",
+                "vcf": {
+                    "alt": "CCAT",
+                    "chr": "chr18",
+                    "pos": "60372346",
+                    "ref": "C"
+                }
+            }
+        },
+        "reference_sequence_records": {
+            "lrg": "http://ftp.ebi.ac.uk/pub/databases/lrgex/pending/LRG_1346.xml",
+            "protein": "https://www.ncbi.nlm.nih.gov/nuccore/NP_005903.2",
+            "refseqgene": "https://www.ncbi.nlm.nih.gov/nuccore/NG_016441.1",
+            "transcript": "https://www.ncbi.nlm.nih.gov/nuccore/NM_005912.3"
+        },
+        "refseqgene_context_intronic_sequence": "",
+        "rna_variant_descriptions": null,
+        "selected_assembly": "hg38",
+        "submitted_variant": "NM_005912.3:c.1_3dup",
+        "transcript_description": "Homo sapiens melanocortin 4 receptor (MC4R), mRNA",
+        "validation_warnings": [
+            "The current status of LRG_1346 is pending therefore changes may be made to the LRG reference sequence"
+        ],
+        "variant_exonic_positions": {
+            "NC_000018.10": {
+                "end_exon": "1",
+                "start_exon": "1"
+            },
+            "NC_000018.9": {
+                "end_exon": "1",
+                "start_exon": "1"
+            },
+            "NG_016441.1": {
+                "end_exon": "1",
+                "start_exon": "1"
+            }
+        }
+    },
+    "flag": "gene_variant",
+    "metadata": {
+        "variantvalidator_hgvs_version": "2.2.0",
+        "variantvalidator_version": "2.2.1.dev69+g7932ba3",
+        "vvdb_version": "vvdb_2022_11",
+        "vvseqrepo_db": "VV_SR_2022_11/master",
+        "vvta_version": "vvta_2022_11_1"
+    }
+}

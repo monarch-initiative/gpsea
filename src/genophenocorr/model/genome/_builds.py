@@ -1,7 +1,7 @@
 import platform
 import warnings
 
-from ._genome import Contig, GenomeBuild
+from ._genome import Contig, GenomeBuild, GenomeBuildIdentifier
 
 major, minor, patch = platform.python_version_tuple()
 
@@ -20,7 +20,7 @@ else:
     warnings.warn(f'Untested Python version v{major}.{minor}.{patch}')
 
 
-def read_assembly_report(identifier: str, path: str) -> GenomeBuild:
+def read_assembly_report(identifier: GenomeBuildIdentifier, path: str) -> GenomeBuild:
     contigs = []
     with resource_loader(path) as fp:
         for line in fp:
@@ -38,12 +38,12 @@ def read_assembly_report(identifier: str, path: str) -> GenomeBuild:
     return GenomeBuild(identifier, contigs)
 
 
-GRCh37 = read_assembly_report('GRCh37.p13', 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
+GRCh37 = read_assembly_report(GenomeBuildIdentifier('GRCh37', 'p13'), 'GCF_000001405.25_GRCh37.p13_assembly_report.tsv')
 """
 The `GRCh37.p13` genomic build.
 """
 
-GRCh38 = read_assembly_report('GRCh38.p13', 'GCF_000001405.39_GRCh38.p13_assembly_report.tsv')
+GRCh38 = read_assembly_report(GenomeBuildIdentifier('GRCh38', 'p13'), 'GCF_000001405.39_GRCh38.p13_assembly_report.tsv')
 """
 The `GRCh38.p13` genomic build.
 """
