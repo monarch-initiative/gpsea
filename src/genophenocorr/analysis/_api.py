@@ -133,18 +133,29 @@ class GenotypePhenotypeAnalysisResult:
             df[col, 'Count'] = cnt
             df[col, 'Percent'] = cnt * 100 / self._n_usable
 
-        # Add columns with p values and corrected p values
+        # Add columns with p values and corrected p values (if present)
         df.insert(df.shape[1], ('', self._pvals.name), self._pvals)
-        df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
+        if self._corrected_pvals is not None:
+            df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
 
         # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]`
         labeled_idx = df.index.map(lambda term_id: f'{hpo.get_term(term_id).name} [{term_id.value}]')
 
-        # Last, sort by corrected p value
-        return df.set_index(labeled_idx).sort_values(by=[('', self._corrected_pvals.name)])
+        # Last, sort by corrected p value or just p value
+        df = df.set_index(labeled_idx)
+        if self._corrected_pvals is not None:
+            return df.sort_values(by=('', self._corrected_pvals.name))
+        else:
+            return df.sort_values(by=('', self._pvals.name))
 
 
-class AbstractCohortAnalysis(metaclass=abc.ABCMeta):
+class CohortAnalysis(metaclass=abc.ABCMeta):
+    """
+    `CohortAnalysis` is a driver class for running genotype-phenotype correlation analyses.
+
+    The class provides various methods to test genotype-phenotype correlations. All methods wrap results
+    into :class:`GenotypePhenotypeAnalysisResult`.
+    """
 
     @abc.abstractmethod
     def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:

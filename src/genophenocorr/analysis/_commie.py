@@ -12,7 +12,7 @@ from .predicate import BooleanPredicate, PolyPredicate
 from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate
 from .predicate.phenotype import PropagatingPhenotypeBooleanPredicateFactory, PhenotypePredicateFactory
 
-from ._api import AbstractCohortAnalysis, GenotypePhenotypeAnalysisResult
+from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
 from ._stats import run_fisher_exact
 
 
@@ -98,13 +98,13 @@ def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient]
 
 
 
-class CommunistCohortAnalysis(AbstractCohortAnalysis):
+class CommunistCohortAnalysis(CohortAnalysis):
 
     def __init__(self, cohort: Cohort,
                  hpo: hpotk.MinimalOntology,
                  missing_implies_excluded: bool = False,
-                 include_large_sv: bool = False,
-                 p_val_correction: str = 'bonferroni',
+                 include_sv: bool = False,
+                 p_val_correction: typing.Optional[str] = None,
                  min_perc_patients_w_hpo: typing.Union[float, int] = .1):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
@@ -113,10 +113,9 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._phenotype_predicate_factory = PropagatingPhenotypeBooleanPredicateFactory(self._hpo,
                                                                                         missing_implies_excluded)
-        # self._include_sv = include_large_sv
         self._correction = p_val_correction
         self._patient_list = list(cohort.all_patients) \
-            if include_large_sv \
+            if include_sv \
             else [pat for pat in cohort.all_patients if not all(var.variant_coordinates.is_structural() for var in pat.variants)]
         if len(self._patient_list) == 0:
             raise ValueError('No patients left for analysis!')
@@ -169,10 +168,13 @@ class CommunistCohortAnalysis(AbstractCohortAnalysis):
             pvals[pf] = run_fisher_exact(counts)
 
         # 3) Multiple correction
-        _, pvals_corrected, _, _ = multitest.multipletests(pvals, alpha=.05, method=self._correction)
-        corrected_idx = pd.Index(phenotypic_features, name='p_val_corrected')
-        corrected_pvals_series = pd.Series(data=pvals_corrected, index=corrected_idx,
-                                           name='Corrected p value')
+        if self._correction is not None:
+            _, pvals_corrected, _, _ = multitest.multipletests(pvals, alpha=.05, method=self._correction)
+            corrected_idx = pd.Index(phenotypic_features, name='p_val_corrected')
+            corrected_pvals_series = pd.Series(data=pvals_corrected, index=corrected_idx,
+                                               name='Corrected p value')
+        else:
+            corrected_pvals_series = None
 
         return GenotypePhenotypeAnalysisResult(n_usable, all_counts, pvals, corrected_pvals_series,
                                                pheno_predicate_factory.get_categories(), geno_predicate.get_question())

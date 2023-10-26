@@ -1,9 +1,10 @@
 from . import predicate
 
-from ._api import AbstractCohortAnalysis, GenotypePhenotypeAnalysisResult
-from ._analyzers import CohortAnalysis
-from ._commie import CommunistCohortAnalysis
+from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
+from ._config import CohortAnalysisConfiguration, CohortAnalysisConfigurationBuilder, configure_cohort_analysis
 
 __all__ = [
-    'AbstractCohortAnalysis', 'GenotypePhenotypeAnalysisResult', 'CohortAnalysis', 'CommunistCohortAnalysis'
+    'configure_cohort_analysis',
+    'CohortAnalysis', 'GenotypePhenotypeAnalysisResult',
+    'CohortAnalysisConfiguration', 'CohortAnalysisConfigurationBuilder'
 ]

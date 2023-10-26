@@ -14,11 +14,11 @@ from .predicate import PolyPredicate
 from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate.genotype import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 
-from ._api import AbstractCohortAnalysis
+from ._api import CohortAnalysis
 from ._stats import run_recessive_fisher_exact, run_fisher_exact
 
 
-class CohortAnalysis(AbstractCohortAnalysis):
+class BaseCohortAnalysis(CohortAnalysis):
     """
     `CohortAnalysis` supports running a palette of genotype-phenotype correlation analyses for a :class:`Cohort`.
 
@@ -36,7 +36,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
         analysis_cohort (Cohort): The Cohort object given for this analysis
         analysis_patients (list): A subset of patients with no structural variants if they are being removed from the analysis. Otherwise, all patients in the cohort.
         analysis_transcript (string): The given transcript ID that will be used in this analysis
-        is_recessive (boolean): True if the variant is recessive. Default is False. 
+        is_recessive (boolean): True if the variant is recessive. Default is False.
         missing_implies_excluded (boolean): True if we assume that a patient without a specific phenotype listed
           *does not* have the phenotype. Otherwise, the only excluded phenotypes are those that are excluded explicitly.
           Defaults to `False`.
@@ -74,7 +74,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
         self._patients_by_hpo = self._group_patients_by_hpo(self._testing_hpo_terms, self._patient_list,
                                                             self._hpo, self._missing_implies_excluded)
         self._correction = p_val_correction
-        
+
     @property
     def analysis_cohort(self) -> Cohort:
         """
@@ -88,7 +88,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
         warnings.warn('The `analysis_cohort` will be removed from the CohortAnalyzer API in 0.3.0',
                       DeprecationWarning, stacklevel=2)
         return self._cohort
-    
+
     @property
     def analysis_patients(self) -> typing.Sequence[Patient]:
         """
@@ -96,7 +96,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
             Sequence: A sequence of patients that are subject to the analysis.
         """
         return self._patient_list
-    
+
     @property
     def analysis_transcript(self) -> str:
         """
@@ -117,7 +117,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
     def include_unmeasured(self) -> bool:
         """
         Returns:
-            boolean: True if we want to assume a patient without a specific phenotype listed does not have that phenotype. 
+            boolean: True if we want to assume a patient without a specific phenotype listed does not have that phenotype.
             Otherwise, will only include those that explicitly say the phenotype was not observed.
         """
         # TODO[0.3.0] - remove
@@ -147,7 +147,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
     def min_perc_patients_w_hpo(self):
         """
         Returns:
-            integer: Will only test phenotypes that are listed in at least this percent of patients. 
+            integer: Will only test phenotypes that are listed in at least this percent of patients.
         """
         # TODO[0.3.0] - remove
         warnings.warn('The `min_perc_patients_w_hpo` will be removed from the CohortAnalyzer API in 0.3.0',
@@ -244,9 +244,9 @@ class CohortAnalysis(AbstractCohortAnalysis):
 
     def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
         """Runs Fisher Exact analysis, finds any correlation between given variant effects across phenotypes.
-        
+
         Args:
-            var_type1 (VariantEffect): 
+            var_type1 (VariantEffect):
             var_type2 (VariantEffect, Optional): If None, we compare between those with var_type1 and those without var_type1
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
@@ -279,9 +279,9 @@ class CohortAnalysis(AbstractCohortAnalysis):
 
     def compare_by_variant(self, variant1:str, variant2:str = None):
         """Runs Fisher Exact analysis, finds any correlation between given variants across phenotypes.
-        
+
         Args:
-            variant1 (string): 
+            variant1 (string):
             variant2 (string, Optional): If None, we compare between those with variant1 and those without variant1
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
@@ -299,7 +299,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
             final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
         else:
-            final_dict, corrected_pvals = self._run_dom_analysis(variant_test, variant1, variant2)  
+            final_dict, corrected_pvals = self._run_dom_analysis(variant_test, variant1, variant2)
             if variant2 is None:
                 col_name = f'Without {variant1}'
             else:
@@ -311,9 +311,9 @@ class CohortAnalysis(AbstractCohortAnalysis):
 
     def compare_by_exon(self, exon1:int, exon2:int = None):
         """Runs Fisher Exact analysis, finds any correlation between given exons across phenotypes.
-        
+
         Args:
-            exon1 (integer): 
+            exon1 (integer):
             exon2 (integer, Optional): If None, we compare between those within exon1 and those outside exon1
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
@@ -330,7 +330,7 @@ class CohortAnalysis(AbstractCohortAnalysis):
             index = MultiIndex.from_product([[f'Homozygous {exon1}', col_name1, col_name2], ['Count', 'Percent']])
             final_df = DataFrame.from_dict(final_dict, orient='index', columns=index.insert(6, ('', 'p-value')))
             final_df.insert(7, ('', "Corrected p-values"), corrected_pvals, True)
-        else: 
+        else:
             final_dict, corrected_pvals = self._run_dom_analysis(exon_test, exon1, exon2)
             if exon2 is None:
                 col_name = f'Outside Exon {exon1}'
@@ -343,9 +343,9 @@ class CohortAnalysis(AbstractCohortAnalysis):
 
     def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
         """Runs Fisher Exact analysis, finds any correlation between given feature type across phenotypes.
-        
+
         Args:
-            feature1 (FeatureType): 
+            feature1 (FeatureType):
             feature2 (FeatureType, Optional): If None, we compare between those with feature1 and those without feature1
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
@@ -376,9 +376,9 @@ class CohortAnalysis(AbstractCohortAnalysis):
 
     def compare_by_protein_feature(self, feature1:str, feature2:str = None):
         """Runs Fisher Exact analysis, finds any correlation between given feature and phenotypes.
-        
+
         Args:
-            feature1 (string): 
+            feature1 (string):
             feature2 (string, Optional): If None, we compare between those within feature1 and those outside feature1
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
