@@ -12,6 +12,7 @@ from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
 from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
+from ._vv import VVHgvsVariantCoordinateFinder
 
 
 def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
@@ -48,7 +49,8 @@ def configure_caching_patient_creator(hpo: hpotk.MinimalOntology,
 
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, protein_fallback)
-    return PhenopacketPatientCreator(build, phenotype_creator, functional_annotator)
+    hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
+    return PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
 
 
 def _setup_phenotype_creator(hpo: hpotk.MinimalOntology,

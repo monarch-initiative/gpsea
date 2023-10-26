@@ -5,25 +5,20 @@ import typing
 import hpotk
 import requests
 
-from genophenocorr.model import VariantCoordinates, Genotype
+from genophenocorr.model import VariantCoordinates
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder
 
 
-class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, str]]):
+class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
     """
     `VVHgvsVariantCoordinateFinder` uses Variant Validator's REST API to build :class:`VariantCoordinates`
     from an HGVS string.
 
-    The finder takes a tuple with two strings:
+    The finder takes an HGVS `str` (e.g. `NM_005912.3:c.253A>G`) and extracts the variant coordinates from the response.
 
-    * HGVS `str` (e.g. `NM_005912.3:c.253A>G`)
-    * genotype `str` (e.g. `heterozygous`)
-
-    and extracts the variant coordinates from the response.
-
-    :param genome_build: the genome build to use to construct :class:`VariantCoordinates`.
-    :param timeout: the REST API request timeout (default: 10).
+    :param genome_build: the genome build to use to construct :class:`VariantCoordinates`
+    :param timeout: the REST API request timeout
     """
 
     def __init__(self, genome_build: GenomeBuild, timeout: int = 10):
@@ -33,17 +28,17 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
         self._headers = {'Content-type': 'application/json'}
         self._hgvs_pattern = re.compile(r'^(?P<tx>NM_\d+\.\d+):c.\d+(_\d+)?.*')
 
-    def find_coordinates(self, item: typing.Tuple[str, str]) -> typing.Tuple[VariantCoordinates, Genotype]:
+    def find_coordinates(self, item: str) -> VariantCoordinates:
         """
         Extracts variant coordinates from an HGVS string using Variant Validator's REST API.
-        :param item: Tuple of hgvs string and genotype string
-        :return: variant coordinates and genotype
+
+        :param item: a hgvs string
+        :return: variant coordinates
         """
-        hgvs, genotype = item
-        matcher = self._hgvs_pattern.match(hgvs)
+        matcher = self._hgvs_pattern.match(item)
         if matcher:
             transcript = matcher.group('tx')
-            request_url = self._url % (self._build.genome_build_id.major_assembly, hgvs, transcript)
+            request_url = self._url % (self._build.genome_build_id.major_assembly, item, transcript)
 
             try:
                 response = requests.get(request_url, headers=self._headers, timeout=self._timeout)
@@ -51,15 +46,14 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[typing.Tuple[str, st
                 response = response.json()
                 variant_coordinates = self._extract_variant_coordinates(response)
             except (requests.exceptions.RequestException, VariantValidatorDecodeException) as e:
-                raise ValueError(f'Error processing {hgvs}', e)
+                raise ValueError(f'Error processing {item}', e)
         else:
             # The HGVS did not pass validation by a regular expression.
             # Please submit an issue to our GitHub tracker if you believe
             # the HGVS expression is correct.
-            raise ValueError(f'Invalid HGVS string: {hgvs}')
+            raise ValueError(f'Invalid HGVS string: {item}')
 
-        genotype = Genotype[genotype.upper()]
-        return variant_coordinates, genotype
+        return variant_coordinates
 
     def _extract_variant_coordinates(self, response: typing.Dict) -> typing.Optional[VariantCoordinates]:
         """
