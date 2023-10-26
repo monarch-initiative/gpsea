@@ -7,28 +7,42 @@ from google.protobuf.json_format import Parse
 # pyright: reportGeneralTypeIssues=false
 from phenopackets import Phenopacket, GenomicInterpretation
 
-from genophenocorr.model.genome import GRCh38
+from genophenocorr.model.genome import GenomeBuild, GRCh38
 
+from ._api import VariantCoordinateFinder
 from ._phenopacket import PhenopacketVariantCoordinateFinder
 from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
 from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
 from ._vep import VepFunctionalAnnotator
+from ._vv import VVHgvsVariantCoordinateFinder
 
 
 @pytest.fixture
-def pp_vc_finder() -> PhenopacketVariantCoordinateFinder:
-    return PhenopacketVariantCoordinateFinder(GRCh38)
+def build() -> GenomeBuild:
+    return GRCh38
+
+
+@pytest.fixture
+def hgvs_vc_finder(build: GenomeBuild) -> VariantCoordinateFinder:
+    return VVHgvsVariantCoordinateFinder(build)
+
+
+@pytest.fixture
+def pp_vc_finder(build: GenomeBuild,
+                 hgvs_vc_finder: VariantCoordinateFinder) -> PhenopacketVariantCoordinateFinder:
+    return PhenopacketVariantCoordinateFinder(build, hgvs_vc_finder)
 
 
 @pytest.mark.parametrize("pp_path, expected",
                          [('test_data/deletion_test.json', '16_89284129_89284134_CTTTTT_C'),
-                          ('test_data/insertion_test.json', '16_89280829_89280830_C_CA'),
+                          ('test_data/insertion_test.json', '16_89280829_89280829_C_CA'),
                           ('test_data/missense_test.json', '16_89279135_89279135_G_C'),
-                          ('test_data/duplication_test.json', '16_89279850_89279851_G_GC'),
+                          ('test_data/missense_hgvs_test.json', '16_89279135_89279135_G_C'),
+                          ('test_data/duplication_test.json', '16_89279850_89279850_G_GC'),
                           ('test_data/delinsert_test.json', '16_89284601_89284602_GG_A'),
-                          ('test_data/CVDup_test.json', '16_89284524_89373231_DUP'),
-                          ('test_data/CVDel_test.json', '16_89217282_89506042_DEL')
+                          ('test_data/CVDup_test.json', '16_89284523_89373231_DUP'),
+                          ('test_data/CVDel_test.json', '16_89217281_89506042_DEL')
                           ])
 def test_find_coordinates(pp_path, expected, pp_vc_finder):
     fname = resource_filename(__name__, pp_path)
@@ -36,7 +50,7 @@ def test_find_coordinates(pp_path, expected, pp_vc_finder):
 
     vc, gt = pp_vc_finder.find_coordinates(gi)
 
-    assert expected == vc.variant_key
+    assert vc.variant_key == expected
 
 
 def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:

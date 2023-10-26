@@ -47,7 +47,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         variant_descriptor = item.variant_interpretation.variation_descriptor
 
         vc = None
-        if variant_descriptor.vcf_record.IsInitialized():
+        if self._vcf_is_available(variant_descriptor.vcf_record):
             # We have a VCF record.
             contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom)
             start = int(variant_descriptor.vcf_record.pos) - 1
@@ -58,9 +58,10 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
             vc = VariantCoordinates(region, ref, alt, change_length)
-        elif variant_descriptor.variation.IsInitialized():
+        elif self._cnv_is_available(variant_descriptor.variation):
             # We have a CNV.
-            seq_location = variant_descriptor.variation.copy_number.allele.sequence_location
+            variation = variant_descriptor.variation
+            seq_location = variation.copy_number.allele.sequence_location
             refseq_contig_name = seq_location.sequence_id.split(':')[1]
             contig = self._build.contig_by_name(refseq_contig_name)
 
@@ -69,7 +70,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
             start = int(seq_location.sequence_interval.start_number.value) - 1
             end = int(seq_location.sequence_interval.end_number.value)
             ref = 'N'
-            number = int(variant_descriptor.variation.copy_number.number.value)
+            number = int(variation.copy_number.number.value)
             if number > 2:
                 alt = '<DUP>'
             else:
@@ -84,8 +85,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 if expression.syntax == 'hgvs.c':
                     vc = self._hgvs_finder.find_coordinates(expression.value)
                     break
-        else:
-            # No way we can get something from this `GenomicInterpretation`!
+
+        if vc is None:
             raise ValueError('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
                              'but did not find one')
 
@@ -94,6 +95,25 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         gt = self._map_geno_genotype_label(genotype)
 
         return vc, gt
+
+    @staticmethod
+    def _vcf_is_available(vcf_record) -> bool:
+        """
+        Check if we can parse data out of VCF record.
+        """
+        return (vcf_record.genome_assembly != ''
+                and vcf_record.chrom != ''
+                and vcf_record.pos >= 0
+                and vcf_record.ref != ''
+                and vcf_record.alt != '')
+
+    @staticmethod
+    def _cnv_is_available(variation):
+        seq_location = variation.copy_number.allele.sequence_location
+        return (seq_location.sequence_id != ''
+                and seq_location.sequence_interval.start_number.value >= 0
+                and seq_location.sequence_interval.end_number.value >= 0
+                and variation.copy_number.number.value != '')
 
     @staticmethod
     def _map_geno_genotype_label(genotype: str) -> Genotype:
