@@ -246,10 +246,6 @@ class ProteinMetadata:
     def get_features_variant_overlaps(self, var_start: int, var_end: int) -> typing.Set[ProteinFeature]:
         affected_features = set()
         for feat in self.protein_features:
-            if feat.info.start is None or feat.info.end is None:
-                print(f"{feat.info.name} has no start and end info")
-                continue
-
             if feat.info.region.overlaps_with(var_start, var_end):
                 affected_features.add(feat)
 
