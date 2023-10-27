@@ -101,7 +101,7 @@ class Patient:
 class Cohort(typing.Sized):
 
     @staticmethod
-    def from_patients(members: typing.Sequence[Patient], include_patients_with_no_HPO: bool = False):
+    def from_patients(members: typing.Sequence[Patient], include_patients_with_no_HPO: bool = False, include_patients_with_no_variants: bool = False):
         """
         Create a cohort from a sequence of patients.
 
@@ -114,6 +114,9 @@ class Cohort(typing.Sized):
         excluded_members = []
         for patient in members:
             if len(patient.phenotypes) == 0 and not include_patients_with_no_HPO:
+                excluded_members.append(patient)
+                continue
+            if len(patient.variants) == 0 and not include_patients_with_no_variants:
                 excluded_members.append(patient)
                 continue
             cohort_phenotypes.update(patient.phenotypes)

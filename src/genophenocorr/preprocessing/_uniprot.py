@@ -20,6 +20,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         """Constructs all necessary attributes for a UniprotProteinMetadataService object
         """
         self._logger = logging.getLogger(__name__)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
         self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
                     'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq'
 

@@ -59,6 +59,10 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
         self._logging = logging.getLogger(__name__)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logging.addHandler(handler)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \
@@ -77,6 +81,9 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         """
         response = self._query_vep(variant_coordinates)
         annotations = []
+        if response is None:
+            self._logging.error('VEP did not finish successfully.')
+            return None
         if 'transcript_consequences' not in response:
             raise ValueError(
                 f'The VEP response lacked the required `transcript_consequences` field')
@@ -97,7 +104,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         try:
             var_effect = VariantEffect[effect]
         except KeyError:
-            self._logging.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub." , effect)
+            self._logging.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
             return None
         return var_effect
 
@@ -118,7 +125,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             if var_effect is not None:
                 var_effects.append(var_effect)
         gene_name = item.get('gene_symbol')
-
         exons_effected = item.get('exon')
         if exons_effected is not None:
             exons_effected = exons_effected.split('/')[0].split('-')
@@ -158,14 +164,16 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
-            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.variant_key}")
-            r.raise_for_status()
+            self._logging.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
+            self._logging.error(r.raise_for_status())
+            return None
         results = r.json()
         if not isinstance(results, list):
             self._logging.error(results.get('error'))
             raise ConnectionError(
                 f"Expected a result but got an Error. See log for details.")
         if len(results) > 1:
+            self._logging.error("Expected only one variant per request but received %s different variants.", len(results))
             self._logging.error([result.id for result in results])
             raise ValueError(
                 f"Expected only one variant per request but received {len(results)} "

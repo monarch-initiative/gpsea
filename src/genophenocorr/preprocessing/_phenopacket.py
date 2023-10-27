@@ -140,6 +140,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                  var_func_ann: FunctionalAnnotator,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder(build, hgvs_coordinate_finder)
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
@@ -181,9 +185,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
                 vc, gt = self._coord_finder.find_coordinates(genomic_interp)
                 if "N" in vc.alt:
-                    self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt} and will not be included.')
+                    self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt}, this variant will not be included.')
                     continue
                 tx_annotations = self._func_ann.annotate(vc)
+                if tx_annotations is None:
+                    raise ValueError(f"Patient {pp.id} has an error with variant {vc.variant_key}, examine logs for more details.")
                 genotype = Genotypes.single(sample_id, gt)
                 variant = Variant(vc, tx_annotations, genotype)
                 variants_list.append(variant)
