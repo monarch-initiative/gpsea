@@ -243,10 +243,18 @@ class ProteinMetadata:
         """
         return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
 
-    def get_features_variant_overlaps(self, var_start: int, var_end: int) -> typing.Set[ProteinFeature]:
+    def get_features_variant_overlaps(self, region: Region) -> typing.Collection[ProteinFeature]:
+        """
+        Get a collection of protein features that overlap with the `region`.
+        Args:
+            region: the query region.
+
+        Returns:
+            Collection[ProteinFeature]: a collection of overlapping protein features.
+        """
         affected_features = set()
         for feat in self.protein_features:
-            if feat.info.region.overlaps_with(var_start, var_end):
+            if feat.info.region.overlaps_with_region(region):
                 affected_features.add(feat)
 
         return affected_features
