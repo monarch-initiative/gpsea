@@ -12,10 +12,10 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
                                name='Observed',
                                description="""
                                The sample *is* annotated with the tested phenotype feature `q`.
-                               
+
                                This is either because the sample is annotated with `q` (exact match),
                                or because one of sample's annotations is a descendant `q` (annotation propagation).
-                               For instance, we tested for a Seizure and the sample *had* a Clonic seizure 
+                               For instance, we tested for a Seizure and the sample *had* a Clonic seizure
                                (a descendant of Seizure).
                                """)
 
@@ -23,11 +23,11 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
                                    name='Not observed',
                                    description="""
                                    We are particular about the sample *not* having the tested feature `q`.
-                                   
+
                                    In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.
-                                   
-                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies 
-                                   *not* Clonic seizure.  
+
+                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies
+                                   *not* Clonic seizure.
                                    """)
 
     NOT_MEASURED = PatientCategory(cat_id=2,
@@ -36,7 +36,7 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
                                    We do not know if the sample has or has not the tested feature.
                                    """)
 
-    def __init__(self, 
+    def __init__(self,
                  hpo: hpotk.MinimalOntology) -> None:
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
 
@@ -69,13 +69,13 @@ class HPOPresentPredicate(PolyPredicate[hpotk.TermId]):
 HETEROZYGOUS = PatientCategory(cat_id=0,
                             name='Heterozygous',
                             description="""
-                            This sample has the tested attribute on one allele. 
+                            This sample has the tested attribute on one allele.
                             """)
 
 HOMOZYGOUS = PatientCategory(cat_id=1,
                                 name='Homozygous',
                                 description="""
-                                This sample has the tested attribute on both alleles. 
+                                This sample has the tested attribute on both alleles.
                                 """)
 
 NO_VARIANT = PatientCategory(cat_id=2,
@@ -87,7 +87,7 @@ NO_VARIANT = PatientCategory(cat_id=2,
 
 
 class VariantEffectPredicate(PolyPredicate[VariantEffect]):
-    
+
     def __init__(self, transcript:str) -> None:
         self._transcript = transcript
 
