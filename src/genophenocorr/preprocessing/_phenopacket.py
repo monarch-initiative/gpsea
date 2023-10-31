@@ -193,7 +193,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
 
 def load_phenopacket_folder(pp_directory: str,
-                            patient_creator: PhenopacketPatientCreator) -> Cohort:
+                            patient_creator: PhenopacketPatientCreator,
+                            include_patients_with_no_HPO: bool = False) -> Cohort:
     """
     Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
 
@@ -215,7 +216,7 @@ def load_phenopacket_folder(pp_directory: str,
     patients = [patient_creator.create_patient(pp) for pp in pps]
 
     # create cohort from patients
-    return Cohort.from_patients(patients)
+    return Cohort.from_patients(patients, include_patients_with_no_HPO)
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:

@@ -38,15 +38,14 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         r = requests.get(api_url).json()
         results = r['results']
         if len(results) == 0:
-            self._logger.warning(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
+            self._logger.warning("No proteins found for ID %s. Please verify refseq ID.", protein_id)
             return []
         protein_list = []
         for protein in results:
-            verify = False
+            unis = []
             for uni in protein['uniProtKBCrossReferences']:
-                if uni['id'] == protein_id:
-                    verify = True
-            if verify:
+                unis.append(uni['id'])
+            if protein_id in unis:
                 try:
                     protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
                 except KeyError:
@@ -61,11 +60,11 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                         feat = ProteinFeature.create(FeatureInfo(feat_name, Region(feat_start, feat_end)), FeatureType[feat_type.upper()])
                         all_features_list.append(feat)
                 except KeyError:
-                    self._logger.warning(f"No features for {protein_id}")
+                    self._logger.warning("No features for %s", protein_id)
                 protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
             else:
-                self._logger.warning(f"ID {protein_id} did not match")
-        self._logger.warning(f'Protein ID {protein_id} got {len(protein_list)} results')
-
+                self._logger.warning("UniProt did not return a protein ID that matches the ID we searched for: %s not in %s", protein_id, unis)
+        if len(protein_list) > 1:
+            self._logger.info('UniProt found %d results for ID %s', len(protein_list), protein_id)
         # TODO - DD would like to discuss an example when there are >1 items in this list.
         return protein_list
