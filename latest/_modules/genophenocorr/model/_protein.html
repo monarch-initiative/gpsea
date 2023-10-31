@@ -88,6 +88,7 @@
 <span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 
 
+
 <div class="viewcode-block" id="FeatureInfo">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.FeatureInfo">[docs]</a>
 <span class="k">class</span> <span class="nc">FeatureInfo</span><span class="p">:</span>
@@ -347,6 +348,25 @@
 <span class="sd">            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;MOTIF&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">MOTIF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProteinMetadata.get_features_variant_overlaps">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.get_features_variant_overlaps">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_features_variant_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a collection of protein features that overlap with the `region`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            region: the query region.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Collection[ProteinFeature]: a collection of overlapping protein features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">affected_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">overlaps_with_region</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
+                <span class="n">affected_features</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">affected_features</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

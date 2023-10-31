@@ -288,7 +288,8 @@
 <div class="viewcode-block" id="load_phenopacket_folder">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.load_phenopacket_folder">[docs]</a>
 <span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                            <span class="n">patient_creator</span><span class="p">:</span> <span class="n">PhenopacketPatientCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
+                            <span class="n">patient_creator</span><span class="p">:</span> <span class="n">PhenopacketPatientCreator</span><span class="p">,</span>
+                            <span class="n">include_patients_with_no_HPO</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.</span>
 
@@ -310,7 +311,7 @@
     <span class="n">patients</span> <span class="o">=</span> <span class="p">[</span><span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span> <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">pps</span><span class="p">]</span>
 
     <span class="c1"># create cohort from patients</span>
-    <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span> <span class="n">include_patients_with_no_HPO</span><span class="p">)</span></div>
 
 
 

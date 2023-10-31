@@ -95,10 +95,10 @@
                                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Observed&#39;</span><span class="p">,</span>
                                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                               The sample *is* annotated with the tested phenotype feature `q`.</span>
-<span class="s2">                               </span>
+
 <span class="s2">                               This is either because the sample is annotated with `q` (exact match),</span>
 <span class="s2">                               or because one of sample&#39;s annotations is a descendant `q` (annotation propagation).</span>
-<span class="s2">                               For instance, we tested for a Seizure and the sample *had* a Clonic seizure </span>
+<span class="s2">                               For instance, we tested for a Seizure and the sample *had* a Clonic seizure</span>
 <span class="s2">                               (a descendant of Seizure).</span>
 <span class="s2">                               &quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -106,11 +106,11 @@
                                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Not observed&#39;</span><span class="p">,</span>
                                    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                                   We are particular about the sample *not* having the tested feature `q`.</span>
-<span class="s2">                                   </span>
+
 <span class="s2">                                   In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.</span>
-<span class="s2">                                   </span>
-<span class="s2">                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies </span>
-<span class="s2">                                   *not* Clonic seizure.  </span>
+
+<span class="s2">                                   For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies</span>
+<span class="s2">                                   *not* Clonic seizure.</span>
 <span class="s2">                                   &quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="n">NOT_MEASURED</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -119,7 +119,7 @@
 <span class="s2">                                   We do not know if the sample has or has not the tested feature.</span>
 <span class="s2">                                   &quot;&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span> <span class="s1">&#39;hpo&#39;</span><span class="p">)</span>
 
@@ -159,13 +159,13 @@
 <span class="n">HETEROZYGOUS</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Heterozygous&#39;</span><span class="p">,</span>
                             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">                            This sample has the tested attribute on one allele. </span>
+<span class="s2">                            This sample has the tested attribute on one allele.</span>
 <span class="s2">                            &quot;&quot;&quot;</span><span class="p">)</span>
 
 <span class="n">HOMOZYGOUS</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                 <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Homozygous&#39;</span><span class="p">,</span>
                                 <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">                                This sample has the tested attribute on both alleles. </span>
+<span class="s2">                                This sample has the tested attribute on both alleles.</span>
 <span class="s2">                                &quot;&quot;&quot;</span><span class="p">)</span>
 
 <span class="n">NO_VARIANT</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -179,7 +179,7 @@
 <div class="viewcode-block" id="VariantEffectPredicate">
 <a class="viewcode-back" href="../../../../apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.VariantEffectPredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantEffectPredicate</span><span class="p">(</span><span class="n">PolyPredicate</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]):</span>
-    
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span> <span class="o">=</span> <span class="n">transcript</span>
 
@@ -329,11 +329,12 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">protein_location</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span>
+                    <span class="k">if</span> <span class="n">protein_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
                             <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">query</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">protein_location</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">protein_location</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                                         <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
@@ -382,11 +383,12 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">protein_location</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span>
+                    <span class="k">if</span> <span class="n">protein_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">trans</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
                             <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">query</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">trans</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">protein_location</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">protein_location</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                                         <span class="nb">vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>

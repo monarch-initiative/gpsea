@@ -227,17 +227,20 @@
         <span class="n">all_variant_counter</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_variant_tuple_list</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
             <span class="n">var_count</span> <span class="o">=</span> <span class="n">all_variant_counter</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span>
-            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">txa</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="s2">&quot;NM_001318852.2&quot;</span><span class="p">]</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">txa</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">preferred_transcript</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">target_txa</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">hgvsc_id</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvsc_id</span>
+                <span class="k">if</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvsc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">hgvsc_id</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvsc_id</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">hgvsc_id</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
                 <span class="c1"># split out the variant</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvsc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="n">hgvs</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">hgvs</span> <span class="o">=</span> <span class="n">hgvsc_id</span>
-                <span class="n">effect_tuple</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">variant_effects</span>
+                <span class="n">effect_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">]</span>
                 <span class="n">variant_count_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
                 <span class="n">variant_to_effect_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">effect_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># for simplicity, just display first effect</span>
                 <span class="n">variant_to_key</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
@@ -257,7 +260,133 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">:</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">var_count</span> <span class="o">=</span> <span class="n">variant_count_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">var_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1">#print(f&quot;{var} - {var_count}&quot;)</span>
+            <span class="k">if</span> <span class="n">var_count</span> <span class="o">&gt;=</span> <span class="n">min_count</span><span class="p">:</span> 
+                <span class="n">variant_key</span> <span class="o">=</span> <span class="n">variant_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_to_effect_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">))</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">var_count</span><span class="p">))</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_key</span><span class="p">)</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">below_threshold_vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">var_str</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;Additionally, the following variants were observed </span><span class="si">{</span><span class="n">min_count</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> or fewer times: &quot;</span><span class="p">)</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_str</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;Use the entry in the </span><span class="se">\&quot;</span><span class="s2">Key</span><span class="se">\&quot;</span><span class="s2"> column to investigate whether specific variants display genotype-phenotype correlations&lt;/p&gt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CohortViewer.cohort_summary_table">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.cohort_summary_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">cohort_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
+<span class="sd">        Show the number of annotations per HPO terms. Provide an explanation.</span>
+<span class="sd">        </span>
+<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
+<span class="sd">        :type cohort: Cohort</span>
+<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
+<span class="sd">        :type min_count: int</span>
+<span class="sd">        :returns: HTML code for display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
+        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">]</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
+        <span class="n">n_individuals</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">total_patient_count</span>
+        <span class="n">n_unique_hpo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">)</span>
+        <span class="n">n_unique_variants</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">)</span>
+        <span class="n">n_excluded_patients</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">()</span>
+        <span class="n">excluded_patients</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_ids</span><span class="p">()</span>
+
+        <span class="n">cap</span> <span class="o">=</span> <span class="s2">&quot;Description of the cohort. &quot;</span>
+        <span class="k">if</span> <span class="n">n_excluded_patients</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cap</span> <span class="o">=</span>  <span class="n">cap</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_excluded_patients</span><span class="si">}</span><span class="s2"> individuals were removed from the cohort because they had no HPO terms.&quot;</span>
+
+        <span class="n">capt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;caption&gt;</span><span class="si">{</span><span class="n">cap</span><span class="si">}</span><span class="s2">&lt;/caption&gt;&quot;</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capt</span><span class="p">)</span>
+        
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Individuals&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_individuals</span><span class="p">)]))</span>
+        <span class="c1">#TODO: Add Diseases</span>
+        <span class="k">if</span> <span class="n">n_excluded_patients</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Excluded Individuals&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">n_excluded_patients</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">excluded_patients</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]))</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Unique HPO Terms&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_unique_hpo</span><span class="p">)]))</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Unique Variants&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_unique_variants</span><span class="p">)]))</span>
+
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
+    
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CohortViewer.protein_features_table">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.protein_features_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">protein_features_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">preferred_transcript</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
+<span class="sd">        Show genotype-phenotype correlation tests that could be run.</span>
+<span class="sd">        </span>
+<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
+<span class="sd">        :type cohort: Cohort</span>
+<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
+<span class="sd">        :type min_count: int</span>
+<span class="sd">        :returns: HTML code for display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="c1"># Get a list of variants for the preferred transcript</span>
+        <span class="n">variant_count_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">variant_to_effect_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+        <span class="n">variant_to_key</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+        <span class="c1"># key, variant string, value int</span>
+        <span class="n">all_variant_tuple_list</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_variant_tuple_list is not a list but is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">all_variant_counter</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_variant_tuple_list</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
+            <span class="n">var_count</span> <span class="o">=</span> <span class="n">all_variant_counter</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">txa</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">preferred_transcript</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">target_txa</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvsc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">hgvsc_id</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvsc_id</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">hgvsc_id</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
+                <span class="c1"># split out the variant</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvsc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">hgvsc_id</span>
+                <span class="n">effect_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">]</span>
+                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
+                <span class="n">variant_to_effect_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">effect_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># for simplicity, just display first effect</span>
+                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[WARN] could not identify a single variant for target transcript (got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">), variant </span><span class="si">{</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># could not find an entry for our transcript, so just show the genomic coordinates</span>
+                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
+                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
+        <span class="c1"># sort the variants by count and put variants below mininum count for display into a separate set</span>
+        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">variant_count_d</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># sort descending by values</span>
+        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">]</span> <span class="c1"># take the first item from each sorted tuple</span>
+        <span class="n">below_threshold_vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
+        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Variant&quot;</span><span class="p">,</span> <span class="s2">&quot;Effect&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Key&quot;</span><span class="p">]</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">var_count</span> <span class="o">=</span> <span class="n">variant_count_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+            <span class="c1">#print(f&quot;{var} - {var_count}&quot;)</span>
             <span class="k">if</span> <span class="n">var_count</span> <span class="o">&gt;=</span> <span class="n">min_count</span><span class="p">:</span> 
                 <span class="n">variant_key</span> <span class="o">=</span> <span class="n">variant_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
                 <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
