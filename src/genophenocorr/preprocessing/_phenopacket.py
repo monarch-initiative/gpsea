@@ -1,5 +1,4 @@
 import logging
-import re
 import os
 import typing
 
@@ -20,15 +19,19 @@ from ._api import VariantCoordinateFinder, FunctionalAnnotator
 
 
 class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
-    """A class that creates VariantCoordinates from a Phenopacket
-
-    Methods:
-        find_coordinates(item:GenomicInterpretation): Creates VariantCoordinates from the data in a given Phenopacket
     """
-    def __init__(self, build: GenomeBuild):
-        """Constructs all necessary attributes for a PhenopacketVariantCoordinateFinder object"""
+    `PhenopacketVariantCoordinateFinder` figures out :class:`genophenocorr.model.VariantCoordinates`
+    and :class:`genophenocorr.model.Genotype` from `GenomicInterpretation` element of Phenopacket Schema.
+
+    :param build: genome build to use in `VariantCoordinates
+    :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions
+    """
+    def __init__(self, build: GenomeBuild,
+                 hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
-        self._build = build
+        self._build = hpotk.util.validate_instance(build, GenomeBuild, 'build')
+        self._hgvs_finder = hpotk.util.validate_instance(hgvs_coordinate_finder, VariantCoordinateFinder,
+                                                         'hgvs_coordinate_finder')
 
     def find_coordinates(self, item: GenomicInterpretation) -> typing.Tuple[VariantCoordinates, Genotype]:
         """Creates a VariantCoordinates object from the data in a given Phenopacket
@@ -40,40 +43,77 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(f"item must be a Phenopacket GenomicInterpretation but was type {type(item)}")
+
         variant_descriptor = item.variant_interpretation.variation_descriptor
-        if len(variant_descriptor.vcf_record.chrom) == 0 and len(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) != 0:
+
+        vc = None
+        if self._vcf_is_available(variant_descriptor.vcf_record):
+            # We have a VCF record.
+            contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom)
+            start = int(variant_descriptor.vcf_record.pos) - 1
+            ref = variant_descriptor.vcf_record.ref
+            alt = variant_descriptor.vcf_record.alt
+            end = start + len(ref)
+            change_length = end - start
+
+            region = GenomicRegion(contig, start, end, Strand.POSITIVE)
+            vc = VariantCoordinates(region, ref, alt, change_length)
+        elif self._cnv_is_available(variant_descriptor.variation):
+            # We have a CNV.
+            variation = variant_descriptor.variation
+            seq_location = variation.copy_number.allele.sequence_location
+            refseq_contig_name = seq_location.sequence_id.split(':')[1]
+            contig = self._build.contig_by_name(refseq_contig_name)
+
+            # Assuming SV coordinates are 1-based (VCF style),
+            # so we subtract 1 to transform to 0-based coordinate system
+            start = int(seq_location.sequence_interval.start_number.value) - 1
+            end = int(seq_location.sequence_interval.end_number.value)
             ref = 'N'
-            start = int(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.start_number.value)
-            end = int(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_interval.end_number.value)
-            number = int(variant_descriptor.variation.copy_number.number.value)
+            number = int(variation.copy_number.number.value)
             if number > 2:
                 alt = '<DUP>'
             else:
                 alt = '<DEL>'
-            refseq_contig_name = variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id.split(':')[1]
-            contig = self._build.contig_by_name(refseq_contig_name)
-        elif len(variant_descriptor.vcf_record.chrom) != 0 and len(
-                variant_descriptor.variation.copy_number.allele.sequence_location.sequence_id) == 0:
-            ref = variant_descriptor.vcf_record.ref
-            alt = variant_descriptor.vcf_record.alt
-            start = int(variant_descriptor.vcf_record.pos) - 1
-            end = int(variant_descriptor.vcf_record.pos) + abs(len(alt) - len(ref))
-            contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom[3:])
-        else:
-            raise ValueError('Expected a VCF record or a VRS CNV but did not find one')
+            change_length = end - start
+
+            region = GenomicRegion(contig, start, end, Strand.POSITIVE)
+            vc = VariantCoordinates(region, ref, alt, change_length)
+        elif len(variant_descriptor.expressions) > 0:
+            # We have some expressions. Let's try to find the 1st expression with `hgvs.c` syntax.
+            for expression in variant_descriptor.expressions:
+                if expression.syntax == 'hgvs.c':
+                    vc = self._hgvs_finder.find_coordinates(expression.value)
+                    break
+
+        if vc is None:
+            raise ValueError('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
+                             'but did not find one')
+
+        # Last, parse genotype.
         genotype = variant_descriptor.allelic_state.label
-
-        if any(field is None for field in (contig, ref, alt, genotype)):
-            raise ValueError(f'Cannot determine variant coordinate from genomic interpretation {item}')
-        region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-
-        vc = VariantCoordinates(region, ref, alt, len(alt) - len(ref))
         gt = self._map_geno_genotype_label(genotype)
 
         return vc, gt
+
+    @staticmethod
+    def _vcf_is_available(vcf_record) -> bool:
+        """
+        Check if we can parse data out of VCF record.
+        """
+        return (vcf_record.genome_assembly != ''
+                and vcf_record.chrom != ''
+                and vcf_record.pos >= 0
+                and vcf_record.ref != ''
+                and vcf_record.alt != '')
+
+    @staticmethod
+    def _cnv_is_available(variation):
+        seq_location = variation.copy_number.allele.sequence_location
+        return (seq_location.sequence_id != ''
+                and seq_location.sequence_interval.start_number.value >= 0
+                and seq_location.sequence_interval.end_number.value >= 0
+                and variation.copy_number.number.value != '')
 
     @staticmethod
     def _map_geno_genotype_label(genotype: str) -> Genotype:
@@ -91,25 +131,17 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
 
 
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
-    """A class that creates a Patient object
-
-    Methods:
-        create_patient(item:Phenopacket): Creates a Patient from the data in a given Phenopacket
+    """
+    `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`genophenocorr.model.Patient`.
     """
 
     def __init__(self, build: GenomeBuild,
                  phenotype_creator: PhenotypeCreator,
-                 var_func_ann: FunctionalAnnotator):
-        """Constructs all necessary attributes for a PhenopacketPatientCreator object
-
-        Args:
-            build (GenomeBuild): A genome build to use to load variant coordinates.
-            phenotype_creator (PhenotypeCreator): A PhenotypeCreator object for Phenotype creation
-            var_func_ann (FunctionalAnnotator): A FunctionalAnnotator object for Variant creation
-        """
+                 var_func_ann: FunctionalAnnotator,
+                 hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
-        self._coord_finder = PhenopacketVariantCoordinateFinder(build)
+        self._coord_finder = PhenopacketVariantCoordinateFinder(build, hgvs_coordinate_finder)
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 
@@ -224,11 +256,16 @@ def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith('.json'):
             phenopacket_path = os.path.join(pp_dir, patient_file)
-            pp = _load_phenopacket(phenopacket_path)
+            pp = load_phenopacket(phenopacket_path)
             patients.append(pp)
     return patients
 
 
-def _load_phenopacket(phenopacket_path: str) -> Phenopacket:
+def load_phenopacket(phenopacket_path: str) -> Phenopacket:
+    """
+    Load phenopacket JSON file.
+
+    :param phenopacket_path: a `str` pointing to phenopacket JSON file.
+    """
     with open(phenopacket_path) as f:
         return Parse(f.read(), Phenopacket())

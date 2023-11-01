@@ -39,7 +39,6 @@ def verify_start_end_coordinates(vc: VariantCoordinates):
         if len(vc.ref) == 1 and len(vc.alt) != 1:
             # INS/DUP
             start = start + 1  # we must "trim"
-            end = end - 1
             alt = vc.alt[1:]
             # 100 AC AGT
             # MNV
@@ -67,8 +66,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
 
-    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[
-        TranscriptAnnotation]:
+    def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
 
         Args:
