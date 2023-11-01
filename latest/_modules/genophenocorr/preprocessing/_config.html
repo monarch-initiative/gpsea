@@ -84,15 +84,16 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span><span class="p">,</span> <span class="n">GenomeBuild</span>
 
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ProteinMetadataService</span>
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
 <span class="kn">from</span> <span class="nn">._phenopacket</span> <span class="kn">import</span> <span class="n">PhenopacketPatientCreator</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
 <span class="kn">from</span> <span class="nn">._protein</span> <span class="kn">import</span> <span class="n">ProteinAnnotationCache</span><span class="p">,</span> <span class="n">ProtCachingFunctionalAnnotator</span>
 <span class="kn">from</span> <span class="nn">._uniprot</span> <span class="kn">import</span> <span class="n">UniprotProteinMetadataService</span>
 <span class="kn">from</span> <span class="nn">._variant</span> <span class="kn">import</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">,</span> <span class="n">VariantAnnotationCache</span>
 <span class="kn">from</span> <span class="nn">._vep</span> <span class="kn">import</span> <span class="n">VepFunctionalAnnotator</span>
+<span class="kn">from</span> <span class="nn">._vv</span> <span class="kn">import</span> <span class="n">VVHgvsVariantCoordinateFinder</span>
 
 
 <div class="viewcode-block" id="configure_caching_patient_creator">
@@ -106,7 +107,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
 
-<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO, the validator</span>
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional.</span>
 
 <span class="sd">    :param hpo: a HPO instance.</span>
 <span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
@@ -122,17 +123,53 @@
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">:</span>
-        <span class="n">build</span> <span class="o">=</span> <span class="n">GRCh38</span>
-    <span class="k">elif</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s1">&#39;GRCh37.p13&#39;</span><span class="p">:</span>
-        <span class="n">build</span> <span class="o">=</span> <span class="n">GRCh37</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown build </span><span class="si">{</span><span class="n">genome_build</span><span class="si">}</span><span class="s1">. Choose from [</span><span class="se">\&#39;</span><span class="s1">GRCh37.p13</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">GRCh38.p13</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">)</span>
-
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
     <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
     <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">,</span> <span class="n">protein_fallback</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">)</span></div>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">hgvs_annotator</span><span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="configure_patient_creator">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_patient_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_patient_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+                              <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
+                              <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">,</span>
+                              <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
+
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional</span>
+
+<span class="sd">    :param hpo: a HPO instance.</span>
+<span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
+<span class="sd">    :param validation_runner: an instance of the validation runner.</span>
+<span class="sd">     if the data should be cached in `.cache` folder in the current working directory.</span>
+<span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
+<span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;UNIPROT&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
+
+    <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
+    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">)</span>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">hgvs_annotator</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomeBuild</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GRCh38</span>
+    <span class="k">elif</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s1">&#39;GRCh37.p13&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GRCh37</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown build </span><span class="si">{</span><span class="n">genome_build</span><span class="si">}</span><span class="s1">. Choose from [</span><span class="se">\&#39;</span><span class="s1">GRCh37.p13</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">GRCh38.p13</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
@@ -154,23 +191,17 @@
                                     <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
     <span class="c1"># (1) ProteinMetadataService</span>
     <span class="c1"># Setup fallback</span>
-    <span class="k">if</span> <span class="n">protein_fallback</span> <span class="o">==</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">:</span>
-        <span class="n">fallback1</span> <span class="o">=</span> <span class="n">UniprotProteinMetadataService</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">protein_fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">)</span>
     <span class="c1"># Setup protein metadata cache</span>
     <span class="n">prot_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;protein_cache&#39;</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">prot_cache</span> <span class="o">=</span> <span class="n">ProteinAnnotationCache</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">)</span>
     <span class="c1"># Assemble the final protein metadata service</span>
-    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">ProtCachingFunctionalAnnotator</span><span class="p">(</span><span class="n">prot_cache</span><span class="p">,</span> <span class="n">fallback1</span><span class="p">)</span>
+    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">ProtCachingFunctionalAnnotator</span><span class="p">(</span><span class="n">prot_cache</span><span class="p">,</span> <span class="n">protein_fallback</span><span class="p">)</span>
 
     <span class="c1"># (2) FunctionalAnnotator</span>
     <span class="c1"># Setup fallback</span>
-    <span class="k">if</span> <span class="n">variant_fallback</span> <span class="o">==</span> <span class="s1">&#39;VEP&#39;</span><span class="p">:</span>
-        <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown variant fallback annotator type </span><span class="si">{</span><span class="n">variant_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">)</span>
 
     <span class="c1"># Setup variant cache</span>
     <span class="n">var_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;variant_cache&#39;</span><span class="p">)</span>
@@ -179,6 +210,23 @@
 
     <span class="c1"># Assemble the final functional annotator</span>
     <span class="k">return</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">(</span><span class="n">var_cache</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">protein_fallback</span> <span class="o">==</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">:</span>
+        <span class="n">fallback1</span> <span class="o">=</span> <span class="n">UniprotProteinMetadataService</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fallback1</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+                                   <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">variant_fallback</span> <span class="o">==</span> <span class="s1">&#39;VEP&#39;</span><span class="p">:</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown variant fallback annotator type </span><span class="si">{</span><span class="n">variant_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fallback</span>
 
 
 </pre></div>
