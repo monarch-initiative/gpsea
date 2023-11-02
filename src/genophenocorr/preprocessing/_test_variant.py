@@ -69,6 +69,7 @@ def caching_annotator(variant_annotator, tmp_path):
     vac = VariantAnnotationCache(tmp_path)
     return VarCachingFunctionalAnnotator(vac, variant_annotator)
 
+@pytest.mark.online
 def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator):
     fname = resource_filename(__name__, 'test_data/missense_test.json')
     gi = read_genomic_interpretation_json(fname)

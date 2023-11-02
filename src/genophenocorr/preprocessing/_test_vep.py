@@ -59,6 +59,7 @@ def test_verify_start_end_coordinates(contig_name, start, end, ref, alt, chlen, 
     assert out == expected
 
 
+@pytest.mark.online  # Online due to using real Uniprot service
 class TestVepFunctionalAnnotator:
     TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vep_response'))
 

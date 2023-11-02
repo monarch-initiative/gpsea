@@ -21,7 +21,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
     :param timeout: the REST API request timeout
     """
 
-    def __init__(self, genome_build: GenomeBuild, timeout: int = 10):
+    def __init__(self, genome_build: GenomeBuild, timeout: int = 30):
         self._build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
         self._timeout = timeout
         self._url = 'https://rest.variantvalidator.org/VariantValidator/variantvalidator/%s/%s/%s'

@@ -101,7 +101,7 @@ class Patient:
 class Cohort(typing.Sized):
 
     @staticmethod
-    def from_patients(members: typing.Sequence[Patient]):
+    def from_patients(members: typing.Sequence[Patient], include_patients_with_no_HPO: bool = False):
         """
         Create a cohort from a sequence of patients.
 
@@ -111,19 +111,23 @@ class Cohort(typing.Sized):
         cohort_variants, cohort_phenotypes, cohort_proteins = set(), set(), set()  # , cohort_proteins
         var_counts, pheno_count, prot_counts = Counter(), Counter(), Counter()  # , prot_counts
         members = set(members)
+        excluded_members = []
         for patient in members:
+            if len(patient.phenotypes) == 0 and not include_patients_with_no_HPO:
+                excluded_members.append(patient)
+                continue
+            cohort_phenotypes.update(patient.phenotypes)
             cohort_variants.update(patient.variants)
             var_counts.update([var.variant_coordinates.variant_key for var in patient.variants])
-            cohort_phenotypes.update(patient.phenotypes)
-            pheno_count.update([pheno.identifier.value for pheno in patient.present_phenotypes()])
+            pheno_count.update(pheno.identifier.value for pheno in patient.present_phenotypes())
             cohort_proteins.update(patient.proteins)
             prot_counts.update([prot.protein_id for prot in patient.proteins])
         all_counts = {'patients': len(members), 'variants': var_counts, 'phenotypes': pheno_count,
                       'proteins': prot_counts}  # 'proteins':prot_counts
         return Cohort(members, cohort_phenotypes, cohort_variants, cohort_proteins,
-                      all_counts)  # cohort_proteins, all_counts
+                      all_counts, excluded_members)  # cohort_proteins, all_counts
 
-    """This class creates a collection of patients and makes it easier to determine overlapping diseases, 
+    """This class creates a collection of patients and makes it easier to determine overlapping diseases,
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
     add each file as a patient into the grouping.
 
@@ -135,14 +139,14 @@ class Cohort(typing.Sized):
         all_transcripts (Sequence[string]): A set of all transcript IDs referenced in all the Variant objects
         total_patient_count (integer): The total number of Patient objects
     Methods:
-        list_all_patients(): A list of all patient IDs 
-        list_all_phenotypes(top:Optional[integer]): A list of all the top phenotype IDs (or all IDs if top is None) and the count of how many patients have it. 
-        list_all_variants(top:Optional[integer]): A list of all the top variants (or all variants if top is None) and the count of how many patients have it. 
-        list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it. 
+        list_all_patients(): A list of all patient IDs
+        list_all_phenotypes(top:Optional[integer]): A list of all the top phenotype IDs (or all IDs if top is None) and the count of how many patients have it.
+        list_all_variants(top:Optional[integer]): A list of all the top variants (or all variants if top is None) and the count of how many patients have it.
+        list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it.
         list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.
     """
 
-    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict,
+    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict, excluded_members,
                  recessive=False):
         """Constructs all necessary attributes for a Cohort object
 
@@ -163,6 +167,7 @@ class Cohort(typing.Sized):
         self._protein_set = protein_set
         self._variant_set = variant_set
         self._all_counts_dict = counts_dict
+        self._excluded_members = excluded_members
         self._recessive = recessive
 
     @property
@@ -207,6 +212,10 @@ class Cohort(typing.Sized):
         for var in self.all_variants:
             all_trans.update([trans.transcript_id for trans in var.tx_annotations])
         return all_trans
+
+    @property
+    def all_excluded_patients(self):
+        return self._excluded_members
 
     @property
     def total_patient_count(self):
@@ -272,6 +281,32 @@ class Cohort(typing.Sized):
         for tx_id in too_small:
             del var_type_dict[tx_id]
         return var_type_dict
+
+    def get_excluded_ids(self):
+        return [ex.patient_id for ex in self.all_excluded_patients]
+
+    def get_excluded_count(self):
+        return len(self.all_excluded_patients)
+
+    def get_protein_features_affected(self, transcript):
+        all_features = Counter()
+        protein_set = set()
+        var_coords = []
+        for var in self.all_variants:
+            for tx in var.tx_annotations:
+                if tx.transcript_id == transcript:
+                    protein_set.add(tx.protein_affected)
+                    if tx.protein_effect_location is None or tx.protein_effect_location[0] is None or tx.protein_effect_location[1] is None:
+                        continue
+                    else:
+                        var_coords.append(tx.protein_effect_location)
+        if len(protein_set) != 1:
+            raise ValueError(f"Found more than 1 protein: {protein_set}")
+        else:
+            protein = list(protein_set)[0][0]
+        for pair in var_coords:
+            all_features.update(list(protein.get_features_variant_overlaps(pair[0], pair[1])))
+        return all_features
 
     def __len__(self) -> int:
         return len(self._patient_set)

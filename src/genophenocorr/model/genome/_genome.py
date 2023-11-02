@@ -180,6 +180,10 @@ class GenomeBuild:
         return f"GenomeBuild(identifier={self._id.identifier}, contigs={self.contigs})"
 
 
+def _a_contains_b(a_start: int, a_end: int, b_start: int, b_end: int) -> bool:
+    return a_start <= b_start and b_end <= a_end
+
+
 class Region(typing.Sized):
     """
     `Region` represents a contiguous region/slice of a biological sequence, such as DNA, RNA, or protein.
@@ -214,6 +218,65 @@ class Region(typing.Sized):
         Get 0-based (included) end coordinate of the region.
         """
         return self._end
+
+    def overlaps_with_region(self, other) -> bool:
+        """
+        Test if this `Region` overlaps with the `other`.
+
+        :param other: another :class:`Region`
+        """
+        if isinstance(other, Region):
+            raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
+
+        return self.overlaps_with(other.start, other.end)
+
+    def overlaps_with(self, start: int, end: int) -> bool:
+        """
+        Test if this `Region` overlaps with `start` and `end` coordinates of another region.
+
+        .. warning::
+
+          `start` must be at or before `end`. Otherwise, the results are UNDEFINED.
+
+        :param start: 0-based start coordinate of the other region
+        :param end: 0-based end coordinate of the other region
+        """
+        if self.is_empty():
+            return _a_contains_b(start, end, self._start, self._end)
+        if end - start == 0:
+            return _a_contains_b(self._start, self._end, start, end)
+
+        return self.start < end and start < self.end
+
+    def contains_region(self, other) -> bool:
+        """
+        Test if this `Region` contains the `other` region.
+
+        :param other: another :class:`Region`
+        """
+        if isinstance(other, Region):
+            raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
+
+        return self.contains(other.start, other.end)
+
+    def contains(self, start: int, end: int) -> bool:
+        """
+        Test if this `Region` contains the another region denoted by `start` and `end` coordinates.
+
+        .. warning::
+
+          `start` must be at or before `end`. Otherwise, the results are UNDEFINED.
+
+        :param start: 0-based start coordinate of the other region
+        :param end: 0-based end coordinate of the other region
+        """
+        return _a_contains_b(self._start, self._end, start, end)
+
+    def is_empty(self) -> bool:
+        """
+        Return `True` if the region is empty, i.e. it spans 0 units/bases/aminoacids...
+        """
+        return self._end - self._start == 0
 
     def __len__(self) -> int:
         return self._end - self._start

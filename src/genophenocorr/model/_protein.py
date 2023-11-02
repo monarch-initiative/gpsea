@@ -7,6 +7,7 @@ import hpotk
 from .genome import Region
 
 
+
 class FeatureInfo:
     """A class that represents a protein feature
     (e.g. a repeated sequence given the name "ANK 1" in protein "Ankyrin repeat domain-containing protein 11")
@@ -241,6 +242,22 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "MOTIF"
         """
         return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
+
+    def get_features_variant_overlaps(self, region: Region) -> typing.Collection[ProteinFeature]:
+        """
+        Get a collection of protein features that overlap with the `region`.
+        Args:
+            region: the query region.
+
+        Returns:
+            Collection[ProteinFeature]: a collection of overlapping protein features.
+        """
+        affected_features = set()
+        for feat in self.protein_features:
+            if feat.info.region.overlaps_with_region(region):
+                affected_features.add(feat)
+
+        return affected_features
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \

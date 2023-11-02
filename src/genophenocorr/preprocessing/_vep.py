@@ -5,6 +5,7 @@ import typing
 import requests
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
+from genophenocorr.model.genome import Region
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
 
@@ -100,7 +101,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             return None
         return var_effect
 
-    def _process_item(self, item) -> typing.Optional[TranscriptAnnotation]:
+    def _process_item(self, item: typing.Dict) -> typing.Optional[TranscriptAnnotation]:
         """
         Parse one transcript annotation from the JSON response.
         """
@@ -108,7 +109,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         if not self._include_computational_txs and not trans_id.startswith('NM_'):
             # Skipping a computational transcript
             return None
-        is_preferred = True if 'canonical' in item and item['canonical'] else False
+        is_preferred = True if ('canonical' in item and item['canonical'] == 1) else False
         hgvsc_id = item.get('hgvsc')
         var_effects = []
         consequences = item.get('consequence_terms')
@@ -117,23 +118,33 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             if var_effect is not None:
                 var_effects.append(var_effect)
         gene_name = item.get('gene_symbol')
-        protein_id = item.get('protein_id')
-        protein = self._protein_annotator.annotate(protein_id)
-        protein_effect_start = item.get('protein_start')
-        protein_effect_end = item.get('protein_end')
-        if protein_effect_start is None and protein_effect_end is not None:
-            protein_effect_start = 1
-        if protein_effect_end is not None:
-            protein_effect_end = int(protein_effect_end)
-        if protein_effect_start is not None:
-            protein_effect_start = int(protein_effect_start)
+
         exons_effected = item.get('exon')
         if exons_effected is not None:
             exons_effected = exons_effected.split('/')[0].split('-')
             if len(exons_effected) == 2:
                 exons_effected = range(int(exons_effected[0]),
                                        int(exons_effected[1]) + 1)
-            exons_effected = [int(x) for x in exons_effected]
+            exons_effected = (int(x) for x in exons_effected)
+
+        protein_id = item.get('protein_id')
+        protein = self._protein_annotator.annotate(protein_id)
+        protein_effect_start = item.get('protein_start')
+        protein_effect_end = item.get('protein_end')
+        if protein_effect_start is None or protein_effect_end is None:
+            # Does this ever happen? Let's log a warning for now and address the absence of a coordinate later,
+            # if we see a lot of these warnings popping out.
+            # Note that Lauren's version of the code had a special branch for missing start, where she set the variable
+            # to `1` (1-based coordinate).
+            self._logging.warning('Missing start/end coordinate for %s on protein %s', hgvsc_id, protein_id)
+            protein_effect = None
+        else:
+            # The coordinates are in 1-based system and we need 0-based.
+            protein_effect_start = int(protein_effect_start) - 1
+            protein_effect_end = int(protein_effect_end)
+            protein_effect = Region(protein_effect_start, protein_effect_end)
+
+
         return TranscriptAnnotation(gene_name,
                                     trans_id,
                                     hgvsc_id,
@@ -141,14 +152,13 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     var_effects,
                                     exons_effected,
                                     protein,
-                                    protein_effect_start,
-                                    protein_effect_end)
+                                    protein_effect)
 
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
-            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates}")
+            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.variant_key}")
             r.raise_for_status()
         results = r.json()
         if not isinstance(results, list):
