@@ -11,13 +11,13 @@ from .._api import PatientCategory, BooleanPredicate
 HETEROZYGOUS = PatientCategory(cat_id=0,
                                name='Heterozygous',
                                description="""
-                               This sample has the tested attribute on one allele. 
+                               This sample has the tested attribute on one allele.
                                """)  #: :meta hide-value:
 
 HOMOZYGOUS = PatientCategory(cat_id=1,
                              name='Homozygous',
                              description="""
-                             This sample has the tested attribute on both alleles. 
+                             This sample has the tested attribute on both alleles.
                              """)  #: :meta hide-value:
 
 NO_VARIANT = PatientCategory(cat_id=2,
@@ -36,7 +36,7 @@ class VariantEffectPredicate(BooleanPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param effect: the tested variant effect.
     """
-    
+
     def __init__(self, transcript_id: str,
                  effect: VariantEffect) -> None:
         self._tx_id = transcript_id
@@ -179,13 +179,12 @@ class ProtFeatureTypePredicate(BooleanPredicate):
         for variant in patient.variants:
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
-                    pe_start, pe_end = ann.protein_effect_location
-                    if all(item is not None for item in (pe_start, pe_end)):
-                        for prot in ann.protein_affected:
-                            for feat in prot.protein_features:
-                                if feat.feature_type == self._feature_type:
-                                    if len(list(range(max(pe_start, feat.info.start), min(pe_end, feat.info.end) + 1))) > 0:
-                                        return BooleanPredicate.YES
+                    prot_loc = ann.protein_effect_location
+                    for prot in ann.protein_affected:
+                        for feat in prot.protein_features:
+                            if feat.feature_type == self._feature_type:
+                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
+                                    return BooleanPredicate.YES
 
         return BooleanPredicate.NO
 
@@ -223,13 +222,12 @@ class ProtFeaturePredicate(BooleanPredicate):
         for variant in patient.variants:
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
-                    pe_start, pe_end = ann.protein_effect_location
-                    if all(item is not None for item in (pe_start, pe_end)):
-                        for prot in ann.protein_affected:
-                            for feat in prot.protein_features:
-                                if feat.info.name == self._pf_name:
-                                    if len(list(range(max(pe_start, feat.info.start), min(pe_end, feat.info.end) + 1))) > 0:
-                                        return BooleanPredicate.YES
+                    prot_loc = ann.protein_effect_location
+                    for prot in ann.protein_affected:
+                        for feat in prot.protein_features:
+                            if feat.info.name == self._pf_name:
+                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
+                                    return BooleanPredicate.YES
 
         return BooleanPredicate.NO
 
