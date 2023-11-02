@@ -34,6 +34,7 @@ def pp_vc_finder(build: GenomeBuild,
     return PhenopacketVariantCoordinateFinder(build, hgvs_vc_finder)
 
 
+@pytest.mark.online
 @pytest.mark.parametrize("pp_path, expected",
                          [('test_data/deletion_test.json', '16_89284129_89284134_CTTTTT_C'),
                           ('test_data/insertion_test.json', '16_89280829_89280829_C_CA'),
