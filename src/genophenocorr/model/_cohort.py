@@ -187,7 +187,7 @@ class Cohort(typing.Sized):
         return self._phenotype_set
 
     @property
-    def all_variants(self):
+    def all_variants(self) -> typing.Collection[Variant]:
         """
         Returns:
             set: A set of all the Variant objects in the Cohort
@@ -288,24 +288,29 @@ class Cohort(typing.Sized):
     def get_excluded_count(self):
         return len(self.all_excluded_patients)
 
-    def get_protein_features_affected(self, transcript):
-        all_features = Counter()
+    def get_protein_features_affected(self, tx_id: str):
+        # TODO - add documentation, type annotations.
         protein_set = set()
-        var_coords = []
+        protein_locations = []
         for var in self.all_variants:
             for tx in var.tx_annotations:
-                if tx.transcript_id == transcript:
+                if tx.transcript_id == tx_id:
+                    # TODO - Here we are adding a sequence of `ProteinMetadata` into the `protein_set`.
+                    #  However, it looks fishy. Shouldn't we be really adding the individual `ProteinMetadata`
+                    #  into the set?
                     protein_set.add(tx.protein_affected)
-                    if tx.protein_effect_location is None or tx.protein_effect_location[0] is None or tx.protein_effect_location[1] is None:
-                        continue
-                    else:
-                        var_coords.append(tx.protein_effect_location)
+                    if tx.protein_effect_location is not None:
+                        protein_locations.append(tx.protein_effect_location)
+
         if len(protein_set) != 1:
             raise ValueError(f"Found more than 1 protein: {protein_set}")
         else:
             protein = list(protein_set)[0][0]
-        for pair in var_coords:
-            all_features.update(list(protein.get_features_variant_overlaps(pair[0], pair[1])))
+
+        all_features = Counter()
+        for location in protein_locations:
+            all_features.update(protein.get_features_variant_overlaps(location))
+
         return all_features
 
     def __len__(self) -> int:
