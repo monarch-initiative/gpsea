@@ -85,9 +85,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             self._logging.error('VEP did not finish successfully.')
             return None
         if 'transcript_consequences' not in response:
-            raise ValueError(
-                f'The VEP response lacked the required `transcript_consequences` field')
-
+            self._logging.error('The VEP response lacked the required `transcript_consequences` field. %s', response)
+            return None
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
