@@ -194,6 +194,40 @@ Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compare_by_protein_feature_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.GenotypePhenotypeAnalysisResult" title="genophenocorr.analysis._api.GenotypePhenotypeAnalysisResult"><span class="pre">GenotypePhenotypeAnalysisResult</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/_api.html#CohortAnalysis.compare_by_protein_feature_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature_type" title="Link to this definition"></a></dt>
+<dd><p>Compare genotype-phenotype correlation between variants that affect a given <cite>feature_type</cite> and the variants
+affecting the rest of the protein.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_type</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model.FeatureType"><em>FeatureType</em></a>) – the protein feature type of interest</p></li>
+<li><p><strong>tx_id</strong> – the accession of the transcript of interest</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compare_by_protein_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.GenotypePhenotypeAnalysisResult" title="genophenocorr.analysis._api.GenotypePhenotypeAnalysisResult"><span class="pre">GenotypePhenotypeAnalysisResult</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/_api.html#CohortAnalysis.compare_by_protein_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature" title="Link to this definition"></a></dt>
+<dd><p>Compare genotype-phenotype correlation between variants that affect a given <cite>feature</cite> and the variants
+affecting the rest of the protein.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The protein feature names can be accessed at <code class="xref py py-attr docutils literal notranslate"><span class="pre">genophenocorr.model.ProteinFeature.name</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> (<em>string</em>) – feature identifier, e.g. <code class="docutils literal notranslate"><span class="pre">DNA-binding</span></code>.</p></li>
+<li><p><strong>tx_id</strong> (<em>string</em>) – the accession of the transcript of interest</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
