@@ -3,35 +3,41 @@
 ![PyPi downloads](https://img.shields.io/pypi/dm/genophenocorr.svg?label=Pypi%20downloads)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/genophenocorr)
 
-Genophenocorr is a Python library for genotype-phenotype association analysis. 
+Genophenocorr is a Python library for genotype-phenotype association analysis.
 
 An example of simple genotype-phenotype association analysis
+
 ```python
 # Load HPO
 import hpotk
+
 hpo = hpotk.load_minimal_ontology('http://purl.obolibrary.org/obo/hp.json')
 
-# Load a cohort of phenopackets 
+# Load a cohort of phenopackets
 from genophenocorr.data import get_toy_cohort
+
 cohort = get_toy_cohort()
 
-# Analyze genotype-phenotype associations 
-from genophenocorr.analysis import CohortAnalysis
-from genophenocorr.constants import VariantEffect
+# Analyze genotype-phenotype associations
+from genophenocorr.analysis import configure_cohort_analysis
+from genophenocorr.analysis.predicate import BooleanPredicate
+from genophenocorr.model import VariantEffect
 
-cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo)
-frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
-print(frameshift)
+cohort_analysis = configure_cohort_analysis(cohort, hpo)
+frameshift = cohort_analysis.compare_by_variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id='NM_1234.5')
+
+frameshift.summarize(hpo, phenotype_category=BooleanPredicate.YES)
 ```
 
-prints a table with genotype-phenotype correlations:
+provides a pandas data frame with genotype-phenotype correlations:
 
 ```text
-                            With frameshift_variant         Without frameshift_variant
-                                              Count Percent                      Count Percent  p-value
-HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
-HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472
-HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
+FRAMESHIFT_VARIANT on NM_1234.5        No             Yes
+                                    Count   Percent Count Percent   p value Corrected p value
+    Arachnodactyly [HP:0001166]         1      3.84    13    50.0   0.00078          0.020299
+    Seizure [HP:0001250]               11     84.62     9    69.2   0.64472          0.913432
+    Spasticity [HP:0001257]             8     61.54     9    69.2   1.00000          1.000000
+    ...                               ...       ...    ...    ...       ...               ...
 ```
 
 ## Documentation

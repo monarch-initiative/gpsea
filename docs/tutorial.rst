@@ -37,10 +37,10 @@ with the package:
 
   See :ref:`input-data` section to learn about preparing your data for the analysis.
 
-We can then view the data using the list commands. 
+We can then view the data using the list commands.
 
 .. doctest:: tutorial
-  
+
   >>> sorted(cohort.list_all_patients())
   ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
   >>> sorted(cohort.list_all_phenotypes())
@@ -54,34 +54,30 @@ We can then view the data using the list commands.
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 
 Using the counts, we can choose and run what analyses we want.
-For instance, we can partition the patients into two groups based on presence/absence of a *frameshift* variant:
+For instance, we can partition the patients into two groups based on presence/absence of a *missense* variant:
 
 .. doctest:: tutorial
 
-  >>> from genophenocorr.analysis import CohortAnalysis
+  >>> from genophenocorr.analysis import configure_cohort_analysis
+  >>> from genophenocorr.analysis.predicate import BooleanPredicate  # TODO - explain the predicate or update the API
   >>> from genophenocorr.model import VariantEffect
-  >>> cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo, include_unmeasured=False)
-  >>> frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
-  >>> frameshift # doctest: +NORMALIZE_WHITESPACE
-                              With frameshift_variant         Without frameshift_variant
-                                                Count Percent                      Count Percent  p-value Corrected p-values
-  HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718            0.14154
-  HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472            1.00000
-  HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000            1.00000
 
+  >>> cohort_analysis = configure_cohort_analysis(cohort, hpo)
+  >>> missense = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+  >>> summary_df = missense.summarize(hpo, BooleanPredicate.YES)
+  >>> summary_df.head(1) # doctest: +NORMALIZE_WHITESPACE
+    MISSENSE_VARIANT on NM_1234.5    No             Yes
+                                    Count   Percent Count Percent   p value Corrected p value
+    Arachnodactyly [HP:0001166]         1  3.846154    13    50.0  0.000781          0.020299
 
-Or perform similar partitioning based on presence/absence of a *missense* variant:
+..
 
-.. doctest:: tutorial
+  We're showing just 1 row above. This is due to 2-.. rows all having corrected p value of `1.000` resulting
+  in unstable sort order. We can show more rows with a better cohort, as soon as we have it!
 
-  >>> missense = cohort_analysis.compare_by_variant_type(VariantEffect.MISSENSE_VARIANT)
-  >>> missense # doctest: +NORMALIZE_WHITESPACE
-                              With missense_variant         Without missense_variant
-                                              Count Percent                    Count Percent   p-value Corrected p-values
-  HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781           0.002342
-  HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449           1.000000
-  HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000           1.000000
+..
 
+  We can show analysis for `VariantEffect.FRAMESHIFT_VARIANT` as well..
 
-The tables present the HPO terms that annotate the cohort members and report their counts and p values
-for each genotype group. The rows are sorted by the p value in ascending order.
+The table presents the HPO terms that annotate the cohort members and report their counts and p values
+for each genotype group. The rows are sorted by the corrected p value in ascending order.

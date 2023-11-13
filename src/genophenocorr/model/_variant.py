@@ -239,9 +239,10 @@ class VariantCoordinates:
     @property
     def change_length(self) -> int:
         """
-        Returns:
-            integer: The change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,
-            deletions and insertions/duplications lead to negative and positive change lengths, respectively.
+        Get the change of length between the `ref` and `alt` alleles due to the variant presence.
+
+        SNVs lead to change length of zero, deletions and insertions/duplications lead to negative
+        and positive change lengths, respectively.
         """
         return self._change_length
 
@@ -250,8 +251,11 @@ class VariantCoordinates:
         """
         Get a readable representation of the variant's coordinates.
 
-        For instance, `X_12345_12345_C_G` for sequence variant or `22_10001_20000_INV`
-        Note that both start and end coordinates use 1-based (included) coordinate system.
+        For instance, ``X_12345_12345_C_G`` for a sequence variant or ``22_10001_20000_INV`` for a symbolic variant.
+
+        .. note::
+
+          Both *start* and *end* coordinates use 1-based (included) coordinate system.
         """
         if self.is_structural():
             return f'{self.chrom}_{self.start + 1}_{self.end}_{self.alt[1:-1]}'
@@ -261,8 +265,7 @@ class VariantCoordinates:
     @property
     def variant_class(self) -> str:
         """
-        Returns:
-            string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)
+        Get a `str` with the variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).
         """
 
         if self.is_structural():
@@ -281,12 +284,19 @@ class VariantCoordinates:
                     return 'MNV'
 
     def is_structural(self) -> bool:
-        """Checks if the variant coordinates use structural variant notation
-        (e.g. `chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10`)
-        as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).
+        """Checks if the variant coordinates use structural variant notation as described by Variant Call Format
+        (`VCF <https://en.wikipedia.org/wiki/Variant_Call_Format>`_).
 
-        Returns:
-            boolean: True if the variant coordinates use structural variant notation
+        Ane example of *structural* variant notation::
+
+          chr5  101 . N <DEL> .  .  SVTYPE=DEL;END=120;SVLEN=-10
+
+
+        as opposed to the *sequence* (literal) notation::
+
+          chr5  101 . NACGTACGTAC N
+
+        :return: `True` if the variant coordinates use structural variant notation.
         """
         return len(self._alt) != 0 and self._alt.startswith('<') and self._alt.endswith('>')
 
