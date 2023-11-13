@@ -128,31 +128,29 @@ with the package:</p>
 </pre></div>
 </div>
 <p>Using the counts, we can choose and run what analyses we want.
-For instance, we can partition the patients into two groups based on presence/absence of a <em>frameshift</em> variant:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
+For instance, we can partition the patients into two groups based on presence/absence of a <em>missense</em> variant:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">configure_cohort_analysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate</span> <span class="kn">import</span> <span class="n">BooleanPredicate</span>  <span class="c1"># TODO - explain the predicate or update the API</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_analysis</span> <span class="o">=</span> <span class="n">CohortAnalysis</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">include_unmeasured</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_type</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">frameshift</span> 
-<span class="go">                            With frameshift_variant         Without frameshift_variant</span>
-<span class="go">                                              Count Percent                      Count Percent  p-value Corrected p-values</span>
-<span class="go">HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718            0.14154</span>
-<span class="go">HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472            1.00000</span>
-<span class="go">HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000            1.00000</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_analysis</span> <span class="o">=</span> <span class="n">configure_cohort_analysis</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">missense</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+<span class="go">  MISSENSE_VARIANT on NM_1234.5    No             Yes</span>
+<span class="go">                                  Count   Percent Count Percent   p value Corrected p value</span>
+<span class="go">  Arachnodactyly [HP:0001166]         1  3.846154    13    50.0  0.000781          0.020299</span>
 </pre></div>
 </div>
-<p>Or perform similar partitioning based on presence/absence of a <em>missense</em> variant:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_by_variant_type</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> 
-<span class="go">                            With missense_variant         Without missense_variant</span>
-<span class="go">                                            Count Percent                    Count Percent   p-value Corrected p-values</span>
-<span class="go">HP:0001166 (Arachnodactyly)                    13  81.25%                        1  10.00%  0.000781           0.002342</span>
-<span class="go">HP:0001257 (Spasticity)                        11  68.75%                        6  60.00%  0.692449           1.000000</span>
-<span class="go">HP:0001250 (Seizure)                           12  75.00%                        8  80.00%  1.000000           1.000000</span>
-</pre></div>
-</div>
-<p>The tables present the HPO terms that annotate the cohort members and report their counts and p values
-for each genotype group. The rows are sorted by the p value in ascending order.</p>
+<blockquote>
+<div><p>We’re showing just 1 row above. This is due to 2-.. rows all having corrected p value of <cite>1.000</cite> resulting
+in unstable sort order. We can show more rows with a better cohort, as soon as we have it!</p>
+</div></blockquote>
+<blockquote>
+<div><p>We can show analysis for <cite>VariantEffect.FRAMESHIFT_VARIANT</cite> as well..</p>
+</div></blockquote>
+<p>The table presents the HPO terms that annotate the cohort members and report their counts and p values
+for each genotype group. The rows are sorted by the corrected p value in ascending order.</p>
 </section>
 </section>
 

@@ -148,6 +148,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proteins</span>
 
+<div class="viewcode-block" id="Patient.present_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Patient.present_phenotypes">[docs]</a>
+    <span class="k">def</span> <span class="nf">present_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an iterator over *present* phenotypes of the patient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Patient.excluded_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Patient.excluded_phenotypes">[docs]</a>
+    <span class="k">def</span> <span class="nf">excluded_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an iterator over *excluded* phenotypes of the patient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_excluded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient(&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;patient_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">patient_id</span><span class="si">}</span><span class="s2">, &quot;</span>
@@ -195,7 +213,7 @@
             <span class="n">cohort_phenotypes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
             <span class="n">cohort_variants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
             <span class="n">var_counts</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">])</span>
-            <span class="n">pheno_count</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">pheno</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">pheno</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span> <span class="k">if</span> <span class="n">pheno</span><span class="o">.</span><span class="n">observed</span> <span class="o">==</span> <span class="kc">True</span><span class="p">])</span>
+            <span class="n">pheno_count</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pheno</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">pheno</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">present_phenotypes</span><span class="p">())</span>
             <span class="n">cohort_proteins</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">proteins</span><span class="p">)</span>
             <span class="n">prot_counts</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">prot</span><span class="o">.</span><span class="n">protein_id</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">proteins</span><span class="p">])</span>
         <span class="n">all_counts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;patients&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">members</span><span class="p">),</span> <span class="s1">&#39;variants&#39;</span><span class="p">:</span> <span class="n">var_counts</span><span class="p">,</span> <span class="s1">&#39;phenotypes&#39;</span><span class="p">:</span> <span class="n">pheno_count</span><span class="p">,</span>
@@ -204,7 +222,7 @@
                       <span class="n">all_counts</span><span class="p">,</span> <span class="n">excluded_members</span><span class="p">)</span>  <span class="c1"># cohort_proteins, all_counts</span></div>
 
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class creates a collection of patients and makes it easier to determine overlapping diseases, </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class creates a collection of patients and makes it easier to determine overlapping diseases,</span>
 <span class="sd">    phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will</span>
 <span class="sd">    add each file as a patient into the grouping.</span>
 
@@ -216,10 +234,10 @@
 <span class="sd">        all_transcripts (Sequence[string]): A set of all transcript IDs referenced in all the Variant objects</span>
 <span class="sd">        total_patient_count (integer): The total number of Patient objects</span>
 <span class="sd">    Methods:</span>
-<span class="sd">        list_all_patients(): A list of all patient IDs </span>
-<span class="sd">        list_all_phenotypes(top:Optional[integer]): A list of all the top phenotype IDs (or all IDs if top is None) and the count of how many patients have it. </span>
-<span class="sd">        list_all_variants(top:Optional[integer]): A list of all the top variants (or all variants if top is None) and the count of how many patients have it. </span>
-<span class="sd">        list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it. </span>
+<span class="sd">        list_all_patients(): A list of all patient IDs</span>
+<span class="sd">        list_all_phenotypes(top:Optional[integer]): A list of all the top phenotype IDs (or all IDs if top is None) and the count of how many patients have it.</span>
+<span class="sd">        list_all_variants(top:Optional[integer]): A list of all the top variants (or all variants if top is None) and the count of how many patients have it.</span>
+<span class="sd">        list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it.</span>
 <span class="sd">        list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -264,7 +282,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_set</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            set: A set of all the Variant objects in the Cohort</span>
@@ -388,27 +406,32 @@
 
 <div class="viewcode-block" id="Cohort.get_protein_features_affected">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_protein_features_affected">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_protein_features_affected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript</span><span class="p">):</span>
-        <span class="n">all_features</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_protein_features_affected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># TODO - add documentation, type annotations.</span>
         <span class="n">protein_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">var_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">protein_locations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">tx_id</span><span class="p">:</span>
+                    <span class="c1"># TODO - Here we are adding a sequence of `ProteinMetadata` into the `protein_set`.</span>
+                    <span class="c1">#  However, it looks fishy. Shouldn&#39;t we be really adding the individual `ProteinMetadata`</span>
+                    <span class="c1">#  into the set?</span>
                     <span class="n">protein_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">continue</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">var_coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">protein_locations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">protein_set</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found more than 1 protein: </span><span class="si">{</span><span class="n">protein_set</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">protein</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">protein_set</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">var_coords</span><span class="p">:</span>
-            <span class="n">all_features</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">get_features_variant_overlaps</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+        <span class="n">all_features</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="n">protein_locations</span><span class="p">:</span>
+            <span class="n">all_features</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">get_features_variant_overlaps</span><span class="p">(</span><span class="n">location</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">all_features</span></div>
 
-        
+
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">)</span></div>
 

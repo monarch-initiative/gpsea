@@ -136,7 +136,7 @@ set: A set of all the Phenotype objects in the Cohort</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.Cohort.all_variants">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_variants</span></span><a class="headerlink" href="#genophenocorr.model.Cohort.all_variants" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_variants</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.12)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.Variant" title="genophenocorr.model._variant.Variant"><span class="pre">Variant</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.model.Cohort.all_variants" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 set: A set of all the Variant objects in the Cohort</p>
 </dd></dl>
@@ -256,7 +256,7 @@ integer: The count of all the Patient objects</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.Cohort.get_protein_features_affected">
-<span class="sig-name descname"><span class="pre">get_protein_features_affected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_cohort.html#Cohort.get_protein_features_affected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Cohort.get_protein_features_affected" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_protein_features_affected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_cohort.html#Cohort.get_protein_features_affected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Cohort.get_protein_features_affected" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -338,16 +338,28 @@ Sequence[Variant]: A list of Variant objects associated with this Patient object
 Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with this Patient object</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.model.Patient.present_phenotypes">
+<span class="sig-name descname"><span class="pre">present_phenotypes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.Phenotype" title="genophenocorr.model._phenotype.Phenotype"><span class="pre">Phenotype</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_cohort.html#Patient.present_phenotypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Patient.present_phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get an iterator over <em>present</em> phenotypes of the patient.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.model.Patient.excluded_phenotypes">
+<span class="sig-name descname"><span class="pre">excluded_phenotypes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.Phenotype" title="genophenocorr.model._phenotype.Phenotype"><span class="pre">Phenotype</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_cohort.html#Patient.excluded_phenotypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Patient.excluded_phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get an iterator over <em>excluded</em> phenotypes of the patient.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.model.Phenotype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">Phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_phenotype.html#Phenotype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Phenotype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">Phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_phenotype.html#Phenotype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Phenotype" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.Identified" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identified</span></code></a>, <a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.Named" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Named</span></code></a></p>
 <p>A class that represents an HPO verified phenotype</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.identifier">
-<span class="sig-name descname"><span class="pre">identifier</span></span><a class="headerlink" href="#genophenocorr.model.Phenotype.identifier" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.term_id">
+<span class="sig-name descname"><span class="pre">term_id</span></span><a class="headerlink" href="#genophenocorr.model.Phenotype.term_id" title="Link to this definition"></a></dt>
 <dd><p>The HPO ID associated with this phenotype</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -368,8 +380,8 @@ Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with thi
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.observed">
-<span class="sig-name descname"><span class="pre">observed</span></span><a class="headerlink" href="#genophenocorr.model.Phenotype.observed" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.is_observed">
+<span class="sig-name descname"><span class="pre">is_observed</span></span><a class="headerlink" href="#genophenocorr.model.Phenotype.is_observed" title="Link to this definition"></a></dt>
 <dd><p>Is True if this phenotype was observed in the respective patient</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -380,12 +392,12 @@ Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with thi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.Phenotype.from_term">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.MinimalTerm" title="(in hpo-toolkit)"><span class="pre">MinimalTerm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_phenotype.html#Phenotype.from_term"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Phenotype.from_term" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.MinimalTerm" title="(in hpo-toolkit)"><span class="pre">MinimalTerm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_phenotype.html#Phenotype.from_term"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.Phenotype.from_term" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id4">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.identifier">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#genophenocorr.model.Phenotype.identifier" title="Link to this definition"></a></dt>
 <dd><p>Returns an HPO ID unique to this Phenotype object.
 You can find more information about the phenotype by searching this ID at <a class="reference external" href="https://hpo.jax.org/app/">https://hpo.jax.org/app/</a></p>
 <dl class="field-list simple">
@@ -399,8 +411,8 @@ You can find more information about the phenotype by searching this ID at <a cla
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id5">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd><p>Returns a string that describes this Phenotype object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -413,8 +425,8 @@ You can find more information about the phenotype by searching this ID at <a cla
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id6">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.observed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#genophenocorr.model.Phenotype.observed" title="Link to this definition"></a></dt>
 <dd><p>Returns a boolean for whether the phenotype is observed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -424,6 +436,18 @@ You can find more information about the phenotype by searching this ID at <a cla
 <dd class="field-even"><p>boolean</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_observed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Returns <cite>True</cite> if the phenotype was <em>present</em> in the respective patient.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.model.Phenotype.is_excluded">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_excluded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#genophenocorr.model.Phenotype.is_excluded" title="Link to this definition"></a></dt>
+<dd><p>Returns <cite>True</cite> if the phenotype presence was <em>explicitly excluded</em> in the respective patient.</p>
 </dd></dl>
 
 </dd></dl>
@@ -491,15 +515,15 @@ You can find more information about the phenotype by searching this ID at <a cla
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id7">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantCoordinates" title="genophenocorr.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantCoordinates" title="genophenocorr.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 VariantCoordinates: A representation of coordinates of a sequence and symbolic variant.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id8">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tx_annotations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model._variant.TranscriptAnnotation"><span class="pre">TranscriptAnnotation</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tx_annotations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model._variant.TranscriptAnnotation"><span class="pre">TranscriptAnnotation</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd><p>A collection of TranscriptAnnotations that each represent results of the functional annotation
 of a variant with respect to single transcript of a gene.</p>
 <dl class="field-list simple">
@@ -591,22 +615,22 @@ integer: The 0-based end coordinate (included) of the ref allele.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id9">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">GenomicRegion</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">GenomicRegion</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 GenomicRegion: The genomic region spanned by the ref allele.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id10">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 string: The reference allele (e.g. “A”, “N”). The allele may be an empty string.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id11">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 string: The alternate allele (e.g. “A”, “GG”, “&lt;DEL&gt;”). The allele may be an empty string for sequence variants.
 The symbolic alternate allele follow the VCF notation and use the <cite>&lt;</cite> and <cite>&gt;</cite> characters
@@ -614,40 +638,46 @@ The symbolic alternate allele follow the VCF notation and use the <cite>&lt;</ci
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id12">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">change_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-integer: The change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,
-deletions and insertions/duplications lead to negative and positive change lengths, respectively.</p>
+<dt class="sig sig-object py" id="id11">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">change_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Get the change of length between the <cite>ref</cite> and <cite>alt</cite> alleles due to the variant presence.</p>
+<p>SNVs lead to change length of zero, deletions and insertions/duplications lead to negative
+and positive change lengths, respectively.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.variant_key">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.variant_key" title="Link to this definition"></a></dt>
 <dd><p>Get a readable representation of the variant’s coordinates.</p>
-<p>For instance, <cite>X_12345_12345_C_G</cite> for sequence variant or <cite>22_10001_20000_INV</cite>
-Note that both start and end coordinates use 1-based (included) coordinate system.</p>
+<p>For instance, <code class="docutils literal notranslate"><span class="pre">X_12345_12345_C_G</span></code> for a sequence variant or <code class="docutils literal notranslate"><span class="pre">22_10001_20000_INV</span></code> for a symbolic variant.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Both <em>start</em> and <em>end</em> coordinates use 1-based (included) coordinate system.</p>
+</div>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.variant_class">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-string: The variant class. (e.g. <cite>DUP</cite>, <cite>SNV</cite>, <cite>INS</cite>, <cite>MNV</cite>, <cite>INV</cite>, …)</p>
+<dd><p>Get a <cite>str</cite> with the variant class. (e.g. <cite>DUP</cite>, <cite>SNV</cite>, <cite>INS</cite>, <cite>MNV</cite>, <cite>INV</cite>, …).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.is_structural">
 <span class="sig-name descname"><span class="pre">is_structural</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantCoordinates.is_structural"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.is_structural" title="Link to this definition"></a></dt>
-<dd><p>Checks if the variant coordinates use structural variant notation
-(e.g. <cite>chr5  101 . N &lt;DEL&gt; .  .  SVTYPE=DEL;END=120;SVLEN=-10</cite>)
-as opposed to the sequence/literal notation (<cite>chr5  101 . NACGTACGTAC N</cite>).</p>
+<dd><p>Checks if the variant coordinates use structural variant notation as described by Variant Call Format
+(<a class="reference external" href="https://en.wikipedia.org/wiki/Variant_Call_Format">VCF</a>).</p>
+<p>Ane example of <em>structural</em> variant notation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chr5</span>  <span class="mi">101</span> <span class="o">.</span> <span class="n">N</span> <span class="o">&lt;</span><span class="n">DEL</span><span class="o">&gt;</span> <span class="o">.</span>  <span class="o">.</span>  <span class="n">SVTYPE</span><span class="o">=</span><span class="n">DEL</span><span class="p">;</span><span class="n">END</span><span class="o">=</span><span class="mi">120</span><span class="p">;</span><span class="n">SVLEN</span><span class="o">=-</span><span class="mi">10</span>
+</pre></div>
+</div>
+<p>as opposed to the <em>sequence</em> (literal) notation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chr5</span>  <span class="mi">101</span> <span class="o">.</span> <span class="n">NACGTACGTAC</span> <span class="n">N</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the variant coordinates use structural variant notation</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>boolean</p>
+<dd class="field-odd"><p><cite>True</cite> if the variant coordinates use structural variant notation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -884,7 +914,7 @@ that the variant affects.</p>
 <span class="go">missense_variant</span>
 </pre></div>
 </div>
-<p>The <cite>VariantEffect</cite> has a <a href="#id13"><span class="problematic" id="id14">:prop:`curie`</span></a> attribute that represents the ontology class from
+<p>The <cite>VariantEffect</cite> has a <a href="#id12"><span class="problematic" id="id13">:prop:`curie`</span></a> attribute that represents the ontology class from
 <a class="reference external" href="http://www.sequenceontology.org/">Sequence Ontology</a>.</p>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span><span class="o">.</span><span class="n">curie</span>
 <span class="go">&#39;SO:0001583&#39;</span>
@@ -1096,7 +1126,7 @@ that the variant affects.</p>
 <dd><p>0001583` for a missense variant).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Get a compact URI (CURIE) of the variant effect (e.g. <a href="#id15"><span class="problematic" id="id16">`</span></a>SO</p>
+<dd class="field-odd"><p>Get a compact URI (CURIE) of the variant effect (e.g. <a href="#id14"><span class="problematic" id="id15">`</span></a>SO</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1223,29 +1253,29 @@ the coding and non-coding regions.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id17">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id16">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 string: A string unique to this protein</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id18">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id17">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 string: The full name of the protein</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id19">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id18">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id20">
-<span class="sig-name descname"><span class="pre">domains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.domains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">domains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.domains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “DOMAIN”</p>
@@ -1257,8 +1287,8 @@ Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id21">
-<span class="sig-name descname"><span class="pre">repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “REPEAT”</p>
@@ -1270,8 +1300,8 @@ Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id22">
-<span class="sig-name descname"><span class="pre">regions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">regions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “REGIONS”</p>
@@ -1283,8 +1313,8 @@ Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id23">
-<span class="sig-name descname"><span class="pre">motifs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">motifs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata.motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “MOTIF”</p>
@@ -1362,8 +1392,8 @@ Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id24">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id23">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 string: the name of the protein feature</p>
 </dd></dl>
@@ -1383,8 +1413,8 @@ integer: A 0-based (included) end coordinate of the protein feature.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id25">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Region</span></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id24">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Region</span></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
 <dd><p>Returns:
 Region: a protein region spanned by the feature.</p>
 </dd></dl>
@@ -1421,23 +1451,23 @@ Region: a protein region spanned by the feature.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">REPEAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id26">
-<span class="sig-name descname"><span class="pre">REPEAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MOTIF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id27">
-<span class="sig-name descname"><span class="pre">MOTIF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOMAIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id28">
-<span class="sig-name descname"><span class="pre">DOMAIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id29">
-<span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

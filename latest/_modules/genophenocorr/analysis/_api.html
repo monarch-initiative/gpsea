@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.analysis._api &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.analysis._api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.analysis._api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Patient</span>
+<span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">PatientCategory</span>
+
+<span class="n">PatientsByHPO</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PatientsByHPO&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all_with_hpo&#39;</span><span class="p">,</span> <span class="s1">&#39;all_without_hpo&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="GenotypePhenotypeAnalysisResult">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult">[docs]</a>
+<span class="k">class</span> <span class="nc">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_usable</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+                 <span class="n">all_counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                 <span class="n">pvals</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+                 <span class="n">corrected_pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+                 <span class="n">phenotype_categories</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span>
+                 <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">=</span> <span class="n">n_usable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">=</span> <span class="n">all_counts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span> <span class="o">=</span> <span class="n">pvals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">=</span> <span class="n">corrected_pvals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">phenotype_categories</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="n">question</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_usable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`pandas.Series` with mapping from HPO term and number of patients where the term was either</span>
+<span class="sd">         present or excluded, and are, thus, usable for genotype-phenotype correlation analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">all_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`pandas.DataFrame` with counts of patients in genotype and phenotype groups.</span>
+
+<span class="sd">        An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence</span>
+<span class="sd">        of a missense variant in transcript, and phenotype predicate that checks presence/absence of a phenotype term::</span>
+
+<span class="sd">                                   Has MISSENSE_VARIANT in NM_123456.7</span>
+<span class="sd">                                   No       Yes</span>
+<span class="sd">            HPO         Present</span>
+<span class="sd">            HP:0001166  Yes        1        13</span>
+<span class="sd">            HP:0001166  No         7        5</span>
+<span class="sd">            HP:0003011  Yes        3        11</span>
+<span class="sd">            HP:0003011  No         7        16</span>
+<span class="sd">            HP:0012638  Yes        9        15</span>
+<span class="sd">            HP:0012638  No         3        4</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`pandas.Series` with p values for each tested HPO term.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corrected_pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an optional :class:`pandas.Series` with p values for each tested HPO term after multiple testing correction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phenotype_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence of phenotype patient categories that can be investigated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span>
+
+<div class="viewcode-block" id="GenotypePhenotypeAnalysisResult.summarize">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult.summarize">[docs]</a>
+    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+                  <span class="n">phenotype_category</span><span class="p">:</span> <span class="n">PatientCategory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a data frame with summary of the genotype phenotype analysis.</span>
+
+<span class="sd">        The *rows* of the frame correspond to the analyzed HPO terms.</span>
+
+<span class="sd">        The columns of the data frame have `Count` and `Percentage` per used genotype predicate.</span>
+<span class="sd">        For instance, if we used :class:`genophenocorr.analysis.predicate.genotype.VariantEffectPredicate`</span>
+<span class="sd">        which compares phenotype with and without variants with certain :class:`genophenocorr.model.VariantEffect`,</span>
+<span class="sd">        we will have the following columns:</span>
+
+<span class="sd">        =====  =======  =====  =======</span>
+<span class="sd">        Yes             No</span>
+<span class="sd">        --------------  --------------</span>
+<span class="sd">        Count  Percent  Count  Percent</span>
+<span class="sd">        =====  =======  =====  =======</span>
+
+<span class="sd">        The final data frame may look something like this::</span>
+
+<span class="sd">            MISSENSE_VARIANT on `NM_1234.5`                       No                  Yes</span>
+<span class="sd">                                                                  Count    Percent    Count    Percent   p value   Corrected p value</span>
+<span class="sd">            Arachnodactyly [HP:0001166]                           1         3.8461    13       50.0000   0.000781  0.020299</span>
+<span class="sd">            Abnormality of the musculature [HP:0003011]           6        35.2941    11       64.7058   1.000000  1.000000</span>
+<span class="sd">            Abnormal nervous system physiology [HP:0012638]       9        37.5000    15       62.5000   1.000000  1.000000</span>
+<span class="sd">            ...                                                   ...      ...        ...      ...       ...       ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phenotype_category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown phenotype category: </span><span class="si">{</span><span class="n">phenotype_category</span><span class="si">}</span><span class="s1">. Use one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Row index: a list of tested HPO terms</span>
+        <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="c1"># Column index: multiindex of counts and percentages for all genotype predicate groups</span>
+        <span class="n">geno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
+            <span class="n">iterables</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">)),</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_question</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="c1"># We&#39;ll fill this frame with data</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pheno_idx</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">geno_idx</span><span class="p">)</span>
+
+        <span class="c1"># We must choose the counts with the `phenotype_category` of interest.</span>
+        <span class="c1"># This depends on the used phenotype predicate.</span>
+        <span class="c1"># Usually, we are interested patients who HAVE a feature,</span>
+        <span class="c1"># but we can also investigate those who do NOT have the feature.</span>
+        <span class="c1"># Hence, we need `phenotype_category`.</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">phenotype_category</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="n">counts</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">pheno_idx</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Fill the frame cells</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">geno_idx</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;Count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span>
+
+        <span class="c1"># Add columns with p values and corrected p values (if present)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">)</span>
+
+        <span class="c1"># Format the index values: `HP:0001250` -&gt; `Seizure [HP:0001250]`</span>
+        <span class="n">labeled_idx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">term_id</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">term_id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Last, sort by corrected p value or just p value</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">labeled_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CohortAnalysis">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis">[docs]</a>
+<span class="k">class</span> <span class="nc">CohortAnalysis</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `CohortAnalysis` is a driver class for running genotype-phenotype correlation analyses.</span>
+
+<span class="sd">    The class provides various methods to test genotype-phenotype correlations. All methods wrap results</span>
+<span class="sd">    into :class:`GenotypePhenotypeAnalysisResult`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_effect">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_effect">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_by_variant_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares variants with `effect` vs. variants with all other variant effects.</span>
+
+<span class="sd">        :param effect: variant effect</span>
+<span class="sd">        :param tx_id: the accession of the transcript of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_key">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_key">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_by_variant_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares variant with `variant_key` vs all the other variants.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">          :attr:`genophenocorr.model.VariantCoordinates.variant_key`</span>
+
+<span class="sd">        :param variant_key: a `str` with the variant key, e.g. ``X_12345_12345_C_G``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_exon">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_exon">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_by_exon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exon_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares variants with `effect` vs. variants with all other variant effects.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">          We use 1-based numbering to number the exons, not the usual 0-based numbering of the computer science.</span>
+<span class="sd">          Therefore, the first exon of the transcript has ``exon_number==1``, the second exon is ``2``, and so on ...</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">          We do not check if the `exon_number` spans beyond the number of exons of the given `transcript_id`!</span>
+<span class="sd">          Therefore, ``exon_number==10,000`` will effectively return :attr:`BooleanPredicate.FALSE` for *all* patients!!! 😱</span>
+<span class="sd">          Well, at least the patients of the *Homo sapiens sapiens* taxon...</span>
+
+<span class="sd">        :param exon_number: a positive `int` with exon number</span>
+<span class="sd">        :param tx_id: the accession of the transcript of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_keys">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_keys">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_by_variant_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">          :attr:`genophenocorr.model.VariantCoordinates.variant_key`</span>
+
+<span class="sd">        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``</span>
+<span class="sd">        :param b: a `str` with variant key of variant `b`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_min_perc_patients_w_hpo</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                                       <span class="n">cohort_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the input meets the requirements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">/</span> <span class="n">cohort_size</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`min_perc_patients_w_hpo` must be a positive `int` &#39;</span>
+                                 <span class="sa">f</span><span class="s1">&#39;but got </span><span class="si">{</span><span class="n">min_perc_patients_w_hpo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">min_perc_patients_w_hpo</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`min_perc_patients_w_hpo` must be a `float` in range (0, 1] &#39;</span>
+                                 <span class="sa">f</span><span class="s1">&#39;but got </span><span class="si">{</span><span class="n">min_perc_patients_w_hpo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`min_perc_patients_w_hpo` must be a positive `int` or a `float` in range (0, 1] &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_group_patients_by_hpo</span><span class="p">(</span><span class="n">phenotypic_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+                               <span class="n">patients</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
+                               <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">GraphAware</span><span class="p">,</span>
+                               <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatientsByHPO</span><span class="p">:</span>
+        <span class="n">all_with_hpo</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">all_without_hpo</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">hpo_term</span> <span class="ow">in</span> <span class="n">phenotypic_features</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">patients</span><span class="p">:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">present_phenotypes</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">hpo_term</span> <span class="o">==</span> <span class="n">pf</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_ancestor_of</span><span class="p">(</span><span class="n">hpo_term</span><span class="p">,</span> <span class="n">pf</span><span class="p">):</span>
+                        <span class="c1"># Patient is annotated with `hpo_term` because `pf` is equal to `hpo_term`</span>
+                        <span class="c1"># or it is a descendant of `hpo_term`.</span>
+                        <span class="n">all_with_hpo</span><span class="p">[</span><span class="n">hpo_term</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+                        <span class="c1"># If one `pf` of the patient is found to be a descendant of `hpo`, we must break to prevent</span>
+                        <span class="c1"># adding the patient to `present_hpo` more than once due to another descendant!</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="c1"># The patient is not annotated by the `hpo_term`.</span>
+
+                    <span class="k">if</span> <span class="n">missing_implies_excluded</span><span class="p">:</span>
+                        <span class="c1"># The `hpo_term` annotation is missing, hence implicitly excluded.</span>
+                        <span class="n">all_without_hpo</span><span class="p">[</span><span class="n">hpo_term</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># The `hpo_term` must be explicitly excluded patient to be accounted for.</span>
+                        <span class="k">for</span> <span class="n">ef</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">excluded_phenotypes</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">hpo_term</span> <span class="o">==</span> <span class="n">ef</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_descendant_of</span><span class="p">(</span><span class="n">hpo_term</span><span class="p">,</span> <span class="n">ef</span><span class="p">):</span>
+                                <span class="n">all_with_hpo</span><span class="p">[</span><span class="n">hpo_term</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+                                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">PatientsByHPO</span><span class="p">(</span><span class="n">all_with_hpo</span><span class="p">,</span> <span class="n">all_without_hpo</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -328,9 +328,10 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">change_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            integer: The change between the ref and alt alleles due to the variant presence. SNVs lead to change length of zero,</span>
-<span class="sd">            deletions and insertions/duplications lead to negative and positive change lengths, respectively.</span>
+<span class="sd">        Get the change of length between the `ref` and `alt` alleles due to the variant presence.</span>
+
+<span class="sd">        SNVs lead to change length of zero, deletions and insertions/duplications lead to negative</span>
+<span class="sd">        and positive change lengths, respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_change_length</span>
 
@@ -339,8 +340,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a readable representation of the variant&#39;s coordinates.</span>
 
-<span class="sd">        For instance, `X_12345_12345_C_G` for sequence variant or `22_10001_20000_INV`</span>
-<span class="sd">        Note that both start and end coordinates use 1-based (included) coordinate system.</span>
+<span class="sd">        For instance, ``X_12345_12345_C_G`` for a sequence variant or ``22_10001_20000_INV`` for a symbolic variant.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">          Both *start* and *end* coordinates use 1-based (included) coordinate system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_structural</span><span class="p">():</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chrom</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -350,8 +354,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)</span>
+<span class="sd">        Get a `str` with the variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_structural</span><span class="p">():</span>
@@ -372,12 +375,19 @@
 <div class="viewcode-block" id="VariantCoordinates.is_structural">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.is_structural">[docs]</a>
     <span class="k">def</span> <span class="nf">is_structural</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the variant coordinates use structural variant notation</span>
-<span class="sd">        (e.g. `chr5  101 . N &lt;DEL&gt; .  .  SVTYPE=DEL;END=120;SVLEN=-10`)</span>
-<span class="sd">        as opposed to the sequence/literal notation (`chr5  101 . NACGTACGTAC N`).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the variant coordinates use structural variant notation as described by Variant Call Format</span>
+<span class="sd">        (`VCF &lt;https://en.wikipedia.org/wiki/Variant_Call_Format&gt;`_).</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            boolean: True if the variant coordinates use structural variant notation</span>
+<span class="sd">        Ane example of *structural* variant notation::</span>
+
+<span class="sd">          chr5  101 . N &lt;DEL&gt; .  .  SVTYPE=DEL;END=120;SVLEN=-10</span>
+
+
+<span class="sd">        as opposed to the *sequence* (literal) notation::</span>
+
+<span class="sd">          chr5  101 . NACGTACGTAC N</span>
+
+<span class="sd">        :return: `True` if the variant coordinates use structural variant notation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span></div>
 
