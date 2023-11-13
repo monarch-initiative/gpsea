@@ -7,9 +7,9 @@ import pandas as pd
 
 from statsmodels.stats import multitest
 
-from genophenocorr.model import Patient, Cohort, VariantEffect
+from genophenocorr.model import Patient, Cohort, VariantEffect, FeatureType
 from .predicate import BooleanPredicate, PolyPredicate
-from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate
+from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate
 from .predicate.phenotype import PropagatingPhenotypeBooleanPredicateFactory, PhenotypePredicateFactory
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
@@ -140,7 +140,16 @@ class CommunistCohortAnalysis(CohortAnalysis):
         predicate = ExonPredicate(tx_id, exon_number)
         return self._apply_boolean_predicate(predicate)
 
+    def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = ProtFeatureTypePredicate(transcript_id=tx_id, feature_type=feature_type)
+        return self._apply_boolean_predicate(predicate)
+
+    def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO - Lauren implement
+        raise NotImplementedError()
+
     def compare_by_variant_keys(self, a: str, b: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO - Lauren implement, #71
         raise NotImplementedError()
 
     def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:

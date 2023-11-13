@@ -5,7 +5,7 @@ from collections import namedtuple, defaultdict
 import hpotk
 import pandas as pd
 
-from genophenocorr.model import VariantEffect, Patient
+from genophenocorr.model import VariantEffect, Patient, FeatureType
 from .predicate import PatientCategory
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -212,6 +212,34 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
         :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``
         :param b: a `str` with variant key of variant `b`
+        """
+        pass
+
+    @abc.abstractmethod
+    def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        """
+        Compare genotype-phenotype correlation between variants that affect a given `feature_type` and the variants
+        affecting the rest of the protein.
+
+        Args:
+            feature_type (FeatureType): the protein feature type of interest
+            tx_id: the accession of the transcript of interest
+        """
+        pass
+
+    @abc.abstractmethod
+    def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        """
+        Compare genotype-phenotype correlation between variants that affect a given `feature` and the variants
+        affecting the rest of the protein.
+
+        .. seealso::
+
+          The protein feature names can be accessed at :attr:`genophenocorr.model.ProteinFeature.name`.
+
+        Args:
+            feature (string): feature identifier, e.g. ``DNA-binding``.
+            tx_id (string): the accession of the transcript of interest
         """
         pass
 
