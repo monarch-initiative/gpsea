@@ -135,3 +135,14 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
         The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
         """
         return BooleanPredicate.NO, BooleanPredicate.YES
+    
+class GroupingPredicate(PolyPredicate, metaclass=abc.ABCMeta):
+    FIRST = PatientCategory(1, 'First', 'The patient belongs in the first group.')
+    SECOND = PatientCategory(2, 'Second', 'The pateint belongs in the second group.')
+
+    @staticmethod
+    def get_categories() -> typing.Sequence[PatientCategory]:
+        """
+        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
+        """
+        return GroupingPredicate.FIRST, GroupingPredicate.SECOND
