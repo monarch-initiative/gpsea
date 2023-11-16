@@ -1,8 +1,8 @@
 from . import genotype
 from . import phenotype
 
-from ._api import BooleanPredicate, PatientCategory, PolyPredicate, ThisThatPredicate
+from ._api import BooleanPredicate, PatientCategory, PolyPredicate, GroupingPredicate
 
 __all__ = [
-    'PolyPredicate', 'PatientCategory', 'BooleanPredicate', 'ThisThatPredicate'
+    'PolyPredicate', 'PatientCategory', 'BooleanPredicate', 'GroupingPredicate'
 ]
