@@ -1,10 +1,14 @@
 from ._geno_bool import ProtFeaturePredicate, ProtFeatureTypePredicate
 from ._geno_bool import VariantEffectPredicate, VariantPredicate, ExonPredicate
 from ._geno_bool import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
-from ._geno_group import VariantsPredicate
+from ._geno_group import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate
+from ._geno_group import ProtFeaturesPredicate, ProtFeatureTypesPredicate
 
 __all__ = [
-    'VariantEffectPredicate', 'VariantPredicate', 'VariantsPredicate', 'ExonPredicate',
-    'ProtFeaturePredicate', 'ProtFeatureTypePredicate',
+    'VariantEffectPredicate', 'VariantEffectsPredicate', 
+    'VariantPredicate', 'VariantsPredicate', 
+    'ExonPredicate', 'ExonsPredicate',
+    'ProtFeaturePredicate', 'ProtFeaturesPredicate',
+    'ProtFeatureTypePredicate', 'ProtFeatureTypesPredicate',
     'HOMOZYGOUS', 'HETEROZYGOUS', 'NO_VARIANT',
 ]
