@@ -170,10 +170,12 @@ class CommunistCohortAnalysis(CohortAnalysis):
         return self._apply_boolean_predicate(predicate)
 
     def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:
+        assert isinstance(predicate, BooleanPredicate), f'{type(predicate)} is not an instance of `BooleanPredicate`'
         return self._run_gp_analysis(self._patient_list, self._testing_hpo_terms,
                                      self._phenotype_predicate_factory, predicate)
 
     def _apply_poly_predicate(self, predicate: PolyPredicate) -> GenotypePhenotypeAnalysisResult:
+        assert isinstance(predicate, PolyPredicate), f'{type(predicate)} is not an instance of `PolyPredicate`'
         return self._run_gp_analysis(self._patient_list, self._testing_hpo_terms,
                                      self._phenotype_predicate_factory, predicate)
 
