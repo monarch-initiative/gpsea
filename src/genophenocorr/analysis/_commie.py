@@ -149,7 +149,6 @@ class CommunistCohortAnalysis(CohortAnalysis):
         return self._apply_boolean_predicate(predicate)
 
     def compare_by_variant_keys(self, a: str, b: str) -> GenotypePhenotypeAnalysisResult:
-        # TODO - Lauren implement, #71
         predicate = VariantsPredicate(a, b)
         return self._apply_poly_predicate(predicate)
 

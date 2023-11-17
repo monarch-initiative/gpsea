@@ -30,11 +30,12 @@ NO_VARIANT = PatientCategory(cat_id=2,
 
 class VariantEffectsPredicate(GroupingPredicate):
     """
-    `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have
-    the functional `effect` on the transcript of interest.
+    `VariantEffectsPredicate` tests if the `patient` has at least one variant that is predicted to have
+    one of the two functional `effects` on the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
-    :param effect: the tested variant effect.
+    :param effect1: the first tested variant effect.
+    :param effect2: the second tested variant effect.
     """
 
     def __init__(self, transcript_id: str,
@@ -77,8 +78,9 @@ class VariantEffectsPredicate(GroupingPredicate):
 
 class VariantsPredicate(GroupingPredicate):
     """
-    `VariantPredicate` tests if the `patient` has ar least one allele of either variant described by the `variant_key1` and `variant_key2`.
-    **Currently does not support if the `patient` has both variants_keys**
+    `VariantsPredicate` tests if the `patient` has at least one allele of one of the variants described by 
+    the `variant_key1` and `variant_key2`.
+    **If patient has both variant_keys, it is not included**
 
     .. note::
 
@@ -123,7 +125,8 @@ class VariantsPredicate(GroupingPredicate):
 
 class ExonsPredicate(GroupingPredicate):
     """
-    `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.
+    `ExonsPredicate` tests if the `patient` has a variant that affects one of the 
+    two given *n*-th exons of the transcript of interest.
 
     .. warning::
 
@@ -137,7 +140,8 @@ class ExonsPredicate(GroupingPredicate):
       Well, at least the patients of the *Homo sapiens sapiens* taxon...
 
     :param transcript_id: the accession of the transcript of interest.
-    :param exon_number: a positive `int` of the target exon.
+    :param exon1_number: a positive `int` of the first target exon.
+    :param exon2_number: a positive `int` of the second target exon.
     """
 
     def __init__(self, transcript_id: str,
@@ -183,11 +187,12 @@ class ExonsPredicate(GroupingPredicate):
 
 class ProtFeatureTypesPredicate(GroupingPredicate):
     """
-    `ExonPredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
-    in the transcript of interest.
+    `ProtFeatureTypesPredicate` tests if the `patient` has a variant that affects one of the two given 
+    :class:`FeatureType`s in the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
-    :param feature_type: an instance of the target :class:`FeatureType`.
+    :param feature_type1: an instance of the first target :class:`FeatureType`.
+    :param feature_type2: an instance of the second target :class:`FeatureType`.
     """
 
     def __init__(self, transcript_id: str, feature_type1: FeatureType, feature_type2: FeatureType) -> None:
@@ -233,13 +238,15 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
 
 class ProtFeaturesPredicate(GroupingPredicate):
     """
-    `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.
+    `ProtFeaturesPredicate` tests if the `patient` has a variant that overlaps with one of the two given
+     protein features.
 
     The predicate needs the name of the protein feature.
     For instance, `EGF-like 2` for `FBN1 <https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains>`_
 
     :param transcript_id: the accession of the transcript of interest.
-    :param protein_feature_name: a `str` with the name of the protein feature.
+    :param protein_feature1_name: a `str` with the name of the first protein feature.
+    :param protein_feature2_name: a `str` with the name of the second protein feature.
     """
 
     def __init__(self, transcript_id: str, protein_feature1_name: str, protein_feature2_name: str) -> None:

@@ -137,12 +137,23 @@ class BooleanPredicate(PolyPredicate, metaclass=abc.ABCMeta):
         return BooleanPredicate.NO, BooleanPredicate.YES
     
 class GroupingPredicate(PolyPredicate, metaclass=abc.ABCMeta):
-    FIRST = PatientCategory(1, 'First', 'The patient belongs in the first group.')
-    SECOND = PatientCategory(2, 'Second', 'The pateint belongs in the second group.')
+    """
+    `GroupingPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to one of two groups and returns
+    FIRST or SECOND based on which group Patient belongs in.
+    """
 
+    FIRST = PatientCategory(0, 'First', 'The patient belongs in the first group.')
+    """
+    Category for a patient who belongs in the first given tested group.
+    """
+    SECOND = PatientCategory(1, 'Second', 'The patient belongs in the second group.')
+    """
+    Category for a patient who belongs to the second given tested group.
+    """
+    
     @staticmethod
     def get_categories() -> typing.Sequence[PatientCategory]:
         """
-        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
+        The predicate bins a patient into :class:`GroupingPredicate.FIRST` or :class:`GroupingPredicate.SECOND` category.
         """
         return GroupingPredicate.FIRST, GroupingPredicate.SECOND
