@@ -168,7 +168,7 @@ class ProtFeatureTypePredicate(BooleanPredicate):
         self._feature_type = hpotk.util.validate_instance(feature_type, FeatureType, 'feature_type')
 
     def get_question(self) -> str:
-        return f'Variant that affects {self._feature_type.name} protein feature on {self._tx_id}'
+        return f'Variant that affects {self._feature_type.name} protein feature type on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -211,7 +211,7 @@ class ProtFeaturePredicate(BooleanPredicate):
         self._pf_name = hpotk.util.validate_instance(protein_feature_name, str, 'protein_feature_name')
 
     def get_question(self) -> str:
-        return f'Variant in {self._pf_name} of {self._tx_id}'
+        return f'Variant that affects {self._pf_name} protein feature on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
