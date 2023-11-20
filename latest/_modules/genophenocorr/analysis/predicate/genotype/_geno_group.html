@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.analysis.predicate.genotype._geno_group &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/genophenocorr.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._geno_group</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.analysis.predicate.genotype._geno_group</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantEffect</span>
+
+<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">GroupingPredicate</span>
+
+
+<span class="c1"># TODO - should we remove these three?</span>
+<span class="n">HETEROZYGOUS</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Heterozygous&#39;</span><span class="p">,</span>
+                               <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                               This sample has the tested attribute on one allele.</span>
+<span class="s2">                               &quot;&quot;&quot;</span><span class="p">)</span>  <span class="c1">#: :meta hide-value:</span>
+
+<span class="n">HOMOZYGOUS</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Homozygous&#39;</span><span class="p">,</span>
+                             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                             This sample has the tested attribute on both alleles.</span>
+<span class="s2">                             &quot;&quot;&quot;</span><span class="p">)</span>  <span class="c1">#: :meta hide-value:</span>
+
+<span class="n">NO_VARIANT</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="n">cat_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;No Variant&#39;</span><span class="p">,</span>
+                             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                             The sample does not have the tested attribute.</span>
+<span class="s2">                             &quot;&quot;&quot;</span><span class="p">)</span>  <span class="c1">#: :meta hide-value:</span>
+
+
+
+<div class="viewcode-block" id="VariantEffectsPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantEffectsPredicate</span><span class="p">(</span><span class="n">GroupingPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VariantEffectsPredicate` tests if the `patient` has at least one variant that is predicted to have</span>
+<span class="sd">    one of the two functional `effects` on the transcript of interest.</span>
+
+<span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
+<span class="sd">    :param effect1: the first tested variant effect.</span>
+<span class="sd">    :param effect2: the second tested variant effect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">effect1</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">effect2</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effect1</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">effect1</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="s1">&#39;effect1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effect2</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">effect2</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="s1">&#39;effect2&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariantEffectsPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> or </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect2</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="VariantEffectsPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">var_eff</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect1</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="n">var_eff</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect2</span><span class="p">:</span>
+                            <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">results</span> <span class="o">==</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span>
+        <span class="k">elif</span> <span class="n">results</span> <span class="o">==</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;VariantEffectPredicate(transcript_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, effect1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect1</span><span class="si">}</span><span class="s1">, effect2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect2</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="VariantsPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantsPredicate</span><span class="p">(</span><span class="n">GroupingPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VariantsPredicate` tests if the `patient` has at least one allele of one of the variants described by </span>
+<span class="sd">    the `variant_key1` and `variant_key2`.</span>
+<span class="sd">    **If patient has both variant_keys, it is not included**</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">      You can get the variant key by calling :class:`genophenocorr.model.VariantCoordinates.variant_key`.</span>
+
+<span class="sd">    :param variant_key1: a `str` with a variant key.</span>
+<span class="sd">    :param variant_key2: a `str` with a variant key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variant_key2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key1</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">variant_key1</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;variant_key1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key2</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">variant_key2</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;variant_key2&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariantsPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&gt;=1 allele of either variant </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_key1</span><span class="si">}</span><span class="s1"> or variant </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_key2</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="VariantsPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key1</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key2</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;VariantPredicate(variant_key1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_key1</span><span class="si">}</span><span class="s1">, variant_key2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_key2</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="ExonsPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonsPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">ExonsPredicate</span><span class="p">(</span><span class="n">GroupingPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ExonsPredicate` tests if the `patient` has a variant that affects one of the </span>
+<span class="sd">    two given *n*-th exons of the transcript of interest.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">      We use 1-based numbering to number the exons, not the usual 0-based numbering of the computer science.</span>
+<span class="sd">      Therefore, the first exon of the transcript has ``exon_number==1``, the second exon is ``2``, and so on ...</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">      We do not check if the `exon_number` spans beyond the number of exons of the given `transcript_id`!</span>
+<span class="sd">      Therefore, ``exon_number==10,000`` will effectively return `None` for *all* patients!!! 😱</span>
+<span class="sd">      Well, at least the patients of the *Homo sapiens sapiens* taxon...</span>
+
+<span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
+<span class="sd">    :param exon1_number: a positive `int` of the first target exon.</span>
+<span class="sd">    :param exon2_number: a positive `int` of the second target exon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">exon1_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exon2_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">exon1_number</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;exon1_number&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">exon2_number</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;exon2_number&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`exon1_number` and `exon2_number` must both be a positive `int` but got </span><span class="si">{</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExonsPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonsPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant in exon </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span><span class="si">}</span><span class="s1"> vs in exon </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="ExonsPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonsPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">overlapping_exons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">:</span>
+                            <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">:</span>
+                            <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ExonPredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, exon1_number=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon1_number</span><span class="si">}</span><span class="s1">, exon2_number=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon2_number</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="ProtFeatureTypesPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">ProtFeatureTypesPredicate</span><span class="p">(</span><span class="n">GroupingPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ProtFeatureTypesPredicate` tests if the `patient` has a variant that affects one of the two given </span>
+<span class="sd">    :class:`FeatureType`s in the transcript of interest.</span>
+
+<span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
+<span class="sd">    :param feature_type1: an instance of the first target :class:`FeatureType`.</span>
+<span class="sd">    :param feature_type2: an instance of the second target :class:`FeatureType`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">feature_type1</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">feature_type2</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type1</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">feature_type1</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="s1">&#39;feature_type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type2</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">feature_type2</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="s1">&#39;feature_type2&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProtFeatureTypesPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> protein feature type vs </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type2</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="ProtFeatureTypesPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
+                    <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
+                    <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type1</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type2</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ProtFeatureTypePredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, feature_type1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type1</span><span class="si">}</span><span class="s1">, feature_type2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type2</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="ProtFeaturesPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturesPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">ProtFeaturesPredicate</span><span class="p">(</span><span class="n">GroupingPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ProtFeaturesPredicate` tests if the `patient` has a variant that overlaps with one of the two given</span>
+<span class="sd">     protein features.</span>
+
+<span class="sd">    The predicate needs the name of the protein feature.</span>
+<span class="sd">    For instance, `EGF-like 2` for `FBN1 &lt;https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains&gt;`_</span>
+
+<span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
+<span class="sd">    :param protein_feature1_name: a `str` with the name of the first protein feature.</span>
+<span class="sd">    :param protein_feature2_name: a `str` with the name of the second protein feature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_feature1_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_feature2_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pf1_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_feature1_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;protein_feature1_name&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pf2_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_feature2_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;protein_feature2_name&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProtFeaturesPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturesPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf1_name</span><span class="si">}</span><span class="s1"> protein feature vs </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf2_name</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="ProtFeaturesPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturesPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
+                    <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
+                    <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf1_name</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf1_name</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">results</span> <span class="o">==</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span>
+        <span class="k">elif</span> <span class="n">results</span> <span class="o">==</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>                                  </div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ProtFeaturePredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, protein_feature1_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf1_name</span><span class="si">}</span><span class="s1">, protein_feature2_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf2_name</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

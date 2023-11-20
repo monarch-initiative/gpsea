@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>genophenocorr.analysis.predicate.genotype._geno &mdash; genophenocorr 0.1.1dev documentation</title>
+  <title>genophenocorr.analysis.predicate.genotype._geno_bool &mdash; genophenocorr 0.1.1dev documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
@@ -69,7 +69,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._geno</li>
+      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._geno_bool</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -78,7 +78,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for genophenocorr.analysis.predicate.genotype._geno</h1><div class="highlight"><pre>
+  <h1>Source code for genophenocorr.analysis.predicate.genotype._geno_bool</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
@@ -280,7 +280,7 @@
 <div class="viewcode-block" id="ProtFeatureTypePredicate.get_question">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> protein feature on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> protein feature type on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
 <div class="viewcode-block" id="ProtFeatureTypePredicate.test">
@@ -332,7 +332,7 @@
 <div class="viewcode-block" id="ProtFeaturePredicate.get_question">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1"> protein feature on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
 <div class="viewcode-block" id="ProtFeaturePredicate.test">

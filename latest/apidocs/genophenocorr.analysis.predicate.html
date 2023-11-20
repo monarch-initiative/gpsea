@@ -190,6 +190,32 @@ Predicate will <em>not</em> check if, for instance, the patient variants are com
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.GroupingPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">GroupingPredicate</span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/_api.html#GroupingPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.GroupingPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#genophenocorr.analysis.predicate.PolyPredicate" title="genophenocorr.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a></p>
+<p><cite>GroupingPredicate</cite> tests if a <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Patient</span></code></a> belongs to one of two groups and returns
+FIRST or SECOND based on which group Patient belongs in.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.GroupingPredicate.FIRST">
+<span class="sig-name descname"><span class="pre">FIRST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PatientCategory(cat_id=0,</span> <span class="pre">name=First,</span> <span class="pre">description=The</span> <span class="pre">patient</span> <span class="pre">belongs</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">group.)</span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.GroupingPredicate.FIRST" title="Link to this definition"></a></dt>
+<dd><p>Category for a patient who belongs in the first given tested group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.GroupingPredicate.SECOND">
+<span class="sig-name descname"><span class="pre">SECOND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PatientCategory(cat_id=1,</span> <span class="pre">name=Second,</span> <span class="pre">description=The</span> <span class="pre">patient</span> <span class="pre">belongs</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">second</span> <span class="pre">group.)</span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.GroupingPredicate.SECOND" title="Link to this definition"></a></dt>
+<dd><p>Category for a patient who belongs to the second given tested group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.GroupingPredicate.get_categories">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/_api.html#GroupingPredicate.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.GroupingPredicate.get_categories" title="Link to this definition"></a></dt>
+<dd><p>The predicate bins a patient into <a class="reference internal" href="#genophenocorr.analysis.predicate.GroupingPredicate.FIRST" title="genophenocorr.analysis.predicate.GroupingPredicate.FIRST"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupingPredicate.FIRST</span></code></a> or <a class="reference internal" href="#genophenocorr.analysis.predicate.GroupingPredicate.SECOND" title="genophenocorr.analysis.predicate.GroupingPredicate.SECOND"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupingPredicate.SECOND</span></code></a> category.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
