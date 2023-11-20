@@ -136,7 +136,7 @@ class ExonsPredicate(GroupingPredicate):
     .. warning::
 
       We do not check if the `exon_number` spans beyond the number of exons of the given `transcript_id`!
-      Therefore, ``exon_number==10,000`` will effectively return :attr:`GroupingPredicate.FALSE` for *all* patients!!! 😱
+      Therefore, ``exon_number==10,000`` will effectively return `None` for *all* patients!!! 😱
       Well, at least the patients of the *Homo sapiens sapiens* taxon...
 
     :param transcript_id: the accession of the transcript of interest.

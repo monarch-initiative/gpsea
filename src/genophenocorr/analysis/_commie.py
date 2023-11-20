@@ -151,23 +151,23 @@ class CommunistCohortAnalysis(CohortAnalysis):
 
     def compare_by_variant_effects(self, effect1: VariantEffect, effect2: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = VariantEffectsPredicate(tx_id, effect1, effect2)
-        return self._apply_boolean_predicate(predicate)
+        return self._apply_poly_predicate(predicate)
 
     def compare_by_variant_keys(self, variant_key1: str, variant_key2: str) -> GenotypePhenotypeAnalysisResult:
         predicate = VariantsPredicate(variant_key1, variant_key2)
-        return self._apply_boolean_predicate(predicate)
+        return self._apply_poly_predicate(predicate)
 
     def compare_by_exons(self, exon1_number: int, exon2_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = ExonsPredicate(tx_id, exon1_number, exon2_number)
-        return self._apply_boolean_predicate(predicate)
+        return self._apply_poly_predicate(predicate)
 
     def compare_by_protein_feature_types(self, feature_type1: FeatureType, feature_type2: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = ProtFeatureTypesPredicate(tx_id, feature_type1, feature_type2)
-        return self._apply_boolean_predicate(predicate)
+        return self._apply_poly_predicate(predicate)
 
     def compare_by_protein_features(self, feature1: str, feature2: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = ProtFeaturesPredicate(tx_id, feature1, feature2)
-        return self._apply_boolean_predicate(predicate)
+        return self._apply_poly_predicate(predicate)
 
     def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:
         assert isinstance(predicate, BooleanPredicate), f'{type(predicate)} is not an instance of `BooleanPredicate`'
