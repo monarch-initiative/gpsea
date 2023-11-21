@@ -254,7 +254,7 @@ class ProteinMetadata:
         """
         affected_features = set()
         for feat in self.protein_features:
-            if feat.info.region.overlaps_with_region(region):
+            if feat.info.region.overlaps_with(region):
                 affected_features.add(feat)
 
         return affected_features
