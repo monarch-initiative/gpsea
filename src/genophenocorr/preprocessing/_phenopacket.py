@@ -1,6 +1,7 @@
 import logging
 import os
 import typing
+import tqdm
 
 import hpotk
 
@@ -256,7 +257,9 @@ def load_phenopacket_folder(pp_directory: str,
         raise ValueError(f"No JSON Phenopackets were found in {pp_directory}")
 
     # turn phenopackets into patients using patient creator
-    patients = [patient_creator.create_patient(pp) for pp in pps]
+    patients = []
+    for pp in tqdm.tqdm(pps):
+        patients.append(patient_creator.create_patient(pp))
 
     # create cohort from patients
     return Cohort.from_patients(patients, include_patients_with_no_HPO)
@@ -280,3 +283,4 @@ def load_phenopacket(phenopacket_path: str) -> Phenopacket:
     """
     with open(phenopacket_path) as f:
         return Parse(f.read(), Phenopacket())
+
