@@ -1,7 +1,11 @@
 from ._cohort import CohortViewer
 from ._txp import VariantTranscriptProteinArtist
+from ._tx_model import TxJsonFileRetriever, VvTranscript, VvTranscriptModel
 
 __all__ = [
     'CohortViewer',
-    'VariantTranscriptProteinArtist'
+    'TxJsonFileRetriever',
+    'VariantTranscriptProteinArtist',
+    'VvTranscript',
+    'VvTranscriptModel'
 ]
