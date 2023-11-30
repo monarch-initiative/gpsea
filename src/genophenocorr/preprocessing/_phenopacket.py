@@ -29,6 +29,10 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
     def __init__(self, build: GenomeBuild,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
         self._build = hpotk.util.validate_instance(build, GenomeBuild, 'build')
         self._hgvs_finder = hpotk.util.validate_instance(hgvs_coordinate_finder, VariantCoordinateFinder,
                                                          'hgvs_coordinate_finder')

@@ -14,7 +14,7 @@ from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, Exon
 from .predicate.phenotype import PropagatingPhenotypeBooleanPredicateFactory, PhenotypePredicateFactory
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
-from ._stats import run_fisher_exact
+from ._stats import run_fisher_exact, run_recessive_fisher_exact
 
 
 def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient],
@@ -106,15 +106,22 @@ class CommunistCohortAnalysis(CohortAnalysis):
                  missing_implies_excluded: bool = False,
                  include_sv: bool = False,
                  p_val_correction: typing.Optional[str] = None,
-                 min_perc_patients_w_hpo: typing.Union[float, int] = .1):
+                 min_perc_patients_w_hpo: typing.Union[float, int] = .1,
+                 recessive: bool = False):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
         self._logger = logging.getLogger(__name__)
+        handler = logging.FileHandler(f"{__name__}.log", mode='w')
+        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._phenotype_predicate_factory = PropagatingPhenotypeBooleanPredicateFactory(self._hpo,
                                                                                         missing_implies_excluded)
         self._correction = p_val_correction
+        #TODO: For recessive tests, we need new predicates that return 3 categories 
+        self._recessive = recessive
         self._patient_list = list(cohort.all_patients) \
             if include_sv \
             else [pat for pat in cohort.all_patients if not all(var.variant_coordinates.is_structural() for var in pat.variants)]
@@ -193,7 +200,12 @@ class CommunistCohortAnalysis(CohortAnalysis):
         for pf in phenotypic_features:
             counts = all_counts.loc[pf]
             # TODO - this is where we must fail unless we have the contingency table of the right size!
-            pvals[pf] = run_fisher_exact(counts)
+            if counts.shape == (2, 2):
+                pvals[pf] = run_fisher_exact(counts)
+            elif counts.shape == (3, 2):
+                pvals[pf] = run_recessive_fisher_exact(counts)
+            else:
+                raise ValueError(f"Invalid number of categories. A {counts.shape} table was created. Only (2, 2) and (3, 2) are valid sizes.")
 
         # 3) Multiple correction
         if self._correction is not None:
