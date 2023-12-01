@@ -180,8 +180,30 @@ class GenomeBuild:
         return f"GenomeBuild(identifier={self._id.identifier}, contigs={self.contigs})"
 
 
+def _a_overlaps_with_b(a_start: int, a_end: int, b_start: int, b_end: int) -> bool:
+    if _is_empty(a_start, a_end) and _is_empty(b_start, b_end):
+        return a_start == b_end and b_start == a_end
+
+    return a_start < b_end and b_start < a_end
+
+
 def _a_contains_b(a_start: int, a_end: int, b_start: int, b_end: int) -> bool:
     return a_start <= b_start and b_end <= a_end
+
+
+def _distance_a_to_b(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
+    if _a_overlaps_with_b(a_start, a_end, b_start, b_end):
+        return 0
+
+    first = b_start - a_end
+    second = a_start - b_end
+
+    result = first if abs(first) < abs(second) else second
+    return result if first > second else -result
+
+
+def _is_empty(start: int, end: int) -> bool:
+    return end - start == 0
 
 
 class Region(typing.Sized):
@@ -219,64 +241,52 @@ class Region(typing.Sized):
         """
         return self._end
 
-    def overlaps_with_region(self, other) -> bool:
+    def overlaps_with(self, other) -> bool:
         """
-        Test if this `Region` overlaps with the `other`.
+        Test if this `Region` overlaps with the `other` `Region`.
 
         :param other: another :class:`Region`
         """
-        if isinstance(other, Region):
-            raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
+        other = Region._check_is_region(other)
+        return _a_overlaps_with_b(self.start, self.end, other.start, other.end)
 
-        return self.overlaps_with(other.start, other.end)
-
-    def overlaps_with(self, start: int, end: int) -> bool:
-        """
-        Test if this `Region` overlaps with `start` and `end` coordinates of another region.
-
-        .. warning::
-
-          `start` must be at or before `end`. Otherwise, the results are UNDEFINED.
-
-        :param start: 0-based start coordinate of the other region
-        :param end: 0-based end coordinate of the other region
-        """
-        if self.is_empty():
-            return _a_contains_b(start, end, self._start, self._end)
-        if end - start == 0:
-            return _a_contains_b(self._start, self._end, start, end)
-
-        return self.start < end and start < self.end
-
-    def contains_region(self, other) -> bool:
+    def contains(self, other) -> bool:
         """
         Test if this `Region` contains the `other` region.
 
+        Empty interval `other` is considered as being contained in `self` if `other` lies on either boundary of `self`.
+
         :param other: another :class:`Region`
         """
-        if isinstance(other, Region):
-            raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
+        other = Region._check_is_region(other)
+        return _a_contains_b(self.start, self.end, other.start, other.end)
 
-        return self.contains(other.start, other.end)
-
-    def contains(self, start: int, end: int) -> bool:
+    def distance_to(self, other) -> int:
         """
-        Test if this `Region` contains the another region denoted by `start` and `end` coordinates.
+        Calculate the number of bases present between this and the `other` region.
 
-        .. warning::
+        The distance is zero if the regions are adjacent or if they overlap.
+        The distance is positive if this is upstream (left) of `other`
+        and negative if this is located downstream (right) of `other`
+        Args:
+            other: other :class:`Region`
 
-          `start` must be at or before `end`. Otherwise, the results are UNDEFINED.
-
-        :param start: 0-based start coordinate of the other region
-        :param end: 0-based end coordinate of the other region
+        Returns: an `int` with the distance.
         """
-        return _a_contains_b(self._start, self._end, start, end)
+        other = Region._check_is_region(other)
+        return _distance_a_to_b(self._start, self._end, other.start, other.end)
 
     def is_empty(self) -> bool:
         """
         Return `True` if the region is empty, i.e. it spans 0 units/bases/aminoacids...
         """
-        return self._end - self._start == 0
+        return _is_empty(self._start, self._end)
+
+    @staticmethod
+    def _check_is_region(other):
+        if not isinstance(other, Region):
+            raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
+        return other
 
     def __len__(self) -> int:
         return self._end - self._start
@@ -416,6 +426,82 @@ class GenomicRegion(Transposable, Region):
             return self
         else:
             return GenomicRegion(self.contig, self.start_on_strand(other), self.end_on_strand(other), other)
+
+    def overlaps_with(self, other) -> bool:
+        """
+        Test if this `GenomicRegion` overlaps with the other `GenomicRegion`.
+
+        Empty intervals are NOT considered as overlapping if they are at the boundaries of the other interval.
+        However, two empty intervals with the same start and end coordinates are considered as overlapping.
+        This method is transitive such that `overlaps_with(a, b) = overlaps_with(b, a)`.
+        Genomic regions located on different contigs do not overlap.
+
+        Args:
+            other: other :class:`GenomicRegion`
+        """
+        other = GenomicRegion._check_is_genomic_region(other)
+
+        if self.contig != other.contig:
+            return False
+
+        if self.strand != other.strand:
+            start = other.start_on_strand(self._strand)
+            end = other.end_on_strand(self._strand)
+            return _a_overlaps_with_b(self.start, self.end, start, end)
+        else:
+            return _a_overlaps_with_b(self.start, self.end, other.start, other.end)
+
+    def contains(self, other) -> bool:
+        """
+        Check if this `GenomicRegion` contains the `other` genomic region.
+
+        Empty interval `other` is considered as being contained in `self` if `other` lies on either boundary of `self`.
+        Genomic region located on a different contig is never contained.
+
+        Args:
+            other: other :class:`GenomicRegion`.
+        """
+        other = GenomicRegion._check_is_genomic_region(other)
+
+        if self.contig != other.contig:
+            return False
+
+        if self.strand != other.strand:
+            start = other.start_on_strand(self._strand)
+            end = other.end_on_strand(self._strand)
+            return _a_contains_b(self.start, self.end, start, end)
+        else:
+            return _a_contains_b(self.start, self.end, other.start, other.end)
+
+    def distance_to(self, other) -> int:
+        """
+        Calculate the number of bases present between this `GenomicRegion` and the `other` genomic region.
+
+        The distance is zero if the regions are adjacent or if they overlap.
+        The distance is positive if this is upstream (left) of `other`
+        and negative if this is located downstream (right) of `other`
+        Args:
+            other: other :class:`GenomicRegion`
+
+        Returns: an `int` with the distance.
+        Raises: `ValueError` if the `other` region is on a different contig.
+        """
+        other = GenomicRegion._check_is_genomic_region(other)
+
+        if self.contig != other.contig:
+            raise ValueError(f'Cannot calculate distance between regions on different contigs: '
+                             f'{self.contig.name} <-> {other.contig.name}')
+
+        other_start = other.start_on_strand(self._strand)
+        other_end = other.end_on_strand(self._strand)
+
+        return _distance_a_to_b(self.start, self.end, other_start, other_end)
+
+    @staticmethod
+    def _check_is_genomic_region(other):
+        if not isinstance(other, GenomicRegion):
+            raise ValueError(f'`other` is not instance of `GenomicRegion`: {type(other)}')
+        return other
 
     def __eq__(self, other):
         return (isinstance(other, GenomicRegion)
