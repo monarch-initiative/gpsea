@@ -247,7 +247,7 @@ def load_phenopacket_folder(pp_directory: str,
 
     # turn phenopackets into patients using patient creator
     patients = []
-    for pp in tqdm(pps):
+    for pp in tqdm(pps, desc='Patients Created'):
         patients.append(patient_creator.create_patient(pp))
 
     # create cohort from patients
