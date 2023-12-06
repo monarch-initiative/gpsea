@@ -7,6 +7,7 @@ import hpotk
 # pyright: reportGeneralTypeIssues=false
 from google.protobuf.json_format import Parse
 from phenopackets import GenomicInterpretation, Phenopacket
+from tqdm import tqdm
 
 from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model import Patient, Cohort
@@ -245,7 +246,9 @@ def load_phenopacket_folder(pp_directory: str,
         raise ValueError(f"No JSON Phenopackets were found in {pp_directory}")
 
     # turn phenopackets into patients using patient creator
-    patients = [patient_creator.create_patient(pp) for pp in pps]
+    patients = []
+    for pp in tqdm(pps, desc='Patients Created'):
+        patients.append(patient_creator.create_patient(pp))
 
     # create cohort from patients
     return Cohort.from_patients(patients, include_patients_with_no_HPO)
