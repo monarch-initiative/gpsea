@@ -90,6 +90,7 @@
 <span class="c1"># pyright: reportGeneralTypeIssues=false</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
 <span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span><span class="p">,</span> <span class="n">Phenopacket</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">Genotypes</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Cohort</span>
@@ -342,7 +343,9 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No JSON Phenopackets were found in </span><span class="si">{</span><span class="n">pp_directory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># turn phenopackets into patients using patient creator</span>
-    <span class="n">patients</span> <span class="o">=</span> <span class="p">[</span><span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span> <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">pps</span><span class="p">]</span>
+    <span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Patients Created&#39;</span><span class="p">):</span>
+        <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">))</span>
 
     <span class="c1"># create cohort from patients</span>
     <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span> <span class="n">include_patients_with_no_HPO</span><span class="p">)</span></div>
