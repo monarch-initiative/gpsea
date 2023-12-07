@@ -122,6 +122,14 @@ class VvTranscript:
                 self._exon_list.append(VvExon(json_data=exon))
             print(f"Extracted {len(self._exon_list)} exons")
 
+
+    @property
+    def reference(self):
+        """TODO, can this be renamed reference_sequence_accession_id
+        """
+        return self._reference
+
+
     def get_exon_list(self):
         return self._exon_list
 
@@ -158,7 +166,7 @@ class VvTranscript:
         if len(priority_levels) == 0:
             priority_levels.append("no priority level")
         priority = ', '.join(priority_levels)
-        return f"[VvTranscript] CDS: {self._coding_start}-{self._coding_end}, chrom: {self._chromosome} length {self._length} nt transl {self._translation}: {priority}"
+        return f"[VvTranscript] {self._reference}-CDS: {self._coding_start}-{self._coding_end}, chrom: {self._chromosome} length {self._length} nt transl {self._translation}: {priority}"
 
 
 class VvExon:

@@ -32,14 +32,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
 dependencies = [
+    "descartes",
     "hpo-toolkit>=0.3.0",
+    "matplotlib>=3.8.2",
+    "numpy>=1.23"
     "protobuf>=3.15.0",
     "pandas>=2.0.0",
     "phenopackets>=2.0.2",
     "requests>=2.25.0",
     "scipy>=1.10",
+    "shapely",
     "statsmodels>=0.13.0",
-    "numpy>=1.23"
 ]
 dynamic = ["version"]
 
