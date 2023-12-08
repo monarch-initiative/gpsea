@@ -59,10 +59,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \

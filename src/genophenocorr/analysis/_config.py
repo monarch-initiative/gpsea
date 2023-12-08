@@ -44,13 +44,11 @@ class CohortAnalysisConfiguration:
     def __init__(self, missing_implies_excluded: bool,
                  pval_correction: typing.Optional[str],
                  min_perc_patients_w_hpo: float,
-                 include_sv: bool, 
-                 recessive: bool):
+                 include_sv: bool):
         self._missing_implies_excluded = missing_implies_excluded
         self._pval_correction = pval_correction
         self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
         self._include_sv = include_sv
-        self._recessive = recessive
 
     @staticmethod
     def builder():
@@ -89,15 +87,6 @@ class CohortAnalysisConfiguration:
         (i.e. the variants that use symbolic VCF notation).
         """
         return self._include_sv
-    
-    @property
-    def recessive(self) -> bool:
-        """
-        `True` if we want to test the correlation between heterozygous variants,
-        homozygous variants, and no variants (i.e. comparing frameshift variants on 
-        both alleles, frameshift variant on one allele, and no frameshift variants)
-        """
-        return self._recessive
 
 
 class CohortAnalysisConfigurationBuilder:
@@ -111,15 +100,10 @@ class CohortAnalysisConfigurationBuilder:
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         self._missing_implies_excluded = False
         self._pval_correction = 'bonferroni'
         self._min_perc_patients_w_hpo = .1
         self._include_sv = False
-        self._recessive = False
 
     def missing_implies_excluded(self, missing_implies_excluded: bool):
         """
@@ -140,13 +124,19 @@ class CohortAnalysisConfigurationBuilder:
         if pval_correction in P_VAL_OPTIONS:
             self._pval_correction = pval_correction
         else:
-            self._logger.warning('Ignoring invalid `pval_correction` value %s. Not doing p-value correction.', pval_correction)
+            self._logger.warning('Ignoring invalid `pval_correction` value %s. Using default "bonferroni" correction.', pval_correction)
         return self
 
     def min_perc_patients_w_hpo(self, min_perc_patients_w_hpo: float):
         """
         Set `min_perc_patients_w_hpo` option.
         """
+        if not isinstance(min_perc_patients_w_hpo, float):
+            try:
+                min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
+            except ValueError:
+                self._logger.warning("min_perc_patients_w_hpo must be a number. Using default of 0.1")
+                min_perc_patients_w_hpo = 0.1
         if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
             self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1. Using default of 0.1")
         else:
@@ -162,17 +152,6 @@ class CohortAnalysisConfigurationBuilder:
         else:
             self._logger.warning('Ignoring invalid `include_sv` value %s. Defaulting to not include large structural variants.', include_sv)
         return self
-    
-    def recessive(self, recessive: bool):
-        """
-        Set `recessive` option.
-        """
-        if isinstance(recessive, bool):
-            self._recessive = recessive
-        else:
-            self._logger.warning('Ignoring invalid `recessive` value %s. Defaulting to a dominant test.', recessive)
-        return self
-
 
     def build(self) -> CohortAnalysisConfiguration:
         """
@@ -181,8 +160,7 @@ class CohortAnalysisConfigurationBuilder:
         return CohortAnalysisConfiguration(self._missing_implies_excluded,
                                            self._pval_correction,
                                            self._min_perc_patients_w_hpo,
-                                           self._include_sv,
-                                           self._recessive)
+                                           self._include_sv)
 
 
 def configure_cohort_analysis(cohort: Cohort,
@@ -203,5 +181,4 @@ def configure_cohort_analysis(cohort: Cohort,
                                    missing_implies_excluded=config.missing_implies_excluded,
                                    include_sv=config.include_sv,
                                    p_val_correction=config.pval_correction,
-                                   min_perc_patients_w_hpo=config.min_perc_patients_w_hpo,
-                                   recessive=config.recessive)
+                                   min_perc_patients_w_hpo=config.min_perc_patients_w_hpo)

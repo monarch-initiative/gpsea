@@ -29,10 +29,6 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
     def __init__(self, build: GenomeBuild,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         self._build = hpotk.util.validate_instance(build, GenomeBuild, 'build')
         self._hgvs_finder = hpotk.util.validate_instance(hgvs_coordinate_finder, VariantCoordinateFinder,
                                                          'hgvs_coordinate_finder')
@@ -144,10 +140,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                  var_func_ann: FunctionalAnnotator,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder(build, hgvs_coordinate_finder)
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')

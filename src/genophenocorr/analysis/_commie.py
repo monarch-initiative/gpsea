@@ -106,22 +106,15 @@ class CommunistCohortAnalysis(CohortAnalysis):
                  missing_implies_excluded: bool = False,
                  include_sv: bool = False,
                  p_val_correction: typing.Optional[str] = None,
-                 min_perc_patients_w_hpo: typing.Union[float, int] = .1,
-                 recessive: bool = False):
+                 min_perc_patients_w_hpo: typing.Union[float, int] = .1):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._phenotype_predicate_factory = PropagatingPhenotypeBooleanPredicateFactory(self._hpo,
                                                                                         missing_implies_excluded)
         self._correction = p_val_correction
-        #TODO: For recessive tests, we need new predicates that return 3 categories 
-        self._recessive = recessive
         self._patient_list = list(cohort.all_patients) \
             if include_sv \
             else [pat for pat in cohort.all_patients if not all(var.variant_coordinates.is_structural() for var in pat.variants)]

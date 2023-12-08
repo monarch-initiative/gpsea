@@ -31,10 +31,6 @@ class PhenotypeCreator:
             validator (hpotk.validate.ValidationRunner): A ValidationRunner object 
         """
         self._logger = logging.getLogger(__name__)
-        handler = logging.FileHandler(f"{__name__}.log", mode='w')
-        formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-        handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
