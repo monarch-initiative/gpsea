@@ -185,7 +185,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                     continue
                 tx_annotations = self._func_ann.annotate(vc)
                 if tx_annotations is None:
-                    self._logger.error("Patient %s has an error with variant %s, this variant will not be included.", pp.id, vc.variant_key)
+                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.", pp.id, vc.variant_key)
                     continue
                 genotype = Genotypes.single(sample_id, gt)
                 variant = Variant(vc, tx_annotations, genotype)

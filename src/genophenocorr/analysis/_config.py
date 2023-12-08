@@ -135,10 +135,10 @@ class CohortAnalysisConfigurationBuilder:
             try:
                 min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
             except ValueError:
-                self._logger.warning("min_perc_patients_w_hpo must be a number. Using default of 0.1")
+                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using default of 0.1", min_perc_patients_w_hpo)
                 min_perc_patients_w_hpo = 0.1
         if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
-            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1. Using default of 0.1")
+            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using default of 0.1", min_perc_patients_w_hpo)
         else:
             self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
         return self

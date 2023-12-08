@@ -77,9 +77,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         """
         response = self._query_vep(variant_coordinates)
         annotations = []
-        if response is None:
-            self._logger.error('VEP did not finish successfully.')
-            return None
         if 'transcript_consequences' not in response:
             self._logger.error('The VEP response lacked the required `transcript_consequences` field. %s', response)
             return None
@@ -160,7 +157,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
             self._logger.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
-            self._logger.error(r.raise_for_status())
+            self._logger.error(r.text)
             return None
         results = r.json()
         if not isinstance(results, list):
