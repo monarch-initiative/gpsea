@@ -70,7 +70,8 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
 
         contig = self._build.contig_by_name(variant_data['chr'])
         if contig is None:
-            raise VariantValidatorDecodeException(f'Contig {variant_data["chr"]} was not found in build {self._build.identifier}')
+            raise VariantValidatorDecodeException(f'Contig {variant_data["chr"]} was not found in build '
+                                                  f'{self._build.identifier}')
 
         pos = int(variant_data['pos'])
         ref = variant_data['ref']
@@ -159,14 +160,15 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
 
         item = response[0]
         if 'requested_symbol' not in item or item['requested_symbol'] != tx_id:
-            # TODO: complain
-            pass
+            raise ValueError(
+                f'Could not find {tx_id} in the `requested_symbol` field in the response from Variant Validator API'
+            )
         if 'transcripts' not in item:
-            raise ValueError(f'A required `transcripts` field  is missing in the response from Variant Validator API')
+            raise ValueError(f'A required `transcripts` field is missing in the response from Variant Validator API')
         tx = self._find_tx_data(tx_id, item['transcripts'])
 
         if 'genomic_spans' not in tx:
-            raise ValueError(f'A required `genomic_spans` field  is missing in the response from Variant Validator API')
+            raise ValueError(f'A required `genomic_spans` field is missing in the response from Variant Validator API')
         contig, genomic_span = self._find_genomic_span(tx['genomic_spans'])
 
         strand = self._parse_strand(genomic_span)
@@ -239,8 +241,8 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
                 start = gen_start
                 end = gen_end
             else:
-                start = transpose_coordinate(contig, gen_end) # !
-                end = transpose_coordinate(contig, gen_start) # !
+                start = transpose_coordinate(contig, gen_end)  # !
+                end = transpose_coordinate(contig, gen_start)  # !
             gr = GenomicRegion(contig, start, end, strand)
             exons.append(gr)
 
