@@ -381,8 +381,8 @@ def transpose_coordinate(contig: Contig, coordinate: int) -> int:
     Returns: an `int` with transposed coordinate.
     Raises: ValueError if the `coordinate` is out of contig bounds.
     """
-    if not 0 <= coordinate < len(contig):
-        raise ValueError(f'Coordinate {coordinate:,} is out of bounds [0,{len(contig):,}) for contig {contig.name}')
+    if not 0 <= coordinate <= len(contig):
+        raise ValueError(f'Coordinate {coordinate:,} is out of bounds [0,{len(contig):,}] for contig {contig.name}')
     return len(contig) - coordinate
 
 
