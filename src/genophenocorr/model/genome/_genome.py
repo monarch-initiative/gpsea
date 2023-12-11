@@ -261,6 +261,24 @@ class Region(typing.Sized):
         other = Region._check_is_region(other)
         return _a_contains_b(self.start, self.end, other.start, other.end)
 
+    def contains_pos(self, pos: int) -> bool:
+        """
+        Test if this `Region` contains the base or protein located at the `pos`. Note, `pos` is represented by
+        a 1-based coordinate system.
+
+        No bound checking is done here and `False` is returned for a position that is e.g. out of bounds of a contig,
+        or for a negative `pos`. For :class:`Stranded` entities, the position is assumed to be located on
+        strand of the :class:`GenomicRegion`.
+
+        An empty region contains no positions.
+
+        Args:
+            pos: an `int` with 1-based position to check.
+
+        Returns: `True` if the `Region` contains the base/aminoacid located at `pos`.
+        """
+        return self._start < pos <= self._end
+
     def distance_to(self, other) -> int:
         """
         Calculate the number of bases present between this and the `other` region.
