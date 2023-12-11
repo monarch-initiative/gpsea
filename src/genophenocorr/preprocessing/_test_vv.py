@@ -6,7 +6,7 @@ from pkg_resources import resource_filename
 import pytest
 
 
-from genophenocorr.model.genome import GRCh38, Strand
+from genophenocorr.model.genome import GRCh38, Strand, transpose_coordinate
 
 from ._vv import VVHgvsVariantCoordinateFinder, VVTranscriptCoordinateService
 
@@ -140,8 +140,32 @@ class TestVVTranscriptCoordinateService:
 
         tc = tx_coordinate_service.parse_response(tx_id, response)
 
-        print(tc)
+        assert tc.identifier == tx_id
 
+        tx_region = tc.region
+        assert tx_region.contig.name == '11'
+        assert tx_region.start_on_strand(Strand.POSITIVE) == 5_225_465
+        assert tx_region.end_on_strand(Strand.POSITIVE) == 5_227_071
+        assert tx_region.strand == Strand.NEGATIVE
+
+        exons = tc.exons
+        assert len(exons) == 3
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.start_on_strand(Strand.POSITIVE) == 5_226_929
+        assert first.end_on_strand(Strand.POSITIVE) == 5_227_071
+
+
+        last = exons[-1]
+        assert last.end == tx_region.end
+        assert last.start_on_strand(Strand.POSITIVE) == 5_225_465
+        assert last.end_on_strand(Strand.POSITIVE) == 52_25_726
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        assert transpose_coordinate(tc.region.contig, tc.cds_start) == 5_227_021
+        assert transpose_coordinate(tc.region.contig, tc.cds_end) == 5_225_597
+        assert tc.cds_start == 129_859_601
+        assert tc.cds_end == 129_861_025
 
 
 def load_response_json(path: str):

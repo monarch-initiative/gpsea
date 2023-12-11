@@ -168,10 +168,10 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
             raise ValueError(f'A required `genomic_spans` field  is missing in the response from Variant Validator API')
         contig, genomic_span = self._find_genomic_span(tx['genomic_spans'])
 
-        tx_start = genomic_span['start_position'] - 1 # Convert from 1-based to 0-based coordinate
-        tx_end = genomic_span['end_position']
         strand = self._parse_strand(genomic_span)
-        region = GenomicRegion(contig, tx_start, tx_end, strand)
+        start_pos = genomic_span['start_position']
+        end_pos = genomic_span['end_position']
+        region = self._parse_tx_region(contig, start_pos, end_pos, strand)
 
         exons = self._parse_exons(contig, strand, genomic_span)
 
@@ -210,15 +210,36 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
             raise ValueError(f'Invalid orientation value {orientation} was not {{-1, 1}}')
 
     @staticmethod
+    def _parse_tx_region(contig: Contig, start_pos: int, end_pos: int, strand: Strand) -> GenomicRegion:
+        """
+        The `start_pos` and `end_pos` coordinates are on the positive strand, but the genomic region that we
+        are returning must be on given `strand`. Therefore, we transpose accordingly.
+
+        However, note that start_pos > end_pos if `strand == Strand.NEGATIVE`. This is unusual in our environment,
+        where we ensure the following: `start <= end`.
+        """
+        if strand == Strand.POSITIVE:
+            start = start_pos - 1  # Convert from 1-based to 0-based coordinate
+            end = end_pos
+        else:
+            end = transpose_coordinate(contig, start_pos - 1)  # Convert from 1-based to 0-based coordinate
+            start = transpose_coordinate(contig, end_pos)
+
+        return GenomicRegion(contig, start, end, strand)
+
+    @staticmethod
     def _parse_exons(contig: Contig, strand: Strand, genomic_span: typing.Dict) -> typing.Sequence[GenomicRegion]:
         # Ensure the exons are sorted in ascending order
         exons = []
         for exon in sorted(genomic_span['exon_structure'], key=lambda exon_data: exon_data['exon_number']):
-            start = exon['genomic_start'] - 1  # -1 to convert to 0-based coordinates.
-            end = exon['genomic_end']
-            if strand == Strand.NEGATIVE:
-                start = transpose_coordinate(contig, end) # !
-                end = transpose_coordinate(contig, start) # !
+            gen_start = exon['genomic_start'] - 1  # -1 to convert to 0-based coordinates.
+            gen_end = exon['genomic_end']
+            if strand.is_positive():
+                start = gen_start
+                end = gen_end
+            else:
+                start = transpose_coordinate(contig, gen_end) # !
+                end = transpose_coordinate(contig, gen_start) # !
             gr = GenomicRegion(contig, start, end, strand)
             exons.append(gr)
 
@@ -235,7 +256,7 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
             exon_len = len(exon)
             if start is None:
                 if processed < coding_start <= processed + exon_len:
-                    start = exon.start + coding_start - processed - 1 # `-1` to convert to 0-based coordinate!
+                    start = exon.start + coding_start - processed - 1  # `-1` to convert to 0-based coordinate!
 
             if end is None:
                 if processed < coding_end <= processed + exon_len:
