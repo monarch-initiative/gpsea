@@ -6,9 +6,9 @@ from pkg_resources import resource_filename
 import pytest
 
 
-from genophenocorr.model.genome import GRCh38
+from genophenocorr.model.genome import GRCh38, Strand
 
-from ._vv import VVHgvsVariantCoordinateFinder
+from ._vv import VVHgvsVariantCoordinateFinder, VVTranscriptCoordinateService
 
 
 @pytest.fixture
@@ -94,6 +94,54 @@ class TestVVHgvsVariantCoordinateFinder:
     def test_find_coordinates(self, coordinate_finder: VVHgvsVariantCoordinateFinder):
         vc = coordinate_finder.find_coordinates('NM_013275.6:c.7407C>G')
         print(vc)
+
+
+class TestVVTranscriptCoordinateService:
+    TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vv_response'))
+
+    @pytest.fixture
+    def tx_coordinate_service(self) -> VVTranscriptCoordinateService:
+        return VVTranscriptCoordinateService(genome_build=GRCh38)
+
+    def test_ptpn11(self, tx_coordinate_service: VVTranscriptCoordinateService):
+        tx_id = 'NM_002834.5'
+
+        response_fpath = os.path.join(self.TEST_DATA_DIR, 'txid-NM_002834.5-PTPN11.json')
+        response = load_response_json(response_fpath)
+
+        tc = tx_coordinate_service.parse_response(tx_id, response)
+
+        assert tc.identifier == tx_id
+
+        tx_region = tc.region
+        assert tx_region.contig.name == '12'
+        assert tx_region.start == 112_418_946
+        assert tx_region.end == 112_509_918
+        assert tx_region.strand == Strand.POSITIVE
+
+        exons = tc.exons
+        assert len(exons) == 16
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.end == 112_419_125
+        last = exons[-1]
+        assert last.start == 112_505_824
+        assert last.end == tx_region.end
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        assert tc.cds_start == 112_419_111
+        assert tc.cds_end == 112_504_764
+
+    def test_hbb(self, tx_coordinate_service: VVTranscriptCoordinateService):
+        tx_id = 'NM_000518.4'
+
+        response_fpath = os.path.join(self.TEST_DATA_DIR, 'txid-NM_000518.4-HBB.json')
+        response = load_response_json(response_fpath)
+
+        tc = tx_coordinate_service.parse_response(tx_id, response)
+
+        print(tc)
+
 
 
 def load_response_json(path: str):

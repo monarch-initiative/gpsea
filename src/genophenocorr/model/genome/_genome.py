@@ -353,6 +353,21 @@ class Strand(enum.Enum):
         return self._symbol
 
 
+def transpose_coordinate(contig: Contig, coordinate: int) -> int:
+    """
+    Transpose a 0-based coordinate to other strand of the contig.
+    Args:
+        contig: contig to transpose the coordinate on.
+        coordinate: the coordinate to transpose.
+
+    Returns: an `int` with transposed coordinate.
+    Raises: ValueError if the `coordinate` is out of contig bounds.
+    """
+    if not 0 <= coordinate < len(contig):
+        raise ValueError(f'Coordinate {coordinate:,} is out of bounds [0,{len(contig):,}) for contig {contig.name}')
+    return len(contig) - coordinate
+
+
 class Stranded(metaclass=abc.ABCMeta):
     """
     Mixin for classes that are on double-stranded sequences.
@@ -409,13 +424,13 @@ class GenomicRegion(Transposable, Region):
         if self.strand == other:
             return self.start
         else:
-            return len(self.contig) - self.end
+            return transpose_coordinate(self._contig, self._end)
 
     def end_on_strand(self, other: Strand) -> int:
         if self.strand == other:
             return self.end
         else:
-            return len(self.contig) - self.start
+            return transpose_coordinate(self._contig, self._start)
 
     @property
     def strand(self) -> Strand:

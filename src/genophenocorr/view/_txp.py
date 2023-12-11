@@ -9,7 +9,7 @@ class VariantTranscriptProteinArtist:
     and its protein product.
     """
 
-    def draw_variants(self, variants: typing.Sequence[Variant],
+    def draw_variants(self, variants: typing.Iterable[Variant],
                       tx: TranscriptCoordinates,
                       protein: ProteinMetadata):
         # TODO - Peter implement
