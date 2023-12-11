@@ -167,6 +167,33 @@ class TestVVTranscriptCoordinateService:
         assert tc.cds_start == 129_859_601
         assert tc.cds_end == 129_861_025
 
+    @pytest.mark.skip('Online tests are disabled by default')
+    def test_fetch_ptpn11(self, tx_coordinate_service: VVTranscriptCoordinateService):
+        tx_id = 'NM_002834.5'
+
+        tc = tx_coordinate_service.fetch(tx_id)
+
+        assert tc.identifier == tx_id
+
+        tx_region = tc.region
+        assert tx_region.contig.name == '12'
+        assert tx_region.start == 112_418_946
+        assert tx_region.end == 112_509_918
+        assert tx_region.strand == Strand.POSITIVE
+
+        exons = tc.exons
+        assert len(exons) == 16
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.end == 112_419_125
+        last = exons[-1]
+        assert last.start == 112_505_824
+        assert last.end == tx_region.end
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        assert tc.cds_start == 112_419_111
+        assert tc.cds_end == 112_504_764
+
 
 def load_response_json(path: str):
     with open(path) as fh:

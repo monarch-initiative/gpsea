@@ -119,24 +119,25 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
     `VVTranscriptCoordinateService` fetches the transcript coordinates from the Variant Validator REST API.
 
     :param genome_build: the genome build for constructing the transcript coordinates.
-    :param timeout: a positive `int` with the REST API timeout in seconds.
+    :param timeout: a positive `float` with the REST API timeout in seconds.
     """
 
-    def __init__(self, genome_build: GenomeBuild, timeout: int = 30):
+    def __init__(self, genome_build: GenomeBuild, timeout: float = 30.):
         self._logger = logging.getLogger(__name__)
         self._genome_build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
 
-        self._timeout = hpotk.util.validate_instance(timeout, int, 'timeout')
+        self._timeout = hpotk.util.validate_instance(timeout, float, 'timeout')
         if self._timeout <= 0:
-            raise ValueError(f'`timeout` must be a positive `int` but got {timeout}')
+            raise ValueError(f'`timeout` must be a positive `float` but got {timeout}')
 
-        self._url = "rest.variantvalidator.org/VariantValidator/tools/gene2transcripts/%s"
+        self._url = "https://rest.variantvalidator.org/VariantValidator/tools/gene2transcripts/%s"
+        self._headers = {'Accept': 'application/json'}
 
     def fetch(self, tx: typing.Union[str, TranscriptInfoAware]) -> TranscriptCoordinates:
         tx_id = self._parse_tx(tx)
         api_url = self._url % tx_id
 
-        response = requests.get(api_url)
+        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
 
         if not response.ok:
             response.raise_for_status()
