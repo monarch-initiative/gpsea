@@ -75,14 +75,21 @@ class TranscriptCoordinates:
         """
         return self._cds_end
 
+    def is_coding(self) -> bool:
+        """
+        Return `True` if the transcript is coding/translated.
+        """
+        return self._cds_start is not None and self._cds_end is not None
+
     def get_coding_base_count(self) -> typing.Optional[int]:
         """
-        Calculate the number of coding bases present in the transcript. Note, the count does *not* include
+        Calculate the number of coding bases present in the transcript. Note, the count does *NOT* include
         the termination codon since it does not code for an aminoacid.
         Returns: an `int` with the coding base count or `None` if the transcript is non-coding.
         """
-        if self._cds_start is None and self._cds_end is None:
-            return None  # non-coding
+        if not self.is_coding():
+            return None
+
         n_bases = 0
         for exon in self.exons:
             start = max(self._cds_start, exon.start)
@@ -93,7 +100,7 @@ class TranscriptCoordinates:
 
     def get_codon_count(self) -> typing.Optional[int]:
         """
-        Calculate the count of codons present in the transcript. Note, the count does *not* include the termination codon!
+        Calculate the count of codons present in the transcript. Note, the count does *NOT* include the termination codon!
 
         Returns: the number of codons of the transcript or `None` if the transcript is non-coding.
         """
@@ -101,6 +108,86 @@ class TranscriptCoordinates:
         assert n_coding_bases % 3 == 0, (f"Transcript {self._id} has {n_coding_bases:,} "
                                          f"coding bases that is not divisible by 3!")
         return int(n_coding_bases / 3)
+
+    def get_five_prime_utrs(self) -> typing.Sequence[GenomicRegion]:
+        """
+        Get a sequence of genomic regions that correspond to 5' untranslated regions of the transcript.
+
+        Returns: a sequence of genomic regions, an empty sequence if the transcript is non-coding.
+        """
+        if not self.is_coding():
+            return ()
+
+        utrs = []
+
+        for exon in self.exons:
+            if exon.start >= self._cds_start:
+                break
+            if exon.end <= self._cds_start:
+                # An entire exon is UTR.
+                utrs.append(exon)
+            else:
+                # Just a part of an exon is UTR.
+                utrs.append(GenomicRegion(exon.contig, exon.start, self._cds_start, exon.strand))
+
+        return tuple(utrs)
+
+    def get_three_prime_utrs(self) -> typing.Sequence[GenomicRegion]:
+        """
+        Get a sequence of genomic regions that correspond to 3' untranslated regions of the transcript.
+
+        Note, the termination codon is *NOT* included in the regions!
+
+        Returns: a sequence of genomic regions, an empty sequence if the transcript is non-coding.
+        """
+        if not self.is_coding():
+            return ()
+
+        utrs = []
+
+        for exon in self.exons:
+            if exon.end > self._cds_end:
+                if self._cds_end <= exon.start:
+                    # An entire exon is UTR.
+                    utrs.append(exon)
+                else:
+                    # Just a part of an exon is UTR.
+                    utrs.append(GenomicRegion(exon.contig, self._cds_end, exon.end, exon.strand))
+
+        return tuple(utrs)
+
+    def get_cds_regions(self) -> typing.Sequence[GenomicRegion]:
+        """
+        Get a sequence of genomic regions that correspond to coding regions of the transcript, including
+        BOTH the initiation and termination codons.
+
+        Returns: a sequence of genomic regions, an empty sequence if the transcript is non-coding.
+        """
+        if not self.is_coding():
+            return ()
+
+        coding_regions = []
+        for exon in self.exons:
+            if self._cds_start >= exon.end or self._cds_end <= exon.start:
+                # An entire exon is UTR.
+                continue
+            else:
+                cds_start_is_at_or_before_start = self._cds_start <= exon.start
+                cds_end_is_at_or_after_end = exon.end <= self._cds_end
+                if cds_start_is_at_or_before_start or cds_end_is_at_or_after_end:
+                    # At least one base of the exon must be coding.
+                    if cds_start_is_at_or_before_start and cds_end_is_at_or_after_end:
+                        # The entire exon is coding
+                        coding_regions.append(exon)
+                    else:
+                        # Part of the exon is coding, another part is UTR
+                        cds = GenomicRegion(exon.contig,
+                                            max(self._cds_start, exon.start),
+                                            min(exon.end, self._cds_end),
+                                            exon.strand)
+                        coding_regions.append(cds)
+
+        return tuple(coding_regions)
 
     def __eq__(self, other):
         return (isinstance(other, TranscriptCoordinates)
