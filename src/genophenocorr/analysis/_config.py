@@ -112,8 +112,8 @@ class CohortAnalysisConfigurationBuilder:
         if isinstance(missing_implies_excluded, bool):
             self._missing_implies_excluded = missing_implies_excluded
         else:
-            self._logger.warning('Ignoring invalid `missing_implies_excluded` value %s',
-                                 missing_implies_excluded)
+            self._logger.warning('Ignoring invalid `missing_implies_excluded` value %s. Using %s.',
+                                 missing_implies_excluded, self._missing_implies_excluded)
 
         return self
 
@@ -124,7 +124,7 @@ class CohortAnalysisConfigurationBuilder:
         if pval_correction in P_VAL_OPTIONS:
             self._pval_correction = pval_correction
         else:
-            self._logger.warning('Ignoring invalid `pval_correction` value %s. Using default "bonferroni" correction.', pval_correction)
+            self._logger.warning('Ignoring invalid `pval_correction` value %s. Using %s correction.', pval_correction, self._pval_correction)
         return self
 
     def min_perc_patients_w_hpo(self, min_perc_patients_w_hpo: float):
@@ -135,10 +135,10 @@ class CohortAnalysisConfigurationBuilder:
             try:
                 min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
             except ValueError:
-                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using default of %f", min_perc_patients_w_hpo, self.min_perc_patients_w_hpo)
+                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f", min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
                 return self
         if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
-            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using default of %f", min_perc_patients_w_hpo, self.min_perc_patients_w_hpo)
+            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using %f", min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
         else:
             self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
         return self
@@ -150,7 +150,7 @@ class CohortAnalysisConfigurationBuilder:
         if isinstance(include_sv, bool):
             self._include_sv = include_sv
         else:
-            self._logger.warning('Ignoring invalid `include_sv` value %s. Defaulting to not include large structural variants.', include_sv)
+            self._logger.warning('Ignoring invalid `include_sv` value %s. Using %s', include_sv, self._include_sv)
         return self
 
     def build(self) -> CohortAnalysisConfiguration:
