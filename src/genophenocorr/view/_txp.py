@@ -37,14 +37,12 @@ class VariantTranscriptVisualizer:
         self._variants = variants
         self._transcript_coordinates = tx
         self._protein = protein
-        print(variants)
         title = f"{protein.protein_id} ({protein.label})"
         fig, ax = plt.subplots(1, figsize=(10, 10))
         protein_domains = set()
         THRESHOLD = 2
         BOTTOM_MARGIN = 20
-        # TODO WE NEED THESE IN THE PROTEIN METADATA!
-        amino_acid_len = 500
+        amino_acid_len = tx.get_codon_count()
         # draw a box that is ten aax tall, where aax is the dimension of one amino acid
         prot_start = get_interpolated_location_in_protein(1, amino_acid_len)
         prot_end = get_interpolated_location_in_protein(amino_acid_len, amino_acid_len)
@@ -101,7 +99,7 @@ class VariantTranscriptVisualizer:
                 box_color = color_list[color_idx]
                 start = feature.start
                 end = feature.end
-                print(name, start, end, box_color)
+                #print(name, start, end, box_color)
                 box_height = 10/amino_acid_len
                 prot_width = prot_end - prot_start + 1
                 protein_height = prot_width/20
