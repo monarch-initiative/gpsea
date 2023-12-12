@@ -75,7 +75,7 @@ class TranscriptCoordinates:
         """
         return self._cds_end
 
-    def compute_n_coding_bases(self) -> typing.Optional[int]:
+    def get_coding_base_count(self) -> typing.Optional[int]:
         """
         Calculate the number of coding bases present in the transcript. Note, the count does *not* include
         the termination codon since it does not code for an aminoacid.
@@ -91,13 +91,13 @@ class TranscriptCoordinates:
 
         return n_bases - 3  # minus stop codon
 
-    def compute_n_codons(self) -> typing.Optional[int]:
+    def get_codon_count(self) -> typing.Optional[int]:
         """
         Calculate the count of codons present in the transcript. Note, the count does *not* include the termination codon!
 
         Returns: the number of codons of the transcript or `None` if the transcript is non-coding.
         """
-        n_coding_bases = self.compute_n_coding_bases()
+        n_coding_bases = self.get_coding_base_count()
         assert n_coding_bases % 3 == 0, (f"Transcript {self._id} has {n_coding_bases:,} "
                                          f"coding bases that is not divisible by 3!")
         return int(n_coding_bases / 3)

@@ -14,7 +14,7 @@ class TestTranscriptCoordinates:
         tx = TranscriptCoordinates('some_id', region=GenomicRegion(contig, 20, 80, Strand.POSITIVE), exons=(
             GenomicRegion(contig, 20, 30, Strand.POSITIVE), GenomicRegion(contig, 50, 60, Strand.POSITIVE),
             GenomicRegion(contig, 70, 80, Strand.POSITIVE)), cds_start=25, cds_end=76)
-        assert tx.compute_n_codons() == 6
+        assert tx.get_codon_count() == 6
 
     def test_tx_w_noncoding_exons__compute_n_codons(self, contig: Contig):
         """
@@ -24,4 +24,4 @@ class TestTranscriptCoordinates:
             GenomicRegion(contig, 5, 10, Strand.POSITIVE), GenomicRegion(contig, 20, 30, Strand.POSITIVE),
             GenomicRegion(contig, 50, 60, Strand.POSITIVE), GenomicRegion(contig, 70, 80, Strand.POSITIVE),
             GenomicRegion(contig, 88, 95, Strand.POSITIVE),), cds_start=25, cds_end=76)
-        assert tx.compute_n_codons() == 6
+        assert tx.get_codon_count() == 6
