@@ -1,5 +1,5 @@
 {
-  "id": "Kutkowska-Kazmierczak2021_P4",
+  "id": "PMID_36446582_Kutkowska-Kazmierczak2021_P4",
   "subject": {
     "id": "Kutkowska-Kazmierczak2021_P4",
     "timeAtLastEncounter": {
@@ -12,59 +12,34 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001249",
-        "label": "Intellectual disability"
-      },
-      "excluded": true,
-      "onset": {
-        "age": {
-          "iso8601duration": "P2Y"
-        }
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     },
     {
       "type": {
-        "id": "HP:0012758",
-        "label": "Neurodevelopmental delay"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P2Y"
-        }
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0006482",
-        "label": "Abnormality of dental morphology"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P2Y"
-        }
+        "id": "HP:0001572",
+        "label": "Macrodontia"
       }
     },
     {
       "type": {
         "id": "HP:0000325",
         "label": "Triangular face"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P2Y"
-        }
       }
     },
     {
       "type": {
         "id": "HP:0004322",
         "label": "Short stature"
-      },
-      "onset": {
-        "age": {
-          "iso8601duration": "P2Y"
-        }
       }
+    },
+    {
+      "type": {
+        "id": "HP:0001249",
+        "label": "Intellectual disability"
+      },
+      "excluded": true
     }
   ],
   "interpretations": [
@@ -82,6 +57,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
+                "id": "var_wrGzrTsttxChuFFCOxoGyDKLI",
                 "geneContext": {
                   "valueId": "HGNC:21316",
                   "symbol": "ANKRD11"
@@ -116,8 +92,8 @@
     }
   ],
   "metaData": {
-    "created": "2023-09-15T19:23:49.837050914Z",
-    "createdBy": "ORCID:0000-0003-2598-6622",
+    "created": "2023-11-25T12:07:36.852018833Z",
+    "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
         "id": "geno",
@@ -144,14 +120,29 @@
         "iriPrefix": "https://www.omim.org/entry/"
       },
       {
+        "id": "so",
+        "name": "Sequence types and features ontology",
+        "url": "http://purl.obolibrary.org/obo/so.obo",
+        "version": "2021-11-22",
+        "namespacePrefix": "SO",
+        "iriPrefix": "http://purl.obolibrary.org/obo/SO_"
+      },
+      {
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-01-27",
+        "version": "2023-10-09",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
     ],
-    "phenopacketSchemaVersion": "2.0"
+    "phenopacketSchemaVersion": "2.0",
+    "externalReferences": [
+      {
+        "id": "PMID:36446582",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/36446582",
+        "description": "Clinical description, molecular delineation and genotype-phenotype correlation in 340 patients with KBG syndrome: addition of 67 new patients"
+      }
+    ]
   }
 }
