@@ -8,8 +8,6 @@ from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Varian
 from genophenocorr.model.genome import Region
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
-SPLICE_EFFECTS = [VariantEffect.SPLICE_ACCEPTOR_VARIANT, VariantEffect.SPLICE_DONOR_VARIANT, VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT, VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT]
-
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
     Converts the 0-based VariantCoordinates to ones that will be interpreted
@@ -66,6 +64,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
+        self._slice_effects = [VariantEffect.SPLICE_ACCEPTOR_VARIANT, VariantEffect.SPLICE_DONOR_VARIANT, VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT, VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT]
+
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
@@ -131,15 +131,9 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
-            # Does this ever happen? Let's log a warning for now and address the absence of a coordinate later,
-            # if we see a lot of these warnings popping out.
-            # Note that Lauren's version of the code had a special branch for missing start, where she set the variable
-            # to `1` (1-based coordinate).
-            if any(ve in var_effects for ve in SPLICE_EFFECTS):
-                protein_effect = None
-            else:
+            if not any(ve in var_effects for ve in self._slice_effects):
                 self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
-                protein_effect = None
+            protein_effect = None
         else:
             # The coordinates are in 1-based system and we need 0-based.
             protein_effect_start = int(protein_effect_start) - 1
