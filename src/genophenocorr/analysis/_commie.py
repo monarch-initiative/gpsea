@@ -14,7 +14,7 @@ from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, Exon
 from .predicate.phenotype import PropagatingPhenotypeBooleanPredicateFactory, PhenotypePredicateFactory
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
-from ._stats import run_fisher_exact
+from ._stats import run_fisher_exact, run_recessive_fisher_exact
 
 
 def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient],
@@ -193,7 +193,12 @@ class CommunistCohortAnalysis(CohortAnalysis):
         for pf in phenotypic_features:
             counts = all_counts.loc[pf]
             # TODO - this is where we must fail unless we have the contingency table of the right size!
-            pvals[pf] = run_fisher_exact(counts)
+            if counts.shape == (2, 2):
+                pvals[pf] = run_fisher_exact(counts)
+            elif counts.shape == (3, 2):
+                pvals[pf] = run_recessive_fisher_exact(counts)
+            else:
+                raise ValueError(f"Invalid number of categories. A {counts.shape} table was created. Only (2, 2) and (3, 2) are valid sizes.")
 
         # 3) Multiple correction
         if self._correction is not None:

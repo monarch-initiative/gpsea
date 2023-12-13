@@ -102,6 +102,9 @@ class ProteinFeature(metaclass=abc.ABCMeta):
     def feature_type(self) -> FeatureType:
         pass
 
+    def to_string(self) -> str:
+        return f"{self.feature_type.name}-{self.info.name}-{self.info.region}"
+
 
 class SimpleProteinFeature(ProteinFeature):
     """A class that represents a protein feature

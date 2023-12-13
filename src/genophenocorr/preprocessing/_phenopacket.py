@@ -182,15 +182,18 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
                 vc, gt = self._coord_finder.find_coordinates(genomic_interp)
                 if "N" in vc.alt:
-                    self._logger.warning(f'Patient {pp.id} has unknown alternative variant {vc.alt} and will not be included.')
+                    self._logger.warning('Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id, vc.variant_key)
                     continue
                 tx_annotations = self._func_ann.annotate(vc)
+                if tx_annotations is None:
+                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.", pp.id, vc.variant_key)
+                    continue
                 genotype = Genotypes.single(sample_id, gt)
                 variant = Variant(vc, tx_annotations, genotype)
                 variants_list.append(variant)
 
         if len(variants_list) == 0:
-            self._logger.warning(f'Expected at least one variant per patient, but received none for patient {pp.id}')
+            self._logger.warning('Expected at least one variant per patient, but received none for patient %s', pp.id)
         return variants_list
 
     def _add_phenotypes(self, pp: Phenopacket) -> typing.Sequence[Phenotype]:

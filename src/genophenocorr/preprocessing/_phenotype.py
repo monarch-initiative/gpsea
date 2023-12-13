@@ -48,8 +48,9 @@ class PhenotypeCreator:
         for term_id, observed in term_ids:
             term = self._hpo.get_term(term_id)
             if term is None:
-                raise ValueError(f'Term ID {term_id} is not present in HPO v{self._hpo.version}')
-            terms.append((term, observed))
+                self._logger.warning("Term %s cannot be found in HPO version %s. It will be ignored.", term_id, self._hpo.version)
+            else:
+                terms.append((term, observed))
         validation_results = self._validator.validate_all([term[0] for term in terms])
         if validation_results.is_ok:
             return tuple(Phenotype.from_term(term, observed) for term, observed in terms)

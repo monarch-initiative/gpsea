@@ -242,7 +242,7 @@ class BaseCohortAnalysis(CohortAnalysis):
         self._transcript = previous
         return result
 
-    def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:VariantEffect = None):
+    def compare_by_variant_type(self, var_type1:VariantEffect, var_type2:typing.Optional[VariantEffect] = None):
         """Runs Fisher Exact analysis, finds any correlation between given variant effects across phenotypes.
 
         Args:
@@ -309,7 +309,7 @@ class BaseCohortAnalysis(CohortAnalysis):
             final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
-    def compare_by_exon(self, exon1:int, exon2:int = None):
+    def compare_by_exon(self, exon1:int, exon2:typing.Optional[int] = None):
         """Runs Fisher Exact analysis, finds any correlation between given exons across phenotypes.
 
         Args:
@@ -341,7 +341,7 @@ class BaseCohortAnalysis(CohortAnalysis):
             final_df.insert(5, ('', "Corrected p-values"), corrected_pvals, True)
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
-    def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:FeatureType = None):
+    def compare_by_protein_feature_type(self, feature1:FeatureType, feature2:typing.Optional[FeatureType] = None):
         """Runs Fisher Exact analysis, finds any correlation between given feature type across phenotypes.
 
         Args:
@@ -374,7 +374,7 @@ class BaseCohortAnalysis(CohortAnalysis):
         return final_df.sort_values([('', 'Corrected p-values'), ('', 'p-value')])
 
 
-    def compare_by_protein_feature(self, feature1:str, feature2:str = None):
+    def compare_by_protein_feature(self, feature1:str, feature2:typing.Optional[str] = None):
         """Runs Fisher Exact analysis, finds any correlation between given feature and phenotypes.
 
         Args:

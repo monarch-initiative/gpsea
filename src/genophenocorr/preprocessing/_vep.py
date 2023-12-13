@@ -8,7 +8,6 @@ from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Varian
 from genophenocorr.model.genome import Region
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
-
 def verify_start_end_coordinates(vc: VariantCoordinates):
     """
     Converts the 0-based VariantCoordinates to ones that will be interpreted
@@ -58,13 +57,15 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
-        self._logging = logging.getLogger(__name__)
+        self._logger = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
+        self._slice_effects = [VariantEffect.SPLICE_ACCEPTOR_VARIANT, VariantEffect.SPLICE_DONOR_VARIANT, VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT, VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT]
+
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
@@ -78,9 +79,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         response = self._query_vep(variant_coordinates)
         annotations = []
         if 'transcript_consequences' not in response:
-            raise ValueError(
-                f'The VEP response lacked the required `transcript_consequences` field')
-
+            self._logger.error('The VEP response lacked the required `transcript_consequences` field. %s', response)
+            return None
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
@@ -97,7 +97,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         try:
             var_effect = VariantEffect[effect]
         except KeyError:
-            self._logging.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub." , effect)
+            self._logger.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
             return None
         return var_effect
 
@@ -118,7 +118,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             if var_effect is not None:
                 var_effects.append(var_effect)
         gene_name = item.get('gene_symbol')
-
         exons_effected = item.get('exon')
         if exons_effected is not None:
             exons_effected = exons_effected.split('/')[0].split('-')
@@ -132,11 +131,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
-            # Does this ever happen? Let's log a warning for now and address the absence of a coordinate later,
-            # if we see a lot of these warnings popping out.
-            # Note that Lauren's version of the code had a special branch for missing start, where she set the variable
-            # to `1` (1-based coordinate).
-            self._logging.warning('Missing start/end coordinate for %s on protein %s', hgvsc_id, protein_id)
+            if not any(ve in var_effects for ve in self._slice_effects):
+                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
             protein_effect = None
         else:
             # The coordinates are in 1-based system and we need 0-based.
@@ -158,15 +154,17 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
         r = requests.get(api_url, headers={'Content-Type': 'application/json'})
         if not r.ok:
-            self._logging.error(f"Expected a result but got an Error for variant: {variant_coordinates.variant_key}")
-            r.raise_for_status()
+            self._logger.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
+            self._logger.error(r.text)
+            return None
         results = r.json()
         if not isinstance(results, list):
-            self._logging.error(results.get('error'))
+            self._logger.error(results.get('error'))
             raise ConnectionError(
                 f"Expected a result but got an Error. See log for details.")
         if len(results) > 1:
-            self._logging.error([result.id for result in results])
+            self._logger.error("Expected only one variant per request but received %s different variants.", len(results))
+            self._logger.error([result.id for result in results])
             raise ValueError(
                 f"Expected only one variant per request but received {len(results)} "
                 f"different variants.")

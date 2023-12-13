@@ -9,6 +9,19 @@ from ._api import CohortAnalysis
 from ._commie import CommunistCohortAnalysis
 
 
+P_VAL_OPTIONS = ['bonferroni', 'b', 
+                 'sidak', 's', 
+                 'holm-sidak', 'hs', 
+                 'holm', 'h', 
+                 'simes-hochberg', 'sh', 
+                 'hommel', 'ho', 
+                 'fdr_bh', 
+                 'fdr_by', 
+                 'fdr_tsbh', 
+                 'fdr_tsbky',
+                 'fdr_gbs',
+                 None]
+
 class CohortAnalysisConfiguration:
     """
     `CohortAnalysisConfiguration` is a value class for storing :class:`genophenocorr.analysis.CohortAnalysis`
@@ -99,8 +112,8 @@ class CohortAnalysisConfigurationBuilder:
         if isinstance(missing_implies_excluded, bool):
             self._missing_implies_excluded = missing_implies_excluded
         else:
-            self._logger.warning('Ignoring invalid `missing_implies_excluded` value %s',
-                                 missing_implies_excluded)
+            self._logger.warning('Ignoring invalid `missing_implies_excluded` value %s. Using %s.',
+                                 missing_implies_excluded, self._missing_implies_excluded)
 
         return self
 
@@ -108,16 +121,26 @@ class CohortAnalysisConfigurationBuilder:
         """
         Set `pval_correction` option.
         """
-        # TODO - check admissible values
-        self._pval_correction = pval_correction
+        if pval_correction in P_VAL_OPTIONS:
+            self._pval_correction = pval_correction
+        else:
+            self._logger.warning('Ignoring invalid `pval_correction` value %s. Using %s correction.', pval_correction, self._pval_correction)
         return self
 
     def min_perc_patients_w_hpo(self, min_perc_patients_w_hpo: float):
         """
         Set `min_perc_patients_w_hpo` option.
         """
-        # TODO - check float in range [0,1)
-        self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
+        if not isinstance(min_perc_patients_w_hpo, float):
+            try:
+                min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
+            except ValueError:
+                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f", min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
+                return self
+        if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
+            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using %f", min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
+        else:
+            self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
         return self
 
     def include_sv(self, include_sv: bool):
@@ -127,7 +150,7 @@ class CohortAnalysisConfigurationBuilder:
         if isinstance(include_sv, bool):
             self._include_sv = include_sv
         else:
-            self._logger.warning('Ignoring invalid `include_sv` value %s', include_sv)
+            self._logger.warning('Ignoring invalid `include_sv` value %s. Using %s', include_sv, self._include_sv)
         return self
 
     def build(self) -> CohortAnalysisConfiguration:
