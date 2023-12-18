@@ -174,10 +174,6 @@
                     <span class="n">vc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">expression</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                     <span class="k">break</span>
 
-        <span class="k">if</span> <span class="n">vc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` &#39;</span>
-                             <span class="s1">&#39;but did not find one&#39;</span><span class="p">)</span>
-
         <span class="c1"># Last, parse genotype.</span>
         <span class="n">genotype</span> <span class="o">=</span> <span class="n">variant_descriptor</span><span class="o">.</span><span class="n">allelic_state</span><span class="o">.</span><span class="n">label</span>
         <span class="n">gt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_geno_genotype_label</span><span class="p">(</span><span class="n">genotype</span><span class="p">)</span>
@@ -249,7 +245,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_id</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">phenotypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_phenotypes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Patient </span><span class="si">%s</span><span class="s1"> has no phenotypes listed and will not be included in this analysis.&#39;</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Patient </span><span class="si">%s</span><span class="s1"> has no variants listed and will not be included in this analysis.&#39;</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">protein_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_protein_data</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">phenotypes</span><span class="p">,</span> <span class="n">variants</span><span class="p">,</span> <span class="n">protein_data</span><span class="p">)</span></div>
 
@@ -275,6 +277,10 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">interpretations</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">genomic_interp</span> <span class="ow">in</span> <span class="n">interp</span><span class="o">.</span><span class="n">diagnosis</span><span class="o">.</span><span class="n">genomic_interpretations</span><span class="p">:</span>
                 <span class="n">vc</span><span class="p">,</span> <span class="n">gt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">genomic_interp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` &#39;</span>
+                             <span class="s1">&#39;but did not find one in patient </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="s2">&quot;N&quot;</span> <span class="ow">in</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Patient </span><span class="si">%s</span><span class="s1"> has unknown alternative variant </span><span class="si">%s</span><span class="s1">, this variant will not be included.&#39;</span><span class="p">,</span> <span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">variant_key</span><span class="p">)</span>
                     <span class="k">continue</span>
@@ -348,7 +354,9 @@
     <span class="c1"># turn phenopackets into patients using patient creator</span>
     <span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Patients Created&#39;</span><span class="p">):</span>
-        <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">))</span>
+        <span class="n">patient</span> <span class="o">=</span> <span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">patient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
     <span class="c1"># create cohort from patients</span>
     <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span> <span class="n">include_patients_with_no_HPO</span><span class="p">)</span></div>
