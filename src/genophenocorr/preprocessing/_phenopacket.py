@@ -87,10 +87,6 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                     vc = self._hgvs_finder.find_coordinates(expression.value)
                     break
 
-        if vc is None:
-            raise ValueError('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
-                             'but did not find one')
-
         # Last, parse genotype.
         genotype = variant_descriptor.allelic_state.label
         gt = self._map_geno_genotype_label(genotype)
@@ -156,7 +152,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """
         sample_id = self._extract_id(item)
         phenotypes = self._add_phenotypes(item)
+        if len(phenotypes) == 0:
+            self._logger.warning('Patient %s has no phenotypes listed and will not be included in this analysis.', sample_id)
+            return None
         variants = self._add_variants(sample_id, item)
+        if len(variants) == 0:
+            self._logger.warning('Patient %s has no variants listed and will not be included in this analysis.', sample_id)
+            return None
         protein_data = self._add_protein_data(variants)
         return Patient(item.id, phenotypes, variants, protein_data)
 
@@ -181,6 +183,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
                 vc, gt = self._coord_finder.find_coordinates(genomic_interp)
+                if vc == None:
+                    self._logger.warning('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
+                             'but did not find one in patient %s', pp.id)
+                    continue
                 if "N" in vc.alt:
                     self._logger.warning('Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id, vc.variant_key)
                     continue
@@ -251,7 +257,9 @@ def load_phenopacket_folder(pp_directory: str,
     # turn phenopackets into patients using patient creator
     patients = []
     for pp in tqdm(pps, desc='Patients Created'):
-        patients.append(patient_creator.create_patient(pp))
+        patient = patient_creator.create_patient(pp)
+        if patient is not None:
+            patients.append(patient)
 
     # create cohort from patients
     return Cohort.from_patients(patients, include_patients_with_no_HPO)
