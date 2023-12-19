@@ -24,9 +24,23 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
 
 class TranscriptCoordinateService(metaclass=abc.ABCMeta):
+    """
+    `TranscriptCoordinateService` gets transcript (tx) coordinates for a given transcript ID.
+    """
 
     @abc.abstractmethod
-    def fetch(self, tx: TranscriptInfoAware) -> TranscriptCoordinates:
+    def fetch(self, tx: typing.Union[str, TranscriptInfoAware]) -> TranscriptCoordinates:
+        """
+        Get tx coordinates for a tx ID or an entity that knows about the tx ID.
+
+        The method will raise an exception in case of an issue.
+
+        Args:
+            tx: a `str` with tx ID (e.g. `NM_002834.5`) or an entity that knows about the transcript ID
+            (e.g. :class:`genophenocorr.model.TranscriptAnnotation`).
+
+        Returns: the transcript coordinates.
+        """
         pass
 
 
