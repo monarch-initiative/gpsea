@@ -150,7 +150,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
-            if not any(ve in var_effects for ve in VepFunctionalAnnotator.NONCODING_EFFECTS):
+            if not any(ve in VepFunctionalAnnotator.NONCODING_EFFECTS for ve in var_effects):
                 self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
             protein_effect = None
         else:
