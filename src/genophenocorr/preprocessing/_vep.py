@@ -55,6 +55,26 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         RefSeq `XM_`.
     """
 
+    NONCODING_EFFECTS = {
+        VariantEffect.UPSTREAM_GENE_VARIANT,
+        VariantEffect.FIVE_PRIME_UTR_VARIANT,
+
+        VariantEffect.NON_CODING_TRANSCRIPT_VARIANT,
+        VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT,
+        VariantEffect.SPLICE_ACCEPTOR_VARIANT,
+        VariantEffect.SPLICE_DONOR_VARIANT,
+        VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT,
+        VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT,
+        VariantEffect.INTRON_VARIANT,
+
+        VariantEffect.THREE_PRIME_UTR_VARIANT,
+        VariantEffect.DOWNSTREAM_GENE_VARIANT,
+        VariantEffect.INTERGENIC_VARIANT
+    }
+    """
+    Non-coding variant effects where we do not complain if the functional annotation lacks the protein effects.
+    """
+
     def __init__(self, protein_annotator: ProteinMetadataService,
                  include_computational_txs: bool = False):
         self._logger = logging.getLogger(__name__)
@@ -64,7 +84,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
-        self._slice_effects = [VariantEffect.SPLICE_ACCEPTOR_VARIANT, VariantEffect.SPLICE_DONOR_VARIANT, VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT, VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT]
 
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
@@ -131,7 +150,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
-            if not any(ve in var_effects for ve in self._slice_effects):
+            if not any(ve in var_effects for ve in VepFunctionalAnnotator.NONCODING_EFFECTS):
                 self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
             protein_effect = None
         else:
