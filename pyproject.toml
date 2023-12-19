@@ -54,5 +54,8 @@ repository = "https://github.com/monarch-initiative/genophenocorr.git"
 documentation = "https://monarch-initiative.github.io/genophenocorr/stable"
 bugtracker = "https://github.com/monarch-initiative/genophenocorr/issues"
 
+[tool.setuptools]
+package-dir = { "" = "src" }
+
 [tool.setuptools.dynamic]
 version = { attr = "genophenocorr.__version__" }
