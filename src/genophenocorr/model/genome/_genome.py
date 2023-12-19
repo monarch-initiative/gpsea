@@ -261,6 +261,24 @@ class Region(typing.Sized):
         other = Region._check_is_region(other)
         return _a_contains_b(self.start, self.end, other.start, other.end)
 
+    def contains_pos(self, pos: int) -> bool:
+        """
+        Test if this `Region` contains the base or protein located at the `pos`. Note, `pos` is represented by
+        a 1-based coordinate system.
+
+        No bound checking is done here and `False` is returned for a position that is e.g. out of bounds of a contig,
+        or for a negative `pos`. For :class:`Stranded` entities, the position is assumed to be located on
+        strand of the :class:`GenomicRegion`.
+
+        An empty region contains no positions.
+
+        Args:
+            pos: an `int` with 1-based position to check.
+
+        Returns: `True` if the `Region` contains the base/aminoacid located at `pos`.
+        """
+        return self._start < pos <= self._end
+
     def distance_to(self, other) -> int:
         """
         Calculate the number of bases present between this and the `other` region.
@@ -353,6 +371,21 @@ class Strand(enum.Enum):
         return self._symbol
 
 
+def transpose_coordinate(contig: Contig, coordinate: int) -> int:
+    """
+    Transpose a 0-based coordinate to other strand of the contig.
+    Args:
+        contig: contig to transpose the coordinate on.
+        coordinate: the coordinate to transpose.
+
+    Returns: an `int` with transposed coordinate.
+    Raises: ValueError if the `coordinate` is out of contig bounds.
+    """
+    if not 0 <= coordinate <= len(contig):
+        raise ValueError(f'Coordinate {coordinate:,} is out of bounds [0,{len(contig):,}] for contig {contig.name}')
+    return len(contig) - coordinate
+
+
 class Stranded(metaclass=abc.ABCMeta):
     """
     Mixin for classes that are on double-stranded sequences.
@@ -409,13 +442,13 @@ class GenomicRegion(Transposable, Region):
         if self.strand == other:
             return self.start
         else:
-            return len(self.contig) - self.end
+            return transpose_coordinate(self._contig, self._end)
 
     def end_on_strand(self, other: Strand) -> int:
         if self.strand == other:
             return self.end
         else:
-            return len(self.contig) - self.start
+            return transpose_coordinate(self._contig, self._start)
 
     @property
     def strand(self) -> Strand:

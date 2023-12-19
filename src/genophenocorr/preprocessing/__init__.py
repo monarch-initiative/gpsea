@@ -7,8 +7,10 @@ from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
 from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
 from ._vep import VepFunctionalAnnotator
+from ._vv import VVHgvsVariantCoordinateFinder, VVTranscriptCoordinateService
 
 __all__ = [
+    'configure_caching_patient_creator', 'configure_patient_creator',
     'VariantCoordinateFinder', 'FunctionalAnnotator', 'ProteinMetadataService',
     'PatientCreator',
     'PhenopacketVariantCoordinateFinder', 'PhenopacketPatientCreator', 'load_phenopacket_folder', 'load_phenopacket',
@@ -16,5 +18,5 @@ __all__ = [
     'ProteinAnnotationCache', 'ProtCachingFunctionalAnnotator',
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
-    'configure_caching_patient_creator', 'configure_patient_creator'
+    'VVHgvsVariantCoordinateFinder', 'VVTranscriptCoordinateService'
 ]
