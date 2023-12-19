@@ -25,18 +25,10 @@ class VariantTranscriptVisualizer:
     and its protein product.
     """
 
-    def __init__(self, transcript:str) -> None:
-        self._transcript_of_reference = transcript
-
-
-
-
+    # noinspection PyMethodMayBeStatic
     def draw_variants(self, variants: typing.Iterable[Variant],
                     tx: TranscriptCoordinates,
                     protein: ProteinMetadata):
-        self._variants = variants
-        self._transcript_coordinates = tx
-        self._protein = protein
         title = f"{protein.protein_id} ({protein.label})"
         fig, ax = plt.subplots(1, figsize=(10, 10))
         protein_domains = set()
@@ -53,12 +45,12 @@ class VariantTranscriptVisualizer:
         rect = Rectangle((50, 30), prot_width, 40, edgecolor='black', facecolor='white', alpha=0.5)
         ax.add_patch(rect)
         for variant in variants:
-            tx_annot_list = [txa for txa in variant.tx_annotations if txa.transcript_id == self._transcript_of_reference ]
+            tx_annot_list = [txa for txa in variant.tx_annotations if txa.transcript_id == tx.identifier]
             if len(tx_annot_list) == 0:
-                raise ValueError(f"Could not find variant transcript annotations for {self._transcript_of_reference}")
+                raise ValueError(f"Could not find variant transcript annotations for {tx.identifier}")
             if len(tx_annot_list) > 1:
                 # Should never happen
-                raise ValueError(f"Found mutiple variant transcript annotations for {self._transcript_of_reference}")
+                raise ValueError(f"Found mutiple variant transcript annotations for {tx.identifier}")
             tx_annot = tx_annot_list[0]
             hgvs = tx_annot.hgvsc_id.split(":")
             if len(hgvs) > 1:
