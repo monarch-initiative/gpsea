@@ -248,7 +248,7 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.DOWNSTREAM_GENE_VARIANT">DOWNSTREAM_GENE_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptProteinArtist.draw_variants">draw_variants() (genophenocorr.view.VariantTranscriptProteinArtist method)</a>
+      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptVisualizer.draw_variants">draw_variants() (genophenocorr.view.VariantTranscriptVisualizer method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -292,10 +292,14 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType">FeatureType (class in genophenocorr.model)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVTranscriptCoordinateService.fetch">fetch() (genophenocorr.preprocessing.VVTranscriptCoordinateService method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">find_coordinates() (genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder method)</a>
 
       <ul>
         <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VariantCoordinateFinder.find_coordinates">(genophenocorr.preprocessing.VariantCoordinateFinder method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVHgvsVariantCoordinateFinder.find_coordinates">(genophenocorr.preprocessing.VVHgvsVariantCoordinateFinder method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -421,14 +425,14 @@
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Variant.genotypes">(genophenocorr.model.Variant property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinAnnotationCache.get_annotations">get_annotations() (genophenocorr.preprocessing.ProteinAnnotationCache method)</a>
 
       <ul>
         <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VariantAnnotationCache.get_annotations">(genophenocorr.preprocessing.VariantAnnotationCache method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate.get_categories">get_categories() (genophenocorr.analysis.predicate.BooleanPredicate static method)</a>
 
       <ul>
@@ -443,11 +447,19 @@
         <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.get_categories">(genophenocorr.analysis.predicate.PolyPredicate static method)</a>
 </li>
       </ul></li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_cds_regions">get_cds_regions() (genophenocorr.model.TranscriptCoordinates method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_coding_base_count">get_coding_base_count() (genophenocorr.model.TranscriptCoordinates method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_codon_count">get_codon_count() (genophenocorr.model.TranscriptCoordinates method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_excluded_count">get_excluded_count() (genophenocorr.model.Cohort method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_excluded_ids">get_excluded_ids() (genophenocorr.model.Cohort method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.get_features_variant_overlaps">get_features_variant_overlaps() (genophenocorr.model.ProteinMetadata method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_five_prime_utrs">get_five_prime_utrs() (genophenocorr.model.TranscriptCoordinates method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_predicate">get_predicate() (genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory method)</a>
 
@@ -485,6 +497,8 @@
         <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.get_question">(genophenocorr.analysis.predicate.PolyPredicate method)</a>
 </li>
       </ul></li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_three_prime_utrs">get_three_prime_utrs() (genophenocorr.model.TranscriptCoordinates method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.data.html#genophenocorr.data.get_toy_cohort">get_toy_cohort() (in module genophenocorr.data)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate">GroupingPredicate (class in genophenocorr.analysis.predicate)</a>
@@ -542,6 +556,8 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.INTERGENIC_VARIANT">INTERGENIC_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.INTRON_VARIANT">INTRON_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.is_coding">is_coding() (genophenocorr.model.TranscriptCoordinates method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Phenotype.is_excluded">is_excluded (genophenocorr.model.Phenotype property)</a>
 </li>
@@ -690,6 +706,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVTranscriptCoordinateService.parse_response">parse_response() (genophenocorr.preprocessing.VVTranscriptCoordinateService method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient">Patient (class in genophenocorr.model)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.patient_id">patient_id (genophenocorr.model.Patient attribute)</a>
@@ -734,10 +752,10 @@
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate">PropagatingPhenotypePredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProtCachingFunctionalAnnotator">ProtCachingFunctionalAnnotator (class in genophenocorr.preprocessing)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProtCachingFunctionalAnnotator">ProtCachingFunctionalAnnotator (class in genophenocorr.preprocessing)</a>
+</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.protein_affected">protein_affected (genophenocorr.model.TranscriptAnnotation property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.PROTEIN_ALTERING_VARIANT">PROTEIN_ALTERING_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
@@ -996,10 +1014,10 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VariantCoordinateFinder">VariantCoordinateFinder (class in genophenocorr.preprocessing)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates">VariantCoordinates (class in genophenocorr.model)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect">VariantEffect (class in genophenocorr.model)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate">VariantEffectPredicate (class in genophenocorr.analysis.predicate.genotype)</a>
@@ -1018,9 +1036,13 @@
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate">VariantsPredicate (class in genophenocorr.analysis.predicate.genotype)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptProteinArtist">VariantTranscriptProteinArtist (class in genophenocorr.view)</a>
+      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.VariantTranscriptVisualizer">VariantTranscriptVisualizer (class in genophenocorr.view)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator">VepFunctionalAnnotator (class in genophenocorr.preprocessing)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVHgvsVariantCoordinateFinder">VVHgvsVariantCoordinateFinder (class in genophenocorr.preprocessing)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVTranscriptCoordinateService">VVTranscriptCoordinateService (class in genophenocorr.preprocessing)</a>
 </li>
   </ul></td>
 </tr></table>
