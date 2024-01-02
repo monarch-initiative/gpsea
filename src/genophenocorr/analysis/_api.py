@@ -144,7 +144,7 @@ class GenotypePhenotypeAnalysisResult:
         # Last, sort by corrected p value or just p value
         df = df.set_index(labeled_idx)
         if self._corrected_pvals is not None:
-            return df.sort_values(by=('', self._corrected_pvals.name))
+            return df.sort_values(by=[('', self._corrected_pvals.name), ('', self._pvals.name)])
         else:
             return df.sort_values(by=('', self._pvals.name))
 
