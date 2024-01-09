@@ -54,6 +54,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_annotator (ProteinMetadataService): a service for getting protein data
         include_computational_txs (bool): Include computational transcripts, such as
         RefSeq `XM_`.
+        timeout (int): Timeout in seconds
     """
 
     NONCODING_EFFECTS = {
@@ -77,7 +78,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     """
 
     def __init__(self, protein_annotator: ProteinMetadataService,
-                 include_computational_txs: bool = False):
+                 include_computational_txs: bool = False,
+                 timeout: int = 10):
         self._logger = logging.getLogger(__name__)
         self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
@@ -85,6 +87,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
+        self._timeout = timeout
 
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
