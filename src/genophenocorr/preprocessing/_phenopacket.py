@@ -280,13 +280,9 @@ def load_phenopacket_folder(pp_directory: str,
     # turn phenopackets into patients using patient creator
     patients = []
     for pp in tqdm(pps, desc='Patients Created'):
-        patient = patient_creator.create_patient(pp)
-        if len(patient.phenotypes) == 0:
-            patient_creator._logger.warning('Patient %s has no phenotypes listed and will not be included in this analysis.', patient.patient_id)
-        if len(patient.variants) == 0:
-            patient_creator._logger.warning('Patient %s has no variants listed and will not be included in this analysis.', patient.patient_id)
-        if patient is not None:
-            patients.append(patient)
+        output = patient_creator.process(pp)
+        # TODO: handle potential sanity issues and decide about the sample's fate.
+        patients.append(output.outcome)
 
     # create cohort from patients
     return Cohort.from_patients(patients, include_patients_with_no_HPO)
