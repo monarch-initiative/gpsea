@@ -50,6 +50,9 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         vc = None
         if self._vcf_is_available(variant_descriptor.vcf_record):
             # We have a VCF record.
+            if not self._check_assembly(variant_descriptor.vcf_record.genome_assembly):
+                raise ValueError(f"Variant id {variant_descriptor.id} for patient {item.subject_or_biosample_id} has a different Genome Assembly than what was given. " \
+                                 + f"{variant_descriptor.vcf_record.genome_assembly} is not {self._build.identifier}.")
             contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom)
             start = int(variant_descriptor.vcf_record.pos) - 1
             ref = variant_descriptor.vcf_record.ref
@@ -92,6 +95,15 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         gt = self._map_geno_genotype_label(genotype)
 
         return vc, gt
+
+    def _check_assembly(self, genome_assembly:str) -> bool:
+        if '38' in genome_assembly and self._build.identifier == 'GRCh38.p13':
+            return True
+        elif ('37' in genome_assembly or '19' in genome_assembly) and self._build.identifier == 'GRCh37.p13':
+            return True
+        else:
+            return False
+
 
     @staticmethod
     def _vcf_is_available(vcf_record) -> bool:
@@ -152,13 +164,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """
         sample_id = self._extract_id(item)
         phenotypes = self._add_phenotypes(item)
-        if len(phenotypes) == 0:
-            self._logger.warning('Patient %s has no phenotypes listed and will not be included in this analysis.', sample_id)
-            return None
         variants = self._add_variants(sample_id, item)
-        if len(variants) == 0:
-            self._logger.warning('Patient %s has no variants listed and will not be included in this analysis.', sample_id)
-            return None
         protein_data = self._add_protein_data(variants)
         return Patient(item.id, phenotypes, variants, protein_data)
 
@@ -216,7 +222,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         if len(hpo_id_list) == 0:
             self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
             return []
-        return self._phenotype_creator.create_phenotype(hpo_id_list)
+        phenotypes, ignored_phenotypes = self._phenotype_creator.create_phenotype(hpo_id_list)
+        if len(ignored_phenotypes) != 0:
+            self._logger.warning("Patient %s had %i unknown phenotypes: %s", pp.id, len(ignored_phenotypes), ', '.join(ignored_phenotypes))
+        return phenotypes
 
     def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
         """Creates a list of ProteinMetadata objects from a given list of Variant objects
@@ -236,6 +245,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
 def load_phenopacket_folder(pp_directory: str,
                             patient_creator: PhenopacketPatientCreator,
+                            #policy:str = "strict/lenient/etc",
                             include_patients_with_no_HPO: bool = False) -> Cohort:
     """
     Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
@@ -245,6 +255,7 @@ def load_phenopacket_folder(pp_directory: str,
     :param patient_creator: patient creator for turning a phenopacket into a :class:`genophenocorr.Patient`
     :return: a cohort made of the phenopackets
     """
+    ## NOTE: Strict would stop code at error vs lenient would just print error but continue. 
     if not os.path.isdir(pp_directory):
         raise ValueError("Could not find directory of Phenopackets.")
     hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator, 'patient_creator')
@@ -258,6 +269,10 @@ def load_phenopacket_folder(pp_directory: str,
     patients = []
     for pp in tqdm(pps, desc='Patients Created'):
         patient = patient_creator.create_patient(pp)
+        if len(patient.phenotypes) == 0:
+            patient_creator._logger.warning('Patient %s has no phenotypes listed and will not be included in this analysis.', patient.patient_id)
+        if len(patient.variants) == 0:
+            patient_creator._logger.warning('Patient %s has no variants listed and will not be included in this analysis.', patient.patient_id)
         if patient is not None:
             patients.append(patient)
 
@@ -283,3 +298,4 @@ def load_phenopacket(phenopacket_path: str) -> Phenopacket:
     """
     with open(phenopacket_path) as f:
         return Parse(f.read(), Phenopacket())
+
