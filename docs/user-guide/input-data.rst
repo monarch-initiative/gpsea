@@ -77,8 +77,8 @@ Here we walk the file system, load all phenopacket JSON files, and transform the
   ...       pp_path = os.path.join(dirpath, filename)
   ...       with open(pp_path) as fh:
   ...         pp = Parse(fh.read(), Phenopacket())
-  ...       patient = patient_creator.create_patient(pp)
-  ...       patients.append(patient)
+  ...       output = patient_creator.process(pp)
+  ...       patients.append(output.outcome)
 
 
   >>> f'Loaded {len(patients)} phenopackets'
