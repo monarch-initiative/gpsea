@@ -154,11 +154,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 
-    def create_patient(self, item: Phenopacket) -> Patient:
+    def process(self, inputs: Phenopacket) -> AuditReport[Patient]:
         """Creates a Patient from the data in a given Phenopacket
 
         Args:
-            item (Phenopacket): A Phenopacket object
+            inputs (Phenopacket): A Phenopacket object
         Returns:
             Patient: A Patient object
         """
@@ -168,16 +168,17 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         # we report issues in any case
         phenotypes = self._add_phenotypes(inputs)
 
-    @staticmethod
-    def _extract_id(pp: Phenopacket):
-        subject = pp.subject
-        if len(subject.id) > 0:
-            return subject.id
-        else:
-            return pp.id
+        # Validate
+        #  - there is >=1 variant in the subject
+        #    - mitigate: skip, warning
+        variants = self._add_variants(sample_id, inputs)
 
+        # TODO: clean up when the protein metadata are removed from the patient.
+        issues = []
 
-    def _add_variants(self, sample_id: str, pp: Phenopacket) -> typing.Sequence[Variant]:
+        patient = Patient(sample_id, phenotypes=phenotypes.outcome, variants=variants.outcome, proteins=())
+        return AuditReport(patient, issues)
+
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
@@ -186,30 +187,45 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         Returns:
             Sequence[Variant]: A list of Variant objects
         """
-        variants_list = []
+        # Variant validation:
+        #
+        #  - for each variant:
+        #    - genomic interpretation must be a VCF record or a VRS CNV or an HGVS expression
+        #      - mitigate: skip, warning
+        #    - Lauren check the `vc.alt == 'N'` if it ever happens. I think we should not care if we do not have this
+        #      in our phenopackets. Maybe a regex check.
+        #    - there is at least 1 tx annotation. This can happen, since the `FunctionalAnnotator` is allowed to return
+        #      an empty sequence. This has pros and cons, but I judge that it is better to give the annotator some wiggle
+        #      room than to be really really really strict.
+        #      - mitigate: ADD the variant but emit a warning. We can still use the variant in the `VariantPredicate`
+        variants = []
+        issues = []
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
                 vc, gt = self._coord_finder.find_coordinates(genomic_interp)
-                if vc == None:
+                if vc is None:
                     self._logger.warning('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
-                             'but did not find one in patient %s', pp.id)
+                                         'but did not find one in patient %s', sample_id)
                     continue
+
                 if "N" in vc.alt:
-                    self._logger.warning('Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id, vc.variant_key)
+                    self._logger.warning(
+                        'Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id,
+                        vc.variant_key)
                     continue
+
                 tx_annotations = self._func_ann.annotate(vc)
-                if tx_annotations is None:
-                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.", pp.id, vc.variant_key)
+                if len(tx_annotations) == 0:
+                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.",
+                                         pp.id, vc.variant_key)
                     continue
+
                 genotype = Genotypes.single(sample_id, gt)
-                variant = Variant(vc, tx_annotations, genotype)
-                variants_list.append(variant)
+                variants.append(Variant(vc, tx_annotations, genotype))
 
-        if len(variants_list) == 0:
-            self._logger.warning('Expected at least one variant per patient, but received none for patient %s', pp.id)
-        return variants_list
+        return AuditReport(variants, issues)
 
-    def _add_phenotypes(self, pp: Phenopacket) -> typing.Sequence[Phenotype]:
+    def _add_phenotypes(self, pp: Phenopacket) -> AuditReport[typing.Sequence[Phenotype]]:
         """Creates a list of Phenotype objects from the data in a given Phenopacket
 
         Args:
@@ -220,13 +236,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         hpo_id_list = []
         for hpo_id in pp.phenotypic_features:
             hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
-        if len(hpo_id_list) == 0:
-            self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
-            return []
-        phenotypes, ignored_phenotypes = self._phenotype_creator.create_phenotype(hpo_id_list)
-        if len(ignored_phenotypes) != 0:
-            self._logger.warning("Patient %s had %i unknown phenotypes: %s", pp.id, len(ignored_phenotypes), ', '.join(ignored_phenotypes))
-        return phenotypes
+
+        return self._phenotype_creator.process(hpo_id_list)
 
     def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
         """Creates a list of ProteinMetadata objects from a given list of Variant objects
@@ -246,7 +257,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
 def load_phenopacket_folder(pp_directory: str,
                             patient_creator: PhenopacketPatientCreator,
-                            #policy:str = "strict/lenient/etc",
+                            # policy:str = "strict/lenient/etc",
                             include_patients_with_no_HPO: bool = False) -> Cohort:
     """
     Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
@@ -256,7 +267,7 @@ def load_phenopacket_folder(pp_directory: str,
     :param patient_creator: patient creator for turning a phenopacket into a :class:`genophenocorr.Patient`
     :return: a cohort made of the phenopackets
     """
-    ## NOTE: Strict would stop code at error vs lenient would just print error but continue. 
+    ## NOTE: Strict would stop code at error vs lenient would just print error but continue.
     if not os.path.isdir(pp_directory):
         raise ValueError("Could not find directory of Phenopackets.")
     hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator, 'patient_creator')

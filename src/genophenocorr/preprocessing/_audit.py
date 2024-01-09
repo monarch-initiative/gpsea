@@ -86,5 +86,5 @@ class Auditor(typing.Generic[IN, OUT], metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def sanitize(self, inputs: IN) -> AuditReport[OUT]:
+    def process(self, inputs: IN) -> AuditReport[OUT]:
         pass
