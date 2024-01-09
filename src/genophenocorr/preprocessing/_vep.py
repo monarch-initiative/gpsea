@@ -8,7 +8,8 @@ from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, Varian
 from genophenocorr.model.genome import Region
 from ._api import FunctionalAnnotator, ProteinMetadataService
 
-def verify_start_end_coordinates(vc: VariantCoordinates):
+
+def format_coordinates_for_vep_query(vc: VariantCoordinates) -> str:
     """
     Converts the 0-based VariantCoordinates to ones that will be interpreted
     correctly by VEP
@@ -94,12 +95,14 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         Returns:
             typing.Sequence[TranscriptAnnotation]: A sequence of transcript
             annotations for the variant coordinates
+        Raises:
+            ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.
         """
         response = self._query_vep(variant_coordinates)
         annotations = []
         if 'transcript_consequences' not in response:
-            self._logger.error('The VEP response lacked the required `transcript_consequences` field. %s', response)
-            return None
+            self._logger.warning('The VEP response for `%s` lacked the required `transcript_consequences` field. %s', variant_coordinates, response)
+            return ()
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
@@ -170,17 +173,16 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     protein_effect)
 
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
-        api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
-        r = requests.get(api_url, headers={'Content-Type': 'application/json'})
+        api_url = self._url % (format_coordinates_for_vep_query(variant_coordinates))
+        r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
         if not r.ok:
             self._logger.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
             self._logger.error(r.text)
-            return None
+            raise ValueError('Expected a result but got an Error. See log for details.')
         results = r.json()
         if not isinstance(results, list):
             self._logger.error(results.get('error'))
-            raise ConnectionError(
-                f"Expected a result but got an Error. See log for details.")
+            raise ValueError("Expected a result but got an Error. See log for details.")
         if len(results) > 1:
             self._logger.error("Expected only one variant per request but received %s different variants.", len(results))
             self._logger.error([result.id for result in results])
