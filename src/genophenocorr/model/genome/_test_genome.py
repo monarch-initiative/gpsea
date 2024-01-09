@@ -171,6 +171,28 @@ class TestContains:
 
         assert not a.contains(b)
 
+    @pytest.mark.parametrize("a_start, a_end, pos, expected",
+                             [
+                                 (2, 3, 0, False),
+                                 (2, 3, 1, False),
+                                 (2, 3, 2, False),
+                                 (2, 3, 3, True),
+                                 (2, 3, 4, False),
+                                 (2, 3, 5, False),
+
+                                 # Empty region contains no position
+                                 (3, 3, 2, False),
+                                 (3, 3, 3, False),
+                                 (3, 3, 4, False),
+
+                                 # Negative coordinate does not raise
+                                 (2, 3, -1, False),
+                             ])
+    def test_contains_pos(self, a_start, a_end, pos, expected):
+        region = Region(a_start, a_end)
+
+        assert region.contains_pos(pos) == expected
+
 
 class TestDistanceTo:
 
