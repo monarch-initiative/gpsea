@@ -96,7 +96,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
 
         return vc, gt
 
-    def _check_assembly(self, genome_assembly:str) -> bool:
+    def _check_assembly(self, genome_assembly: str) -> bool:
         if '38' in genome_assembly and self._build.identifier == 'GRCh38.p13':
             return True
         elif ('37' in genome_assembly or '19' in genome_assembly) and self._build.identifier == 'GRCh37.p13':
