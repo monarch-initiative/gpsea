@@ -9,14 +9,13 @@ from google.protobuf.json_format import Parse
 from phenopackets import GenomicInterpretation, Phenopacket
 from tqdm import tqdm
 
+from genophenocorr.model import Patient, Cohort, SampleLabels
 from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
-from genophenocorr.model import Patient, Cohort
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
-
+from ._api import VariantCoordinateFinder, FunctionalAnnotator
+from ._audit import AuditReport
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
-from ._api import VariantCoordinateFinder, FunctionalAnnotator
-
 
 
 class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
@@ -27,6 +26,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
     :param build: genome build to use in `VariantCoordinates
     :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions
     """
+
     def __init__(self, build: GenomeBuild,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
@@ -162,11 +162,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         Returns:
             Patient: A Patient object
         """
-        sample_id = self._extract_id(item)
-        phenotypes = self._add_phenotypes(item)
-        variants = self._add_variants(sample_id, item)
-        protein_data = self._add_protein_data(variants)
-        return Patient(item.id, phenotypes, variants, protein_data)
+        sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
+
+        # Validation - relay the errors found by `PhenotypeCreator`
+        # we report issues in any case
+        phenotypes = self._add_phenotypes(inputs)
 
     @staticmethod
     def _extract_id(pp: Phenopacket):
@@ -178,6 +178,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
 
     def _add_variants(self, sample_id: str, pp: Phenopacket) -> typing.Sequence[Variant]:
+    def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
         Args:

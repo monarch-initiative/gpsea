@@ -1,6 +1,7 @@
 import typing
 from collections import Counter
 
+from ._base import SampleLabels
 from ._phenotype import Phenotype
 from ._protein import ProteinMetadata
 from ._variant import Variant
@@ -10,25 +11,25 @@ class Patient:
     """A class that represents an individual patient
 
     Attributes:
-        patient_id (string): A string unique to this Patient object
+        patient_id (SampleLabels): The patient identifiers
         phenotypes (Sequence[Phenotype]): A list of Phenotype objects
         variants (Sequence[Variant]): A list of Variant objects
         proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
     """
 
-    def __init__(self, patient_id: str,
+    def __init__(self, labels: SampleLabels,
                  phenotypes: typing.Iterable[Phenotype],
                  variants: typing.Iterable[Variant],
                  proteins: typing.Iterable[ProteinMetadata]):
         """Constructs all necessary attributes for a Patient object
 
         Args:
-            patient_id (string): A string unique to this Patient object
+            labels (string): A string unique to this Patient object
             phenotypes (Iterable[Phenotype]): A list of Phenotype objects
             variants (Iterable[Variant]): A list of Variant objects
             proteins (Iterable[ProteinMetadata]): A list of ProteinMetadata objects
         """
-        self._id = patient_id
+        self._labels = labels
         self._phenotypes = tuple(phenotypes)
         self._variants = tuple(variants)
         self._proteins = tuple(proteins)
@@ -39,7 +40,14 @@ class Patient:
         Returns:
             string: Patient ID unique to this Patient object
         """
-        return self._id
+        return self._labels.label_summary()
+
+    @property
+    def labels(self) -> SampleLabels:
+        """
+        Get the sample identifiers.
+        """
+        return self._labels
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
@@ -79,7 +87,7 @@ class Patient:
 
     def __str__(self) -> str:
         return (f"Patient("
-                f"patient_id:{self.patient_id}, "
+                f"labels:{self._labels}, "
                 f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
                 f"proteins:{[prot.protein_id for prot in self.proteins]})")
