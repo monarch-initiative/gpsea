@@ -8,6 +8,11 @@ from ._audit import Auditor
 
 
 T = typing.TypeVar('T')
+"""
+The input for `PatientCreator`.
+
+It can be any object that contains the patient data (e.g. a phenopacket).
+"""
 
 
 class PatientCreator(typing.Generic[T], Auditor[T, Patient], metaclass=abc.ABCMeta):
