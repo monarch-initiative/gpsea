@@ -9,16 +9,6 @@ from genophenocorr.model import Phenotype
 from ._audit import Auditor, AuditReport, DataSanityIssue, Level
 
 
-class PhenotypeValidationException(BaseException):
-
-    def __init__(self, issues):
-        self._issues = issues
-
-    @property
-    def issues(self):
-        return self._issues
-
-
 class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.Sequence[Phenotype]]):
     """
     `PhenotypeCreator` validates the input phenotype features and prepares them for the downstream analysis.

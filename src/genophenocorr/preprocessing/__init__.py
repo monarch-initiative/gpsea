@@ -3,7 +3,7 @@ from ._audit import Auditor, AuditReport, DataSanityIssue, Level
 from ._config import configure_caching_patient_creator, configure_patient_creator
 from ._patient import PatientCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator, load_phenopacket_folder, load_phenopacket
-from ._phenotype import PhenotypeCreator, PhenotypeValidationException
+from ._phenotype import PhenotypeCreator
 from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
 from ._uniprot import UniprotProteinMetadataService
 from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
@@ -15,7 +15,7 @@ __all__ = [
     'VariantCoordinateFinder', 'FunctionalAnnotator', 'ProteinMetadataService',
     'PatientCreator',
     'PhenopacketVariantCoordinateFinder', 'PhenopacketPatientCreator', 'load_phenopacket_folder', 'load_phenopacket',
-    'PhenotypeCreator', 'PhenotypeValidationException',
+    'PhenotypeCreator',
     'ProteinAnnotationCache', 'ProtCachingFunctionalAnnotator',
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
