@@ -1,5 +1,3 @@
-import os
-
 import hpotk
 import pytest
 
@@ -123,8 +121,3 @@ def get_test_phenotypes():
 
     return phenotypes
 
-
-@pytest.fixture
-def toy_hpo() -> hpotk.Ontology:
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'testingDefaults', 'hp.toy.json')
-    return hpotk.ontology.load.obographs.load_ontology(path)
