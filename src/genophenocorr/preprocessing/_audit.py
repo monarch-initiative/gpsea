@@ -20,6 +20,9 @@ class Level(enum.Enum):
     may be malarkey 😱.
     """
 
+    def __str__(self):
+        return self.name
+
 
 class DataSanityIssue:
     """
@@ -45,6 +48,12 @@ class DataSanityIssue:
     @property
     def solution(self) -> str:
         return self._solution
+
+    def __str__(self):
+        return f'DataSanityIssue(level={self._level}, message={self._message}, solution={self._solution})'
+
+    def __repr__(self):
+        return str(self)
 
 
 IN = typing.TypeVar('IN')
@@ -75,6 +84,12 @@ class AuditReport(typing.Generic[OUT]):
     @property
     def issues(self) -> typing.Sequence[DataSanityIssue]:
         return self._issues
+
+    def __str__(self):
+        return f'AuditReport(issues={self._issues}, outcome={self._outcome})'
+
+    def __repr__(self):
+        return str(self)
 
 
 class Auditor(typing.Generic[IN, OUT], metaclass=abc.ABCMeta):

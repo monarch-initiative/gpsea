@@ -1,4 +1,5 @@
 from ._api import VariantCoordinateFinder, FunctionalAnnotator, ProteinMetadataService
+from ._audit import Auditor, AuditReport, DataSanityIssue, Level
 from ._config import configure_caching_patient_creator, configure_patient_creator
 from ._patient import PatientCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator, load_phenopacket_folder, load_phenopacket
@@ -18,5 +19,6 @@ __all__ = [
     'ProteinAnnotationCache', 'ProtCachingFunctionalAnnotator',
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
-    'VVHgvsVariantCoordinateFinder', 'VVTranscriptCoordinateService'
+    'VVHgvsVariantCoordinateFinder', 'VVTranscriptCoordinateService',
+    'Auditor', 'AuditReport', 'DataSanityIssue', 'Level',
 ]
