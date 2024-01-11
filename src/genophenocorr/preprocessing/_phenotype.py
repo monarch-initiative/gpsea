@@ -71,13 +71,22 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
                 )
                 continue
 
+            if term.identifier != term_id:
+                # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
+                # since `term.identifier` always returns the primary term ID.
+                issues.append(
+                    DataSanityIssue(Level.WARN,
+                                    f'{term_id} is an obsolete identifier for {term.name}',
+                                    f'Replace {term_id} with the primary term ID {term.identifier}')
+                )
+
             phenotypes.append(Phenotype.from_term(term, is_observed))
 
         vr = self._validator.validate_all(phenotypes)
         for result in vr.results:
             level = self._translate_level(result.level)
             if level is None:
-                # A bug we should be notified about if it happens.
+                # Should not happen. Please let the developers know about this issue!
                 raise ValueError(f'Unknown result validation level {result.level}')
 
             issues.append(
