@@ -10,7 +10,7 @@ from phenopackets import GenomicInterpretation, Phenopacket
 from tqdm import tqdm
 
 from genophenocorr.model import Patient, Cohort, SampleLabels
-from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
+from genophenocorr.model import ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
 from ._audit import AuditReport
@@ -164,19 +164,25 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """
         sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
 
-        # Validation - relay the errors found by `PhenotypeCreator`
-        # we report issues in any case
-        phenotypes = self._add_phenotypes(inputs)
+        issues = []
 
+        # Check phenotype
+        pheno_audit_report = self._phenotype_creator.process(
+            (pf.type.id, not pf.excluded)
+            for pf in inputs.phenotypic_features
+        )
+        issues.extend(pheno_audit_report.issues)
+
+        # Check variants
         # Validate
         #  - there is >=1 variant in the subject
         #    - mitigate: skip, warning
         variants = self._add_variants(sample_id, inputs)
+        # TODO - check we have >=1 variants
+        issues.extend(variants.issues)
 
-        # TODO: clean up when the protein metadata are removed from the patient.
-        issues = []
+        patient = Patient(sample_id, phenotypes=pheno_audit_report.outcome, variants=variants.outcome, proteins=())
 
-        patient = Patient(sample_id, phenotypes=phenotypes.outcome, variants=variants.outcome, proteins=())
         return AuditReport(patient, issues)
 
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
@@ -224,35 +230,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 variants.append(Variant(vc, tx_annotations, genotype))
 
         return AuditReport(variants, issues)
-
-    def _add_phenotypes(self, pp: Phenopacket) -> AuditReport[typing.Sequence[Phenotype]]:
-        """Creates a list of Phenotype objects from the data in a given Phenopacket
-
-        Args:
-            pp (Phenopacket): A Phenopacket object
-        Returns:
-            Sequence[Phenotype]: A list of Phenotype objects
-        """
-        hpo_id_list = []
-        for hpo_id in pp.phenotypic_features:
-            hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
-
-        return self._phenotype_creator.process(hpo_id_list)
-
-    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
-        """Creates a list of ProteinMetadata objects from a given list of Variant objects
-
-        Args:
-            variants (Sequence[Variant]): A list of Variant objects
-        Returns:
-            Collection[ProteinMetadata]: A list of ProteinMetadata objects
-        """
-        final_prots = set()
-        for var in variants:
-            for trans in var.tx_annotations:
-                for prot in trans.protein_affected:
-                    final_prots.add(prot)
-        return final_prots
 
 
 def load_phenopacket_folder(pp_directory: str,

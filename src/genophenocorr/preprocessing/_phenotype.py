@@ -82,18 +82,27 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
 
             phenotypes.append(Phenotype.from_term(term, is_observed))
 
-        vr = self._validator.validate_all(phenotypes)
-        for result in vr.results:
-            level = self._translate_level(result.level)
-            if level is None:
-                # Should not happen. Please let the developers know about this issue!
-                raise ValueError(f'Unknown result validation level {result.level}')
-
+        # Check we have some phenotype terms to work with.
+        if len(phenotypes) == 0:
             issues.append(
-                DataSanityIssue(level,
-                                result.message,
-                                solution='Correct the input data')
+                DataSanityIssue(
+                    Level.WARN,
+                    f'No phenotype terms were left after the validation',
+                    'Revise the phenotype terms and try again')
             )
+        else:
+            vr = self._validator.validate_all(phenotypes)
+            for result in vr.results:
+                level = self._translate_level(result.level)
+                if level is None:
+                    # Should not happen. Please let the developers know about this issue!
+                    raise ValueError(f'Unknown result validation level {result.level}')
+
+                issues.append(
+                    DataSanityIssue(level,
+                                    result.message,
+                                    solution='Correct the input data')
+                )
 
         return AuditReport(phenotypes, issues)
 
