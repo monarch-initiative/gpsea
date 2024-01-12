@@ -10,7 +10,7 @@ from phenopackets import GenomicInterpretation, Phenopacket
 from tqdm import tqdm
 
 from genophenocorr.model import Patient, Cohort, SampleLabels
-from genophenocorr.model import ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
+from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
 from ._audit import AuditReport
