@@ -51,7 +51,7 @@ class TestPhenotypeCreator:
 
         audit_report = phenotype_creator.process(inputs)
 
-        assert len(audit_report.issues) == 1
+        assert len(audit_report.issues) == 2
 
         first = audit_report.issues[0]
         assert first.message == message

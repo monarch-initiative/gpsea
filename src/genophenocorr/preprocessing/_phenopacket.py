@@ -1,15 +1,11 @@
 import logging
-import os
 import typing
 
 import hpotk
 
-# pyright: reportGeneralTypeIssues=false
-from google.protobuf.json_format import Parse
 from phenopackets import GenomicInterpretation, Phenopacket
-from tqdm import tqdm
 
-from genophenocorr.model import Patient, Cohort, SampleLabels
+from genophenocorr.model import Patient, SampleLabels
 from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
@@ -230,57 +226,4 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 variants.append(Variant(vc, tx_annotations, genotype))
 
         return AuditReport(variants, issues)
-
-
-def load_phenopacket_folder(pp_directory: str,
-                            patient_creator: PhenopacketPatientCreator,
-                            # policy:str = "strict/lenient/etc",
-                            include_patients_with_no_HPO: bool = False) -> Cohort:
-    """
-    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
-
-    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
-      a directory with at least one phenopacket.
-    :param patient_creator: patient creator for turning a phenopacket into a :class:`genophenocorr.Patient`
-    :return: a cohort made of the phenopackets
-    """
-    ## NOTE: Strict would stop code at error vs lenient would just print error but continue.
-    if not os.path.isdir(pp_directory):
-        raise ValueError("Could not find directory of Phenopackets.")
-    hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator, 'patient_creator')
-
-    # load Phenopackets
-    pps = _load_phenopacket_dir(pp_directory)
-    if len(pps) == 0:
-        raise ValueError(f"No JSON Phenopackets were found in {pp_directory}")
-
-    # turn phenopackets into patients using patient creator
-    patients = []
-    for pp in tqdm(pps, desc='Patients Created'):
-        output = patient_creator.process(pp)
-        # TODO: handle potential sanity issues and decide about the sample's fate.
-        patients.append(output.outcome)
-
-    # create cohort from patients
-    return Cohort.from_patients(patients, include_patients_with_no_HPO)
-
-
-def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
-    patients = []
-    for patient_file in os.listdir(pp_dir):
-        if patient_file.endswith('.json'):
-            phenopacket_path = os.path.join(pp_dir, patient_file)
-            pp = load_phenopacket(phenopacket_path)
-            patients.append(pp)
-    return patients
-
-
-def load_phenopacket(phenopacket_path: str) -> Phenopacket:
-    """
-    Load phenopacket JSON file.
-
-    :param phenopacket_path: a `str` pointing to phenopacket JSON file.
-    """
-    with open(phenopacket_path) as f:
-        return Parse(f.read(), Phenopacket())
 

@@ -2,10 +2,11 @@ import abc
 
 import typing
 
-from genophenocorr.model import Patient
+import hpotk
 
-from ._audit import Auditor
+from genophenocorr.model import Patient, Cohort
 
+from ._audit import Auditor, AuditReport, DataSanityIssue, Level
 
 T = typing.TypeVar('T')
 """
@@ -22,3 +23,35 @@ class PatientCreator(typing.Generic[T], Auditor[T, Patient], metaclass=abc.ABCMe
     `PatientCreator` is an `Auditor`, hence the input is sanitized and any errors are reported to the caller.
     """
     pass
+
+
+class CohortCreator(typing.Generic[T], Auditor[typing.Iterable[T], Cohort]):
+    """
+    `CohortCreator` creates a cohort from an iterable of some `T` where `T` represents a cohort member.
+    """
+
+    def __init__(self, patient_creator: PatientCreator[T]):
+        # Check that we're getting a `PatientCreator`.
+        # Unfortunately, we cannot check that `T`s of `PatientCreator` and `CohortCreator` actually match
+        # due to Python's loosey-goosey nature.
+        self._pc = hpotk.util.validate_instance(patient_creator, PatientCreator, 'patient_creator')
+
+    def process(self, inputs: typing.Iterable[T]) -> AuditReport[Cohort]:
+        patients = []
+        issues = []
+        for pp in inputs:
+            patient_report = self._pc.process(pp)
+            patients.append(patient_report.outcome)
+            issues.extend(patient_report.issues)
+
+        # What happens if a sample has
+
+        # We should have >1 patients in the cohort, right?
+        if len(patients) <= 1:
+            issues.append(
+                DataSanityIssue(Level.WARN,
+                                f'Cohort must include {len(patients)}>=1 members',
+                                'Fix issues in patients to enable the analysis'))
+        cohort = Cohort.from_patients(patients)
+
+        return AuditReport(cohort, issues)

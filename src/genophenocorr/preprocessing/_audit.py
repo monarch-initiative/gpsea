@@ -83,7 +83,59 @@ class AuditReport(typing.Generic[OUT]):
 
     @property
     def issues(self) -> typing.Sequence[DataSanityIssue]:
+        """
+        Returns:
+            a sequence of :class:`DataSanityIssue`.
+        """
         return self._issues
+
+    def warnings(self) -> typing.Iterator[DataSanityIssue]:
+        """
+        Returns:
+            an iterator over the warnings.
+        """
+        return filter(lambda i: i.level == Level.WARN, self.issues)
+
+    def errors(self) -> typing.Iterator[DataSanityIssue]:
+        """
+        Returns:
+            an iterator over the errors.
+        """
+        return filter(lambda i: i.level == Level.ERROR, self.issues)
+
+    def has_errors(self) -> bool:
+        """
+        Returns:
+            bool: `True` if one or more errors were found in the input.
+        """
+        for _ in self.errors():
+            return True
+        return False
+
+    def has_warnings_or_errors(self) -> bool:
+        """
+        Returns:
+            bool: `True` if one or more errors or warnings were found in the input.
+        """
+        for _ in self.warnings():
+            return True
+        for _ in self.errors():
+            return True
+        return False
+
+    def n_warnings(self) -> int:
+        """
+        Returns:
+            int: the number of warnings in the audit report.
+        """
+        return sum(1 for issue in self.issues if issue.level == Level.WARN)
+
+    def n_errors(self) -> int:
+        """
+        Returns:
+            int: the number of errors in the audit report.
+        """
+        return sum(1 for issue in self.issues if issue.level == Level.ERROR)
 
     def __str__(self):
         return f'AuditReport(issues={self._issues}, outcome={self._outcome})'
