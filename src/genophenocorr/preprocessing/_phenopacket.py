@@ -9,7 +9,7 @@ from genophenocorr.model import Patient, SampleLabels
 from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
-from ._audit import AuditReport
+from ._audit import Notepad, AuditReport
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
 
@@ -150,11 +150,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 
-    def process(self, inputs: Phenopacket) -> AuditReport[Patient]:
+    def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
 
         Args:
             inputs (Phenopacket): A Phenopacket object
+            notepad (Notepad): notepad to write down the issues
         Returns:
             Patient: A Patient object
         """
@@ -163,11 +164,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         issues = []
 
         # Check phenotype
-        pheno_audit_report = self._phenotype_creator.process(
-            (pf.type.id, not pf.excluded)
-            for pf in inputs.phenotypic_features
+        pfs = notepad.add_subsection('phenotype-features')
+        phenotypes = self._phenotype_creator.process(
+            ((pf.type.id, not pf.excluded) for pf in inputs.phenotypic_features),
+            pfs
         )
-        issues.extend(pheno_audit_report.issues)
 
         # Check variants
         # Validate
@@ -177,9 +178,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         # TODO - check we have >=1 variants
         issues.extend(variants.issues)
 
-        patient = Patient(sample_id, phenotypes=pheno_audit_report.outcome, variants=variants.outcome, proteins=())
+        patient = Patient(sample_id, phenotypes=phenotypes, variants=variants.outcome, proteins=())
 
-        return AuditReport(patient, issues)
+        return patient
 
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
         """Creates a list of Variant objects from the data in a given Phenopacket

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
 from ._api import FunctionalAnnotator, ProteinMetadataService
-from ._audit import AuditReport
+from ._audit import NotepadTree
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
@@ -47,12 +47,6 @@ def configure_caching_cohort_creator(hpo: hpotk.MinimalOntology,
     :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.
      Choose from ``{'UNIPROT'}`` (just one fallback implementation is available at the moment).
     """
-    pc = configure_caching_patient_creator(hpo,
-                                           genome_build,
-                                           validation_runner,
-                                           cache_dir,
-                                           variant_fallback,
-                                           protein_fallback)
     if cache_dir is None:
         cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
 
@@ -256,42 +250,54 @@ def load_phenopacket_folder(pp_directory: str,
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
     cohort_iter = tqdm(pps, desc='Patients Created')
-    cohort_report = cohort_creator.process(cohort_iter)
+    notepad = cohort_creator.prepare_notepad(f'phenopackets found at {pp_directory}')
+    cohort = cohort_creator.process(cohort_iter, notepad)
 
     logger = logging.getLogger('genophenocorr.preprocessing')
-    _summarize_validation(validation_policy, cohort_report, logger)
+    validation_summary = _summarize_validation(validation_policy, notepad)
+    logger.info(os.linesep.join(validation_summary))
     if validation_policy == 'none':
         # No validation
-        return cohort_report.outcome
+        return cohort
     elif validation_policy == 'lenient':
-        if cohort_report.has_errors():
-            raise ValueError(f'Cannot load cohort due to errors')
+        if notepad.has_errors(include_subsections=True):
+            raise ValueError('Cannot load cohort due to errors')
     elif validation_policy == 'strict':
-        if cohort_report.has_warnings_or_errors():
-            raise ValueError(f'Cannot load cohort due to warnings or errors')
+        if notepad.has_errors_or_warnings(include_subsections=True):
+            raise ValueError('Cannot load cohort due to warnings/errors')
     else:
         # Bug, please report to the developers.
         raise ValueError(f'Unexpected policy {validation_policy}')
 
     # create cohort from patients
-    return cohort_report.outcome
+    return cohort
 
 
 def _summarize_validation(policy: str,
-                          audit_report: AuditReport,
-                          logger):
-    logger.info(f'Validated under {policy} policy')
-    errors = tuple(audit_report.errors())
-    warnings = tuple(audit_report.warnings())
-    logger.info(f'Found {len(errors)} error(s) and {len(warnings)} warnings')
-    if len(errors) > 0:
-        logger.info('Errors:')
-        for e in errors:
-            logger.info(f' - {e.message}. {e.solution}.')
-    if len(warnings) > 0:
-        logger.info('Warnings:')
-        for w in warnings:
-            logger.info(f' - {w.message}. {w.solution}.')
+                          notepad: NotepadTree,
+                          indent: int = 2):
+    lines = [f'Validated under {policy} policy']
+    n_errors = sum(node.error_count() for node in notepad.iterate_nodes())
+    n_warnings = sum(node.warning_count() for node in notepad.iterate_nodes())
+    if n_errors > 0 or n_warnings > 0:
+        lines.append('Showing errors and warnings')
+        for node in notepad.iterate_nodes():
+            if node.has_errors_or_warnings(include_subsections=True):
+                # We must report the node label even if there are no issues with the node.
+                l_pad = ' ' * (node.level * indent)
+                lines.append(l_pad + node.label)
+                if node.has_errors():
+                    lines.append(l_pad + 'errors:')
+                    for error in node.errors():
+                        lines.append(l_pad + ' ' + error.message + error.solution if error.solution else '')
+                if node.has_warnings():
+                    lines.append(l_pad + 'warnings:')
+                    for warning in node.warnings():
+                        lines.append(l_pad + ' ' + warning.message + '.'
+                                     + f' {warning.solution}' if warning.solution else '')
+    else:
+        lines.append('No errors or warnings were found')
+    return lines
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
