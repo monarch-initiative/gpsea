@@ -18,8 +18,6 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
 
     The creator prunes CURIES with simple errors such as malformed CURIE or non-HPO terms and validates the rest
     with HPO toolkit's validator.
-
-    The results are wrapped into :class:`AuditReport`.
     """
 
     def __init__(self, hpo: hpotk.MinimalOntology,
