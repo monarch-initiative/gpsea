@@ -241,12 +241,12 @@ def load_phenopacket_folder(pp_directory: str,
     """
     # Check inputs before moving a finger.
     hpotk.util.validate_instance(cohort_creator, CohortCreator, 'cohort_creator')
-    if not os.path.isdir(pp_directory):
-        raise ValueError(f'`{pp_directory}` does not point to a directory')
+    fpath_pp_abs = os.path.abspath(pp_directory)
+    if not os.path.isdir(fpath_pp_abs):
+        raise ValueError(f'`{fpath_pp_abs}` does not point to a directory')
     if validation_policy.lower() not in VALIDATION_POLICIES:
         raise ValueError(f'{validation_policy} must be one of {VALIDATION_POLICIES}')
 
-    fpath_pp_abs = os.path.abspath(pp_directory)
     # Load phenopackets
     pps = _load_phenopacket_dir(pp_directory)
     if len(pps) < 1:

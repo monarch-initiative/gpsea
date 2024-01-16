@@ -27,9 +27,9 @@ class TestPhenopacketCohortCreator:
     def phenopacket_cohort_creator(self, toy_hpo: hpotk.MinimalOntology) -> CohortCreator:
         return configure_cohort_creator(toy_hpo)
 
-    # @pytest.mark.skip('Skipping online test')
+    @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(self, phenopacket_cohort_creator: CohortCreator):
-        cohort = load_phenopacket_folder('../docs/data/simple_cohort', phenopacket_cohort_creator)
+        cohort = load_phenopacket_folder('docs/data/simple_cohort', phenopacket_cohort_creator)
         print(cohort)
 
 
@@ -62,12 +62,12 @@ class TestPhenotypeCreator:
                           curie: str, message: str, solution: str):
         inputs = ((curie, True),)
 
-        notepad = phenotype_creator.prepare_notepad()
+        notepad = phenotype_creator.prepare_notepad('top-level')
         phenotypes = phenotype_creator.process(inputs, notepad)
 
         assert len(phenotypes) == 0
 
-        issues = list(notepad.all_issues())
+        issues = list(notepad.issues)
         assert len(issues) == 2
 
         first = issues[0]
@@ -81,12 +81,12 @@ class TestPhenotypeCreator:
             ('HP:0002266', True),  # Focal clonic seizure
         )
 
-        notepad = phenotype_creator.prepare_notepad()
+        notepad = phenotype_creator.prepare_notepad('top-level')
         phenotypes = phenotype_creator.process(inputs, notepad)
 
         assert len(phenotypes) == 2
 
-        issues = list(notepad.all_issues())
+        issues = list(notepad.issues)
         assert len(issues) == 1
 
         first = issues[0]
