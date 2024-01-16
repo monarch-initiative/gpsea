@@ -1,6 +1,7 @@
 import logging
 import os
 import typing
+import re
 
 import hpotk
 
@@ -13,7 +14,7 @@ from genophenocorr.model import Patient, Cohort, SampleLabels
 from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
-from ._audit import AuditReport
+from ._audit import AuditReport, DataSanityIssue, Level
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
 
@@ -89,6 +90,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 if expression.syntax == 'hgvs.c':
                     vc = self._hgvs_finder.find_coordinates(expression.value)
                     break
+        else:
+            raise ValueError("Unable to find variant coordinates.")
 
         # Last, parse genotype.
         genotype = variant_descriptor.allelic_state.label
@@ -202,22 +205,25 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         issues = []
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
-                vc, gt = self._coord_finder.find_coordinates(genomic_interp)
-                if vc is None:
-                    self._logger.warning('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
-                                         'but did not find one in patient %s', sample_id)
+                try:
+                    vc, gt = self._coord_finder.find_coordinates(genomic_interp)
+                except ValueError:
+                    issues.append(DataSanityIssue(Level.WARN, f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}.", 
+                                                  "Remove variant from testing."))
                     continue
 
-                if "N" in vc.alt:
-                    self._logger.warning(
-                        'Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id,
-                        vc.variant_key)
+                if len(re.findall(r"[^ACGT\s-]", vc.alt, re.IGNORECASE)) != 0:
+                    issues.append(DataSanityIssue(Level.WARN, f'Patient {pp.id} has unknown alternative variant {vc.variant_key}.', 
+                                                  "Remove variant from testing."))
                     continue
-
-                tx_annotations = self._func_ann.annotate(vc)
+                try:
+                    tx_annotations = self._func_ann.annotate(vc)
+                except ValueError:
+                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}", 
+                                                  "Remove variant form testing."))
                 if len(tx_annotations) == 0:
-                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.",
-                                         pp.id, vc.variant_key)
+                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                                  "Remove variant from testing."))
                     continue
 
                 genotype = Genotypes.single(sample_id, gt)
@@ -279,10 +285,13 @@ def load_phenopacket_folder(pp_directory: str,
 
     # turn phenopackets into patients using patient creator
     patients = []
+    issues = []
     for pp in tqdm(pps, desc='Patients Created'):
-        output = patient_creator.process(pp)
+        audit_report = patient_creator.process(pp)
         # TODO: handle potential sanity issues and decide about the sample's fate.
-        patients.append(output.outcome)
+        patients.append(audit_report.outcome)
+        issues.append(audit_report.issues)
+    print(issues)
 
     # create cohort from patients
     return Cohort.from_patients(patients, include_patients_with_no_HPO)

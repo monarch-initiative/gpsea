@@ -104,8 +104,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         response = self._query_vep(variant_coordinates)
         annotations = []
         if 'transcript_consequences' not in response:
-            self._logger.warning('The VEP response for `%s` lacked the required `transcript_consequences` field. %s', variant_coordinates, response)
-            return ()
+            raise ValueError('The VEP response for `%s` lacked the required `transcript_consequences` field. %s', variant_coordinates, response)
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
@@ -122,8 +121,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         try:
             var_effect = VariantEffect[effect]
         except KeyError:
-            self._logger.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
-            return None
+            raise ValueError("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
         return var_effect
 
     def _process_item(self, item: typing.Dict) -> typing.Optional[TranscriptAnnotation]:
@@ -178,6 +176,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
         api_url = self._url % (format_coordinates_for_vep_query(variant_coordinates))
         r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
+        #Throw an exception rather than errors so we can skip the variant in _phenopackets
         if not r.ok:
             self._logger.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
             self._logger.error(r.text)
