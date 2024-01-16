@@ -12,6 +12,9 @@ class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
     def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
         """
         Determine :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+
+        Raises:
+            ValueError: if there is an error of any kind.
         """
         pass
 

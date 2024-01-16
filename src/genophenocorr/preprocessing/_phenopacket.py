@@ -208,19 +208,17 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 try:
                     vc, gt = self._coord_finder.find_coordinates(genomic_interp)
                 except ValueError:
-                    issues.append(DataSanityIssue(Level.WARN, f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}.", 
+                    issues.append(DataSanityIssue(Level.WARN, f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}.",
                                                   "Remove variant from testing."))
                     continue
 
-                if len(re.findall(r"[^ACGT\s-]", vc.alt, re.IGNORECASE)) != 0:
-                    issues.append(DataSanityIssue(Level.WARN, f'Patient {pp.id} has unknown alternative variant {vc.variant_key}.', 
-                                                  "Remove variant from testing."))
-                    continue
                 try:
                     tx_annotations = self._func_ann.annotate(vc)
                 except ValueError:
-                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}", 
-                                                  "Remove variant form testing."))
+                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                                  "Try again or remove variant form testing."))
+                    continue
+
                 if len(tx_annotations) == 0:
                     issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
                                                   "Remove variant from testing."))

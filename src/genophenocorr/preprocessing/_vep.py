@@ -121,7 +121,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         try:
             var_effect = VariantEffect[effect]
         except KeyError:
-            raise ValueError("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
+            # A missing variant effect, pls submit an issue to the genophenocorr GitHub repository.
+            raise ValueError("VariantEffect %s was not found in our record of possible effects.", effect)
         return var_effect
 
     def _process_item(self, item: typing.Dict) -> typing.Optional[TranscriptAnnotation]:
