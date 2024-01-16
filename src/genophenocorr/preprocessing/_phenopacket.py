@@ -9,7 +9,7 @@ from genophenocorr.model import Patient, SampleLabels
 from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
-from ._audit import Notepad, AuditReport
+from ._audit import Notepad
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
 
@@ -85,6 +85,8 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 if expression.syntax == 'hgvs.c':
                     vc = self._hgvs_finder.find_coordinates(expression.value)
                     break
+        else:
+            raise ValueError("Unable to find variant coordinates.")
 
         # Last, parse genotype.
         genotype = variant_descriptor.allelic_state.label
@@ -174,13 +176,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         # Validate
         #  - there is >=1 variant in the subject
         #    - mitigate: skip, warning
-        variants = self._add_variants(sample_id, inputs)
         # TODO - check we have >=1 variants
-        issues.extend(variants.issues)
+        variants = self._add_variants(sample_id, inputs)
 
-        patient = Patient(sample_id, phenotypes=phenotypes, variants=variants.outcome, proteins=())
-
-        return patient
+        return Patient(sample_id, phenotypes=phenotypes, variants=variants, proteins=())
 
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
         """Creates a list of Variant objects from the data in a given Phenopacket
@@ -202,25 +201,27 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         #      room than to be really really really strict.
         #      - mitigate: ADD the variant but emit a warning. We can still use the variant in the `VariantPredicate`
         variants = []
+        # TODO - rework
         issues = []
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
-                vc, gt = self._coord_finder.find_coordinates(genomic_interp)
-                if vc is None:
-                    self._logger.warning('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
-                                         'but did not find one in patient %s', sample_id)
+                try:
+                    vc, gt = self._coord_finder.find_coordinates(genomic_interp)
+                except ValueError:
+                    issues.append(DataSanityIssue(Level.WARN, f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}.",
+                                                  "Remove variant from testing."))
                     continue
 
-                if "N" in vc.alt:
-                    self._logger.warning(
-                        'Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id,
-                        vc.variant_key)
+                try:
+                    tx_annotations = self._func_ann.annotate(vc)
+                except ValueError:
+                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                                  "Try again or remove variant form testing."))
                     continue
 
-                tx_annotations = self._func_ann.annotate(vc)
                 if len(tx_annotations) == 0:
-                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.",
-                                         pp.id, vc.variant_key)
+                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                                  "Remove variant from testing."))
                     continue
 
                 genotype = Genotypes.single(sample_id, gt)

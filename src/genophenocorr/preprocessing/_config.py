@@ -128,8 +128,13 @@ def configure_patient_creator(hpo: hpotk.MinimalOntology,
                               genome_build: str = 'GRCh38.p13',
                               validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
                               variant_fallback: str = 'VEP',
-                              protein_fallback: str = 'UNIPROT') -> PhenopacketPatientCreator:
+                              protein_fallback: str = 'UNIPROT',
+                              validation: str = 'lenient') -> PhenopacketPatientCreator: #Rename to something more understandable by user
     """
+                                ^^^ none, lenient, strict - 
+                                none = run unless unrunnable
+                                lenient = fix what we can, abort unfixable
+                                strict = abort at any issue
     A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
     To create the patient creator, we need hpo-toolkit's representation of HPO. Other options are optional
