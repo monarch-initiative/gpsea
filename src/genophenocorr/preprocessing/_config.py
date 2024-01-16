@@ -1,5 +1,5 @@
-import logging
 import os
+import sys
 import typing
 import warnings
 
@@ -131,7 +131,7 @@ def configure_patient_creator(hpo: hpotk.MinimalOntology,
                               protein_fallback: str = 'UNIPROT',
                               validation: str = 'lenient') -> PhenopacketPatientCreator: #Rename to something more understandable by user
     """
-                                ^^^ none, lenient, strict - 
+                                ^^^ none, lenient, strict -
                                 none = run unless unrunnable
                                 lenient = fix what we can, abort unfixable
                                 strict = abort at any issue
@@ -246,21 +246,22 @@ def load_phenopacket_folder(pp_directory: str,
     if validation_policy.lower() not in VALIDATION_POLICIES:
         raise ValueError(f'{validation_policy} must be one of {VALIDATION_POLICIES}')
 
+    fpath_pp_abs = os.path.abspath(pp_directory)
     # Load phenopackets
     pps = _load_phenopacket_dir(pp_directory)
-    if len(pps) == 0:
-        raise ValueError(f"No phenopackets could be parsed from {pp_directory}")
+    if len(pps) < 1:
+        raise ValueError(f"No phenopackets could be parsed from `{fpath_pp_abs}`")
 
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
     cohort_iter = tqdm(pps, desc='Patients Created')
-    notepad = cohort_creator.prepare_notepad(f'phenopackets found at {pp_directory}')
+    notepad = cohort_creator.prepare_notepad(f'{len(pps)} phenopacket(s) found at `{pp_directory}`')
     cohort = cohort_creator.process(cohort_iter, notepad)
 
-    logger = logging.getLogger('genophenocorr.preprocessing')
+
     validation_summary = _summarize_validation(validation_policy, notepad)
-    logger.info(os.linesep.join(validation_summary))
+    print(os.linesep.join(validation_summary), file=sys.stderr)
     if validation_policy == 'none':
         # No validation
         return cohort
@@ -292,13 +293,13 @@ def _summarize_validation(policy: str,
                 l_pad = ' ' * (node.level * indent)
                 lines.append(l_pad + node.label)
                 if node.has_errors():
-                    lines.append(l_pad + 'errors:')
+                    lines.append(l_pad + ' errors:')
                     for error in node.errors():
                         lines.append(l_pad + ' ' + error.message + error.solution if error.solution else '')
                 if node.has_warnings():
-                    lines.append(l_pad + 'warnings:')
+                    lines.append(l_pad + ' warnings:')
                     for warning in node.warnings():
-                        lines.append(l_pad + ' ' + warning.message + '.'
+                        lines.append(l_pad + ' ·' + warning.message + '.'
                                      + f' {warning.solution}' if warning.solution else '')
     else:
         lines.append('No errors or warnings were found')

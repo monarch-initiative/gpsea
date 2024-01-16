@@ -163,8 +163,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """
         sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
 
-        issues = []
-
         # Check phenotype
         pfs = notepad.add_subsection('phenotype-features')
         phenotypes = self._phenotype_creator.process(
@@ -173,15 +171,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         )
 
         # Check variants
-        # Validate
-        #  - there is >=1 variant in the subject
-        #    - mitigate: skip, warning
-        # TODO - check we have >=1 variants
-        variants = self._add_variants(sample_id, inputs)
+        vs = notepad.add_subsection('variants')
+        variants = self._add_variants(sample_id, inputs, vs)
 
         return Patient(sample_id, phenotypes=phenotypes, variants=variants, proteins=())
 
-    def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket) -> AuditReport[typing.Sequence[Variant]]:
+    def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket, notepad: Notepad) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
         Args:
@@ -189,43 +184,33 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         Returns:
             Sequence[Variant]: A list of Variant objects
         """
-        # Variant validation:
-        #
-        #  - for each variant:
-        #    - genomic interpretation must be a VCF record or a VRS CNV or an HGVS expression
-        #      - mitigate: skip, warning
-        #    - Lauren check the `vc.alt == 'N'` if it ever happens. I think we should not care if we do not have this
-        #      in our phenopackets. Maybe a regex check.
-        #    - there is at least 1 tx annotation. This can happen, since the `FunctionalAnnotator` is allowed to return
-        #      an empty sequence. This has pros and cons, but I judge that it is better to give the annotator some wiggle
-        #      room than to be really really really strict.
-        #      - mitigate: ADD the variant but emit a warning. We can still use the variant in the `VariantPredicate`
         variants = []
-        # TODO - rework
-        issues = []
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
                 try:
                     vc, gt = self._coord_finder.find_coordinates(genomic_interp)
                 except ValueError:
-                    issues.append(DataSanityIssue(Level.WARN, f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}.",
-                                                  "Remove variant from testing."))
+                    notepad.add_warning(f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
+                                        "Remove variant from testing")
                     continue
 
                 try:
                     tx_annotations = self._func_ann.annotate(vc)
                 except ValueError:
-                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
-                                                  "Try again or remove variant form testing."))
+                    notepad.add_warning(f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                        "Try again or remove variant form testing")
                     continue
 
                 if len(tx_annotations) == 0:
-                    issues.append(DataSanityIssue(Level.WARN, f"Patient {pp.id} has an error with variant {vc.variant_key}",
-                                                  "Remove variant from testing."))
+                    notepad.add_warning(f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                        "Remove variant from testing")
                     continue
 
                 genotype = Genotypes.single(sample_id, gt)
                 variants.append(Variant(vc, tx_annotations, genotype))
 
-        return AuditReport(variants, issues)
+        if len(variants) == 0:
+            notepad.add_warning(f"Patient {pp.id} has no variants to work with")
+
+        return variants
 
