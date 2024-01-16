@@ -9,7 +9,7 @@ from genophenocorr.model import Phenotype
 from ._audit import Auditor, Level, Notepad
 
 
-class PhenotypeCreator(Auditor[typing.Tuple[str, bool], typing.Sequence[Phenotype]]):
+class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.Sequence[Phenotype]]):
     """
     `PhenotypeCreator` validates the input phenotype features and prepares them for the downstream analysis.
 
