@@ -85,70 +85,102 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
+<span class="kn">from</span> <span class="nn">hpotk.validate</span> <span class="kn">import</span> <span class="n">ValidationLevel</span>
+
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Phenotype</span>
 
-
-<div class="viewcode-block" id="PhenotypeValidationException">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeValidationException">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeValidationException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_issues</span> <span class="o">=</span> <span class="n">issues</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">issues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_issues</span></div>
-
+<span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Auditor</span><span class="p">,</span> <span class="n">Level</span><span class="p">,</span> <span class="n">Notepad</span>
 
 
 <div class="viewcode-block" id="PhenotypeCreator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeCreator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that creates a Phenotype object </span>
+<span class="k">class</span> <span class="nc">PhenotypeCreator</span><span class="p">(</span><span class="n">Auditor</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `PhenotypeCreator` validates the input phenotype features and prepares them for the downstream analysis.</span>
 
-<span class="sd">    Methods:</span>
-<span class="sd">        create_phenotype(term_ids:Iterable[Tuple[str, bool]]): Creates a list of Phenotype objects from a list of tuples.</span>
-<span class="sd">                                                               Each tuple has the HPO ID and a boolean on if the phenotype is observed.</span>
+<span class="sd">    The creator expects an iterable with tuples that contain a CURIE and status. The CURIE must correspond</span>
+<span class="sd">    to a HPO term identifier and status must be a `bool`.</span>
+
+<span class="sd">    The creator prunes CURIES with simple errors such as malformed CURIE or non-HPO terms and validates the rest</span>
+<span class="sd">    with HPO toolkit&#39;s validator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
                  <span class="n">validator</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a PhenotypeCreator object</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            hpo (hpotk.ontology.Ontology): An Ontology object </span>
-<span class="sd">            validator (hpotk.validate.ValidationRunner): A ValidationRunner object </span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span> <span class="s1">&#39;hpo&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PhenotypeCreator.create_phenotype">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator.create_phenotype">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+<div class="viewcode-block" id="PhenotypeCreator.process">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Phenotype objects from term IDs and checks if the term IDs satisfy the validation requirements.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            term_ids (Iterable[Tuple[str, bool]]): A list of Tuples, structured (HPO IDs, boolean- True if observed)</span>
+<span class="sd">            inputs (Iterable[Tuple[str, bool]]): A list of Tuples, structured (HPO IDs, boolean- True if observed)</span>
+<span class="sd">            notepad: Node</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            A sequence of Phenotype objects</span>
-<span class="sd">        Error:</span>
-<span class="sd">            PhenotypeValidationException: An instance of an issue with the ValidationRunner</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">term_id</span><span class="p">,</span> <span class="n">observed</span> <span class="ow">in</span> <span class="n">term_ids</span><span class="p">:</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">curie</span><span class="p">,</span> <span class="n">is_observed</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+            <span class="c1"># Check the CURIE is well-formed</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;Ensure the term ID consists of a prefix (e.g. `HP`) &#39;</span>
+                                 <span class="s1">&#39;and id (e.g. `0001250`) joined by colon `:` or underscore `_`&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Check the term is an HPO concept</span>
+            <span class="k">if</span> <span class="n">term_id</span><span class="o">.</span><span class="n">prefix</span> <span class="o">!=</span> <span class="s1">&#39;HP&#39;</span><span class="p">:</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is not an HPO term&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;Remove non-HPO concepts from the analysis input&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Term must be present in HPO</span>
             <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">term</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Term </span><span class="si">%s</span><span class="s2"> cannot be found in HPO version </span><span class="si">%s</span><span class="s2">. It will be ignored.&quot;</span><span class="p">,</span> <span class="n">term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">term</span><span class="p">,</span> <span class="n">observed</span><span class="p">))</span>
-        <span class="n">validation_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">validate_all</span><span class="p">([</span><span class="n">term</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">validation_results</span><span class="o">.</span><span class="n">is_ok</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Phenotype</span><span class="o">.</span><span class="n">from_term</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">observed</span><span class="p">)</span> <span class="k">for</span> <span class="n">term</span><span class="p">,</span> <span class="n">observed</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">)</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is not in HPO version `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;Correct the HPO term or use the latest HPO for the analysis&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">identifier</span> <span class="o">!=</span> <span class="n">term_id</span><span class="p">:</span>
+                <span class="c1"># Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,</span>
+                <span class="c1"># since `term.identifier` always returns the primary term ID.</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is an obsolete identifier for </span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                 <span class="sa">f</span><span class="s1">&#39;Replace </span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> with the primary term ID </span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="n">phenotypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Phenotype</span><span class="o">.</span><span class="n">from_term</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">is_observed</span><span class="p">))</span>
+
+        <span class="c1"># Check we have some phenotype terms to work with.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;No phenotype terms were left after the validation&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Revise the phenotype terms and try again&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># We return the messages for now. We may provide more details in future, if necessary.</span>
-            <span class="n">issues</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">validation_results</span><span class="o">.</span><span class="n">results</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="n">PhenotypeValidationException</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span></div>
-</div>
+            <span class="n">vr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">validate_all</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">vr</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_level</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Should not happen. Please let the developers know about this issue!</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown result validation level </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_issue</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">phenotypes</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_translate_level</span><span class="p">(</span><span class="n">lvl</span><span class="p">:</span> <span class="n">ValidationLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Level</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Level</span><span class="o">.</span><span class="n">WARN</span>
+        <span class="k">elif</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Level</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 </pre></div>
 

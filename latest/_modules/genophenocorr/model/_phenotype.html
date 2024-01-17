@@ -89,7 +89,7 @@
 
 <div class="viewcode-block" id="Phenotype">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Phenotype">[docs]</a>
-<span class="k">class</span> <span class="nc">Phenotype</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Named</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Phenotype</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ObservableFeature</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Named</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that represents an HPO verified phenotype</span>
 
 <span class="sd">    Attributes:</span>
@@ -132,6 +132,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_present</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean: `True` if the phenotype feature was observed in the subject or `False` if the feature&#39;s presence</span>
+<span class="sd">            was explicitly excluded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">observed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a boolean for whether the phenotype is observed.</span>
 
@@ -139,37 +148,32 @@
 <span class="sd">            boolean: True if this phenotype was observed in the respective patient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`observed` property was deprecated and will be removed in `v0.3.0`. &#39;</span>
-                      <span class="s1">&#39;Use `is_observed` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_observed</span>
+                      <span class="s1">&#39;Use `is_present` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_present</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_observed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns `True` if the phenotype was *present* in the respective patient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns `True` if the phenotype presence was *explicitly excluded* in the respective patient.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_observed</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`is_observed` property was deprecated and will be removed in `v0.3.0`. &#39;</span>
+                      <span class="s1">&#39;Use `is_present` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_present</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Phenotype</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">identifier</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_observed</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">is_observed</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_present</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">is_present</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_observed</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_present</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Phenotype(&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2">, &quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;is_observed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">)&quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>

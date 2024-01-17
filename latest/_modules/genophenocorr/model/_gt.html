@@ -89,6 +89,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">SampleLabels</span>
+
 
 <div class="viewcode-block" id="Genotype">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Genotype">[docs]</a>
@@ -123,8 +125,10 @@
 
 <span class="sd">    Use one of the static methods to create an instance:</span>
 
-<span class="sd">    &gt;&gt;&gt; gts = Genotypes.single(&#39;A&#39;, Genotype.HETEROZYGOUS)</span>
-<span class="sd">    &gt;&gt;&gt; gts = Genotypes.from_mapping({&#39;A&#39;: Genotype.HETEROZYGOUS, &#39;B&#39;: Genotype.HOMOZYGOUS_ALTERNATE})</span>
+<span class="sd">    &gt;&gt;&gt; a = SampleLabels(&#39;A&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; b = SampleLabels(&#39;B&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gts = Genotypes.single(a, Genotype.HETEROZYGOUS)</span>
+<span class="sd">    &gt;&gt;&gt; _ = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})</span>
 
 <span class="sd">    There are 2 genotypes in the container:</span>
 
@@ -133,12 +137,12 @@
 
 <span class="sd">    You can get a genotype for a sample ID:</span>
 
-<span class="sd">    &gt;&gt;&gt; gts.for_sample(&#39;A&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gts.for_sample(a)</span>
 <span class="sd">    Genotype.HETEROZYGOUS</span>
 
 <span class="sd">    You will get `None` if the sample is not present:</span>
 
-<span class="sd">    &gt;&gt;&gt; gts.for_sample(&#39;UNKNOWN&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gts.for_sample(SampleLabels(&#39;UNKNOWN&#39;))</span>
 <span class="sd">    None</span>
 
 <span class="sd">    You can iterate over sample-genotype pairs:</span>
@@ -159,14 +163,15 @@
 <div class="viewcode-block" id="Genotypes.single">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Genotypes.single">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="n">sample_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="n">Genotype</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="n">Genotype</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A shortcut for creating `Genotypes` for a single sample:</span>
 
-<span class="sd">        &gt;&gt;&gt; gts = Genotypes.single(&#39;A&#39;, Genotype.HOMOZYGOUS_ALTERNATE)</span>
+<span class="sd">        &gt;&gt;&gt; a = SampleLabels(&#39;A&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; gts = Genotypes.single(a, Genotype.HOMOZYGOUS_ALTERNATE)</span>
 
 <span class="sd">        &gt;&gt;&gt; assert len(gts) == 1</span>
-<span class="sd">        &gt;&gt;&gt; assert gts.for_sample(&#39;A&#39;) == Genotype.HOMOZYGOUS_ALTERNATE</span>
+<span class="sd">        &gt;&gt;&gt; assert gts.for_sample(a) == Genotype.HOMOZYGOUS_ALTERNATE</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">Genotypes</span><span class="p">((</span><span class="n">sample_id</span><span class="p">,),</span> <span class="p">(</span><span class="n">genotype</span><span class="p">,))</span></div>
@@ -175,11 +180,13 @@
 <div class="viewcode-block" id="Genotypes.from_mapping">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Genotypes.from_mapping">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create `Genotypes` from mapping between sample IDs and genotypes.</span>
 
-<span class="sd">        &gt;&gt;&gt; gts = Genotypes.from_mapping({&#39;A&#39;: Genotype.HETEROZYGOUS, &#39;B&#39;: Genotype.HOMOZYGOUS_ALTERNATE})</span>
+<span class="sd">        &gt;&gt;&gt; a = SampleLabels(&#39;A&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; b = SampleLabels(&#39;B&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; gts = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})</span>
 
 <span class="sd">        &gt;&gt;&gt; assert len(gts) == 2</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -188,7 +195,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_preprocess_mapping</span><span class="p">(</span><span class="n">genotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">_preprocess_mapping</span><span class="p">(</span><span class="n">genotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]]:</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">genotypes</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
         <span class="n">gts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">genotypes</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
 
@@ -200,7 +207,7 @@
 
         <span class="k">return</span> <span class="n">samples</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">gts</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">genotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">],</span> <span class="n">genotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">genotypes</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gts</span><span class="p">):</span>
@@ -208,11 +215,11 @@
 
 <div class="viewcode-block" id="Genotypes.for_sample">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Genotypes.for_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">for_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">for_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a genotype for a sample or `None` if the genotype is not present.</span>
 
-<span class="sd">        :param sample_id: a `str` with sample&#39;s identifier.</span>
+<span class="sd">        :param sample_id: a :class:`SampleLabels` with sample&#39;s identifier.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">sample_id</span><span class="p">:</span>
@@ -223,7 +230,7 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -259,11 +266,11 @@
 
 <div class="viewcode-block" id="Genotyped.genotype_for_sample">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Genotyped.genotype_for_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">genotype_for_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">genotype_for_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a genotype for a sample or `None` if the genotype is not present.</span>
 
-<span class="sd">        :param sample_id: a `str` with sample&#39;s identifier.</span>
+<span class="sd">        :param sample_id: a :class:`SampleLabels` with sample&#39;s identifier.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotypes</span><span class="o">.</span><span class="n">for_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span></div>
 </div>

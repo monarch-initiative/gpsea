@@ -162,132 +162,132 @@
         <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">())</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
 
     <span class="n">patients</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;J&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;J&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>
                 <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span>
+        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">),</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
                 <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
                 <span class="n">proteins</span><span class="o">=</span><span class="p">[</span><span class="n">prot</span><span class="p">]</span>

@@ -108,8 +108,7 @@ for the exploratory and downstream analysis.</p>
 <h2>Create a cohort from GA4GH phenopackets<a class="headerlink" href="#create-a-cohort-from-ga4gh-phenopackets" title="Link to this heading"></a></h2>
 <p>The easiest way to input data into <cite>genophenocorr</cite> is to use the
 <a class="reference external" href="https://phenopacket-schema.readthedocs.io/en/latest">GA4GH Phenopacket Schema</a> phenopackets.
-<cite>genophenocorr</cite> provides <a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketPatientCreator" title="genophenocorr.preprocessing.PhenopacketPatientCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.PhenopacketPatientCreator</span></code></a>,
-an out-of-the-box class for loading phenopackets.</p>
+<cite>genophenocorr</cite> provides an out-of-the-box solution for loading a cohort from a folder of phenopacket JSON files.</p>
 <p>Let’s start with loading Human Phenotype Ontology, a requisite for the input Q/C steps. We’ll use the amazing
 <a class="reference external" href="https://github.com/TheJacksonLaboratory/hpo-toolkit">hpo-toolkit</a> library which is installed along with
 the standard <cite>genophenocorr</cite> installation:</p>
@@ -118,19 +117,19 @@ the standard <cite>genophenocorr</cite> installation:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">load_minimal_ontology</span><span class="p">(</span><span class="s1">&#39;http://purl.obolibrary.org/obo/hp.json&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Next, let’s create the <cite>PhenopacketPatientCreator</cite>. We use a convenience method
-<a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_patient_creator" title="genophenocorr.preprocessing.configure_caching_patient_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_patient_creator()</span></code></a>:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_patient_creator</span>
+<p>Next, let’s get a <cite>CohortCreator</cite> for loading the phenopackets. We use the
+<a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_cohort_creator" title="genophenocorr.preprocessing.configure_caching_cohort_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_cohort_creator()</span></code></a> convenience method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">patient_creator</span> <span class="o">=</span> <span class="n">configure_caching_patient_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>By default, the method creates the patient creator that will call Variant Effect Predictor
-and Uniprot APIs to perform the functional annotation and protein annotation and cache the responses
+<p>The default <cite>cohort_creator</cite> will call Variant Effect Predictor
+and Uniprot APIs to perform the functional annotation and protein annotation, and the responses will be cached
 in the current working directory to save the bandwidth.
-See the <a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_patient_creator" title="genophenocorr.preprocessing.configure_caching_patient_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_patient_creator()</span></code></a> for more configuration options.</p>
+See the <a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_cohort_creator" title="genophenocorr.preprocessing.configure_caching_cohort_creator"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.configure_caching_cohort_creator()</span></code></a> for more configuration options.</p>
 </div>
 <p>We can create a cohort starting from a folder with phenopackets stored as JSON files.
 For the purpose of this example, we will use a folder <cite>simple_cohort</cite> with 5 example phenopackets located in
@@ -139,35 +138,16 @@ For the purpose of this example, we will use a folder <cite>simple_cohort</cite>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">simple_cohort_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;simple_cohort&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
-<a class="reference internal" href="../apidocs/genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Patient</span></code></a>:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
+<p>We load the phenopackets using <cite>cohort_creator</cite> defined above together with another convenience function
+<a class="reference internal" href="../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.load_phenopacket_folder" title="genophenocorr.preprocessing.load_phenopacket_folder"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.load_phenopacket_folder</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopacket_folder</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">simple_cohort_path</span><span class="p">):</span>
-<span class="gp">... </span>  <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
-<span class="gp">... </span>      <span class="n">pp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-<span class="gp">... </span>      <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pp_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="n">pp</span> <span class="o">=</span> <span class="n">Parse</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Phenopacket</span><span class="p">())</span>
-<span class="gp">... </span>      <span class="n">patient</span> <span class="o">=</span> <span class="n">patient_creator</span><span class="o">.</span><span class="n">create_patient</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
-<span class="gp">... </span>      <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
-
-
-<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1"> phenopackets&#39;</span>
-<span class="go">&#39;Loaded 5 phenopackets&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">simple_cohort_path</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="go">5</span>
 </pre></div>
 </div>
-<p>Now we can construct a <cite>Cohort</cite>:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s1">&#39;Created a cohort with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s1"> members&#39;</span>
-<span class="go">&#39;Created a cohort with 5 members&#39;</span>
-</pre></div>
-</div>
+<p>We loaded phenopackets into a <cite>Cohort</cite> consisting of 5 members.</p>
 </section>
 <section id="create-a-cohort-from-other-data">
 <h2>Create a cohort from other data<a class="headerlink" href="#create-a-cohort-from-other-data" title="Link to this heading"></a></h2>
