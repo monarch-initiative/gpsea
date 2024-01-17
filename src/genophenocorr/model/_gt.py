@@ -6,6 +6,8 @@ from typing import Iterator
 
 import numpy as np
 
+from ._base import SampleLabels
+
 
 class Genotype(enum.Enum):
     """
@@ -35,8 +37,10 @@ class Genotypes(typing.Sized, typing.Iterable):
 
     Use one of the static methods to create an instance:
 
-    >>> gts = Genotypes.single('A', Genotype.HETEROZYGOUS)
-    >>> gts = Genotypes.from_mapping({'A': Genotype.HETEROZYGOUS, 'B': Genotype.HOMOZYGOUS_ALTERNATE})
+    >>> a = SampleLabels('A')
+    >>> b = SampleLabels('B')
+    >>> gts = Genotypes.single(a, Genotype.HETEROZYGOUS)
+    >>> _ = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})
 
     There are 2 genotypes in the container:
 
@@ -45,12 +49,12 @@ class Genotypes(typing.Sized, typing.Iterable):
 
     You can get a genotype for a sample ID:
 
-    >>> gts.for_sample('A')
+    >>> gts.for_sample(a)
     Genotype.HETEROZYGOUS
 
     You will get `None` if the sample is not present:
 
-    >>> gts.for_sample('UNKNOWN')
+    >>> gts.for_sample(SampleLabels('UNKNOWN'))
     None
 
     You can iterate over sample-genotype pairs:
@@ -66,24 +70,27 @@ class Genotypes(typing.Sized, typing.Iterable):
         return EMPTY
 
     @staticmethod
-    def single(sample_id: str, genotype: Genotype):
+    def single(sample_id: SampleLabels, genotype: Genotype):
         """
         A shortcut for creating `Genotypes` for a single sample:
 
-        >>> gts = Genotypes.single('A', Genotype.HOMOZYGOUS_ALTERNATE)
+        >>> a = SampleLabels('A')
+        >>> gts = Genotypes.single(a, Genotype.HOMOZYGOUS_ALTERNATE)
 
         >>> assert len(gts) == 1
-        >>> assert gts.for_sample('A') == Genotype.HOMOZYGOUS_ALTERNATE
+        >>> assert gts.for_sample(a) == Genotype.HOMOZYGOUS_ALTERNATE
         """
 
         return Genotypes((sample_id,), (genotype,))
 
     @staticmethod
-    def from_mapping(mapping: typing.Mapping[str, Genotype]):
+    def from_mapping(mapping: typing.Mapping[SampleLabels, Genotype]):
         """
         Create `Genotypes` from mapping between sample IDs and genotypes.
 
-        >>> gts = Genotypes.from_mapping({'A': Genotype.HETEROZYGOUS, 'B': Genotype.HOMOZYGOUS_ALTERNATE})
+        >>> a = SampleLabels('A')
+        >>> b = SampleLabels('B')
+        >>> gts = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})
 
         >>> assert len(gts) == 2
         """
@@ -91,7 +98,7 @@ class Genotypes(typing.Sized, typing.Iterable):
         return Genotypes(*Genotypes._preprocess_mapping(mapping))
 
     @staticmethod
-    def _preprocess_mapping(genotypes: typing.Mapping[str, Genotype]) -> typing.Tuple[typing.Sequence[str], typing.Sequence[Genotype]]:
+    def _preprocess_mapping(genotypes: typing.Mapping[SampleLabels, Genotype]) -> typing.Tuple[typing.Sequence[str], typing.Sequence[Genotype]]:
         samples = np.empty(shape=(len(genotypes),), dtype=object)
         gts = np.empty(shape=(len(genotypes),), dtype=object)
 
@@ -103,17 +110,17 @@ class Genotypes(typing.Sized, typing.Iterable):
 
         return samples[indices], gts[indices]
 
-    def __init__(self, samples: typing.Iterable[str], genotypes: typing.Iterable[Genotype]):
+    def __init__(self, samples: typing.Iterable[SampleLabels], genotypes: typing.Iterable[Genotype]):
         self._samples = tuple(samples)
         self._gts = tuple(genotypes)
         if len(self._samples) != len(self._gts):
             raise ValueError(f'Mismatch between the sample and genotype count: {len(self._samples)} != {len(self._gts)}')
 
-    def for_sample(self, sample_id: str) -> typing.Optional[Genotype]:
+    def for_sample(self, sample_id: SampleLabels) -> typing.Optional[Genotype]:
         """
         Get a genotype for a sample or `None` if the genotype is not present.
 
-        :param sample_id: a `str` with sample's identifier.
+        :param sample_id: a :class:`SampleLabels` with sample's identifier.
         """
         idx = bisect.bisect_left(self._samples, sample_id)
         if idx != len(self._samples) and self._samples[idx] == sample_id:
@@ -123,7 +130,7 @@ class Genotypes(typing.Sized, typing.Iterable):
     def __len__(self) -> int:
         return len(self._samples)
 
-    def __iter__(self) -> Iterator[typing.Tuple[str, Genotype]]:
+    def __iter__(self) -> Iterator[typing.Tuple[SampleLabels, Genotype]]:
         return zip(self._samples, self._gts)
 
     def __hash__(self):
@@ -154,10 +161,10 @@ class Genotyped(metaclass=abc.ABCMeta):
     def genotypes(self) -> Genotypes:
         pass
 
-    def genotype_for_sample(self, sample_id: str) -> typing.Optional[Genotype]:
+    def genotype_for_sample(self, sample_id: SampleLabels) -> typing.Optional[Genotype]:
         """
         Get a genotype for a sample or `None` if the genotype is not present.
 
-        :param sample_id: a `str` with sample's identifier.
+        :param sample_id: a :class:`SampleLabels` with sample's identifier.
         """
         return self.genotypes.for_sample(sample_id)

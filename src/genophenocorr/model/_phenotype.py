@@ -4,7 +4,7 @@ import warnings
 import hpotk
 
 
-class Phenotype(hpotk.model.Identified, hpotk.model.Named):
+class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model.Named):
     """A class that represents an HPO verified phenotype
 
     Attributes:
@@ -44,6 +44,15 @@ class Phenotype(hpotk.model.Identified, hpotk.model.Named):
         return self._name
 
     @property
+    def is_present(self) -> bool:
+        """
+        Returns:
+            boolean: `True` if the phenotype feature was observed in the subject or `False` if the feature's presence
+            was explicitly excluded.
+        """
+        return self._observed
+
+    @property
     def observed(self) -> typing.Optional[bool]:
         """Returns a boolean for whether the phenotype is observed.
 
@@ -51,37 +60,32 @@ class Phenotype(hpotk.model.Identified, hpotk.model.Named):
             boolean: True if this phenotype was observed in the respective patient.
         """
         warnings.warn('`observed` property was deprecated and will be removed in `v0.3.0`. '
-                      'Use `is_observed` instead', DeprecationWarning, stacklevel=2)
-        return self.is_observed
+                      'Use `is_present` instead', DeprecationWarning, stacklevel=2)
+        return self.is_present
 
     @property
     def is_observed(self) -> bool:
         """
         Returns `True` if the phenotype was *present* in the respective patient.
         """
-        return self._observed
-
-    @property
-    def is_excluded(self) -> bool:
-        """
-        Returns `True` if the phenotype presence was *explicitly excluded* in the respective patient.
-        """
-        return not self.is_observed
+        warnings.warn('`is_observed` property was deprecated and will be removed in `v0.3.0`. '
+                      'Use `is_present` instead', DeprecationWarning, stacklevel=2)
+        return self.is_present
 
     def __eq__(self, other):
         return isinstance(other, Phenotype) \
             and self.identifier == other.identifier \
             and self.name == other.name \
-            and self.is_observed == other.is_observed
+            and self.is_present == other.is_present
 
     def __hash__(self):
-        return hash((self.identifier, self.name, self.is_observed))
+        return hash((self.identifier, self.name, self.is_present))
 
     def __str__(self):
         return f"Phenotype(" \
                f"identifier={self.identifier}, " \
                f"name={self.name}, " \
-               f"is_observed={self._observed})"
+               f"is_present={self._observed})"
 
     def __repr__(self):
         return str(self)

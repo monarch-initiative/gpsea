@@ -1,5 +1,6 @@
-# content of conftest.py
+import os
 
+import hpotk
 import pytest
 
 
@@ -21,3 +22,19 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "online" in item.keywords:
             item.add_marker(skip_online)
+
+
+@pytest.fixture(scope='session')
+def toy_hpo() -> hpotk.MinimalOntology:
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'hp.toy.json')
+    return hpotk.load_minimal_ontology(path)
+
+
+@pytest.fixture(scope='session')
+def toy_validation_runner(toy_hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+    validators = (
+        hpotk.validate.ObsoleteTermIdsValidator(toy_hpo),
+        hpotk.validate.AnnotationPropagationValidator(toy_hpo),
+        hpotk.validate.PhenotypicAbnormalityValidator(toy_hpo)
+    )
+    return hpotk.validate.ValidationRunner(validators)

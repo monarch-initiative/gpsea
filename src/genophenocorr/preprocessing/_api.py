@@ -12,6 +12,9 @@ class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
     def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
         """
         Determine :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+
+        Raises:
+            ValueError: if there is an error of any kind.
         """
         pass
 
@@ -20,6 +23,13 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
+        """
+        Compute functional annotations for the variant coordinates. The annotations can be empty.
+
+        Returns: a sequence of transcript annotations
+        Raises:
+            ValueError if the annotation cannot proceed due to the remote resource being offline, etc.
+        """
         pass
 
 
