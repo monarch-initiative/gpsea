@@ -295,12 +295,13 @@ def _summarize_validation(policy: str,
                 if node.has_errors():
                     lines.append(l_pad + ' errors:')
                     for error in node.errors():
-                        lines.append(l_pad + ' ' + error.message + error.solution if error.solution else '')
+                        lines.append(l_pad + ' ' + error.message
+                                     + (f'. {error.solution}' if error.solution else ''))
                 if node.has_warnings():
                     lines.append(l_pad + ' warnings:')
                     for warning in node.warnings():
-                        lines.append(l_pad + ' ·' + warning.message + '.'
-                                     + f' {warning.solution}' if warning.solution else '')
+                        lines.append(l_pad + ' ·' + warning.message
+                                     + (f'. {warning.solution}' if warning.solution else ''))
     else:
         lines.append('No errors or warnings were found')
     return lines
