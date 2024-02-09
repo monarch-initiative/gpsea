@@ -3,6 +3,7 @@ import typing
 import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
+from genophenocorr.preprocessing import ProteinMetadataService
 
 from .._api import PatientCategory, BooleanPredicate
 
@@ -156,19 +157,21 @@ class ExonPredicate(BooleanPredicate):
 
 class ProtFeatureTypePredicate(BooleanPredicate):
     """
-    `ExonPredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
-    in the transcript of interest.
+    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
+    in the protein encoded by the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
     :param feature_type: an instance of the target :class:`FeatureType`.
+    :param protein_service: an instance of a :class:`ProteinMetadataService`.
     """
 
-    def __init__(self, transcript_id: str, feature_type: FeatureType) -> None:
+    def __init__(self, transcript_id: str, feature_type: FeatureType, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
         self._feature_type = hpotk.util.validate_instance(feature_type, FeatureType, 'feature_type')
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
-        return f'Variant that affects {self._feature_type.name} protein feature type on {self._tx_id}'
+        return f'Variant that affects {self._feature_type.name} feature type on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -180,14 +183,19 @@ class ProtFeatureTypePredicate(BooleanPredicate):
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     prot_loc = ann.protein_effect_location
-                    for prot in ann.protein_affected:
-                        for feat in prot.protein_features:
-                            if feat.feature_type == self._feature_type:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    return BooleanPredicate.YES
+                    prot_id = ann.protein_id
+                    if prot_id is not None and prot_loc is not None:
+                        proteins = self._protein_service.annotate(prot_id)
+                        for prot in proteins:
+                            if prot.protein_id == prot_id:
+                                for feat in prot.protein_features:
+                                    if feat.feature_type == self._feature_type:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            return BooleanPredicate.YES
 
         return BooleanPredicate.NO
-
+        #TODO: Add a logger field, add a branch that handles the state where prot_id is set but prot_loc is not - gives warning
+    
     def __str__(self):
         return repr(self)
 
@@ -206,12 +214,13 @@ class ProtFeaturePredicate(BooleanPredicate):
     :param protein_feature_name: a `str` with the name of the protein feature.
     """
 
-    def __init__(self, transcript_id: str, protein_feature_name: str) -> None:
+    def __init__(self, transcript_id: str, protein_feature_name: str, protein_service:ProteinMetadataService) -> None:
         self._tx_id = transcript_id
         self._pf_name = hpotk.util.validate_instance(protein_feature_name, str, 'protein_feature_name')
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
-        return f'Variant that affects {self._pf_name} protein feature on {self._tx_id}'
+        return f'Variant that affects {self._pf_name} feature on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
         self._check_patient(patient)
@@ -223,11 +232,15 @@ class ProtFeaturePredicate(BooleanPredicate):
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     prot_loc = ann.protein_effect_location
-                    for prot in ann.protein_affected:
-                        for feat in prot.protein_features:
-                            if feat.info.name == self._pf_name:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    return BooleanPredicate.YES
+                    prot_id = ann.protein_id
+                    if prot_id is not None and prot_loc is not None:
+                        proteins = self._protein_service.annotate(prot_id)
+                        for prot in proteins:
+                            if prot.protein_id == prot_id:
+                                for feat in prot.protein_features:
+                                    if feat.info.name == self._pf_name:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            return BooleanPredicate.YES
 
         return BooleanPredicate.NO
 
