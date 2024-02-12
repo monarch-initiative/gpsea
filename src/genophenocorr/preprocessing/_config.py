@@ -16,8 +16,6 @@ from ._audit import NotepadTree
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
-from ._protein import ProteinAnnotationCache, ProtCachingMetadataService
-from ._uniprot import UniprotProteinMetadataService
 from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
 from ._vv import VVHgvsVariantCoordinateFinder

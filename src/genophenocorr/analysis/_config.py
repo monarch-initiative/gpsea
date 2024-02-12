@@ -169,6 +169,7 @@ class CohortAnalysisConfigurationBuilder:
 def configure_cohort_analysis(cohort: Cohort,
                               hpo: hpotk.MinimalOntology,
                               protein_source: str = 'UNIPROT',
+                              cache_dir: typing.Optional[str] = None,
                               config: typing.Optional[CohortAnalysisConfiguration] = None) -> CohortAnalysis:
     """
     Configure :class:`genophenocorr.analysis.CohortAnalysis` for given `cohort`.
@@ -182,7 +183,9 @@ def configure_cohort_analysis(cohort: Cohort,
     """
     if config is None:
         config = CohortAnalysisConfiguration.builder().build()
-    protein_metadata_service = _configure_protein_service(protein_source)
+    if cache_dir is None:
+        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    protein_metadata_service = _configure_protein_service(protein_source, cache_dir)
 
 
     return CommunistCohortAnalysis(cohort, hpo, protein_metadata_service,
