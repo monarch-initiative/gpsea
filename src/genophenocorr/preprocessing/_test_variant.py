@@ -11,8 +11,6 @@ from genophenocorr.model.genome import GenomeBuild, GRCh38
 
 from ._api import VariantCoordinateFinder
 from ._phenopacket import PhenopacketVariantCoordinateFinder
-from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
-from ._uniprot import UniprotProteinMetadataService
 from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
 from ._vep import VepFunctionalAnnotator
 from ._vv import VVHgvsVariantCoordinateFinder
@@ -59,11 +57,8 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
         return Parse(fh.read(), GenomicInterpretation())
 
 @pytest.fixture
-def variant_annotator(tmp_path):
-    pm = UniprotProteinMetadataService()
-    pac = ProteinAnnotationCache(tmp_path)
-    pfa = ProtCachingFunctionalAnnotator(pac, pm)
-    return VepFunctionalAnnotator(pfa)
+def variant_annotator():
+    return VepFunctionalAnnotator()
 
 @pytest.fixture
 def caching_annotator(variant_annotator, tmp_path):
