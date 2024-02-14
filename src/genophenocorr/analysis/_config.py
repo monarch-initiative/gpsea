@@ -6,18 +6,18 @@ import hpotk
 from genophenocorr.model import Cohort
 
 from ._api import CohortAnalysis
-from ._commie import CommunistCohortAnalysis
+from ._gp_impl import GpCohortAnalysis
 
 
-P_VAL_OPTIONS = ['bonferroni', 'b', 
-                 'sidak', 's', 
-                 'holm-sidak', 'hs', 
-                 'holm', 'h', 
-                 'simes-hochberg', 'sh', 
-                 'hommel', 'ho', 
-                 'fdr_bh', 
-                 'fdr_by', 
-                 'fdr_tsbh', 
+P_VAL_OPTIONS = ['bonferroni', 'b',
+                 'sidak', 's',
+                 'holm-sidak', 'hs',
+                 'holm', 'h',
+                 'simes-hochberg', 'sh',
+                 'hommel', 'ho',
+                 'fdr_bh',
+                 'fdr_by',
+                 'fdr_tsbh',
                  'fdr_tsbky',
                  'fdr_gbs',
                  None]
@@ -177,8 +177,8 @@ def configure_cohort_analysis(cohort: Cohort,
     if config is None:
         config = CohortAnalysisConfiguration.builder().build()
 
-    return CommunistCohortAnalysis(cohort, hpo,
-                                   missing_implies_excluded=config.missing_implies_excluded,
-                                   include_sv=config.include_sv,
-                                   p_val_correction=config.pval_correction,
-                                   min_perc_patients_w_hpo=config.min_perc_patients_w_hpo)
+    return GpCohortAnalysis(cohort, hpo,
+                            missing_implies_excluded=config.missing_implies_excluded,
+                            include_sv=config.include_sv,
+                            p_val_correction=config.pval_correction,
+                            min_perc_patients_w_hpo=config.min_perc_patients_w_hpo)

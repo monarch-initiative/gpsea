@@ -99,7 +99,7 @@ def _filter_rare_phenotypes_using_hierarchy(patients: typing.Collection[Patient]
 
 
 
-class CommunistCohortAnalysis(CohortAnalysis):
+class GpCohortAnalysis(CohortAnalysis):
 
     def __init__(self, cohort: Cohort,
                  hpo: hpotk.MinimalOntology,
