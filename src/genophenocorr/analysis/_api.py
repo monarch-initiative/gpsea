@@ -130,7 +130,10 @@ class GenotypePhenotypeAnalysisResult:
         # Fill the frame cells
         for col in geno_idx.levels[0]:
             cnt = counts[col]
-            df[col, 'Count'] = cnt
+            # Format `Count` as `N/M` string, where `N` is the sample count
+            # and `M` is the number of usable samples - the samples where
+            # both genotype and phenotype predicates were able to make a call.
+            df[col, 'Count'] = cnt.map(str) + '/' + self._n_usable.map(str)
             df[col, 'Percent'] = cnt * 100 / self._n_usable
 
         # Add columns with p values and corrected p values (if present)
