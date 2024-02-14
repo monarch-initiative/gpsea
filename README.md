@@ -34,9 +34,9 @@ provides a pandas data frame with genotype-phenotype correlations:
 ```text
 FRAMESHIFT_VARIANT on NM_1234.5        No             Yes
                                     Count   Percent Count Percent   p value Corrected p value
-    Arachnodactyly [HP:0001166]         1      3.84    13    50.0   0.00078          0.020299
-    Seizure [HP:0001250]               11     84.62     9    69.2   0.64472          0.913432
-    Spasticity [HP:0001257]             8     61.54     9    69.2   1.00000          1.000000
+    Arachnodactyly [HP:0001166]      1/26      3.84 13/26    50.0   0.00078          0.020299
+    Spasticity [HP:0001257]          6/26     23.08 11/26    42.3   0.69245          1.000000
+    Hypertonia [HP:0001276]          6/17     35.29 11/17    64.7   1.00000          1.000000
     ...                               ...       ...    ...    ...       ...               ...
 ```
 
