@@ -35,5 +35,6 @@ def create_protein_test_data() -> Sequence[ProteinMetadata]:
             ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo('Disordered', Region(start=1988, end=2019))),
             ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo('Disordered', Region(start=2131, end=2406))),
             ProteinFeature.create(feature_type=FeatureType.REGION, info=FeatureInfo('Important for protein degradation', Region(start=2369, end=2663)))))
-        prots.append(prot_test, prot_doc)
+        prots.append(prot_test)
+        prots.append(prot_doc)
         return prots
