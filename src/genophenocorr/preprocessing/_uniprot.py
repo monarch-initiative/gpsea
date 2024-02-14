@@ -39,8 +39,8 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         if len(results) == 0:
             raise ValueError(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
         protein_list = []
+        unis = []
         for protein in results:
-            unis = []
             for uni in protein['uniProtKBCrossReferences']:
                 unis.append(uni['id'])
             if protein_id in unis:
@@ -60,9 +60,8 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                 except KeyError:
                     raise ValueError(f"No features for {protein_id}")
                 protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
-            else:
-                raise ValueError(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
         if len(protein_list) > 1:
             self._logger.info('UniProt found %d results for ID %s', len(protein_list), protein_id)
-        # TODO - DD would like to discuss an example when there are >1 items in this list.
+        elif len(protein_list) == 0:
+            raise ValueError(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
         return protein_list
