@@ -1,7 +1,7 @@
 import hpotk
 import pytest
 
-from .protein_test_service import ProteinTestMetadataService
+from genophenocorr.data import ProteinTestMetadataService
 from genophenocorr.model import *
 from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand
 

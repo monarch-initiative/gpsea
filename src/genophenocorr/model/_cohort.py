@@ -103,7 +103,6 @@ class Cohort(typing.Sized):
         """
         cohort_variants, cohort_phenotypes = set(), set()  # , cohort_proteins
         var_counts, pheno_count = Counter(), Counter() # , prot_counts
-        print(len(members))
         members = set(members)
         excluded_members = []
         for patient in members:
@@ -129,7 +128,6 @@ class Cohort(typing.Sized):
         all_patients (Sequence[Patient]): A set of all Patient objects in the Cohort
         all_phenotypes (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort
         all_variants (Sequence[Variant]): A set of all Variant objects in the Cohort
-        all_proteins (Sequence[ProteinMetadata]): A set of all ProteinMetadata objects in the Cohort
         all_transcripts (Sequence[string]): A set of all transcript IDs referenced in all the Variant objects
         total_patient_count (integer): The total number of Patient objects
     Methods:
@@ -234,6 +232,20 @@ class Cohort(typing.Sized):
             list: A list of tuples, formatted (variant string, number of patients with that variant)
         """
         return self._all_counts_dict.get('variants').most_common(top)
+    
+    def list_all_proteins(self, top=None):
+        """
+        Args:
+            top (integer, Optional): If not given, lists all proteins. Otherwise, lists only the `top` highest counts
+        Returns:
+            list: A list of tuples, formatted (protein ID string, number of variants with that protein)
+        """
+        prots = Counter()
+        for pat in [pats for pats in self.all_patients if pats not in self.all_excluded_patients]:
+            for var in pat.variants:
+                for trans in var.tx_annotations:
+                    prots.update([trans.protein_id])
+        return prots.most_common(top)
 
     def list_data_by_tx(self, transcript=None):
         """
@@ -243,7 +255,7 @@ class Cohort(typing.Sized):
             dictionary: Each transcript ID references a Counter(), with the variant effect as the key and total variants with that effect as the count value
         """
         if transcript is not None:
-            var_type_dict = {transcript: Counter()}
+            var_type_dict = {transcript: Counter()} 
         else:
             var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
         for var in self.all_variants:
