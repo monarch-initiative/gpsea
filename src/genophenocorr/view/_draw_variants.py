@@ -126,18 +126,18 @@ class VariantsVisualizer:
             cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
             self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
 
-        # draw the features
+        # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
         for exon_x_min, exon_x_max in feature_limits:
             draw_rectangle(exon_x_min, feature_y_min, exon_x_max, feature_y_max, line_color=self.feature_outline_color,
                            fill_color=np.random.choice(self.feature_colors), line_width=1.0)
 
-        # draw the transcript track
+        # draw the exons (transcript track)
         transcript_y_min, transcript_y_max = 0.39, 0.43
-        # iterate over pairs in protein_limits
-        for protein_x_min, protein_x_max in [exon_limits[i:i + 2] for i in range(len(exon_limits) - 1)]:
+        # iterate over pairs
+        for exon_x_min, exon_x_max in [exon_limits[i:i + 2] for i in range(len(exon_limits) - 1)]:
             cur_color = next(self.exon_colors)
-            draw_rectangle(protein_x_min, transcript_y_min, protein_x_max, transcript_y_max,
+            draw_rectangle(exon_x_min, transcript_y_min, exon_x_max, transcript_y_max,
                            line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
 
         plt.xlim(0, 1)
