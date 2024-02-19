@@ -52,22 +52,22 @@ class VariantsVisualizer:
         assert len(protein_metas) == 1
         self.protein_meta = protein_metas[0]
 
-        self.protein_track_bg_color = '#d3d3d3'
+        self.protein_track_color = '#d3d3d3'
         self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
         self.exon_colors = cycle(['blue', 'lightblue'])
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
-        draw_line(x, min_y, x, max_y, line_color=self.protein_track_bg_color, line_width=0.5)
-        draw_circle(x, max_y, circle_radius, line_color=self.protein_track_bg_color, fill_color=color, line_width=0.5)
+        draw_line(x, min_y, x, max_y, line_color=self.protein_track_color, line_width=0.5)
+        draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
-    def _marker_dim(self, marker_count, gray_y_max, marker_length=0.02, marker_radius=0.0025):
+    def _marker_dim(self, marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
         radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
-        length = gray_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
+        length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
 
     def draw_fig(self, limits, protein_limits, markers):
-        gray_x_min, gray_x_max = 0.15, 0.85
-        gray_y_min, gray_y_max = 0.492, 0.508
+        protein_track_x_min, protein_track_x_max = 0.15, 0.85
+        protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
         text_padding = 0.004
 
@@ -80,17 +80,17 @@ class VariantsVisualizer:
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
-        preprocess = lambda x: (x / max_x) * (gray_x_max - gray_x_min) + gray_x_min
+        preprocess = lambda x: (x / max_x) * (protein_track_x_max - protein_track_x_min) + protein_track_x_min
         protein_limits = preprocess(protein_limits)
         limits = preprocess(limits)
         markers = preprocess(markers)
 
-        # draw the gray bar
-        draw_rectangle(gray_x_min, gray_y_min, gray_x_max, gray_y_max, line_color='gray', fill_color='gray',
+        # draw the protein track
+        draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max, line_color='gray', fill_color='gray',
                        line_width=2.0)
         # x_axis
-        x_axis_y = gray_y_min - 0.02
-        x_axis_min_x, x_axis_max_x = gray_x_min, gray_x_max
+        x_axis_y = protein_track_y_min - 0.02
+        x_axis_min_x, x_axis_max_x = protein_track_x_min, protein_track_x_max
         big_tick_length, small_tick_length = 0.01, 0.005
         draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color='black', line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color='black',
@@ -103,9 +103,9 @@ class VariantsVisualizer:
                     ha='center', va='top')
 
         # y_axis
-        y_axis_x = gray_x_min - 0.02
-        y_axis_min_y = gray_y_max + 0.01
-        _, y_axis_max_y = self._marker_dim(max_marker_count, gray_y_max)
+        y_axis_x = protein_track_x_min - 0.02
+        y_axis_min_y = protein_track_y_max + 0.01
+        _, y_axis_max_y = self._marker_dim(max_marker_count, protein_track_y_max)
         draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color='black', line_width=1.0)
         draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color='black',
                   line_width=1.0)  # 0 tick
@@ -119,10 +119,10 @@ class VariantsVisualizer:
                     va='center', rotation=90)  # x axis label
 
         # draw markers
-        marker_y_min = gray_y_max
+        marker_y_min = protein_track_y_max
         for marker in markers:
             marker_count = marker_counts[np.where(markers == marker)[0][0]]
-            cur_radius, cur_length = self._marker_dim(marker_count, gray_y_max)
+            cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
             self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
 
         # draw the exons
