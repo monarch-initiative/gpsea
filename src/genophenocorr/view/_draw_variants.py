@@ -1,16 +1,9 @@
-import typing
-import os
 from itertools import cycle
 
 import numpy as np
 import matplotlib.pyplot as plt
-import hpotk
-from hpotk.validate import ValidationRunner
-from hpotk.validate import ObsoleteTermIdsValidator, PhenotypicAbnormalityValidator, AnnotationPropagationValidator
 
 from genophenocorr.model import Cohort
-from genophenocorr.preprocessing import configure_caching_patient_creator
-from genophenocorr.preprocessing import load_phenopacket_folder
 from genophenocorr.model.genome import GRCh38
 from genophenocorr.preprocessing import VVTranscriptCoordinateService
 from genophenocorr.preprocessing import UniprotProteinMetadataService
@@ -69,7 +62,8 @@ class VariantsVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
 
-    def draw_fig(self, limits, protein_limits, markers):
+    def draw_fig(self):
+        limits, protein_limits, markers = 1, 2, 3  # TODO
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
