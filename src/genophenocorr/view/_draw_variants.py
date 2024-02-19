@@ -55,6 +55,7 @@ class VariantsVisualizer:
         self.protein_track_color = '#d3d3d3'
         self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
         self.exon_colors = cycle(['blue', 'lightblue'])
+        self.exon_outline = 'black'
         self.axis_color = 'black'
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
@@ -129,8 +130,8 @@ class VariantsVisualizer:
         # draw the exons
         exon_y_min, exon_y_max = 0.485, 0.515
         for exon_x_min, exon_x_max in limits:
-            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color='black',
-                           fill_color=np.random.choice(next(self.exon_colors)), line_width=1.0)
+            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color=self.exon_outline,
+                           fill_color=next(self.exon_colors), line_width=1.0)
 
         # draw the protein
         protein_y_min, protein_y_max = 0.39, 0.43
