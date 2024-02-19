@@ -55,6 +55,7 @@ class VariantsVisualizer:
         self.protein_track_color = '#d3d3d3'
         self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
         self.exon_colors = cycle(['blue', 'lightblue'])
+        self.axis_color = 'black'
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
         draw_line(x, min_y, x, max_y, line_color=self.protein_track_color, line_width=0.5)
@@ -86,18 +87,18 @@ class VariantsVisualizer:
         markers = preprocess(markers)
 
         # draw the protein track
-        draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max, line_color='gray', fill_color='gray',
-                       line_width=2.0)
+        draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
+                       line_color=self.protein_track_color, fill_color=self.protein_track_color,line_width=2.0)
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
         x_axis_min_x, x_axis_max_x = protein_track_x_min, protein_track_x_max
         big_tick_length, small_tick_length = 0.01, 0.005
-        draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color='black', line_width=1.0)  # main line
-        draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color='black',
+        draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color, line_width=1.0)  # main line
+        draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # 0 tick
         draw_string("0", x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size, ha='center',
                     va='top')
-        draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color='black',
+        draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # max tick
         draw_string(str(max_x), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
@@ -106,12 +107,12 @@ class VariantsVisualizer:
         y_axis_x = protein_track_x_min - 0.02
         y_axis_min_y = protein_track_y_max + 0.01
         _, y_axis_max_y = self._marker_dim(max_marker_count, protein_track_y_max)
-        draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color='black', line_width=1.0)
-        draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color='black',
+        draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color=self.axis_color, line_width=1.0)
+        draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color=self.axis_color,
                   line_width=1.0)  # 0 tick
         draw_string("0", y_axis_x - small_tick_length - text_padding, y_axis_min_y, fontsize=font_size, ha='right',
                     va='center')
-        draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color='black',
+        draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color=self.axis_color,
                   line_width=1.0)  # max tick
         draw_string(str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
                     fontsize=font_size, ha='right', va='center')
