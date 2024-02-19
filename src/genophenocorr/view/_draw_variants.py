@@ -54,7 +54,7 @@ class VariantsVisualizer:
         self.axis_color = 'black'
 
         self.feature_limits = [[50, 100], [234, 700]]
-        self.exon_limits = [0, 101, 201, 351, 601, 730]
+        self.exon_limits = [(cds.start, cds.end) for cds in self.tx_coordinates.get_cds_regions()]
         self.variant_locations = [32, 634, 523, 34, 67, 342]
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
@@ -120,10 +120,9 @@ class VariantsVisualizer:
                     va='center', rotation=90)  # x axis label
 
         # draw the exons (transcript track)
-        print(self.tx_coordinates.get_cds_regions())
         transcript_y_min, transcript_y_max = 0.39, 0.43
         # iterate over pairs
-        for exon_x_min, exon_x_max in [exon_limits_relative[i:i + 2] for i in range(len(exon_limits_relative) - 1)]:
+        for exon_x_min, exon_x_max in exon_limits_relative:
             cur_color = next(self.exon_colors)
             draw_rectangle(exon_x_min, transcript_y_min, exon_x_max, transcript_y_max,
                            line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
