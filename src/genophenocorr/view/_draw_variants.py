@@ -131,22 +131,15 @@ class VariantsVisualizer:
         # draw the features
         exon_y_min, exon_y_max = 0.485, 0.515
         for exon_x_min, exon_x_max in limits:
-            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color=self.exon_outline,
+            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color=self.feature_outline_color,
                            fill_color=np.random.choice(self.feature_colors), line_width=1.0)
 
         # draw the protein
         protein_y_min, protein_y_max = 0.39, 0.43
-        light_blue = True
         # iterate over pairs in protein_limits
         for protein_x_min, protein_x_max in [protein_limits[i:i + 2] for i in range(len(protein_limits) - 1)]:
-            if light_blue:
-                color = 'lightblue'
-                light_blue = False
-            else:
-                color = 'blue'
-                light_blue = True
-            draw_rectangle(protein_x_min, protein_y_min, protein_x_max, protein_y_max, line_color='black',
-                           fill_color=color, line_width=1.0)
+            draw_rectangle(protein_x_min, protein_y_min, protein_x_max, protein_y_max, line_color=self.exon_outline_color,
+                           fill_color=next(self.exon_colors), line_width=1.0)
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
