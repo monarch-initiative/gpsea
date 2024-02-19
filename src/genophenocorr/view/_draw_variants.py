@@ -119,7 +119,7 @@ class VariantsVisualizer:
         draw_string("# Markers", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
                     va='center', rotation=90)  # x axis label
 
-        # draw markers
+        # draw variants
         marker_y_min = protein_track_y_max
         for marker in variant_locations:
             marker_count = marker_counts[np.where(variant_locations == marker)[0][0]]
@@ -127,18 +127,18 @@ class VariantsVisualizer:
             self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
 
         # draw the features
-        exon_y_min, exon_y_max = 0.485, 0.515
+        feature_y_min, feature_y_max = 0.485, 0.515
         for exon_x_min, exon_x_max in feature_limits:
-            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color=self.feature_outline_color,
+            draw_rectangle(exon_x_min, feature_y_min, exon_x_max, feature_y_max, line_color=self.feature_outline_color,
                            fill_color=np.random.choice(self.feature_colors), line_width=1.0)
 
-        # draw the protein
-        protein_y_min, protein_y_max = 0.39, 0.43
+        # draw the transcript track
+        transcript_y_min, transcript_y_max = 0.39, 0.43
         # iterate over pairs in protein_limits
         for protein_x_min, protein_x_max in [exon_limits[i:i + 2] for i in range(len(exon_limits) - 1)]:
             cur_color = next(self.exon_colors)
-            draw_rectangle(protein_x_min, protein_y_min, protein_x_max, protein_y_max, line_color=self.exon_outline_color,
-                           fill_color=cur_color, line_width=1.0)
+            draw_rectangle(protein_x_min, transcript_y_min, protein_x_max, transcript_y_max,
+                           line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
