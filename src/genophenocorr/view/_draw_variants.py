@@ -53,8 +53,8 @@ class VariantsVisualizer:
         self.protein_meta = protein_metas[0]
 
         self.protein_track_color = '#d3d3d3'
-        self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
-        self.feature_colors = ['blue', 'green', 'yellow', 'orange']
+        self.marker_colors = ['green', 'cyan', 'purple']
+        self.feature_colors = ['red', 'orange', 'yellow']
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
         self.exon_outline_color = 'black'
