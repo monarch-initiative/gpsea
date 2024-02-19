@@ -176,7 +176,7 @@ def configure_cohort_analysis(cohort: Cohort,
 
     :param cohort: a :class:`genophenocorr.model.Cohort` to analyze
     :param hpo: a :class:`hpotk.MinimalOntology` with HPO to use in the analysis
-    :param protein_source: the resource to retreive protein annotations from if we cannot find the annotations locally.
+    :param protein_source: the resource to retrieve protein annotations from if we cannot find the annotations locally.
      Choose from ``{'UNIPROT'}`` (just one fallback implementation is available at the moment).
     :param config: an optional :class:`CohortAnalysisConfiguration` to parameterize the analysis.
      The default parameters will be used if `None`.

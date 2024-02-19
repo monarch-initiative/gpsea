@@ -379,7 +379,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     is_preferred: bool,
                                     consequences: typing.Iterable[VariantEffect],
                                     exons_effected: typing.Sequence[int],
-                                    protein_id: typing.Sequence[str],
+                                    protein_id: typing.Optional[str],
                                     protein_effect_start: int,
                                     protein_effect_end: int,
                                     genotypes: Genotypes):

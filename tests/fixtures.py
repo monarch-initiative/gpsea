@@ -1,14 +1,14 @@
 import hpotk
 import pytest
 
-from genophenocorr.data import ProteinTestMetadataService
+from ._protein_test_service import ProteinTestMetadataService
 from genophenocorr.model import *
 from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
     return GenomicRegion(GRCh38.contig_by_name(contig), start, end, Strand.POSITIVE)
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def protein_test_service() -> ProteinTestMetadataService:
     return ProteinTestMetadataService()
 

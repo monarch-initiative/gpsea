@@ -1,8 +1,7 @@
 from hpotk import TermId
 
-from ._protein_test_service import ProteinTestMetadataService
 from genophenocorr.model import *
-from genophenocorr.model.genome import Contig, GenomicRegion, Region, Strand
+from genophenocorr.model.genome import Contig, GenomicRegion, Strand
 
 CONTIG = Contig('1', 'GB_ACC', 'REFSEQ_NAME', 'UCSC_NAME', 1_000)
 

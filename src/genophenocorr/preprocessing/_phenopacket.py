@@ -162,7 +162,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             Patient: A Patient object
         """
         sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
-        #print(f"Working on sample {sample_id}")
         # Check phenotype
         pfs = notepad.add_subsection('phenotype-features')
         phenotypes = self._phenotype_creator.process(
