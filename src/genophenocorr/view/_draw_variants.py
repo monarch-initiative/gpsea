@@ -1,5 +1,6 @@
 import typing
 import os
+from itertools import cycle
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,10 +52,13 @@ class VariantsVisualizer:
         assert len(protein_metas) == 1
         self.protein_meta = protein_metas[0]
 
+        self.protein_track_bg_color = '#d3d3d3'
+        self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
+        self.exon_colors = cycle(['blue', 'lightblue'])
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
-        draw_line(x, min_y, x, max_y, line_color='black', line_width=0.5)
-        draw_circle(x, max_y, circle_radius, line_color='black', fill_color=color, line_width=0.5)
+        draw_line(x, min_y, x, max_y, line_color=self.protein_track_bg_color, line_width=0.5)
+        draw_circle(x, max_y, circle_radius, line_color=self.protein_track_bg_color, fill_color=color, line_width=0.5)
 
     def _marker_dim(self, marker_count, gray_y_max, marker_length=0.02, marker_radius=0.0025):
         radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
@@ -68,7 +72,6 @@ class VariantsVisualizer:
         text_padding = 0.004
 
         plt.figure(figsize=(20, 20))
-        colors = ['red', 'green', 'yellow', 'orange', 'purple']
 
         max_x = max(np.max(limits), np.max(protein_limits), np.max(markers))
 
@@ -120,13 +123,13 @@ class VariantsVisualizer:
         for marker in markers:
             marker_count = marker_counts[np.where(markers == marker)[0][0]]
             cur_radius, cur_length = self._marker_dim(marker_count, gray_y_max)
-            self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(colors))
+            self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
 
         # draw the exons
         exon_y_min, exon_y_max = 0.485, 0.515
         for exon_x_min, exon_x_max in limits:
             draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color='black',
-                           fill_color=np.random.choice(colors), line_width=1.0)
+                           fill_color=np.random.choice(next(self.exon_colors)), line_width=1.0)
 
         # draw the protein
         protein_y_min, protein_y_max = 0.39, 0.43
