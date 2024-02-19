@@ -63,7 +63,9 @@ class VariantsVisualizer:
         return radius, length
 
     def draw_fig(self):
-        limits, protein_limits, markers = 1, 2, 3  # TODO
+        feature_limits = 1
+        exon_limits = 2
+        variant_locations = 3
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
@@ -71,17 +73,17 @@ class VariantsVisualizer:
 
         plt.figure(figsize=(20, 20))
 
-        max_x = max(np.max(limits), np.max(protein_limits), np.max(markers))
+        max_x = max(np.max(feature_limits), np.max(exon_limits), np.max(variant_locations))
 
         # count marker occurrences and remove duplicates
-        markers, marker_counts = np.unique(markers, return_counts=True)
+        variant_locations, marker_counts = np.unique(variant_locations, return_counts=True)
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
         preprocess = lambda x: (x / max_x) * (protein_track_x_max - protein_track_x_min) + protein_track_x_min
-        protein_limits = preprocess(protein_limits)
-        limits = preprocess(limits)
-        markers = preprocess(markers)
+        exon_limits = preprocess(exon_limits)
+        feature_limits = preprocess(feature_limits)
+        variant_locations = preprocess(variant_locations)
 
         # draw the protein track
         draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
@@ -118,21 +120,21 @@ class VariantsVisualizer:
 
         # draw markers
         marker_y_min = protein_track_y_max
-        for marker in markers:
-            marker_count = marker_counts[np.where(markers == marker)[0][0]]
+        for marker in variant_locations:
+            marker_count = marker_counts[np.where(variant_locations == marker)[0][0]]
             cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
             self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
 
         # draw the features
         exon_y_min, exon_y_max = 0.485, 0.515
-        for exon_x_min, exon_x_max in limits:
+        for exon_x_min, exon_x_max in feature_limits:
             draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max, line_color=self.feature_outline_color,
                            fill_color=np.random.choice(self.feature_colors), line_width=1.0)
 
         # draw the protein
         protein_y_min, protein_y_max = 0.39, 0.43
         # iterate over pairs in protein_limits
-        for protein_x_min, protein_x_max in [protein_limits[i:i + 2] for i in range(len(protein_limits) - 1)]:
+        for protein_x_min, protein_x_max in [exon_limits[i:i + 2] for i in range(len(exon_limits) - 1)]:
             draw_rectangle(protein_x_min, protein_y_min, protein_x_max, protein_y_max, line_color=self.exon_outline_color,
                            fill_color=next(self.exon_colors), line_width=1.0)
 
