@@ -55,8 +55,9 @@ class VariantsVisualizer:
         self.protein_track_color = '#d3d3d3'
         self.marker_colors = ['red', 'green', 'yellow', 'orange', 'purple']
         self.feature_colors = ['blue', 'green', 'yellow', 'orange']
+        self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
-        self.exon_outline = 'black'
+        self.exon_outline_color = 'black'
         self.axis_color = 'black'
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
