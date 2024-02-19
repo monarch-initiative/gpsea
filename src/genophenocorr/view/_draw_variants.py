@@ -63,9 +63,10 @@ class VariantsVisualizer:
         return radius, length
 
     def draw_fig(self):
-        feature_limits = 1
-        exon_limits = 2
-        variant_locations = 3
+        feature_limits = [[50, 100], [234, 700]]
+        exon_limits = [0, 101, 201, 351, 601, 730]
+        variant_locations = [32, 634, 523, 34, 67, 342]
+
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
@@ -135,11 +136,15 @@ class VariantsVisualizer:
         protein_y_min, protein_y_max = 0.39, 0.43
         # iterate over pairs in protein_limits
         for protein_x_min, protein_x_max in [exon_limits[i:i + 2] for i in range(len(exon_limits) - 1)]:
+            cur_color = next(self.exon_colors)
             draw_rectangle(protein_x_min, protein_y_min, protein_x_max, protein_y_max, line_color=self.exon_outline_color,
-                           fill_color=next(self.exon_colors), line_width=1.0)
+                           fill_color=cur_color, line_width=1.0)
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
         plt.gca().set_aspect('equal')
         plt.axis('off')
+        plt.title(f'[Working title:] transcript: {self.tx_coordinates.identifier}, '
+                  f'protein: {self.protein_meta.protein_id},'
+                  f'protein name: {self.protein_meta.label}')
         plt.show()
