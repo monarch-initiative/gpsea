@@ -35,11 +35,11 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
 
 
 class VariantsVisualizer:
-    def draw_marker(self, x, min_y, max_y, circle_radius, color):
+    def _draw_marker(self, x, min_y, max_y, circle_radius, color):
         draw_line(x, min_y, x, max_y, line_color='black', line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color='black', fill_color=color, line_width=0.5)
 
-    def marker_dim(self, marker_count, gray_y_max, marker_length=0.02, marker_radius=0.0025):
+    def _marker_dim(self, marker_count, gray_y_max, marker_length=0.02, marker_radius=0.0025):
         radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
         length = gray_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
@@ -85,7 +85,7 @@ class VariantsVisualizer:
         # y_axis
         y_axis_x = gray_x_min - 0.02
         y_axis_min_y = gray_y_max + 0.01
-        _, y_axis_max_y = self.marker_dim(max_marker_count, gray_y_max)
+        _, y_axis_max_y = self._marker_dim(max_marker_count, gray_y_max)
         draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color='black', line_width=1.0)
         draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color='black',
                   line_width=1.0)  # 0 tick
@@ -102,8 +102,8 @@ class VariantsVisualizer:
         marker_y_min = gray_y_max
         for marker in markers:
             marker_count = marker_counts[np.where(markers == marker)[0][0]]
-            cur_radius, cur_length = self.marker_dim(marker_count, gray_y_max)
-            self.draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(colors))
+            cur_radius, cur_length = self._marker_dim(marker_count, gray_y_max)
+            self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(colors))
 
         # draw the exons
         exon_y_min, exon_y_max = 0.485, 0.515
