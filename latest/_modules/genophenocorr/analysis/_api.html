@@ -217,7 +217,10 @@
         <span class="c1"># Fill the frame cells</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">geno_idx</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">cnt</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;Count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+            <span class="c1"># Format `Count` as `N/M` string, where `N` is the sample count</span>
+            <span class="c1"># and `M` is the number of usable samples - the samples where</span>
+            <span class="c1"># both genotype and phenotype predicates were able to make a call.</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;Count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
             <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span>
 
         <span class="c1"># Add columns with p values and corrected p values (if present)</span>
