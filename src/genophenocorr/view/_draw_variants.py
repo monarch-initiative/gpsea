@@ -32,6 +32,7 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
 
 class VariantsVisualizer:
     def __init__(self, transcript_id: str, protein_id: str, cohort: Cohort):
+        # TODO: remove params here and have public method to take only info nec for plotting, no state in this class
         self.transcript_id = transcript_id
         self.tx_coordinates = VVTranscriptCoordinateService(genome_build=GRCh38).fetch(self.transcript_id)
         self.protein_id = protein_id
