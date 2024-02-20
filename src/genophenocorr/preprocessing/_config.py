@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
-from ._api import FunctionalAnnotator, ProteinMetadataService
+from ._api import FunctionalAnnotator
 from ._audit import NotepadTree
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
@@ -46,6 +46,7 @@ def configure_caching_cohort_creator(hpo: hpotk.MinimalOntology,
     """
     if cache_dir is None:
         cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    os.makedirs(cache_dir, exist_ok=True)
 
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
