@@ -8,7 +8,7 @@ from genophenocorr.analysis.predicate.genotype import *
 from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
 
-from .fixtures import toy_cohort, protein_test_service
+from .conftest import toy_cohort, protein_test_service
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
