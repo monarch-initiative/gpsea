@@ -8,6 +8,7 @@ from genophenocorr.model import Cohort
 from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingMetadataService
 
 from ._api import CohortAnalysis
+from ._filter import SimplePhenotypeFilter
 from ._gp_impl import GpCohortAnalysis
 
 
@@ -23,6 +24,7 @@ P_VAL_OPTIONS = (
     'fdr_gbs',
     None,
 )
+
 
 class CohortAnalysisConfiguration:
     """
@@ -186,13 +188,19 @@ def configure_cohort_analysis(cohort: Cohort,
         cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
     protein_metadata_service = _configure_protein_service(protein_source, cache_dir)
 
+    # Phenotype filter defines how we select the HPO terms of interest.
+    # For instance, we may choose to only investigate the terms
+    # which annotate at least 3 cohort members, etc.
+    phenotype_filter = SimplePhenotypeFilter(hpo, config.min_perc_patients_w_hpo)
+
     return GpCohortAnalysis(
-        cohort, hpo,
-        protein_metadata_service,
+        cohort=cohort,
+        hpo=hpo,
+        protein_service=protein_metadata_service,
+        phenotype_filter=phenotype_filter,
         missing_implies_excluded=config.missing_implies_excluded,
         include_sv=config.include_sv,
         p_val_correction=config.pval_correction,
-        min_perc_patients_w_hpo=config.min_perc_patients_w_hpo,
     )
 
 
@@ -207,6 +215,7 @@ def _configure_protein_service(protein_fallback: str, cache_dir) -> ProteinMetad
     # Assemble the final protein metadata service
     protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
     return protein_metadata_service
+
 
 def _configure_fallback_protein_service(protein_fallback: str) -> ProteinMetadataService:
     if protein_fallback == 'UNIPROT':
