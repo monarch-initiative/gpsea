@@ -74,33 +74,42 @@ class VariantsVisualizer:
 
         plt.figure(figsize=(20, 20))
 
-        max_x = max(np.max(self.feature_limits), np.max(self.exon_limits), np.max(self.variant_locations))
+        min_x_absolute = min(np.min(self.feature_limits), np.min(self.exon_limits), np.min(self.variant_locations))
+        max_x_absolute = max(np.max(self.feature_limits), np.max(self.exon_limits), np.max(self.variant_locations))
 
         # count marker occurrences and remove duplicates
         variant_locations_counted_absolute, marker_counts = np.unique(self.variant_locations, return_counts=True)
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
-        preprocess = lambda x: (x / max_x) * (protein_track_x_max - protein_track_x_min) + protein_track_x_min
+        def preprocess(x_absolute):
+            shifted_to_0_1 = ((x_absolute - min_x_absolute) / (max_x_absolute - min_x_absolute))
+            print(f'{shifted_to_0_1=}')
+            relative_scale = (protein_track_x_max - protein_track_x_min)
+            print(f'{relative_scale=}')
+            print(f'{shifted_to_0_1 * relative_scale=}')
+            return shifted_to_0_1 * relative_scale + protein_track_x_min
+
         exon_limits_relative = preprocess(self.exon_limits)
         feature_limits_relative = preprocess(self.feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
 
         # draw the protein track
         draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
-                       line_color=self.protein_track_color, fill_color=self.protein_track_color,line_width=2.0)
+                       line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
         x_axis_min_x, x_axis_max_x = protein_track_x_min, protein_track_x_max
         big_tick_length, small_tick_length = 0.01, 0.005
-        draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color, line_width=1.0)  # main line
+        draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color,
+                  line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
-                  line_width=1.0)  # 0 tick
-        draw_string("0", x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size, ha='center',
-                    va='top')
+                  line_width=1.0)  # minimum tick
+        draw_string(str(min_x_absolute), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
+                    ha='center', va='top')
         draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # max tick
-        draw_string(str(max_x), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
+        draw_string(str(max_x_absolute), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
 
         # y_axis
