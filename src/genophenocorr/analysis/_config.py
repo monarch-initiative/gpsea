@@ -8,22 +8,21 @@ from genophenocorr.model import Cohort
 from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingMetadataService
 
 from ._api import CohortAnalysis
-from ._commie import CommunistCohortAnalysis
+from ._gp_impl import GpCohortAnalysis
 
 
-
-P_VAL_OPTIONS = ['bonferroni', 'b', 
-                 'sidak', 's', 
-                 'holm-sidak', 'hs', 
-                 'holm', 'h', 
-                 'simes-hochberg', 'sh', 
-                 'hommel', 'ho', 
-                 'fdr_bh', 
-                 'fdr_by', 
-                 'fdr_tsbh', 
-                 'fdr_tsbky',
-                 'fdr_gbs',
-                 None]
+P_VAL_OPTIONS = (
+    'bonferroni', 'b',
+    'sidak', 's',
+    'holm-sidak', 'hs',
+    'holm', 'h',
+    'simes-hochberg', 'sh',
+    'hommel', 'ho',
+    'fdr_bh', 'fdr_by',
+    'fdr_tsbh', 'fdr_tsbky',
+    'fdr_gbs',
+    None,
+)
 
 class CohortAnalysisConfiguration:
     """
@@ -187,12 +186,15 @@ def configure_cohort_analysis(cohort: Cohort,
         cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
     protein_metadata_service = _configure_protein_service(protein_source, cache_dir)
 
+    return GpCohortAnalysis(
+        cohort, hpo,
+        protein_metadata_service,
+        missing_implies_excluded=config.missing_implies_excluded,
+        include_sv=config.include_sv,
+        p_val_correction=config.pval_correction,
+        min_perc_patients_w_hpo=config.min_perc_patients_w_hpo,
+    )
 
-    return CommunistCohortAnalysis(cohort, hpo, protein_metadata_service,
-                                   missing_implies_excluded=config.missing_implies_excluded,
-                                   include_sv=config.include_sv,
-                                   p_val_correction=config.pval_correction,
-                                   min_perc_patients_w_hpo=config.min_perc_patients_w_hpo)
 
 def _configure_protein_service(protein_fallback: str, cache_dir) -> ProteinMetadataService:
     # (1) ProteinMetadataService
