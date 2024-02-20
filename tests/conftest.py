@@ -13,7 +13,6 @@ def pytest_addoption(parser):
         "--runonline", action="store_true", default=False, help="run online tests"
     )
 
-
 def pytest_configure(config):
     config.addinivalue_line("markers", "online: mark test that require internet access to run")
 
