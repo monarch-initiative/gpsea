@@ -89,7 +89,7 @@
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ProteinMetadataService</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
 
 
 <span class="k">def</span> <span class="nf">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -162,11 +162,10 @@
 <span class="sd">    Non-coding variant effects where we do not complain if the functional annotation lacks the protein effects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_annotator</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">include_computational_txs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_annotator</span> <span class="o">=</span> <span class="n">protein_annotator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="s1">&#39;https://rest.ensembl.org/vep/human/region/</span><span class="si">%s</span><span class="s1">?LoF=1&amp;canonical=1&#39;</span> \
                     <span class="s1">&#39;&amp;domains=1&amp;hgvs=1&#39;</span> \
                     <span class="s1">&#39;&amp;mutfunc=1&amp;numbers=1&amp;protein=1&amp;refseq=1&amp;mane=1&#39;</span> \
@@ -239,7 +238,6 @@
             <span class="n">exons_effected</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exons_effected</span><span class="p">)</span>
 
         <span class="n">protein_id</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protein_id&#39;</span><span class="p">)</span>
-        <span class="n">protein</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span>
         <span class="n">protein_effect_start</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protein_start&#39;</span><span class="p">)</span>
         <span class="n">protein_effect_end</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protein_end&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">protein_effect_start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">protein_effect_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -259,7 +257,7 @@
                                     <span class="n">is_preferred</span><span class="p">,</span>
                                     <span class="n">var_effects</span><span class="p">,</span>
                                     <span class="n">exons_effected</span><span class="p">,</span>
-                                    <span class="n">protein</span><span class="p">,</span>
+                                    <span class="n">protein_id</span><span class="p">,</span>
                                     <span class="n">protein_effect</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_query_vep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

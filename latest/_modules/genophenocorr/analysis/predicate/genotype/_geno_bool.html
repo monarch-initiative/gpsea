@@ -86,6 +86,7 @@
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">BooleanPredicate</span>
 
@@ -268,21 +269,23 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">ProtFeatureTypePredicate</span><span class="p">(</span><span class="n">BooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ExonPredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`</span>
-<span class="sd">    in the transcript of interest.</span>
+<span class="sd">    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`</span>
+<span class="sd">    in the protein encoded by the transcript of interest.</span>
 
 <span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
 <span class="sd">    :param feature_type: an instance of the target :class:`FeatureType`.</span>
+<span class="sd">    :param protein_service: an instance of a :class:`ProteinMetadataService`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">protein_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="s1">&#39;feature_type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_service</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="s1">&#39;protein_service&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ProtFeatureTypePredicate.get_question">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> protein feature type on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> feature type on protein encoded by transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
 <div class="viewcode-block" id="ProtFeatureTypePredicate.test">
@@ -297,15 +300,20 @@
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
                     <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
-                    <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="p">:</span>
-                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                                    <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                    <span class="n">prot_id</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_id</span>
+                    <span class="k">if</span> <span class="n">prot_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prot_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">proteins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">prot_id</span><span class="p">:</span>
+                                <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="p">:</span>
+                                        <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
+                                            <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
 
         <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
 
-
+        <span class="c1">#TODO: Add a logger field, add a branch that handles the state where prot_id is set but prot_loc is not - gives warning</span>
+    
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -327,14 +335,15 @@
 <span class="sd">    :param protein_feature_name: a `str` with the name of the protein feature.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_feature_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_feature_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_service</span><span class="p">:</span><span class="n">ProteinMetadataService</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_feature_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;protein_feature_name&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_service</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="s1">&#39;protein_service&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ProtFeaturePredicate.get_question">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1"> protein feature on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1"> feature on protein encoded by transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
 <div class="viewcode-block" id="ProtFeaturePredicate.test">
@@ -349,11 +358,15 @@
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
                     <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
-                    <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_affected</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="p">:</span>
-                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">prot_loc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                                    <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                    <span class="n">prot_id</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_id</span>
+                    <span class="k">if</span> <span class="n">prot_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prot_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">proteins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">prot_id</span><span class="p">:</span>
+                                <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="p">:</span>
+                                        <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
+                                            <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
 
         <span class="k">return</span> <span class="n">BooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
 
