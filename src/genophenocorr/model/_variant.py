@@ -45,7 +45,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.
         variant_effects (Iterable[string]): An iterable of predicted effects given by VEP
         affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.
-        affected_protein (ProteinMetadata): A ProteinMetadata object representing the protein affected by this transcript
+        protein_id (string): The protein ID for the protein encoded by the transcript.
         protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates
          of the effect on the protein sequence.
     """
@@ -56,18 +56,21 @@ class TranscriptAnnotation(TranscriptInfoAware):
                  is_preferred: bool,
                  variant_effects: typing.Iterable[VariantEffect],
                  affected_exons: typing.Optional[typing.Iterable[int]],
-                 affected_protein: typing.Iterable[ProteinMetadata],
+                 protein_id: typing.Optional[str],
                  protein_effect_coordinates: typing.Optional[Region]):
         self._gene_id = hpotk.util.validate_instance(gene_id, str, 'gene_id')
         self._tx_id = hpotk.util.validate_instance(tx_id, str, 'tx_id')
         self._hgvsc_id = hpotk.util.validate_optional_instance(hgvsc, str, 'hgvsc')
         self._is_preferred = hpotk.util.validate_instance(is_preferred, bool, 'is_preferred')
         self._variant_effects = tuple(variant_effects)
-        if affected_exons is not None:
+        if affected_exons is not None: 
             self._affected_exons = tuple(affected_exons)
         else:
             self._affected_exons = None
-        self._affected_protein = tuple(affected_protein)
+        if protein_id is not None:
+            self._protein_id = hpotk.util.validate_instance(protein_id, str, 'protein_id')
+        else:
+            self._protein_id = None
         self._protein_effect_location = hpotk.util.validate_optional_instance(protein_effect_coordinates, Region,
                                                                              'protein_effect_coordinates')
 
@@ -123,12 +126,12 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._affected_exons
 
     @property
-    def protein_affected(self) -> typing.Sequence[ProteinMetadata]:
+    def protein_id(self) -> typing.Optional[str]:
         """
         Returns:
-            Sequence[ProteinMetadata]: The ProteinMetadata object representing the protein that is affected by the alteration of this transcript
+            Optional[str]: The protein accession ID for the protein relevant to the variant
         """
-        return self._affected_protein
+        return self._protein_id
 
     @property
     def protein_effect_location(self) -> typing.Optional[Region]:
@@ -146,7 +149,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
                f"is_preferred:{self.is_preferred}," \
                f"variant_effects:{self.variant_effects}," \
                f"overlapping_exons:{self.overlapping_exons}," \
-               f"protein_affected:{self.protein_affected}," \
+               f"protein_id:{self.protein_id}," \
                f"protein_effect_location:{self.protein_effect_location})"
 
     def __eq__(self, other) -> bool:
@@ -157,7 +160,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
             and self.transcript_id == other.transcript_id \
             and self.variant_effects == other.variant_effects \
             and self.overlapping_exons == other.overlapping_exons \
-            and self.protein_affected == other.protein_affected \
+            and self.protein_id == other.protein_id \
             and self.protein_effect_location == other.protein_effect_location
 
     def __repr__(self) -> str:
@@ -165,8 +168,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
 
     def __hash__(self) -> int:
         return hash((self.gene_id, self.hgvsc_id, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
-                     self.protein_affected, self.protein_effect_location))
-
+                     self.protein_id, self.protein_effect_location))
 
 
 class VariantCoordinates:
@@ -377,13 +379,13 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     is_preferred: bool,
                                     consequences: typing.Iterable[VariantEffect],
                                     exons_effected: typing.Sequence[int],
-                                    protein: typing.Sequence[ProteinMetadata],
+                                    protein_id: typing.Optional[str],
                                     protein_effect_start: int,
                                     protein_effect_end: int,
                                     genotypes: Genotypes):
         protein_effect = Region(protein_effect_start, protein_effect_end)
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, is_preferred, consequences, exons_effected,
-                                          protein, protein_effect)
+                                          protein_id, protein_effect)
         return Variant(variant_coordinates, (transcript,), genotypes)
 
     def __init__(self, var_coordinates: VariantCoordinates,
