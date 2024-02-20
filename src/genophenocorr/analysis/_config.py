@@ -1,26 +1,28 @@
 import logging
+import os
 import typing
 
 import hpotk
 
 from genophenocorr.model import Cohort
+from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, ProtCachingMetadataService
 
 from ._api import CohortAnalysis
 from ._gp_impl import GpCohortAnalysis
 
 
-P_VAL_OPTIONS = ['bonferroni', 'b',
-                 'sidak', 's',
-                 'holm-sidak', 'hs',
-                 'holm', 'h',
-                 'simes-hochberg', 'sh',
-                 'hommel', 'ho',
-                 'fdr_bh',
-                 'fdr_by',
-                 'fdr_tsbh',
-                 'fdr_tsbky',
-                 'fdr_gbs',
-                 None]
+P_VAL_OPTIONS = (
+    'bonferroni', 'b',
+    'sidak', 's',
+    'holm-sidak', 'hs',
+    'holm', 'h',
+    'simes-hochberg', 'sh',
+    'hommel', 'ho',
+    'fdr_bh', 'fdr_by',
+    'fdr_tsbh', 'fdr_tsbky',
+    'fdr_gbs',
+    None,
+)
 
 class CohortAnalysisConfiguration:
     """
@@ -165,20 +167,50 @@ class CohortAnalysisConfigurationBuilder:
 
 def configure_cohort_analysis(cohort: Cohort,
                               hpo: hpotk.MinimalOntology,
+                              protein_source: str = 'UNIPROT',
+                              cache_dir: typing.Optional[str] = None,
                               config: typing.Optional[CohortAnalysisConfiguration] = None) -> CohortAnalysis:
     """
     Configure :class:`genophenocorr.analysis.CohortAnalysis` for given `cohort`.
 
     :param cohort: a :class:`genophenocorr.model.Cohort` to analyze
     :param hpo: a :class:`hpotk.MinimalOntology` with HPO to use in the analysis
+    :param protein_source: the resource to retrieve protein annotations from if we cannot find the annotations locally.
+     Choose from ``{'UNIPROT'}`` (just one fallback implementation is available at the moment).
     :param config: an optional :class:`CohortAnalysisConfiguration` to parameterize the analysis.
      The default parameters will be used if `None`.
     """
     if config is None:
         config = CohortAnalysisConfiguration.builder().build()
+    if cache_dir is None:
+        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    protein_metadata_service = _configure_protein_service(protein_source, cache_dir)
 
-    return GpCohortAnalysis(cohort, hpo,
-                            missing_implies_excluded=config.missing_implies_excluded,
-                            include_sv=config.include_sv,
-                            p_val_correction=config.pval_correction,
-                            min_perc_patients_w_hpo=config.min_perc_patients_w_hpo)
+    return GpCohortAnalysis(
+        cohort, hpo,
+        protein_metadata_service,
+        missing_implies_excluded=config.missing_implies_excluded,
+        include_sv=config.include_sv,
+        p_val_correction=config.pval_correction,
+        min_perc_patients_w_hpo=config.min_perc_patients_w_hpo,
+    )
+
+
+def _configure_protein_service(protein_fallback: str, cache_dir) -> ProteinMetadataService:
+    # (1) ProteinMetadataService
+    # Setup fallback
+    protein_fallback = _configure_fallback_protein_service(protein_fallback)
+    # Setup protein metadata cache
+    prot_cache_dir = os.path.join(cache_dir, 'protein_cache')
+    os.makedirs(prot_cache_dir, exist_ok=True)
+    prot_cache = ProteinAnnotationCache(prot_cache_dir)
+    # Assemble the final protein metadata service
+    protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
+    return protein_metadata_service
+
+def _configure_fallback_protein_service(protein_fallback: str) -> ProteinMetadataService:
+    if protein_fallback == 'UNIPROT':
+        fallback1 = UniprotProteinMetadataService()
+    else:
+        raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
+    return fallback1

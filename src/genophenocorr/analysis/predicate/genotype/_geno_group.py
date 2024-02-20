@@ -3,6 +3,7 @@ import typing
 import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
+from genophenocorr.preprocessing import ProteinMetadataService
 
 from .._api import PatientCategory, GroupingPredicate
 
@@ -195,10 +196,13 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
     :param feature_type2: an instance of the second target :class:`FeatureType`.
     """
 
-    def __init__(self, transcript_id: str, feature_type1: FeatureType, feature_type2: FeatureType) -> None:
+    def __init__(self, transcript_id: str, feature_type1: FeatureType, feature_type2: FeatureType, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
         self._feature_type1 = hpotk.util.validate_instance(feature_type1, FeatureType, 'feature_type')
         self._feature_type2 = hpotk.util.validate_instance(feature_type2, FeatureType, 'feature_type2')
+        if feature_type1 == feature_type2:
+            raise ValueError(f"Cannot compare against same feature types. {feature_type1} equals {feature_type2}.")
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
         return f'Variant that affects {self._feature_type1.name} protein feature type vs {self._feature_type2} on {self._tx_id}'
@@ -214,14 +218,18 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     prot_loc = ann.protein_effect_location
-                    for prot in ann.protein_affected:
-                        for feat in prot.protein_features:
-                            if feat.feature_type == self._feature_type1:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    result[0] = True
-                            if feat.feature_type == self._feature_type2:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    result[1] = True
+                    prot_id = ann.protein_id
+                    if prot_id is not None and prot_loc is not None:
+                        proteins = self._protein_service.annotate(prot_id)
+                        for prot in proteins:
+                            if prot.protein_id == prot_id:
+                                for feat in prot.protein_features:
+                                    if feat.feature_type == self._feature_type1:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            result[0] = True
+                                    if feat.feature_type == self._feature_type2:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            result[1] = True
         if result == [True, False]:
             return GroupingPredicate.FIRST
         elif result == [False, True]:
@@ -233,7 +241,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProtFeatureTypePredicate(tx_id={self._tx_id}, feature_type1={self._feature_type1}, feature_type2={self._feature_type2})'
+        return f'ProtFeatureTypePredicate(tx_id={self._tx_id}, feature_type1={self._feature_type1}, feature_type2={self._feature_type2}, protein_service={self._protein_service})'
 
 
 class ProtFeaturesPredicate(GroupingPredicate):
@@ -249,10 +257,13 @@ class ProtFeaturesPredicate(GroupingPredicate):
     :param protein_feature2_name: a `str` with the name of the second protein feature.
     """
 
-    def __init__(self, transcript_id: str, protein_feature1_name: str, protein_feature2_name: str) -> None:
+    def __init__(self, transcript_id: str, protein_feature1_name: str, protein_feature2_name: str, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
         self._pf1_name = hpotk.util.validate_instance(protein_feature1_name, str, 'protein_feature1_name')
         self._pf2_name = hpotk.util.validate_instance(protein_feature2_name, str, 'protein_feature2_name')
+        if self._pf1_name == self._pf2_name:
+            raise ValueError(f"Cannot compare against the same features. {self._pf1_name} equals {self._pf2_name}.")
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
         return f'Variant that affects {self._pf1_name} protein feature vs {self._pf2_name} on {self._tx_id}'
@@ -268,14 +279,19 @@ class ProtFeaturesPredicate(GroupingPredicate):
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     prot_loc = ann.protein_effect_location
-                    for prot in ann.protein_affected:
-                        for feat in prot.protein_features:
-                            if feat.info.name == self._pf1_name:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    results[0] = True
-                            if feat.info.name == self._pf1_name:
-                                if len(list(range(max(prot_loc.start, feat.info.start), min(prot_loc.end, feat.info.end) + 1))) > 0:
-                                    results[1] = True
+                    prot_id = ann.protein_id
+                    if prot_id is not None and prot_loc is not None:
+                        proteins = self._protein_service.annotate(prot_id)
+                        for prot in proteins:
+                            if prot.protein_id == prot_id:
+                                for feat in prot.protein_features:
+                                    if feat.info.name == self._pf1_name:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            results[0] = True
+                                    if feat.info.name == self._pf2_name:
+                                        if prot_loc.overlaps_with(feat.info.region):
+                                            results[1] = True
+
         if results == [True, False]:
             return GroupingPredicate.FIRST
         elif results == [False, True]:
@@ -287,4 +303,4 @@ class ProtFeaturesPredicate(GroupingPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProtFeaturePredicate(tx_id={self._tx_id}, protein_feature1_name={self._pf1_name}, protein_feature2_name={self._pf2_name})'
+        return f'ProtFeaturePredicate(tx_id={self._tx_id}, protein_feature1_name={self._pf1_name}, protein_feature2_name={self._pf2_name}, protein_service={self._protein_service})'

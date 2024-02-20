@@ -48,7 +48,7 @@ We can then view the data using the list commands.
   >>> sorted(cohort.list_all_variants())
   [('1_281_281_A_G', 16), ('1_361_363_TTC_T', 13)]
   >>> sorted(cohort.list_all_proteins())
-  [('NP_09876.5', 26)]
+  [('NP_09876.5', 29)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]

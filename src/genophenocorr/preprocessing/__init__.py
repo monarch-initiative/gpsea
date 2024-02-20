@@ -5,7 +5,7 @@ from ._config import configure_caching_cohort_creator, configure_cohort_creator
 from ._patient import PatientCreator, CohortCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
-from ._protein import ProteinAnnotationCache, ProtCachingFunctionalAnnotator
+from ._protein import ProteinAnnotationCache, ProtCachingMetadataService
 from ._uniprot import UniprotProteinMetadataService
 from ._variant import VariantAnnotationCache, VarCachingFunctionalAnnotator
 from ._vep import VepFunctionalAnnotator
@@ -18,7 +18,7 @@ __all__ = [
     'PatientCreator', 'CohortCreator',
     'PhenopacketVariantCoordinateFinder', 'PhenopacketPatientCreator', 'load_phenopacket_folder', 'load_phenopacket',
     'PhenotypeCreator',
-    'ProteinAnnotationCache', 'ProtCachingFunctionalAnnotator',
+    'ProteinAnnotationCache', 'ProtCachingMetadataService',
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
     'VVHgvsVariantCoordinateFinder', 'VVTranscriptCoordinateService',

@@ -8,6 +8,7 @@ import pandas as pd
 from statsmodels.stats import multitest
 
 from genophenocorr.model import Patient, Cohort, VariantEffect, FeatureType
+from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import BooleanPredicate, PolyPredicate
 from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate, ProtFeaturesPredicate, ProtFeatureTypesPredicate
@@ -103,10 +104,12 @@ class GpCohortAnalysis(CohortAnalysis):
 
     def __init__(self, cohort: Cohort,
                  hpo: hpotk.MinimalOntology,
+                 protein_service: ProteinMetadataService,
                  missing_implies_excluded: bool = False,
                  include_sv: bool = False,
                  p_val_correction: typing.Optional[str] = None,
-                 min_perc_patients_w_hpo: typing.Union[float, int] = .1):
+                 min_perc_patients_w_hpo: typing.Union[float, int] = .1
+                 ):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
@@ -114,6 +117,7 @@ class GpCohortAnalysis(CohortAnalysis):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._phenotype_predicate_factory = PropagatingPhenotypeBooleanPredicateFactory(self._hpo,
                                                                                         missing_implies_excluded)
+        self._protein_service = protein_service
         self._correction = p_val_correction
         self._patient_list = list(cohort.all_patients) \
             if include_sv \
@@ -142,11 +146,11 @@ class GpCohortAnalysis(CohortAnalysis):
         return self._apply_boolean_predicate(predicate)
 
     def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = ProtFeatureTypePredicate(transcript_id=tx_id, feature_type=feature_type)
+        predicate = ProtFeatureTypePredicate(tx_id, feature_type, self._protein_service)
         return self._apply_boolean_predicate(predicate)
 
     def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = ProtFeaturePredicate(tx_id, feature)
+        predicate = ProtFeaturePredicate(tx_id, feature, self._protein_service)
         return self._apply_boolean_predicate(predicate)
 
     def compare_by_variant_effects(self, effect1: VariantEffect, effect2: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
@@ -162,11 +166,11 @@ class GpCohortAnalysis(CohortAnalysis):
         return self._apply_poly_predicate(predicate)
 
     def compare_by_protein_feature_types(self, feature_type1: FeatureType, feature_type2: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = ProtFeatureTypesPredicate(tx_id, feature_type1, feature_type2)
+        predicate = ProtFeatureTypesPredicate(tx_id, feature_type1, feature_type2, self._protein_service)
         return self._apply_poly_predicate(predicate)
 
     def compare_by_protein_features(self, feature1: str, feature2: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = ProtFeaturesPredicate(tx_id, feature1, feature2)
+        predicate = ProtFeaturesPredicate(tx_id, feature1, feature2, self._protein_service)
         return self._apply_poly_predicate(predicate)
 
     def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:

@@ -162,7 +162,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             Patient: A Patient object
         """
         sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
-
         # Check phenotype
         pfs = notepad.add_subsection('phenotype-features')
         phenotypes = self._phenotype_creator.process(
@@ -174,7 +173,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         vs = notepad.add_subsection('variants')
         variants = self._add_variants(sample_id, inputs, vs)
 
-        return Patient(sample_id, phenotypes=phenotypes, variants=variants, proteins=())
+        return Patient(sample_id, phenotypes=phenotypes, variants=variants)
 
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket, notepad: Notepad) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket

@@ -1,7 +1,7 @@
 from hpotk import TermId
 
 from genophenocorr.model import *
-from genophenocorr.model.genome import Contig, GenomicRegion, Region, Strand
+from genophenocorr.model.genome import Contig, GenomicRegion, Strand
 
 CONTIG = Contig('1', 'GB_ACC', 'REFSEQ_NAME', 'UCSC_NAME', 1_000)
 
@@ -31,14 +31,9 @@ def get_toy_cohort() -> Cohort:
     seizure_F = Phenotype(TermId.from_curie('HP:0001250'), 'Seizure', False)
     spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
 
-
-    prot_feat_1 = ProteinFeature.create(FeatureInfo('domain', Region(1, 75)), FeatureType.DOMAIN)
-    prot_feat_2 = ProteinFeature.create(FeatureInfo('region', Region(50, 100)), FeatureType.REGION)
-    prot = ProteinMetadata('NP_09876.5', 'FakeProtein', [prot_feat_1, prot_feat_2])
-
     snv = Variant.create_variant_from_scratch(VariantCoordinates(make_region(280, 281), 'A', 'G', 0), 'FakeGene',
                                                   'NM_1234.5', 'NM_1234.5:c.180A>G', False, [VariantEffect.MISSENSE_VARIANT], [1],
-                                                  [prot], 60, 60,
+                                                  'NP_09876.5', 60, 60,
                                                   Genotypes.from_mapping({
                                                       'A': Genotype.HETEROZYGOUS, 'B': Genotype.HETEROZYGOUS,
                                                       'C': Genotype.HOMOZYGOUS_ALTERNATE,
@@ -55,7 +50,7 @@ def get_toy_cohort() -> Cohort:
     deletion = Variant.create_variant_from_scratch(VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
                                                   'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del',
                                                   False, [VariantEffect.FRAMESHIFT_VARIANT],
-                                                  [2], [prot], 86, 87,
+                                                  [2], 'NP_09876.5', 86, 87,
                                                   Genotypes.from_mapping({
                                                       'D': Genotype.HETEROZYGOUS, 'F': Genotype.HETEROZYGOUS,
                                                       'G': Genotype.HETEROZYGOUS, 'H': Genotype.HETEROZYGOUS,
@@ -69,143 +64,117 @@ def get_toy_cohort() -> Cohort:
                                                    )
     het_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1), 'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], [prot], 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
     hom_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1),'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], [prot], 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
 
     patients = (
         Patient(SampleLabels('A'),
                 phenotypes=(arachnodactyly_T, spasticity_F, seizure_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('B'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('C'),
                 phenotypes=(arachnodactyly_F, spasticity_T, seizure_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('D'),
                 phenotypes=(arachnodactyly_T, spasticity_T, seizure_T),
-                variants=[snv, deletion],
-                proteins=[prot]
+                variants=[snv, deletion]
                 ),
         Patient(SampleLabels('E'),
                 phenotypes=(arachnodactyly_T, spasticity_T, seizure_F),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('F'),
                 phenotypes=(arachnodactyly_F, spasticity_F, seizure_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('G'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[snv, deletion],
-                proteins=[prot]
+                variants=[snv, deletion]
                 ),
         Patient(SampleLabels('H'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('I'),
                 phenotypes=(arachnodactyly_F, spasticity_F, seizure_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('J'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('K'),
                 phenotypes=(arachnodactyly_F, spasticity_T, seizure_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('L'),
                 phenotypes=(arachnodactyly_F, seizure_F, spasticity_F),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('M'),
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('N'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_F),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('O'),
                 phenotypes=(arachnodactyly_F, seizure_F, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('P'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('Q'),
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_F),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('R'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_F),
-                variants=[snv, deletion],
-                proteins=[prot]
+                variants=[snv, deletion]
                 ),
         Patient(SampleLabels('S'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('T'),
                 phenotypes=(arachnodactyly_T, seizure_F, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('U'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('V'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('W'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('X'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
         Patient(SampleLabels('Y'),
                 phenotypes=(arachnodactyly_T, seizure_T, spasticity_T),
-                variants=[snv],
-                proteins=[prot]
+                variants=[snv]
                 ),
         Patient(SampleLabels('Z'),
                 phenotypes=(arachnodactyly_F, seizure_T, spasticity_T),
-                variants=[deletion],
-                proteins=[prot]
+                variants=[deletion]
                 ),
     )
 
