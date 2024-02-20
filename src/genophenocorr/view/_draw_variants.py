@@ -55,6 +55,7 @@ class VariantsVisualizer:
 
         self.feature_limits = [[56002271, 56002300], [56002600, 56002836]]
         self.exon_limits = [(cds.start, cds.end) for cds in self.tx_coordinates.get_cds_regions()]
+        self.exon_labels = [f'{i + 1}' for i in range(len(self.exon_limits))]
         self.variant_locations = [56003221, 56004027, 56004027]
 
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
