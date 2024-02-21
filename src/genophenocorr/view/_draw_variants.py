@@ -3,7 +3,7 @@ from itertools import cycle
 import numpy as np
 import matplotlib.pyplot as plt
 
-from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates
+from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect
 
 
 #  BASIC DRAWING METHODS
@@ -30,7 +30,48 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
 class VariantsVisualizer:
     def __init__(self):
         self.protein_track_color = '#d3d3d3'
-        self.marker_colors = ['green', 'cyan', 'purple']
+        self.marker_colors = {  # TODO: @ielis change colors for variant effects as desired
+            VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
+            VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
+            VariantEffect.SPLICE_DONOR_VARIANT: "#0000ff",
+            VariantEffect.STOP_GAINED: "#ff00ff",
+            VariantEffect.FRAMESHIFT_VARIANT: "#ffff00",
+            VariantEffect.STOP_LOST: "#00ffff",
+            VariantEffect.START_LOST: "#ff9900",
+            VariantEffect.TRANSCRIPT_AMPLIFICATION: "#9900ff",
+            VariantEffect.INFRAME_INSERTION: "#ff0099",
+            VariantEffect.INFRAME_DELETION: "#99ff00",
+            VariantEffect.MISSENSE_VARIANT: "#00ff99",
+            VariantEffect.PROTEIN_ALTERING_VARIANT: "#990000",
+            VariantEffect.SPLICE_REGION_VARIANT: "#009900",
+            VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT: "#009999",
+            VariantEffect.SPLICE_DONOR_REGION_VARIANT: "#990099",
+            VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT: "#999900",
+            VariantEffect.INCOMPLETE_TERMINAL_CODON_VARIANT: "#999999",
+            VariantEffect.START_RETAINED_VARIANT: "#ffcc00",
+            VariantEffect.STOP_RETAINED_VARIANT: "#ccff00",
+            VariantEffect.SYNONYMOUS_VARIANT: "#00ccff",
+            VariantEffect.CODING_SEQUENCE_VARIANT: "#ff00cc",
+            VariantEffect.MATURE_MIRNA_VARIANT: "#cc00ff",
+            VariantEffect.FIVE_PRIME_UTR_VARIANT: "#ff6600",
+            VariantEffect.THREE_PRIME_UTR_VARIANT: "#6600ff",
+            VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT: "#ff3366",
+            VariantEffect.INTRON_VARIANT: "#3366ff",
+            VariantEffect.NMD_TRANSCRIPT_VARIANT: "#ffcc99",
+            VariantEffect.NON_CODING_TRANSCRIPT_VARIANT: "#cc99ff",
+            VariantEffect.UPSTREAM_GENE_VARIANT: "#ff6633",
+            VariantEffect.DOWNSTREAM_GENE_VARIANT: "#6633ff",
+            VariantEffect.TFBS_ABLATION: "#cc3300",
+            VariantEffect.TFBS_AMPLIFICATION: "#ccff66",
+            VariantEffect.TF_BINDING_SITE_VARIANT: "#66ccff",
+            VariantEffect.REGULATORY_REGION_ABLATION: "#ff3366",
+            VariantEffect.REGULATORY_REGION_AMPLIFICATION: "#3366ff",
+            VariantEffect.FEATURE_ELONGATION: "#ffcc33",
+            VariantEffect.REGULATORY_REGION_VARIANT: "#ccff33",
+            VariantEffect.FEATURE_TRUNCATION: "#33ccff",
+            VariantEffect.INTERGENIC_VARIANT: "#ff0033",
+            VariantEffect.SEQUENCE_VARIANT: "#33ff00",
+        }
         self.feature_colors = ['red', 'orange', 'yellow']
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
@@ -67,7 +108,13 @@ class VariantsVisualizer:
 
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
-        variant_locations = np.array([56003221, 56004027, 56004027])
+        variant_locations = np.array([(
+            ann.protein_effect_location.start(),
+            ann.protein_effect_location.end())
+            for ann in tx_anns
+        ])
+        variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
+        variant_effect_colors = {effect: 1 for effect in np.unique(variant_effects)}
         exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
