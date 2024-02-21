@@ -100,7 +100,7 @@ class VariantsVisualizer:
             else:
                 tx_anns.append(tx_ann)
 
-        return tx_ann
+        return tx_anns
 
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         tx_id = tx_coordinates.identifier
@@ -116,7 +116,10 @@ class VariantsVisualizer:
             for ann in tx_anns
         ])
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
-        variant_effect_colors = {effect: 1 for effect in np.unique(variant_effects)}
+        # count marker occurrences and remove duplicates
+        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, return_counts=True)
+        print(f"{variant_locations_counted_absolute}")
+        variant_effect_colors = 1
         exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
