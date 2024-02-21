@@ -29,7 +29,8 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
 
 class VariantsVisualizer:
     def __init__(self):
-        self.protein_track_color = '#d3d3d3'
+        self.protein_track_color = '#a9a9a9'
+        self.transcript_track_color = '#a9a9a9'
         self.marker_colors = {  # TODO: @ielis change colors for variant effects as desired
             VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
             VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
@@ -145,6 +146,7 @@ class VariantsVisualizer:
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
+        transcript_y_min, transcript_y_max = 0.39, 0.43
         font_size = 12
         text_padding = 0.004
 
@@ -165,8 +167,10 @@ class VariantsVisualizer:
         feature_limits_relative = preprocess(feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
 
-        # draw the protein track
+        # draw the tracks
         draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
+                       line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
+        draw_rectangle(protein_track_x_min, transcript_y_min*1.03, protein_track_x_max, transcript_y_max/1.03,
                        line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
@@ -200,7 +204,6 @@ class VariantsVisualizer:
                     va='center', rotation=90)  # x axis label
 
         # draw the exons (transcript track)
-        transcript_y_min, transcript_y_max = 0.39, 0.43
         # iterate over pairs
         for exon_x_min, exon_x_max in exon_limits_relative:
             cur_color = next(self.exon_colors)
