@@ -78,7 +78,8 @@ class VariantsVisualizer:
         self.exon_outline_color = 'black'
         self.axis_color = 'black'
 
-    def _draw_marker(self, x, min_y, max_y, circle_radius, color):
+    def _draw_marker(self, x_start, x_end, min_y, max_y, circle_radius, color):
+        x = (x_start + x_end)/2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
         draw_line(x, min_y, x, max_y, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
@@ -118,12 +119,6 @@ class VariantsVisualizer:
             for ann in tx_anns
         ])
         variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
-        feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
-        variant_locations = np.array([[
-            ann.protein_effect_location.start,
-            ann.protein_effect_location.end]
-            for ann in tx_anns
-        ])
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
         variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
@@ -200,10 +195,11 @@ class VariantsVisualizer:
 
         # draw variants
         marker_y_min = protein_track_y_max
-        for marker in variant_locations_relative:
+        for i, marker in enumerate(variant_locations_relative):
             marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
             cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
-            self._draw_marker(marker, marker_y_min, cur_length, cur_radius, np.random.choice(self.marker_colors))
+            x_start, x_end = marker[0], marker[1]
+            self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, variant_effect_colors[i])
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
