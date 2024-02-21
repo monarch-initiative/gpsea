@@ -111,8 +111,8 @@ class VariantsVisualizer:
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
         variant_locations = np.array([(
-            ann.protein_effect_location.start(),
-            ann.protein_effect_location.end())
+            ann.protein_effect_location.start,
+            ann.protein_effect_location.end)
             for ann in tx_anns
         ])
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
