@@ -222,6 +222,21 @@ class VariantsVisualizer:
             draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
                            line_color=self.feature_outline_color,
                            fill_color=feature_color, line_width=1.0)
+            if (feature_x_max - feature_x_min) <= 0.03:  # too small to dsplay name
+                draw_string(feature_name,
+                            0.05 * (feature_x_max - feature_x_min) + feature_x_min,
+                            0.55 * (feature_y_max - feature_y_min) + feature_y_min,
+                            ha="left", va="center", rotation=90, color='black', fontsize=8
+                            )
+            elif (feature_x_max - feature_x_min) <= 0.005:  # too small even to draw vertical string
+                # TODO @ielis: How to display name here?
+                pass
+            else:
+                draw_string(feature_name,
+                            0.2 * (feature_x_max - feature_x_min) + feature_x_min,
+                            0.3 * (feature_y_max - feature_y_min) + feature_y_min,
+                            ha="left", va="center", color='black'
+                            )
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
