@@ -110,16 +110,19 @@ class VariantsVisualizer:
 
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
-        variant_locations = np.array([(
+        variant_locations = np.array([[
             ann.protein_effect_location.start,
-            ann.protein_effect_location.end)
+            ann.protein_effect_location.end]
             for ann in tx_anns
         ])
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
-        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, return_counts=True)
-        print(f"{variant_locations_counted_absolute}")
-        variant_effect_colors = 1
+        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
+        variant_effect_colors = []
+        for vl in variant_locations_counted_absolute:
+            i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
+            effect = variant_effects[i]
+            variant_effect_colors.append(self.marker_colors[effect])
         exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
