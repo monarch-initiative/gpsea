@@ -90,7 +90,7 @@ class VariantsVisualizer:
         self.axis_color = 'black'
 
     def _draw_marker(self, x_start, x_end, min_y, max_y, circle_radius, color):
-        x = (x_start + x_end)/2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
+        x = (x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
         draw_line(x, min_y, x, max_y, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
