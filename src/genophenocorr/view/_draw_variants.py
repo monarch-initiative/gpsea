@@ -51,10 +51,10 @@ class VariantsVisualizer:
         protein_id = protein_meta.protein_id
         variants = cohort.all_variants
 
-        exon_limits = [(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()]
+        exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
+        feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
+        variant_locations = np.array([56003221, 56004027, 56004027])
         exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
-        feature_limits = [(feature.info.start, feature.info.end) for feature in protein_meta.protein_features]
-        variant_locations = [56003221, 56004027, 56004027]
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
