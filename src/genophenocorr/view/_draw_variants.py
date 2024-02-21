@@ -205,10 +205,18 @@ class VariantsVisualizer:
 
         # draw the exons (transcript track)
         # iterate over pairs
-        for exon_x_min, exon_x_max in exon_limits_relative:
+        for exon_x, exon_label in zip(exon_limits_relative, exon_labels):
+            exon_x_min, exon_x_max = exon_x
             cur_color = next(self.exon_colors)
             draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max,
                            line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
+            exon_width = exon_x_max - exon_x_min
+            font_size = int(4 * exon_width + 8)  # min 8, max 12
+            draw_string(exon_label,
+                        0.45 * (exon_x_max - exon_x_min) + exon_x_min,
+                        0.4 * (exon_y_max - exon_y_min) + exon_y_min,
+                        ha="left", va="center", color='black', fontsize=font_size
+                        )
 
         # draw variants
         marker_y_min = protein_track_y_max
