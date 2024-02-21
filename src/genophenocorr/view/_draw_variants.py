@@ -127,17 +127,12 @@ class VariantsVisualizer:
         min_x_absolute = min(np.min(feature_limits), np.min(exon_limits), np.min(variant_locations))
         max_x_absolute = max(np.max(feature_limits), np.max(exon_limits), np.max(variant_locations))
 
-        # count marker occurrences and remove duplicates
-        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, return_counts=True)
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
         def preprocess(x_absolute):
             shifted_to_0_1 = ((x_absolute - min_x_absolute) / (max_x_absolute - min_x_absolute))
-            print(f'{shifted_to_0_1=}')
             relative_scale = (protein_track_x_max - protein_track_x_min)
-            print(f'{relative_scale=}')
-            print(f'{shifted_to_0_1 * relative_scale=}')
             return shifted_to_0_1 * relative_scale + protein_track_x_min
 
         exon_limits_relative = preprocess(exon_limits)
