@@ -63,11 +63,11 @@ class VariantsVisualizer:
 
         plt.figure(figsize=(20, 20))
 
-        min_x_absolute = min(np.min(self.feature_limits), np.min(self.exon_limits), np.min(self.variant_locations))
-        max_x_absolute = max(np.max(self.feature_limits), np.max(self.exon_limits), np.max(self.variant_locations))
+        min_x_absolute = min(np.min(feature_limits), np.min(exon_limits), np.min(variant_locations))
+        max_x_absolute = max(np.max(feature_limits), np.max(exon_limits), np.max(variant_locations))
 
         # count marker occurrences and remove duplicates
-        variant_locations_counted_absolute, marker_counts = np.unique(self.variant_locations, return_counts=True)
+        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, return_counts=True)
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
@@ -79,8 +79,8 @@ class VariantsVisualizer:
             print(f'{shifted_to_0_1 * relative_scale=}')
             return shifted_to_0_1 * relative_scale + protein_track_x_min
 
-        exon_limits_relative = preprocess(self.exon_limits)
-        feature_limits_relative = preprocess(self.feature_limits)
+        exon_limits_relative = preprocess(exon_limits)
+        feature_limits_relative = preprocess(feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
 
         # draw the protein track
@@ -143,7 +143,7 @@ class VariantsVisualizer:
         plt.ylim(0.3, 0.7)
         plt.gca().set_aspect('equal')
         plt.axis('off')
-        plt.title(f'[Working title:] transcript: {self.tx_coordinates.identifier}, '
-                  f'protein: {self.protein_meta.protein_id},'
-                  f'protein name: {self.protein_meta.label}')
+        plt.title(f'[Working title:] transcript: {tx_id}, '
+                  f'protein: {protein_id},'
+                  f'protein name: {protein_meta.label}')
         plt.show()
