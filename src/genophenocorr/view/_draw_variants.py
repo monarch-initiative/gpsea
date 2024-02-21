@@ -109,6 +109,15 @@ class VariantsVisualizer:
         tx_anns = self._get_tx_anns(variants, tx_id)
 
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
+        min_exon_limit = np.min(exon_limits)
+        feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
+        feature_limits = (feature_limits * 3) - 2 + min_exon_limit  # to convert from codons to bases
+        variant_locations = np.array([[
+            ann.protein_effect_location.start,
+            ann.protein_effect_location.end]
+            for ann in tx_anns
+        ])
+        variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
         variant_locations = np.array([[
             ann.protein_effect_location.start,
