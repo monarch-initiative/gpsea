@@ -31,21 +31,7 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
 
 
 class VariantsVisualizer:
-    def __init__(self, transcript_id: str, protein_id: str, cohort: Cohort):
-        # TODO: remove params here and have public method to take only info nec for plotting, no state in this class
-        self.transcript_id = transcript_id
-        self.tx_coordinates = VVTranscriptCoordinateService(genome_build=GRCh38).fetch(self.transcript_id)
-        self.protein_id = protein_id
-        # TODO @ielis: in your notebook you wrote: "Genophenocorr knows that `NM_001032386.2` transcript corresponds to `NP_001027558.1` protein and it can fetch the corresponding metadata:"
-        # but at the top you wrote that we should input it manually. Should I take it as a parameter or can i use genophenocorr to figure it out
-        self.cohort = cohort
-        self.variants = self.cohort.all_variants
-
-        pms = UniprotProteinMetadataService()
-        protein_metas = pms.annotate(protein_id)
-        assert len(protein_metas) == 1
-        self.protein_meta = protein_metas[0]
-
+    def __init__(self):
         self.protein_track_color = '#d3d3d3'
         self.marker_colors = ['green', 'cyan', 'purple']
         self.feature_colors = ['red', 'orange', 'yellow']
