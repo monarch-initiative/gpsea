@@ -40,11 +40,6 @@ class VariantsVisualizer:
         self.exon_outline_color = 'black'
         self.axis_color = 'black'
 
-        self.exon_limits = [(cds.start, cds.end) for cds in self.tx_coordinates.get_cds_regions()]
-        self.exon_labels = [f'{i + 1}' for i in range(len(self.exon_limits))]
-        self.feature_limits = [(feature.info.start, feature.info.end) for feature in self.protein_meta.protein_features]
-        self.variant_locations = [56003221, 56004027, 56004027]
-
     def _draw_marker(self, x, min_y, max_y, circle_radius, color):
         draw_line(x, min_y, x, max_y, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
