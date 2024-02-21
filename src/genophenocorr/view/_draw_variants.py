@@ -3,7 +3,7 @@ from itertools import cycle
 import numpy as np
 import matplotlib.pyplot as plt
 
-from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect
+from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect, FeatureType
 
 
 #  BASIC DRAWING METHODS
@@ -72,7 +72,18 @@ class VariantsVisualizer:
             VariantEffect.INTERGENIC_VARIANT: "#ff0033",
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
-        self.feature_colors = cycle(['red', 'orange', 'yellow'])
+        self.protein_feature_colors = {
+            FeatureType.REPEAT: 'yellow',
+            FeatureType.MOTIF: 'orange',
+            FeatureType.DOMAIN: 'red',
+            FeatureType.REGION: 'brown'
+        }
+        self.protein_feature_names = {
+            FeatureType.REPEAT: 'Repeat',
+            FeatureType.MOTIF: 'Motif',
+            FeatureType.DOMAIN: 'Domain',
+            FeatureType.REGION: 'Region'
+        }
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
         self.exon_outline_color = 'black'
