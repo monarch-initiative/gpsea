@@ -49,8 +49,6 @@ class VariantsVisualizer:
     def _get_tx_anns(self, variants, tx_id):
         tx_anns = []
         for i, v in enumerate(variants):
-            if i == 5:
-                break
             tx_ann = None
             for ann in v.tx_annotations:
                 if ann.transcript_id == tx_id:
