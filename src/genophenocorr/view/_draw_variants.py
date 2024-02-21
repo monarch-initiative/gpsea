@@ -146,7 +146,7 @@ class VariantsVisualizer:
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
-        transcript_y_min, transcript_y_max = 0.39, 0.43
+        exon_y_min, exon_y_max = 0.39, 0.43
         font_size = 12
         text_padding = 0.004
 
@@ -207,7 +207,7 @@ class VariantsVisualizer:
         # iterate over pairs
         for exon_x_min, exon_x_max in exon_limits_relative:
             cur_color = next(self.exon_colors)
-            draw_rectangle(exon_x_min, transcript_y_min, exon_x_max, transcript_y_max,
+            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max,
                            line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
 
         # draw variants
