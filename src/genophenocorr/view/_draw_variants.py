@@ -72,7 +72,7 @@ class VariantsVisualizer:
             VariantEffect.INTERGENIC_VARIANT: "#ff0033",
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
-        self.feature_colors = ['red', 'orange', 'yellow']
+        self.feature_colors = cycle(['red', 'orange', 'yellow'])
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
         self.exon_outline_color = 'black'
@@ -206,7 +206,7 @@ class VariantsVisualizer:
         for feature_x_min, feature_x_max in feature_limits_relative:
             draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
                            line_color=self.feature_outline_color,
-                           fill_color=np.random.choice(self.feature_colors), line_width=1.0)
+                           fill_color=next(self.feature_colors), line_width=1.0)
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
