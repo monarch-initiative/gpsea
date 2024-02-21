@@ -170,7 +170,7 @@ class VariantsVisualizer:
         # draw the tracks
         draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
                        line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
-        draw_rectangle(protein_track_x_min, transcript_y_min*1.03, protein_track_x_max, transcript_y_max/1.03,
+        draw_rectangle(protein_track_x_min, exon_y_min*1.03, protein_track_x_max, exon_y_max/1.03,
                        line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
@@ -245,12 +245,16 @@ class VariantsVisualizer:
             else:
                 draw_string(feature_name,
                             0.2 * (feature_x_max - feature_x_min) + feature_x_min,
-                            0.3 * (feature_y_max - feature_y_min) + feature_y_min,
+                            0.4 * (feature_y_max - feature_y_min) + feature_y_min,
                             ha="left", va="center", color='black'
                             )
 
+        # draw legend
+        draw_rectangle(0.7, 0.6, 0.85, 0.7, 'black')
+        # TODO: legend
+
         plt.xlim(0, 1)
-        plt.ylim(0.3, 0.7)
+        plt.ylim(0.3, 0.75)
         plt.gca().set_aspect('equal')
         plt.axis('off')
         plt.title(f'[Working title:] transcript: {tx_id}, '
