@@ -3,10 +3,7 @@ from itertools import cycle
 import numpy as np
 import matplotlib.pyplot as plt
 
-from genophenocorr.model import Cohort
-from genophenocorr.model.genome import GRCh38
-from genophenocorr.preprocessing import VVTranscriptCoordinateService
-from genophenocorr.preprocessing import UniprotProteinMetadataService
+from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates
 
 
 #  BASIC DRAWING METHODS
@@ -49,7 +46,16 @@ class VariantsVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
 
-    def draw_fig(self):
+    def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
+        tx_id = tx_coordinates.identifier
+        protein_id = protein_meta.protein_id
+        variants = cohort.all_variants
+
+        exon_limits = [(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()]
+        exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
+        feature_limits = [(feature.info.start, feature.info.end) for feature in protein_meta.protein_features]
+        variant_locations = [56003221, 56004027, 56004027]
+
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
