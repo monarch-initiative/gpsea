@@ -209,11 +209,11 @@ class VariantsVisualizer:
 
         # draw variants
         marker_y_min = protein_track_y_max
-        for i, marker in enumerate(variant_locations_relative):
+        for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
             marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
             cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
             x_start, x_end = marker[0], marker[1]
-            self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, variant_effect_colors[i])
+            self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
