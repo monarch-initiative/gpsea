@@ -100,6 +100,8 @@ class VariantsVisualizer:
             else:
                 tx_anns.append(tx_ann)
 
+        return tx_ann
+
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         tx_id = tx_coordinates.identifier
         protein_id = protein_meta.protein_id
