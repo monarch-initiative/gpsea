@@ -46,10 +46,26 @@ class VariantsVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
 
+    def _get_tx_anns(self, variants, tx_id):
+        tx_anns = []
+        for i, v in enumerate(variants):
+            if i == 5:
+                break
+            tx_ann = None
+            for ann in v.tx_annotations:
+                if ann.transcript_id == tx_id:
+                    tx_ann = ann
+                    break
+            if tx_ann is None:
+                raise ValueError(f'The transcript annotation for {tx_id} was not found!')
+            else:
+                tx_anns.append(tx_ann)
+
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         tx_id = tx_coordinates.identifier
         protein_id = protein_meta.protein_id
         variants = cohort.all_variants
+        tx_anns = self._get_tx_anns(variants, tx_id)
 
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
