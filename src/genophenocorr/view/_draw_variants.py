@@ -217,10 +217,11 @@ class VariantsVisualizer:
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
-        for feature_x_min, feature_x_max in feature_limits_relative:
+        for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
+            feature_x_min, feature_x_max = feature_x[0], feature_x[1]
             draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
                            line_color=self.feature_outline_color,
-                           fill_color=next(self.feature_colors), line_width=1.0)
+                           fill_color=feature_color, line_width=1.0)
 
         plt.xlim(0, 1)
         plt.ylim(0.3, 0.7)
