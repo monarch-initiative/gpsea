@@ -133,7 +133,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             # Skipping a computational transcript
             return None
         is_preferred = True if ('canonical' in item and item['canonical'] == 1) else False
-        hgvsc_id = item.get('hgvsc')
+        hgvs_cdna = item.get('hgvsc')
         var_effects = []
         consequences = item.get('consequence_terms')
         for con in consequences:
@@ -154,7 +154,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
             if not any(ve in VepFunctionalAnnotator.NONCODING_EFFECTS for ve in var_effects):
-                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
+                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvs_cdna, protein_id)
             protein_effect = None
         else:
             # The coordinates are in 1-based system and we need 0-based.
@@ -165,7 +165,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
         return TranscriptAnnotation(gene_name,
                                     trans_id,
-                                    hgvsc_id,
+                                    hgvs_cdna,
                                     is_preferred,
                                     var_effects,
                                     exons_effected,

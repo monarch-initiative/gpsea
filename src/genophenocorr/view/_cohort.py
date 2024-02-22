@@ -133,16 +133,16 @@ class CohortViewer:
             targets = [txa for txa in variant.tx_annotations if txa.transcript_id == preferred_transcript]
             if len(targets) == 1:
                 target_txa = targets[0]
-                if target_txa.hgvsc_id is not None:
-                    hgvsc_id = target_txa.hgvsc_id
+                if target_txa.hgvs_cdna is not None:
+                    hgvs_cdna = target_txa.hgvs_cdna
                 else:
-                    hgvsc_id = "NA"
+                    hgvs_cdna = "NA"
                 # split out the variant
-                fields = hgvsc_id.split(":")
+                fields = hgvs_cdna.split(":")
                 if len(fields) == 2:
                     hgvs = fields[1]
                 else:
-                    hgvs = hgvsc_id
+                    hgvs = hgvs_cdna
                 effect_tuple = [var_eff.name for var_eff in target_txa.variant_effects]
                 variant_count_d[hgvs] = var_count
                 variant_to_effect_d[hgvs] = effect_tuple[0] # for simplicity, just display first effect
@@ -253,16 +253,16 @@ class CohortViewer:
             targets = [txa for txa in variant.tx_annotations if txa.transcript_id == preferred_transcript]
             if len(targets) == 1:
                 target_txa = targets[0]
-                if target_txa.hgvsc_id is not None:
-                    hgvsc_id = target_txa.hgvsc_id
+                if target_txa.hgvs_cdna is not None:
+                    hgvs_cdna = target_txa.hgvs_cdna
                 else:
-                    hgvsc_id = "NA"
+                    hgvs_cdna = "NA"
                 # split out the variant
-                fields = hgvsc_id.split(":")
+                fields = hgvs_cdna.split(":")
                 if len(fields) == 2:
                     hgvs = fields[1]
                 else:
-                    hgvs = hgvsc_id
+                    hgvs = hgvs_cdna
                 effect_tuple = [var_eff.name for var_eff in target_txa.variant_effects]
                 variant_count_d[hgvs] = var_count
                 variant_to_effect_d[hgvs] = effect_tuple[0] # for simplicity, just display first effect
