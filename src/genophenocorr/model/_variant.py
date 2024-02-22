@@ -52,7 +52,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
 
     def __init__(self, gene_id: str,
                  tx_id: str,
-                 hgvsc: typing.Optional[str],
+                 hgvs_cdna: typing.Optional[str],
                  is_preferred: bool,
                  variant_effects: typing.Iterable[VariantEffect],
                  affected_exons: typing.Optional[typing.Iterable[int]],
@@ -60,7 +60,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
                  protein_effect_coordinates: typing.Optional[Region]):
         self._gene_id = hpotk.util.validate_instance(gene_id, str, 'gene_id')
         self._tx_id = hpotk.util.validate_instance(tx_id, str, 'tx_id')
-        self._hgvsc_id = hpotk.util.validate_optional_instance(hgvsc, str, 'hgvsc')
+        self._hgvs_cdna = hpotk.util.validate_optional_instance(hgvs_cdna, str, 'hgvs_cdna')
         self._is_preferred = hpotk.util.validate_instance(is_preferred, bool, 'is_preferred')
         self._variant_effects = tuple(variant_effects)
         if affected_exons is not None: 
@@ -99,13 +99,13 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._is_preferred
 
     @property
-    def hgvsc_id(self) -> typing.Optional[str]:
+    def hgvs_cdna(self) -> typing.Optional[str]:
         """
         Returns:
             string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
             or `None` if not available.
         """
-        return self._hgvsc_id
+        return self._hgvs_cdna
 
     @property
     def variant_effects(self) -> typing.Sequence[VariantEffect]:
@@ -145,7 +145,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
     def __str__(self) -> str:
         return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
                f"transcript_id:{self.transcript_id}," \
-               f"hgvsc_id:{self.hgvsc_id}," \
+               f"hgvs_cdna:{self.hgvs_cdna}," \
                f"is_preferred:{self.is_preferred}," \
                f"variant_effects:{self.variant_effects}," \
                f"overlapping_exons:{self.overlapping_exons}," \
@@ -155,7 +155,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
     def __eq__(self, other) -> bool:
         return isinstance(other, TranscriptAnnotation) \
             and self.gene_id == other.gene_id \
-            and self.hgvsc_id == other.hgvsc_id \
+            and self.hgvs_cdna == other.hgvs_cdna \
             and self.is_preferred == other.is_preferred \
             and self.transcript_id == other.transcript_id \
             and self.variant_effects == other.variant_effects \
@@ -167,7 +167,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvsc_id, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
+        return hash((self.gene_id, self.hgvs_cdna, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
                      self.protein_id, self.protein_effect_location))
 
 
@@ -375,7 +375,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
     def create_variant_from_scratch(variant_coordinates: VariantCoordinates,
                                     gene_name: str,
                                     trans_id: str,
-                                    hgvsc_id: str,
+                                    hgvs_cdna: str,
                                     is_preferred: bool,
                                     consequences: typing.Iterable[VariantEffect],
                                     exons_effected: typing.Sequence[int],
@@ -384,7 +384,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
                                     protein_effect_end: int,
                                     genotypes: Genotypes):
         protein_effect = Region(protein_effect_start, protein_effect_end)
-        transcript = TranscriptAnnotation(gene_name, trans_id, hgvsc_id, is_preferred, consequences, exons_effected,
+        transcript = TranscriptAnnotation(gene_name, trans_id, hgvs_cdna, is_preferred, consequences, exons_effected,
                                           protein_id, protein_effect)
         return Variant(variant_coordinates, (transcript,), genotypes)
 
