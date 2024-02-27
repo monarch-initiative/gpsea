@@ -94,7 +94,7 @@
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span><span class="p">,</span> <span class="n">GenomeBuild</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ProteinMetadataService</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
 <span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">NotepadTree</span>
 <span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">CohortCreator</span>
 <span class="kn">from</span> <span class="nn">._phenopacket</span> <span class="kn">import</span> <span class="n">PhenopacketPatientCreator</span>
@@ -131,6 +131,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
     <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>

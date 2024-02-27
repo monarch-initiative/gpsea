@@ -88,11 +88,13 @@
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="n">UniprotProteinMetadataService</span><span class="p">,</span> <span class="n">ProteinAnnotationCache</span><span class="p">,</span> <span class="n">ProtCachingMetadataService</span>
-
+<span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="n">UniprotProteinMetadataService</span><span class="p">,</span> <span class="n">ProteinAnnotationCache</span><span class="p">,</span> \
+    <span class="n">ProtCachingMetadataService</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
+<span class="kn">from</span> <span class="nn">._filter</span> <span class="kn">import</span> <span class="n">SimplePhenotypeFilter</span>
+<span class="kn">from</span> <span class="nn">._gp_analysis</span> <span class="kn">import</span> <span class="n">FisherExactAnalyzer</span>
 <span class="kn">from</span> <span class="nn">._gp_impl</span> <span class="kn">import</span> <span class="n">GpCohortAnalysis</span>
-
+<span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">PropagatingPhenotypeBooleanPredicateFactory</span>
 
 <span class="n">P_VAL_OPTIONS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;bonferroni&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
@@ -107,12 +109,18 @@
     <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
 
+
 <div class="viewcode-block" id="CohortAnalysisConfiguration">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration">[docs]</a>
 <span class="k">class</span> <span class="nc">CohortAnalysisConfiguration</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CohortAnalysisConfiguration` is a value class for storing :class:`genophenocorr.analysis.CohortAnalysis`</span>
 <span class="sd">    configuration options.</span>
+
+<span class="sd">    The class contains the default values upon creation and the configuration option values can be set as properties.</span>
+
+<span class="sd">    If an invalid value option is passed to the property setter, a warning is logged and the previous value is retained.</span>
+<span class="sd">    Therefore, it is *impossible* to mis-configure the analysis.</span>
 
 <span class="sd">    Default values</span>
 <span class="sd">    ^^^^^^^^^^^^^^</span>
@@ -123,29 +131,19 @@
 <span class="sd">     ``missing_implies_excluded``    `bool`      `False`</span>
 <span class="sd">     ``pval_correction``             `str`       `bonferroni`</span>
 <span class="sd">     ``min_perc_patients_w_hpo``     `float`     `0.1`</span>
+<span class="sd">     ``mtc_alpha``                   `float`     `0.05`</span>
 <span class="sd">     ``include_sv``                  `bool`      `False`</span>
 <span class="sd">    ==============================  ===========  ====================</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-                 <span class="n">pval_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                 <span class="n">min_perc_patients_w_hpo</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                 <span class="n">include_sv</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="n">missing_implies_excluded</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="n">pval_correction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">min_perc_patients_w_hpo</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="n">include_sv</span>
-
-<div class="viewcode-block" id="CohortAnalysisConfiguration.builder">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.builder">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">builder</span><span class="p">():</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new :class:`CohortAnalysisConfigurationBuilder` initialized with default configuration options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">CohortAnalysisConfigurationBuilder</span><span class="p">()</span></div>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="s1">&#39;bonferroni&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span> <span class="o">=</span> <span class="mf">.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="mf">.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -155,12 +153,36 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span>
 
+    <span class="nd">@missing_implies_excluded</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param missing_implies_excluded: a `bool` to dictate is the missing phenotypic features should be considered</span>
+<span class="sd">          as excluded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="n">missing_implies_excluded</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `missing_implies_excluded` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span>
+                                 <span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span><span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get method for multiple testing p value correction. Default: `bonferroni`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span>
+
+    <span class="nd">@pval_correction</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`</span>
+<span class="sd">          if no MTC should be applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pval_correction</span> <span class="ow">in</span> <span class="n">P_VAL_OPTIONS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="n">pval_correction</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `pval_correction` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1"> correction.&#39;</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">min_perc_patients_w_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -170,105 +192,64 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span>
 
+    <span class="nd">@min_perc_patients_w_hpo</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">min_perc_patients_w_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_perc_patients_w_hpo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param min_perc_patients_w_hpo: as a `float` with the lower acceptable bound of patients</span>
+<span class="sd">          for the phenotype feature to be included in the analysis</span>
+<span class="sd">          (e.g. `0.2` for needing 20% or more patients).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;min_perc_patients_w_hpo must be a number, but was </span><span class="si">%s</span><span class="s2">. Using </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;min_perc_patients_w_hpo must be greater than 0 and at most 1, but was </span><span class="si">%f</span><span class="s2">. Using </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">min_perc_patients_w_hpo</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mtc_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The alpha value for multiple testing correction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span>
+
+    <span class="nd">@mtc_alpha</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mtc_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtc_alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set new multiple testing correction alpha value.</span>
+
+<span class="sd">        :param mtc_alpha: a `float` in range :math:`(0,1]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtc_alpha</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">mtc_alpha</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span> <span class="o">=</span> <span class="n">mtc_alpha</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;`mtc_alpha` should be a `float` in range `(0, 1]` but was </span><span class="si">%s</span><span class="s1">. Keeping the previous value </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                                 <span class="n">mtc_alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span><span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">include_sv</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        `True` if we want to include structural variants in the analysis</span>
 <span class="sd">        (i.e. the variants that use symbolic VCF notation).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span>
 
-
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder">[docs]</a>
-<span class="k">class</span> <span class="nc">CohortAnalysisConfigurationBuilder</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `CohortAnalysisConfigurationBuilder` builds :class:`CohortAnalysisConfiguration`. The configuration options</span>
-<span class="sd">    can be customized or set with default values.</span>
-
-<span class="sd">    If an invalid option is passed, a warning is logged and the previous value is retained.</span>
-<span class="sd">    Consequently, it is *impossible* to mis-configure the analysis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="s1">&#39;bonferroni&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="mf">.1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="kc">False</span>
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder.missing_implies_excluded">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder.missing_implies_excluded">[docs]</a>
-    <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set `missing_implies_excluded` option.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="n">missing_implies_excluded</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `missing_implies_excluded` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span>
-                                 <span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder.pval_correction">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder.pval_correction">[docs]</a>
-    <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set `pval_correction` option.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">pval_correction</span> <span class="ow">in</span> <span class="n">P_VAL_OPTIONS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="n">pval_correction</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `pval_correction` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1"> correction.&#39;</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder.min_perc_patients_w_hpo">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder.min_perc_patients_w_hpo">[docs]</a>
-    <span class="k">def</span> <span class="nf">min_perc_patients_w_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_perc_patients_w_hpo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set `min_perc_patients_w_hpo` option.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;min_perc_patients_w_hpo must be a number, but was </span><span class="si">%s</span><span class="s2">. Using </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">self</span>
-        <span class="k">if</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">min_perc_patients_w_hpo</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;min_perc_patients_w_hpo must be greater than 0 and at most 1, but was </span><span class="si">%f</span><span class="s2">. Using </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">min_perc_patients_w_hpo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">min_perc_patients_w_hpo</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder.include_sv">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder.include_sv">[docs]</a>
+    <span class="nd">@include_sv</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">include_sv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set `include_sv` option.</span>
+
+<span class="sd">        :param include_sv: a `bool` with the value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">include_sv</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="n">include_sv</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="CohortAnalysisConfigurationBuilder.build">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfigurationBuilder.build">[docs]</a>
-    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Build the configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span></div>
-</div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span></div>
 
 
 
@@ -290,18 +271,38 @@
 <span class="sd">     The default parameters will be used if `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="o">.</span><span class="n">builder</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>  <span class="c1"># Use the default config</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
     <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">_configure_protein_service</span><span class="p">(</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">GpCohortAnalysis</span><span class="p">(</span>
-        <span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span>
-        <span class="n">protein_metadata_service</span><span class="p">,</span>
+    <span class="c1"># Phenotype filter defines how we select the HPO terms of interest.</span>
+    <span class="c1"># For instance, we may choose to only investigate the terms</span>
+    <span class="c1"># which annotate at least 3 cohort members, etc.</span>
+    <span class="n">phenotype_filter</span> <span class="o">=</span> <span class="n">SimplePhenotypeFilter</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Configure the nuts and bolts of the G/P analysis.</span>
+    <span class="n">phenotype_predicate_factory</span> <span class="o">=</span> <span class="n">PropagatingPhenotypeBooleanPredicateFactory</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
         <span class="n">missing_implies_excluded</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">missing_implies_excluded</span><span class="p">,</span>
-        <span class="n">include_sv</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">include_sv</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Choosing a simple Fisher&#39;s exact test for now.</span>
+    <span class="n">gp_analyzer</span> <span class="o">=</span> <span class="n">FisherExactAnalyzer</span><span class="p">(</span>
+        <span class="n">pheno_predicate_factory</span><span class="o">=</span><span class="n">phenotype_predicate_factory</span><span class="p">,</span>
         <span class="n">p_val_correction</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span><span class="p">,</span>
-        <span class="n">min_perc_patients_w_hpo</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span>
+        <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">mtc_alpha</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">GpCohortAnalysis</span><span class="p">(</span>
+        <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+        <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
+        <span class="n">protein_service</span><span class="o">=</span><span class="n">protein_metadata_service</span><span class="p">,</span>
+        <span class="n">phenotype_filter</span><span class="o">=</span><span class="n">phenotype_filter</span><span class="p">,</span>
+        <span class="n">gp_analyzer</span><span class="o">=</span><span class="n">gp_analyzer</span><span class="p">,</span>
+        <span class="n">include_sv</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">include_sv</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -317,6 +318,7 @@
     <span class="c1"># Assemble the final protein metadata service</span>
     <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">ProtCachingMetadataService</span><span class="p">(</span><span class="n">prot_cache</span><span class="p">,</span> <span class="n">protein_fallback</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">protein_metadata_service</span>
+
 
 <span class="k">def</span> <span class="nf">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">protein_fallback</span> <span class="o">==</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">:</span>

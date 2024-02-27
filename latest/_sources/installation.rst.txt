@@ -46,7 +46,7 @@ Then, running the tests is as simple as::
   pytest
 
 This will run the unit and integration tests that do *not* require internet access. To run the "online" tests,
-we add ``--runonlin`` option to the command line invocation::
+we add ``--runonline`` option to the command line invocation::
 
   pytest --runonline
 
