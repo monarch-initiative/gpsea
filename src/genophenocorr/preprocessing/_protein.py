@@ -59,7 +59,7 @@ class ProteinAnnotationCache:
         fname = f'{prot_id}.pickle'
         return os.path.join(self._datadir, fname)
 
-class ProtCachingFunctionalAnnotator(ProteinMetadataService):
+class ProtCachingMetadataService(ProteinMetadataService):
     """A class that retrieves ProteinMetadata if it exists or will run the fallback Fuctional Annotator if it does not exist.
 
     Methods:
@@ -67,7 +67,7 @@ class ProtCachingFunctionalAnnotator(ProteinMetadataService):
     """
 
     def __init__(self, cache: ProteinAnnotationCache, fallback: ProteinMetadataService):
-        """Constructs all necessary attributes for a ProtCachingFunctionalAnnotator object
+        """Constructs all necessary attributes for a ProtCachingMetadataService object
 
         Args:
             cache (ProteinAnnotationCache): A ProteinAnnotationCache object

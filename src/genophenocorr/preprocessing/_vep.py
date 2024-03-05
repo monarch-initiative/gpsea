@@ -6,7 +6,7 @@ import requests
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
 from genophenocorr.model.genome import Region
-from ._api import FunctionalAnnotator, ProteinMetadataService
+from ._api import FunctionalAnnotator
 
 
 def format_coordinates_for_vep_query(vc: VariantCoordinates) -> str:
@@ -77,11 +77,10 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
     Non-coding variant effects where we do not complain if the functional annotation lacks the protein effects.
     """
 
-    def __init__(self, protein_annotator: ProteinMetadataService,
+    def __init__(self,
                  include_computational_txs: bool = False,
                  timeout: int = 10):
         self._logger = logging.getLogger(__name__)
-        self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
@@ -134,7 +133,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             # Skipping a computational transcript
             return None
         is_preferred = True if ('canonical' in item and item['canonical'] == 1) else False
-        hgvsc_id = item.get('hgvsc')
+        hgvs_cdna = item.get('hgvsc')
         var_effects = []
         consequences = item.get('consequence_terms')
         for con in consequences:
@@ -151,12 +150,11 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             exons_effected = (int(x) for x in exons_effected)
 
         protein_id = item.get('protein_id')
-        protein = self._protein_annotator.annotate(protein_id)
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
             if not any(ve in VepFunctionalAnnotator.NONCODING_EFFECTS for ve in var_effects):
-                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
+                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvs_cdna, protein_id)
             protein_effect = None
         else:
             # The coordinates are in 1-based system and we need 0-based.
@@ -167,11 +165,11 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
         return TranscriptAnnotation(gene_name,
                                     trans_id,
-                                    hgvsc_id,
+                                    hgvs_cdna,
                                     is_preferred,
                                     var_effects,
                                     exons_effected,
-                                    protein,
+                                    protein_id,
                                     protein_effect)
 
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
