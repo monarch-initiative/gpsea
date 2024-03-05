@@ -71,7 +71,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate):
 
                               This is either because the sample is annotated with `q` (exact match),
                               or because one of sample's annotations is a descendant `q` (annotation propagation).
-                              For instance, we tested for a Seizure and the sample *had* a Clonic seizure 
+                              For instance, we tested for a Seizure and the sample *had* a Clonic seizure
                               (a descendant of Seizure).
                               """)  #: :meta hide-value:
 
@@ -82,8 +82,8 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate):
 
                                In other words, `q` was *excluded* in the sample or the sample is annotated with an excluded ancestor of `q`.
 
-                               For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies 
-                               *not* Clonic seizure.  
+                               For instance, we tested for a Clonic seizure and the sample did *not* have any Seizure, which implies
+                               *not* Clonic seizure.
                                """)  #: :meta hide-value:
 
     NOT_MEASURED = PatientCategory(cat_id=2,
@@ -164,3 +164,24 @@ class PropagatingPhenotypeBooleanPredicateFactory(PhenotypePredicateFactory):
 
     def get_predicate(self, query: hpotk.TermId) -> PhenotypePolyPredicate:
         return PropagatingPhenotypeBooleanPredicate(self._hpo, query, self._missing_implies_excluded)
+
+
+class DiseaseDiagnosisPredicate(BooleanPredicate):
+    """
+    `DiseaseDiagnosisPredicate` tests if the `patient` has a certain disease
+
+    The predicate returns the following results:
+
+    * :attr:`BooleanPredicate.YES` if the patient has the disease
+    * :attr:`BooleanPredicate.NO` if the patient is not annotated to have the disease
+    """
+    def __init__(self) -> None:
+        ## TODO stuff disease diagnosis into INIT
+        super().__init__()
+        # store disease here
+
+    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        self._check_patient(patient)
+        ## TODO check if patient has the same disease
+        pass
+

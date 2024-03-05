@@ -20,7 +20,7 @@ class GpCohortAnalysis(CohortAnalysis):
                  protein_service: ProteinMetadataService,
                  phenotype_filter: PhenotypeFilter,
                  gp_analyzer: GPAnalyzer,
-                 include_sv: bool = False,
+                 include_sv: bool = False
                  ):
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
@@ -79,7 +79,7 @@ class GpCohortAnalysis(CohortAnalysis):
         predicate = ProtFeaturesPredicate(tx_id, feature1, feature2, self._protein_service)
         return self._apply_poly_predicate(predicate)
 
-    def _apply_boolean_predicate(self, predicate: BooleanPredicate) -> GenotypePhenotypeAnalysisResult:
+    def _apply_boolean_predicate(self, predicate: BooleanPredicate, test_diseases:bool=False) -> GenotypePhenotypeAnalysisResult:
         assert isinstance(predicate, BooleanPredicate), f'{type(predicate)} is not an instance of `BooleanPredicate`'
 
         return self._apply_poly_predicate(predicate)
@@ -92,3 +92,22 @@ class GpCohortAnalysis(CohortAnalysis):
             phenotypic_features=self._hpo_terms_of_interest,
             predicate=predicate,
         )
+
+
+    def compare_disease_by_variant_key(self, variant_key: str, disease_id:str) -> GenotypePhenotypeAnalysisResult:
+        predicate = VariantPredicate(variant_key)
+        return self._apply_boolean_predicate(predicate, disease_id)
+
+    def _apply_boolean_disease_predicate(self, predicate:BooleanPredicate, disease_id:str) -> GenotypePhenotypeAnalysisResult:
+        """A predicate that returns True iff a patient has a certain disease
+        # create disease predicate using disease_id
+
+        TODO - need to create a Boolean preedicate that checks of a patient has a Disease
+
+        Args:
+            predicate (BooleanPredicate): a predicate that returns True iff a patient has a Disease diagnosis such as "Marfan syndrome"
+
+        Returns:
+            GenotypePhenotypeAnalysisResult: result of analysis of correlation between Disease and some genotypic feature
+        """
+        pass
