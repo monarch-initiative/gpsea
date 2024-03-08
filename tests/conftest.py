@@ -103,23 +103,28 @@ def toy_cohort() -> Cohort:
     patients = (
         Patient(SampleLabels('HetSingleVar'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_F'], phenos['focal_clonic_seizure_T']),
-                variants=(dup,)
+                variants=(dup,),
+                diseases=(phenos['KBG_T'],)
                 ),
         Patient(SampleLabels('HetDoubleVar1'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['seizure_T'], phenos['spasticity_T']),
-                variants=(indel, snv_stop_gain)
+                variants=(indel, snv_stop_gain),
+                diseases=(phenos['KBG_T'],)
                 ),
         Patient(SampleLabels('HetDoubleVar2'),
                 phenotypes=(phenos['arachnodactyly_F'], phenos['spasticity_T'], phenos['seizure_T']),
-                variants=(snv_missense, del_frameshift)
+                variants=(snv_missense, del_frameshift),
+                diseases=(phenos['KBG_T'],)
                 ),
         Patient(SampleLabels('HomoVar'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_T']),
-                variants=(del_small,)
+                variants=(del_small,),
+                diseases=(phenos['KBG_F'],)
                 ),
         Patient(SampleLabels('LargeCNV'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_F']),
-                variants=(del_large,)
+                variants=(del_large,),
+                diseases=(phenos['KBG_F'],)
                 ),
     )
 
@@ -137,6 +142,8 @@ def get_test_phenotypes():
     phenotypes['seizure_F'] = Phenotype(hpotk.TermId.from_curie('HP:0001250'), "Seizure", False)
     phenotypes['spasticity_F'] = Phenotype(hpotk.TermId.from_curie('HP:0001257'), "Spasticity", False)
     phenotypes['focal_clonic_seizure_F'] = Phenotype(hpotk.TermId.from_curie('HP:0002266'), "Focal clonic seizure", False)
+    phenotypes['KBG_T'] = Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True)
+    phenotypes['KBG_F'] = Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False)
 
     return phenotypes
 
