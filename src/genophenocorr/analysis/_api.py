@@ -126,15 +126,18 @@ class GenotypePhenotypeAnalysisResult:
         # Hence, we need `phenotype_category`.
         counts = self._all_counts.loc[(slice(None), phenotype_category), :]
         counts.set_index(pheno_idx, inplace=True)
+        
+        # We must find the total count of all samples in each phenotype category
+        totals = counts.sum(axis=1)
 
         # Fill the frame cells
         for col in geno_idx.levels[0]:
             cnt = counts[col]
-            # Format `Count` as `N/M` string, where `N` is the sample count
-            # and `M` is the number of usable samples - the samples where
-            # both genotype and phenotype predicates were able to make a call.
-            df[col, 'Count'] = cnt.map(str) + '/' + self._n_usable.map(str)
-            df[col, 'Percent'] = cnt * 100 / self._n_usable
+            # Format `Count` as `N/M` string, where `N` is the sample count for the genotype category
+            # within that phenotype category and `M` is the total count of all samples in that phenotype 
+            # - the samples where both genotype and phenotype predicates were able to make a call.
+            df[col, 'Count'] = cnt.map(str) + '/' + (totals.map(str))
+            df[col, 'Percent'] = (cnt * 100 / totals).round(decimals=2).map(str) + '%'
 
         # Add columns with p values and corrected p values (if present)
         df.insert(df.shape[1], ('', self._pvals.name), self._pvals)
