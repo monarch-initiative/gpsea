@@ -101,9 +101,9 @@ class GenotypePhenotypeAnalysisResult:
 
             MISSENSE_VARIANT on `NM_1234.5`                       No                  Yes
                                                                   Count    Percent    Count    Percent   p value   Corrected p value
-            Arachnodactyly [HP:0001166]                           1/14        7.14    13/14      92.86   0.000781  0.020299
-            Abnormality of the musculature [HP:0003011]           6/17       35.29    11/17      64.71   1.000000  1.000000
-            Abnormal nervous system physiology [HP:0012638]       9/24       37.50    15/24      62.50   1.000000  1.000000
+            Arachnodactyly [HP:0001166]                           1/14       7.14%    13/14     92.86%   0.000781  0.020299
+            Abnormality of the musculature [HP:0003011]           6/17      35.29%    11/17     64.71%   1.000000  1.000000
+            Abnormal nervous system physiology [HP:0012638]       9/24      37.50%    15/24     62.50%   1.000000  1.000000
             ...                                                   ...      ...        ...      ...       ...       ...
         """
         if phenotype_category not in self._phenotype_categories:
