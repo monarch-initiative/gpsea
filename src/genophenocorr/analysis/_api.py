@@ -127,17 +127,22 @@ class GenotypePhenotypeAnalysisResult:
         counts = self._all_counts.loc[(slice(None), phenotype_category), :]
         counts.set_index(pheno_idx, inplace=True)
 
-        # We must find the total count of all samples in each phenotype category
-        totals = counts.sum(axis=1)
+        # We must find the total count of all samples in each genotype category
+        # stack turns all indexes into columns. swaplevel switches the pheno_category with geno_category.
+        # unstack puts pheno_category as the column and geno_category as the multi-index.
+        # sum(axis=1) adds across the geno_category, giving us the total patients in that category, removing pheno_category.
+        # unstack puts the geno_category back as the column name. reindex_like(counts) formats it like counts, making the 
+        # following for loop work.
+        totals = self._all_counts.stack().swaplevel().unstack().sum(axis=1).unstack().reindex_like(counts)
 
         # Fill the frame cells
         for col in geno_idx.levels[0]:
             cnt = counts[col]
+            tot = totals[col]
             # Format `Count` as `N/M` string, where `N` is the sample count for the genotype category
-            # within that phenotype category and `M` is the total count of all samples in that phenotype
-            # - the samples where both genotype and phenotype predicates were able to make a call.
-            df[col, 'Count'] = cnt.map(str) + '/' + totals.map(str)
-            df[col, 'Percent'] = (cnt * 100 / totals).round(decimals=2).map(str) + '%'
+            # within that phenotype category and `M` is the total count of all samples in that genotype
+            df[col, 'Count'] = cnt.map(str) + '/' + tot.map(str)
+            df[col, 'Percent'] = (cnt * 100 / tot).round(decimals=2).map(str) + '%'
 
         # Add columns with p values and corrected p values (if present)
         df.insert(df.shape[1], ('', self._pvals.name), self._pvals)

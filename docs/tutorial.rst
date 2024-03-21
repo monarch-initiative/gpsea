@@ -68,7 +68,7 @@ For instance, we can partition the patients into two groups based on presence/ab
   >>> summary_df.head(1) # doctest: +NORMALIZE_WHITESPACE
     MISSENSE_VARIANT on NM_1234.5    No             Yes
                                     Count   Percent Count Percent   p value Corrected p value
-    Arachnodactyly [HP:0001166]    1/14   7.14%  13/14  92.86%  0.000781          0.020299
+    Arachnodactyly [HP:0001166]    1/10   10.0%  13/16  81.25%  0.000781          0.020299
 
 ..
 
