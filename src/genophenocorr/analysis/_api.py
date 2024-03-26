@@ -6,7 +6,8 @@ import hpotk
 import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient, FeatureType
-from .predicate import PatientCategory
+from .predicate import PolyPredicate, PatientCategory
+from .predicate.phenotype import P
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -16,18 +17,20 @@ class GenotypePhenotypeAnalysisResult:
     `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.
     """
 
-    def __init__(self, n_usable: pd.Series,
-                 all_counts: pd.DataFrame,
-                 pvals: pd.Series,
-                 corrected_pvals: typing.Optional[pd.Series],
-                 phenotype_categories: typing.Iterable[PatientCategory],
-                 question: str):
+    def __init__(
+            self, n_usable: pd.Series,
+            all_counts: typing.Mapping[P, pd.DataFrame],
+            pvals: pd.Series,
+            corrected_pvals: typing.Optional[pd.Series],
+            phenotype_categories: typing.Iterable[PatientCategory],
+            geno_predicate: PolyPredicate,
+    ):
         self._n_usable = n_usable
         self._all_counts = all_counts
         self._pvals = pvals
         self._corrected_pvals = corrected_pvals
         self._phenotype_categories = tuple(phenotype_categories)
-        self._question = question
+        self._geno_predicate = geno_predicate
 
     @property
     def n_usable(self) -> pd.Series:
@@ -38,23 +41,22 @@ class GenotypePhenotypeAnalysisResult:
         return self._n_usable
 
     @property
-    def all_counts(self) -> pd.DataFrame:
+    def all_counts(self) -> typing.Mapping[P, pd.DataFrame]:
         """
-        Get a :class:`pandas.DataFrame` with counts of patients in genotype and phenotype groups.
+        Get a mapping from the phenotype item to :class:`pandas.DataFrame` with counts of patients
+        in genotype and phenotype groups.
 
         An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence
-        of a missense variant in transcript, and phenotype predicate that checks presence/absence of a phenotype term::
+        of a missense variant in transcript `NM_123456.7`, and phenotype predicate that checks
+        presence/absence of `HP:0001166` (a phenotype term)::
 
-                                   Has MISSENSE_VARIANT in NM_123456.7
-                                   No       Yes
-            HPO         Present
-            HP:0001166  Yes        1        13
-            HP:0001166  No         7        5
-            HP:0003011  Yes        3        11
-            HP:0003011  No         7        16
-            HP:0012638  Yes        9        15
-            HP:0012638  No         3        4
+                       Has MISSENSE_VARIANT in NM_123456.7
+                       No       Yes
+            Present
+            Yes        1        13
+            No         7        5
 
+        The rows correspond to the phenotype categories, and the columns represent the genotype categories.
         """
         return self._all_counts
 
@@ -79,70 +81,50 @@ class GenotypePhenotypeAnalysisResult:
         """
         return self._phenotype_categories
 
-    def summarize(self, hpo: hpotk.MinimalOntology,
-                  phenotype_category: PatientCategory) -> pd.DataFrame:
+    def summarize(
+            self, hpo: hpotk.MinimalOntology,
+            category: PatientCategory,
+    ) -> pd.DataFrame:
         """
         Create a data frame with summary of the genotype phenotype analysis.
 
         The *rows* of the frame correspond to the analyzed HPO terms.
 
         The columns of the data frame have `Count` and `Percentage` per used genotype predicate.
-        For instance, if we used :class:`genophenocorr.analysis.predicate.genotype.VariantEffectPredicate`
-        which compares phenotype with and without variants with certain :class:`genophenocorr.model.VariantEffect`,
-        we will have the following columns:
 
-        =====  =======  =====  =======
-        Yes             No
-        --------------  --------------
-        Count  Percent  Count  Percent
-        =====  =======  =====  =======
+        **Example**
 
-        The final data frame may look something like this::
+        If we use :class:`genophenocorr.analysis.predicate.genotype.VariantEffectPredicate`
+        which can compare phenotype with and without a missense variant, we will have a data frame
+        that looks like this::
 
             MISSENSE_VARIANT on `NM_1234.5`                       No                  Yes
                                                                   Count    Percent    Count    Percent   p value   Corrected p value
-            Arachnodactyly [HP:0001166]                           1/14       7.14%    13/14     92.86%   0.000781  0.020299
-            Abnormality of the musculature [HP:0003011]           6/17      35.29%    11/17     64.71%   1.000000  1.000000
-            Abnormal nervous system physiology [HP:0012638]       9/24      37.50%    15/24     62.50%   1.000000  1.000000
+            Arachnodactyly [HP:0001166]                           1/10         10%    13/16        81%   0.000781  0.020299
+            Abnormality of the musculature [HP:0003011]           6/6         100%    11/11       100%   1.000000  1.000000
+            Abnormal nervous system physiology [HP:0012638]       9/9         100%    15/15       100%   1.000000  1.000000
             ...                                                   ...      ...        ...      ...       ...       ...
         """
-        if phenotype_category not in self._phenotype_categories:
-            raise ValueError(f'Unknown phenotype category: {phenotype_category}. Use one of {self._phenotype_categories}')
+        if category not in self._phenotype_categories:
+            raise ValueError(f'Unknown phenotype category: {category}. Use one of {self._phenotype_categories}')
 
         # Row index: a list of tested HPO terms
         pheno_idx = pd.Index(self._n_usable.index)
         # Column index: multiindex of counts and percentages for all genotype predicate groups
         geno_idx = pd.MultiIndex.from_product(
-            iterables=(self._all_counts.columns, ('Count', 'Percent')),
-            names=(self._question, None))
+            iterables=(self._geno_predicate.get_categories(), ('Count', 'Percent')),
+            names=(self._geno_predicate.get_question(), None),
+        )
 
         # We'll fill this frame with data
         df = pd.DataFrame(index=pheno_idx, columns=geno_idx)
 
-        # We must choose the counts with the `phenotype_category` of interest.
-        # This depends on the used phenotype predicate.
-        # Usually, we are interested patients who HAVE a feature,
-        # but we can also investigate those who do NOT have the feature.
-        # Hence, we need `phenotype_category`.
-        counts = self._all_counts.loc[(slice(None), phenotype_category), :]
-        counts.set_index(pheno_idx, inplace=True)
-
-        # We must find the total count of all samples in each genotype category
-        # stack turns all indexes into columns. swaplevel switches the pheno_category with geno_category.
-        # unstack puts pheno_category as the column and geno_category as the multi-index.
-        # sum(axis=1) adds across the geno_category, giving us the total patients in that category, removing pheno_category.
-        # unstack puts the geno_category back as the column name. reindex_like(counts) formats it like counts, making the 
-        # following for loop work.
-        totals = self._all_counts.stack().swaplevel().unstack().sum(axis=1).unstack().reindex_like(counts)
-
-        # Fill the frame cells
-        for col in geno_idx.levels[0]:
-            cnt = counts[col]
-            tot = totals[col]
-            # Format `Count` as `N/M` string, where `N` is the sample count for the genotype category
-            # within that phenotype category and `M` is the total count of all samples in that genotype
-            df[col, 'Count'] = cnt.map(str) + '/' + tot.map(str)
-            df[col, 'Percent'] = (cnt * 100 / tot).round(decimals=2).map(str) + '%'
+        for pf, count in self._all_counts.items():
+            total = count.sum()  # Sum across the phenotype categories (collapse the rows).
+            for gt_cat in count.columns:
+                cnt = count.loc[category, gt_cat]
+                df.loc[pf, (gt_cat, 'Count')] = f'{cnt}/{total[gt_cat]}'
+                df.loc[pf, (gt_cat, 'Percent')] = f'{round(cnt * 100 / total[gt_cat])}%'
 
         # Add columns with p values and corrected p values (if present)
         df.insert(df.shape[1], ('', self._pvals.name), self._pvals)
