@@ -120,11 +120,13 @@ class GenotypePhenotypeAnalysisResult:
         df = pd.DataFrame(index=pheno_idx, columns=geno_idx)
 
         for pf, count in self._all_counts.items():
-            total = count.sum()  # Sum across the phenotype categories (collapse the rows).
+            gt_totals = count.sum()  # Sum across the phenotype categories (collapse the rows).
             for gt_cat in count.columns:
                 cnt = count.loc[category, gt_cat]
-                df.loc[pf, (gt_cat, 'Count')] = f'{cnt}/{total[gt_cat]}'
-                df.loc[pf, (gt_cat, 'Percent')] = f'{round(cnt * 100 / total[gt_cat])}%'
+                total = gt_totals[gt_cat]
+                df.loc[pf, (gt_cat, 'Count')] = f'{cnt}/{total}'
+                pct = 0 if total == 0 else round(cnt * 100 / total)
+                df.loc[pf, (gt_cat, 'Percent')] = f'{pct}%'
 
         # Add columns with p values and corrected p values (if present)
         df.insert(df.shape[1], ('', self._pvals.name), self._pvals)
