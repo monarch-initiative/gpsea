@@ -26,6 +26,17 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
         return f'{self._effect.name} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A VariantEffect is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have the VariantEffect and returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -65,6 +76,17 @@ class VariantPredicate(GenotypeBooleanPredicate):
         return f'>=1 allele of the variant {self._variant_key}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A variant string is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have the variant and returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -114,6 +136,17 @@ class ExonPredicate(GenotypeBooleanPredicate):
         return f'Variant in exon {self._exon_number} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """An exon number is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does or does not
+        have a variant in that exon and returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -154,6 +187,18 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
         return f'Variant that affects {self._feature_type.name} feature type on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A FeatureType and ProteinMetadataService is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have a variant effecting that FeatureType on the given protein and 
+        returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -203,6 +248,18 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
         return f'Variant that affects {self._pf_name} feature on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A protein_feature_name and ProteinMetadataService is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have a variant effecting that protein feature on the given protein and 
+        returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:

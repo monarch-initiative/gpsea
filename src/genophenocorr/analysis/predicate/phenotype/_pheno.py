@@ -3,7 +3,7 @@ import typing
 
 import hpotk
 
-from genophenocorr.model import Patient
+from genophenocorr.model import Patient, Disease
 
 from .._api import PolyPredicate, PatientCategory, PatientCategories, C, Categorization
 
@@ -94,23 +94,23 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
 
     :param hpo: HPO object
     :param query: the HPO term to test
-    :param missing_implies_excluded: `True` if lack of an explicit annotation implies term's absence`.
+    :param missing_implies_phenotype_excluded: `True` if lack of an explicit annotation implies term's absence`.
     """
 
     def __init__(self, hpo: hpotk.MinimalOntology,
                  query: hpotk.TermId,
-                 missing_implies_excluded: bool = False):
+                 missing_implies_phenotype_excluded: bool = False):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._query = hpotk.util.validate_instance(query, hpotk.TermId, 'phenotypic_feature')
-        self._query_label = self._hpo.get_term_name(query)
+        self._query_label = self._hpo.get_term(query)
         assert self._query_label is not None, f'Query {query} is in HPO'
-        self._missing_implies_excluded = hpotk.util.validate_instance(missing_implies_excluded, bool,
-                                                                      'missing_implies_excluded')
-        self._present = PhenotypeCategorization(
+        self._missing_implies_phenotype_excluded = hpotk.util.validate_instance(missing_implies_phenotype_excluded, bool,
+                                                                      'missing_implies_phenotype_excluded')
+        self._phenotype_observed = PhenotypeCategorization(
             category=PatientCategories.YES,
             phenotype=query,
         )
-        self._excluded = PhenotypeCategorization(
+        self._phenotype_excluded = PhenotypeCategorization(
             category=PatientCategories.NO,
             phenotype=query,
         )
@@ -124,25 +124,42 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
         return self._query,
 
     def get_categorizations(self) -> typing.Sequence[C]:
-        return self._present, self._excluded
+        return self._phenotype_observed, self._phenotype_excluded
 
     def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
+        """An HPO TermID is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has the
+        given phenotype.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[PhenotypeCategorization[P]]: PhenotypeCategorization,
+                                                        either "YES" if the phenotype
+                                                        is listed and is not excluded, or 
+                                                        "NO" if the phenotype is listed and excluded, 
+                                                        otherwise will return None.
+                                                        Unless _missing_implies_phenotype_excluded is True, then 
+                                                        will return "NO" if the phenotype is listed and excluded
+                                                        or not listed. 
+        """
         self._check_patient(patient)
 
         if len(patient.phenotypes) == 0:
             return None
 
         for phenotype in patient.phenotypes:
-            if phenotype.is_present:
+            if phenotype.is_phenotype_observed:
                 if any(self._query == anc for anc in self._hpo.graph.get_ancestors(phenotype, include_source=True)):
-                    return self._present
+                    return self._phenotype_observed
             else:
-                if self._missing_implies_excluded:
-                    return self._excluded
+                if self._missing_implies_phenotype_excluded:
+                    return self._phenotype_excluded
                 else:
                     if any(self._query == desc for desc in
                            self._hpo.graph.get_descendants(phenotype, include_source=True)):
-                        return self._excluded
+                        return self._phenotype_excluded
 
         return None
 
@@ -155,6 +172,56 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hp
     `DiseasePresencePredicate` tests if the patient was diagnosed with a disease.
 
     The predicate tests if the patient's diseases include a disease ID formatted as a :class:`hpotk.model.TermId`.
+
+    :param disease_id_query: the Disease ID to test
     """
-    # TODO: Lauren please implement and test.
-    pass
+
+    def __init__(self, disease_id_query: hpotk.TermId):
+        self._query = hpotk.util.validate_instance(disease_id_query, hpotk.TermId, 'disease_id_query')
+
+        self._diagnosis_present = PhenotypeCategorization(
+            category=PatientCategories.YES,
+            phenotype=disease_id_query,
+        )
+        self._diagnosis_excluded = PhenotypeCategorization(
+            category=PatientCategories.NO,
+            phenotype=disease_id_query,
+        )
+
+    def get_question(self) -> str:
+        return f'Was {self._query} diagnosed in the patient?'
+
+    @property
+    def diseases(self) -> typing.Sequence[hpotk.TermId]:
+        # We usually test just a single Disease, so we return a tuple with a single member.
+        return self._query,
+
+    def get_categorizations(self) -> typing.Sequence[C]:
+        return self._diagnosis_present, self._diagnosis_excluded
+
+    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
+        """A Disease TermID is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has the
+        given phenotype.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[PhenotypeCategorization[P]]: PhenotypeCategorization,
+                                                        either "YES" if the phenotype
+                                                        is listed and is not excluded, or 
+                                                        "NO" if the disease is not listed
+                                                        or is excluded.
+
+        """
+        self._check_patient(patient)
+
+        for dis in patient.diseases:
+            if dis.is_present and dis.identifier == self._query:
+                return self._diagnosis_present
+
+        return self._diagnosis_excluded
+
+    def __repr__(self):
+        return f'DiseasePresencePredicate(query={self._query})'

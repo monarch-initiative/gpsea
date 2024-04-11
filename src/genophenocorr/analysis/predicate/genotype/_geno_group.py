@@ -49,6 +49,19 @@ class VariantEffectsPredicate(GroupingPredicate):
         return f'{self._effect1.name} or {self._effect2.name} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """Two VariantEffects are given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has either 
+        VariantEffects and returns a category based off which one it does have, 
+        or returns None if it has both or neither.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+                                             if it has the first given genotype or the
+                                             second given genotype. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -99,6 +112,19 @@ class VariantsPredicate(GroupingPredicate):
         return f'>=1 allele of either variant {self._variant_key1} or variant {self._variant_key2}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """Two variant strings are given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has either 
+        variant and returns a category based off which one it does have, 
+        or returns None if it has both or neither.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+                                             if it has the first given genotype or the
+                                             second given genotype. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -157,6 +183,19 @@ class ExonsPredicate(GroupingPredicate):
         return f'Variant in exon {self._exon1_number} vs in exon {self._exon2_number} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """Two exon numbers are given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has a variant effecting
+        either exon and returns a category based off which one it does have an effect on, 
+        or returns None if it effects both or neither.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+                                             if it has the first given genotype or the
+                                             second given genotype. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -208,6 +247,19 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
         return f'Variant that affects {self._feature_type1.name} protein feature type vs {self._feature_type2} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """Two FeatureTypes and a ProteinMetadataService are given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has a variant effecting
+        either protein feature type and returns a category based off which one it does have an effect on, 
+        or returns None if it effects both or neither.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+                                             if it has the first given genotype or the
+                                             second given genotype. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
@@ -269,6 +321,19 @@ class ProtFeaturesPredicate(GroupingPredicate):
         return f'Variant that affects {self._pf1_name} protein feature vs {self._pf2_name} on {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """Two protein features and a ProteinMetadataService are given when initializing the class. 
+        Given a Patient class, this function tests whether the patient has a variant effecting
+        either protein feature and returns a category based off which one it does have an effect on, 
+        or returns None if it effects both or neither.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+                                             if it has the first given genotype or the
+                                             second given genotype. 
+        """
         self._check_patient(patient)
 
         if len(patient.variants) == 0:
