@@ -211,3 +211,12 @@ class GroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
         The predicate bins a patient into :class:`GroupingPredicate.FIRST` or :class:`GroupingPredicate.SECOND` category.
         """
         return GroupingPredicate.FIRST, GroupingPredicate.SECOND
+
+
+class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
+    BOTH = Categorization(PatientCategory(0, 'Both', 'The patient belongs in both groups.'))
+    ONE = Categorization(PatientCategory(1, 'One', 'The patient belongs in one of the two groups.'))
+    NEITHER = Categorization(PatientCategory(2, 'Neither', 'The patient does not belong in either group.'))
+    
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return RecessiveGroupingPredicate.BOTH, RecessiveGroupingPredicate.ONE, RecessiveGroupingPredicate.NEITHER

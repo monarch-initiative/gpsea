@@ -21,8 +21,8 @@ class MultiFisherExact(metaclass=abc.ABCMeta):
     def _check_input(a: np.ndarray):
         if not isinstance(a, np.ndarray):
             raise ValueError(f'Expected a numpy array but got {type(a)}')
-        if not a.shape == (3, 2):
-            raise ValueError(f'Shape of the array must be (3, 2) but got {a.shape}')
+        if not a.shape == (2, 3):
+            raise ValueError(f'Shape of the array must be (2, 3) but got {a.shape}')
         if np.array_equal(a, np.zeros_like(a)):
             raise ValueError(f'Array is all zeros, cannot run analysis')
 

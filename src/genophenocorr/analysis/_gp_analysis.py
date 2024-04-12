@@ -118,12 +118,12 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
             # TODO - this is where we must fail unless we have the contingency table of the right size!
             if counts.shape == (2, 2):
                 pvals[phenotype] = run_fisher_exact(counts)
-            elif counts.shape == (3, 2):
+            elif counts.shape == (2, 3):
                 pvals[phenotype] = run_recessive_fisher_exact(counts)
             else:
                 raise ValueError(
                     "Invalid number of categories. "
-                    f"A {counts.shape} table was created. Only (2, 2) and (3, 2) are valid sizes."
+                    f"A {counts.shape} table was created. Only (2, 2) and (2, 3) are valid sizes."
                 )
 
         # 3) Multiple correction

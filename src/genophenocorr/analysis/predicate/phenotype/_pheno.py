@@ -150,7 +150,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
             return None
 
         for phenotype in patient.phenotypes:
-            if phenotype.is_phenotype_observed:
+            if phenotype.is_observed:
                 if any(self._query == anc for anc in self._hpo.graph.get_ancestors(phenotype, include_source=True)):
                     return self._phenotype_observed
             else:
