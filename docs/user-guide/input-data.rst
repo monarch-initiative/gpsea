@@ -22,8 +22,7 @@ Create a cohort from GA4GH phenopackets
 
 The easiest way to input data into `genophenocorr` is to use the
 `GA4GH Phenopacket Schema <https://phenopacket-schema.readthedocs.io/en/latest>`_ phenopackets.
-`genophenocorr` provides :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`,
-an out-of-the-box class for loading phenopackets.
+`genophenocorr` provides an out-of-the-box solution for loading a cohort from a folder of phenopacket JSON files.
 
 
 Let's start with loading Human Phenotype Ontology, a requisite for the input Q/C steps. We'll use the amazing
@@ -36,21 +35,21 @@ the standard `genophenocorr` installation:
 
   >>> hpo = hpotk.load_minimal_ontology('http://purl.obolibrary.org/obo/hp.json')
 
-Next, let's create the `PhenopacketPatientCreator`. We use a convenience method
-:func:`genophenocorr.preprocessing.configure_caching_patient_creator`:
+Next, let's get a `CohortCreator` for loading the phenopackets. We use the
+:func:`genophenocorr.preprocessing.configure_caching_cohort_creator` convenience method:
 
 .. doctest:: input-data
 
-  >>> from genophenocorr.preprocessing import configure_caching_patient_creator
+  >>> from genophenocorr.preprocessing import configure_caching_cohort_creator
 
-  >>> patient_creator = configure_caching_patient_creator(hpo)
+  >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
 .. note::
 
-  By default, the method creates the patient creator that will call Variant Effect Predictor
-  and Uniprot APIs to perform the functional annotation and protein annotation and cache the responses
+  The default `cohort_creator` will call Variant Effect Predictor
+  and Uniprot APIs to perform the functional annotation and protein annotation, and the responses will be cached
   in the current working directory to save the bandwidth.
-  See the :func:`genophenocorr.preprocessing.configure_caching_patient_creator` for more configuration options.
+  See the :func:`genophenocorr.preprocessing.configure_caching_cohort_creator` for more configuration options.
 
 We can create a cohort starting from a folder with phenopackets stored as JSON files.
 For the purpose of this example, we will use a folder `simple_cohort` with 5 example phenopackets located in
@@ -61,38 +60,18 @@ For the purpose of this example, we will use a folder `simple_cohort` with 5 exa
   >>> import os
   >>> simple_cohort_path = os.path.join(os.getcwd(), 'data', 'simple_cohort')
 
-Here we walk the file system, load all phenopacket JSON files, and transform the phenopackets into instances of
-:class:`genophenocorr.model.Patient`:
+We load the phenopackets using `cohort_creator` defined above together with another convenience function
+:class:`genophenocorr.preprocessing.load_phenopacket_folder`:
 
 .. doctest:: input-data
 
-  >>> import os
-  >>> from phenopackets import Phenopacket
-  >>> from google.protobuf.json_format import Parse
+  >>> from genophenocorr.preprocessing import load_phenopacket_folder
 
-  >>> patients = []
-  >>> for dirpath, _, filenames in os.walk(simple_cohort_path):
-  ...   for filename in filenames:
-  ...     if filename.endswith('.json'):
-  ...       pp_path = os.path.join(dirpath, filename)
-  ...       with open(pp_path) as fh:
-  ...         pp = Parse(fh.read(), Phenopacket())
-  ...       patient = patient_creator.create_patient(pp)
-  ...       patients.append(patient)
+  >>> cohort = load_phenopacket_folder(simple_cohort_path, cohort_creator)
+  >>> len(cohort)
+  5
 
-
-  >>> f'Loaded {len(patients)} phenopackets'
-  'Loaded 5 phenopackets'
-
-Now we can construct a `Cohort`:
-
-.. doctest:: input-data
-
-  >>> from genophenocorr.model import Cohort
-
-  >>> cohort = Cohort.from_patients(patients)
-  >>> f'Created a cohort with {len(cohort)} members'
-  'Created a cohort with 5 members'
+We loaded phenopackets into a `Cohort` consisting of 5 members.
 
 
 Create a cohort from other data

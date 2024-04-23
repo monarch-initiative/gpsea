@@ -8,10 +8,10 @@ from genophenocorr.analysis.predicate.genotype import *
 from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
 
-from .fixtures import toy_hpo, toy_cohort
+from .conftest import toy_cohort, protein_test_service
 
 
-def find_patient(pat_id, cohort) -> typing.Optional[Patient]:
+def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
     for pat in cohort.all_patients:
         if pat.patient_id == pat_id:
             return pat
@@ -111,9 +111,9 @@ def test_ExonPredicate(patient_id, exon, hasVarResult, toy_cohort):
                         ['HetDoubleVar1', FeatureType.REPEAT, BooleanPredicate.NO]))
                         ## TODO Why do CNV not show as affecting a feature?
                         ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
-def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy_cohort):
+def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy_cohort, protein_test_service):
     patient = find_patient(patient_id, toy_cohort)
-    predicate = ProtFeatureTypePredicate('NM_013275.6', feature_type=feature_type)
+    predicate = ProtFeatureTypePredicate('NM_013275.6', feature_type=feature_type, protein_service=protein_test_service)
     result = predicate.test(patient)
     assert result == hasVarResult
 
@@ -124,8 +124,8 @@ def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy
                         ['HetSingleVar', 'Disordered', BooleanPredicate.YES],
                         ['HomoVar', 'Disordered', BooleanPredicate.YES],
                         ['HetDoubleVar1', 'Disordered', BooleanPredicate.YES]))
-def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort):
-    predicate = ProtFeaturePredicate('NM_013275.6', protein_feature_name=feature)
+def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, protein_test_service):
+    predicate = ProtFeaturePredicate('NM_013275.6', protein_feature_name=feature, protein_service=protein_test_service)
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result == hasVarResult

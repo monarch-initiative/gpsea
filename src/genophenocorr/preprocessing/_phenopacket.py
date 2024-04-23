@@ -1,22 +1,17 @@
 import logging
-import os
 import typing
 
 import hpotk
 
-# pyright: reportGeneralTypeIssues=false
-from google.protobuf.json_format import Parse
-from phenopackets import GenomicInterpretation, Phenopacket
-from tqdm import tqdm
+from phenopackets import GenomicInterpretation, Phenopacket, Disease
 
-from genophenocorr.model import Phenotype, ProteinMetadata, VariantCoordinates, Variant, Genotype, Genotypes
-from genophenocorr.model import Patient, Cohort
+from genophenocorr.model import Patient, SampleLabels, Disease as Dis
+from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
-
+from ._api import VariantCoordinateFinder, FunctionalAnnotator
+from ._audit import Notepad
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
-from ._api import VariantCoordinateFinder, FunctionalAnnotator
-
 
 
 class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpretation]):
@@ -27,6 +22,7 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
     :param build: genome build to use in `VariantCoordinates
     :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions
     """
+
     def __init__(self, build: GenomeBuild,
                  hgvs_coordinate_finder: VariantCoordinateFinder[str]):
         self._logger = logging.getLogger(__name__)
@@ -50,6 +46,9 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
         vc = None
         if self._vcf_is_available(variant_descriptor.vcf_record):
             # We have a VCF record.
+            if not self._check_assembly(variant_descriptor.vcf_record.genome_assembly):
+                raise ValueError(f"Variant id {variant_descriptor.id} for patient {item.subject_or_biosample_id} has a different Genome Assembly than what was given. " \
+                                 + f"{variant_descriptor.vcf_record.genome_assembly} is not {self._build.identifier}.")
             contig = self._build.contig_by_name(variant_descriptor.vcf_record.chrom)
             start = int(variant_descriptor.vcf_record.pos) - 1
             ref = variant_descriptor.vcf_record.ref
@@ -86,12 +85,23 @@ class PhenopacketVariantCoordinateFinder(VariantCoordinateFinder[GenomicInterpre
                 if expression.syntax == 'hgvs.c':
                     vc = self._hgvs_finder.find_coordinates(expression.value)
                     break
+        else:
+            raise ValueError("Unable to find variant coordinates.")
 
         # Last, parse genotype.
         genotype = variant_descriptor.allelic_state.label
         gt = self._map_geno_genotype_label(genotype)
 
         return vc, gt
+
+    def _check_assembly(self, genome_assembly: str) -> bool:
+        if '38' in genome_assembly and self._build.identifier == 'GRCh38.p13':
+            return True
+        elif ('37' in genome_assembly or '19' in genome_assembly) and self._build.identifier == 'GRCh37.p13':
+            return True
+        else:
+            return False
+
 
     @staticmethod
     def _vcf_is_available(vcf_record) -> bool:
@@ -142,36 +152,54 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._phenotype_creator = hpotk.util.validate_instance(phenotype_creator, PhenotypeCreator, 'phenotype_creator')
         self._func_ann = hpotk.util.validate_instance(var_func_ann, FunctionalAnnotator, 'var_func_ann')
 
-    def create_patient(self, item: Phenopacket) -> Patient:
+    def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
 
         Args:
-            item (Phenopacket): A Phenopacket object
+            inputs (Phenopacket): A Phenopacket object
+            notepad (Notepad): notepad to write down the issues
         Returns:
             Patient: A Patient object
         """
-        sample_id = self._extract_id(item)
-        phenotypes = self._add_phenotypes(item)
-        if len(phenotypes) == 0:
-            self._logger.warning('Patient %s has no phenotypes listed and will not be included in this analysis.', sample_id)
-            return None
-        variants = self._add_variants(sample_id, item)
-        if len(variants) == 0:
-            self._logger.warning('Patient %s has no variants listed and will not be included in this analysis.', sample_id)
-            return None
-        protein_data = self._add_protein_data(variants)
-        return Patient(item.id, phenotypes, variants, protein_data)
+        sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
 
-    @staticmethod
-    def _extract_id(pp: Phenopacket):
-        subject = pp.subject
-        if len(subject.id) > 0:
-            return subject.id
-        else:
-            return pp.id
+        # Check phenotypes 
+        pfs = notepad.add_subsection('phenotype-features')
+        phenotypes = self._phenotype_creator.process(
+            ((pf.type.id, not pf.excluded) for pf in inputs.phenotypic_features),
+            pfs
+        )
+        
+        # Check diseases
+        diseases = self._add_diseases([dis for dis in inputs.diseases], pfs)
 
+        # Check variants
+        vs = notepad.add_subsection('variants')
+        variants = self._add_variants(sample_id, inputs, vs)
+    
+        return Patient(sample_id, phenotypes=phenotypes, variants=variants, diseases=diseases)
 
-    def _add_variants(self, sample_id: str, pp: Phenopacket) -> typing.Sequence[Variant]:
+    def _add_diseases(self, diseases: typing.Sequence[Disease], notepad: Notepad) -> typing.Sequence[Dis]:
+        """Creates a list of Disease objects from the data in a given Phenopacket
+
+        Args:
+            diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects
+        Returns:
+            Sequence[Dis]: A list of Disease objects
+        """
+        if len(diseases) == 0:
+            notepad.add_warning(f"No diseases found.")
+            return []
+        final_diseases = []
+        for i, dis in enumerate(diseases):
+            if not dis.HasField("term"):
+                raise ValueError('Could not find term in Disease.')
+            term_id = hpotk.TermId.from_curie(dis.term.id)
+            final_diseases.append(Dis(term_id, dis.term.label, not dis.excluded))
+        return final_diseases
+        
+
+    def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket, notepad: Notepad) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
         Args:
@@ -179,107 +207,33 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         Returns:
             Sequence[Variant]: A list of Variant objects
         """
-        variants_list = []
+        variants = []
         for i, interp in enumerate(pp.interpretations):
             for genomic_interp in interp.diagnosis.genomic_interpretations:
-                vc, gt = self._coord_finder.find_coordinates(genomic_interp)
-                if vc == None:
-                    self._logger.warning('Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` '
-                             'but did not find one in patient %s', pp.id)
+                try:
+                    vc, gt = self._coord_finder.find_coordinates(genomic_interp)
+                except ValueError:
+                    notepad.add_warning(f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
+                                        "Remove variant from testing")
                     continue
-                if "N" in vc.alt:
-                    self._logger.warning('Patient %s has unknown alternative variant %s, this variant will not be included.', pp.id, vc.variant_key)
+
+                try:
+                    tx_annotations = self._func_ann.annotate(vc)
+                except ValueError:
+                    notepad.add_warning(f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                        "Try again or remove variant form testing")
                     continue
-                tx_annotations = self._func_ann.annotate(vc)
-                if tx_annotations is None:
-                    self._logger.warning("Patient %s has an error with variant %s, this variant will not be included.", pp.id, vc.variant_key)
+
+                if len(tx_annotations) == 0:
+                    notepad.add_warning(f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                                        "Remove variant from testing")
                     continue
+
                 genotype = Genotypes.single(sample_id, gt)
-                variant = Variant(vc, tx_annotations, genotype)
-                variants_list.append(variant)
+                variants.append(Variant(vc, tx_annotations, genotype))
 
-        if len(variants_list) == 0:
-            self._logger.warning('Expected at least one variant per patient, but received none for patient %s', pp.id)
-        return variants_list
+        if len(variants) == 0:
+            notepad.add_warning(f"Patient {pp.id} has no variants to work with")
 
-    def _add_phenotypes(self, pp: Phenopacket) -> typing.Sequence[Phenotype]:
-        """Creates a list of Phenotype objects from the data in a given Phenopacket
+        return variants
 
-        Args:
-            pp (Phenopacket): A Phenopacket object
-        Returns:
-            Sequence[Phenotype]: A list of Phenotype objects
-        """
-        hpo_id_list = []
-        for hpo_id in pp.phenotypic_features:
-            hpo_id_list.append((hpo_id.type.id, not hpo_id.excluded))
-        if len(hpo_id_list) == 0:
-            self._logger.warning(f'Expected at least one HPO term per patient, but received none for patient {pp.id}')
-            return []
-        return self._phenotype_creator.create_phenotype(hpo_id_list)
-
-    def _add_protein_data(self, variants: typing.Sequence[Variant]) -> typing.Collection[ProteinMetadata]:
-        """Creates a list of ProteinMetadata objects from a given list of Variant objects
-
-        Args:
-            variants (Sequence[Variant]): A list of Variant objects
-        Returns:
-            Collection[ProteinMetadata]: A list of ProteinMetadata objects
-        """
-        final_prots = set()
-        for var in variants:
-            for trans in var.tx_annotations:
-                for prot in trans.protein_affected:
-                    final_prots.add(prot)
-        return final_prots
-
-
-def load_phenopacket_folder(pp_directory: str,
-                            patient_creator: PhenopacketPatientCreator,
-                            include_patients_with_no_HPO: bool = False) -> Cohort:
-    """
-    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
-
-    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
-      a directory with at least one phenopacket.
-    :param patient_creator: patient creator for turning a phenopacket into a :class:`genophenocorr.Patient`
-    :return: a cohort made of the phenopackets
-    """
-    if not os.path.isdir(pp_directory):
-        raise ValueError("Could not find directory of Phenopackets.")
-    hpotk.util.validate_instance(patient_creator, PhenopacketPatientCreator, 'patient_creator')
-
-    # load Phenopackets
-    pps = _load_phenopacket_dir(pp_directory)
-    if len(pps) == 0:
-        raise ValueError(f"No JSON Phenopackets were found in {pp_directory}")
-
-    # turn phenopackets into patients using patient creator
-    patients = []
-    for pp in tqdm(pps, desc='Patients Created'):
-        patient = patient_creator.create_patient(pp)
-        if patient is not None:
-            patients.append(patient)
-
-    # create cohort from patients
-    return Cohort.from_patients(patients, include_patients_with_no_HPO)
-
-
-def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
-    patients = []
-    for patient_file in os.listdir(pp_dir):
-        if patient_file.endswith('.json'):
-            phenopacket_path = os.path.join(pp_dir, patient_file)
-            pp = load_phenopacket(phenopacket_path)
-            patients.append(pp)
-    return patients
-
-
-def load_phenopacket(phenopacket_path: str) -> Phenopacket:
-    """
-    Load phenopacket JSON file.
-
-    :param phenopacket_path: a `str` pointing to phenopacket JSON file.
-    """
-    with open(phenopacket_path) as f:
-        return Parse(f.read(), Phenopacket())

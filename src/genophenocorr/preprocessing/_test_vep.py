@@ -8,7 +8,7 @@ import pytest
 from genophenocorr.model import VariantCoordinates, VariantEffect
 from genophenocorr.model.genome import GenomicRegion, Strand, GRCh38
 
-from ._vep import verify_start_end_coordinates, VepFunctionalAnnotator
+from ._vep import format_coordinates_for_vep_query, VepFunctionalAnnotator
 
 from ._test_variant import variant_annotator
 
@@ -55,7 +55,7 @@ def test_verify_start_end_coordinates(contig_name, start, end, ref, alt, chlen, 
     contig = GRCh38.contig_by_name(contig_name)
     region = GenomicRegion(contig, start, end, Strand.POSITIVE)
     vc = VariantCoordinates(region, ref, alt, chlen)
-    out = verify_start_end_coordinates(vc)
+    out = format_coordinates_for_vep_query(vc)
     assert out == expected
 
 

@@ -32,17 +32,15 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             Sequence[ProteinMetadata]: A sequence of ProteinMetadata objects, or an empty sequence if no data was found.
         """
         if not isinstance(protein_id, str):
-            # TODO - log a warning?
             raise ValueError(f'Protein ID must be a str but it was {type(protein_id)}')
         api_url = self._url % protein_id
         r = requests.get(api_url).json()
         results = r['results']
         if len(results) == 0:
-            self._logger.warning("No proteins found for ID %s. Please verify refseq ID.", protein_id)
-            return []
+            raise ValueError(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
         protein_list = []
+        unis = []
         for protein in results:
-            unis = []
             for uni in protein['uniProtKBCrossReferences']:
                 unis.append(uni['id'])
             if protein_id in unis:
@@ -60,11 +58,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                         feat = ProteinFeature.create(FeatureInfo(feat_name, Region(feat_start, feat_end)), FeatureType[feat_type.upper()])
                         all_features_list.append(feat)
                 except KeyError:
-                    self._logger.warning("No features for %s", protein_id)
+                    raise ValueError(f"No features for {protein_id}")
                 protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list))
-            else:
-                self._logger.warning("UniProt did not return a protein ID that matches the ID we searched for: %s not in %s", protein_id, unis)
         if len(protein_list) > 1:
             self._logger.info('UniProt found %d results for ID %s', len(protein_list), protein_id)
-        # TODO - DD would like to discuss an example when there are >1 items in this list.
+        elif len(protein_list) == 0:
+            raise ValueError(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
         return protein_list

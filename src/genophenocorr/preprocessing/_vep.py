@@ -6,9 +6,10 @@ import requests
 
 from genophenocorr.model import VariantCoordinates, TranscriptAnnotation, VariantEffect
 from genophenocorr.model.genome import Region
-from ._api import FunctionalAnnotator, ProteinMetadataService
+from ._api import FunctionalAnnotator
 
-def verify_start_end_coordinates(vc: VariantCoordinates):
+
+def format_coordinates_for_vep_query(vc: VariantCoordinates) -> str:
     """
     Converts the 0-based VariantCoordinates to ones that will be interpreted
     correctly by VEP
@@ -53,18 +54,39 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         protein_annotator (ProteinMetadataService): a service for getting protein data
         include_computational_txs (bool): Include computational transcripts, such as
         RefSeq `XM_`.
+        timeout (int): Timeout in seconds
     """
 
-    def __init__(self, protein_annotator: ProteinMetadataService,
-                 include_computational_txs: bool = False):
+    NONCODING_EFFECTS = {
+        VariantEffect.UPSTREAM_GENE_VARIANT,
+        VariantEffect.FIVE_PRIME_UTR_VARIANT,
+
+        VariantEffect.NON_CODING_TRANSCRIPT_VARIANT,
+        VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT,
+        VariantEffect.SPLICE_ACCEPTOR_VARIANT,
+        VariantEffect.SPLICE_DONOR_VARIANT,
+        VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT,
+        VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT,
+        VariantEffect.INTRON_VARIANT,
+
+        VariantEffect.THREE_PRIME_UTR_VARIANT,
+        VariantEffect.DOWNSTREAM_GENE_VARIANT,
+        VariantEffect.INTERGENIC_VARIANT
+    }
+    """
+    Non-coding variant effects where we do not complain if the functional annotation lacks the protein effects.
+    """
+
+    def __init__(self,
+                 include_computational_txs: bool = False,
+                 timeout: int = 10):
         self._logger = logging.getLogger(__name__)
-        self._protein_annotator = protein_annotator
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \
                     '&mutfunc=1&numbers=1&protein=1&refseq=1&mane=1' \
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
-        self._slice_effects = [VariantEffect.SPLICE_ACCEPTOR_VARIANT, VariantEffect.SPLICE_DONOR_VARIANT, VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT, VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT]
+        self._timeout = timeout
 
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
@@ -75,12 +97,13 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         Returns:
             typing.Sequence[TranscriptAnnotation]: A sequence of transcript
             annotations for the variant coordinates
+        Raises:
+            ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.
         """
         response = self._query_vep(variant_coordinates)
         annotations = []
         if 'transcript_consequences' not in response:
-            self._logger.error('The VEP response lacked the required `transcript_consequences` field. %s', response)
-            return None
+            raise ValueError('The VEP response for `%s` lacked the required `transcript_consequences` field. %s', variant_coordinates, response)
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
@@ -97,8 +120,8 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         try:
             var_effect = VariantEffect[effect]
         except KeyError:
-            self._logger.warning("VariantEffect %s was not found in our record of possible effects. Please report this issue to the genophenocorr GitHub.", effect)
-            return None
+            # A missing variant effect, pls submit an issue to the genophenocorr GitHub repository.
+            raise ValueError("VariantEffect %s was not found in our record of possible effects.", effect)
         return var_effect
 
     def _process_item(self, item: typing.Dict) -> typing.Optional[TranscriptAnnotation]:
@@ -110,7 +133,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             # Skipping a computational transcript
             return None
         is_preferred = True if ('canonical' in item and item['canonical'] == 1) else False
-        hgvsc_id = item.get('hgvsc')
+        hgvs_cdna = item.get('hgvsc')
         var_effects = []
         consequences = item.get('consequence_terms')
         for con in consequences:
@@ -127,12 +150,11 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             exons_effected = (int(x) for x in exons_effected)
 
         protein_id = item.get('protein_id')
-        protein = self._protein_annotator.annotate(protein_id)
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
-            if not any(ve in var_effects for ve in self._slice_effects):
-                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvsc_id, protein_id)
+            if not any(ve in VepFunctionalAnnotator.NONCODING_EFFECTS for ve in var_effects):
+                self._logger.warning('Missing start/end coordinate for %s on protein %s. Protein effect will not be included.', hgvs_cdna, protein_id)
             protein_effect = None
         else:
             # The coordinates are in 1-based system and we need 0-based.
@@ -143,25 +165,25 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
         return TranscriptAnnotation(gene_name,
                                     trans_id,
-                                    hgvsc_id,
+                                    hgvs_cdna,
                                     is_preferred,
                                     var_effects,
                                     exons_effected,
-                                    protein,
+                                    protein_id,
                                     protein_effect)
 
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
-        api_url = self._url % (verify_start_end_coordinates(variant_coordinates))
-        r = requests.get(api_url, headers={'Content-Type': 'application/json'})
+        api_url = self._url % (format_coordinates_for_vep_query(variant_coordinates))
+        r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
+        #Throw an exception rather than errors so we can skip the variant in _phenopackets
         if not r.ok:
             self._logger.error("Expected a result but got an Error for variant: %s", variant_coordinates.variant_key)
             self._logger.error(r.text)
-            return None
+            raise ValueError('Expected a result but got an Error. See log for details.')
         results = r.json()
         if not isinstance(results, list):
             self._logger.error(results.get('error'))
-            raise ConnectionError(
-                f"Expected a result but got an Error. See log for details.")
+            raise ValueError("Expected a result but got an Error. See log for details.")
         if len(results) > 1:
             self._logger.error("Expected only one variant per request but received %s different variants.", len(results))
             self._logger.error([result.id for result in results])

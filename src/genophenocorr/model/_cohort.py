@@ -1,8 +1,8 @@
 import typing
 from collections import Counter
 
-from ._phenotype import Phenotype
-from ._protein import ProteinMetadata
+from ._base import SampleLabels
+from ._phenotype import Phenotype, Disease
 from ._variant import Variant
 
 
@@ -10,28 +10,26 @@ class Patient:
     """A class that represents an individual patient
 
     Attributes:
-        patient_id (string): A string unique to this Patient object
+        patient_id (SampleLabels): The patient identifiers
         phenotypes (Sequence[Phenotype]): A list of Phenotype objects
         variants (Sequence[Variant]): A list of Variant objects
-        proteins (Sequence[ProteinMetadata]): A list of ProteinMetadata objects
     """
 
-    def __init__(self, patient_id: str,
+    def __init__(self, labels: SampleLabels,
                  phenotypes: typing.Iterable[Phenotype],
-                 variants: typing.Iterable[Variant],
-                 proteins: typing.Iterable[ProteinMetadata]):
+                 diseases: typing.Iterable[Disease],
+                 variants: typing.Iterable[Variant]):
         """Constructs all necessary attributes for a Patient object
 
         Args:
-            patient_id (string): A string unique to this Patient object
+            labels (string): A string unique to this Patient object
             phenotypes (Iterable[Phenotype]): A list of Phenotype objects
             variants (Iterable[Variant]): A list of Variant objects
-            proteins (Iterable[ProteinMetadata]): A list of ProteinMetadata objects
         """
-        self._id = patient_id
+        self._labels = labels
         self._phenotypes = tuple(phenotypes)
+        self._diseases = tuple(diseases)
         self._variants = tuple(variants)
-        self._proteins = tuple(proteins)
 
     @property
     def patient_id(self) -> str:
@@ -39,7 +37,14 @@ class Patient:
         Returns:
             string: Patient ID unique to this Patient object
         """
-        return self._id
+        return self._labels.label_summary()
+
+    @property
+    def labels(self) -> SampleLabels:
+        """
+        Get the sample identifiers.
+        """
+        return self._labels
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
@@ -50,20 +55,16 @@ class Patient:
         return self._phenotypes
 
     @property
+    def diseases(self) -> typing.Sequence[Disease]:
+        return self._diseases
+
+    @property
     def variants(self) -> typing.Sequence[Variant]:
         """
         Returns:
             Sequence[Variant]: A list of Variant objects associated with this Patient object
         """
         return self._variants
-
-    @property
-    def proteins(self) -> typing.Sequence[ProteinMetadata]:
-        """
-        Returns:
-            Sequence[ProteinMetadata]: A list of ProteinMetadata objects associated with this Patient object
-        """
-        return self._proteins
 
     def present_phenotypes(self) -> typing.Iterator[Phenotype]:
         """
@@ -76,13 +77,19 @@ class Patient:
         Get an iterator over *excluded* phenotypes of the patient.
         """
         return filter(lambda p: p.is_excluded, self._phenotypes)
+    
+    def present_diseases(self) -> typing.Iterator[Disease]:
+        return filter(lambda d: d.is_present, self._diseases)
+    
+    def excluded_diseases(self) -> typing.Iterator[Disease]:
+        return filter(lambda d: not d.is_present, self._diseases)
 
     def __str__(self) -> str:
         return (f"Patient("
-                f"patient_id:{self.patient_id}, "
+                f"labels:{self._labels}, "
                 f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
-                f"proteins:{[prot.protein_id for prot in self.proteins]})")
+                f"diseases:{[dis.identifier for dis in self.diseases]}")
 
     def __repr__(self) -> str:
         return str(self)
@@ -92,10 +99,10 @@ class Patient:
                 and self.patient_id == other.patient_id
                 and self.variants == other.variants
                 and self.phenotypes == other.phenotypes
-                and self.proteins == other.proteins)
+                and self.diseases == other.diseases)
 
     def __hash__(self) -> int:
-        return hash((self.patient_id, self.variants, self.phenotypes, self.proteins))
+        return hash((self.patient_id, self.variants, self.phenotypes, self.diseases)) 
 
 
 class Cohort(typing.Sized):
@@ -108,8 +115,8 @@ class Cohort(typing.Sized):
         :param members: a sequence of cohort members.
         :return: the cohort
         """
-        cohort_variants, cohort_phenotypes, cohort_proteins = set(), set(), set()  # , cohort_proteins
-        var_counts, pheno_count, prot_counts = Counter(), Counter(), Counter()  # , prot_counts
+        cohort_variants, cohort_phenotypes, cohort_diseases = set(), set(), set()
+        var_counts, pheno_count, diseases_count = Counter(), Counter(), Counter()
         members = set(members)
         excluded_members = []
         for patient in members:
@@ -121,14 +128,13 @@ class Cohort(typing.Sized):
                 continue
             cohort_phenotypes.update(patient.phenotypes)
             cohort_variants.update(patient.variants)
+            cohort_diseases.update(patient.diseases)
             var_counts.update([var.variant_coordinates.variant_key for var in patient.variants])
             pheno_count.update(pheno.identifier.value for pheno in patient.present_phenotypes())
-            cohort_proteins.update(patient.proteins)
-            prot_counts.update([prot.protein_id for prot in patient.proteins])
-        all_counts = {'patients': len(members), 'variants': var_counts, 'phenotypes': pheno_count,
-                      'proteins': prot_counts}  # 'proteins':prot_counts
-        return Cohort(members, cohort_phenotypes, cohort_variants, cohort_proteins,
-                      all_counts, excluded_members)  # cohort_proteins, all_counts
+            diseases_count.update(dis.identifier.value for dis in patient.present_diseases())
+        all_counts = {'patients': len(members), 'variants': var_counts, 'phenotypes': pheno_count, 'diseases': diseases_count} 
+        return Cohort(members, cohort_phenotypes, cohort_variants, cohort_diseases,
+                      all_counts, excluded_members) 
 
     """This class creates a collection of patients and makes it easier to determine overlapping diseases,
     phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will
@@ -138,7 +144,6 @@ class Cohort(typing.Sized):
         all_patients (Sequence[Patient]): A set of all Patient objects in the Cohort
         all_phenotypes (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort
         all_variants (Sequence[Variant]): A set of all Variant objects in the Cohort
-        all_proteins (Sequence[ProteinMetadata]): A set of all ProteinMetadata objects in the Cohort
         all_transcripts (Sequence[string]): A set of all transcript IDs referenced in all the Variant objects
         total_patient_count (integer): The total number of Patient objects
     Methods:
@@ -149,7 +154,7 @@ class Cohort(typing.Sized):
         list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.
     """
 
-    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, protein_set, counts_dict, excluded_members,
+    def __init__(self, patient_set: typing.Set[Patient], phenotype_set, variant_set, disease_set, counts_dict, excluded_members,
                  recessive=False):
         """Constructs all necessary attributes for a Cohort object
 
@@ -167,8 +172,8 @@ class Cohort(typing.Sized):
             self._patient_set = frozenset(patient_set)
 
         self._phenotype_set = phenotype_set
-        self._protein_set = protein_set
         self._variant_set = variant_set
+        self._disease_set = disease_set
         self._all_counts_dict = counts_dict
         self._excluded_members = excluded_members
         self._recessive = recessive
@@ -188,6 +193,10 @@ class Cohort(typing.Sized):
             set: A set of all the Phenotype objects in the Cohort
         """
         return self._phenotype_set
+    
+    @property
+    def all_diseases(self):
+        return self._disease_set
 
     @property
     def all_variants(self) -> typing.Collection[Variant]:
@@ -196,14 +205,6 @@ class Cohort(typing.Sized):
             set: A set of all the Variant objects in the Cohort
         """
         return self._variant_set
-
-    @property
-    def all_proteins(self):
-        """
-        Returns:
-            set: A set of all the ProteinMetadata objects in the Cohort
-        """
-        return self._protein_set
 
     @property
     def all_transcripts(self):
@@ -243,6 +244,9 @@ class Cohort(typing.Sized):
             list: A list of tuples, formatted (phenotype ID, number of patients with that phenotype)
         """
         return self._all_counts_dict.get('phenotypes').most_common(top)
+    
+    def list_all_diseases(self, top=None):
+        return self._all_counts_dict.get('diseases').most_common(top)
 
     def list_all_variants(self, top=None):
         """
@@ -252,15 +256,20 @@ class Cohort(typing.Sized):
             list: A list of tuples, formatted (variant string, number of patients with that variant)
         """
         return self._all_counts_dict.get('variants').most_common(top)
-
+    
     def list_all_proteins(self, top=None):
         """
         Args:
             top (integer, Optional): If not given, lists all proteins. Otherwise, lists only the `top` highest counts
         Returns:
-            list: A list of tuples, formatted (protein ID, number of patients with that protein)
+            list: A list of tuples, formatted (protein ID string, number of variants with that protein)
         """
-        return self._all_counts_dict.get('proteins').most_common(top)
+        prots = Counter()
+        for pat in [pats for pats in self.all_patients if pats not in self.all_excluded_patients]:
+            for var in pat.variants:
+                for trans in var.tx_annotations:
+                    prots.update([trans.protein_id])
+        return prots.most_common(top)
 
     def list_data_by_tx(self, transcript=None):
         """
@@ -270,7 +279,7 @@ class Cohort(typing.Sized):
             dictionary: Each transcript ID references a Counter(), with the variant effect as the key and total variants with that effect as the count value
         """
         if transcript is not None:
-            var_type_dict = {transcript: Counter()}
+            var_type_dict = {transcript: Counter()} 
         else:
             var_type_dict = {tx_id: Counter() for tx_id in self.all_transcripts}
         for var in self.all_variants:
@@ -290,31 +299,6 @@ class Cohort(typing.Sized):
 
     def get_excluded_count(self):
         return len(self.all_excluded_patients)
-
-    def get_protein_features_affected(self, tx_id: str):
-        # TODO - add documentation, type annotations.
-        protein_set = set()
-        protein_locations = []
-        for var in self.all_variants:
-            for tx in var.tx_annotations:
-                if tx.transcript_id == tx_id:
-                    # TODO - Here we are adding a sequence of `ProteinMetadata` into the `protein_set`.
-                    #  However, it looks fishy. Shouldn't we be really adding the individual `ProteinMetadata`
-                    #  into the set?
-                    protein_set.add(tx.protein_affected)
-                    if tx.protein_effect_location is not None:
-                        protein_locations.append(tx.protein_effect_location)
-
-        if len(protein_set) != 1:
-            raise ValueError(f"Found more than 1 protein: {protein_set}")
-        else:
-            protein = list(protein_set)[0][0]
-
-        all_features = Counter()
-        for location in protein_locations:
-            all_features.update(protein.get_features_variant_overlaps(location))
-
-        return all_features
 
     def __len__(self) -> int:
         return len(self._patient_set)

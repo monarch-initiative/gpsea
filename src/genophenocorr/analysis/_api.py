@@ -130,7 +130,10 @@ class GenotypePhenotypeAnalysisResult:
         # Fill the frame cells
         for col in geno_idx.levels[0]:
             cnt = counts[col]
-            df[col, 'Count'] = cnt
+            # Format `Count` as `N/M` string, where `N` is the sample count
+            # and `M` is the number of usable samples - the samples where
+            # both genotype and phenotype predicates were able to make a call.
+            df[col, 'Count'] = cnt.map(str) + '/' + self._n_usable.map(str)
             df[col, 'Percent'] = cnt * 100 / self._n_usable
 
         # Add columns with p values and corrected p values (if present)
@@ -144,7 +147,7 @@ class GenotypePhenotypeAnalysisResult:
         # Last, sort by corrected p value or just p value
         df = df.set_index(labeled_idx)
         if self._corrected_pvals is not None:
-            return df.sort_values(by=('', self._corrected_pvals.name))
+            return df.sort_values(by=[('', self._corrected_pvals.name), ('', self._pvals.name)])
         else:
             return df.sort_values(by=('', self._pvals.name))
 

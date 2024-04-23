@@ -48,7 +48,7 @@ We can then view the data using the list commands.
   >>> sorted(cohort.list_all_variants())
   [('1_281_281_A_G', 16), ('1_361_363_TTC_T', 13)]
   >>> sorted(cohort.list_all_proteins())
-  [('NP_09876.5', 26)]
+  [('NP_09876.5', 29)]
   >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
@@ -68,7 +68,7 @@ For instance, we can partition the patients into two groups based on presence/ab
   >>> summary_df.head(1) # doctest: +NORMALIZE_WHITESPACE
     MISSENSE_VARIANT on NM_1234.5    No             Yes
                                     Count   Percent Count Percent   p value Corrected p value
-    Arachnodactyly [HP:0001166]         1  3.846154    13    50.0  0.000781          0.020299
+    Arachnodactyly [HP:0001166]      1/26  3.846154 13/26    50.0  0.000781          0.020299
 
 ..
 
