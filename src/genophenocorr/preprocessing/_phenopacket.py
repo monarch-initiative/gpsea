@@ -3,9 +3,9 @@ import typing
 
 import hpotk
 
-from phenopackets import GenomicInterpretation, Phenopacket
+from phenopackets import GenomicInterpretation, Phenopacket, Disease
 
-from genophenocorr.model import Patient, SampleLabels
+from genophenocorr.model import Patient, SampleLabels, Disease as Dis
 from genophenocorr.model import VariantCoordinates, Variant, Genotype, Genotypes
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator
@@ -162,18 +162,42 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             Patient: A Patient object
         """
         sample_id = SampleLabels(label=inputs.subject.id, meta_label=inputs.id if len(inputs.id) > 0 else None)
-        # Check phenotype
+
+        # Check phenotypes 
         pfs = notepad.add_subsection('phenotype-features')
         phenotypes = self._phenotype_creator.process(
             ((pf.type.id, not pf.excluded) for pf in inputs.phenotypic_features),
             pfs
         )
+        
+        # Check diseases
+        diseases = self._add_diseases([dis for dis in inputs.diseases], pfs)
 
         # Check variants
         vs = notepad.add_subsection('variants')
         variants = self._add_variants(sample_id, inputs, vs)
+    
+        return Patient(sample_id, phenotypes=phenotypes, variants=variants, diseases=diseases)
 
-        return Patient(sample_id, phenotypes=phenotypes, variants=variants)
+    def _add_diseases(self, diseases: typing.Sequence[Disease], notepad: Notepad) -> typing.Sequence[Dis]:
+        """Creates a list of Disease objects from the data in a given Phenopacket
+
+        Args:
+            diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects
+        Returns:
+            Sequence[Dis]: A list of Disease objects
+        """
+        if len(diseases) == 0:
+            notepad.add_warning(f"No diseases found.")
+            return []
+        final_diseases = []
+        for i, dis in enumerate(diseases):
+            if not dis.HasField("term"):
+                raise ValueError('Could not find term in Disease.')
+            term_id = hpotk.TermId.from_curie(dis.term.id)
+            final_diseases.append(Dis(term_id, dis.term.label, not dis.excluded))
+        return final_diseases
+        
 
     def _add_variants(self, sample_id: SampleLabels, pp: Phenopacket, notepad: Notepad) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
