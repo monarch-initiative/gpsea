@@ -5,10 +5,10 @@ import hpotk
 from genophenocorr.model import Patient, FeatureType, VariantEffect
 from genophenocorr.preprocessing import ProteinMetadataService
 
-from .._api import Categorization, GenotypeBooleanPredicate
+from .._api import Categorization, RecessiveGroupingPredicate
 
 
-class VariantEffectPredicate(GenotypeBooleanPredicate):
+class RecessiveVariantEffectPredicate(RecessiveGroupingPredicate):
     """
     `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have
     the functional `effect` on the transcript of interest.
@@ -39,17 +39,24 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
         """
         self._check_patient(patient)
 
-        if len(patient.variants) == 0:
+        if len(patient.variants) < 1:
             return None
+
+        result = []
 
         for variant in patient.variants:
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     for var_eff in ann.variant_effects:
                         if var_eff == self._effect:
-                            return GenotypeBooleanPredicate.YES
+                            result.append(True)
 
-        return GenotypeBooleanPredicate.NO
+        if len(result) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(result) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
 
     def __str__(self):
         return repr(self)
@@ -58,7 +65,7 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
         return f'VariantEffectPredicate(transcript_id={self._tx_id}, effect={self._effect})'
 
 
-class VariantPredicate(GenotypeBooleanPredicate):
+class RecessiveVariantPredicate(RecessiveGroupingPredicate):
     """
     `VariantPredicate` tests if the `patient` has ar least one allele of the variant described by the `variant_key`.
 
@@ -89,14 +96,21 @@ class VariantPredicate(GenotypeBooleanPredicate):
         """
         self._check_patient(patient)
 
-        if len(patient.variants) == 0:
+        if len(patient.variants) < 1:
             return None
+        
+        result = []
 
         for variant in patient.variants:
             if variant.variant_coordinates.variant_key == self._variant_key:
-                return GenotypeBooleanPredicate.YES
+                result.append(True)
 
-        return GenotypeBooleanPredicate.NO
+        if len(result) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(result) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
 
     def __str__(self):
         return repr(self)
@@ -105,7 +119,7 @@ class VariantPredicate(GenotypeBooleanPredicate):
         return f'VariantPredicate(variant_key={self._variant_key})'
 
 
-class ExonPredicate(GenotypeBooleanPredicate):
+class RecessiveExonPredicate(RecessiveGroupingPredicate):
     """
     `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.
 
@@ -149,17 +163,24 @@ class ExonPredicate(GenotypeBooleanPredicate):
         """
         self._check_patient(patient)
 
-        if len(patient.variants) == 0:
+        if len(patient.variants) < 1:
             return None
+        
+        result = []
 
         for variant in patient.variants:
             for ann in variant.tx_annotations:
                 if ann.transcript_id == self._tx_id:
                     if ann.overlapping_exons is not None:
                         if self._exon_number in ann.overlapping_exons:
-                            return GenotypeBooleanPredicate.YES
+                            result.append(True)
 
-        return GenotypeBooleanPredicate.NO
+        if len(result) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(result) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
 
     def __str__(self):
         return repr(self)
@@ -168,7 +189,7 @@ class ExonPredicate(GenotypeBooleanPredicate):
         return f'ExonPredicate(tx_id={self._tx_id}, exon_number={self._exon_number})'
 
 
-class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
+class RecessiveProtFeatureTypePredicate(RecessiveGroupingPredicate):
     """
     `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
     in the protein encoded by the transcript of interest.
@@ -201,8 +222,10 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
         """
         self._check_patient(patient)
 
-        if len(patient.variants) == 0:
+        if len(patient.variants) < 1:
             return None
+
+        result = []
 
         for variant in patient.variants:
             for ann in variant.tx_annotations:
@@ -216,9 +239,14 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
                                 for feat in prot.protein_features:
                                     if feat.feature_type == self._feature_type:
                                         if prot_loc.overlaps_with(feat.info.region):
-                                            return GenotypeBooleanPredicate.YES
+                                            result.append(True)
 
-        return GenotypeBooleanPredicate.NO
+        if len(result) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(result) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
         #TODO: Add a logger field, add a branch that handles the state where prot_id is set but prot_loc is not - gives warning
 
     def __str__(self):
@@ -228,7 +256,7 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
         return f'ProtFeatureTypePredicate(tx_id={self._tx_id}, feature_type={self._feature_type})'
 
 
-class ProtFeaturePredicate(GenotypeBooleanPredicate):
+class RecessiveProtFeaturePredicate(RecessiveGroupingPredicate):
     """
     `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.
 
@@ -262,8 +290,10 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
         """
         self._check_patient(patient)
 
-        if len(patient.variants) == 0:
+        if len(patient.variants) < 1:
             return None
+        
+        result = []
 
         for variant in patient.variants:
             for ann in variant.tx_annotations:
@@ -277,9 +307,14 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
                                 for feat in prot.protein_features:
                                     if feat.info.name == self._pf_name:
                                         if prot_loc.overlaps_with(feat.info.region):
-                                            return GenotypeBooleanPredicate.YES
+                                            result.append(True)
 
-        return GenotypeBooleanPredicate.NO
+        if len(result) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(result) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
 
     def __str__(self):
         return repr(self)
