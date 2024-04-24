@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>genophenocorr.analysis.predicate.genotype._geno_bool &mdash; genophenocorr 0.1.1dev documentation</title>
+  <title>genophenocorr.analysis.predicate.genotype._geno_bool_rec &mdash; genophenocorr 0.1.1dev documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -71,7 +71,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._geno_bool</li>
+      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._geno_bool_rec</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -80,7 +80,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for genophenocorr.analysis.predicate.genotype._geno_bool</h1><div class="highlight"><pre>
+  <h1>Source code for genophenocorr.analysis.predicate.genotype._geno_bool_rec</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
@@ -88,12 +88,12 @@
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantEffect</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 
-<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">GenotypeBooleanPredicate</span>
+<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">RecessiveGroupingPredicate</span>
 
 
-<div class="viewcode-block" id="VariantEffectPredicate">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">VariantEffectPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<div class="viewcode-block" id="RecessiveVariantEffectPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">RecessiveVariantEffectPredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have</span>
 <span class="sd">    the functional `effect` on the transcript of interest.</span>
@@ -107,14 +107,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_effect</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="s1">&#39;effect&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="VariantEffectPredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="RecessiveVariantEffectPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="VariantEffectPredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test">[docs]</a>
+<div class="viewcode-block" id="RecessiveVariantEffectPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A VariantEffect is given when initializing the class. </span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does </span>
@@ -129,17 +129,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">var_eff</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -150,9 +157,9 @@
 
 
 
-<div class="viewcode-block" id="VariantPredicate">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">VariantPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<div class="viewcode-block" id="RecessiveVariantPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">RecessiveVariantPredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantPredicate` tests if the `patient` has ar least one allele of the variant described by the `variant_key`.</span>
 
@@ -166,14 +173,14 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">variant_key</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;variant_key&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="VariantPredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="RecessiveVariantPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&gt;=1 allele of the variant </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_key</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="VariantPredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate.test">[docs]</a>
+<div class="viewcode-block" id="RecessiveVariantPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A variant string is given when initializing the class. </span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does </span>
@@ -188,14 +195,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_key</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -206,9 +220,9 @@
 
 
 
-<div class="viewcode-block" id="ExonPredicate">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">ExonPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<div class="viewcode-block" id="RecessiveExonPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">RecessiveExonPredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.</span>
 
@@ -235,14 +249,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon_number</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`exon_number` must be a positive `int` but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon_number</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExonPredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="RecessiveExonPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant in exon </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exon_number</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="ExonPredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate.test">[docs]</a>
+<div class="viewcode-block" id="RecessiveExonPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;An exon number is given when initializing the class. </span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does or does not</span>
@@ -257,17 +271,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">overlapping_exons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exon_number</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -278,9 +299,9 @@
 
 
 
-<div class="viewcode-block" id="ProtFeatureTypePredicate">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">ProtFeatureTypePredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<div class="viewcode-block" id="RecessiveProtFeatureTypePredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">RecessiveProtFeatureTypePredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`</span>
 <span class="sd">    in the protein encoded by the transcript of interest.</span>
@@ -295,14 +316,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="s1">&#39;feature_type&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_service</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="s1">&#39;protein_service&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProtFeatureTypePredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="RecessiveProtFeatureTypePredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> feature type on protein encoded by transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="ProtFeatureTypePredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.test">[docs]</a>
+<div class="viewcode-block" id="RecessiveProtFeatureTypePredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A FeatureType and ProteinMetadataService is given when initializing the class. </span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does </span>
@@ -318,8 +339,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
@@ -333,9 +356,14 @@
                                 <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
                                     <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="p">:</span>
                                         <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
-                                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span></div>
 
         <span class="c1">#TODO: Add a logger field, add a branch that handles the state where prot_id is set but prot_loc is not - gives warning</span>
 
@@ -347,9 +375,9 @@
 
 
 
-<div class="viewcode-block" id="ProtFeaturePredicate">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">ProtFeaturePredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<div class="viewcode-block" id="RecessiveProtFeaturePredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">RecessiveProtFeaturePredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.</span>
 
@@ -365,14 +393,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_feature_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;protein_feature_name&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_service</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="s1">&#39;protein_service&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProtFeaturePredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="RecessiveProtFeaturePredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.get_question">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1"> feature on protein encoded by transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="ProtFeaturePredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.test">[docs]</a>
+<div class="viewcode-block" id="RecessiveProtFeaturePredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A protein_feature_name and ProteinMetadataService is given when initializing the class. </span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does </span>
@@ -388,8 +416,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
@@ -403,9 +433,14 @@
                                 <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
                                     <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="p">:</span>
                                         <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
-                                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

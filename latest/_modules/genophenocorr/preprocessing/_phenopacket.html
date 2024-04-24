@@ -86,9 +86,9 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span><span class="p">,</span> <span class="n">Phenopacket</span><span class="p">,</span> <span class="n">Disease</span>
+<span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span><span class="p">,</span> <span class="n">Phenopacket</span><span class="p">,</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">Dis</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Disease</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">Genotypes</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantCoordinateFinder</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span>
@@ -273,7 +273,7 @@
         <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span> <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span> <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_add_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Disease</span><span class="p">],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Dis</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_add_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPDisease</span><span class="p">],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Disease objects from the data in a given Phenopacket</span>
 
 <span class="sd">        Args:</span>
@@ -289,7 +289,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find term in Disease.&#39;</span><span class="p">)</span>
             <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-            <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Dis</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
+            <span class="c1"># Do not include excluded diseases if we decide to assume excluded if not included </span>
+            <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Disease</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">final_diseases</span>
         
 

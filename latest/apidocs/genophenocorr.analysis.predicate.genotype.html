@@ -86,7 +86,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantEffectPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">VariantEffectPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantEffect" title="genophenocorr.model._variant_effects.VariantEffect"><span class="pre">VariantEffect</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantEffectPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate" title="genophenocorr.analysis.predicate._api.BooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanPredicate</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate" title="genophenocorr.analysis.predicate._api.GenotypeBooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate</span></code></a></p>
 <p><cite>VariantEffectPredicate</cite> tests if the <cite>patient</cite> has at least one variant that is predicted to have
 the functional <cite>effect</cite> on the transcript of interest.</p>
 <dl class="field-list simple">
@@ -105,9 +105,25 @@ the functional <cite>effect</cite> on the transcript of interest.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantEffectPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantEffectPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A VariantEffect is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have the VariantEffect and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -136,8 +152,71 @@ one of the two functional <cite>effects</cite> on the transcript of interest.</p
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#VariantEffectsPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dd><p>Two VariantEffects are given when initializing the class.
+Given a Patient class, this function tests whether the patient has either
+VariantEffects and returns a category based off which one it does have,
+or returns None if it has both or neither.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GroupingPredicate, either “FIRST” or “SECOND”</dt><dd><p>if it has the first given genotype or the
+second given genotype.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">RecessiveVariantEffectPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantEffect" title="genophenocorr.model._variant_effects.VariantEffect"><span class="pre">VariantEffect</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantEffectPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate</span></code></p>
+<p><cite>VariantEffectPredicate</cite> tests if the <cite>patient</cite> has at least one variant that is predicted to have
+the functional <cite>effect</cite> on the transcript of interest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transcript_id</strong> – the accession of the transcript of interest.</p></li>
+<li><p><strong>effect</strong> – the tested variant effect.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantEffectPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantEffectPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A VariantEffect is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have the VariantEffect and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -145,7 +224,7 @@ one of the two functional <cite>effects</cite> on the transcript of interest.</p
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">VariantPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate" title="genophenocorr.analysis.predicate._api.BooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanPredicate</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate" title="genophenocorr.analysis.predicate._api.GenotypeBooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate</span></code></a></p>
 <p><cite>VariantPredicate</cite> tests if the <cite>patient</cite> has ar least one allele of the variant described by the <cite>variant_key</cite>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -164,9 +243,25 @@ one of the two functional <cite>effects</cite> on the transcript of interest.</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#VariantPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A variant string is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have the variant and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -199,8 +294,71 @@ the <cite>variant_key1</cite> and <cite>variant_key2</cite>.
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantsPredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#VariantsPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantsPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dd><p>Two variant strings are given when initializing the class.
+Given a Patient class, this function tests whether the patient has either
+variant and returns a category based off which one it does have,
+or returns None if it has both or neither.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GroupingPredicate, either “FIRST” or “SECOND”</dt><dd><p>if it has the first given genotype or the
+second given genotype.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">RecessiveVariantPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate</span></code></p>
+<p><cite>VariantPredicate</cite> tests if the <cite>patient</cite> has ar least one allele of the variant described by the <cite>variant_key</cite>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can get the variant key by calling <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates.variant_key" title="genophenocorr.model.VariantCoordinates.variant_key"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.VariantCoordinates.variant_key</span></code></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>variant_key</strong> – a <cite>str</cite> with the variant key.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveVariantPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A variant string is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have the variant and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -208,7 +366,7 @@ the <cite>variant_key1</cite> and <cite>variant_key2</cite>.
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ExonPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ExonPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exon_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ExonPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ExonPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate" title="genophenocorr.analysis.predicate._api.BooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanPredicate</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate" title="genophenocorr.analysis.predicate._api.GenotypeBooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate</span></code></a></p>
 <p><cite>ExonPredicate</cite> tests if the <cite>patient</cite> has a variant that affects <em>n</em>-th exon of the transcript of interest.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -218,7 +376,8 @@ Therefore, the first exon of the transcript has <code class="docutils literal no
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>We do not check if the <cite>exon_number</cite> spans beyond the number of exons of the given <cite>transcript_id</cite>!
-Therefore, <code class="docutils literal notranslate"><span class="pre">exon_number==10,000</span></code> will effectively return <code class="xref py py-attr docutils literal notranslate"><span class="pre">BooleanPredicate.FALSE</span></code> for <em>all</em> patients!!! 😱
+Therefore, <code class="docutils literal notranslate"><span class="pre">exon_number==10,000</span></code> will effectively return <code class="xref py py-attr docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate.FALSE</span></code>
+for <em>all</em> patients!!! 😱
 Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
 </div>
 <dl class="field-list simple">
@@ -237,9 +396,25 @@ Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ExonPredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ExonPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ExonPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ExonPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ExonPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>An exon number is given when initializing the class.
+Given a Patient class, this function tests whether the patient does or does not
+have a variant in that exon and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -279,8 +454,82 @@ Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ExonsPredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#ExonsPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ExonsPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dd><p>Two exon numbers are given when initializing the class.
+Given a Patient class, this function tests whether the patient has a variant effecting
+either exon and returns a category based off which one it does have an effect on,
+or returns None if it effects both or neither.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GroupingPredicate, either “FIRST” or “SECOND”</dt><dd><p>if it has the first given genotype or the
+second given genotype.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">RecessiveExonPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exon_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveExonPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate</span></code></p>
+<p><cite>ExonPredicate</cite> tests if the <cite>patient</cite> has a variant that affects <em>n</em>-th exon of the transcript of interest.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We use 1-based numbering to number the exons, not the usual 0-based numbering of the computer science.
+Therefore, the first exon of the transcript has <code class="docutils literal notranslate"><span class="pre">exon_number==1</span></code>, the second exon is <code class="docutils literal notranslate"><span class="pre">2</span></code>, and so on …</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We do not check if the <cite>exon_number</cite> spans beyond the number of exons of the given <cite>transcript_id</cite>!
+Therefore, <code class="docutils literal notranslate"><span class="pre">exon_number==10,000</span></code> will effectively return <code class="xref py py-attr docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate.FALSE</span></code>
+for <em>all</em> patients!!! 😱
+Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transcript_id</strong> – the accession of the transcript of interest.</p></li>
+<li><p><strong>exon_number</strong> – a positive <cite>int</cite> of the target exon.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveExonPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveExonPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>An exon number is given when initializing the class.
+Given a Patient class, this function tests whether the patient does or does not
+have a variant in that exon and returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -288,7 +537,7 @@ Well, at least the patients of the <em>Homo sapiens sapiens</em> taxon…</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ProtFeaturePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_feature_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeaturePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate" title="genophenocorr.analysis.predicate._api.BooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanPredicate</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate" title="genophenocorr.analysis.predicate._api.GenotypeBooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate</span></code></a></p>
 <p><cite>ProtFeaturePredicate</cite> tests if the <cite>patient</cite> has a variant that overlaps with a protein feature.</p>
 <p>The predicate needs the name of the protein feature.
 For instance, <cite>EGF-like 2</cite> for <a class="reference external" href="https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains">FBN1</a></p>
@@ -308,9 +557,26 @@ For instance, <cite>EGF-like 2</cite> for <a class="reference external" href="ht
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeaturePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeaturePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A protein_feature_name and ProteinMetadataService is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have a variant effecting that protein feature on the given protein and
+returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -343,8 +609,73 @@ For instance, <cite>EGF-like 2</cite> for <a class="reference external" href="ht
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeaturesPredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#ProtFeaturesPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeaturesPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dd><p>Two protein features and a ProteinMetadataService are given when initializing the class.
+Given a Patient class, this function tests whether the patient has a variant effecting
+either protein feature and returns a category based off which one it does have an effect on,
+or returns None if it effects both or neither.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GroupingPredicate, either “FIRST” or “SECOND”</dt><dd><p>if it has the first given genotype or the
+second given genotype.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">RecessiveProtFeaturePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_feature_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeaturePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate</span></code></p>
+<p><cite>ProtFeaturePredicate</cite> tests if the <cite>patient</cite> has a variant that overlaps with a protein feature.</p>
+<p>The predicate needs the name of the protein feature.
+For instance, <cite>EGF-like 2</cite> for <a class="reference external" href="https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains">FBN1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transcript_id</strong> – the accession of the transcript of interest.</p></li>
+<li><p><strong>protein_feature_name</strong> – a <cite>str</cite> with the name of the protein feature.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeaturePredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeaturePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A protein_feature_name and ProteinMetadataService is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have a variant effecting that protein feature on the given protein and
+returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -352,7 +683,7 @@ For instance, <cite>EGF-like 2</cite> for <a class="reference external" href="ht
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ProtFeatureTypePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeatureTypePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate" title="genophenocorr.analysis.predicate._api.BooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanPredicate</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate" title="genophenocorr.analysis.predicate._api.GenotypeBooleanPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeBooleanPredicate</span></code></a></p>
 <p><cite>ProtFeatureTypePredicate</cite> tests if the <cite>patient</cite> has a variant that affects a <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code>
 in the protein encoded by the transcript of interest.</p>
 <dl class="field-list simple">
@@ -372,9 +703,26 @@ in the protein encoded by the transcript of interest.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeatureTypePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool.html#ProtFeatureTypePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A FeatureType and ProteinMetadataService is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have a variant effecting that FeatureType on the given protein and
+returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -384,7 +732,7 @@ in the protein encoded by the transcript of interest.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ProtFeatureTypesPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#ProtFeatureTypesPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate" title="genophenocorr.analysis.predicate._api.GroupingPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupingPredicate</span></code></a></p>
 <p><cite>ProtFeatureTypesPredicate</cite> tests if the <cite>patient</cite> has a variant that affects one of the two given
-:class:<a href="#id2"><span class="problematic" id="id3">`</span></a>FeatureType`s in the transcript of interest.</p>
+:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>FeatureType`s in the transcript of interest.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -403,8 +751,73 @@ in the protein encoded by the transcript of interest.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_group.html#ProtFeatureTypesPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dd><p>Two FeatureTypes and a ProteinMetadataService are given when initializing the class.
+Given a Patient class, this function tests whether the patient has a variant effecting
+either protein feature type and returns a category based off which one it does have an effect on,
+or returns None if it effects both or neither.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GroupingPredicate, either “FIRST” or “SECOND”</dt><dd><p>if it has the first given genotype or the
+second given genotype.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">RecessiveProtFeatureTypePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.FeatureType" title="genophenocorr.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeatureTypePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate</span></code></p>
+<p><cite>ProtFeatureTypePredicate</cite> tests if the <cite>patient</cite> has a variant that affects a <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code>
+in the protein encoded by the transcript of interest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transcript_id</strong> – the accession of the transcript of interest.</p></li>
+<li><p><strong>feature_type</strong> – an instance of the target <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code>.</p></li>
+<li><p><strong>protein_service</strong> – an instance of a <code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadataService</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeatureTypePredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_geno_bool_rec.html#RecessiveProtFeatureTypePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A FeatureType and ProteinMetadataService is given when initializing the class.
+Given a Patient class, this function tests whether the patient does
+or does not have a variant effecting that FeatureType on the given protein and
+returns the respective category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>GenotypeBooleanPredicate, either “YES” or “NO”</dt><dd><p>if genotype is present or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate.Categorization">Categorization</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

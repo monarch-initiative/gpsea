@@ -123,12 +123,16 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Genotypes` is a container for mapping between sample ID and its genotype.</span>
 
-<span class="sd">    Use one of the static methods to create an instance:</span>
+<span class="sd">    Let&#39;s consider a pair of samples:</span>
 
 <span class="sd">    &gt;&gt;&gt; a = SampleLabels(&#39;A&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; b = SampleLabels(&#39;B&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; gts = Genotypes.single(a, Genotype.HETEROZYGOUS)</span>
-<span class="sd">    &gt;&gt;&gt; _ = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})</span>
+
+<span class="sd">    We can use one of the static methods to create an instance. Either a single genotype:</span>
+<span class="sd">    &gt;&gt;&gt; gt = Genotypes.single(a, Genotype.HETEROZYGOUS)</span>
+
+<span class="sd">    Or genotypes of several samples:</span>
+<span class="sd">    &gt;&gt;&gt; gts = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})</span>
 
 <span class="sd">    There are 2 genotypes in the container:</span>
 
@@ -137,18 +141,18 @@
 
 <span class="sd">    You can get a genotype for a sample ID:</span>
 
-<span class="sd">    &gt;&gt;&gt; gts.for_sample(a)</span>
-<span class="sd">    Genotype.HETEROZYGOUS</span>
+<span class="sd">    &gt;&gt;&gt; g = gts.for_sample(a)</span>
+<span class="sd">    &gt;&gt;&gt; g.code</span>
+<span class="sd">    &#39;0/1&#39;</span>
 
 <span class="sd">    You will get `None` if the sample is not present:</span>
 
 <span class="sd">    &gt;&gt;&gt; gts.for_sample(SampleLabels(&#39;UNKNOWN&#39;))</span>
-<span class="sd">    None</span>
 
 <span class="sd">    You can iterate over sample-genotype pairs:</span>
 
-<span class="sd">    &gt;&gt;&gt; for sample_id, gt in gts:</span>
-<span class="sd">    ...   print(sample_id, gt)</span>
+<span class="sd">    &gt;&gt;&gt; for sample_id, genotype in gts:</span>
+<span class="sd">    ...   print(sample_id, genotype)</span>
 <span class="sd">    A 0/1</span>
 <span class="sd">    B 1/1</span>
 <span class="sd">    &quot;&quot;&quot;</span>

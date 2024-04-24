@@ -84,124 +84,162 @@
   <section id="module-genophenocorr.analysis.predicate.phenotype">
 <span id="genophenocorr-analysis-predicate-phenotype-package"></span><h1>genophenocorr.analysis.predicate.phenotype package<a class="headerlink" href="#module-genophenocorr.analysis.predicate.phenotype" title="Link to this heading"></a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypePolyPredicate</span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PhenotypePolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate" title="genophenocorr.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>]]</p>
+<p><cite>PhenotypePolyPredicate</cite> investigates a patient in context of one or more phenotype categories <cite>P</cite>.</p>
+<p>Each phenotype category <cite>P</cite> can be a <a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">hpotk.model.TermId</span></code></a> representing an HPO term or an OMIM/MONDO term.</p>
+<p>Most of the time, only one category is investigated, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">phenotype</span></code> will return a sequence with
+one element only (e.g. <em>Arachnodactyly</em> <cite>HP:0001166</cite>). However, multiple categories can be sought as well,
+such as when the predicate bins the patient into one of discrete diseases
+(e.g. Geleophysic dysplasia, Marfan syndrome, …). Then the predicate should return a sequence of disease
+identifiers.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotypes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entities of interest.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PropagatingPhenotypePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypic_feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></p>
-<p><cite>PropagatingPhenotypePredicate</cite> tests if the <cite>patient</cite> is annotated with a <cite>query</cite> HPO term.</p>
-<p>The predicate returns the following results:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.PRESENT" title="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.PRESENT"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate.PRESENT</span></code></a> if the patient is annotated with the <cite>query</cite> term or its descendant</p></li>
-<li><p><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.EXCLUDED" title="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.EXCLUDED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate.EXCLUDED</span></code></a> presence of the <cite>query</cite> term or its ancestor was specifically
-excluded in the patient</p></li>
-<li><p><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.NOT_MEASURED" title="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.NOT_MEASURED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate.NOT_MEASURED</span></code></a> if the patient is not annotated with the <cite>query</cite> and presence of <cite>query</cite>
-was <em>not</em> excluded</p></li>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PropagatingPhenotypePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_implies_phenotype_excluded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a>[<a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a>[<a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>]]</p>
+<p><cite>PropagatingPhenotypePredicate</cite> tests if a patient is annotated with an HPO term.</p>
+<p>Note, <cite>query</cite> must be a term of the provided <cite>hpo</cite>!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hpo</strong> – HPO object</p></li>
+<li><p><strong>query</strong> – the HPO term to test</p></li>
+<li><p><strong>missing_implies_phenotype_excluded</strong> – <cite>True</cite> if lack of an explicit annotation implies term’s absence`.</p></li>
 </ul>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.PRESENT">
-<span class="sig-name descname"><span class="pre">PRESENT</span></span><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.PRESENT" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+</dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.EXCLUDED">
-<span class="sig-name descname"><span class="pre">EXCLUDED</span></span><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.EXCLUDED" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.NOT_MEASURED">
-<span class="sig-name descname"><span class="pre">NOT_MEASURED</span></span><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.NOT_MEASURED" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categories">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categories" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question">
 <span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.phenotypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entities of interest.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">
+<span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>An HPO TermID is given when initializing the class.
+Given a Patient class, this function tests whether the patient has the
+given phenotype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>PhenotypeCategorization,</dt><dd><p>either “YES” if the phenotype
+is listed and is not excluded, or
+“NO” if the phenotype is listed and excluded,
+otherwise will return None.
+Unless _missing_implies_phenotype_excluded is True, then
+will return “NO” if the phenotype is listed and excluded
+or not listed.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization">PhenotypeCategorization</a>[P]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PropagatingPhenotypeBooleanPredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypic_feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_implies_excluded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePhenotypeBooleanPredicate</span></code></p>
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">DiseasePresencePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disease_id_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a>[<a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a>[<a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>]]</p>
+<p><cite>DiseasePresencePredicate</cite> tests if the patient was diagnosed with a disease.</p>
+<p>The predicate tests if the patient’s diseases include a disease ID formatted as a <a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">hpotk.model.TermId</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disease_id_query</strong> – the Disease ID to test</p>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.get_question">
-<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.get_question" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_question" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.diseases">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">diseases</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.diseases" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a category.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">
+<span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test" title="Link to this definition"></a></dt>
+<dd><p>A Disease TermID is given when initializing the class.
+Given a Patient class, this function tests whether the patient has the
+given phenotype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>PhenotypeCategorization,</dt><dd><p>either “YES” if the phenotype
+is listed and is not excluded, or
+“NO” if the disease is not listed
+or is excluded.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization">PhenotypeCategorization</a>[P]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypePredicateFactory</span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PhenotypePredicateFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypeCategorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PhenotypeCategorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization" title="genophenocorr.analysis.predicate._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a></p>
+<p>”
+On top of the attributes of the <cite>Categorization</cite>, <cite>PhenotypeCategorization</cite> keeps track of the target phenotype <cite>P</cite>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization.phenotype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">P</span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization.phenotype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.Comparable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">Comparable</span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#Comparable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.Comparable" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>PhenotypePredicateFactory</cite> creates a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code> to assess a phenotype query.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_categories">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PhenotypePredicateFactory.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_categories" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PhenotypePolyPredicate</cite> provided by this factory can produce.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_predicate">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PhenotypePolyPredicate</span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PhenotypePredicateFactory.get_predicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_predicate" title="Link to this definition"></a></dt>
-<dd><p>Get an instance of <cite>PhenotypePolyPredicate</cite> for the phenotype <cite>query</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>query</strong> – a term ID of the query phenotype.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PropagatingPhenotypeBooleanPredicateFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_implies_excluded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicateFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypePredicateFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePredicateFactory</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_categories">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory" title="genophenocorr.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicateFactory.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_categories" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PhenotypePolyPredicate</cite> provided by this factory can produce.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_predicate">
-<span class="sig-name descname"><span class="pre">get_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://thejacksonlaboratory.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PhenotypePolyPredicate</span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#PropagatingPhenotypeBooleanPredicateFactory.get_predicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_predicate" title="Link to this definition"></a></dt>
-<dd><p>Get an instance of <cite>PhenotypePolyPredicate</cite> for the phenotype <cite>query</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>query</strong> – a term ID of the query phenotype.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<p>A protocol for annotating comparable types.</p>
 </dd></dl>
 
 </section>

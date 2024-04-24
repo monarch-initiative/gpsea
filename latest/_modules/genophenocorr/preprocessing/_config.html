@@ -108,11 +108,14 @@
 
 <div class="viewcode-block" id="configure_caching_cohort_creator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_cohort_creator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-                                     <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
-                                     <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                     <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">configure_caching_cohort_creator</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
+        <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
 
@@ -126,8 +129,7 @@
 <span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
 <span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
 <span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
-<span class="sd">    :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.</span>
-<span class="sd">     Choose from ``{&#39;UNIPROT&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the VEP API</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
@@ -135,7 +137,7 @@
 
     <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
     <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
-    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
     <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
     <span class="n">pc</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">hgvs_annotator</span><span class="p">)</span>
 
@@ -145,11 +147,14 @@
 
 <div class="viewcode-block" id="configure_caching_patient_creator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_caching_patient_creator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_caching_patient_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-                                      <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
-                                      <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                      <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                      <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">configure_caching_patient_creator</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
+        <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
 
@@ -163,8 +168,7 @@
 <span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
 <span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
 <span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
-<span class="sd">    :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.</span>
-<span class="sd">     Choose from ``{&#39;UNIPROT&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the VEP API</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`configure_caching_patient_creator` was deprecated. &#39;</span>
                   <span class="s1">&#39;Use `configure_caching_cohort_creator` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -173,7 +177,7 @@
 
     <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
     <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
-    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
     <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">hgvs_annotator</span><span class="p">)</span></div>
 
@@ -181,10 +185,13 @@
 
 <div class="viewcode-block" id="configure_cohort_creator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.configure_cohort_creator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-                             <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
-                             <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                             <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">configure_cohort_creator</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GRCh38.p13&#39;</span><span class="p">,</span>
+        <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;VEP&#39;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
 
@@ -197,11 +204,12 @@
 <span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
 <span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
 <span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the VEP API</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
 
     <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
-    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
     <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
     <span class="n">pc</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">hgvs_annotator</span><span class="p">)</span>
 
@@ -232,8 +240,6 @@
 <span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
 <span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
 <span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
-<span class="sd">    :param protein_fallback: the fallback protein metadata annotator to use if we cannot find the annotation locally.</span>
-<span class="sd">     Choose from ``{&#39;UNIPROT&#39;}`` (just one fallback implementation is available at the moment).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`configure_patient_creator` was deprecated. &#39;</span>
                   <span class="s1">&#39;Use `configure_cohort_creator` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -270,12 +276,15 @@
     <span class="k">return</span> <span class="n">PhenotypeCreator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validator</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_functional_annotator</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_configure_functional_annotator</span><span class="p">(</span>
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
 
     <span class="c1"># (2) FunctionalAnnotator</span>
     <span class="c1"># Setup fallback</span>
-    <span class="n">fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">)</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
 
     <span class="c1"># Setup variant cache</span>
     <span class="n">var_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;variant_cache&#39;</span><span class="p">)</span>
@@ -286,9 +295,12 @@
     <span class="k">return</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">(</span><span class="n">var_cache</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span>
+        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">variant_fallback</span> <span class="o">==</span> <span class="s1">&#39;VEP&#39;</span><span class="p">:</span>
-        <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">()</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown variant fallback annotator type </span><span class="si">{</span><span class="n">variant_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fallback</span>

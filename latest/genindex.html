@@ -84,7 +84,6 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
@@ -164,18 +163,14 @@
   </ul></td>
 </tr></table>
 
-<h2 id="B">B</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate">BooleanPredicate (class in genophenocorr.analysis.predicate)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory.cat_id">cat_id (genophenocorr.analysis.predicate.PatientCategory property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization">Categorization (class in genophenocorr.analysis.predicate)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization.category">category (genophenocorr.analysis.predicate.Categorization property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.cds_end">cds_end (genophenocorr.model.TranscriptCoordinates property)</a>
 </li>
@@ -205,10 +200,12 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.CohortCreator">CohortCreator (class in genophenocorr.preprocessing)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer">CohortViewer (class in genophenocorr.view)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer">CohortViewer (class in genophenocorr.view)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.Comparable">Comparable (class in genophenocorr.analysis.predicate.phenotype)</a>
+</li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_exon">compare_by_exon() (genophenocorr.analysis.CohortAnalysis method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature">compare_by_protein_feature() (genophenocorr.analysis.CohortAnalysis method)</a>
@@ -251,8 +248,14 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Disease">Disease (class in genophenocorr.model)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.diseases">diseases (genophenocorr.model.Patient property)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate">DiseasePresencePredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.diseases">diseases (genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+
+      <ul>
+        <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.diseases">(genophenocorr.model.Patient property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.DOMAIN">DOMAIN (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id27">[1]</a>
@@ -281,11 +284,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Notepad.error_count">error_count() (genophenocorr.preprocessing.Notepad method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Notepad.errors">errors() (genophenocorr.preprocessing.Notepad method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.EXCLUDED">EXCLUDED (genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate attribute)</a>
+      <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Notepad.errors">errors() (genophenocorr.preprocessing.Notepad method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.excluded_diseases">excluded_diseases() (genophenocorr.model.Patient method)</a>
 </li>
@@ -434,9 +435,13 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotyped.genotype_for_sample">genotype_for_sample() (genophenocorr.model.Genotyped method)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate">GenotypeBooleanPredicate (class in genophenocorr.analysis.predicate)</a>
+</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotyped">Genotyped (class in genophenocorr.model)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult">GenotypePhenotypeAnalysisResult (class in genophenocorr.analysis)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypePolyPredicate">GenotypePolyPredicate (class in genophenocorr.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotypes">Genotypes (class in genophenocorr.model)</a>
 </li>
@@ -454,18 +459,18 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate.get_categories">get_categories() (genophenocorr.analysis.predicate.BooleanPredicate static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.get_categories">get_categories() (genophenocorr.analysis.predicate.PolyPredicate method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate.get_categorizations">get_categorizations() (genophenocorr.analysis.predicate.GenotypeBooleanPredicate method)</a>
 
       <ul>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate.get_categories">(genophenocorr.analysis.predicate.GroupingPredicate static method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate.get_categorizations">(genophenocorr.analysis.predicate.GroupingPredicate method)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_categories">(genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory static method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">(genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate method)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_categories">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory static method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate method)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categories">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate static method)</a>
-</li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.get_categories">(genophenocorr.analysis.predicate.PolyPredicate static method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.get_categorizations">(genophenocorr.analysis.predicate.PolyPredicate method)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_cds_regions">get_cds_regions() (genophenocorr.model.TranscriptCoordinates method)</a>
@@ -482,12 +487,6 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_five_prime_utrs">get_five_prime_utrs() (genophenocorr.model.TranscriptCoordinates method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory.get_predicate">get_predicate() (genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory method)</a>
-
-      <ul>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory.get_predicate">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory method)</a>
-</li>
-      </ul></li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate.get_question">get_question() (genophenocorr.analysis.predicate.genotype.ExonPredicate method)</a>
 
       <ul>
@@ -501,6 +500,16 @@
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.get_question">(genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate method)</a>
 </li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.get_question">(genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.get_question">(genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.get_question">(genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.get_question">(genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.get_question">(genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate method)</a>
+</li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.get_question">(genophenocorr.analysis.predicate.genotype.VariantEffectPredicate method)</a>
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.get_question">(genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate method)</a>
@@ -509,7 +518,7 @@
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate.get_question">(genophenocorr.analysis.predicate.genotype.VariantsPredicate method)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.get_question">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_question">(genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate method)</a>
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate method)</a>
 </li>
@@ -711,7 +720,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.n_categories">n_categories() (genophenocorr.analysis.predicate.PolyPredicate class method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.n_categorizations">n_categorizations() (genophenocorr.analysis.predicate.PolyPredicate method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult.n_usable">n_usable (genophenocorr.analysis.GenotypePhenotypeAnalysisResult property)</a>
 </li>
@@ -735,8 +744,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.NMD_TRANSCRIPT_VARIANT">NMD_TRANSCRIPT_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate.NO">NO (genophenocorr.analysis.predicate.BooleanPredicate attribute)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate.NO">NO (genophenocorr.analysis.predicate.GenotypeBooleanPredicate attribute)</a>
+
+      <ul>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategories.NO">(genophenocorr.analysis.predicate.PatientCategories attribute)</a>
 </li>
+      </ul></li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.NO_CALL">NO_CALL (genophenocorr.model.Genotype attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT">NON_CODING_TRANSCRIPT_EXON_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
@@ -744,8 +757,6 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.NON_CODING_TRANSCRIPT_VARIANT">NON_CODING_TRANSCRIPT_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.NONCODING_EFFECTS">NONCODING_EFFECTS (genophenocorr.preprocessing.VepFunctionalAnnotator attribute)</a>
-</li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.NOT_MEASURED">NOT_MEASURED (genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Notepad">Notepad (class in genophenocorr.preprocessing)</a>
 </li>
@@ -779,6 +790,8 @@
         <li><a href="apidocs/genophenocorr.model.html#id0">(genophenocorr.model.Patient property)</a>
 </li>
       </ul></li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategories">PatientCategories (class in genophenocorr.analysis.predicate)</a>
+</li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategory">PatientCategory (class in genophenocorr.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PatientCreator">PatientCreator (class in genophenocorr.preprocessing)</a>
@@ -789,15 +802,23 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Phenotype">Phenotype (class in genophenocorr.model)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization.phenotype">phenotype (genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization property)</a>
+</li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult.phenotype_categories">phenotype_categories (genophenocorr.analysis.GenotypePhenotypeAnalysisResult property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization">PhenotypeCategorization (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator">PhenotypeCreator (class in genophenocorr.preprocessing)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePredicateFactory">PhenotypePredicateFactory (class in genophenocorr.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate">PhenotypePolyPredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.phenotypes">phenotypes (genophenocorr.model.Patient attribute)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotypes">phenotypes (genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate property)</a>
 
       <ul>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.phenotypes">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate property)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.phenotypes">(genophenocorr.model.Patient attribute)</a>
+</li>
         <li><a href="apidocs/genophenocorr.model.html#id1">(genophenocorr.model.Patient property)</a>
 </li>
       </ul></li>
@@ -805,12 +826,12 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Auditor.prepare_notepad">prepare_notepad() (genophenocorr.preprocessing.Auditor static method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.PRESENT">PRESENT (genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate attribute)</a>
-</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.present_diseases">present_diseases() (genophenocorr.model.Patient method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.present_phenotypes">present_phenotypes() (genophenocorr.model.Patient method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Auditor.process">process() (genophenocorr.preprocessing.Auditor method)</a>
 
       <ul>
@@ -821,12 +842,6 @@
         <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator.process">(genophenocorr.preprocessing.PhenotypeCreator method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate">PropagatingPhenotypeBooleanPredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
-</li>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicateFactory">PropagatingPhenotypeBooleanPredicateFactory (class in genophenocorr.analysis.predicate.phenotype)</a>
-</li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate">PropagatingPhenotypePredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProtCachingMetadataService">ProtCachingMetadataService (class in genophenocorr.preprocessing)</a>
@@ -877,6 +892,16 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate">RecessiveExonPredicate (class in genophenocorr.analysis.predicate.genotype)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate">RecessiveProtFeaturePredicate (class in genophenocorr.analysis.predicate.genotype)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate">RecessiveProtFeatureTypePredicate (class in genophenocorr.analysis.predicate.genotype)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate">RecessiveVariantEffectPredicate (class in genophenocorr.analysis.predicate.genotype)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate">RecessiveVariantPredicate (class in genophenocorr.analysis.predicate.genotype)</a>
+</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.ref">ref (genophenocorr.model.VariantCoordinates attribute)</a>
 
       <ul>
@@ -889,6 +914,8 @@
         <li><a href="apidocs/genophenocorr.model.html#id24">(genophenocorr.model.FeatureInfo property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.REGION">REGION (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id28">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.region">region (genophenocorr.model.TranscriptCoordinates property)</a>
@@ -899,8 +926,6 @@
         <li><a href="apidocs/genophenocorr.model.html#id8">(genophenocorr.model.VariantCoordinates property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.regions">regions() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id21">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.REGULATORY_REGION_ABLATION">REGULATORY_REGION_ABLATION (genophenocorr.model.VariantEffect attribute)</a>
@@ -994,6 +1019,16 @@
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate.test">(genophenocorr.analysis.predicate.genotype.ProtFeatureTypesPredicate method)</a>
 </li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate.test">(genophenocorr.analysis.predicate.genotype.RecessiveExonPredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate.test">(genophenocorr.analysis.predicate.genotype.RecessiveProtFeaturePredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate.test">(genophenocorr.analysis.predicate.genotype.RecessiveProtFeatureTypePredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate.test">(genophenocorr.analysis.predicate.genotype.RecessiveVariantEffectPredicate method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate.test">(genophenocorr.analysis.predicate.genotype.RecessiveVariantPredicate method)</a>
+</li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test">(genophenocorr.analysis.predicate.genotype.VariantEffectPredicate method)</a>
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate.test">(genophenocorr.analysis.predicate.genotype.VariantEffectsPredicate method)</a>
@@ -1002,7 +1037,7 @@
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantsPredicate.test">(genophenocorr.analysis.predicate.genotype.VariantsPredicate method)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate.test">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypeBooleanPredicate method)</a>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test">(genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate method)</a>
 </li>
         <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test">(genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate method)</a>
 </li>
@@ -1141,8 +1176,12 @@
 <h2 id="Y">Y</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.BooleanPredicate.YES">YES (genophenocorr.analysis.predicate.BooleanPredicate attribute)</a>
+      <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GenotypeBooleanPredicate.YES">YES (genophenocorr.analysis.predicate.GenotypeBooleanPredicate attribute)</a>
+
+      <ul>
+        <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PatientCategories.YES">(genophenocorr.analysis.predicate.PatientCategories attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
