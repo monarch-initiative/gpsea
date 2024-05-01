@@ -134,7 +134,10 @@ class GenotypePhenotypeAnalysisResult:
             df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
 
         # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]`
-        labeled_idx = df.index.map(lambda term_id: f'{hpo.get_term(term_id).name} [{term_id.value}]')
+        try:
+            labeled_idx = df.index.map(lambda term_id: f'{hpo.get_term(term_id).name} [{term_id.value}]')
+        except AttributeError:
+            labeled_idx = df.index.map(lambda term_id: f'{term_id}')
 
         # Last, sort by corrected p value or just p value
         df = df.set_index(labeled_idx)

@@ -192,7 +192,7 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hp
         return f'Was {self._query} diagnosed in the patient?'
 
     @property
-    def diseases(self) -> typing.Sequence[hpotk.TermId]:
+    def phenotypes(self) -> typing.Sequence[hpotk.TermId]:
         # We usually test just a single Disease, so we return a tuple with a single member.
         return self._query,
 
