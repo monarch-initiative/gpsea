@@ -4,9 +4,9 @@ import hpotk
 import pytest
 
 from genophenocorr.analysis.predicate import PatientCategory, PatientCategories
-from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate
+from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
 from genophenocorr.analysis.predicate.genotype import *
-from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
+from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect, Disease
 
 from .conftest import toy_cohort, protein_test_service
 
@@ -65,6 +65,24 @@ class TestPropagatingPhenotypeBooleanPredicate:
         actual = predicate.test(patient)
 
         assert actual is None
+        
+        
+    pytest.mark.parametrize('patient_id, patient_category',
+                            [('HetSingleVar', PatientCategories.YES),
+                             ('HomoVar', PatientCategories.NO)])
+    def test_disease_predicate(
+        self, 
+        patient_id: str,
+        patient_category: PatientCategories,
+        toy_cohort: Cohort,
+
+    ):
+        patient = find_patient(patient_id, toy_cohort)
+        disease_id = "OMIM:148050"
+        predicate = DiseasePresencePredicate(disease_id)
+        actual = predicate.test(patient)
+        assert actual.phenotype == disease_id
+        assert actual.category == patient_category
 
 
 @pytest.mark.parametrize('patient_id, variant_effect, expected_result',
@@ -146,3 +164,4 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
+

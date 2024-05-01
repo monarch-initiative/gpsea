@@ -119,12 +119,12 @@ def toy_cohort() -> Cohort:
         Patient(SampleLabels('HomoVar'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_T']),
                 variants=(del_small,),
-                diseases=(phenos['KBG_F'],)
+                diseases=()
                 ),
         Patient(SampleLabels('LargeCNV'),
                 phenotypes=(phenos['arachnodactyly_T'], phenos['spasticity_T'], phenos['seizure_F']),
                 variants=(del_large,),
-                diseases=(phenos['KBG_F'],)
+                diseases=()
                 ),
     )
 
