@@ -3,7 +3,7 @@ import typing
 
 import hpotk
 
-from genophenocorr.model import Patient, Disease
+from genophenocorr.model import Patient
 
 from .._api import PolyPredicate, PatientCategory, PatientCategories, C, Categorization
 
