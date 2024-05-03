@@ -6,9 +6,7 @@ import pytest
 from genophenocorr.analysis.predicate import PatientCategory, PatientCategories
 from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
 from genophenocorr.analysis.predicate.genotype import *
-from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect, Disease
-
-from .conftest import toy_cohort, protein_test_service
+from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
