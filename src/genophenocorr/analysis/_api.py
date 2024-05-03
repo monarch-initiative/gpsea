@@ -133,11 +133,8 @@ class GenotypePhenotypeAnalysisResult:
         if self._corrected_pvals is not None:
             df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
 
-        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]`
-        try:
-            labeled_idx = df.index.map(lambda term_id: f'{hpo.get_term(term_id).name} [{term_id.value}]')
-        except AttributeError:
-            labeled_idx = df.index.map(lambda term_id: f'{term_id}')
+        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms.
+        labeled_idx = df.index.map(lambda term_id: GenotypePhenotypeAnalysisResult._format_term_id(hpo, term_id))
 
         # Last, sort by corrected p value or just p value
         df = df.set_index(labeled_idx)
@@ -145,6 +142,21 @@ class GenotypePhenotypeAnalysisResult:
             return df.sort_values(by=[('', self._corrected_pvals.name), ('', self._pvals.name)])
         else:
             return df.sort_values(by=('', self._pvals.name))
+
+    @staticmethod
+    def _format_term_id(
+            hpo: hpotk.MinimalOntology,
+            term_id: hpotk.TermId,
+    ) -> str:
+        """
+        Format a `term_id` as a `str`. HPO term ID is formatted as `<name> [<term_id>]` whereas other term IDs
+        are formatted as CURIEs (e.g. `OMIM:123000`).
+        """
+        if term_id.prefix == 'HP':
+            name = hpo.get_term_name(term_id)
+            return f'{name} [{term_id.value}]'
+        else:
+            return term_id.value
 
 
 class CohortAnalysis(metaclass=abc.ABCMeta):
