@@ -127,7 +127,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
         return self._phenotype_observed, self._phenotype_excluded
 
     def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
-        """An HPO TermID is given when initializing the class. 
+        """An HPO TermID is given when initializing the class.
         Given a Patient class, this function tests whether the patient has the
         given phenotype.
 
@@ -137,12 +137,12 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
         Returns:
             typing.Optional[PhenotypeCategorization[P]]: PhenotypeCategorization,
                                                         either "YES" if the phenotype
-                                                        is listed and is not excluded, or 
-                                                        "NO" if the phenotype is listed and excluded, 
+                                                        is listed and is not excluded, or
+                                                        "NO" if the phenotype is listed and excluded,
                                                         otherwise will return None.
-                                                        Unless _missing_implies_phenotype_excluded is True, then 
+                                                        Unless _missing_implies_phenotype_excluded is True, then
                                                         will return "NO" if the phenotype is listed and excluded
-                                                        or not listed. 
+                                                        or not listed.
         """
         self._check_patient(patient)
 
@@ -200,20 +200,18 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hp
         return self._diagnosis_present, self._diagnosis_excluded
 
     def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
-        """A Disease TermID is given when initializing the class. 
-        Given a Patient class, this function tests whether the patient has the
-        given phenotype.
+        """
+        Test if the `patient` was diagnosed with a disease.
 
         Args:
-            patient (Patient): A Patient class representing a patient.
+            patient (Patient): a `patient` instance to be tested.
 
         Returns:
             typing.Optional[PhenotypeCategorization[P]]: PhenotypeCategorization,
                                                         either "YES" if the phenotype
-                                                        is listed and is not excluded, or 
+                                                        is listed and is not excluded, or
                                                         "NO" if the disease is not listed
                                                         or is excluded.
-
         """
         self._check_patient(patient)
 
