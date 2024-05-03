@@ -65,13 +65,18 @@ class TestPropagatingPhenotypeBooleanPredicate:
         actual = predicate.test(patient)
 
         assert actual is None
-        
-        
-    pytest.mark.parametrize('patient_id, patient_category',
-                            [('HetSingleVar', PatientCategories.YES),
-                             ('HomoVar', PatientCategories.NO)])
+
+
+class TestDiseasePresencePredicate:
+
+    @pytest.mark.parametrize(
+        'patient_id, patient_category',
+        [
+            ('HetSingleVar', PatientCategories.YES),
+            ('HomoVar', PatientCategories.NO),
+        ])
     def test_disease_predicate(
-        self, 
+        self,
         patient_id: str,
         patient_category: PatientCategories,
         toy_cohort: Cohort,
