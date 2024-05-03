@@ -133,7 +133,8 @@ class GenotypePhenotypeAnalysisResult:
         if self._corrected_pvals is not None:
             df.insert(df.shape[1], ('', self._corrected_pvals.name), self._corrected_pvals)
 
-        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms.
+        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms
+        # or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).
         labeled_idx = df.index.map(lambda term_id: GenotypePhenotypeAnalysisResult._format_term_id(hpo, term_id))
 
         # Last, sort by corrected p value or just p value
