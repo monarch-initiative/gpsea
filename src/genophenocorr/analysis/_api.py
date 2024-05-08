@@ -154,8 +154,8 @@ class GenotypePhenotypeAnalysisResult:
         are formatted as CURIEs (e.g. `OMIM:123000`).
         """
         if term_id.prefix == 'HP':
-            name = hpo.get_term_name(term_id)
-            return f'{name} [{term_id.value}]'
+            min_onto = hpo.get_term(term_id)
+            return f'{min_onto.name} [{term_id.value}]'
         else:
             return term_id.value
 
