@@ -128,11 +128,18 @@ class VariantsVisualizer:
         feature_colors = [self.protein_feature_colors[ft] for ft in feature_types]
         feature_names = [self.protein_feature_names[ft] for ft in feature_types]
         feature_limits = (feature_limits * 3) - 2 + min_exon_limit  # to convert from codons to bases
-        variant_locations = np.array([[
-            ann.protein_effect_location.start,
-            ann.protein_effect_location.end]
-            for ann in tx_anns
-        ])
+        variant_locations = list()
+        for ann in tx_anns:
+            if ann is not None and hasattr(ann, 'protein_effect_location'):
+                prot_eff_loc = ann.protein_effect_location
+                if prot_eff_loc is not None:
+                    variant_locations.append([prot_eff_loc.start, prot_eff_loc.end])
+        variant_locations = np.array(variant_locations)
+        #variant_locations = np.array([[
+        #    ann.protein_effect_location.start,
+        #    ann.protein_effect_location.end]
+        #    for ann in tx_anns if ann is not None and hasattr(ann, 'protein_effect_location')
+        #])
         variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
