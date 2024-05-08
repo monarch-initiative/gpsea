@@ -81,7 +81,7 @@ class TestDiseasePresencePredicate:
 
     ):
         patient = find_patient(patient_id, toy_cohort)
-        disease_id = "OMIM:148050"
+        disease_id = hpotk.TermId.from_curie("OMIM:148050")
         predicate = DiseasePresencePredicate(disease_id)
         actual = predicate.test(patient)
         assert actual.phenotype == disease_id
