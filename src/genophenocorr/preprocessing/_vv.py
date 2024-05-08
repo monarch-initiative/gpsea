@@ -138,14 +138,8 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
 
     def fetch(self, tx: typing.Union[str, TranscriptInfoAware]) -> TranscriptCoordinates:
         tx_id = self._parse_tx(tx)
-        api_url = self._url % tx_id
-
-        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
-
-        if not response.ok:
-            response.raise_for_status()
-
-        return self.parse_response(tx_id, response.json())
+        response_json = self.get_response(tx_id)
+        return self.parse_response(tx_id, response_json)
 
     @staticmethod
     def _parse_tx(tx: typing.Union[str, TranscriptInfoAware]) -> str:
@@ -155,6 +149,15 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
             return tx.transcript_id
         else:
             raise ValueError(f'Expected a `str` or `TranscriptInfoAware` but got {type(tx)}: {tx}')
+
+    def get_response(self, tx_id: str):
+        api_url = self._url % tx_id
+        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
+
+        if not response.ok:
+            response.raise_for_status()
+
+        return response.json()
 
     def parse_response(self, tx_id: str, response) -> TranscriptCoordinates:
         if not isinstance(response, list):
