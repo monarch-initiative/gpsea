@@ -63,7 +63,7 @@ class OntologyPValueTestChooser:
             # get descendants not including original term
             descs = self._hpo.graph.get_descendants(pf.id, False)
             descs = set(descs)
-            # if no descendant is in the set of annotated terms, then ter term must be a leaf term
+            # if no descendant is in the set of annotated terms, then the term must be a leaf term
             if len(descs.intersection(self._hpo_term_id_set)) == 0:
                 self._hpo_leaf_term_id_set.add(pd.id)
         print(f"[INFO] We found a total of {len(self._hpo_leaf_term_id_set)} HPO terms as leaves of the graph")

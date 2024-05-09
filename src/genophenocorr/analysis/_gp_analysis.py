@@ -1,5 +1,6 @@
 import abc
 import typing
+import hpotk
 
 import pandas as pd
 
@@ -10,8 +11,36 @@ from genophenocorr.model import Patient
 from .predicate import PolyPredicate, PatientCategory
 from .predicate.phenotype import PhenotypePolyPredicate, P
 
-from ._api import GenotypePhenotypeAnalysisResult
+from ._api import GenotypePhenotypeAnalysisResult, HpoMtcFilter
 from ._stats import run_fisher_exact, run_recessive_fisher_exact
+
+
+
+class IdentityTermMtcFilter(HpoMtcFilter):
+
+    def filter_terms_to_test(
+            self, 
+            n_usable:typing.Mapping[hpotk.TermId, int], 
+            all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
+    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
+        """Use this implementation to test all available terms
+        """
+        return n_usable, all_counts
+
+class HeuristicSamplerMtcFilter(HpoMtcFilter):
+
+    def __init__(self, hpo_ontology:hpotk.MinimalOntology) -> None:
+        self._hpo = hpo_ontology
+
+    def filter_terms_to_test(
+            self, 
+            n_usable:typing.Mapping[hpotk.TermId, int], 
+            all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
+    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
+        """TODO !! 
+        """
+        return n_usable, all_counts
+
 
 
 class GPAnalyzer(typing.Generic[P], metaclass=abc.ABCMeta):
@@ -93,11 +122,13 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
 
     def __init__(
             self,
+            hpo_mtc_filter:HpoMtcFilter,
             p_val_correction: typing.Optional[str] = None,
             mtc_alpha: float = .05,
     ):
         self._correction = p_val_correction
         self._mtc_alpha = mtc_alpha
+        self._hpo_mtc_filter = hpo_mtc_filter
 
     def analyze(
             self,
@@ -109,6 +140,8 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         categories, n_usable, all_counts = GPAnalyzer._count_patients(
             patients, pheno_predicates, gt_predicate,
         )
+        # 1.5) Filter terms for MTC
+        n_usable, all_counts = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
 
         # 2) Statistical tests
         pheno_idx = pd.Index(n_usable.index, name='p_val')

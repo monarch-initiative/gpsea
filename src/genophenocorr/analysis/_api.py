@@ -294,3 +294,17 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
                                 break
 
         return PatientsByHPO(all_with_hpo, all_without_hpo)
+
+
+class HpoMtcFilter(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def filter_terms_to_test(
+        self, 
+        n_usable:typing.Mapping[hpotk.TermId, int], 
+        all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
+    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
+        """Decide which terms to pass through for statistical testing.
+        The intention of this class is tto reduce multiple testing burden by removing terms that are unlikely to
+        lead to interesting statistical/analytical results.
+        """
+        pass
