@@ -81,331 +81,118 @@
            <div itemprop="articleBody">
              
   <h1>Source code for genophenocorr.view._cohort</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
+
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 
 
+<div class="viewcode-block" id="CohortViewable">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable">[docs]</a>
+<span class="k">class</span> <span class="nc">CohortViewable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to create a viewable object that is uses a Jinja2 template to create an HTML element</span>
+<span class="sd">    for display in the Jupyter notebook.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="n">CSS_CODE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">table {</span>
-<span class="s2">  border-collapse: collapse; </span>
-<span class="s2">  margin: 25px 0;</span>
-<span class="s2">    font-size: 0.9em;</span>
-<span class="s2">    font-family: sans-serif;</span>
-<span class="s2">    min-width: 400px;</span>
-<span class="s2">    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);</span>
-<span class="s2">}</span>
-
-
-<span class="s2">th {</span>
-<span class="s2">  background-color: #f2f2f2; </span>
-<span class="s2">  border: 1px solid #dddddd; </span>
-<span class="s2">  text-align: left;</span>
-<span class="s2">  padding: 2px;</span>
-<span class="s2">}</span>
-
-<span class="s2">tr {</span>
-<span class="s2">  border: 1px solid #dddddd; </span>
-<span class="s2">}</span>
-
-<span class="s2">td {</span>
-<span class="s2">  padding: 2px; </span>
-<span class="s2">  font-weight: bold;</span>
-<span class="s2">}</span>
-
-<span class="s2">tr:nth-child(even) {</span>
-<span class="s2">  background-color: #f2f2f2;</span>
-<span class="s2">}</span>
-<span class="s2">&quot;&quot;&quot;</span>
-
-
-
-<div class="viewcode-block" id="CohortViewer">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">CohortViewer</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hpo</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">MinimalOntology</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hpo argument must be a MinimalOntology but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">hpo</span><span class="p">:</span> <span class="n">MinimalOntology</span><span class="p">,</span>
+            <span class="n">top_phenotype_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">top_variant_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            hpo(MinimalOntology): An HPO ontology object from hpo-toolkit</span>
+<span class="sd">            top_phenotype_count(int): Maximum number of HPO terms to display in the HTML table (default: 10)</span>
+<span class="sd">            top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)</span>
+<span class="sd">            transcript_id(str): The identifier (Only NCBI RefSeq supported!) to use for the HGVS-able variants</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span> <span class="o">=</span> <span class="n">top_phenotype_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span> <span class="o">=</span> <span class="n">top_variant_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
 
-<div class="viewcode-block" id="CohortViewer.html_row">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.html_row">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">html_row</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&lt;/td&gt;&lt;td&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span></div>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;cohort.html&quot;</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="CohortViewer.anchor">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.anchor">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">anchor</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;a href=</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s2">&lt;/a&gt;&quot;</span></div>
-
-
-<div class="viewcode-block" id="CohortViewer.hpo_anchor">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.hpo_anchor">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">hpo_anchor</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://hpo.jax.org/app/browse/term/</span><span class="si">{</span><span class="n">hpo_id</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">hpo_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">hpo_id</span><span class="si">}</span><span class="s2">)&quot;</span>
-        <span class="k">return</span> <span class="n">CohortViewer</span><span class="o">.</span><span class="n">anchor</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">hpo_label</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="CohortViewer.hpo_term_counts_table">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.hpo_term_counts_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">hpo_term_counts_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="CohortViewable.process">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
-<span class="sd">        Show the number of annotations per HPO terms. Provide an explanation.</span>
-<span class="sd">        </span>
-<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
-<span class="sd">        :type cohort: Cohort</span>
-<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
-<span class="sd">        :type min_count: int</span>
-<span class="sd">        :returns: HTML code for display</span>
+<span class="sd">        Create an HTML that should be shown with display(HTML(..)) of the ipython package.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cohort (Cohort): The cohort being analyzed in the current Notebook</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: an HTML string with parameterized template for rendering</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
-        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;HPO Term&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">]</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
-        <span class="n">hpo_list</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_phenotypes</span><span class="p">()</span>
-        <span class="n">n_individuals</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">total_patient_count</span>
-        <span class="n">capt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;caption&gt;Counts of annotations to HPO terms for the </span><span class="si">{</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> in the cohort&lt;/caption&gt;&quot;</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capt</span><span class="p">)</span>
-        <span class="n">min_terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">hpo_tuple</span> <span class="ow">in</span> <span class="n">hpo_list</span><span class="p">:</span>
-            <span class="n">row_items</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">hpo_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">count</span> <span class="o">=</span> <span class="n">hpo_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">term</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">hpo_label</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hpo_label</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">name</span>
-            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">min_count</span><span class="p">:</span>
-                <span class="n">row_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">hpo_anchor</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">,</span> <span class="n">hpo_label</span><span class="p">))</span>
-                <span class="n">row_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">))</span>
-                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">row_items</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">min_terms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">hpo_anchor</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">,</span> <span class="n">hpo_label</span><span class="p">))</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">min_terms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">term_str</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">min_terms</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;Additionally, the following terms were observed </span><span class="si">{</span><span class="n">min_count</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> or fewer times:&lt;/p&gt;&quot;</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">{</span><span class="n">term_str</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="CohortViewer.variants_table">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.variants_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">variants_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">preferred_transcript</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
-<span class="sd">        Show genotype-phenotype correlation tests that could be run.</span>
-<span class="sd">        </span>
-<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
-<span class="sd">        :type cohort: Cohort</span>
-<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
-<span class="sd">        :type min_count: int</span>
-<span class="sd">        :returns: HTML code for display</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="c1"># Get a list of variants for the preferred transcript</span>
-        <span class="n">variant_count_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">variant_to_effect_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
-        <span class="n">variant_to_key</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
-        <span class="c1"># key, variant string, value int</span>
-        <span class="n">all_variant_tuple_list</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_variant_tuple_list is not a list but is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">all_variant_counter</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_variant_tuple_list</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
-            <span class="n">var_count</span> <span class="o">=</span> <span class="n">all_variant_counter</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span>
-            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">txa</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">preferred_transcript</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">target_txa</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvs_cdna</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">hgvs_cdna</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvs_cdna</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hgvs_cdna</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
-                <span class="c1"># split out the variant</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvs_cdna</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">hgvs_cdna</span>
-                <span class="n">effect_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">]</span>
-                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
-                <span class="n">variant_to_effect_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">effect_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># for simplicity, just display first effect</span>
-                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[WARN] could not identify a single variant for target transcript (got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">), variant </span><span class="si">{</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># could not find an entry for our transcript, so just show the genomic coordinates</span>
-                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
-                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
-        <span class="c1"># sort the variants by count and put variants below mininum count for display into a separate set</span>
-        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">variant_count_d</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># sort descending by values</span>
-        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">]</span> <span class="c1"># take the first item from each sorted tuple</span>
-        <span class="n">below_threshold_vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
-        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Variant&quot;</span><span class="p">,</span> <span class="s2">&quot;Effect&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Key&quot;</span><span class="p">]</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">:</span>
-            <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">var_count</span> <span class="o">=</span> <span class="n">variant_count_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-            <span class="c1">#print(f&quot;{var} - {var_count}&quot;)</span>
-            <span class="k">if</span> <span class="n">var_count</span> <span class="o">&gt;=</span> <span class="n">min_count</span><span class="p">:</span> 
-                <span class="n">variant_key</span> <span class="o">=</span> <span class="n">variant_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_to_effect_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">))</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">var_count</span><span class="p">))</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_key</span><span class="p">)</span>
-                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">below_threshold_vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">var_str</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;Additionally, the following variants were observed </span><span class="si">{</span><span class="n">min_count</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> or fewer times: &quot;</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_str</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;Use the entry in the </span><span class="se">\&quot;</span><span class="s2">Key</span><span class="se">\&quot;</span><span class="s2"> column to investigate whether specific variants display genotype-phenotype correlations&lt;/p&gt;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="CohortViewer.cohort_summary_table">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.cohort_summary_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">cohort_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
-<span class="sd">        Show the number of annotations per HPO terms. Provide an explanation.</span>
-<span class="sd">        </span>
-<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
-<span class="sd">        :type cohort: Cohort</span>
-<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
-<span class="sd">        :type min_count: int</span>
-<span class="sd">        :returns: HTML code for display</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
-        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">]</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
-        <span class="n">n_individuals</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">total_patient_count</span>
-        <span class="n">n_unique_hpo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">)</span>
-        <span class="n">n_unique_variants</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">)</span>
-        <span class="n">n_excluded_patients</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">()</span>
-        <span class="n">excluded_patients</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_ids</span><span class="p">()</span>
-
-        <span class="n">cap</span> <span class="o">=</span> <span class="s2">&quot;Description of the cohort. &quot;</span>
-        <span class="k">if</span> <span class="n">n_excluded_patients</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">cap</span> <span class="o">=</span>  <span class="n">cap</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_excluded_patients</span><span class="si">}</span><span class="s2"> individuals were removed from the cohort because they had no HPO terms.&quot;</span>
-
-        <span class="n">capt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;caption&gt;</span><span class="si">{</span><span class="n">cap</span><span class="si">}</span><span class="s2">&lt;/caption&gt;&quot;</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capt</span><span class="p">)</span>
-        
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Individuals&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_individuals</span><span class="p">)]))</span>
-        <span class="c1">#TODO: Add Diseases</span>
-        <span class="k">if</span> <span class="n">n_excluded_patients</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Excluded Individuals&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">n_excluded_patients</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">excluded_patients</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]))</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Unique HPO Terms&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_unique_hpo</span><span class="p">)]))</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">([</span><span class="s2">&quot;Total Unique Variants&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_unique_variants</span><span class="p">)]))</span>
-
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
-    
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="CohortViewer.protein_features_table">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewer.protein_features_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">protein_features_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">preferred_transcript</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML</span>
-<span class="sd">        Show genotype-phenotype correlation tests that could be run.</span>
-<span class="sd">        </span>
-<span class="sd">        :param cohort: A cohort of patients to be analyzed</span>
-<span class="sd">        :type cohort: Cohort</span>
-<span class="sd">        :param min_count: Minimum number of annotations to be displayed in the table</span>
-<span class="sd">        :type min_count: int</span>
-<span class="sd">        :returns: HTML code for display</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cohort argument must be a Cohort object but we got a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span><span class="si">}</span><span class="s2"> object&quot;</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="c1"># Get a list of variants for the preferred transcript</span>
-        <span class="n">variant_count_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">variant_to_effect_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
-        <span class="n">variant_to_key</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
-        <span class="c1"># key, variant string, value int</span>
-        <span class="n">all_variant_tuple_list</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_variant_tuple_list is not a list but is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">all_variant_tuple_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">all_variant_counter</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_variant_tuple_list</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
-            <span class="n">var_count</span> <span class="o">=</span> <span class="n">all_variant_counter</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span>
-            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">txa</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">preferred_transcript</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">target_txa</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvs_cdna</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">hgvs_cdna</span> <span class="o">=</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">hgvs_cdna</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hgvs_cdna</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
-                <span class="c1"># split out the variant</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvs_cdna</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hgvs</span> <span class="o">=</span> <span class="n">hgvs_cdna</span>
-                <span class="n">effect_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">target_txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">]</span>
-                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
-                <span class="n">variant_to_effect_d</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">effect_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># for simplicity, just display first effect</span>
-                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">hgvs</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[WARN] could not identify a single variant for target transcript (got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">), variant </span><span class="si">{</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># could not find an entry for our transcript, so just show the genomic coordinates</span>
-                <span class="n">variant_count_d</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_count</span>
-                <span class="n">variant_to_key</span><span class="p">[</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_string</span>
-        <span class="c1"># sort the variants by count and put variants below mininum count for display into a separate set</span>
-        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">variant_count_d</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># sort descending by values</span>
-        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">]</span> <span class="c1"># take the first item from each sorted tuple</span>
-        <span class="n">below_threshold_vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="se">\n</span><span class="si">{</span><span class="n">CSS_CODE</span><span class="si">}</span><span class="s2">&lt;/style&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">)</span>
-        <span class="n">header_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Variant&quot;</span><span class="p">,</span> <span class="s2">&quot;Effect&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Key&quot;</span><span class="p">]</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">header_items</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">:</span>
-            <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">var_count</span> <span class="o">=</span> <span class="n">variant_count_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-            <span class="c1">#print(f&quot;{var} - {var_count}&quot;)</span>
-            <span class="k">if</span> <span class="n">var_count</span> <span class="o">&gt;=</span> <span class="n">min_count</span><span class="p">:</span> 
-                <span class="n">variant_key</span> <span class="o">=</span> <span class="n">variant_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_to_effect_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">))</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">var_count</span><span class="p">))</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_key</span><span class="p">)</span>
-                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CohortViewer</span><span class="o">.</span><span class="n">html_row</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">below_threshold_vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">var_str</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">below_threshold_vars</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;Additionally, the following variants were observed </span><span class="si">{</span><span class="n">min_count</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> or fewer times: &quot;</span><span class="p">)</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_str</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span><span class="p">)</span>
-        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;Use the entry in the </span><span class="se">\&quot;</span><span class="s2">Key</span><span class="se">\&quot;</span><span class="s2"> column to investigate whether specific variants display genotype-phenotype correlations&lt;/p&gt;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
-</div>
+    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="n">n_patients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">)</span>
+        <span class="n">total_HPO_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">)</span>
+        <span class="n">top_hpos</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_phenotypes</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">)</span>
+        <span class="n">hpo_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">top_hpos</span><span class="p">:</span>
+            <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">individual_count</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">hpo_label</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
+            <span class="k">if</span> <span class="n">hpo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="p">:</span>
+                <span class="n">hpo_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span>
+            <span class="n">hpo_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;HPO&quot;</span><span class="p">:</span> <span class="n">hpo_label</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">hpo_id</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">individual_count</span><span class="p">})</span>
+        <span class="n">top_vars</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">)</span>
+        <span class="n">var_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">top_vars</span><span class="p">:</span>
+            <span class="n">chrom_var</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">var_count</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># TODO get HGVS or human readable variant</span>
+            <span class="n">var_name</span> <span class="o">=</span> <span class="s2">&quot;todo&quot;</span>
+            <span class="n">var_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;variant&quot;</span><span class="p">:</span> <span class="n">chrom_var</span><span class="p">,</span> <span class="s2">&quot;variant_name&quot;</span><span class="p">:</span> <span class="n">var_name</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">var_count</span><span class="p">})</span>
+        <span class="n">diseases</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_diseases</span><span class="p">()</span>
+        <span class="n">n_diseases</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">diseases</span><span class="p">)</span>
+        <span class="n">disease_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">diseases</span><span class="p">:</span>
+            <span class="n">disease_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">disease_count</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">disease_id</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">disease_count</span><span class="p">})</span>
+        <span class="n">var_effects_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">has_transcript</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">data_by_tx</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_data_by_tx</span><span class="p">(</span><span class="n">transcript</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
+            <span class="n">counter_d</span> <span class="o">=</span> <span class="n">data_by_tx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
+            <span class="c1"># data structure -- {&#39;effect}&#39;: &#39;FRAMESHIFT_VARIANT&#39;, &#39;count&#39;: 175}, {&#39;effect}&#39;: &#39;STOP_GAINED&#39;, &#39;count&#39;: 67},</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counter_d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">var_effects_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;effect&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">has_transcript</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="n">n_patients</span><span class="p">,</span>
+            <span class="s2">&quot;n_excluded&quot;</span><span class="p">:</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">(),</span>
+            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">total_HPO_count</span><span class="p">,</span>
+            <span class="s2">&quot;top_hpo_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">,</span>
+            <span class="s2">&quot;hpo_counts&quot;</span><span class="p">:</span> <span class="n">hpo_counts</span><span class="p">,</span>
+            <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">),</span>
+            <span class="s2">&quot;top_var_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">,</span>
+            <span class="s2">&quot;var_counts&quot;</span><span class="p">:</span> <span class="n">var_counts</span><span class="p">,</span>
+            <span class="s2">&quot;n_diseases&quot;</span><span class="p">:</span> <span class="n">n_diseases</span><span class="p">,</span>
+            <span class="s2">&quot;disease_counts&quot;</span><span class="p">:</span> <span class="n">disease_counts</span><span class="p">,</span>
+            <span class="s2">&quot;has_transcript&quot;</span><span class="p">:</span> <span class="n">has_transcript</span><span class="p">,</span>
+            <span class="s2">&quot;var_effects_list&quot;</span><span class="p">:</span> <span class="n">var_effects_list</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
 </pre></div>
 

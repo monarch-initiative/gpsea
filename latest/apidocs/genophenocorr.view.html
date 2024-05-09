@@ -101,92 +101,24 @@
   <section id="module-genophenocorr.view">
 <span id="genophenocorr-view-package"></span><h1>genophenocorr.view package<a class="headerlink" href="#module-genophenocorr.view" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">CohortViewer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.view.CohortViewable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">CohortViewable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_phenotype_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_variant_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to create a viewable object that is uses a Jinja2 template to create an HTML element
+for display in the Jupyter notebook.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.html_row">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">html_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.html_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.html_row" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.anchor">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.anchor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.anchor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.hpo_anchor">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hpo_anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.hpo_anchor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.hpo_anchor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.hpo_term_counts_table">
-<span class="sig-name descname"><span class="pre">hpo_term_counts_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.hpo_term_counts_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.hpo_term_counts_table" title="Link to this definition"></a></dt>
-<dd><p>Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML
-Show the number of annotations per HPO terms. Provide an explanation.</p>
+<dt class="sig sig-object py" id="genophenocorr.view.CohortViewable.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable.process" title="Link to this definition"></a></dt>
+<dd><p>Create an HTML that should be shown with display(HTML(..)) of the ipython package.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – A cohort of patients to be analyzed</p></li>
-<li><p><strong>min_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Minimum number of annotations to be displayed in the table</p></li>
-</ul>
+<dd class="field-odd"><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – The cohort being analyzed in the current Notebook</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>HTML code for display</p>
+<dd class="field-even"><p>an HTML string with parameterized template for rendering</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.variants_table">
-<span class="sig-name descname"><span class="pre">variants_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferred_transcript</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.variants_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.variants_table" title="Link to this definition"></a></dt>
-<dd><p>Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML
-Show genotype-phenotype correlation tests that could be run.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – A cohort of patients to be analyzed</p></li>
-<li><p><strong>min_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Minimum number of annotations to be displayed in the table</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>HTML code for display</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.cohort_summary_table">
-<span class="sig-name descname"><span class="pre">cohort_summary_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.cohort_summary_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.cohort_summary_table" title="Link to this definition"></a></dt>
-<dd><p>Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML
-Show the number of annotations per HPO terms. Provide an explanation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – A cohort of patients to be analyzed</p></li>
-<li><p><strong>min_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Minimum number of annotations to be displayed in the table</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>HTML code for display</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.CohortViewer.protein_features_table">
-<span class="sig-name descname"><span class="pre">protein_features_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferred_transcript</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewer.protein_features_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewer.protein_features_table" title="Link to this definition"></a></dt>
-<dd><p>Generate HTML code designed to be displayed on a Jupyter notebook using ipython/display/HTML
-Show genotype-phenotype correlation tests that could be run.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – A cohort of patients to be analyzed</p></li>
-<li><p><strong>min_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Minimum number of annotations to be displayed in the table</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>HTML code for display</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
