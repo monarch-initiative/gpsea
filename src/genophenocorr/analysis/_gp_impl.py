@@ -30,6 +30,7 @@ class GpCohortAnalysis(CohortAnalysis):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
         self._logger = logging.getLogger(__name__)
+        self._cohort = cohort
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._protein_service = protein_service
         self._phenotype_filter = hpotk.util.validate_instance(phenotype_filter, PhenotypeFilter, 'phenotype_filter')
@@ -120,14 +121,24 @@ class GpCohortAnalysis(CohortAnalysis):
         return self._apply_poly_predicate_on_hpo_terms(predicate)
 
     def compare_disease_vs_genotype(
-        self, disease_id:typing.Union[str, hpotk.TermId], genotype_predicate: GenotypePolyPredicate
+        self, genotype_predicate: GenotypePolyPredicate, disease_ids:typing.Sequence[typing.Union[str, hpotk.TermId]] = None
     ) -> GenotypePhenotypeAnalysisResult:
-        if type(disease_id) == str:
-            disease_id = hpotk.TermId.from_curie(disease_id)
-        disease_id = hpotk.util.validate_instance(disease_id, hpotk.TermId, 'disease_id')
-        pheno_predicate = DiseasePresencePredicate(disease_id)
+        pheno_predicates = []
+        testing_diseases = []
+        if disease_ids is None:
+            disease_ids = [dis.identifier for dis in self._cohort.all_diseases]
+        if len(disease_ids) < 1:
+            raise ValueError("No diseases available for testing.")
+        for dis in disease_ids:
+            if type(dis) == str:
+                testing_diseases.append(hpotk.TermId.from_curie(dis))
+            else:
+                testing_diseases.append(hpotk.util.validate_instance(dis, hpotk.TermId, 'dis'))
+
+        for disease in testing_diseases:
+            pheno_predicates.append(DiseasePresencePredicate(disease))
         
-        return self._apply_poly_predicate([pheno_predicate], genotype_predicate)
+        return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
 
     def _apply_boolean_predicate_on_hpo_terms(
             self,
