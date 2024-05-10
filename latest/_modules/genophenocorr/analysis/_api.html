@@ -220,8 +220,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">)</span>
 
-        <span class="c1"># Format the index values: `HP:0001250` -&gt; `Seizure [HP:0001250]`</span>
-        <span class="n">labeled_idx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">term_id</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">term_id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+        <span class="c1"># Format the index values: `HP:0001250` -&gt; `Seizure [HP:0001250]` if the index members are HPO terms</span>
+        <span class="c1"># or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).</span>
+        <span class="n">labeled_idx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">term_id</span><span class="p">:</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="o">.</span><span class="n">_format_term_id</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_id</span><span class="p">))</span>
 
         <span class="c1"># Last, sort by corrected p value or just p value</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">labeled_idx</span><span class="p">)</span>
@@ -229,7 +230,22 @@
             <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">)])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
-</div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_format_term_id</span><span class="p">(</span>
+            <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+            <span class="n">term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format a `term_id` as a `str`. HPO term ID is formatted as `&lt;name&gt; [&lt;term_id&gt;]` whereas other term IDs</span>
+<span class="sd">        are formatted as CURIEs (e.g. `OMIM:123000`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">term_id</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s1">&#39;HP&#39;</span><span class="p">:</span>
+            <span class="n">min_onto</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">min_onto</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">term_id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">]&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">term_id</span><span class="o">.</span><span class="n">value</span></div>
 
 
 

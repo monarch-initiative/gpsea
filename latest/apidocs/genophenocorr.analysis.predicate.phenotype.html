@@ -184,9 +184,10 @@ or not listed.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.diseases">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">diseases</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TermId</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.diseases" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.phenotypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TermId</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entities of interest.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">
@@ -197,12 +198,10 @@ or not listed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test">
 <span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization" title="genophenocorr.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test" title="Link to this definition"></a></dt>
-<dd><p>A Disease TermID is given when initializing the class.
-Given a Patient class, this function tests whether the patient has the
-given phenotype.</p>
+<dd><p>Test if the <cite>patient</cite> was diagnosed with a disease.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – A Patient class representing a patient.</p>
+<dd class="field-odd"><p><strong>patient</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Patient" title="genophenocorr.model.Patient"><em>Patient</em></a>) – a <cite>patient</cite> instance to be tested.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
