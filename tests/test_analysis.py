@@ -79,3 +79,27 @@ class TestCommunistCohortAnalysis:
 
         # In total, 26 patients were categorized
         assert counts.sum().sum() == 26
+
+
+    def test_get_positive_count(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
+        """
+        This test shows how to get the counts for positive HPO terms
+        Let's use Arachnodactyly [HP:0001166]  Yes (Genotype NO 1/10); No (Genotype YES 13/16) as an example
+        that is
+        Arachnodactyly (+) MISSENSE (-) = 1
+        Arachnodactyly (-) MISSENSE (-) = 9
+        Arachnodactyly (+) MISSENSE (+) = 13
+        Arachnodactyly (-) MISSENSE (+) = 3
+        This means we expect 1+13=14 
+        See the previous test for further information
+        """
+        pd.set_option('expand_frame_repr', False)
+        cohort_analysis = configure_cohort_analysis(toy_cohort, toy_hpo)
+        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
+        all_counts = results.all_counts
+        # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
+        # Let's test Arachnodactyly - we should have one row for each Patient Predicate
+        counts = all_counts[hpotk.TermId.from_curie("HP:0001166")]
+        #total_observed_HPO = HeuristicSamplerMtcFilter.get_number_of_positive_observations(arachnodactyly_counts)
+        total_observed_HPO = counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[PatientCategories.YES, PatientCategories.YES]
+        assert 14 == total_observed_HPO
