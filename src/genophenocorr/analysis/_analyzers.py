@@ -11,7 +11,7 @@ from collections import Counter
 from genophenocorr.model import Cohort, FeatureType, VariantEffect, Patient
 
 from .predicate import PolyPredicate
-from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from .predicate.genotype import VariantEffectPredicate, VariantKeyPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 # from .predicate.genotype import HOMOZYGOUS, HETEROZYGOUS, NO_VARIANT
 
 from ._api import CohortAnalysis
@@ -286,7 +286,7 @@ class BaseCohortAnalysis(CohortAnalysis):
         Returns:
             DataFrame: A pandas DataFrame showing the results of the analysis
         """
-        variant_test = VariantPredicate(self.analysis_transcript)
+        variant_test = VariantKeyPredicate(self.analysis_transcript)
         if self.is_recessive:
             final_dict, corrected_pvals = self._run_rec_analysis(variant_test, variant1, variant2)
             if variant2 is None:

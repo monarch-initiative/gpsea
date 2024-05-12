@@ -6,7 +6,7 @@ import hpotk
 from genophenocorr.model import Cohort, VariantEffect, FeatureType
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate, GenotypeBooleanPredicate
-from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
+from .predicate.genotype import VariantEffectPredicate, VariantKeyPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
 from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate, ProtFeaturesPredicate, ProtFeatureTypesPredicate
 from .predicate.genotype import RecessiveVariantPredicate, RecessiveProtFeaturePredicate, RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantEffectPredicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
@@ -50,7 +50,7 @@ class GpCohortAnalysis(CohortAnalysis):
         return self._apply_boolean_predicate_on_hpo_terms(predicate)
 
     def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = VariantPredicate(variant_key)
+        predicate = VariantKeyPredicate(variant_key)
         return self._apply_boolean_predicate_on_hpo_terms(predicate)
 
     def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
@@ -99,7 +99,7 @@ class GpCohortAnalysis(CohortAnalysis):
     ) -> GenotypePhenotypeAnalysisResult:
         predicate = ProtFeaturesPredicate(tx_id, feature1, feature2, self._protein_service)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
-    
+
     def compare_by_recessive_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = RecessiveVariantEffectPredicate(tx_id, effect)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
@@ -137,7 +137,7 @@ class GpCohortAnalysis(CohortAnalysis):
 
         for disease in testing_diseases:
             pheno_predicates.append(DiseasePresencePredicate(disease))
-        
+
         return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
 
     def _apply_boolean_predicate_on_hpo_terms(

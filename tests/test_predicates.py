@@ -117,8 +117,8 @@ def test_VariantEffectPredicate(patient_id: str,
                           ['HomoVar', '16_89280752_89280752_G_T', PatientCategories.NO],
                           ['HomoVar', '16_89279458_89279459_TG_T', PatientCategories.YES],
                           ['LargeCNV', '16_89190071_89439815_DEL', PatientCategories.YES]))
-def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
-    predicate = VariantPredicate(variant_key=variant)
+def test_VariantKeyPredicate(patient_id, variant, hasVarResult, toy_cohort):
+    predicate = VariantKeyPredicate(variant_key=variant)
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
