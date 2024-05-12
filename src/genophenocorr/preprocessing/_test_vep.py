@@ -106,6 +106,23 @@ class TestVepFunctionalAnnotator:
         assert preferred.overlapping_exons == (9,)
 
 
+@pytest.mark.skip('To be run manually now and then')
+def test_random_variant(variant_annotator: VepFunctionalAnnotator):
+    vc = VariantCoordinates(
+        region=GenomicRegion(
+            contig=GRCh38.contig_by_name('chr1'),
+            start=156_134_852,
+            end=156_134_853,
+            strand=Strand.POSITIVE,
+        ),
+        ref='G', alt='A', change_length=0,
+    )
+    annotations = variant_annotator.annotate(vc)
+
+    for annotation in annotations:
+        print(annotation)
+
+
 def load_response_json(path: str):
     with open(path) as fh:
         return json.load(fh)

@@ -6,7 +6,7 @@ import pytest
 
 from ._protein_test_service import ProteinTestMetadataService
 from genophenocorr.model import *
-from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand
+from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
 
 
 def pytest_addoption(parser):
@@ -170,3 +170,8 @@ def test_diseases() -> typing.Mapping[str, Disease]:
         'KBG_T': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
         'KBG_F': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
     }
+
+
+@pytest.fixture(scope='session')
+def genome_build() -> GenomeBuild:
+    return GRCh38
