@@ -29,17 +29,22 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope='session')
-def toy_hpo() -> hpotk.MinimalOntology:
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'hp.toy.json')
-    return hpotk.load_minimal_ontology(path)
+def test_data_dir() -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
 
 
 @pytest.fixture(scope='session')
-def toy_validation_runner(toy_hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+def hpo(test_data_dir: str) -> hpotk.MinimalOntology:
+    fpath_hpo = os.path.join(test_data_dir, 'hp.v2024-04-26.json.gz')
+    return hpotk.load_minimal_ontology(fpath_hpo)
+
+
+@pytest.fixture(scope='session')
+def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
     validators = (
-        hpotk.validate.ObsoleteTermIdsValidator(toy_hpo),
-        hpotk.validate.AnnotationPropagationValidator(toy_hpo),
-        hpotk.validate.PhenotypicAbnormalityValidator(toy_hpo)
+        hpotk.validate.ObsoleteTermIdsValidator(hpo),
+        hpotk.validate.AnnotationPropagationValidator(hpo),
+        hpotk.validate.PhenotypicAbnormalityValidator(hpo)
     )
     return hpotk.validate.ValidationRunner(validators)
 

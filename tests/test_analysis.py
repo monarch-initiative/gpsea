@@ -18,15 +18,15 @@ class TestCommunistCohortAnalysis:
     def toy_cohort(self) -> Cohort:
         return get_toy_cohort()
 
-    def test_compare_by_variant_effect(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
+    def test_compare_by_variant_effect(self, toy_cohort: Cohort, hpo: hpotk.MinimalOntology):
         pd.set_option('expand_frame_repr', False)
-        cohort_analysis = configure_cohort_analysis(toy_cohort, toy_hpo)
+        cohort_analysis = configure_cohort_analysis(toy_cohort, hpo)
         results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
         print(results)
-        summary = results.summarize(toy_hpo, PatientCategories.YES)
+        summary = results.summarize(hpo, PatientCategories.YES)
         print(summary)
 
-    def test_get_count(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
+    def test_get_count(self, toy_cohort: Cohort, hpo: hpotk.MinimalOntology):
         """
         This test shows how to manipulate the results object to get the counts we need
         Let's use Arachnodactyly [HP:0001166]  Yes (Genotype NO 1/10); No (Genotype YES 13/16) as an example
@@ -46,7 +46,7 @@ class TestCommunistCohortAnalysis:
         Arachnodactyly [HP:0001166]                         1/10   10.0%  13/16  81.25%  0.000781          0.020299
         """
         pd.set_option('expand_frame_repr', False)
-        cohort_analysis = configure_cohort_analysis(toy_cohort, toy_hpo)
+        cohort_analysis = configure_cohort_analysis(toy_cohort, hpo)
         results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
 
         # Let's make sure we know what class we have
