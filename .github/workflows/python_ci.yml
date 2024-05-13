@@ -7,7 +7,7 @@ on:
       branches: [ main, develop ]
 
 jobs:
-    build:
+    run-ci:
       runs-on: ubuntu-latest
       strategy:
         matrix:
