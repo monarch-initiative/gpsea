@@ -211,9 +211,11 @@ def _configure_fallback_functional(
     return fallback
 
 
-def load_phenopacket_folder(pp_directory: str,
-                            cohort_creator: CohortCreator[Phenopacket],
-                            validation_policy: str = 'none') -> Cohort:
+def load_phenopacket_folder(
+        pp_directory: str,
+        cohort_creator: CohortCreator[Phenopacket],
+        validation_policy: typing.Literal['none', 'lenient', 'strict'] = 'none',
+) -> Cohort:
     """
     Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
 
@@ -223,7 +225,7 @@ def load_phenopacket_folder(pp_directory: str,
     :param validation_policy: a `str` with the validation policy. The value must be one of `{'none', 'lenient', 'strict'}`
     :return: a cohort made of the phenopackets
     """
-    # Check inputs before moving a finger.
+    # Check inputs before doing anything
     hpotk.util.validate_instance(cohort_creator, CohortCreator, 'cohort_creator')
     fpath_pp_abs = os.path.abspath(pp_directory)
     if not os.path.isdir(fpath_pp_abs):
