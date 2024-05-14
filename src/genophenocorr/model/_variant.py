@@ -63,7 +63,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         self._hgvs_cdna = hpotk.util.validate_optional_instance(hgvs_cdna, str, 'hgvs_cdna')
         self._is_preferred = hpotk.util.validate_instance(is_preferred, bool, 'is_preferred')
         self._variant_effects = tuple(variant_effects)
-        if affected_exons is not None: 
+        if affected_exons is not None:
             self._affected_exons = tuple(affected_exons)
         else:
             self._affected_exons = None

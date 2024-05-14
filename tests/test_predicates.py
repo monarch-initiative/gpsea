@@ -4,11 +4,9 @@ import hpotk
 import pytest
 
 from genophenocorr.analysis.predicate import PatientCategory, PatientCategories
-from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate
+from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
 from genophenocorr.analysis.predicate.genotype import *
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
-
-from .conftest import toy_cohort, protein_test_service
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
@@ -40,14 +38,14 @@ class TestPropagatingPhenotypeBooleanPredicate:
     def test_phenotype_predicate__present_or_excluded(
             self,
             toy_cohort: Cohort,
-            toy_hpo: hpotk.Ontology,
+            hpo: hpotk.MinimalOntology,
             curie: str,
             patient_id: str,
             expected: PatientCategory,
     ):
         patient = find_patient(patient_id, toy_cohort)
         term_id = hpotk.TermId.from_curie(curie)
-        predicate = PropagatingPhenotypePredicate(hpo=toy_hpo, query=term_id)
+        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual.phenotype == term_id
@@ -56,15 +54,38 @@ class TestPropagatingPhenotypeBooleanPredicate:
     def test_phenotype_predicate__unknown(
             self,
             toy_cohort: Cohort,
-            toy_hpo: hpotk.Ontology,
+            hpo: hpotk.MinimalOntology,
     ):
         # Not Measured and not Observed - 'HP:0006280',  # Chronic pancreatitis
         patient = find_patient('HetSingleVar', toy_cohort)
         term_id = hpotk.TermId.from_curie('HP:0006280')
-        predicate = PropagatingPhenotypePredicate(hpo=toy_hpo, query=term_id)
+        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual is None
+
+
+class TestDiseasePresencePredicate:
+
+    @pytest.mark.parametrize(
+        'patient_id, patient_category',
+        [
+            ('HetSingleVar', PatientCategories.YES),
+            ('HomoVar', PatientCategories.NO),
+        ])
+    def test_disease_predicate(
+        self,
+        patient_id: str,
+        patient_category: PatientCategories,
+        toy_cohort: Cohort,
+
+    ):
+        patient = find_patient(patient_id, toy_cohort)
+        disease_id = hpotk.TermId.from_curie("OMIM:148050")
+        predicate = DiseasePresencePredicate(disease_id)
+        actual = predicate.test(patient)
+        assert actual.phenotype == disease_id
+        assert actual.category == patient_category
 
 
 @pytest.mark.parametrize('patient_id, variant_effect, expected_result',
@@ -146,3 +167,4 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
+

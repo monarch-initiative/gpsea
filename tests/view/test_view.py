@@ -10,10 +10,10 @@ class TestCohortViewable:
     @pytest.fixture
     def cohort_viewable(
             self,
-            toy_hpo: hpotk.MinimalOntology,
+            hpo: hpotk.MinimalOntology,
     ) -> CohortViewable:
         return CohortViewable(
-            hpo=toy_hpo,
+            hpo=hpo,
         )
 
     def test_process(

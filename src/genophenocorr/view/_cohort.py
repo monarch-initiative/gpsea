@@ -55,8 +55,8 @@ class CohortViewable:
             cohort: Cohort,
     ) -> typing.Mapping[str, typing.Any]:
         n_patients = len(cohort.all_patients)
-        total_HPO_count = len(cohort.all_phenotypes)
-        top_hpos = cohort.list_all_phenotypes(top=self._top_phenotype_count)
+        total_HPO_count = len(cohort.all_phenotypes())
+        top_hpos = cohort.list_present_phenotypes(top=self._top_phenotype_count)
         hpo_counts = list()
         for hpo in top_hpos:
             hpo_id = hpo[0]
@@ -83,7 +83,7 @@ class CohortViewable:
         var_effects_list = list()
         if self._tx_id is not None:
             has_transcript = 1
-            data_by_tx = cohort.list_data_by_tx(transcript=self._tx_id)
+            data_by_tx = cohort.variant_effect_count_by_tx(tx_id=self._tx_id)
             counter_d = data_by_tx.get(self._tx_id)
             # data structure -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175}, {'effect}': 'STOP_GAINED', 'count': 67},
             for k, v in counter_d.items():
@@ -97,7 +97,7 @@ class CohortViewable:
             "total_hpo_count": total_HPO_count,
             "top_hpo_count": self._top_phenotype_count,
             "hpo_counts": hpo_counts,
-            "unique_variant_count": len(cohort.all_variants),
+            "unique_variant_count": len(cohort.all_variants()),
             "top_var_count": self._top_variant_count,
             "var_counts": var_counts,
             "n_diseases": n_diseases,

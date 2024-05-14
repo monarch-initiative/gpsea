@@ -11,22 +11,25 @@ from genophenocorr.data import get_toy_cohort
 from genophenocorr.model import Cohort, VariantEffect
 
 
-#@pytest.mark.skip(reason='Disabled unless explicitly enabled')
-class TestCommunistCohortAnalysis:
+class TestCohortAnalysis:
 
-    @pytest.fixture
-    def toy_cohort(self) -> Cohort:
-        return get_toy_cohort()
-
-    def test_compare_by_variant_effect(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
+    def test_compare_by_variant_effect(
+            self,
+            suox_cohort: Cohort,
+            hpo: hpotk.MinimalOntology,
+    ):
         pd.set_option('expand_frame_repr', False)
-        cohort_analysis = configure_cohort_analysis(toy_cohort, toy_hpo)
-        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
+        cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
+        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
         print(results)
-        summary = results.summarize(toy_hpo, PatientCategories.YES)
+        summary = results.summarize(hpo, PatientCategories.YES)
         print(summary)
 
-    def test_get_count(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
+    def test_get_count(
+            self,
+            suox_cohort: Cohort,
+            hpo: hpotk.MinimalOntology,
+    ):
         """
         This test shows how to manipulate the results object to get the counts we need
         Let's use Arachnodactyly [HP:0001166]  Yes (Genotype NO 1/10); No (Genotype YES 13/16) as an example
@@ -46,8 +49,8 @@ class TestCommunistCohortAnalysis:
         Arachnodactyly [HP:0001166]                         1/10   10.0%  13/16  81.25%  0.000781          0.020299
         """
         pd.set_option('expand_frame_repr', False)
-        cohort_analysis = configure_cohort_analysis(toy_cohort, toy_hpo)
-        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_1234.5')
+        cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
+        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
 
         # Let's make sure we know what class we have
         assert isinstance(results, GenotypePhenotypeAnalysisResult)
@@ -63,22 +66,22 @@ class TestCommunistCohortAnalysis:
         assert isinstance(all_counts, typing.Mapping)
 
         # We tested 26 HPO terms
-        assert len(all_counts) == 26
+        assert len(all_counts) == 71
 
         # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
-        # Let's test Arachnodactyly - we should have one row for each Patient Predicate
-        counts = all_counts[hpotk.TermId.from_curie("HP:0001166")]
+        # Let's test Seizure - we should have one row for each Patient Predicate
+        counts = all_counts[hpotk.TermId.from_curie("HP:0001250")]
 
-        # The YES row is Arachnodactyly YES -- according to the above, we have 1 (MISSENSE NO) and 13 (MISSENSE YES)
-        assert counts.loc[PatientCategories.YES, PatientCategories.NO] == 1
-        assert counts.loc[PatientCategories.YES, PatientCategories.YES] == 13
+        # The YES row is Seizure YES -- according to the above, we have 11 (MISSENSE NO) and 17 (MISSENSE YES)
+        assert counts.loc[PatientCategories.YES, PatientCategories.NO] == 11
+        assert counts.loc[PatientCategories.YES, PatientCategories.YES] == 17
 
-        # The NO row is Arachnodactyly NO -- according to the above, we have 9 (MISSENSE NO) and 3 (MISSENSE YES)
-        assert counts.loc[PatientCategories.NO, PatientCategories.NO] == 9
-        assert counts.loc[PatientCategories.NO, PatientCategories.YES] == 3
+        # The NO row is Seizure NO -- according to the above, we have 0 (MISSENSE NO) and 7 (MISSENSE YES)
+        assert counts.loc[PatientCategories.NO, PatientCategories.NO] == 0
+        assert counts.loc[PatientCategories.NO, PatientCategories.YES] == 7
 
-        # In total, 26 patients were categorized
-        assert counts.sum().sum() == 26
+        # In total, 35 patients were categorized
+        assert counts.sum().sum() == 35
 
 
     def test_get_positive_count(self, toy_cohort: Cohort, toy_hpo: hpotk.MinimalOntology):
@@ -90,7 +93,7 @@ class TestCommunistCohortAnalysis:
         Arachnodactyly (-) MISSENSE (-) = 9
         Arachnodactyly (+) MISSENSE (+) = 13
         Arachnodactyly (-) MISSENSE (+) = 3
-        This means we expect 1+13=14 
+        This means we expect 1+13=14
         See the previous test for further information
         """
         pd.set_option('expand_frame_repr', False)
