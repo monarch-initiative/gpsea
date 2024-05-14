@@ -81,8 +81,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for genophenocorr.model._cohort</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">SampleLabels</span>
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">Disease</span>
@@ -95,15 +99,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that represents an individual patient</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        patient_id (SampleLabels): The patient identifiers</span>
+<span class="sd">        labels (SampleLabels): The patient identifiers</span>
 <span class="sd">        phenotypes (Sequence[Phenotype]): A list of Phenotype objects</span>
+<span class="sd">        diseases (Sequence[Disease]): A list of Disease objects</span>
 <span class="sd">        variants (Sequence[Variant]): A list of Variant objects</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
-                 <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">],</span>
-                 <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Disease</span><span class="p">],</span>
-                 <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">labels</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Disease</span><span class="p">],</span>
+            <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">]</span>
+            <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a Patient object</span>
 
 <span class="sd">        Args:</span>
@@ -168,13 +176,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_excluded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Patient.present_diseases">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Patient.present_diseases">[docs]</a>
     <span class="k">def</span> <span class="nf">present_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">is_present</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Patient.excluded_diseases">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Patient.excluded_diseases">[docs]</a>
     <span class="k">def</span> <span class="nf">excluded_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
@@ -193,13 +201,13 @@
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Patient</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">patient_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">patient_id</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variants</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variants</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">phenotypes</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">phenotypes</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">diseases</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">diseases</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_labels</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_variants</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_phenotypes</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_diseases</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variants</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diseases</span><span class="p">))</span> </div>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span><span class="p">))</span></div>
 
 
 
@@ -210,119 +218,87 @@
 <div class="viewcode-block" id="Cohort.from_patients">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.from_patients">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_patients</span><span class="p">(</span><span class="n">members</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span> <span class="n">include_patients_with_no_HPO</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">include_patients_with_no_variants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_patients</span><span class="p">(</span>
+            <span class="n">members</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
+            <span class="n">include_patients_with_no_HPO</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">include_patients_with_no_variants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a cohort from a sequence of patients.</span>
 
-<span class="sd">        :param members: a sequence of cohort members.</span>
-<span class="sd">        :return: the cohort</span>
+<span class="sd">        Args:</span>
+<span class="sd">            members: an iterable with patients</span>
+<span class="sd">            include_patients_with_no_variants:</span>
+<span class="sd">            include_patients_with_no_HPO:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cohort_variants</span><span class="p">,</span> <span class="n">cohort_phenotypes</span><span class="p">,</span> <span class="n">cohort_diseases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">var_counts</span><span class="p">,</span> <span class="n">pheno_count</span><span class="p">,</span> <span class="n">diseases_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(),</span> <span class="n">Counter</span><span class="p">(),</span> <span class="n">Counter</span><span class="p">()</span>
-        <span class="n">members</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
-        <span class="n">excluded_members</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># TODO: move this logic into `CohortCreator` and remove `excluded_member_count` from `Cohort`.</span>
+        <span class="n">filtered</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">excluded_member_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_patients_with_no_HPO</span><span class="p">:</span>
-                <span class="n">excluded_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+                <span class="n">excluded_member_count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_patients_with_no_variants</span><span class="p">:</span>
-                <span class="n">excluded_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_patients_with_no_variants</span><span class="p">:</span>
+                <span class="n">excluded_member_count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">continue</span>
-            <span class="n">cohort_phenotypes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
-            <span class="n">cohort_variants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
-            <span class="n">cohort_diseases</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">diseases</span><span class="p">)</span>
-            <span class="n">var_counts</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">])</span>
-            <span class="n">pheno_count</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pheno</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">pheno</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">present_phenotypes</span><span class="p">())</span>
-            <span class="n">diseases_count</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">dis</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">present_diseases</span><span class="p">())</span>
-        <span class="n">all_counts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;patients&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">members</span><span class="p">),</span> <span class="s1">&#39;variants&#39;</span><span class="p">:</span> <span class="n">var_counts</span><span class="p">,</span> <span class="s1">&#39;phenotypes&#39;</span><span class="p">:</span> <span class="n">pheno_count</span><span class="p">,</span> <span class="s1">&#39;diseases&#39;</span><span class="p">:</span> <span class="n">diseases_count</span><span class="p">}</span> 
-        <span class="k">return</span> <span class="n">Cohort</span><span class="p">(</span><span class="n">members</span><span class="p">,</span> <span class="n">cohort_phenotypes</span><span class="p">,</span> <span class="n">cohort_variants</span><span class="p">,</span> <span class="n">cohort_diseases</span><span class="p">,</span>
-                      <span class="n">all_counts</span><span class="p">,</span> <span class="n">excluded_members</span><span class="p">)</span> </div>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filtered</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Cohort</span><span class="p">(</span>
+            <span class="n">members</span><span class="o">=</span><span class="n">members</span><span class="p">,</span>
+            <span class="n">excluded_member_count</span><span class="o">=</span><span class="n">excluded_member_count</span>
+        <span class="p">)</span></div>
 
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class creates a collection of patients and makes it easier to determine overlapping diseases,</span>
-<span class="sd">    phenotypes, variants, and proteins among the patients. If a list of JSON files is given, it will</span>
-<span class="sd">    add each file as a patient into the grouping.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        all_patients (Sequence[Patient]): A set of all Patient objects in the Cohort</span>
-<span class="sd">        all_phenotypes (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort</span>
-<span class="sd">        all_variants (Sequence[Variant]): A set of all Variant objects in the Cohort</span>
-<span class="sd">        all_transcripts (Sequence[string]): A set of all transcript IDs referenced in all the Variant objects</span>
-<span class="sd">        total_patient_count (integer): The total number of Patient objects</span>
-<span class="sd">    Methods:</span>
-<span class="sd">        list_all_patients(): A list of all patient IDs</span>
-<span class="sd">        list_all_phenotypes(top:Optional[integer]): A list of all the top phenotype IDs (or all IDs if top is None) and the count of how many patients have it.</span>
-<span class="sd">        list_all_variants(top:Optional[integer]): A list of all the top variants (or all variants if top is None) and the count of how many patients have it.</span>
-<span class="sd">        list_all_proteins(top:Optional[integer]): A list of all the top protein IDs (or all IDs if top is None) and the count of how many patients have it.</span>
-<span class="sd">        list_data_by_tx(transcript:Optional[string]): A list and count of all the variants effects found for all transcripts or a given transcript if transcript is not None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient_set</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span> <span class="n">phenotype_set</span><span class="p">,</span> <span class="n">variant_set</span><span class="p">,</span> <span class="n">disease_set</span><span class="p">,</span> <span class="n">counts_dict</span><span class="p">,</span> <span class="n">excluded_members</span><span class="p">,</span>
-                 <span class="n">recessive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a Cohort object</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            patient_set (Sequence[Patient]): A set of all Patient objects in the Cohort</span>
-<span class="sd">            phenotype_set (Sequence[Phenotype]): A set of all Phenotype objects in the Cohort</span>
-<span class="sd">            variant_set (Sequence[Variant]): A set of all Variant objects in the Cohort</span>
-<span class="sd">            protein_set (Sequence[ProteinMetadata]): A set of all ProteinMetadata objects in the Cohort</span>
-<span class="sd">            counts_dict (Dictionary{String, Counter()}): A Dictionary with counts for Phenotypes, Variant, and Proteins objects represented in all Patients</span>
-<span class="sd">            recessive (boolean, Optional): True if the Cohort is focused on a recessive allele. Defaults to False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patient_set</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`patient_set` must be a set but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">patient_set</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">patient_set</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_set</span> <span class="o">=</span> <span class="n">phenotype_set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_set</span> <span class="o">=</span> <span class="n">variant_set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disease_set</span> <span class="o">=</span> <span class="n">disease_set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts_dict</span> <span class="o">=</span> <span class="n">counts_dict</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_members</span> <span class="o">=</span> <span class="n">excluded_members</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_recessive</span> <span class="o">=</span> <span class="n">recessive</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">members</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
+            <span class="n">excluded_member_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_count</span> <span class="o">=</span> <span class="n">excluded_member_count</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_patients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">FrozenSet</span><span class="p">[</span><span class="n">Patient</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">all_patients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">Patient</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            set: A frozen set of all the Patient objects in the Cohort</span>
+<span class="sd">            set: A collection of all the Patient objects in the Cohort</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Cohort.all_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_phenotypes">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            set: A set of all the Phenotype objects in the Cohort</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_set</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disease_set</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">phenotype</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">))</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="Cohort.all_diseases">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_diseases">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">disease</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">diseases</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Cohort.all_variants">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_variants">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            set: A set of all the Variant objects in the Cohort</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_set</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">variant</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">))</span></div>
+
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_transcripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_transcript_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            set: A set of all the transcript IDs in the Cohort</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">all_trans</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
-            <span class="n">all_trans</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span> <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">all_trans</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_excluded_patients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_members</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()</span> <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_patient_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -330,105 +306,130 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            integer: The count of all the Patient objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patients&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Cohort.list_all_patients">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_all_patients">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_patients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Cohort.get_patient_ids">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_patient_ids">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_patient_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of all the patient IDs in the Cohort</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">pat</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_patients</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">pat</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Cohort.list_all_phenotypes">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_all_phenotypes">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Cohort.list_present_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_present_phenotypes">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_present_phenotypes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence with counts of HPO terms used as direct annotations of the cohort members.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            top (integer, Optional): If not given, lists all phenotypes. Otherwise, lists only the `top` highest counts</span>
+<span class="sd">            top (integer, Optional): If not given, lists all present phenotypes.</span>
+<span class="sd">              Otherwise, lists only the `top` highest counts</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            list: A list of tuples, formatted (phenotype ID, number of patients with that phenotype)</span>
+<span class="sd">            list: A list of tuples, formatted (phenotype CURIE, number of patients with that phenotype)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;phenotypes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_present</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Cohort.list_all_diseases">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_all_diseases">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_diseases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diseases&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">list_all_diseases</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">diseases</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Cohort.list_all_variants">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_all_variants">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">list_all_variants</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            top (integer, Optional): If not given, lists all variants. Otherwise, lists only the `top` highest counts</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            list: A list of tuples, formatted (variant string, number of patients with that variant)</span>
+<span class="sd">            list: A sequence of tuples, formatted (variant key, number of patients with that variant)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variants&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Cohort.list_all_proteins">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_all_proteins">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">list_all_proteins</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            top (integer, Optional): If not given, lists all proteins. Otherwise, lists only the `top` highest counts</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            list: A list of tuples, formatted (protein ID string, number of variants with that protein)</span>
+<span class="sd">            list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">prots</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pats</span> <span class="k">for</span> <span class="n">pats</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_patients</span> <span class="k">if</span> <span class="n">pats</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_excluded_patients</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
-                    <span class="n">prots</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">trans</span><span class="o">.</span><span class="n">protein_id</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">prots</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">txa</span><span class="o">.</span><span class="n">protein_id</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Cohort.list_data_by_tx">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.list_data_by_tx">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_data_by_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Cohort.variant_effect_count_by_tx">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.variant_effect_count_by_tx">[docs]</a>
+    <span class="k">def</span> <span class="nf">variant_effect_count_by_tx</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Count variant effects for all transcripts or for a transcript `tx_id` of choice.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            transcript (string, Optional): If not given, lists all transcripts. Otherwise, will only list the given transcript</span>
+<span class="sd">            tx_id (string, Optional): a `str` with transcript accession (e.g. `NM_123456.5`)</span>
+<span class="sd">              or `None` if all transcripts should be listed.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            dictionary: Each transcript ID references a Counter(), with the variant effect as the key and total variants with that effect as the count value</span>
+<span class="sd">            mapping: Each transcript ID references a Counter(), with the variant effect as the key</span>
+<span class="sd">              and the count of variants with that effect on the transcript id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">transcript</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">var_type_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">transcript</span><span class="p">:</span> <span class="n">Counter</span><span class="p">()}</span> 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">var_type_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">tx_id</span><span class="p">:</span> <span class="n">Counter</span><span class="p">()</span> <span class="k">for</span> <span class="n">tx_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_transcripts</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span> <span class="ow">in</span> <span class="n">var_type_dict</span><span class="p">:</span>
-                    <span class="n">var_type_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trans</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">trans</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">])</span>
-        <span class="n">too_small</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">tx_id</span><span class="p">,</span> <span class="n">var_effect_counter</span> <span class="ow">in</span> <span class="n">var_type_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_effect_counter</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">too_small</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">tx_id</span> <span class="ow">in</span> <span class="n">too_small</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">var_type_dict</span><span class="p">[</span><span class="n">tx_id</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">var_type_dict</span></div>
+        <span class="n">counters</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">Counter</span><span class="p">)</span>
 
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tx_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tx_id</span> <span class="o">==</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">:</span>
+                    <span class="n">counter</span> <span class="o">=</span> <span class="n">counters</span><span class="p">[</span><span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">]</span>
+                    <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ve</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ve</span> <span class="ow">in</span> <span class="n">txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Cohort.get_excluded_ids">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_excluded_ids">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_excluded_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_excluded_patients</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">counters</span></div>
 
 
 <div class="viewcode-block" id="Cohort.get_excluded_count">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_excluded_count">[docs]</a>
     <span class="k">def</span> <span class="nf">get_excluded_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_excluded_patients</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_count</span></div>
 
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_patient_set</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Cohort(members=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span><span class="si">}</span><span class="s1">, excluded_count=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_excluded_count</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 </pre></div>
 

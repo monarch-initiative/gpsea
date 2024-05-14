@@ -117,15 +117,15 @@ with the package:</p>
 <p>See <a class="reference internal" href="user-guide/input-data.html#input-data"><span class="std std-ref">Input data</span></a> section to learn about preparing your data for the analysis.</p>
 </div>
 <p>We can then view the data using the list commands.</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_patients</span><span class="p">())</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">get_patient_ids</span><span class="p">())</span>
 <span class="go">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;, &#39;G&#39;, &#39;H&#39;, &#39;I&#39;, &#39;J&#39;, &#39;K&#39;, &#39;L&#39;, &#39;M&#39;, &#39;N&#39;, &#39;O&#39;, &#39;P&#39;, &#39;Q&#39;, &#39;R&#39;, &#39;S&#39;, &#39;T&#39;, &#39;U&#39;, &#39;V&#39;, &#39;W&#39;, &#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_phenotypes</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_present_phenotypes</span><span class="p">())</span>
 <span class="go">[(&#39;HP:0001166&#39;, 14), (&#39;HP:0001250&#39;, 20), (&#39;HP:0001257&#39;, 17)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">())</span>
 <span class="go">[(&#39;1_281_281_A_G&#39;, 16), (&#39;1_361_363_TTC_T&#39;, 13)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_proteins</span><span class="p">())</span>
 <span class="go">[(&#39;NP_09876.5&#39;, 29)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_dict</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_data_by_tx</span><span class="p">(</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_dict</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">variant_effect_count_by_tx</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">tx_dict</span><span class="p">[</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 <span class="go">[(&#39;FRAMESHIFT_VARIANT&#39;, 1), (&#39;MISSENSE_VARIANT&#39;, 1)]</span>
 </pre></div>

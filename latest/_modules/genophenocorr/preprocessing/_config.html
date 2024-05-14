@@ -308,9 +308,11 @@
 
 <div class="viewcode-block" id="load_phenopacket_folder">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.load_phenopacket_folder">[docs]</a>
-<span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                            <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
-                            <span class="n">validation_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span>
+        <span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
+        <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;lenient&#39;</span><span class="p">,</span> <span class="s1">&#39;strict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.</span>
 
@@ -320,7 +322,7 @@
 <span class="sd">    :param validation_policy: a `str` with the validation policy. The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
 <span class="sd">    :return: a cohort made of the phenopackets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check inputs before moving a finger.</span>
+    <span class="c1"># Check inputs before doing anything</span>
     <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">cohort_creator</span><span class="p">,</span> <span class="n">CohortCreator</span><span class="p">,</span> <span class="s1">&#39;cohort_creator&#39;</span><span class="p">)</span>
     <span class="n">fpath_pp_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fpath_pp_abs</span><span class="p">):</span>

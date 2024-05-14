@@ -143,8 +143,8 @@
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="n">n_patients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">)</span>
-        <span class="n">total_HPO_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">)</span>
-        <span class="n">top_hpos</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_phenotypes</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">)</span>
+        <span class="n">total_HPO_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">())</span>
+        <span class="n">top_hpos</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_present_phenotypes</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">)</span>
         <span class="n">hpo_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">top_hpos</span><span class="p">:</span>
             <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -171,7 +171,7 @@
         <span class="n">var_effects_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">has_transcript</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">data_by_tx</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_data_by_tx</span><span class="p">(</span><span class="n">transcript</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
+            <span class="n">data_by_tx</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">variant_effect_count_by_tx</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
             <span class="n">counter_d</span> <span class="o">=</span> <span class="n">data_by_tx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
             <span class="c1"># data structure -- {&#39;effect}&#39;: &#39;FRAMESHIFT_VARIANT&#39;, &#39;count&#39;: 175}, {&#39;effect}&#39;: &#39;STOP_GAINED&#39;, &#39;count&#39;: 67},</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counter_d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -185,7 +185,7 @@
             <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">total_HPO_count</span><span class="p">,</span>
             <span class="s2">&quot;top_hpo_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">,</span>
             <span class="s2">&quot;hpo_counts&quot;</span><span class="p">:</span> <span class="n">hpo_counts</span><span class="p">,</span>
-            <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">),</span>
+            <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()),</span>
             <span class="s2">&quot;top_var_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">,</span>
             <span class="s2">&quot;var_counts&quot;</span><span class="p">:</span> <span class="n">var_counts</span><span class="p">,</span>
             <span class="s2">&quot;n_diseases&quot;</span><span class="p">:</span> <span class="n">n_diseases</span><span class="p">,</span>
