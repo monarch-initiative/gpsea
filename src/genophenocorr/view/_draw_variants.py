@@ -120,8 +120,9 @@ class VariantsVisualizer:
         protein_id = protein_meta.protein_id
         variants = cohort.all_variants
         tx_anns = self._get_tx_anns(variants, tx_id)
-
+        # create array of tuples with stand and end for each transcripts
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
+        # get minimum position on chromosome for all transcripts
         min_exon_limit = np.min(exon_limits)
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
         feature_types = [pf.feature_type for pf in protein_meta.protein_features]
