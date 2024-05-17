@@ -210,28 +210,28 @@ class ProteinVariantVisualizer:
         draw_string("# Markers", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
                     va='center', rotation=90)  # x axis label
 
-        # draw the exons (transcript track)
-        # iterate over pairs
-        for exon_x, exon_label in zip(exon_limits_relative, exon_labels):
-            exon_x_min, exon_x_max = exon_x
-            cur_color = next(self.exon_colors)
-            draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max,
-                           line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
-            exon_width = exon_x_max - exon_x_min
-            font_size = int(4 * exon_width + 8)  # min 8, max 12
-            draw_string(exon_label,
-                        0.45 * (exon_x_max - exon_x_min) + exon_x_min,
-                        0.4 * (exon_y_max - exon_y_min) + exon_y_min,
-                        ha="left", va="center", color='black', fontsize=font_size
-                        )
-
-        # draw variants
-        marker_y_min = protein_track_y_max
-        for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
-            marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
-            cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
-            x_start, x_end = marker[0], marker[1]
-            self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
+        # # draw the exons (transcript track)
+        # # iterate over pairs
+        # for exon_x, exon_label in zip(exon_limits_relative, exon_labels):
+        #     exon_x_min, exon_x_max = exon_x
+        #     cur_color = next(self.exon_colors)
+        #     draw_rectangle(exon_x_min, exon_y_min, exon_x_max, exon_y_max,
+        #                    line_color=self.exon_outline_color, fill_color=cur_color, line_width=1.0)
+        #     exon_width = exon_x_max - exon_x_min
+        #     font_size = int(4 * exon_width + 8)  # min 8, max 12
+        #     draw_string(exon_label,
+        #                 0.45 * (exon_x_max - exon_x_min) + exon_x_min,
+        #                 0.4 * (exon_y_max - exon_y_min) + exon_y_min,
+        #                 ha="left", va="center", color='black', fontsize=font_size
+        #                 )
+        #
+        # # draw variants
+        # marker_y_min = protein_track_y_max
+        # for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
+        #     marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
+        #     cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
+        #     x_start, x_end = marker[0], marker[1]
+        #     self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
@@ -382,7 +382,7 @@ class GenomicVariantVisualizer:
         #    ann.protein_effect_location.end]
         #    for ann in tx_anns if ann is not None and hasattr(ann, 'protein_effect_location')
         #])
-        variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
+        # variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
         variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
         variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
@@ -417,8 +417,8 @@ class GenomicVariantVisualizer:
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
 
         # draw the tracks
-        draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
-                       line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
+        # draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
+        #                line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
         draw_rectangle(protein_track_x_min, exon_y_min*1.03, protein_track_x_max, exon_y_max/1.03,
                        line_color=self.protein_track_color, fill_color=self.protein_track_color, line_width=2.0)
         # x_axis
@@ -436,21 +436,21 @@ class GenomicVariantVisualizer:
         draw_string(str(max_x_absolute), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
 
-        # y_axis
-        y_axis_x = protein_track_x_min - 0.02
-        y_axis_min_y = protein_track_y_max + 0.01
-        _, y_axis_max_y = self._marker_dim(max_marker_count, protein_track_y_max)
-        draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color=self.axis_color, line_width=1.0)
-        draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color=self.axis_color,
-                  line_width=1.0)  # 0 tick
-        draw_string("0", y_axis_x - small_tick_length - text_padding, y_axis_min_y, fontsize=font_size, ha='right',
-                    va='center')
-        draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color=self.axis_color,
-                  line_width=1.0)  # max tick
-        draw_string(str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
-                    fontsize=font_size, ha='right', va='center')
-        draw_string("# Markers", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
-                    va='center', rotation=90)  # x axis label
+        # # y_axis
+        # y_axis_x = protein_track_x_min - 0.02
+        # y_axis_min_y = protein_track_y_max + 0.01
+        # _, y_axis_max_y = self._marker_dim(max_marker_count, protein_track_y_max)
+        # draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color=self.axis_color, line_width=1.0)
+        # draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color=self.axis_color,
+        #           line_width=1.0)  # 0 tick
+        # draw_string("0", y_axis_x - small_tick_length - text_padding, y_axis_min_y, fontsize=font_size, ha='right',
+        #             va='center')
+        # draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color=self.axis_color,
+        #           line_width=1.0)  # max tick
+        # draw_string(str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
+        #             fontsize=font_size, ha='right', va='center')
+        # draw_string("# Markers", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
+        #             va='center', rotation=90)  # x axis label
 
         # draw the exons (transcript track)
         # iterate over pairs
@@ -475,28 +475,28 @@ class GenomicVariantVisualizer:
             x_start, x_end = marker[0], marker[1]
             self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
-        # draw the features (protein track)
-        feature_y_min, feature_y_max = 0.485, 0.515
-        for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
-            feature_x_min, feature_x_max = feature_x
-            draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
-                           line_color=self.feature_outline_color,
-                           fill_color=feature_color, line_width=1.0)
-            if (feature_x_max - feature_x_min) <= 0.03:  # too small to dsplay name
-                draw_string(feature_name,
-                            0.05 * (feature_x_max - feature_x_min) + feature_x_min,
-                            0.55 * (feature_y_max - feature_y_min) + feature_y_min,
-                            ha="left", va="center", rotation=90, color='black', fontsize=8
-                            )
-            elif (feature_x_max - feature_x_min) <= 0.005:  # too small even to draw vertical string
-                # TODO @ielis: How to display name here?
-                pass
-            else:
-                draw_string(feature_name,
-                            0.2 * (feature_x_max - feature_x_min) + feature_x_min,
-                            0.4 * (feature_y_max - feature_y_min) + feature_y_min,
-                            ha="left", va="center", color='black'
-                            )
+        # # draw the features (protein track)
+        # feature_y_min, feature_y_max = 0.485, 0.515
+        # for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
+        #     feature_x_min, feature_x_max = feature_x
+        #     draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
+        #                    line_color=self.feature_outline_color,
+        #                    fill_color=feature_color, line_width=1.0)
+        #     if (feature_x_max - feature_x_min) <= 0.03:  # too small to dsplay name
+        #         draw_string(feature_name,
+        #                     0.05 * (feature_x_max - feature_x_min) + feature_x_min,
+        #                     0.55 * (feature_y_max - feature_y_min) + feature_y_min,
+        #                     ha="left", va="center", rotation=90, color='black', fontsize=8
+        #                     )
+        #     elif (feature_x_max - feature_x_min) <= 0.005:  # too small even to draw vertical string
+        #         # TODO @ielis: How to display name here?
+        #         pass
+        #     else:
+        #         draw_string(feature_name,
+        #                     0.2 * (feature_x_max - feature_x_min) + feature_x_min,
+        #                     0.4 * (feature_y_max - feature_y_min) + feature_y_min,
+        #                     ha="left", va="center", color='black'
+        #                     )
 
         # draw legend
         draw_rectangle(0.7, 0.6, 0.85, 0.7, 'black')
