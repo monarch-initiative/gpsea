@@ -44,11 +44,13 @@ def _calc_aa_based_pos(pos_bases, tx_coordinates):
             if exon.start < exon.end < pos_bases:
                 # case 1: exon prior to pos: exon.start to exon.end
                 num_nt += exon.end - max(exon.start, tx_coordinates.cds_start)
-                print(f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
+                print(
+                    f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
             elif exon.start <= pos_bases <= exon.end:
                 # case 2: exon in which pos sits: exon.start to pos
                 num_nt += pos_bases - max(exon.start, tx_coordinates.cds_start)
-                print(f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
+                print(
+                    f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
             else:
                 break
 
@@ -123,7 +125,8 @@ class ProteinVariantVisualizer:
         self.axis_color = 'black'
 
     def _draw_marker(self, x_start, x_end, min_y, max_y, circle_radius, color):
-        x = (x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
+        x = (
+                    x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
         draw_line(x, min_y, x, max_y - circle_radius, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
@@ -148,6 +151,7 @@ class ProteinVariantVisualizer:
         return tx_anns
 
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
+        plt.figure(figsize=(20, 20))
         tx_id = tx_coordinates.identifier
         protein_id = protein_meta.protein_id
         variants = cohort.all_variants
@@ -183,26 +187,26 @@ class ProteinVariantVisualizer:
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
         text_padding = 0.004
+        
+        # TODO: move the following code to own method: def get_axis_ticks(n_ticks, min, max, ...)
+        def round_to_nearest_power_ten(x, base=None):
+            if base is None:
+                order_of_magnitude = np.ceil(np.log10(np.abs(x)))
+                base = 10 ** order_of_magnitude
+                return (base * np.round(x / base)).astype(int), base
+            else:
+                return (base * np.round(x / base)).astype(int)
 
-        print(f'{feature_limits=}')
-        print(f'{exon_limits=}')
-        print(f'{variant_locations=}')
-        feature_limits = np.array([[
-            _calc_aa_based_pos(fl[0], tx_coordinates), _calc_aa_based_pos(fl[1], tx_coordinates)
-        ] for fl in feature_limits])
-        exon_limits = np.array([[
-            _calc_aa_based_pos(el[0], tx_coordinates), _calc_aa_based_pos(el[1], tx_coordinates)
-        ] for el in exon_limits])
-        variant_locations = np.array([[
-            _calc_aa_based_pos(vl[0], tx_coordinates), _calc_aa_based_pos(vl[1], tx_coordinates)
-        ] for vl in variant_locations])
-
-        print(f'{feature_limits=}')
-        print(f'{exon_limits=}')
-        print(f'{variant_locations=}')
-
+        apprx_n_x_ticks = 6
         min_x_absolute = min(np.min(feature_limits), np.min(exon_limits), np.min(variant_locations))
         max_x_absolute = max(np.max(exon_limits), np.max(variant_locations))
+        tick_step_size, base = round_to_nearest_power_ten((max_x_absolute - min_x_absolute) / apprx_n_x_ticks)
+        print(base)
+        x_ticks = np.array(list(filter(
+            lambda x: x < max_x_absolute,
+            [min_x_absolute + i * tick_step_size for i in range(1, apprx_n_x_ticks + 1)]
+        ))).astype(int)
+        x_ticks = round_to_nearest_power_ten(x_ticks, base)
 
         max_marker_count = np.max(marker_counts)
 
@@ -214,6 +218,7 @@ class ProteinVariantVisualizer:
 
         feature_limits_relative = preprocess(feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
+        x_ticks_relative = preprocess(x_ticks)
 
         # draw the tracks
         draw_rectangle(protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
@@ -221,7 +226,7 @@ class ProteinVariantVisualizer:
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
         x_axis_min_x, x_axis_max_x = protein_track_x_min, protein_track_x_max
-        big_tick_length, small_tick_length = 0.01, 0.005
+        big_tick_length, small_tick_length = 0.015, 0.005
         draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
@@ -232,6 +237,11 @@ class ProteinVariantVisualizer:
                   line_width=1.0)  # max tick
         draw_string(str(max_x_absolute), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
+        for x_tick_relative, x_tick_absolute in zip(x_ticks_relative, x_ticks):
+            draw_line(x_tick_relative, x_axis_y - small_tick_length, x_tick_relative, x_axis_y,
+                      line_color=self.axis_color, line_width=1.0)  # max tick
+            draw_string(str(x_tick_absolute), x_tick_relative, x_axis_y - small_tick_length - text_padding,
+                        fontsize=font_size, ha='center', va='top')
 
         # y_axis
         y_axis_x = protein_track_x_min - 0.02
