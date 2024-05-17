@@ -122,7 +122,7 @@ class ProteinVariantVisualizer:
         :param cds_start: start position of the coding sequence
         :param exons: exon positions
         """
-        print(f'{pos_bases=}')
+        # print(f'{pos_bases=}')
         exons, cds_start, cds_end = tx_coordinates.exons, tx_coordinates.cds_start, tx_coordinates.cds_end
 
         num_nt = 0
@@ -133,18 +133,18 @@ class ProteinVariantVisualizer:
                 if exon.start < exon.end < pos_bases:
                     # case 1: exon prior to pos: exon.start to exon.end
                     num_nt += exon.end - max(exon.start, tx_coordinates.cds_start)
-                    print(f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
+                    # print(f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
                 elif exon.start <= pos_bases <= exon.end:
                     # case 2: exon in which pos sits: exon.start to pos
                     num_nt += pos_bases - max(exon.start, tx_coordinates.cds_start)
-                    print(f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
+                    # print(f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
                 else:
                     break
 
-        print(f'{num_nt=}')
+        # print(f'{num_nt=}')
 
         pos_aa = np.ceil(num_nt / 3)
-        print(f'{pos_aa=}')
+        # print(f'{pos_aa=}')
         return pos_aa
 
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
@@ -188,14 +188,6 @@ class ProteinVariantVisualizer:
 
         min_x_absolute = min(np.min(feature_limits), np.min(exon_limits), np.min(variant_locations))
         max_x_absolute = max(np.max(exon_limits), np.max(variant_locations))
-
-        print(f'{np.max(exon_limits)=}, {np.max(variant_locations)=}')
-
-        print(f'{min_x_absolute=}  {max_x_absolute=}')
-        print(f'{self._calc_aa_based_pos(min_x_absolute, tx_coordinates)=}')
-        print(f'{self._calc_aa_based_pos(min_x_absolute+2, tx_coordinates)=}')
-        # print(f'{self._calc_aa_based_pos(max_x_absolute, tx_coordinates)=}')
-        # print(f'{self._calc_aa_based_pos(1_050_000, tx_coordinates)=}')
 
         max_marker_count = np.max(marker_counts)
 
