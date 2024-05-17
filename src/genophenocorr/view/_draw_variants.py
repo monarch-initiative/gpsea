@@ -331,16 +331,6 @@ class GenomicVariantVisualizer:
         self.exon_outline_color = 'black'
         self.axis_color = 'black'
 
-    def _draw_marker(self, x_start, x_end, min_y, max_y, circle_radius, color):
-        x = (x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
-        draw_line(x, min_y, x, max_y - circle_radius, line_color=self.protein_track_color, line_width=0.5)
-        draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
-
-    def _marker_dim(self, marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
-        radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
-        length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
-        return radius, length
-
     def _get_tx_anns(self, variants, tx_id):
         tx_anns = []
         for i, v in enumerate(variants):
@@ -466,14 +456,6 @@ class GenomicVariantVisualizer:
                         0.4 * (exon_y_max - exon_y_min) + exon_y_min,
                         ha="left", va="center", color='black', fontsize=font_size
                         )
-
-        # draw variants
-        marker_y_min = protein_track_y_max
-        for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
-            marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
-            cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
-            x_start, x_end = marker[0], marker[1]
-            self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # # draw the features (protein track)
         # feature_y_min, feature_y_max = 0.485, 0.515
