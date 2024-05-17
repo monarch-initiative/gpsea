@@ -27,6 +27,38 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
     plt.text(x, y, text, fontsize=fontsize, color=color, ha=ha, va=va, rotation=rotation)
 
 
+def _calc_aa_based_pos(pos_bases, tx_coordinates):
+    """
+    :param pos_bases: position on the chromosome in bases
+    :param cds_start: start position of the coding sequence
+    :param exons: exon positions
+    """
+    print(f'{pos_bases=}')
+    exons, cds_start, cds_end = tx_coordinates.exons, tx_coordinates.cds_start, tx_coordinates.cds_end
+
+    num_nt = 0
+
+    for exon in exons:
+        if exon.end > tx_coordinates.cds_start and exon.start < tx_coordinates.cds_end:  # exon in coding seq
+            print(exon)
+            if exon.start < exon.end < pos_bases:
+                # case 1: exon prior to pos: exon.start to exon.end
+                num_nt += exon.end - max(exon.start, tx_coordinates.cds_start)
+                print(f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
+            elif exon.start <= pos_bases <= exon.end:
+                # case 2: exon in which pos sits: exon.start to pos
+                num_nt += pos_bases - max(exon.start, tx_coordinates.cds_start)
+                print(f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
+            else:
+                break
+
+    # print(f'{num_nt=}')
+
+    pos_aa = np.ceil(num_nt / 3).astype(int)
+    # print(f'{pos_aa=}')
+    return pos_aa
+
+
 class ProteinVariantVisualizer:
     def __init__(self):
         self.protein_track_color = '#a9a9a9'
@@ -91,8 +123,7 @@ class ProteinVariantVisualizer:
         self.axis_color = 'black'
 
     def _draw_marker(self, x_start, x_end, min_y, max_y, circle_radius, color):
-        x = (
-                        x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
+        x = (x_start + x_end) / 2  # TODO @ielis, currently putting marker in the middle of start and end, can change this later
         draw_line(x, min_y, x, max_y - circle_radius, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
@@ -115,37 +146,6 @@ class ProteinVariantVisualizer:
                 tx_anns.append(tx_ann)
 
         return tx_anns
-
-    def _calc_aa_based_pos(self, pos_bases, tx_coordinates):
-        """
-        :param pos_bases: position on the chromosome in bases
-        :param cds_start: start position of the coding sequence
-        :param exons: exon positions
-        """
-        # print(f'{pos_bases=}')
-        exons, cds_start, cds_end = tx_coordinates.exons, tx_coordinates.cds_start, tx_coordinates.cds_end
-
-        num_nt = 0
-
-        for exon in exons:
-            if exon.end > tx_coordinates.cds_start and exon.start < tx_coordinates.cds_end:  # exon in coding seq
-                # print(exon)
-                if exon.start < exon.end < pos_bases:
-                    # case 1: exon prior to pos: exon.start to exon.end
-                    num_nt += exon.end - max(exon.start, tx_coordinates.cds_start)
-                    # print(f'adding {exon.end=} - {max(exon.start, tx_coordinates.cds_start)} = {exon.end - max(exon.start, tx_coordinates.cds_start)}')
-                elif exon.start <= pos_bases <= exon.end:
-                    # case 2: exon in which pos sits: exon.start to pos
-                    num_nt += pos_bases - max(exon.start, tx_coordinates.cds_start)
-                    # print(f'adding {pos_bases=} - {max(exon.start, tx_coordinates.cds_start)=} = {pos_bases - max(exon.start, tx_coordinates.cds_start)}')
-                else:
-                    break
-
-        # print(f'{num_nt=}')
-
-        pos_aa = np.ceil(num_nt / 3)
-        # print(f'{pos_aa=}')
-        return pos_aa
 
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         tx_id = tx_coordinates.identifier
@@ -184,7 +184,22 @@ class ProteinVariantVisualizer:
         font_size = 12
         text_padding = 0.004
 
-        plt.figure(figsize=(20, 20))
+        print(f'{feature_limits=}')
+        print(f'{exon_limits=}')
+        print(f'{variant_locations=}')
+        feature_limits = np.array([[
+            _calc_aa_based_pos(fl[0], tx_coordinates), _calc_aa_based_pos(fl[1], tx_coordinates)
+        ] for fl in feature_limits])
+        exon_limits = np.array([[
+            _calc_aa_based_pos(el[0], tx_coordinates), _calc_aa_based_pos(el[1], tx_coordinates)
+        ] for el in exon_limits])
+        variant_locations = np.array([[
+            _calc_aa_based_pos(vl[0], tx_coordinates), _calc_aa_based_pos(vl[1], tx_coordinates)
+        ] for vl in variant_locations])
+
+        print(f'{feature_limits=}')
+        print(f'{exon_limits=}')
+        print(f'{variant_locations=}')
 
         min_x_absolute = min(np.min(feature_limits), np.min(exon_limits), np.min(variant_locations))
         max_x_absolute = max(np.max(exon_limits), np.max(variant_locations))
@@ -197,7 +212,6 @@ class ProteinVariantVisualizer:
             relative_scale = (protein_track_x_max - protein_track_x_min)
             return shifted_to_0_1 * relative_scale + protein_track_x_min
 
-        exon_limits_relative = preprocess(exon_limits)
         feature_limits_relative = preprocess(feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
 
