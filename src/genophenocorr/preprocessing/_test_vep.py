@@ -80,7 +80,7 @@ class TestVepFunctionalAnnotator:
         preferred = ann_by_tx['NM_013275.6']
         assert preferred.transcript_id == 'NM_013275.6'
         assert preferred.is_preferred is True
-        assert preferred.hgvsc_id == 'NM_013275.6:c.7407C>G'
+        assert preferred.hgvs_cdna == 'NM_013275.6:c.7407C>G'
         assert preferred.variant_effects == (VariantEffect.STOP_GAINED,)
         assert preferred.overlapping_exons == (9,)
 
@@ -101,7 +101,7 @@ class TestVepFunctionalAnnotator:
         preferred = ann_by_tx['NM_013275.6']
         assert preferred.transcript_id == 'NM_013275.6'
         assert preferred.is_preferred is True
-        assert preferred.hgvsc_id == 'NM_013275.6:c.2408_2412del'
+        assert preferred.hgvs_cdna == 'NM_013275.6:c.2408_2412del'
         assert preferred.variant_effects == (VariantEffect.FRAMESHIFT_VARIANT,)
         assert preferred.overlapping_exons == (9,)
 
