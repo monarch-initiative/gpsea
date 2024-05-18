@@ -55,7 +55,7 @@ class BaseCohortAnalysis(CohortAnalysis):
                 include_large_SV: bool = True, min_perc_patients_w_hpo: typing.Union[float, int] = .1) -> None:
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
-        if transcript not in cohort.all_transcripts:
+        if transcript not in cohort.all_transcript_ids:
             raise ValueError(f"Transcript {transcript} not found in Cohort")
         self._logger = logging.getLogger(__name__)
         self._cohort = cohort

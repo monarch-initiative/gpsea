@@ -539,7 +539,7 @@ class GenomicRegion(Transposable, Region):
     def __eq__(self, other):
         return (isinstance(other, GenomicRegion)
                 and self.contig == other.contig
-                and self.start == other.strand
+                and self.start == other.start
                 and self.end == other.end
                 and self.strand == other.strand)
 
