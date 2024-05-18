@@ -5,6 +5,8 @@ import typing
 
 import hpotk
 import requests
+import json
+
 
 from genophenocorr.model import VariantCoordinates, TranscriptInfoAware, TranscriptCoordinates
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand, Contig, transpose_coordinate
@@ -136,14 +138,8 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
 
     def fetch(self, tx: typing.Union[str, TranscriptInfoAware]) -> TranscriptCoordinates:
         tx_id = self._parse_tx(tx)
-        api_url = self._url % tx_id
-
-        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
-
-        if not response.ok:
-            response.raise_for_status()
-
-        return self.parse_response(tx_id, response.json())
+        response_json = self.get_response(tx_id)
+        return self.parse_response(tx_id, response_json)
 
     @staticmethod
     def _parse_tx(tx: typing.Union[str, TranscriptInfoAware]) -> str:
@@ -154,19 +150,31 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
         else:
             raise ValueError(f'Expected a `str` or `TranscriptInfoAware` but got {type(tx)}: {tx}')
 
+    def get_response(self, tx_id: str):
+        api_url = self._url % tx_id
+        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
+
+        if not response.ok:
+            response.raise_for_status()
+
+        return response.json()
+
     def parse_response(self, tx_id: str, response) -> TranscriptCoordinates:
-        if len(response) != 1:
-            self._logger.warning('Response has %s!=1 items. Choosing the first', len(response))
-
-        item = response[0]
-        if 'requested_symbol' not in item or item['requested_symbol'] != tx_id:
-            raise ValueError(
-                f'Could not find {tx_id} in the `requested_symbol` field in the response from Variant Validator API'
-            )
-        if 'transcripts' not in item:
-            raise ValueError(f'A required `transcripts` field is missing in the response from Variant Validator API')
-        tx = self._find_tx_data(tx_id, item['transcripts'])
-
+        if not isinstance(response, list):
+            transcript_response = response
+        else:
+            if len(response) != 1:
+                self._logger.warning('Response has %s!=1 items. Choosing the first', len(response))
+            transcript_response = response[0]
+        if 'requested_symbol' not in transcript_response or transcript_response['requested_symbol'] != tx_id:
+            json_formatted_str = json.dumps(response, indent=2)
+            error_string = f"Not able to find {tx_id} in the `requested_symbol` field in the response from Variant Validator API: \n{json_formatted_str}"
+            raise ValueError(error_string)
+        if 'transcripts' not in transcript_response:
+            json_formatted_str = json.dumps(response, indent=2)
+            error_string = f"A required `transcripts` field is missing in the response from Variant Validator API: \n{json_formatted_str}"
+            raise ValueError(error_string)
+        tx = self._find_tx_data(tx_id, transcript_response['transcripts'])
         if 'genomic_spans' not in tx:
             raise ValueError(f'A required `genomic_spans` field is missing in the response from Variant Validator API')
         contig, genomic_span = self._find_genomic_span(tx['genomic_spans'])

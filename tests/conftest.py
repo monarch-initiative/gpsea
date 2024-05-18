@@ -7,8 +7,9 @@ import pytest
 
 from ._protein_test_service import ProteinTestMetadataService
 from genophenocorr.model import *
-from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand
+from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
 from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
+
 
 
 def pytest_addoption(parser):
@@ -31,8 +32,25 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope='session')
-def fpath_test_data_dir() -> str:
+
+def fpath_test_data() -> str:
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+
+
+@pytest.fixture(scope='session')
+def fpath_toy_hpo(fpath_test_data: str) -> str:
+    return os.path.join(fpath_test_data, 'hp.toy.json')
+
+
+@pytest.fixture(scope='session')
+def toy_hpo(fpath_toy_hpo: str) -> hpotk.MinimalOntology:
+    return hpotk.load_minimal_ontology(fpath_toy_hpo)
+
+
+@pytest.fixture(scope='session')
+def genome_build_hg38() -> GenomeBuild:
+    return GRCh38
+
 
 
 @pytest.fixture(scope='session')
