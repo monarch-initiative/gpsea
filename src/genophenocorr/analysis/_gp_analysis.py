@@ -10,23 +10,32 @@ from statsmodels.stats import multitest
 from genophenocorr.model import Patient
 
 from .predicate import PolyPredicate, PatientCategory, PatientCategories
+from .predicate._api import RecessiveGroupingPredicate
 from .predicate.phenotype import PhenotypePolyPredicate, P
 
-from ._api import GenotypePhenotypeAnalysisResult, HpoMtcFilter
+from ._api import GenotypePhenotypeAnalysisResult, HpoMtcFilter, HpoMtcReport
 from ._stats import run_fisher_exact, run_recessive_fisher_exact
 
 
+    
 
 class IdentityTermMtcFilter(HpoMtcFilter):
 
     def filter_terms_to_test(
-            self, 
-            n_usable:typing.Mapping[hpotk.TermId, int], 
+            self,
+            n_usable:typing.Mapping[hpotk.TermId, int],
             all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
     ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
         """Use this implementation to test all available terms
         """
-        return n_usable, all_counts
+        empty_dict = defaultdict(int) # needed for API
+        return n_usable, all_counts, empty_dict
+    
+    def filter_method_name(self) -> str:
+        return "identity filter"
+    
+ 
+    
 
 class HeuristicSamplerMtcFilter(HpoMtcFilter):
     """
@@ -59,45 +68,12 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
         self._SECONDLEVEL_PVAL_THRES = second_level_pval_threshold
         # get all HPO terms in the graph that is induced by the phenotypic observations
         self._hpo_term_id_set = set()
-        # A "leaf" refers to an annotated term none of whose children is annotated. 
-        # May or may not be leaf in HPO graph
-        self._hpo_leaf_term_id_set = set()
-        for pf in self._phenotypic_features:
-            self._hpo_term_id_set.add(pf.id)
-            # get ancestors (data type: Iterator)
-            ancs = self._hpo.graph.get_ancestors(pf.id, False)
-            ancs = set(ancs)
-            self._hpo_term_id_set.update(ancs)
-        print(f"[INFO] We found a total of {len(self._hpo_term_id_set)} unique directly and indirectly annotated HPO terms")
-        # get all of the leaf terms
-        for pf in self._phenotypic_features:
-            # get descendants not including original term
-            descs = self._hpo.graph.get_descendants(pf.id, False)
-            descs = set(descs)
-            # if no descendant is in the set of annotated terms, then the term must be a leaf term
-            if len(descs.intersection(self._hpo_term_id_set)) == 0:
-                self._hpo_leaf_term_id_set.add(pd.id)
-        print(f"[INFO] We found a total of {len(self._hpo_leaf_term_id_set)} HPO terms as leaves of the graph")
-      
-        queue = deque()
-        seen_terms = set()
-        for hpo_id in self._hpo_leaf_term_id_set:
-            queue.append(hpo_id)
-        while len(queue) > 0:
-            hpo_id = queue.popleft()
-            if hpo_id in seen_terms:
-                continue
-            else:
-                seen_terms.add(hpo_id)
-            self._ordered_term_list.append(hpo_id)
-            parents = self._hpo.graph.get_parents(hpo_id, False)
-            for p in parents:
-                queue.append(p)
-        # now, self._ordered_term_list is ordered from leaves to root
+        
         # Finally, collect sets of top-level and second-level terms
         self._PHENO_ROOT_ID = "HP:0000118"
         self._top_level_terms = set()  # e.g., Abnormality of the cardiovascular system (HP:0001626)
         self._second_level_terms = set()
+        self._ordered_term_list = list()
         for id in hpo_ontology.graph.get_children(self._PHENO_ROOT_ID, False):
             self._top_level_terms.add(id)
         for top_level_id in self._top_level_terms:
@@ -119,44 +95,169 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
             return 42# hpo_observed_geno_one + hpo_observed_geno_both + hpo_observed_geno_neither
         else:
             raise ValueError(f"Did not expect to see shape of counts dataframe be {counts_frame.shape}")
-        
+
+    @staticmethod
+    def get_positive_count(counts: pd.DataFrame):
+        if not isinstance(counts, pd.DataFrame):
+            raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
+        if counts.shape == (2, 2):
+            return (counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[
+                PatientCategories.YES, PatientCategories.YES])
+        elif counts.shape == (2, 3):
+            raise ValueError("(2,3) not yet implemented")
+        else:
+            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
+
+    @staticmethod
+    def some_cell_has_greater_than_one_count(counts: pd.DataFrame) -> bool:
+        """
+        If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one
+        observed HPO and N excluded, and NOT MISSENSE has zero or one observed HPO, then we will skip the test
+        Args:
+            counts: pandas DataFrame with counts
+
+        Returns: true if at least one of the genotypes has more than one observed HPO count
+
+        """
+        if not isinstance(counts, pd.DataFrame):
+            raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
+        if counts.shape == (2, 2):
+            return counts.loc[PatientCategories.YES, PatientCategories.NO] > 1 or counts.loc[PatientCategories.YES, PatientCategories.YES] > 1
+        elif counts.shape == (2,3):
+            return counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] > 1 or counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] > 1 or counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER] > 1
+        else:
+            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
+
+    @staticmethod
+    def genotypes_have_same_HPO_proportions(counts: pd.DataFrame) -> bool:
+        """
+        If each genotype has the same proportion of observed HPOs, then we do not want to do a test
+        For instance, if MISSENSE has 5/5 observed HPOs and NOT MISSENSE has 7/7 it makes not sense to do a statistical test
+        Args:
+            counts: pandas DataFrame with counts
+
+        Returns: true if the genotypes differ by more than DELTA, with DELTA = 0.01
+
+        """
+        if not isinstance(counts, pd.DataFrame):
+            raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
+        DELTA = 0.01
+        if counts.shape == (2, 2):
+            num1 =  counts.loc[PatientCategories.YES, PatientCategories.NO]
+            denom1 =  counts.loc[PatientCategories.YES, PatientCategories.NO] +  counts.loc[PatientCategories.NO, PatientCategories.NO]
+            num2 = counts.loc[PatientCategories.YES, PatientCategories.YES]
+            denom2 = counts.loc[PatientCategories.YES, PatientCategories.YES] + counts.loc[PatientCategories.NO, PatientCategories.YES]
+            if denom1 is None or denom1 == 0 or denom2 is None or denom2 == 0:
+                return False
+            return (num1/denom1 - num2/denom2) > DELTA
+        elif counts.shape == (2,3):
+            num1 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH]
+            denom1 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
+            num2 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE]
+            denom2= counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
+            num3 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH]
+            denom3 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
+            if num1/denom1 - num2/denom2 > DELTA:
+                return True
+            elif num1/denom1 - num3/denom3 > DELTA:
+                return True
+            else:
+                return False
+        else:
+            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
+
+
+    
+    
+    def get_ordered_terms(self, n_usable:typing.Mapping[hpotk.TermId, int]) -> typing.List[hpotk.TermId]:
+        """
+        We want to order the terms that were observed in a cohort from the most specific ("leaves" in the graph of observed terms, but not
+        necessarily leaves in the entire HPO graph) to the most general
+        """
+        ordered_term_list = list() # reset, if needed
+        # A "leaf" refers to an annotated term none of whose children is annotated.
+        # May or may not be leaf in HPO graph
+        hpo_leaf_term_id_set = set()
+        for pf in n_usable.keys():
+            self._hpo_term_id_set.add(pf.id)
+            # get ancestors (data type: Iterator)
+            ancs = self._hpo.graph.get_ancestors(pf.id, False)
+            ancs = set(ancs)
+            self._hpo_term_id_set.update(ancs)
+        print(f"[INFO] We found a total of {len(self._hpo_term_id_set)} unique directly and indirectly annotated HPO terms")
+        # get all of the leaf terms
+        for pf in n_usable.keys():
+            # get descendants not including original term
+            descs = self._hpo.graph.get_descendants(pf.id, False)
+            descs = set(descs)
+            # if no descendant is in the set of annotated terms, then the term must be a leaf term
+            if len(descs.intersection(self._hpo_term_id_set)) == 0:
+                hpo_leaf_term_id_set.add(pd.id)
+        print(f"[INFO] We found a total of {len(hpo_leaf_term_id_set)} HPO terms as leaves of the graph")
+
+        queue = deque()
+        seen_terms = set()
+        for hpo_id in hpo_leaf_term_id_set:
+            queue.append(hpo_id)
+        while len(queue) > 0:
+            hpo_id = queue.popleft()
+            if hpo_id in seen_terms:
+                continue
+            else:
+                seen_terms.add(hpo_id)
+            ordered_term_list.append(hpo_id)
+            parents = self._hpo.graph.get_parents(hpo_id, False)
+            for p in parents:
+                queue.append(p)
+        # now, ordered_term_list is ordered from leaves to root
+        return ordered_term_list
+    
     
     
     
     def filter_terms_to_test(
-            self, 
-            n_usable:typing.Mapping[hpotk.TermId, int], 
+            self,
+            n_usable:typing.Mapping[hpotk.TermId, int],
             all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
-    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
-        """TODO !! 
+    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame], typing.Dict[str, int]]:
+        """Filter out terms that do not need to be tested because there is no statistical power, the term is a top-level or non-phenotype term, or there are too few HPO observations to be sensible.
         """
         # NOTE -- Print states for development, remove when dust settled!
         SECOND_LEVEL_TERM_THRESHOLD = 0.75
-        filtered_n_usable = dict()
-        filtered_all_counts = dict()
-        tested_counts_pf = defaultdict(tuple) # key is an HP id, value is a tuple with counts, i.e.,
+        filtered_n_usable = pd.Series()
+        filtered_all_counts = pd.Series()
+        filtered_terms_d = defaultdict(int)
+        tested_counts_pf = defaultdict(pd.DataFrame) # key is an HP id, value is a tuple with counts, i.e.,
         for hpo_tk_term_id, counts_frame in all_counts.items():
             if hpo_tk_term_id in self._top_level_terms:
-                print(f"Skipping top level term id {hpo_tk_term_id}")
+                filtered_terms_d["Skipping top level term"] += 1
                 continue
             if not self._hpo.graph.is_descendant_of(hpo_tk_term_id, self._PHENO_ROOT_ID):
-                print(f"Skipping non phenotype term {hpo_tk_term_id}")
+                filtered_terms_d["Skipping non phenotype term "] += 1
                 continue ## only test phenotype annotations
             # get total number of observations
             total = counts_frame.sum().sum()
             if counts_frame.shape == (2,2) and total < 7:
-                print(f"Skipping term with only {total} observations (not powered for 2x2)")
+                reason = f"Skipping term with only {total} observations (not powered for 2x2)"
+                filtered_terms_d[reason] += 1
+                continue
             # todo -- similar for (3,2)
-            total_HPO = HeuristicSamplerMtcFilter.get_number_of_observed_HPO_observations(counts_frame=counts_frame)
-            if total_HPO < 2:
-                # do not test if there is only one observation of the HPO term
+            if not HeuristicSamplerMtcFilter.some_cell_has_greater_than_one_count(counts_frame):
+                reason = f"Skipping term {hpo_tk_term_id} because no term has more than one count"
+                filtered_terms_d[reason] += 1
+                continue
+            if HeuristicSamplerMtcFilter.genotypes_have_same_HPO_proportions(counts_frame):
+                reason = f"Skipping term {hpo_tk_term_id} because all genotypes have same HPO observed proportions"
+                filtered_terms_d[reason] += 1
                 continue
             children = self._hpo.graph.get_children(hpo_tk_term_id, False)
             for c in children:
                 if c in tested_counts_pf:
-                    if tested_counts_pf[c] == counts_frame:
-                        # Child term with same counts previously tested
+                    if tested_counts_pf[c].equals(counts_frame):
+                        reason = f" Child term with same counts previously tested"
+                        filtered_terms_d[reason] += 1
                         continue
+            total_HPO = HeuristicSamplerMtcFilter.get_number_of_observed_HPO_observations(counts_frame=counts_frame)
             tested_counts_pf[hpo_tk_term_id] = counts_frame
             ## Heuristic -- if a child of a second level term has at least 75% of the counts of its ancestor
             # second level term, then do not test because it is unlikely to add much insight
@@ -178,10 +279,14 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
             # if we get here, then do the test
             filtered_n_usable[hpo_tk_term_id] = n_usable.get(hpo_tk_term_id)
             filtered_all_counts[hpo_tk_term_id] = all_counts.get(hpo_tk_term_id)
-        return filtered_n_usable, filtered_all_counts
+
+        return filtered_n_usable, filtered_all_counts, filtered_terms_d
+    
+    def filter_method_name(self) -> str:
+        return "heuristic sampler"
 
 
-
+       
 class GPAnalyzer(typing.Generic[P], metaclass=abc.ABCMeta):
     """
     `GPAnalyzer` calculates p values for genotype-phenotype correlation of phenotypic features of interest.
@@ -280,7 +385,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
             patients, pheno_predicates, gt_predicate,
         )
         # 1.5) Filter terms for MTC
-        n_usable, all_counts = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        n_usable, all_counts, filtered_terms_d = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
 
         # 2) Statistical tests
         pheno_idx = pd.Index(n_usable.index, name='p_val')
@@ -307,6 +412,16 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         else:
             corrected_pvals_series = None
 
+        mtc_method = "none"
+        if self._correction is not None:
+            mtc_method = self._correction
+        total_terms_tested = len(n_usable)
+
+        mtc_filter_report = HpoMtcReport(filter_name=self._hpo_mtc_filter.filter_method_name(), 
+                                         mtc_name=mtc_method, 
+                                         filter_results_map=filtered_terms_d, 
+                                         term_count=total_terms_tested)
+
         # 4) Wrap up
         return GenotypePhenotypeAnalysisResult(
             n_usable=n_usable,
@@ -315,4 +430,5 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
             corrected_pvals=corrected_pvals_series,
             phenotype_categories=categories,
             geno_predicate=gt_predicate,
+            mtc_filter_report=mtc_filter_report
         )

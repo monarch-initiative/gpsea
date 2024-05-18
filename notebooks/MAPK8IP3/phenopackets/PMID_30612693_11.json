@@ -12,8 +12,20 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001257",
-        "label": "Spasticity"
+        "id": "HP:0100704",
+        "label": "Cerebral visual impairment"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0006956",
+        "label": "Lateral ventricle dilatation"
       }
     },
     {
@@ -24,14 +36,14 @@
     },
     {
       "type": {
-        "id": "HP:0033725",
-        "label": "Thin corpus callosum"
+        "id": "HP:0001257",
+        "label": "Spasticity"
       }
     },
     {
       "type": {
-        "id": "HP:0006956",
-        "label": "Lateral ventricle dilatation"
+        "id": "HP:0033725",
+        "label": "Thin corpus callosum"
       }
     },
     {
@@ -50,22 +62,10 @@
     },
     {
       "type": {
-        "id": "HP:0100704",
-        "label": "Cerebral visual impairment"
-      }
-    },
-    {
-      "type": {
         "id": "HP:0001250",
         "label": "Seizure"
       },
       "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      }
     }
   ],
   "interpretations": [
@@ -83,7 +83,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_jvnViaKujDnPJHVundlpSeZRM",
+                "id": "var_kPcJoKCIvFGRcQtmuUUWAwGPC",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -117,8 +117,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:618443",
+        "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-09-19T16:34:36.554000377Z",
+    "created": "2024-04-16T06:47:02.829189062Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -157,7 +165,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-04-03",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

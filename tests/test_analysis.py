@@ -109,3 +109,4 @@ class TestCohortAnalysis:
         #total_observed_HPO = HeuristicSamplerMtcFilter.get_number_of_positive_observations(arachnodactyly_counts)
         total_observed_HPO = counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[PatientCategories.YES, PatientCategories.YES]
         assert 28 == total_observed_HPO
+

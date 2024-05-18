@@ -160,9 +160,9 @@ class BaseCohortAnalysis(CohortAnalysis):
         all_no_hpo_counts = Counter()
         for pat in self.analysis_patients:
             all_hpo_counts.update(pat.present_phenotypes())
-            if not self.include_unmeasured:
+            if not self.missing_implies_excluded:
                 all_no_hpo_counts.update(pat.excluded_phenotypes())
-        if self.include_unmeasured:
+        if self.missing_implies_excluded:
             for hpo, count in all_hpo_counts.items():
                 count = count if not None else 0
                 if (count / len(self.analysis_patients)) >= (self.min_perc_patients_w_hpo / 100):

@@ -12,6 +12,39 @@ from .predicate.phenotype import P
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
 
+
+
+class HpoMtcReport:
+    """
+    Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses
+    """
+
+    def __init__(self, filter_name:str, mtc_name:str, filter_results_map:typing.Dict[str,int], term_count:int) -> None:
+        self._hpo_mtc_filter_name = filter_name
+        self._mtc_name = mtc_name
+        self._results_map = filter_results_map
+        self._term_count = term_count
+
+    def filter_method(self) -> str:
+        """Return the name of the HpoMtcFilter method used
+        """
+        return self._hpo_mtc_filter_name
+
+    def skipped_terms_dict(self) -> typing.Dict[str,int]:
+        """Return a dictionary with categories and counts of terms that were skipped
+        """
+        return self._results_map
+
+    def mtc_method(self) -> str:
+        """Return the name of the multiple testing correction method used
+        """
+        return self._mtc_name
+
+    def n_terms_tested(self) -> int:
+        """return the number of terms tested following our HpoMtcFilter
+        """
+        return self._term_count
+
 class GenotypePhenotypeAnalysisResult:
     """
     `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.
@@ -24,6 +57,7 @@ class GenotypePhenotypeAnalysisResult:
             corrected_pvals: typing.Optional[pd.Series],
             phenotype_categories: typing.Iterable[PatientCategory],
             geno_predicate: PolyPredicate,
+            mtc_filter_report: HpoMtcReport=None
     ):
         self._n_usable = n_usable
         self._all_counts = all_counts
@@ -31,6 +65,7 @@ class GenotypePhenotypeAnalysisResult:
         self._corrected_pvals = corrected_pvals
         self._phenotype_categories = tuple(phenotype_categories)
         self._geno_predicate = geno_predicate
+        self._mtc_filter_report = mtc_filter_report
 
     @property
     def n_usable(self) -> pd.Series:
@@ -80,6 +115,10 @@ class GenotypePhenotypeAnalysisResult:
         Get a sequence of phenotype patient categories that can be investigated.
         """
         return self._phenotype_categories
+    
+    @property
+    def mtc_filter_report(self) -> HpoMtcReport:
+        return self._mtc_filter_report
 
     def summarize(
             self, hpo: hpotk.MinimalOntology,
@@ -324,3 +363,11 @@ class HpoMtcFilter(metaclass=abc.ABCMeta):
         lead to interesting statistical/analytical results.
         """
         pass
+
+    @abc.abstractmethod
+    def filter_method_name(self) -> str:
+        """returns the name of the heuristic used to limit multiple testing
+        """
+        pass
+
+
