@@ -168,6 +168,8 @@ class ProteinMetadata:
         protein_id (string): A string unique to this protein
         label (string): Full name of the protein
         protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
+        length(int): The length of the Protein (chain) in amino-acid residues
+        # TODO -- provided with default argument of zero to not break tests. Refactor tests.
     Methods:
         domains (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "DOMAIN"
         repeats (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "REPEAT"
@@ -175,13 +177,14 @@ class ProteinMetadata:
         motifs (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "MOTIF"
     """
 
-    def __init__(self, protein_id: str, label: str, protein_features: typing.Sequence[ProteinFeature]):
+    def __init__(self, protein_id: str, label: str, protein_features: typing.Sequence[ProteinFeature], protein_length:int=0):
         """Constructs all necessary attributes for a ProteinMetadata object
 
         Args:
             protein_id (string): A string unique to this protein
             label (string): Full name of the protein
             protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
+            protein_length (int): The length of the Protein (chain) in amino-acid residues
         """
         if not isinstance(protein_id, str):
             raise ValueError(f"Protein ID must be type string but is type {type(protein_id)}")
@@ -193,6 +196,7 @@ class ProteinMetadata:
             raise ValueError(
                 f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
         self._features = tuple(protein_features)
+        self._protein_length = protein_length
 
     @property
     def protein_id(self) -> str:
@@ -217,6 +221,10 @@ class ProteinMetadata:
             Sequence[ProteinFeature]: A sequence of ProteinFeatures objects
         """
         return self._features
+    
+    @property
+    def protein_length(self):
+        return self._protein_length
 
     def domains(self) -> typing.Iterable[ProteinFeature]:
         """

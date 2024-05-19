@@ -43,6 +43,11 @@ def fpath_toy_hpo(fpath_test_data: str) -> str:
 
 
 @pytest.fixture(scope='session')
+def fpath_test_zn462_human_uniprot(fpath_test_data: str) -> str:
+    return os.path.join(fpath_test_data, "uniprot", "ZN462_HUMAN.json")
+
+
+@pytest.fixture(scope='session')
 def toy_hpo(fpath_toy_hpo: str) -> hpotk.MinimalOntology:
     return hpotk.load_minimal_ontology(fpath_toy_hpo)
 
