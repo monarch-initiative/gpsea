@@ -41,6 +41,10 @@ class ProteinVisualizable:
         variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
         self._variant_locations_counted_absolute = variant_locations_counted_absolute
         self._marker_counts = marker_counts
+        if protein_meta.protein_length > 0:
+            self._protein_length = protein_meta.protein_length
+        else:
+            raise ValueError(f"Unable to get protein_length for {protein_meta.label}. Consider deleting cache and trying again. Also check accession numbers")
 
     @staticmethod
     def _get_protein_meta(protein_meta: ProteinMetadata):

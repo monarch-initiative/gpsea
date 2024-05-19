@@ -78,5 +78,5 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             raise ValueError(f"only works with a RefSeq database ID (e.g. NP_037407.4), but we got {protein_id}")
         api_url = self._url % protein_id
         r = requests.get(api_url).json()
-        return UniprotProteinMetadataService.parse_uniprot_json(r)
+        return UniprotProteinMetadataService.parse_uniprot_json(r, protein_id)
 
