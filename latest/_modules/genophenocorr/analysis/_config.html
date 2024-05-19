@@ -84,15 +84,15 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-
+<span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="n">UniprotProteinMetadataService</span><span class="p">,</span> <span class="n">ProteinAnnotationCache</span><span class="p">,</span> \
     <span class="n">ProtCachingMetadataService</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span><span class="p">,</span> <span class="n">HpoMtcFilter</span>
 <span class="kn">from</span> <span class="nn">._filter</span> <span class="kn">import</span> <span class="n">SimplePhenotypeFilter</span>
-<span class="kn">from</span> <span class="nn">._gp_analysis</span> <span class="kn">import</span> <span class="n">FisherExactAnalyzer</span>
+<span class="kn">from</span> <span class="nn">._gp_analysis</span> <span class="kn">import</span> <span class="n">FisherExactAnalyzer</span><span class="p">,</span> <span class="n">IdentityTermMtcFilter</span><span class="p">,</span> <span class="n">HeuristicSamplerMtcFilter</span>
 <span class="kn">from</span> <span class="nn">._gp_impl</span> <span class="kn">import</span> <span class="n">GpCohortAnalysis</span>
 
 <span class="n">P_VAL_OPTIONS</span> <span class="o">=</span> <span class="p">(</span>
@@ -107,6 +107,12 @@
     <span class="s1">&#39;fdr_gbs&#39;</span><span class="p">,</span>
     <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MTC_Strategy</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">ALL_HPO_TERMS</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">HEURISTIC_SAMPLER</span> <span class="o">=</span> <span class="mi">1</span>
+
+
 
 
 <div class="viewcode-block" id="CohortAnalysisConfiguration">
@@ -143,6 +149,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span> <span class="o">=</span> <span class="mf">.05</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="mf">.1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -248,7 +255,30 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">include_sv</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="n">include_sv</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mtc_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MTC_Strategy</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span>
+
+    <span class="nd">@mtc_strategy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mtc_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">MTC_Strategy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="n">MTC_Strategy</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">strategy</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;TODO DOCUMENT `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CohortAnalysisConfiguration.heuristic_strategy">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy">[docs]</a>
+    <span class="k">def</span> <span class="nf">heuristic_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span></div>
+</div>
 
 
 
@@ -283,11 +313,22 @@
         <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span>
     <span class="p">)</span>
 
+    
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span><span class="p">:</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicSamplerMtcFilter</span><span class="p">(</span><span class="n">hpo_ontology</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span><span class="p">:</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span>  <span class="n">IdentityTermMtcFilter</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did not recognize MtcStrategy </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="c1"># Choosing a simple Fisher&#39;s exact test for now.</span>
     <span class="n">gp_analyzer</span> <span class="o">=</span> <span class="n">FisherExactAnalyzer</span><span class="p">(</span>
+        <span class="n">hpo_mtc_filter</span><span class="o">=</span><span class="n">mtc_filter</span><span class="p">,</span>
         <span class="n">p_val_correction</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span><span class="p">,</span>
         <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">mtc_alpha</span><span class="p">,</span>
     <span class="p">)</span>
+
+    
 
     <span class="k">return</span> <span class="n">GpCohortAnalysis</span><span class="p">(</span>
         <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>

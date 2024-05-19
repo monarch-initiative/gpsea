@@ -312,6 +312,8 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VVTranscriptCoordinateService.fetch">fetch() (genophenocorr.preprocessing.VVTranscriptCoordinateService method)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.filter_method">filter_method() (genophenocorr.analysis.HpoMtcReport method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">find_coordinates() (genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder method)</a>
 
       <ul>
@@ -554,15 +556,19 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HEMIZYGOUS">HEMIZYGOUS (genophenocorr.model.Genotype attribute)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HETEROZYGOUS">HETEROZYGOUS (genophenocorr.model.Genotype attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HETEROZYGOUS">HETEROZYGOUS (genophenocorr.model.Genotype attribute)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy">heuristic_strategy() (genophenocorr.analysis.CohortAnalysisConfiguration method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.hgvs_cdna">hgvs_cdna (genophenocorr.model.TranscriptAnnotation property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HOMOZYGOUS_ALTERNATE">HOMOZYGOUS_ALTERNATE (genophenocorr.model.Genotype attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HOMOZYGOUS_REFERENCE">HOMOZYGOUS_REFERENCE (genophenocorr.model.Genotype attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport">HpoMtcReport (class in genophenocorr.analysis)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -719,6 +725,12 @@
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_alpha">mtc_alpha (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult.mtc_filter_report">mtc_filter_report (genophenocorr.analysis.GenotypePhenotypeAnalysisResult property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.mtc_method">mtc_method() (genophenocorr.analysis.HpoMtcReport method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_strategy">mtc_strategy (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -726,6 +738,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.PolyPredicate.n_categorizations">n_categorizations() (genophenocorr.analysis.predicate.PolyPredicate method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.n_terms_tested">n_terms_tested() (genophenocorr.analysis.HpoMtcReport method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.GenotypePhenotypeAnalysisResult.n_usable">n_usable (genophenocorr.analysis.GenotypePhenotypeAnalysisResult property)</a>
 </li>
@@ -835,8 +849,6 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Patient.present_phenotypes">present_phenotypes() (genophenocorr.model.Patient method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.Auditor.process">process() (genophenocorr.preprocessing.Auditor method)</a>
 
       <ul>
@@ -848,7 +860,11 @@
 </li>
         <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.process">(genophenocorr.view.CohortViewable method)</a>
 </li>
+        <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewable.process">(genophenocorr.view.StatsViewable method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate">PropagatingPhenotypePredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProtCachingMetadataService">ProtCachingMetadataService (class in genophenocorr.preprocessing)</a>
@@ -957,6 +973,8 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotypes.single">single() (genophenocorr.model.Genotypes static method)</a>
 </li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.skipped_terms_dict">skipped_terms_dict() (genophenocorr.analysis.HpoMtcReport method)</a>
+</li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.DataSanityIssue.solution">solution (genophenocorr.preprocessing.DataSanityIssue property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.SPLICE_ACCEPTOR_VARIANT">SPLICE_ACCEPTOR_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
@@ -982,6 +1000,8 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.START_LOST">START_LOST (genophenocorr.model.VariantEffect attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.START_RETAINED_VARIANT">START_RETAINED_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewable">StatsViewable (class in genophenocorr.view)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.STOP_GAINED">STOP_GAINED (genophenocorr.model.VariantEffect attribute)</a>
 </li>
