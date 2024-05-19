@@ -85,6 +85,7 @@
 
 <span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">HpoMtcReport</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 
@@ -99,22 +100,18 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">filter_method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">mtc_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">filter_results_map</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">],</span>
-            <span class="n">term_count</span><span class="p">:</span> <span class="nb">int</span> <span class="p">,</span>
+            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            filter_name(str): name of the method used to limit number of terms tested</span>
-<span class="sd">            mtc_name(str): name of multiple testing correction procedure</span>
-<span class="sd">            filter_results_map(Dict): Dictionary with counts and reasons for removed terms</span>
-<span class="sd">            total_terms_tested(int): The total number of HPO terms tested after MTC limitation procedures</span>
+<span class="sd">            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span> <span class="o">=</span> <span class="n">filter_method_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">mtc_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span> <span class="o">=</span> <span class="n">filter_results_map</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span> <span class="o">=</span> <span class="n">term_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">filter_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">mtc_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hpo_mtc_report.skipped_terms_dict must be disctionary but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span>
         <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;stats.html&quot;</span><span class="p">)</span>
 
