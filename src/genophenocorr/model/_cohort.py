@@ -285,6 +285,13 @@ class Cohort(typing.Sized):
 
     def get_excluded_count(self):
         return self._excluded_count
+    
+    def get_variant_by_key(self, variant_key):
+        for v in self.all_variants():
+            if v.variant_coordinates.variant_key == variant_key:
+                return v
+        else:
+            raise ValueError(f"Variant key {variant_key} not found in cohort.")
 
     def __eq__(self, other):
         return isinstance(other, Cohort) and self._patient_set == other._patient_set
