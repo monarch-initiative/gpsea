@@ -2,6 +2,7 @@ import typing
 
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
+from genophenocorr.analysis import HpoMtcReport
 
 from genophenocorr.model import Cohort
 
@@ -14,22 +15,18 @@ class StatsViewable:
 
     def __init__(
             self,
-            filter_method_name: str,
-            mtc_name:str,
-            filter_results_map: typing.Dict[str,int],
-            term_count: int ,
+            hpo_mtc_report: HpoMtcReport,
     ):
         """
         Args:
-            filter_name(str): name of the method used to limit number of terms tested
-            mtc_name(str): name of multiple testing correction procedure
-            filter_results_map(Dict): Dictionary with counts and reasons for removed terms
-            total_terms_tested(int): The total number of HPO terms tested after MTC limitation procedures
+            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure
         """
-        self._hpo_mtc_filter_name = filter_method_name
-        self._mtc_name = mtc_name
-        self._results_map = filter_results_map
-        self._term_count = term_count
+        self._hpo_mtc_filter_name = hpo_mtc_report.filter_method
+        self._mtc_name = hpo_mtc_report.mtc_method
+        self._results_map = hpo_mtc_report.skipped_terms_dict
+        if not isinstance(hpo_mtc_report.skipped_terms_dict, dict):
+            raise ValueError(f"hpo_mtc_report.skipped_terms_dict must be disctionary but was {type(hpo_mtc_report.skipped_terms_dict)}")
+        self._term_count = hpo_mtc_report.n_terms_tested
         environment = Environment(loader=(PackageLoader('genophenocorr.view', 'templates')))
         self._cohort_template = environment.get_template("stats.html")
 

@@ -107,6 +107,18 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
             raise ValueError("(2,3) not yet implemented")
         else:
             raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
+        
+    @staticmethod
+    def one_genotype_has_zero_HPO_observations(counts: pd.DataFrame):
+        if not isinstance(counts, pd.DataFrame):
+            raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
+        if counts.shape == (2, 2):
+            return (counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[
+                PatientCategories.YES, PatientCategories.YES])
+        elif counts.shape == (2, 3):
+            raise ValueError("(2,3) not yet implemented")
+        else:
+            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
 
     @staticmethod
     def some_cell_has_greater_than_one_count(counts: pd.DataFrame) -> bool:
@@ -122,9 +134,14 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
         if not isinstance(counts, pd.DataFrame):
             raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
         if counts.shape == (2, 2):
-            return counts.loc[PatientCategories.YES, PatientCategories.NO] > 1 or counts.loc[PatientCategories.YES, PatientCategories.YES] > 1
+            num1 =  counts.loc[PatientCategories.YES, PatientCategories.NO]
+            denom1 =  counts.loc[PatientCategories.YES, PatientCategories.NO] +  counts.loc[PatientCategories.NO, PatientCategories.NO]
+            num2 = counts.loc[PatientCategories.YES, PatientCategories.YES]
+            denom2 = counts.loc[PatientCategories.YES, PatientCategories.YES] + counts.loc[PatientCategories.NO, PatientCategories.YES]
+            if (num1 == 0 and denom1 == 0) or (num2==0 and denom2 == 0):
+                return True
         elif counts.shape == (2,3):
-            return counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] > 1 or counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] > 1 or counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER] > 1
+            raise ValueError(f"(2,3) not yet implemented)")        
         else:
             raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
 
@@ -248,6 +265,10 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
                 continue
             if HeuristicSamplerMtcFilter.genotypes_have_same_HPO_proportions(counts_frame):
                 reason = f"Skipping term {hpo_tk_term_id} because all genotypes have same HPO observed proportions"
+                filtered_terms_d[reason] += 1
+                continue
+            if HeuristicSamplerMtcFilter.one_genotype_has_zero_HPO_observations(counts_frame):
+                reason = f"Skipping term {hpo_tk_term_id} because one genotype had zero observations"
                 filtered_terms_d[reason] += 1
                 continue
             children = self._hpo.graph.get_children(hpo_tk_term_id, False)

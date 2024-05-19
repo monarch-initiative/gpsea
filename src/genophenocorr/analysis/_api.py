@@ -25,21 +25,25 @@ class HpoMtcReport:
         self._results_map = filter_results_map
         self._term_count = term_count
 
+    @property
     def filter_method(self) -> str:
         """Return the name of the HpoMtcFilter method used
         """
         return self._hpo_mtc_filter_name
 
+    @property
     def skipped_terms_dict(self) -> typing.Dict[str,int]:
         """Return a dictionary with categories and counts of terms that were skipped
         """
         return self._results_map
 
+    @property
     def mtc_method(self) -> str:
         """Return the name of the multiple testing correction method used
         """
         return self._mtc_name
 
+    @property
     def n_terms_tested(self) -> int:
         """return the number of terms tested following our HpoMtcFilter
         """

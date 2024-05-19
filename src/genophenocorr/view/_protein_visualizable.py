@@ -10,7 +10,7 @@ class ProteinVisualizable:
         self._protein_features = list()
         for feature in protein_meta.protein_features:
             self._protein_features.append(feature)
-        variants = cohort.all_variants
+        variants = cohort.all_variants()
          # store the annotations for the correct transcript
         transcript_annotations = ProteinVisualizable._get_tx_anns(variants, self._tx_id)
         self._variant_pos = list()
