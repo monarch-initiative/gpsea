@@ -1,11 +1,13 @@
 import hpotk
 import pytest
+import json
 
 
 from genophenocorr.preprocessing import PhenopacketPatientCreator, PhenotypeCreator, CohortCreator
 from genophenocorr.preprocessing import configure_patient_creator, configure_cohort_creator, load_phenopacket
 from genophenocorr.preprocessing import load_phenopacket_folder
 from genophenocorr.preprocessing import Level
+from genophenocorr.preprocessing import UniprotProteinMetadataService
 
 
 class TestPhenopacketPatientCreator:
@@ -93,3 +95,23 @@ class TestPhenotypeCreator:
         assert first.level == Level.ERROR
         assert first.message == 'Terms should not contain both present Focal clonic seizure [HP:0002266] and its present or excluded ancestor Seizure [HP:0001250]'
         assert first.solution is None
+
+
+class TestUniprotProteinMetadataService:
+
+
+    @pytest.fixture
+    def zn462_human_uniprot_json(self, fpath_test_zn462_human_uniprot: str):
+        with open(fpath_test_zn462_human_uniprot) as f:
+            data = json.load(f)
+        return data
+    
+    def test_zn462(self, zn462_human_uniprot_json):
+        protein_id = "NP_037407.4"
+        protein_list = UniprotProteinMetadataService.parse_uniprot_json(zn462_human_uniprot_json, protein_id=protein_id)
+        assert protein_list is not None
+        assert len(protein_list) > 0
+        protein_metadata = protein_list[0]
+        assert 2663 == protein_metadata.protein_length
+        assert "Ankyrin repeat domain-containing protein 11" == protein_metadata.label
+        
