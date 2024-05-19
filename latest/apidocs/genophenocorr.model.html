@@ -1376,7 +1376,7 @@ BOTH the initiation and termination codons.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.model.ProteinMetadata">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">ProteinMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.ProteinMetadata" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">ProteinMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.model.ProteinFeature" title="genophenocorr.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_protein.html#ProteinMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.ProteinMetadata" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A class that represents a specific protein</p>
 <dl class="py attribute">
@@ -1411,6 +1411,22 @@ BOTH the initiation and termination codons.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.ProteinMetadata.length">
+<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#genophenocorr.model.ProteinMetadata.length" title="Link to this definition"></a></dt>
+<dd><p>The length of the Protein (chain) in amino-acid residues</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">#</span> <span class="pre">TODO</span> <span class="pre">--</span> <span class="pre">provided</span> <span class="pre">with</span> <span class="pre">default</span> <span class="pre">argument</span> <span class="pre">of</span> <span class="pre">zero</span> <span class="pre">to</span> <span class="pre">not</span> <span class="pre">break</span> <span class="pre">tests.</span> <span class="pre">Refactor</span> <span class="pre">tests.</span></span></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.ProteinMetadata.domains">
@@ -1456,6 +1472,11 @@ string: The full name of the protein</p>
 <dd><p>Returns:
 Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.model.ProteinMetadata.protein_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_length</span></span><a class="headerlink" href="#genophenocorr.model.ProteinMetadata.protein_length" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id20">

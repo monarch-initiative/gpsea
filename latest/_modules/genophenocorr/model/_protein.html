@@ -268,6 +268,8 @@
 <span class="sd">        protein_id (string): A string unique to this protein</span>
 <span class="sd">        label (string): Full name of the protein</span>
 <span class="sd">        protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects</span>
+<span class="sd">        length(int): The length of the Protein (chain) in amino-acid residues</span>
+<span class="sd">        # TODO -- provided with default argument of zero to not break tests. Refactor tests.</span>
 <span class="sd">    Methods:</span>
 <span class="sd">        domains (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;DOMAIN&quot;</span>
 <span class="sd">        repeats (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;REPEAT&quot;</span>
@@ -275,13 +277,14 @@
 <span class="sd">        motifs (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;MOTIF&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">],</span> <span class="n">protein_length</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a ProteinMetadata object</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            protein_id (string): A string unique to this protein</span>
 <span class="sd">            label (string): Full name of the protein</span>
 <span class="sd">            protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects</span>
+<span class="sd">            protein_length (int): The length of the Protein (chain) in amino-acid residues</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Protein ID must be type string but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -293,6 +296,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Protein Features must be a list of type ProteinFeature but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_features</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">protein_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span> <span class="o">=</span> <span class="n">protein_length</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -317,6 +321,10 @@
 <span class="sd">            Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span>
 
 <div class="viewcode-block" id="ProteinMetadata.domains">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.domains">[docs]</a>
