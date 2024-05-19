@@ -13,8 +13,8 @@ from genophenocorr.preprocessing import UniprotProteinMetadataService
 class TestPhenopacketPatientCreator:
 
     @pytest.fixture
-    def phenopacket_patient_creator(self, toy_hpo: hpotk.MinimalOntology) -> PhenopacketPatientCreator:
-        return configure_patient_creator(toy_hpo)
+    def phenopacket_patient_creator(self, hpo: hpotk.MinimalOntology) -> PhenopacketPatientCreator:
+        return configure_patient_creator(hpo)
 
     @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(self, phenopacket_patient_creator: PhenopacketPatientCreator):
@@ -26,8 +26,8 @@ class TestPhenopacketPatientCreator:
 class TestPhenopacketCohortCreator:
 
     @pytest.fixture
-    def phenopacket_cohort_creator(self, toy_hpo: hpotk.MinimalOntology) -> CohortCreator:
-        return configure_cohort_creator(toy_hpo)
+    def phenopacket_cohort_creator(self, hpo: hpotk.MinimalOntology) -> CohortCreator:
+        return configure_cohort_creator(hpo)
 
     @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(self, phenopacket_cohort_creator: CohortCreator):
@@ -38,9 +38,9 @@ class TestPhenopacketCohortCreator:
 class TestPhenotypeCreator:
 
     @pytest.fixture
-    def phenotype_creator(self, toy_hpo: hpotk.MinimalOntology,
+    def phenotype_creator(self, hpo: hpotk.MinimalOntology,
                           toy_validation_runner: hpotk.validate.ValidationRunner) -> PhenotypeCreator:
-        return PhenotypeCreator(toy_hpo, toy_validation_runner)
+        return PhenotypeCreator(hpo, toy_validation_runner)
 
     @pytest.mark.parametrize('curie, message, solution',
                              [
@@ -56,7 +56,7 @@ class TestPhenotypeCreator:
                                  ),
                                  (
                                          'HP:999999',
-                                         '#0 HP:999999 is not in HPO version `2022-10-05`',
+                                         '#0 HP:999999 is not in HPO version `2024-04-26`',
                                          'Correct the HPO term or use the latest HPO for the analysis'
                                  ),
                              ])

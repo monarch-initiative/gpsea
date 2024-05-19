@@ -1,3 +1,4 @@
+import json
 import os
 import typing
 
@@ -7,6 +8,8 @@ import pytest
 from ._protein_test_service import ProteinTestMetadataService
 from genophenocorr.model import *
 from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
+from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
+
 
 
 def pytest_addoption(parser):
@@ -29,6 +32,7 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope='session')
+
 def fpath_test_data() -> str:
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
 
@@ -53,12 +57,19 @@ def genome_build_hg38() -> GenomeBuild:
     return GRCh38
 
 
+
 @pytest.fixture(scope='session')
-def toy_validation_runner(toy_hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+def hpo(fpath_test_data_dir: str) -> hpotk.MinimalOntology:
+    fpath_hpo = os.path.join(fpath_test_data_dir, 'hp.v2024-04-26.json.gz')
+    return hpotk.load_minimal_ontology(fpath_hpo)
+
+
+@pytest.fixture(scope='session')
+def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
     validators = (
-        hpotk.validate.ObsoleteTermIdsValidator(toy_hpo),
-        hpotk.validate.AnnotationPropagationValidator(toy_hpo),
-        hpotk.validate.PhenotypicAbnormalityValidator(toy_hpo)
+        hpotk.validate.ObsoleteTermIdsValidator(hpo),
+        hpotk.validate.AnnotationPropagationValidator(hpo),
+        hpotk.validate.PhenotypicAbnormalityValidator(hpo)
     )
     return hpotk.validate.ValidationRunner(validators)
 
@@ -69,6 +80,40 @@ def make_region(contig: str, start: int, end: int) -> GenomicRegion:
 @pytest.fixture(scope='session')
 def protein_test_service() -> ProteinTestMetadataService:
     return ProteinTestMetadataService()
+
+
+@pytest.fixture(scope='session')
+def fpath_suox_cohort(
+        fpath_test_data_dir: str,
+) -> str:
+    return os.path.join(fpath_test_data_dir, 'SUOX.json')
+
+
+@pytest.fixture(scope='session')
+def suox_cohort(
+        fpath_suox_cohort: str,
+) -> Cohort:
+    with open(fpath_suox_cohort) as fh:
+        return json.load(fh, cls=GenophenocorrJSONDecoder)
+
+
+@pytest.mark.skip('Run manually to regenerate `suox_cohort`')
+def test_regenerate_cohort(
+        fpath_suox_cohort: str,
+        hpo: hpotk.MinimalOntology,
+):
+    """
+    The test for regenerating the `SUOX.json` file based on a cohort of phenopackets.
+    The test needs path to a folder with phenopacket JSON files (empty `str` below).
+    """
+    fpath_suox_pp_dir = '/path/to/SUOX/phenopackets'
+
+    from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopacket_folder
+
+    cohort_creator = configure_caching_cohort_creator(hpo)
+    cohort = load_phenopacket_folder(fpath_suox_pp_dir, cohort_creator, validation_policy='strict')
+    with open(fpath_suox_cohort, 'w') as fh:
+        json.dump(cohort, fh, cls=GenophenocorrJSONEncoder, indent=2)
 
 
 @pytest.fixture(scope='session')
