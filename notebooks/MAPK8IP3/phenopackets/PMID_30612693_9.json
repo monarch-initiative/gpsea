@@ -12,38 +12,8 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001257",
-        "label": "Spasticity"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002493",
-        "label": "Upper motor neuron dysfunction"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0007340",
-        "label": "Lower limb muscle weakness"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002342",
-        "label": "Intellectual disability, moderate"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0033725",
-        "label": "Thin corpus callosum"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002365",
-        "label": "Hypoplasia of the brainstem"
+        "id": "HP:0001252",
+        "label": "Hypotonia"
       }
     },
     {
@@ -60,20 +30,32 @@
     },
     {
       "type": {
+        "id": "HP:0200055",
+        "label": "Small hand"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001250",
+        "label": "Seizure"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002365",
+        "label": "Hypoplasia of the brainstem"
+      }
+    },
+    {
+      "type": {
         "id": "HP:0034295",
         "label": "Reduced cerebral white matter volume"
       }
     },
     {
       "type": {
-        "id": "HP:0011856",
-        "label": "Pica"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0034295",
-        "label": "Reduced cerebral white matter volume"
+        "id": "HP:0001263",
+        "label": "Global developmental delay"
       }
     },
     {
@@ -84,8 +66,20 @@
     },
     {
       "type": {
-        "id": "HP:0200055",
-        "label": "Small hand"
+        "id": "HP:0007340",
+        "label": "Lower limb muscle weakness"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001257",
+        "label": "Spasticity"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0002342",
+        "label": "Intellectual disability, moderate"
       }
     },
     {
@@ -101,24 +95,6 @@
         "label": "Autism"
       },
       "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0001252",
-        "label": "Hypotonia"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0001250",
-        "label": "Seizure"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
-      }
     }
   ],
   "interpretations": [
@@ -136,7 +112,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_YMmswTwbbHtnQzScXTXPFRWpT",
+                "id": "var_XUOtlWuyLVengnQDdxQtEHKDC",
                 "geneContext": {
                   "valueId": "HGNC:6884",
                   "symbol": "MAPK8IP3"
@@ -170,8 +146,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:618443",
+        "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-09-19T16:34:36.554000377Z",
+    "created": "2024-04-16T06:47:02.824060916Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -210,7 +194,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-04-03",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

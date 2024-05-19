@@ -74,17 +74,17 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.mod
 
     def __eq__(self, other):
         return isinstance(other, Phenotype) \
-            and self.identifier == other.identifier \
-            and self.name == other.name \
-            and self.is_present == other.is_present
+            and self._term_id == other._term_id \
+            and self._name == other._name \
+            and self._observed == other._observed
 
     def __hash__(self):
-        return hash((self.identifier, self.name, self.is_present))
+        return hash((self._term_id, self._name, self._observed))
 
     def __str__(self):
         return f"Phenotype(" \
-               f"identifier={self.identifier}, " \
-               f"name={self.name}, " \
+               f"identifier={self._term_id}, " \
+               f"name={self._name}, " \
                f"is_present={self._observed})"
 
     def __repr__(self):
@@ -110,7 +110,7 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
     @property
     def identifier(self) -> hpotk.TermId:
         """Returns an ID unique to this Disease object.
-        
+
         Returns:
             hpotk.model.Named: Disease ID
         """
@@ -136,12 +136,12 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
 
     def __eq__(self, other):
         return isinstance(other, Disease) \
-            and self.identifier == other.identifier \
-            and self.name == other.name \
-            and self.is_present == other.is_present
+            and self._term_id == other._term_id \
+            and self._name == other._name \
+            and self._observed == other._observed
 
     def __hash__(self):
-        return hash((self.identifier, self.name, self.is_present))
+        return hash((self._term_id, self._name, self._observed))
 
     def __str__(self):
         return f"Disease(" \

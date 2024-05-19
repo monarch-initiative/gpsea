@@ -1,18 +1,20 @@
 import hpotk
 import pytest
+import json
 
 
 from genophenocorr.preprocessing import PhenopacketPatientCreator, PhenotypeCreator, CohortCreator
 from genophenocorr.preprocessing import configure_patient_creator, configure_cohort_creator, load_phenopacket
 from genophenocorr.preprocessing import load_phenopacket_folder
 from genophenocorr.preprocessing import Level
+from genophenocorr.preprocessing import UniprotProteinMetadataService
 
 
 class TestPhenopacketPatientCreator:
 
     @pytest.fixture
-    def phenopacket_patient_creator(self, toy_hpo: hpotk.MinimalOntology) -> PhenopacketPatientCreator:
-        return configure_patient_creator(toy_hpo)
+    def phenopacket_patient_creator(self, hpo: hpotk.MinimalOntology) -> PhenopacketPatientCreator:
+        return configure_patient_creator(hpo)
 
     @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(self, phenopacket_patient_creator: PhenopacketPatientCreator):
@@ -24,8 +26,8 @@ class TestPhenopacketPatientCreator:
 class TestPhenopacketCohortCreator:
 
     @pytest.fixture
-    def phenopacket_cohort_creator(self, toy_hpo: hpotk.MinimalOntology) -> CohortCreator:
-        return configure_cohort_creator(toy_hpo)
+    def phenopacket_cohort_creator(self, hpo: hpotk.MinimalOntology) -> CohortCreator:
+        return configure_cohort_creator(hpo)
 
     @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(self, phenopacket_cohort_creator: CohortCreator):
@@ -36,9 +38,9 @@ class TestPhenopacketCohortCreator:
 class TestPhenotypeCreator:
 
     @pytest.fixture
-    def phenotype_creator(self, toy_hpo: hpotk.MinimalOntology,
+    def phenotype_creator(self, hpo: hpotk.MinimalOntology,
                           toy_validation_runner: hpotk.validate.ValidationRunner) -> PhenotypeCreator:
-        return PhenotypeCreator(toy_hpo, toy_validation_runner)
+        return PhenotypeCreator(hpo, toy_validation_runner)
 
     @pytest.mark.parametrize('curie, message, solution',
                              [
@@ -54,7 +56,7 @@ class TestPhenotypeCreator:
                                  ),
                                  (
                                          'HP:999999',
-                                         '#0 HP:999999 is not in HPO version `2022-10-05`',
+                                         '#0 HP:999999 is not in HPO version `2024-04-26`',
                                          'Correct the HPO term or use the latest HPO for the analysis'
                                  ),
                              ])
@@ -93,3 +95,23 @@ class TestPhenotypeCreator:
         assert first.level == Level.ERROR
         assert first.message == 'Terms should not contain both present Focal clonic seizure [HP:0002266] and its present or excluded ancestor Seizure [HP:0001250]'
         assert first.solution is None
+
+
+class TestUniprotProteinMetadataService:
+
+
+    @pytest.fixture
+    def zn462_human_uniprot_json(self, fpath_test_zn462_human_uniprot: str):
+        with open(fpath_test_zn462_human_uniprot) as f:
+            data = json.load(f)
+        return data
+    
+    def test_zn462(self, zn462_human_uniprot_json):
+        protein_id = "NP_037407.4"
+        protein_list = UniprotProteinMetadataService.parse_uniprot_json(zn462_human_uniprot_json, protein_id=protein_id)
+        assert protein_list is not None
+        assert len(protein_list) > 0
+        protein_metadata = protein_list[0]
+        assert 2663 == protein_metadata.protein_length
+        assert "Ankyrin repeat domain-containing protein 11" == protein_metadata.label
+        

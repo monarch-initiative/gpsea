@@ -1,59 +1,132 @@
 {
-  "id": "PMID_34321325_Patient_S12",
+  "id": "PMID_31949313_F2_II_1",
   "subject": {
-    "id": "Patient S12",
+    "id": "F2;II:1",
+    "timeAtLastEncounter": {
+      "age": {
+        "iso8601duration": "P2Y8M"
+      }
+    },
     "sex": "MALE"
   },
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001249",
-        "label": "Intellectual disability"
+        "id": "HP:0000750",
+        "label": "Delayed speech and language development"
       }
     },
     {
       "type": {
-        "id": "HP:0034183",
-        "label": "Spastic triplegia"
+        "id": "HP:0002020",
+        "label": "Gastroesophageal reflux"
       }
+    },
+    {
+      "type": {
+        "id": "HP:0002561",
+        "label": "Absent nipple"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0011968",
+        "label": "Feeding difficulties"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0001256",
+        "label": "Intellectual disability, mild"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001270",
+        "label": "Motor delay"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001643",
+        "label": "Patent ductus arteriosus"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001655",
+        "label": "Patent foramen ovale"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0001667",
+        "label": "Right ventricular hypertrophy"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0002557",
+        "label": "Hypoplastic nipples"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0002719",
+        "label": "Recurrent infections"
+      },
+      "excluded": true
+    },
+    {
+      "type": {
+        "id": "HP:0002092",
+        "label": "Pulmonary arterial hypertension"
+      },
+      "excluded": true
     }
   ],
   "interpretations": [
     {
-      "id": "Patient S12",
+      "id": "F2;II:1",
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "OMIM:618443",
-          "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+          "id": "OMIM:147920",
+          "label": "Kabuki Syndrome 1"
         },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "Patient S12",
+            "subjectOrBiosampleId": "F2;II:1",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_BfixpjeiCzVKEAETORjegMQLk",
+                "id": "var_CZQbDJMjDtDVZsvQXCFVzCMKb",
                 "geneContext": {
-                  "valueId": "HGNC:6884",
-                  "symbol": "MAPK8IP3"
+                  "valueId": "HGNC:7133",
+                  "symbol": "KMT2D"
                 },
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_001318852.2:c.45C>G"
+                    "value": "NM_003482.3:c.10582C>G"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000016.10:g.1706384C>G"
+                    "value": "NC_000012.12:g.49034225G>C"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
-                  "chrom": "chr16",
-                  "pos": "1706384",
-                  "ref": "C",
-                  "alt": "G"
+                  "chrom": "chr12",
+                  "pos": "49034225",
+                  "ref": "G",
+                  "alt": "C"
                 },
                 "moleculeContext": "genomic",
                 "allelicState": {
@@ -67,8 +140,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:147920",
+        "label": "Kabuki Syndrome 1"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-09-19T16:54:49.641586065Z",
+    "created": "2024-05-17T13:48:15.559228897Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -107,7 +188,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-04-26",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
@@ -115,9 +196,9 @@
     "phenopacketSchemaVersion": "2.0",
     "externalReferences": [
       {
-        "id": "PMID:34321325",
-        "reference": "https://pubmed.ncbi.nlm.nih.gov/34321325",
-        "description": "Diagnostic yield of chromosomal microarray and trio whole exome sequencing in cryptogenic cerebral palsy"
+        "id": "PMID:31949313",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/31949313",
+        "description": "A restricted spectrum of missense KMT2D variants cause a multiple malformations disorder distinct from Kabuki syndrome"
       }
     ]
   }

@@ -42,15 +42,15 @@ We can then view the data using the list commands.
 
 .. doctest:: tutorial
 
-  >>> sorted(cohort.list_all_patients())
+  >>> sorted(cohort.get_patient_ids())
   ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-  >>> sorted(cohort.list_all_phenotypes())
+  >>> sorted(cohort.list_present_phenotypes())
   [('HP:0001166', 14), ('HP:0001250', 20), ('HP:0001257', 17)]
   >>> sorted(cohort.list_all_variants())
   [('1_281_281_A_G', 16), ('1_361_363_TTC_T', 13)]
   >>> sorted(cohort.list_all_proteins())
   [('NP_09876.5', 29)]
-  >>> tx_dict = cohort.list_data_by_tx('NM_1234.5')
+  >>> tx_dict = cohort.variant_effect_count_by_tx(tx_id='NM_1234.5')
   >>> sorted(tx_dict['NM_1234.5'].items())
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 

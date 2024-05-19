@@ -1,131 +1,182 @@
 {
-  "id": "PMID_pending_Individual_A",
+  "id": "PMID_31846209_patient",
   "subject": {
-    "id": "Individual A",
+    "id": "patient",
+    "timeAtLastEncounter": {
+      "age": {
+        "iso8601duration": "P2Y"
+      }
+    },
     "sex": "FEMALE"
   },
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0012498",
-        "label": "Nuchal cord"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002333",
-        "label": "Motor deterioration"
-      }
-    },
-    {
-      "type": {
         "id": "HP:0000252",
         "label": "Microcephaly"
+      },
+      "onset": {
+        "ontologyClass": {
+          "id": "HP:0003577",
+          "label": "Congenital onset"
+        }
       }
     },
     {
       "type": {
-        "id": "HP:0001264",
-        "label": "Spastic diplegia"
+        "id": "HP:0000601",
+        "label": "Hypotelorism"
+      },
+      "onset": {
+        "age": {
+          "iso8601duration": "P5D"
+        }
       }
     },
     {
       "type": {
-        "id": "HP:0100021",
-        "label": "Cerebral palsy"
+        "id": "HP:0006870",
+        "label": "Lobar holoprosencephaly"
+      },
+      "onset": {
+        "age": {
+          "iso8601duration": "P5D"
+        }
       }
     },
     {
       "type": {
-        "id": "HP:0001263",
-        "label": "Global developmental delay"
+        "id": "HP:0001250",
+        "label": "Seizure"
+      },
+      "onset": {
+        "age": {
+          "iso8601duration": "P7M14D"
+        }
       }
     },
     {
       "type": {
-        "id": "HP:0031936",
-        "label": "Delayed ability to walk"
+        "id": "HP:0000218",
+        "label": "High palate"
       }
     },
     {
       "type": {
-        "id": "HP:0000750",
-        "label": "Delayed speech and language development"
+        "id": "HP:0000411",
+        "label": "Protruding ear"
       }
     },
     {
       "type": {
-        "id": "HP:0001321",
-        "label": "Cerebellar hypoplasia"
+        "id": "HP:0000437",
+        "label": "Depressed nasal tip"
       }
     },
     {
       "type": {
-        "id": "HP:0006872",
-        "label": "Cerebral hypoplasia"
+        "id": "HP:0000637",
+        "label": "Long palpebral fissure"
       }
     },
     {
       "type": {
-        "id": "HP:0033725",
-        "label": "Thin corpus callosum"
+        "id": "HP:0007655",
+        "label": "Eversion of lateral third of lower eyelids"
       }
     },
     {
       "type": {
-        "id": "HP:0012110",
-        "label": "Hypoplasia of the pons"
+        "id": "HP:0001212",
+        "label": "Prominent fingertip pads"
       }
     },
     {
       "type": {
-        "id": "HP:0034295",
-        "label": "Reduced cerebral white matter volume"
+        "id": "HP:0001252",
+        "label": "Hypotonia"
       }
     },
     {
       "type": {
-        "id": "HP:0006970",
-        "label": "Periventricular leukomalacia"
+        "id": "HP:0001385",
+        "label": "Hip dysplasia"
       }
+    },
+    {
+      "type": {
+        "id": "HP:0002553",
+        "label": "Highly arched eyebrow"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0005338",
+        "label": "Sparse lateral eyebrow"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0000400",
+        "label": "Macrotia"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0011950",
+        "label": "Bronchiolitis"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0011968",
+        "label": "Feeding difficulties"
+      }
+    },
+    {
+      "type": {
+        "id": "HP:0006988",
+        "label": "Alobar holoprosencephaly"
+      },
+      "excluded": true
     }
   ],
   "interpretations": [
     {
-      "id": "Individual A",
+      "id": "patient",
       "progressStatus": "SOLVED",
       "diagnosis": {
         "disease": {
-          "id": "OMIM:618443",
-          "label": "Neurodevelopmental disorder with or without variable brain abnormalities"
+          "id": "OMIM:147920",
+          "label": "Kabuki Syndrome 1"
         },
         "genomicInterpretations": [
           {
-            "subjectOrBiosampleId": "Individual A",
+            "subjectOrBiosampleId": "patient",
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_dEqaQhEIdjYadVhQrzydwwalj",
+                "id": "var_cfeblgqMncKRyOTwPpoQXLqnS",
                 "geneContext": {
-                  "valueId": "HGNC:6884",
-                  "symbol": "MAPK8IP3"
+                  "valueId": "HGNC:7133",
+                  "symbol": "KMT2D"
                 },
                 "expressions": [
                   {
                     "syntax": "hgvs.c",
-                    "value": "NM_001318852.2:c.1735C>T"
+                    "value": "NM_003482.3:c.6295C>T"
                   },
                   {
                     "syntax": "hgvs.g",
-                    "value": "NC_000016.10:g.1762843C>T"
+                    "value": "NC_000012.12:g.49041475G>A"
                   }
                 ],
                 "vcfRecord": {
                   "genomeAssembly": "hg38",
-                  "chrom": "chr16",
-                  "pos": "1762843",
-                  "ref": "C",
-                  "alt": "T"
+                  "chrom": "chr12",
+                  "pos": "49041475",
+                  "ref": "G",
+                  "alt": "A"
                 },
                 "moleculeContext": "genomic",
                 "allelicState": {
@@ -139,8 +190,22 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:147920",
+        "label": "Kabuki Syndrome 1"
+      },
+      "onset": {
+        "ontologyClass": {
+          "id": "HP:0003577",
+          "label": "Congenital onset"
+        }
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-09-19T16:54:50.415200948Z",
+    "created": "2024-05-17T13:48:15.557825088Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -179,7 +244,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-04-26",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }
@@ -187,9 +252,9 @@
     "phenopacketSchemaVersion": "2.0",
     "externalReferences": [
       {
-        "id": "PMID:pending",
-        "reference": "https://pubmed.ncbi.nlm.nih.gov/pending",
-        "description": "in preparation"
+        "id": "PMID:31846209",
+        "reference": "https://pubmed.ncbi.nlm.nih.gov/31846209",
+        "description": "Holoprosencephaly in Kabuki syndrome"
       }
     ]
   }

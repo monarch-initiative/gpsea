@@ -38,14 +38,14 @@ class TestPropagatingPhenotypeBooleanPredicate:
     def test_phenotype_predicate__present_or_excluded(
             self,
             toy_cohort: Cohort,
-            toy_hpo: hpotk.Ontology,
+            hpo: hpotk.MinimalOntology,
             curie: str,
             patient_id: str,
             expected: PatientCategory,
     ):
         patient = find_patient(patient_id, toy_cohort)
         term_id = hpotk.TermId.from_curie(curie)
-        predicate = PropagatingPhenotypePredicate(hpo=toy_hpo, query=term_id)
+        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual.phenotype == term_id
@@ -54,12 +54,12 @@ class TestPropagatingPhenotypeBooleanPredicate:
     def test_phenotype_predicate__unknown(
             self,
             toy_cohort: Cohort,
-            toy_hpo: hpotk.Ontology,
+            hpo: hpotk.MinimalOntology,
     ):
         # Not Measured and not Observed - 'HP:0006280',  # Chronic pancreatitis
         patient = find_patient('HetSingleVar', toy_cohort)
         term_id = hpotk.TermId.from_curie('HP:0006280')
-        predicate = PropagatingPhenotypePredicate(hpo=toy_hpo, query=term_id)
+        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual is None
