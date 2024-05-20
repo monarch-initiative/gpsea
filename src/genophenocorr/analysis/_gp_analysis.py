@@ -141,7 +141,7 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
             denom2 = counts.loc[PatientCategories.YES, PatientCategories.YES] + counts.loc[PatientCategories.NO, PatientCategories.YES]
             if denom1 is None or denom1 == 0 or denom2 is None or denom2 == 0:
                 return False
-            return (num1/denom1 - num2/denom2) < DELTA
+            return abs(num1/denom1 - num2/denom2) < DELTA
         elif counts.shape == (2,3):
             raise ValueError(f"(2,3) not implemented yet")
         else:
