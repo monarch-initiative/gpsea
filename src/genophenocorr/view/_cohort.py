@@ -139,6 +139,9 @@ class CohortViewable:
             if onlyHgvs:
                 # do not show the transcript id
                 fields = display.split(":")
-                display = fields[0]
+                if len(fields)>1:
+                    display = fields[1]
+                else:
+                    display = [0]
             chrom_to_display[var_string] = display
         return chrom_to_display

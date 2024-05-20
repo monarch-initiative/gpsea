@@ -83,38 +83,22 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
 
     @staticmethod
     def get_number_of_observed_HPO_observations(counts_frame:pd.DataFrame) -> int:
-        if counts_frame.shape == (2,2):
-            hpo_observed_geno_observed = counts_frame.loc[PatientCategories.YES, PatientCategories.YES]
-            hpo_observed_geno_excluded =  counts_frame.loc[PatientCategories.YES, PatientCategories.NO]
-            return hpo_observed_geno_observed + hpo_observed_geno_excluded
-        elif counts_frame.shape == (2,3):
-            # recessive case
-            #hpo_observed_geno_both = counts_frame.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH]
-            #hpo_observed_geno_one = counts_frame.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE]
-            #hpo_observed_geno_neither = counts_frame.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
-            return 42# hpo_observed_geno_one + hpo_observed_geno_both + hpo_observed_geno_neither
-        else:
-            raise ValueError(f"Did not expect to see shape of counts dataframe be {counts_frame.shape}")
+        return counts_frame.loc[PatientCategories.YES].sum()
 
-    @staticmethod
-    def get_positive_count(counts: pd.DataFrame):
-        if not isinstance(counts, pd.DataFrame):
-            raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
-        if counts.shape == (2, 2):
-            return (counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[
-                PatientCategories.YES, PatientCategories.YES])
-        elif counts.shape == (2, 3):
-            raise ValueError("(2,3) not yet implemented")
-        else:
-            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
         
     @staticmethod
     def one_genotype_has_zero_HPO_observations(counts: pd.DataFrame):
         if not isinstance(counts, pd.DataFrame):
             raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
+        #return (counts.loc[PatientCategories.YES] == 0).any()
+
         if counts.shape == (2, 2):
-            return (counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[
-                PatientCategories.YES, PatientCategories.YES])
+            if counts.loc[PatientCategories.YES, PatientCategories.NO] == 0 and counts.loc[
+                PatientCategories.NO, PatientCategories.NO] == 0:
+                return True
+            elif counts.loc[PatientCategories.YES, PatientCategories.YES] == 0 and counts.loc[
+                PatientCategories.NO, PatientCategories.YES] == 0:
+                return True
         elif counts.shape == (2, 3):
             raise ValueError("(2,3) not yet implemented")
         else:
@@ -133,17 +117,8 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
         """
         if not isinstance(counts, pd.DataFrame):
             raise ValueError(f"argument 'counts' must be pandas DataFrame but was {type(counts)}")
-        if counts.shape == (2, 2):
-            num1 =  counts.loc[PatientCategories.YES, PatientCategories.NO]
-            denom1 =  counts.loc[PatientCategories.YES, PatientCategories.NO] +  counts.loc[PatientCategories.NO, PatientCategories.NO]
-            num2 = counts.loc[PatientCategories.YES, PatientCategories.YES]
-            denom2 = counts.loc[PatientCategories.YES, PatientCategories.YES] + counts.loc[PatientCategories.NO, PatientCategories.YES]
-            if (num1 == 0 and denom1 == 0) or (num2==0 and denom2 == 0):
-                return True
-        elif counts.shape == (2,3):
-            raise ValueError(f"(2,3) not yet implemented)")        
-        else:
-            raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
+        return (counts.loc[PatientCategories.YES] > 1).any()
+            
 
     @staticmethod
     def genotypes_have_same_HPO_proportions(counts: pd.DataFrame) -> bool:
@@ -166,20 +141,9 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
             denom2 = counts.loc[PatientCategories.YES, PatientCategories.YES] + counts.loc[PatientCategories.NO, PatientCategories.YES]
             if denom1 is None or denom1 == 0 or denom2 is None or denom2 == 0:
                 return False
-            return (num1/denom1 - num2/denom2) > DELTA
+            return (num1/denom1 - num2/denom2) < DELTA
         elif counts.shape == (2,3):
-            num1 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH]
-            denom1 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
-            num2 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE]
-            denom2= counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
-            num3 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.BOTH]
-            denom3 = counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.ONE] + counts.loc[PatientCategories.YES, RecessiveGroupingPredicate.NEITHER]
-            if num1/denom1 - num2/denom2 > DELTA:
-                return True
-            elif num1/denom1 - num3/denom3 > DELTA:
-                return True
-            else:
-                return False
+            raise ValueError(f"(2,3) not implemented yet")
         else:
             raise ValueError(f"Did not recognize shape of counts matrix: {counts.shape}")
 
@@ -239,7 +203,6 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
     ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame], typing.Dict[str, int]]:
         """Filter out terms that do not need to be tested because there is no statistical power, the term is a top-level or non-phenotype term, or there are too few HPO observations to be sensible.
         """
-        # NOTE -- Print states for development, remove when dust settled!
         SECOND_LEVEL_TERM_THRESHOLD = 0.75
         filtered_n_usable = pd.Series()
         filtered_all_counts = pd.Series()
