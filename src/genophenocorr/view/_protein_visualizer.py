@@ -37,7 +37,7 @@ def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
     plt.text(x, y, text, fontsize=fontsize, color=color, ha=ha, va=va, rotation=rotation)     
 
 
-class VariantDrawer:
+class ProteinVisualizer:
 
     def __init__(self) -> None:
         self.protein_track_color = '#a9a9a9'
@@ -208,7 +208,7 @@ class VariantDrawer:
                   line_width=1.0)  # max tick
         draw_string(str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
                     fontsize=font_size, ha='right', va='center')
-        draw_string("# Markers", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
+        draw_string("# Variants", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
                     va='center', rotation=90)  # x axis label
 
         # draw variants

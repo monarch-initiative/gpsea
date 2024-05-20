@@ -109,6 +109,7 @@ class CohortViewable:
             "disease_counts": disease_counts,
             "has_transcript": has_transcript,
             "var_effects_list": var_effects_list,
+            "transcript_id": self._transcript_id,
         }
     
     @staticmethod
@@ -119,7 +120,8 @@ class CohortViewable:
         return variant.variant_string
     
     def get_variant_description(self, cohort: Cohort,
-            transcript_id: str) -> typing.Dict[str, str]:
+            transcript_id: str,
+            onlyHgvs:bool=True) -> typing.Dict[str, str]:
         """
         Get user-friendly strings (e.g., HGV for our target trancript) to match to the chromosomal strings
         Args:
@@ -134,5 +136,9 @@ class CohortViewable:
         for var in all_var_set:
             var_string = var.variant_string
             display = CohortViewable.get_display(variant=var, transcript_id=transcript_id)
+            if onlyHgvs:
+                # do not show the transcript id
+                fields = display.split(":")
+                display = fields[0]
             chrom_to_display[var_string] = display
         return chrom_to_display
