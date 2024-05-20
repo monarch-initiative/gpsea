@@ -151,7 +151,6 @@ class VariantDrawer:
         min_x_absolute = minimum_aa_pos
         max_x_absolute = maximum_aa_pos
         tick_step_size, base = round_to_nearest_power_ten((max_x_absolute - min_x_absolute) / apprx_n_x_ticks)
-        print(base)
         x_ticks = np.array(list(filter(
             lambda x: x < max_x_absolute,
             [min_x_absolute + i * tick_step_size for i in range(1, apprx_n_x_ticks + 1)]
@@ -162,10 +161,9 @@ class VariantDrawer:
 
         # normalize into [0, 1], leaving some space on the sides
         def preprocess(x_absolute):
-            print(f"type {type(x_absolute)} ")
-            print(f"type max_x_absolute {type(max_x_absolute)} ")
             if x_absolute.any() > max_x_absolute:
-                print(f"x={x_absolute} but max={max_x_absolute}")
+                # should never happen
+                print(f"[ERROR _variant_drawer] x={x_absolute} but max={max_x_absolute}")
             shifted_to_0_1 = ((x_absolute - min_x_absolute) / (max_x_absolute - min_x_absolute))
             relative_scale = (protein_track_x_max - protein_track_x_min)
             return shifted_to_0_1 * relative_scale + protein_track_x_min
@@ -219,7 +217,6 @@ class VariantDrawer:
             marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
             cur_radius, cur_length = self._marker_dim(marker_count, protein_track_y_max)
             x_start, x_end = marker, marker #  WAS  marker[0], marker[1]
-            print("Drawing at marker = ",marker)
             self._draw_marker(x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)

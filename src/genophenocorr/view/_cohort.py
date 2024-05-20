@@ -3,7 +3,7 @@ import typing
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 
-from genophenocorr.model import Cohort
+from genophenocorr.model import Cohort, Variant
 
 
 class CohortViewable:
@@ -37,16 +37,20 @@ class CohortViewable:
     def process(
             self,
             cohort: Cohort,
+            transcript_id: str
     ) -> str:
         """
         Create an HTML that should be shown with display(HTML(..)) of the ipython package.
 
         Args:
             cohort (Cohort): The cohort being analyzed in the current Notebook
+            transcript_id (str): the transcript that we map variants onto
 
         Returns:
             str: an HTML string with parameterized template for rendering
         """
+        self._transcript_id = transcript_id
+        self._variant_to_display_d = self.get_variant_description(cohort, transcript_id)
         context = self._prepare_context(cohort)
         return self._cohort_template.render(context)
 
@@ -67,11 +71,12 @@ class CohortViewable:
             hpo_counts.append({"HPO": hpo_label, "ID": hpo_id, "Count": individual_count})
         top_vars = cohort.list_all_variants(top=self._top_variant_count)
         var_counts = list()
+        all_variant_set = cohort.all_variants()
         for var in top_vars:
             chrom_var = var[0]
             var_count = var[1]
-            # TODO get HGVS or human readable variant
-            var_name = "todo"
+            # get HGVS or human readable variant
+            var_name = self._variant_to_display_d.get(chrom_var, chrom_var)
             var_counts.append({"variant": chrom_var, "variant_name": var_name, "Count": var_count})
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
@@ -105,3 +110,29 @@ class CohortViewable:
             "has_transcript": has_transcript,
             "var_effects_list": var_effects_list,
         }
+    
+    @staticmethod
+    def get_display(variant:Variant, transcript_id:str) -> str:
+        for annot in variant.tx_annotations:
+            if annot.transcript_id == transcript_id:
+                return annot.hgvs_cdna
+        return variant.variant_string
+    
+    def get_variant_description(self, cohort: Cohort,
+            transcript_id: str) -> typing.Dict[str, str]:
+        """
+        Get user-friendly strings (e.g., HGV for our target trancript) to match to the chromosomal strings
+        Args:
+            cohort (Cohort): The cohort being analyzed in the current Notebook
+            transcript_id (str): the transcript that we map variants onto
+
+        Returns:
+            typing.Dict[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant
+        """
+        chrom_to_display = dict()
+        all_var_set = cohort.all_variants()
+        for var in all_var_set:
+            var_string = var.variant_string
+            display = CohortViewable.get_display(variant=var, transcript_id=transcript_id)
+            chrom_to_display[var_string] = display
+        return chrom_to_display

@@ -21,7 +21,6 @@ class ProteinVisualizable:
                 continue
             prot_eff_loc = tannot.protein_effect_location
             if prot_eff_loc is not None:
-                print("start ", prot_eff_loc.start, " end ", prot_eff_loc.end)
                 self._variant_pos.append([prot_eff_loc.start, prot_eff_loc.end])
                 self._variant_effect.append(variant_effects[0])
         self._protein_feature_names = list()
@@ -90,10 +89,18 @@ class ProteinVisualizable:
     
     @property
     def protein_length(self):
-        print("Warning need to implement protein_length")
-        max_feat = max(self._protein_feature_ends)
-        max_var = max(self._variant_locations)
-        return  max(max_feat, max_var) + 30
+        """
+        We try to parse the protein length from the UniProt API. If it worked, then self._protein_length is greater than zero.
+        If it did not work, then we take the maximum value of the protein features and variants and add 30 amino acids to it so that
+        the display will show something reasonable. We also print an error.
+        """
+        if self._protein_length > 0:
+            return self._protein_length
+        else:
+            print("There was some problem parsing the protein length; here we estimate the length based on features and variants")
+            max_feat = max(self._protein_feature_ends)
+            max_var = max(self._variant_locations)
+            return  max(max_feat, max_var) + 30
     
     @property
     def protein_feature_names(self):
