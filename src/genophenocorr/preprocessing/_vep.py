@@ -9,49 +9,11 @@ from genophenocorr.model.genome import Region
 from ._api import FunctionalAnnotator
 
 
-def format_coordinates_for_vep_query(vc: VariantCoordinates) -> str:
-    """
-    Converts the 0-based VariantCoordinates to ones that will be interpreted
-    correctly by VEP
-
-    Example - an insertion/duplication of G after the given G at coordinate 3:
-    1 2 3 4 5
-    A C G T A
-
-    0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G
-
-    Args:
-        vc (VariantCoordinates): A VariantCoordinates object
-    Returns:
-        string: The variant coordinates formatted to work with VEP
-    """
-
-    chrom = vc.chrom
-    end = vc.end
-    start = vc.start + 1
-    alt = vc.alt
-    if vc.is_structural():
-        alt = vc.alt[1:-1]
-        # TODO: Verify <INS> are working correctly
-    else:
-        if len(vc.ref) == 0 or len(vc.alt) == 0:
-            raise ValueError(f'Trimmed alleles are not yet supported!')
-        if len(vc.ref) == 1 and len(vc.alt) != 1:
-            # INS/DUP
-            start = start + 1  # we must "trim"
-            alt = vc.alt[1:]
-            # 100 AC AGT
-            # MNV
-
-    return f'{chrom}:{start}-{end}/{alt}'
-
-
 class VepFunctionalAnnotator(FunctionalAnnotator):
     """A `FunctionalAnnotator` that uses Variant Effect Predictor (VEP) REST API to
     do functional variant annotation.
 
     Args:
-        protein_annotator (ProteinMetadataService): a service for getting protein data
         include_computational_txs (bool): Include computational transcripts, such as
         RefSeq `XM_`.
         timeout (int): Timeout in seconds
@@ -87,7 +49,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                     '&transcript_version=1&variant_class=1'
         self._include_computational_txs = include_computational_txs
         self._timeout = timeout
-
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
@@ -173,7 +134,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     protein_effect)
 
     def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
-        api_url = self._url % (format_coordinates_for_vep_query(variant_coordinates))
+        api_url = self._url % (VepFunctionalAnnotator.format_coordinates_for_vep_query(variant_coordinates))
         r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
         #Throw an exception rather than errors so we can skip the variant in _phenopackets
         if not r.ok:
@@ -191,3 +152,40 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                 f"Expected only one variant per request but received {len(results)} "
                 f"different variants.")
         return results[0]
+
+    @staticmethod
+    def format_coordinates_for_vep_query(vc: VariantCoordinates) -> str:
+        """
+        Converts the 0-based VariantCoordinates to ones that will be interpreted
+        correctly by VEP
+
+        Example - an insertion/duplication of G after the given G at coordinate 3:
+        1 2 3 4 5
+        A C G T A
+
+        0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G
+
+        Args:
+            vc (VariantCoordinates): A VariantCoordinates object
+        Returns:
+            string: The variant coordinates formatted to work with VEP
+        """
+
+        chrom = vc.chrom
+        end = vc.end
+        start = vc.start + 1
+        alt = vc.alt
+        if vc.is_structural():
+            alt = vc.alt[1:-1]
+            # TODO: Verify <INS> are working correctly
+        else:
+            if len(vc.ref) == 0 or len(vc.alt) == 0:
+                raise ValueError(f'Trimmed alleles are not yet supported!')
+            if len(vc.ref) == 1 and len(vc.alt) != 1:
+                # INS/DUP
+                start = start + 1  # we must "trim"
+                alt = vc.alt[1:]
+                # 100 AC AGT
+                # MNV
+
+        return f'{chrom}:{start}-{end}/{alt}'
