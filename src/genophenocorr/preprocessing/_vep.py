@@ -61,10 +61,20 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         Raises:
             ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.
         """
-        response = self._query_vep(variant_coordinates)
+        response = self.fetch_response(variant_coordinates)
+        return self.process_response(variant_coordinates.variant_key, response)
+
+    def process_response(
+            self,
+            variant_key: str,
+            response: typing.Mapping[str, typing.Any],
+    ) -> typing.Sequence[TranscriptAnnotation]:
         annotations = []
         if 'transcript_consequences' not in response:
-            raise ValueError('The VEP response for `%s` lacked the required `transcript_consequences` field. %s', variant_coordinates, response)
+            raise ValueError(
+                'The VEP response for `%s` lacked the required `transcript_consequences` field. %s',
+                variant_key, response
+                )
         for trans in response['transcript_consequences']:
             annotation = self._process_item(trans)
             if annotation is not None:
@@ -133,7 +143,15 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     protein_id,
                                     protein_effect)
 
-    def _query_vep(self, variant_coordinates: VariantCoordinates) -> dict:
+    def fetch_response(
+            self,
+            variant_coordinates: VariantCoordinates,
+    ) -> typing.Mapping[str, typing.Any]:
+        """
+        Get a `dict` with the response from the VEP REST API.
+        Args:
+            variant_coordinates: a query :class:`VariantCoordinates`.
+        """
         api_url = self._url % (VepFunctionalAnnotator.format_coordinates_for_vep_query(variant_coordinates))
         r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
         #Throw an exception rather than errors so we can skip the variant in _phenopackets
