@@ -511,7 +511,6 @@ do functional variant annotation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>protein_annotator</strong> (<a class="reference internal" href="#genophenocorr.preprocessing.ProteinMetadataService" title="genophenocorr.preprocessing.ProteinMetadataService"><em>ProteinMetadataService</em></a>) – a service for getting protein data</p></li>
 <li><p><strong>include_computational_txs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Include computational transcripts, such as</p></li>
 <li><p><strong>XM_.</strong> (<em>RefSeq</em>)</p></li>
 <li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Timeout in seconds</p></li>
@@ -541,6 +540,40 @@ annotations for the variant coordinates</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError if VEP times out</strong><strong> or </strong><strong>does not return a response</strong><strong> or </strong><strong>if the response is not formatted as we expect.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.preprocessing.VepFunctionalAnnotator.process_response">
+<span class="sig-name descname"><span class="pre">process_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model._variant.TranscriptAnnotation"><span class="pre">TranscriptAnnotation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_vep.html#VepFunctionalAnnotator.process_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.VepFunctionalAnnotator.process_response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.preprocessing.VepFunctionalAnnotator.fetch_response">
+<span class="sig-name descname"><span class="pre">fetch_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_vep.html#VepFunctionalAnnotator.fetch_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.VepFunctionalAnnotator.fetch_response" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>dict</cite> with the response from the VEP REST API.
+:param variant_coordinates: a query <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantCoordinates</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.preprocessing.VepFunctionalAnnotator.format_coordinates_for_vep_query">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">format_coordinates_for_vep_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_vep.html#VepFunctionalAnnotator.format_coordinates_for_vep_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.VepFunctionalAnnotator.format_coordinates_for_vep_query" title="Link to this definition"></a></dt>
+<dd><p>Converts the 0-based VariantCoordinates to ones that will be interpreted
+correctly by VEP</p>
+<p>Example - an insertion/duplication of G after the given G at coordinate 3:
+1 2 3 4 5
+A C G T A</p>
+<p>0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vc</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates"><em>VariantCoordinates</em></a>) – A VariantCoordinates object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The variant coordinates formatted to work with VEP</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string</p>
 </dd>
 </dl>
 </dd></dl>

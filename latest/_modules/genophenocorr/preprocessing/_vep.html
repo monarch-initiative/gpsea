@@ -92,43 +92,6 @@
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
 
 
-<span class="k">def</span> <span class="nf">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts the 0-based VariantCoordinates to ones that will be interpreted</span>
-<span class="sd">    correctly by VEP</span>
-
-<span class="sd">    Example - an insertion/duplication of G after the given G at coordinate 3:</span>
-<span class="sd">    1 2 3 4 5</span>
-<span class="sd">    A C G T A</span>
-
-<span class="sd">    0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        vc (VariantCoordinates): A VariantCoordinates object</span>
-<span class="sd">    Returns:</span>
-<span class="sd">        string: The variant coordinates formatted to work with VEP</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">chrom</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">chrom</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">end</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span>
-    <span class="k">if</span> <span class="n">vc</span><span class="o">.</span><span class="n">is_structural</span><span class="p">():</span>
-        <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="c1"># TODO: Verify &lt;INS&gt; are working correctly</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Trimmed alleles are not yet supported!&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># INS/DUP</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># we must &quot;trim&quot;</span>
-            <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="c1"># 100 AC AGT</span>
-            <span class="c1"># MNV</span>
-
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">alt</span><span class="si">}</span><span class="s1">&#39;</span>
-
-
 <div class="viewcode-block" id="VepFunctionalAnnotator">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator">[docs]</a>
 <span class="k">class</span> <span class="nc">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">FunctionalAnnotator</span><span class="p">):</span>
@@ -136,7 +99,6 @@
 <span class="sd">    do functional variant annotation.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        protein_annotator (ProteinMetadataService): a service for getting protein data</span>
 <span class="sd">        include_computational_txs (bool): Include computational transcripts, such as</span>
 <span class="sd">        RefSeq `XM_`.</span>
 <span class="sd">        timeout (int): Timeout in seconds</span>
@@ -173,7 +135,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_include_computational_txs</span> <span class="o">=</span> <span class="n">include_computational_txs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
-
 <div class="viewcode-block" id="VepFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.annotate">[docs]</a>
     <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
@@ -187,10 +148,23 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_vep</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VepFunctionalAnnotator.process_response">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.process_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">process_response</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">variant_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">response</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="s1">&#39;transcript_consequences&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The VEP response for `</span><span class="si">%s</span><span class="s1">` lacked the required `transcript_consequences` field. </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The VEP response for `</span><span class="si">%s</span><span class="s1">` lacked the required `transcript_consequences` field. </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">variant_key</span><span class="p">,</span> <span class="n">response</span>
+                <span class="p">)</span>
         <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;transcript_consequences&#39;</span><span class="p">]:</span>
             <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_item</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">annotation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -260,8 +234,18 @@
                                     <span class="n">protein_id</span><span class="p">,</span>
                                     <span class="n">protein_effect</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_query_vep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="p">(</span><span class="n">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">))</span>
+<div class="viewcode-block" id="VepFunctionalAnnotator.fetch_response">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.fetch_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_response</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `dict` with the response from the VEP REST API.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            variant_coordinates: a query :class:`VariantCoordinates`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="p">(</span><span class="n">VepFunctionalAnnotator</span><span class="o">.</span><span class="n">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">))</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
         <span class="c1">#Throw an exception rather than errors so we can skip the variant in _phenopackets</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
@@ -279,6 +263,47 @@
                 <span class="sa">f</span><span class="s2">&quot;Expected only one variant per request but received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;different variants.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="VepFunctionalAnnotator.format_coordinates_for_vep_query">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VepFunctionalAnnotator.format_coordinates_for_vep_query">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the 0-based VariantCoordinates to ones that will be interpreted</span>
+<span class="sd">        correctly by VEP</span>
+
+<span class="sd">        Example - an insertion/duplication of G after the given G at coordinate 3:</span>
+<span class="sd">        1 2 3 4 5</span>
+<span class="sd">        A C G T A</span>
+
+<span class="sd">        0-based: 2 3 G GG       1-based: 3 G GG         VEP: 4 3 - G</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vc (VariantCoordinates): A VariantCoordinates object</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The variant coordinates formatted to work with VEP</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">chrom</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">chrom</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span>
+        <span class="k">if</span> <span class="n">vc</span><span class="o">.</span><span class="n">is_structural</span><span class="p">():</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># TODO: Verify &lt;INS&gt; are working correctly</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Trimmed alleles are not yet supported!&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># INS/DUP</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># we must &quot;trim&quot;</span>
+                <span class="n">alt</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="c1"># 100 AC AGT</span>
+                <span class="c1"># MNV</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">alt</span><span class="si">}</span><span class="s1">&#39;</span></div>
+</div>
 
 </pre></div>
 
