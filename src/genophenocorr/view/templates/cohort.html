@@ -112,12 +112,14 @@ caption {
     <table>
         <tbody>
             <tr class="strng">
-                <th class="lft">Disease</th>
+                <th class="lft">Disease ID</th>
+                <th>Disease Name</th>
                 <th>Annotation Count</th>
               </tr>
               {% for disease_count in disease_counts %}
               <tr>
                 <td class="lft">{{ disease_count.disease_id }}</td>
+                <td>{{ disease_count.disease_name }}</td>
                 <td>{{ disease_count.count }}</td>
                 </tr>
             {% endfor %}
