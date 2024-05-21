@@ -63,7 +63,7 @@ class CohortViewable:
             individual_count = hpo[1]
             hpo_label = "n/a"
             if hpo_id in self._hpo:
-                hpo_label = self._hpo.get_term_name(hpo_id)
+                hpo_label = self._hpo.get_term(hpo_id).name
             hpo_counts.append({"HPO": hpo_label, "ID": hpo_id, "Count": individual_count})
         top_vars = cohort.list_all_variants(top=self._top_variant_count)
         var_counts = list()
@@ -71,7 +71,11 @@ class CohortViewable:
             chrom_var = var[0]
             var_count = var[1]
             # TODO get HGVS or human readable variant
-            var_name = "todo"
+            if self._tx_id is not None:
+                variant = cohort.get_variant_by_key(chrom_var)
+                var_name = variant.get_hgvs_cdna_by_tx(self._tx_id)
+            else:
+                var_name = "ID with transcript"
             var_counts.append({"variant": chrom_var, "variant_name": var_name, "Count": var_count})
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
@@ -79,7 +83,11 @@ class CohortViewable:
         for d in diseases:
             disease_id = d[0]
             disease_count = d[1]
-            disease_counts.append({"disease_id": disease_id, "count": disease_count})
+            disease_name = "Unknown"
+            for dis in cohort.all_diseases():
+                if dis.identifier == d[0]:
+                    disease_name = dis.name
+            disease_counts.append({"disease_id": disease_id, "disease_name": disease_name, "count": disease_count})
         var_effects_list = list()
         if self._tx_id is not None:
             has_transcript = 1
