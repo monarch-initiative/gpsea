@@ -83,6 +83,11 @@ def protein_test_service() -> ProteinTestMetadataService:
 
 
 @pytest.fixture(scope='session')
+def fpath_test_data_dir() -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+
+
+@pytest.fixture(scope='session')
 def fpath_suox_cohort(
         fpath_test_data_dir: str,
 ) -> str:
