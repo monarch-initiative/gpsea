@@ -17,7 +17,6 @@ class CohortViewable:
             hpo: MinimalOntology,
             top_phenotype_count: int = 10,
             top_variant_count: int = 10,
-            transcript_id: str = None,
     ):
         """
         Args:
@@ -29,8 +28,6 @@ class CohortViewable:
         self._hpo = hpo
         self._top_phenotype_count = top_phenotype_count
         self._top_variant_count = top_variant_count
-        self._tx_id = transcript_id
-
         environment = Environment(loader=(PackageLoader('genophenocorr.view', 'templates')))
         self._cohort_template = environment.get_template("cohort.html")
 
@@ -90,12 +87,11 @@ class CohortViewable:
                     disease_name = dis.name
             disease_counts.append({"disease_id": disease_id, "disease_name": disease_name, "count": disease_count})
         var_effects_list = list()
-        if self._tx_id is not None:
+        if transcript_id is not None:
             has_transcript = 1
-            data_by_tx = cohort.variant_effect_count_by_tx(tx_id=self._tx_id)
-            counter_d = data_by_tx.get(self._tx_id)
-            # data structure -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175}, {'effect}': 'STOP_GAINED', 'count': 67},
-            for k, v in counter_d.items():
+            data_by_tx = cohort.variant_effect_count_by_tx(tx_id=transcript_id)
+            # e.g., data structure -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175}, {'effect}': 'STOP_GAINED', 'count': 67},
+            for k, v in data_by_tx.items():
                 var_effects_list.append({"effect": k, "count": v})
         else:
             has_transcript = 0
