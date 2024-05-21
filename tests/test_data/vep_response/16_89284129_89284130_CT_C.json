@@ -1,0 +1,169 @@
+{
+  "start": 89284130,
+  "strand": 1,
+  "minimised": 1,
+  "variant_class": "deletion",
+  "end": 89284130,
+  "assembly_name": "GRCh38",
+  "input": "16 89284129 89284130 CT/C 1",
+  "seq_region_name": "16",
+  "id": "16_89284130_T/-",
+  "colocated_variants": [
+    {
+      "start": 89284130,
+      "id": "CD1613564",
+      "seq_region_name": "16",
+      "phenotype_or_disease": 1,
+      "strand": 1,
+      "somatic": 1,
+      "allele_string": "HGMD_MUTATION",
+      "end": 89284130
+    },
+    {
+      "start": 89284130,
+      "phenotype_or_disease": 1,
+      "id": "rs886039902",
+      "seq_region_name": "16",
+      "clin_sig": [
+        "likely_pathogenic",
+        "pathogenic"
+      ],
+      "strand": 1,
+      "var_synonyms": {
+        "ClinVar": [
+          "RCV000256444",
+          "VCV000266033",
+          "RCV000522964",
+          "RCV001376675",
+          "RCV002519008",
+          "RCV000826156",
+          "RCV000489189",
+          "VCV000426843"
+        ]
+      },
+      "pubmed": [
+        25125236,
+        21782149,
+        35682590,
+        33917340,
+        35970914,
+        25413698,
+        33955014,
+        32124548,
+        25652421,
+        27667800
+      ],
+      "end": 89284135,
+      "allele_string": "TTTTTT/T/TT/TTTTT"
+    }
+  ],
+  "transcript_consequences": [
+    {
+      "biotype": "protein_coding",
+      "gene_id": "29123",
+      "impact": "HIGH",
+      "cdna_end": 2944,
+      "protein_end": 804,
+      "cds_start": 2412,
+      "protein_id": "NP_001243111.1",
+      "consequence_terms": [
+        "frameshift_variant"
+      ],
+      "lof": "HC",
+      "hgvsp": "NP_001243111.1:p.Glu805LysfsTer58",
+      "codons": "aaA/aa",
+      "protein_start": 804,
+      "hgvsc": "NM_001256182.2:c.2412del",
+      "transcript_id": "NM_001256182.2",
+      "given_ref": "T",
+      "strand": -1,
+      "variant_allele": "-",
+      "amino_acids": "K/X",
+      "gene_symbol": "ANKRD11",
+      "gene_symbol_source": "EntrezGene",
+      "cds_end": 2412,
+      "cdna_start": 2944,
+      "used_ref": "T",
+      "exon": "10/14",
+      "lof_info": "PERCENTILE:0.301801801801802,GERP_DIST:-3802.55439479351,BP_DIST:5576,DIST_FROM_LAST_EXON:5391,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT"
+    },
+    {
+      "hgvsp": "NP_001243112.1:p.Glu805LysfsTer58",
+      "codons": "aaA/aa",
+      "protein_start": 804,
+      "protein_id": "NP_001243112.1",
+      "lof": "HC",
+      "consequence_terms": [
+        "frameshift_variant"
+      ],
+      "cds_start": 2412,
+      "protein_end": 804,
+      "gene_id": "29123",
+      "cdna_end": 2870,
+      "impact": "HIGH",
+      "biotype": "protein_coding",
+      "used_ref": "T",
+      "lof_info": "PERCENTILE:0.301801801801802,GERP_DIST:-3802.55439479351,BP_DIST:5576,DIST_FROM_LAST_EXON:5391,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT",
+      "exon": "9/13",
+      "cdna_start": 2870,
+      "cds_end": 2412,
+      "gene_symbol_source": "EntrezGene",
+      "gene_symbol": "ANKRD11",
+      "strand": -1,
+      "amino_acids": "K/X",
+      "variant_allele": "-",
+      "hgvsc": "NM_001256183.2:c.2412del",
+      "transcript_id": "NM_001256183.2",
+      "given_ref": "T"
+    },
+    {
+      "cds_start": 2412,
+      "lof": "HC",
+      "consequence_terms": [
+        "frameshift_variant"
+      ],
+      "protein_id": "NP_037407.4",
+      "protein_start": 804,
+      "codons": "aaA/aa",
+      "hgvsp": "NP_037407.4:p.Glu805LysfsTer58",
+      "biotype": "protein_coding",
+      "cdna_end": 2873,
+      "impact": "HIGH",
+      "gene_id": "29123",
+      "protein_end": 804,
+      "canonical": 1,
+      "cds_end": 2412,
+      "cdna_start": 2873,
+      "exon": "9/13",
+      "lof_info": "PERCENTILE:0.301801801801802,GERP_DIST:-3802.55439479351,BP_DIST:5576,DIST_FROM_LAST_EXON:5391,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT",
+      "used_ref": "T",
+      "mane_select": "ENST00000301030.10",
+      "transcript_id": "NM_013275.6",
+      "given_ref": "T",
+      "hgvsc": "NM_013275.6:c.2412del",
+      "amino_acids": "K/X",
+      "variant_allele": "-",
+      "strand": -1,
+      "gene_symbol": "ANKRD11",
+      "gene_symbol_source": "EntrezGene"
+    },
+    {
+      "gene_symbol_source": "EntrezGene",
+      "gene_id": "29123",
+      "impact": "MODIFIER",
+      "gene_symbol": "ANKRD11",
+      "strand": -1,
+      "biotype": "misc_RNA",
+      "distance": 2531,
+      "variant_allele": "-",
+      "given_ref": "T",
+      "transcript_id": "NR_045839.2",
+      "used_ref": "T",
+      "consequence_terms": [
+        "downstream_gene_variant"
+      ]
+    }
+  ],
+  "most_severe_consequence": "frameshift_variant",
+  "allele_string": "T/-"
+}

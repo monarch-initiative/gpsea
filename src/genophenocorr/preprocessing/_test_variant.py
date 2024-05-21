@@ -56,9 +56,11 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
     with open(fpath) as fh:
         return Parse(fh.read(), GenomicInterpretation())
 
+
 @pytest.fixture
-def variant_annotator():
+def variant_annotator() -> VepFunctionalAnnotator:
     return VepFunctionalAnnotator()
+
 
 @pytest.fixture
 def caching_annotator(variant_annotator, tmp_path):
