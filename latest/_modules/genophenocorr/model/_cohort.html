@@ -418,6 +418,16 @@
     <span class="k">def</span> <span class="nf">get_excluded_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_count</span></div>
 
+    
+<div class="viewcode-block" id="Cohort.get_variant_by_key">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_variant_by_key">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variant_by_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="n">variant_key</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variant key </span><span class="si">{</span><span class="n">variant_key</span><span class="si">}</span><span class="s2"> not found in cohort.&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patient_set</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_patient_set</span>
