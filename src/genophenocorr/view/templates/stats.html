@@ -34,7 +34,7 @@
   }
 
   .table td,tr {
-    text-align: right;
+    text-align: left;
 }
 
 .table td:first-child, tr:first-child {
@@ -47,9 +47,8 @@
 <body>
   <h1>Statistical analysis: {{mtc_name}} ({{ hpo_mtc_filter_name }})</h1>
   <p>Performed statistical tests for {{ total_hpo_count }} HPO terms.</p>
-  <p>Using  {{ hpo_mtc_filter_name }}, the following numbers of terms were omitted from statistical analysis. </p>
-    <h3>Omitted from statisical analysis</h3>
     <table>
+      <caption>Using  {{ hpo_mtc_filter_name }}, the following numbers of terms were omitted from statistical analysis. </caption>
         <tbody>
             <tr>
                 <th>Skipped</th>

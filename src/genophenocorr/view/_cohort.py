@@ -49,19 +49,19 @@ class CohortViewable:
         Returns:
             str: an HTML string with parameterized template for rendering
         """
-        self._transcript_id = transcript_id
-        self._variant_to_display_d = self.get_variant_description(cohort, transcript_id)
-        context = self._prepare_context(cohort)
+        context = self._prepare_context(cohort, transcript_id=transcript_id)
         return self._cohort_template.render(context)
 
     def _prepare_context(
             self,
             cohort: Cohort,
+            transcript_id: str
     ) -> typing.Mapping[str, typing.Any]:
         n_patients = len(cohort.all_patients)
         total_HPO_count = len(cohort.all_phenotypes())
         top_hpos = cohort.list_present_phenotypes(top=self._top_phenotype_count)
         hpo_counts = list()
+        variant_to_display_d = self.get_variant_description(cohort, transcript_id)
         for hpo in top_hpos:
             hpo_id = hpo[0]
             individual_count = hpo[1]
@@ -76,13 +76,7 @@ class CohortViewable:
             chrom_var = var[0]
             var_count = var[1]
             # get HGVS or human readable variant
-            var_name = self._variant_to_display_d.get(chrom_var, chrom_var)
-            # TODO get HGVS or human readable variant
-            if self._tx_id is not None:
-                variant = cohort.get_variant_by_key(chrom_var)
-                var_name = variant.get_hgvs_cdna_by_tx(self._tx_id)
-            else:
-                var_name = "ID with transcript"
+            var_name = variant_to_display_d.get(chrom_var, chrom_var)
             var_counts.append({"variant": chrom_var, "variant_name": var_name, "Count": var_count})
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
@@ -119,7 +113,7 @@ class CohortViewable:
             "disease_counts": disease_counts,
             "has_transcript": has_transcript,
             "var_effects_list": var_effects_list,
-            "transcript_id": self._transcript_id,
+            "transcript_id": transcript_id,
         }
     
     @staticmethod

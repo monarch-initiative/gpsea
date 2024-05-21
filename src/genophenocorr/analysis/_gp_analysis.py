@@ -223,15 +223,15 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
                 continue
             # todo -- similar for (3,2)
             if not HeuristicSamplerMtcFilter.some_cell_has_greater_than_one_count(counts_frame):
-                reason = f"Skipping term {hpo_tk_term_id} because no term has more than one count"
+                reason = f"Skipping term because no genotype has more than one observed HPO count"
                 filtered_terms_d[reason] += 1
                 continue
             if HeuristicSamplerMtcFilter.genotypes_have_same_HPO_proportions(counts_frame):
-                reason = f"Skipping term {hpo_tk_term_id} because all genotypes have same HPO observed proportions"
+                reason = f"Skipping term because all genotypes have same HPO observed proportions"
                 filtered_terms_d[reason] += 1
                 continue
             if HeuristicSamplerMtcFilter.one_genotype_has_zero_HPO_observations(counts_frame):
-                reason = f"Skipping term {hpo_tk_term_id} because one genotype had zero observations"
+                reason = f"Skipping term because one genotype had zero observations"
                 filtered_terms_d[reason] += 1
                 continue
             children = self._hpo.graph.get_children(hpo_tk_term_id, False)
