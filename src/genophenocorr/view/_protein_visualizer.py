@@ -234,13 +234,25 @@ class ProteinVisualizer:
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
+
+        unique_feature_names = list(set(feature_names))
+        labeling_methods = ['abbreviate', 'enumerate']
+        labeling_method = labeling_methods[1]
+
+        if labeling_method == 'enumerate':
+            ascii_A = 65
+            labels = {fn: chr(ascii_A + i) for i, fn in enumerate(unique_feature_names)}
+
+        elif labeling_method == 'abbreviate':
+            labels = {fn: fn[0:5] for fn in unique_feature_names}
+
         for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
             feature_x_min, feature_x_max = feature_x
             draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
                            line_color=self.feature_outline_color,
                            fill_color=feature_color, line_width=1.0)
             if (feature_x_max - feature_x_min) <= 0.03:  # too small to dsplay name
-                draw_string(feature_name,
+                draw_string(labels[feature_name],
                             0.05 * (feature_x_max - feature_x_min) + feature_x_min,
                             0.55 * (feature_y_max - feature_y_min) + feature_y_min,
                             ha="left", va="center", rotation=90, color='black', fontsize=8
@@ -249,7 +261,7 @@ class ProteinVisualizer:
                 # TODO @ielis: How to display name here?
                 pass
             else:
-                draw_string(feature_name,
+                draw_string(labels[feature_name],
                             0.2 * (feature_x_max - feature_x_min) + feature_x_min,
                             0.4 * (feature_y_max - feature_y_min) + feature_y_min,
                             ha="left", va="center", color='black'
