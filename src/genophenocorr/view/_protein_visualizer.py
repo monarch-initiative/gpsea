@@ -117,7 +117,11 @@ class ProteinVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
     
-    def draw_fig(self, pvis:ProteinVisualizable):
+    def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate'):
+        """
+        Valid values of labeling_method are ['abbreviate', 'enumerate']
+        """
+        labeling_methods = ['abbreviate', 'enumerate']
         plt.figure(figsize=(20, 20))
         tx_id = pvis.transcript_id
         protein_id = pvis.protein_id
@@ -236,8 +240,6 @@ class ProteinVisualizer:
         feature_y_min, feature_y_max = 0.485, 0.515
 
         unique_feature_names = list(set(feature_names))
-        labeling_methods = ['abbreviate', 'enumerate']
-        labeling_method = labeling_methods[0]
 
         if labeling_method == 'enumerate':
             ascii_A = 65
