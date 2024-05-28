@@ -270,17 +270,21 @@ class ProteinVisualizer:
                             )
 
         # draw legend
-        legend_min_y = 0.6
-        legend_max_y = 0.7
-        legend_min_x = 0.7
-        legend_max_x = 0.85
+        n_unique_features = len(unique_feature_names)
         color_box_x_dim = 0.01
         color_box_y_dim = 0.01
         if labeling_method == labeling_methods[0]:
             color_box_x_dim *= 3.5
         row_spacing = 0.005
+        legend_min_y = 0.6
+        legend_min_x = 0.7
+        legend_max_y = legend_min_y + (n_unique_features + 1) * row_spacing + n_unique_features * color_box_y_dim
+        legend_max_x = 0.85
+
+        # legend box
         draw_rectangle(legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
         for i, feature_name in enumerate(unique_feature_names):
+            # colored box
             color_box_min_x = legend_min_x + row_spacing
             color_box_max_x = color_box_min_x + color_box_x_dim
             color_box_max_y = legend_max_y - (i + 1) * row_spacing - i * color_box_y_dim
@@ -289,10 +293,18 @@ class ProteinVisualizer:
                            color_box_max_x, color_box_max_y,
                            'black',
                            fill_color=self.protein_feature_colors[feature_name])
+            # label in colored box (same as on x axis in the boxes)
             draw_string(labels[feature_name],
                         color_box_min_x + 0.002,
                         color_box_min_y + 0.005,
                         fontsize=10,
+                        ha="left", va="center", color='black'
+                        )
+            # full feature name
+            draw_string(feature_name,
+                        color_box_max_x + 0.005,
+                        color_box_min_y + 0.005,
+                        fontsize=12,
                         ha="left", va="center", color='black'
                         )
 
