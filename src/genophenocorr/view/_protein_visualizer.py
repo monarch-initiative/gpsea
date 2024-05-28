@@ -156,8 +156,7 @@ class ProteinVisualizer:
             [min_x_absolute + i * tick_step_size for i in range(1, apprx_n_x_ticks + 1)]
         ))).astype(int)
         x_ticks = round_to_nearest_power_ten(x_ticks, base)
-        print(tick_step_size, base)
-        print('xticks: ', x_ticks)
+        
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
@@ -184,8 +183,8 @@ class ProteinVisualizer:
                   line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # minimum tick
-        # draw_string(str(min_x_absolute), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
-        #             ha='center', va='top')
+        draw_string(str(min_x_absolute), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
+                    ha='center', va='top')
         draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # max tick
         draw_string(str(max_x_absolute), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
