@@ -34,7 +34,16 @@ def draw_circle(center_x, center_y, radius, line_color='black', fill_color=None,
 
 
 def draw_string(text, x, y, ha, va, color='black', fontsize=12, rotation=0):
-    plt.text(x, y, text, fontsize=fontsize, color=color, ha=ha, va=va, rotation=rotation)     
+    plt.text(x, y, text, fontsize=fontsize, color=color, ha=ha, va=va, rotation=rotation)
+
+
+def generate_ticks(apprx_n_ticks, min, max):
+    tick_step_size, base = round_to_nearest_power_ten((max - min) / apprx_n_ticks)
+    ticks = np.array(list(filter(
+        lambda x: x < max,
+        [min + i * tick_step_size for i in range(1, apprx_n_ticks + 1)]
+    ))).astype(int)
+    return round_to_nearest_power_ten(ticks, base)
 
 
 class ProteinVisualizer:
@@ -112,8 +121,8 @@ class ProteinVisualizer:
         plt.figure(figsize=(20, 20))
         tx_id = pvis.transcript_id
         protein_id = pvis.protein_id
-        minimum_aa_pos = 1
-        maximum_aa_pos = pvis.protein_length        
+        min_aa_pos = 1
+        max_aa_pos = pvis.protein_length
         feature_limits = list()
         for i in range(len(pvis.protein_feature_ends)):
             feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
@@ -146,17 +155,9 @@ class ProteinVisualizer:
         protein_track_y_min, protein_track_y_max = 0.492, 0.508
         font_size = 12
         text_padding = 0.004
-        
-        apprx_n_x_ticks = 6
-        min_x_absolute = minimum_aa_pos
-        max_x_absolute = maximum_aa_pos
-        tick_step_size, base = round_to_nearest_power_ten((max_x_absolute - min_x_absolute) / apprx_n_x_ticks)
-        x_ticks = np.array(list(filter(
-            lambda x: x < max_x_absolute,
-            [min_x_absolute + i * tick_step_size for i in range(1, apprx_n_x_ticks + 1)]
-        ))).astype(int)
-        x_ticks = round_to_nearest_power_ten(x_ticks, base)
-        
+
+        x_ticks = generate_ticks(apprx_n_ticks=6, min=min_aa_pos, max=max_aa_pos)
+
         max_marker_count = np.max(marker_counts)
 
         # normalize into [0, 1], leaving some space on the sides
