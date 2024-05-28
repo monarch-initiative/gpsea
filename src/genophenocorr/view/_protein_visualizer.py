@@ -120,6 +120,8 @@ class ProteinVisualizer:
     def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate', legend_x=0.87):
         """
         Valid values of labeling_method are ['abbreviate', 'enumerate']
+        by default the legend is drawn to the right of the figure to avoid overlap between the variant markers and
+        the legend
         """
         labeling_methods = ['abbreviate', 'enumerate']
         plt.figure(figsize=(20, 20))
@@ -276,7 +278,7 @@ class ProteinVisualizer:
         if labeling_method == labeling_methods[0]:
             color_box_x_dim *= 3.5
         row_spacing = 0.005
-        legend_width = 0.24
+        legend_width = 0.23 + color_box_x_dim
         legend_max_y = 0.75
         legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
         legend_min_x = legend_x
@@ -309,8 +311,7 @@ class ProteinVisualizer:
                         ha="left", va="center", color='black'
                         )
 
-
-        plt.xlim(0, 1.2)
+        plt.xlim(0, max(1.0, legend_x + legend_width + 0.02))
         plt.ylim(0.3, 0.75)
         plt.gca().set_aspect('equal')
         plt.axis('off')
