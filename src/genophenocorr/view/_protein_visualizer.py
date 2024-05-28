@@ -162,10 +162,10 @@ class ProteinVisualizer:
 
         # normalize into [0, 1], leaving some space on the sides
         def preprocess(x_absolute):
-            if x_absolute.any() > max_x_absolute:
+            if x_absolute.any() > max_aa_pos:
                 # should never happen
-                print(f"[ERROR _variant_drawer] x={x_absolute} but max={max_x_absolute}")
-            shifted_to_0_1 = ((x_absolute - min_x_absolute) / (max_x_absolute - min_x_absolute))
+                print(f"[ERROR _variant_drawer] x={x_absolute} but max={max_aa_pos}")
+            shifted_to_0_1 = ((x_absolute - min_aa_pos) / (max_aa_pos - min_aa_pos))
             relative_scale = (protein_track_x_max - protein_track_x_min)
             return shifted_to_0_1 * relative_scale + protein_track_x_min
 
@@ -184,11 +184,11 @@ class ProteinVisualizer:
                   line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # minimum tick
-        draw_string(str(min_x_absolute), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
+        draw_string(str(min_aa_pos), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
         draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # max tick
-        draw_string(str(max_x_absolute), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
+        draw_string(str(max_aa_pos), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
         for x_tick_relative, x_tick_absolute in zip(x_ticks_relative, x_ticks):
             draw_line(x_tick_relative, x_axis_y - small_tick_length, x_tick_relative, x_axis_y,
