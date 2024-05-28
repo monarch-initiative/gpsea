@@ -117,7 +117,7 @@ class ProteinVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
     
-    def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate'):
+    def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate', legend_x=0.87):
         """
         Valid values of labeling_method are ['abbreviate', 'enumerate']
         """
@@ -276,10 +276,10 @@ class ProteinVisualizer:
         if labeling_method == labeling_methods[0]:
             color_box_x_dim *= 3.5
         row_spacing = 0.005
-        legend_width = 0.22
+        legend_width = 0.24
         legend_max_y = 0.75
         legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
-        legend_min_x = 0.87
+        legend_min_x = legend_x
         legend_max_x = legend_min_x + legend_width
 
         # legend box
@@ -318,4 +318,3 @@ class ProteinVisualizer:
                   f'protein: {protein_id},'
                   f'protein name: {pvis.protein_id}')
         plt.show()
-        
