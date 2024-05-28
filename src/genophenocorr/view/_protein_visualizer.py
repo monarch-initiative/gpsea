@@ -237,7 +237,7 @@ class ProteinVisualizer:
 
         unique_feature_names = list(set(feature_names))
         labeling_methods = ['abbreviate', 'enumerate']
-        labeling_method = labeling_methods[1]
+        labeling_method = labeling_methods[0]
 
         if labeling_method == 'enumerate':
             ascii_A = 65
@@ -272,18 +272,27 @@ class ProteinVisualizer:
         legend_max_y = 0.7
         legend_min_x = 0.7
         legend_max_x = 0.85
-        color_box_dim = 0.02
-        row_spacing = 0.01
+        color_box_x_dim = 0.01
+        color_box_y_dim = 0.01
+        if labeling_method == labeling_methods[0]:
+            color_box_x_dim *= 3.5
+        row_spacing = 0.005
         draw_rectangle(legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
         for i, feature_name in enumerate(unique_feature_names):
             color_box_min_x = legend_min_x + row_spacing
-            color_box_max_x = color_box_min_x + color_box_dim
-            color_box_min_y = legend_min_y + (i + 1) * (row_spacing + color_box_dim)
-            color_box_max_y = color_box_min_y + color_box_dim
+            color_box_max_x = color_box_min_x + color_box_x_dim
+            color_box_max_y = legend_max_y - (i + 1) * row_spacing - i * color_box_y_dim
+            color_box_min_y = color_box_max_y - color_box_y_dim
             draw_rectangle(color_box_min_x, color_box_min_y,
                            color_box_max_x, color_box_max_y,
                            'black',
                            fill_color=self.protein_feature_colors[feature_name])
+            draw_string(labels[feature_name],
+                        color_box_min_x + 0.002,
+                        color_box_min_y + 0.005,
+                        fontsize=10,
+                        ha="left", va="center", color='black'
+                        )
 
 
         plt.xlim(0, 1)
