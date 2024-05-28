@@ -278,7 +278,7 @@ class ProteinVisualizer:
         if labeling_method == labeling_methods[0]:
             color_box_x_dim *= 3.5
         row_spacing = 0.005
-        legend_width = 0.23 + color_box_x_dim
+        legend_width = 0.2 + color_box_x_dim
         legend_max_y = 0.75
         legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
         legend_min_x = legend_x
