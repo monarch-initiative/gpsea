@@ -156,18 +156,21 @@ class ProteinVisualizer:
         font_size = 12
         text_padding = 0.004
 
-        x_ticks = generate_ticks(apprx_n_ticks=6, min=min_aa_pos, max=max_aa_pos)
-
         max_marker_count = np.max(marker_counts)
 
+        x_ticks = generate_ticks(apprx_n_ticks=6, min=min_aa_pos, max=max_aa_pos)
+        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
+
         # normalize into [0, 1], leaving some space on the sides
-        def preprocess(x_absolute):
-            if x_absolute.any() > max_aa_pos:
+        def preprocess(absolute,
+                       min_absolute=min_aa_pos, max_absolute=max_aa_pos,
+                       min_relative=protein_track_x_min, max_relative=protein_track_x_max):
+            if absolute.any() > max_absolute:
                 # should never happen
-                print(f"[ERROR _variant_drawer] x={x_absolute} but max={max_aa_pos}")
-            shifted_to_0_1 = ((x_absolute - min_aa_pos) / (max_aa_pos - min_aa_pos))
-            relative_scale = (protein_track_x_max - protein_track_x_min)
-            return shifted_to_0_1 * relative_scale + protein_track_x_min
+                print(f"[ERROR _variant_drawer] x={absolute} but max={max_absolute}")
+            shifted_to_0_1 = ((absolute - min_absolute) / (max_absolute - min_absolute))
+            relative_scale = (max_relative - min_relative)
+            return shifted_to_0_1 * relative_scale + min_relative
 
         feature_limits_relative = preprocess(feature_limits)
         variant_locations_relative = preprocess(variant_locations_counted_absolute)
@@ -182,17 +185,18 @@ class ProteinVisualizer:
         big_tick_length, small_tick_length = 0.015, 0.005
         draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # main line
-        draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
-                  line_width=1.0)  # minimum tick
         draw_string(str(min_aa_pos), x_axis_min_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
-        draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
-                  line_width=1.0)  # max tick
         draw_string(str(max_aa_pos), x_axis_max_x, x_axis_y - big_tick_length - text_padding, fontsize=font_size,
                     ha='center', va='top')
+        # draw x ticks
+        draw_line(x_axis_max_x, x_axis_y - big_tick_length, x_axis_max_x, x_axis_y, line_color=self.axis_color,
+                  line_width=1.0)  # max tick
+        draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,
+                  line_width=1.0)  # minimum tick
         for x_tick_relative, x_tick_absolute in zip(x_ticks_relative, x_ticks):
             draw_line(x_tick_relative, x_axis_y - small_tick_length, x_tick_relative, x_axis_y,
-                      line_color=self.axis_color, line_width=1.0)  # max tick
+                      line_color=self.axis_color, line_width=1.0)
             draw_string(str(x_tick_absolute), x_tick_relative, x_axis_y - small_tick_length - text_padding,
                         fontsize=font_size, ha='center', va='top')
 
@@ -200,17 +204,25 @@ class ProteinVisualizer:
         y_axis_x = protein_track_x_min - 0.02
         y_axis_min_y = protein_track_y_max + 0.01
         _, y_axis_max_y = self._marker_dim(max_marker_count, protein_track_y_max)
+        y_ticks_relative = preprocess(y_ticks, min_absolute=0, max_absolute=max_marker_count,
+                                      min_relative=y_axis_min_y, max_relative=y_axis_max_y)
         draw_line(y_axis_x, y_axis_min_y, y_axis_x, y_axis_max_y, line_color=self.axis_color, line_width=1.0)
-        draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color=self.axis_color,
-                  line_width=1.0)  # 0 tick
         draw_string("0", y_axis_x - small_tick_length - text_padding, y_axis_min_y, fontsize=font_size, ha='right',
                     va='center')
-        draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color=self.axis_color,
-                  line_width=1.0)  # max tick
         draw_string(str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
                     fontsize=font_size, ha='right', va='center')
         draw_string("# Variants", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2, fontsize=font_size, ha='center',
                     va='center', rotation=90)  # x axis label
+        # draw y ticks
+        draw_line(y_axis_x - small_tick_length, y_axis_min_y, y_axis_x, y_axis_min_y, line_color=self.axis_color,
+                  line_width=1.0)  # 0 tick
+        draw_line(y_axis_x - small_tick_length, y_axis_max_y, y_axis_x, y_axis_max_y, line_color=self.axis_color,
+                  line_width=1.0)  # max tick
+        for y_tick_relative, y_tick_absolute in zip(y_ticks_relative, y_ticks):
+            draw_line(y_axis_x - small_tick_length, y_tick_relative, y_axis_x, y_tick_relative, line_color=self.axis_color,
+                      line_width=1.0)
+            draw_string(str(y_tick_absolute), y_axis_x - small_tick_length - text_padding, y_tick_relative, fontsize=font_size, ha='right',
+                        va='center')
 
         # draw variants
         marker_y_min = protein_track_y_max
