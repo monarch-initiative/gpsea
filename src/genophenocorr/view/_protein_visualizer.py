@@ -276,10 +276,11 @@ class ProteinVisualizer:
         if labeling_method == labeling_methods[0]:
             color_box_x_dim *= 3.5
         row_spacing = 0.005
-        legend_min_y = 0.6
-        legend_min_x = 0.7
-        legend_max_y = legend_min_y + (n_unique_features + 1) * row_spacing + n_unique_features * color_box_y_dim
-        legend_max_x = 0.85
+        legend_width = 0.22
+        legend_max_y = 0.75
+        legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
+        legend_min_x = 0.87
+        legend_max_x = legend_min_x + legend_width
 
         # legend box
         draw_rectangle(legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
@@ -309,7 +310,7 @@ class ProteinVisualizer:
                         )
 
 
-        plt.xlim(0, 1)
+        plt.xlim(0, 1.2)
         plt.ylim(0.3, 0.75)
         plt.gca().set_aspect('equal')
         plt.axis('off')
@@ -317,3 +318,4 @@ class ProteinVisualizer:
                   f'protein: {protein_id},'
                   f'protein name: {pvis.protein_id}')
         plt.show()
+        
