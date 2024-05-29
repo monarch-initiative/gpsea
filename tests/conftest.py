@@ -5,17 +5,20 @@ import typing
 import hpotk
 import pytest
 
-from ._protein_test_service import ProteinTestMetadataService
+from genophenocorr.analysis.predicate import GenotypePolyPredicate
+from genophenocorr.analysis.predicate.genotype import VariantEffectPredicate
+from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
 from genophenocorr.model import *
 from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
-from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
-
+from ._protein_test_service import ProteinTestMetadataService
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--runonline", action="store_true", default=False, help="run online tests"
     )
+
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "online: mark test that require internet access to run")
@@ -32,7 +35,6 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope='session')
-
 def fpath_test_data() -> str:
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
 
@@ -57,7 +59,6 @@ def genome_build_hg38() -> GenomeBuild:
     return GRCh38
 
 
-
 @pytest.fixture(scope='session')
 def hpo(fpath_test_data_dir: str) -> hpotk.MinimalOntology:
     fpath_hpo = os.path.join(fpath_test_data_dir, 'hp.v2024-04-26.json.gz')
@@ -72,6 +73,7 @@ def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.Validati
         hpotk.validate.PhenotypicAbnormalityValidator(hpo)
     )
     return hpotk.validate.ValidationRunner(validators)
+
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
     return GenomicRegion(GRCh38.contig_by_name(contig), start, end, Strand.POSITIVE)
@@ -100,6 +102,47 @@ def suox_cohort(
 ) -> Cohort:
     with open(fpath_suox_cohort) as fh:
         return json.load(fh, cls=GenophenocorrJSONDecoder)
+
+
+@pytest.fixture(scope='session')
+def suox_gt_predicate() -> GenotypePolyPredicate:
+    # To bin the patients to a group with >1 MISSENSE variant or 0 MISSENSE variants.
+    suox_mane_tx_id = 'NM_001032386.2'
+    return VariantEffectPredicate(transcript_id=suox_mane_tx_id, effect=VariantEffect.MISSENSE_VARIANT)
+
+
+@pytest.fixture(scope='session')
+def suox_pheno_predicates(
+        hpo: hpotk.MinimalOntology,
+) -> typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]:
+    """
+    Get predicates for test for presence of 5 HPO terms:
+    Seizure, Ectopia lentis, Sulfocysteinuria, Neurodevelopmental delay, and Hypertonia.
+
+    Note, these are just a *SUBSET* of all phenotypes that can be tested for in the *SUOX* cohort.
+    """
+    return (
+        PropagatingPhenotypePredicate(
+            hpo=hpo,
+            query=hpotk.TermId.from_curie('HP:0001250'),  # Seizure
+        ),
+        PropagatingPhenotypePredicate(
+            hpo=hpo,
+            query=hpotk.TermId.from_curie('HP:0001083'),  # Ectopia lentis
+        ),
+        PropagatingPhenotypePredicate(
+            hpo=hpo,
+            query=hpotk.TermId.from_curie('HP:0032350'),  # Sulfocysteinuria
+        ),
+        PropagatingPhenotypePredicate(
+            hpo=hpo,
+            query=hpotk.TermId.from_curie('HP:0012758'),  # Neurodevelopmental delay
+        ),
+        PropagatingPhenotypePredicate(
+            hpo=hpo,
+            query=hpotk.TermId.from_curie('HP:0001276'),  # Hypertonia
+        ),
+    )
 
 
 @pytest.mark.skip('Run manually to regenerate `suox_cohort`')
