@@ -117,7 +117,13 @@ class ProteinVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
     
-    def draw_fig(self, pvis:ProteinVisualizable):
+    def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate', legend_x=0.87):
+        """
+        Valid values of labeling_method are ['abbreviate', 'enumerate']
+        by default the legend is drawn to the right of the figure to avoid overlap between the variant markers and
+        the legend
+        """
+        labeling_methods = ['abbreviate', 'enumerate']
         plt.figure(figsize=(20, 20))
         tx_id = pvis.transcript_id
         protein_id = pvis.protein_id
@@ -234,13 +240,23 @@ class ProteinVisualizer:
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
+
+        unique_feature_names = list(set(feature_names))
+
+        if labeling_method == 'enumerate':
+            ascii_A = 65
+            labels = {fn: chr(ascii_A + i) for i, fn in enumerate(unique_feature_names)}
+
+        elif labeling_method == 'abbreviate':
+            labels = {fn: fn[0:5] for fn in unique_feature_names}
+
         for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
             feature_x_min, feature_x_max = feature_x
             draw_rectangle(feature_x_min, feature_y_min, feature_x_max, feature_y_max,
                            line_color=self.feature_outline_color,
                            fill_color=feature_color, line_width=1.0)
             if (feature_x_max - feature_x_min) <= 0.03:  # too small to dsplay name
-                draw_string(feature_name,
+                draw_string(labels[feature_name],
                             0.05 * (feature_x_max - feature_x_min) + feature_x_min,
                             0.55 * (feature_y_max - feature_y_min) + feature_y_min,
                             ha="left", va="center", rotation=90, color='black', fontsize=8
@@ -249,17 +265,53 @@ class ProteinVisualizer:
                 # TODO @ielis: How to display name here?
                 pass
             else:
-                draw_string(feature_name,
+                draw_string(labels[feature_name],
                             0.2 * (feature_x_max - feature_x_min) + feature_x_min,
                             0.4 * (feature_y_max - feature_y_min) + feature_y_min,
                             ha="left", va="center", color='black'
                             )
 
-        # # draw legend
-        # draw_rectangle(0.7, 0.6, 0.85, 0.7, 'black')
-        # # TODO: legend
+        # draw legend
+        n_unique_features = len(unique_feature_names)
+        color_box_x_dim = 0.01
+        color_box_y_dim = 0.01
+        if labeling_method == labeling_methods[0]:
+            color_box_x_dim *= 3.5
+        row_spacing = 0.005
+        legend_width = 0.2 + color_box_x_dim
+        legend_max_y = 0.75
+        legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
+        legend_min_x = legend_x
+        legend_max_x = legend_min_x + legend_width
 
-        plt.xlim(0, 1)
+        # legend box
+        draw_rectangle(legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
+        for i, feature_name in enumerate(unique_feature_names):
+            # colored box
+            color_box_min_x = legend_min_x + row_spacing
+            color_box_max_x = color_box_min_x + color_box_x_dim
+            color_box_max_y = legend_max_y - (i + 1) * row_spacing - i * color_box_y_dim
+            color_box_min_y = color_box_max_y - color_box_y_dim
+            draw_rectangle(color_box_min_x, color_box_min_y,
+                           color_box_max_x, color_box_max_y,
+                           'black',
+                           fill_color=self.protein_feature_colors[feature_name])
+            # label in colored box (same as on x axis in the boxes)
+            draw_string(labels[feature_name],
+                        color_box_min_x + 0.002,
+                        color_box_min_y + 0.005,
+                        fontsize=10,
+                        ha="left", va="center", color='black'
+                        )
+            # full feature name
+            draw_string(feature_name,
+                        color_box_max_x + 0.005,
+                        color_box_min_y + 0.005,
+                        fontsize=12,
+                        ha="left", va="center", color='black'
+                        )
+
+        plt.xlim(0, max(1.0, legend_x + legend_width + 0.02))
         plt.ylim(0.3, 0.75)
         plt.gca().set_aspect('equal')
         plt.axis('off')
