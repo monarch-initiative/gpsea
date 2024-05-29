@@ -1,3 +1,4 @@
+import typing
 from typing import Any
 from ._protein_visualizable import ProteinVisualizable
 import numpy as np
@@ -15,7 +16,7 @@ def round_to_nearest_power_ten(x, base=None):
         return (base * np.round(x / base)).astype(int), base
     else:
         return (base * np.round(x / base)).astype(int)
-  
+
 #  BASIC DRAWING METHODS
 def draw_rectangle(start_x, start_y, end_x, end_y, line_color='black', fill_color=None, line_width=1.0):
     rect = plt.Rectangle((start_x, start_y), end_x - start_x, end_y - start_y, edgecolor=line_color,
@@ -51,7 +52,7 @@ class ProteinVisualizer:
     def __init__(self) -> None:
         self.protein_track_color = '#a9a9a9'
         self.transcript_track_color = '#a9a9a9'
-        self.marker_colors = { 
+        self.marker_colors = {
             VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
             VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
             VariantEffect.SPLICE_DONOR_VARIANT: "#0000ff",
@@ -108,7 +109,7 @@ class ProteinVisualizer:
         Draw a lollipop representing a variant and the number of counts for the variant effect type
         currently putting marker in the middle of start and end, can change this later
         """
-        x = (x_start + x_end) / 2 
+        x = (x_start + x_end) / 2
         draw_line(x, min_y, x, max_y - circle_radius, line_color=self.protein_track_color, line_width=0.5)
         draw_circle(x, max_y, circle_radius, line_color=self.protein_track_color, fill_color=color, line_width=0.5)
 
@@ -116,8 +117,13 @@ class ProteinVisualizer:
         radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
-    
-    def draw_fig(self, pvis:ProteinVisualizable, labeling_method='abbreviate', legend_x=0.87):
+
+    def draw_fig(
+            self,
+            pvis: ProteinVisualizable,
+            labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate',
+            legend_x: float = 0.87,
+    ):
         """
         Valid values of labeling_method are ['abbreviate', 'enumerate']
         by default the legend is drawn to the right of the figure to avoid overlap between the variant markers and
