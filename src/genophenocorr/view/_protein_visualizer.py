@@ -129,7 +129,6 @@ class ProteinVisualizer:
         by default the legend is drawn to the right of the figure to avoid overlap between the variant markers and
         the legend
         """
-        labeling_methods = ['abbreviate', 'enumerate']
         plt.figure(figsize=(20, 20))
         tx_id = pvis.transcript_id
         protein_id = pvis.protein_id
@@ -255,6 +254,8 @@ class ProteinVisualizer:
 
         elif labeling_method == 'abbreviate':
             labels = {fn: fn[0:5] for fn in unique_feature_names}
+        else:
+            raise ValueError(f'Unsupported labeling method {labeling_method}')
 
         for feature_x, feature_color, feature_name in zip(feature_limits_relative, feature_colors, feature_names):
             feature_x_min, feature_x_max = feature_x
@@ -281,7 +282,7 @@ class ProteinVisualizer:
         n_unique_features = len(unique_feature_names)
         color_box_x_dim = 0.01
         color_box_y_dim = 0.01
-        if labeling_method == labeling_methods[0]:
+        if labeling_method == 'abbreviate':
             color_box_x_dim *= 3.5
         row_spacing = 0.005
         legend_width = 0.2 + color_box_x_dim
