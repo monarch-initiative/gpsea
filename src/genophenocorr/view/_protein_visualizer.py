@@ -211,21 +211,25 @@ class ProteinVisualizer:
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
 
         # normalize into [0, 1], leaving some space on the sides
-        def preprocess(
+        def translate_to_ax_coordinates(
                 absolute: np.ndarray,
                 min_absolute=min_aa_pos, max_absolute=max_aa_pos,
                 min_relative=protein_track_x_min, max_relative=protein_track_x_max,
+                clip: bool = False,
         ) -> np.ndarray:
-            if absolute.any() > max_absolute:
-                # should never happen
-                print(f"[ERROR _variant_drawer] x={absolute} but max={max_absolute}")
+
+            if clip:
+                # Put the coordinate of an item located at or after the stop codon to the location of the last AA
+                absolute = np.minimum(absolute, max_absolute)
+                # Put the coordinate of an item located at or before the start codon to the location of the first AA
+                absolute = np.maximum(absolute, min_absolute)
             shifted_to_0_1 = ((absolute - min_absolute) / (max_absolute - min_absolute))
             relative_scale = (max_relative - min_relative)
             return shifted_to_0_1 * relative_scale + min_relative
 
-        feature_limits_relative = preprocess(feature_limits)
-        variant_locations_relative = preprocess(variant_locations_counted_absolute)
-        x_ticks_relative = preprocess(x_ticks)
+        feature_limits_relative = translate_to_ax_coordinates(feature_limits)
+        variant_locations_relative = translate_to_ax_coordinates(variant_locations_counted_absolute, clip=True)
+        x_ticks_relative = translate_to_ax_coordinates(x_ticks)
 
         # draw the tracks
         draw_rectangle(
@@ -279,7 +283,7 @@ class ProteinVisualizer:
         y_axis_x = protein_track_x_min - 0.02
         y_axis_min_y = protein_track_y_max + 0.01
         _, y_axis_max_y = ProteinVisualizer._marker_dim(max_marker_count, protein_track_y_max)
-        y_ticks_relative = preprocess(
+        y_ticks_relative = translate_to_ax_coordinates(
             y_ticks,
             min_absolute=0, max_absolute=max_marker_count, min_relative=y_axis_min_y, max_relative=y_axis_max_y,
         )
