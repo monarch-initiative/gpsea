@@ -1,3 +1,4 @@
+import os
 import random
 import typing
 
@@ -413,11 +414,10 @@ class ProteinVisualizer:
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
             ylim=(0.3, 0.75),
             aspect='equal',
-            axis='off',
-            title=f'transcript: {pvis.transcript_id}, '
-                  f'protein: {pvis.protein_id}, '
-                  f'protein name {pvis.protein_metadata.label}',
+            title=f'{pvis.protein_metadata.label}{os.linesep}transcript: {pvis.transcript_id}, '
+                  f'protein: {pvis.protein_id}',
         )
+        ax.axis('off')
 
         if should_return_ax:
             return ax

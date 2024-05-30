@@ -81,7 +81,7 @@ def make_region(contig: str, start: int, end: int) -> GenomicRegion:
 
 @pytest.fixture(scope='session')
 def protein_test_service() -> ProteinTestMetadataService:
-    return ProteinTestMetadataService()
+    return ProteinTestMetadataService.create()
 
 
 @pytest.fixture(scope='session')
@@ -143,6 +143,34 @@ def suox_pheno_predicates(
             query=hpotk.TermId.from_curie('HP:0001276'),  # Hypertonia
         ),
     )
+
+
+@pytest.fixture(scope='session')
+def fpath_suox_tx_coordinates(fpath_test_data: str) -> str:
+    suox_mane_tx_id = 'NM_001032386.2'
+    return os.path.join(fpath_test_data, f'SUOX-{suox_mane_tx_id}.json')
+
+
+@pytest.fixture(scope='session')
+def suox_mane_tx_coordinates(
+        fpath_suox_tx_coordinates: str,
+) -> TranscriptCoordinates:
+    with open(fpath_suox_tx_coordinates) as fh:
+        return json.load(fh, cls=GenophenocorrJSONDecoder)
+
+
+@pytest.fixture(scope='session')
+def fpath_suox_protein_metadata(fpath_test_data: str) -> str:
+    suox_mane_tx_protein_id = 'NP_001027558.1'
+    return os.path.join(fpath_test_data, f'SUOX-{suox_mane_tx_protein_id}.json')
+
+
+@pytest.fixture(scope='session')
+def suox_protein_metadata(
+        fpath_suox_protein_metadata: str,
+) -> ProteinMetadata:
+    with open(fpath_suox_protein_metadata) as fh:
+        return json.load(fh, cls=GenophenocorrJSONDecoder)
 
 
 @pytest.mark.skip('Run manually to regenerate `suox_cohort`')

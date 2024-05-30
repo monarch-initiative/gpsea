@@ -20,9 +20,9 @@ class TestStatsViewable:
             mtc_name='bonferroni',
             filter_results_map={
                 # The reason for skipping a phenotype -> the number of phenotypes skipped for the reason
-                'Skipping test because I slept bad tonight': 0,
+                'I slept bad tonight': 0,
                 'The sun is too bright today': 5,
-                'The kids are too noisy': 80,
+                'Life is a conspiracy': 80,
                 'I need coffee': 7,
             },
             term_count=100,  # The filtered out (80 + 7 + 5) + the unfiltered

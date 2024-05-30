@@ -99,6 +99,31 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'members': sorted(o.all_patients, key=lambda patient: patient.labels),
                 'excluded_patient_count': o.get_excluded_count(),
             }
+        elif isinstance(o, TranscriptCoordinates):
+            return {
+                'identifier': o.identifier,
+                'region': o.region,
+                'exons': o.exons,
+                'cds_start': o.cds_start,
+                'cds_end': o.cds_end,
+            }
+        elif isinstance(o, ProteinMetadata):
+            return {
+                'protein_id': o.protein_id,
+                'label': o.label,
+                'protein_features': o.protein_features,
+                'protein_length': o.protein_length,
+            }
+        elif isinstance(o, ProteinFeature):
+            return {
+                'info': o.info,
+                'feature_type': o.feature_type.name,
+            }
+        elif isinstance(o, FeatureInfo):
+            return {
+                'name': o.name,
+                'region': o.region,
+            }
         else:
             return super().default(o)
 
@@ -114,6 +139,10 @@ _TX_ANNOTATION_FIELDS = (
     'gene_id', 'transcript_id', 'hgvs_cdna', 'is_preferred', 'variant_effects',
     'overlapping_exons', 'protein_id', 'protein_effect_location',
 )
+_TX_COORDINATES = ('identifier', 'region', 'exons', 'cds_start', 'cds_end')
+_PROTEIN_METADATA = ('protein_id', 'label', 'protein_features', 'protein_length')
+_PROTEIN_FEATURE = ('info', 'feature_type')
+_FEATURE_INFO = ('name', 'region')
 _PHENOTYPE_FIELDS = ('term_id', 'name', 'is_present')
 _DISEASE_FIELDS = ('term_id', 'name', 'is_observed')
 _PATIENT_FIELDS = ('labels', 'phenotypes', 'diseases', 'variants')
@@ -220,6 +249,29 @@ class GenophenocorrJSONDecoder(JSONDecoder):
                 phenotypes=obj['phenotypes'],
                 diseases=obj['diseases'],
                 variants=obj['variants'],
+            )
+        elif GenophenocorrJSONDecoder._has_all_fields(obj, _TX_COORDINATES):
+            return TranscriptCoordinates(
+                identifier=obj['identifier'],
+                region=obj['region'],
+                exons=obj['exons'],
+                cds_start=obj['cds_start'],
+                cds_end=obj['cds_end'],
+            )
+        elif GenophenocorrJSONDecoder._has_all_fields(obj, _PROTEIN_METADATA):
+            return ProteinMetadata(
+                protein_id=obj['protein_id'],
+                label=obj['label'],
+                protein_features=obj['protein_features'],
+                protein_length=obj['protein_length'],
+            )
+        elif GenophenocorrJSONDecoder._has_all_fields(obj, _PROTEIN_FEATURE):
+            return ProteinFeature.create(
+                info=obj['info'], feature_type=FeatureType[obj['feature_type']],
+            )
+        elif GenophenocorrJSONDecoder._has_all_fields(obj, _FEATURE_INFO):
+            return FeatureInfo(
+                name=obj['name'], region=obj['region'],
             )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _COHORT_FIELDS):
             return Cohort(

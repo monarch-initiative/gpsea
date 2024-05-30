@@ -55,19 +55,22 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
 
 
 class ProteinMetadataService(metaclass=abc.ABCMeta):
-    """A metaclass that can be used to establish a class that creates ProteinMetadata objects
+    """
+    A service for obtaining annotations for a given protein accession ID.
 
-    Methods:
-        annotate(protein_id:str): Gets metadata and creates ProteinMetadata for given protein ID
+    The annotations include elements of the :class:`ProteinMetadata` class.
     """
 
     @abc.abstractmethod
-    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
-        """Get metadata for given protein ID
+    def annotate(self, protein_id: str) -> ProteinMetadata:
+        """
+        Prepare `ProteinMetadata` for a protein with given `protein_id` accession ID.
 
         Args:
-            protein_id (string): A protein ID
+            protein_id (string): A accession ID `str` (e.g. `NP_001027558.1`)
         Returns:
-            Sequence[ProteinMetadata]: A sequence of ProteinMetadata objects, or an empty sequence if no data was found
+            ProteinMetadata: a `ProteinMetadata` container with the protein metadata
+        Raises:
+            `ValueError` if the metadata cannot be generated for *any* reason.
         """
         pass
