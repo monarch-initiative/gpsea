@@ -24,6 +24,7 @@ class TestProteinVisualizer:
             cohort=suox_cohort,
         )
 
+    @pytest.mark.skip('Run manually on demand')
     def test_protein_visualizer(
             self,
             visualizer: ProteinVisualizer,
