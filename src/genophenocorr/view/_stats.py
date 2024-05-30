@@ -7,9 +7,9 @@ from genophenocorr.analysis import HpoMtcReport
 from genophenocorr.model import Cohort
 
 
-class StatsViewable:
+class StatsViewer:
     """
-    `StatsViewable` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook
+    `StatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook
     or for writing into a standalone HTML file.
     """
 
