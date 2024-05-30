@@ -7,7 +7,7 @@ from ._protein_visualizer import ProteinVisualizer
 
 __all__ = [
     'CohortViewable',
-    'ProteinVisualizer',
+    'ProteinVisualizer', 'ProteinVisualizable',
     'DiseaseViewable',
     'StatsViewer',
     'VariantTranscriptVisualizer'
