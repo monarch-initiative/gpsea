@@ -147,7 +147,7 @@ class ProteinVisualizer:
             ax: typing.Optional[plt.Axes] = None,
             labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate',
             legend_x: float = 0.87,
-    ) -> plt.Axes:
+    ) -> typing.Optional[plt.Axes]:
         """
         Visualize the cohort variants on a protein diagram.
 
@@ -161,9 +161,15 @@ class ProteinVisualizer:
              labeling_method: the strategy for generating labels.
                Valid values of labeling_method are `{'abbreviate', 'enumerate'}`
              legend_x: left x coordinate of the legend bounding box
+        Returns:
+            `None` if an :class:`plt.Axes` was provided via `ax` argument
+            or an `Axes` created by the visualizer if `ax` was `None`.
         """
         if ax is None:
+            should_return_ax = True
             _, ax = plt.subplots(figsize=(20, 20))
+        else:
+            should_return_ax = False
         min_aa_pos = 1
         max_aa_pos = pvis.protein_length
         feature_limits = list()
@@ -413,4 +419,5 @@ class ProteinVisualizer:
                   f'protein name {pvis.protein_metadata.label}',
         )
 
-        return ax
+        if should_return_ax:
+            return ax
