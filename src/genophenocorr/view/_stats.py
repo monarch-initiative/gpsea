@@ -43,14 +43,21 @@ class StatsViewer:
                 "hpo_mtc_report.skipped_terms_dict must be dictionary "
                 f"but was {type(hpo_mtc_report.skipped_terms_dict)}"
             )
-        skip_counts = list()
-        sort_by_value = dict(sorted(results_map.items(), key=lambda item: item[1], reverse=True))
-        for skipped, c in sort_by_value.items():
-            skip_counts.append({"Skipped": skipped, "count": c})
+
+        n_skipped = 0
+        reason_to_count = list()
+        for reason, count in sorted(results_map.items(), key=lambda item: item[1], reverse=True):
+            reason_to_count.append({"reason": reason, "count": count})
+            n_skipped += count
+
+        n_tested = hpo_mtc_report.n_terms_tested - n_skipped
+
         # The following dictionary is used by the Jinja2 HTML template
         return {
             "mtc_name": hpo_mtc_report.mtc_method,
             "hpo_mtc_filter_name": hpo_mtc_report.filter_method,
+            "skipped_hpo_count": n_skipped,
+            "tested_hpo_count": n_tested,
             "total_hpo_count": hpo_mtc_report.n_terms_tested,
-            "skipped_counts": skip_counts,
+            "reason_to_count": reason_to_count,
         }

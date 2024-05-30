@@ -398,8 +398,10 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         categories, n_usable, all_counts = apply_predicates_on_patients(
             patients, pheno_predicates, gt_predicate,
         )
+        original_phenotype_count = len(n_usable)
+
         # 1.5) Filter terms for MTC
-        n_usable, all_counts, filtered_terms_d = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        n_usable, all_counts, reason2count = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
 
         # 2) Statistical tests
         pheno_idx = pd.Index(n_usable.keys(), name='p_val')
@@ -430,13 +432,11 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         mtc_method = "none"
         if self._correction is not None:
             mtc_method = self._correction
-        total_terms_tested = len(n_usable)
-
         mtc_filter_report = HpoMtcReport(
             filter_name=self._hpo_mtc_filter.filter_method_name(),
             mtc_name=mtc_method,
-            filter_results_map=filtered_terms_d,
-            term_count=total_terms_tested,
+            filter_results_map=reason2count,
+            term_count=original_phenotype_count,
         )
 
         # 4) Wrap up

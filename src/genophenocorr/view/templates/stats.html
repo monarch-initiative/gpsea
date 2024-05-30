@@ -39,28 +39,28 @@
 
 .table td:first-child, tr:first-child {
     text-align: left;
-}​
+}
 
   </style>
 </head>
 
 <body>
   <h1>Statistical analysis: {{mtc_name}} ({{ hpo_mtc_filter_name }})</h1>
-  <p>Performed statistical tests for {{ total_hpo_count }} HPO terms.</p>
+  <p>Performed statistical tests for {{ tested_hpo_count }} out of the total of {{ total_hpo_count }} HPO terms.</p>
     <table>
-      <caption>Using  {{ hpo_mtc_filter_name }}, the following numbers of terms were omitted from statistical analysis. </caption>
+      <caption>Using {{ hpo_mtc_filter_name }}, {{ skipped_hpo_count }} term(s) were omitted from statistical analysis. </caption>
         <tbody>
-            <tr>
-                <th>Skipped</th>
-                <th>Count</th>
-              </tr>
-              {% for skipped  in skipped_counts %}
-              <tr>
-                <td>{{ skipped.Skipped }}</td>
-                <td>{{ skipped.count }}</td>
-                </tr>
-            {% endfor %}
-                </tbody>
+          <tr>
+            <th>Reason</th>
+            <th>Count</th>
+          </tr>
+          {% for skipped  in reason_to_count %}
+          <tr>
+            <td>{{ skipped.reason }}</td>
+            <td>{{ skipped.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>
