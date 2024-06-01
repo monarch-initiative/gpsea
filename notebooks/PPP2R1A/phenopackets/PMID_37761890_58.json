@@ -33,7 +33,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_uzgeXkIRTPSuPnQbBBIVYDNSt",
+                "id": "var_YqQaxXDrasRInVuZlUqYzQDPn",
                 "geneContext": {
                   "valueId": "HGNC:9302",
                   "symbol": "PPP2R1A"
@@ -67,8 +67,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:616362",
+        "label": "Houge-Janssen syndrome 2"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-10-01T17:59:30.177509784Z",
+    "created": "2024-03-24T10:16:27.697085857Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -107,7 +115,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-03-06",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

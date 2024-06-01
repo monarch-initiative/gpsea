@@ -12,13 +12,18 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   }
 
-
+  .table .column-1 {
+      text-align: left;
+  }
   th {
-    background-color: #f2f2f2;
+    background-color: LightSkyBlue;
     border: 1px solid #dddddd;
     text-align: left;
     padding: 2px;
-  }
+  font-weight: bold;
+  font-size: 120%;
+}
+
 
   tr {
     border: 1px solid #dddddd;
@@ -37,9 +42,20 @@
     text-align: right;
 }
 
-.table td:first-child, tr:first-child {
+.lft {
     text-align: left;
 }​
+
+
+
+
+
+caption {
+  caption-side: bottom;
+  text-align: left;
+  padding-bottom: 10px;
+  font-weight: bold;
+}
 
   </style>
 </head>
@@ -52,71 +68,74 @@
   {% else %}
   <p>No errors encountered.</p>
   {% endif %}
-  <p>A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort. </p>
+
     <h3>Top {{top_hpo_count}} HPO Terms</h3>
     <table>
+      <caption>A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort. </caption>
         <tbody>
-            <tr>
-                <th>HPO Term</th>
+            <tr class="strng">
+                <th class="lft">HPO Term</th>
                 <th>ID</th>
                 <th>Annotation Count</th>
               </tr>
               {% for hpo_count in hpo_counts %}
               <tr>
-                <td>{{ hpo_count.HPO }}</td>
+                <td class="lft">{{ hpo_count.HPO }}</td>
                 <td>{{ hpo_count.ID }}</td>
                 <td>{{ hpo_count.Count }}</td>
                 </tr>
             {% endfor %}
                 </tbody>
     </table>
- <h3>Variants</h3>
- <p>A total of {{ unique_variant_count}} unique variants were identified in the cohort.</p>
+
  <h3>Top {{top_var_count}} Variants</h3>
  <table>
+  <caption>
+    Variants are shown according to {{ transcript_id }}. A total of {{ unique_variant_count}} unique variants were identified in the cohort.
+  </caption>
         <tbody>
-            <tr>
-                <th>Variant</th>
+            <tr class="strng">
+                <th class="lft">Variant</th>
                 <th>Variant name</th>
                 <th>Variant Count</th>
               </tr>
               {% for var_count in var_counts %}
               <tr>
-                <td>{{ var_count.variant }}</td>
+                <td class="lft">{{ var_count.variant }}</td>
                 <td>{{ var_count.variant_name }}</td>
                 <td>{{ var_count.Count }}</td>
                 </tr>
             {% endfor %}
-                </tbody>
+         </tbody>
     </table>
     <h3>Diseases</h3>
     <table>
         <tbody>
-            <tr>
-                <th>Disease ID</th>
+            <tr class="strng">
+                <th class="lft">Disease ID</th>
                 <th>Disease Name</th>
                 <th>Annotation Count</th>
               </tr>
               {% for disease_count in disease_counts %}
               <tr>
-                <td>{{ disease_count.disease_id }}</td>
+                <td class="lft">{{ disease_count.disease_id }}</td>
                 <td>{{ disease_count.disease_name }}</td>
                 <td>{{ disease_count.count }}</td>
                 </tr>
             {% endfor %}
            </tbody>
     </table>
-    {% if has_transcript > 0 %}
+    {% if has_transcript %}
     <h3>Variant categories</h3>
     <table>
         <tbody>
-            <tr>
-                <th>Variant effect</th>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
                 <th>Annotation Count</th>
               </tr>
               {% for var_effect in var_effects_list %}
               <tr>
-                <td>{{ var_effect.effect }}</td>
+                <td class="lft">{{ var_effect.effect }}</td>
                 <td>{{ var_effect.count }}</td>
                 </tr>
             {% endfor %}
@@ -126,6 +145,6 @@
   <p>Call this function with transcript to see table with variant effect counts.</p>
   {% endif %}
 
-    has_transcript
+
 </body>
 </html>

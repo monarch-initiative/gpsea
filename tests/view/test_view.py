@@ -21,7 +21,8 @@ class TestCohortViewable:
             cohort_viewable: CohortViewable,
             toy_cohort: Cohort,
     ):
-        html = cohort_viewable.process(cohort=toy_cohort)
+        toy_transcript_id = "NM_123.1"
+        html = cohort_viewable.process(cohort=toy_cohort, transcript_id=toy_transcript_id)
 
         # A dummy test for now.
         assert len(html) != 0
