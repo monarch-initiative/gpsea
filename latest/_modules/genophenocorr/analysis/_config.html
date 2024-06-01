@@ -256,7 +256,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="n">include_sv</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include_sv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span><span class="p">)</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MTC_Strategy</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -313,11 +313,10 @@
         <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span>
     <span class="p">)</span>
 
-    
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span><span class="p">:</span>
-        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicSamplerMtcFilter</span><span class="p">(</span><span class="n">hpo_ontology</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicSamplerMtcFilter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span><span class="p">:</span>
-        <span class="n">mtc_filter</span> <span class="o">=</span>  <span class="n">IdentityTermMtcFilter</span><span class="p">()</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">IdentityTermMtcFilter</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did not recognize MtcStrategy </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -327,8 +326,6 @@
         <span class="n">p_val_correction</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span><span class="p">,</span>
         <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">mtc_alpha</span><span class="p">,</span>
     <span class="p">)</span>
-
-    
 
     <span class="k">return</span> <span class="n">GpCohortAnalysis</span><span class="p">(</span>
         <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>

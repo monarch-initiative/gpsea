@@ -116,16 +116,16 @@
 <div class="viewcode-block" id="VariantEffectPredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A VariantEffect is given when initializing the class. </span>
-<span class="sd">        Given a Patient class, this function tests whether the patient does </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A VariantEffect is given when initializing the class.</span>
+<span class="sd">        Given a Patient class, this function tests whether the patient does</span>
 <span class="sd">        or does not have the VariantEffect and returns the respective category.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): A Patient class representing a patient.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot; </span>
-<span class="sd">                                             if genotype is present or not. </span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
@@ -175,16 +175,17 @@
 <div class="viewcode-block" id="VariantPredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A variant string is given when initializing the class. </span>
-<span class="sd">        Given a Patient class, this function tests whether the patient does </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A variant key, such as `X_12345_12345_C_G`, is given when initializing the class.</span>
+
+<span class="sd">        Given a `patient`, we test whether the patient does</span>
 <span class="sd">        or does not have the variant and returns the respective category.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): A Patient class representing a patient.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot; </span>
-<span class="sd">                                             if genotype is present or not. </span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
@@ -244,7 +245,7 @@
 <div class="viewcode-block" id="ExonPredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;An exon number is given when initializing the class. </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An exon number is given when initializing the class.</span>
 <span class="sd">        Given a Patient class, this function tests whether the patient does or does not</span>
 <span class="sd">        have a variant in that exon and returns the respective category.</span>
 
@@ -252,8 +253,8 @@
 <span class="sd">            patient (Patient): A Patient class representing a patient.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot; </span>
-<span class="sd">                                             if genotype is present or not. </span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
@@ -304,17 +305,17 @@
 <div class="viewcode-block" id="ProtFeatureTypePredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A FeatureType and ProteinMetadataService is given when initializing the class. </span>
-<span class="sd">        Given a Patient class, this function tests whether the patient does </span>
-<span class="sd">        or does not have a variant effecting that FeatureType on the given protein and </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A FeatureType and ProteinMetadataService is given when initializing the class.</span>
+<span class="sd">        Given a Patient class, this function tests whether the patient does</span>
+<span class="sd">        or does not have a variant effecting that FeatureType on the given protein and</span>
 <span class="sd">        returns the respective category.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): A Patient class representing a patient.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot; </span>
-<span class="sd">                                             if genotype is present or not. </span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
@@ -327,13 +328,11 @@
                     <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
                     <span class="n">prot_id</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_id</span>
                     <span class="k">if</span> <span class="n">prot_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prot_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">proteins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">prot_id</span><span class="p">:</span>
-                                <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="p">:</span>
-                                        <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
-                                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                        <span class="n">protein</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">protein</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
+                                    <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
 
         <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
 
@@ -374,17 +373,17 @@
 <div class="viewcode-block" id="ProtFeaturePredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A protein_feature_name and ProteinMetadataService is given when initializing the class. </span>
-<span class="sd">        Given a Patient class, this function tests whether the patient does </span>
-<span class="sd">        or does not have a variant effecting that protein feature on the given protein and </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A protein_feature_name and ProteinMetadataService is given when initializing the class.</span>
+<span class="sd">        Given a Patient class, this function tests whether the patient does</span>
+<span class="sd">        or does not have a variant effecting that protein feature on the given protein and</span>
 <span class="sd">        returns the respective category.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): A Patient class representing a patient.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot; </span>
-<span class="sd">                                             if genotype is present or not. </span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
@@ -397,13 +396,11 @@
                     <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
                     <span class="n">prot_id</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_id</span>
                     <span class="k">if</span> <span class="n">prot_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prot_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">proteins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">prot_id</span><span class="p">:</span>
-                                <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="p">:</span>
-                                        <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
-                                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+                        <span class="n">protein</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">prot_id</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">protein</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
+                                    <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
 
         <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
 

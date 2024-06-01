@@ -152,22 +152,25 @@
 <div class="viewcode-block" id="ProteinMetadataService">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService">[docs]</a>
 <span class="k">class</span> <span class="nc">ProteinMetadataService</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A metaclass that can be used to establish a class that creates ProteinMetadata objects</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A service for obtaining annotations for a given protein accession ID.</span>
 
-<span class="sd">    Methods:</span>
-<span class="sd">        annotate(protein_id:str): Gets metadata and creates ProteinMetadata for given protein ID</span>
+<span class="sd">    The annotations include elements of the :class:`ProteinMetadata` class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProteinMetadataService.annotate">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinMetadataService.annotate">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata for given protein ID</span>
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare `ProteinMetadata` for a protein with given `protein_id` accession ID.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): A protein ID</span>
+<span class="sd">            protein_id (string): A accession ID `str` (e.g. `NP_001027558.1`)</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Sequence[ProteinMetadata]: A sequence of ProteinMetadata objects, or an empty sequence if no data was found</span>
+<span class="sd">            ProteinMetadata: a `ProteinMetadata` container with the protein metadata</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `ValueError` if the metadata cannot be generated for *any* reason.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 </div>

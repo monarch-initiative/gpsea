@@ -90,65 +90,64 @@
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 
 
-<div class="viewcode-block" id="StatsViewable">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewable">[docs]</a>
-<span class="k">class</span> <span class="nc">StatsViewable</span><span class="p">:</span>
+<div class="viewcode-block" id="StatsViewer">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewer">[docs]</a>
+<span class="k">class</span> <span class="nc">StatsViewer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to create a viewable object that is uses a Jinja2 template to create an HTML element</span>
-<span class="sd">    for display in the Jupyter notebook.</span>
+<span class="sd">    `StatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook</span>
+<span class="sd">    or for writing into a standalone HTML file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">filter_method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">mtc_method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hpo_mtc_report.skipped_terms_dict must be disctionary but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;stats.html&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="StatsViewable.process">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewable.process">[docs]</a>
+<div class="viewcode-block" id="StatsViewer.process">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewer.process">[docs]</a>
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create an HTML that should be shown with display(HTML(..)) of the ipython package.</span>
+<span class="sd">        Create an HTML that should be shown with `display(HTML(..))` of the ipython package.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            cohort (Cohort): The cohort being analyzed in the current Notebook</span>
+<span class="sd">            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: an HTML string with parameterized template for rendering</span>
+<span class="sd">            str: an HTML string with parameterized template for rendering or writing into a standalone HTML file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
 
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
-       
-        <span class="n">skip_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">sort_by_value</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">skipped</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sort_by_value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">skip_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;Skipped&quot;</span><span class="p">:</span> <span class="n">skipped</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">})</span>
+        <span class="n">results_map</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results_map</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;hpo_mtc_report.skipped_terms_dict must be dictionary &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n_skipped</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">reason_to_count</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">reason</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results_map</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">reason_to_count</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span>
+            <span class="n">n_skipped</span> <span class="o">+=</span> <span class="n">count</span>
+
+        <span class="n">n_tested</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span> <span class="o">-</span> <span class="n">n_skipped</span>
+
         <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;mtc_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span><span class="p">,</span>
-            <span class="s2">&quot;hpo_mtc_filter_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span> <span class="p">,</span>
-            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span><span class="p">,</span>
-            <span class="s2">&quot;skipped_counts&quot;</span><span class="p">:</span> <span class="n">skip_counts</span><span class="p">,</span>
+            <span class="s2">&quot;mtc_name&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">mtc_method</span><span class="p">,</span>
+            <span class="s2">&quot;hpo_mtc_filter_name&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">filter_method</span><span class="p">,</span>
+            <span class="s2">&quot;skipped_hpo_count&quot;</span><span class="p">:</span> <span class="n">n_skipped</span><span class="p">,</span>
+            <span class="s2">&quot;tested_hpo_count&quot;</span><span class="p">:</span> <span class="n">n_tested</span><span class="p">,</span>
+            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span><span class="p">,</span>
+            <span class="s2">&quot;reason_to_count&quot;</span><span class="p">:</span> <span class="n">reason_to_count</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 </pre></div>

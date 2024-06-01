@@ -99,9 +99,9 @@
 
 <span class="sd">    Methods:</span>
 <span class="sd">        get_annotations(protein_id:str): Searches a given data directory for a pickle file with given ID and returns ProteinMetadata</span>
-<span class="sd">        store_annotations(protein_id:str, annotation:Sequence[ProteinMetadata]): Creates a pickle file with given ID and stores the given ProteinMetadata into that file  </span>
+<span class="sd">        store_annotations(protein_id:str, annotation:Sequence[ProteinMetadata]): Creates a pickle file with given ID and stores the given ProteinMetadata into that file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadir</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a ProteinAnnotationCache object</span>
 
 <span class="sd">        Args:</span>
@@ -113,7 +113,7 @@
 
 <div class="viewcode-block" id="ProteinAnnotationCache.get_annotations">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinAnnotationCache.get_annotations">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches a given data directory for a pickle file with given ID and returns ProteinMetadata from file. Returns None if no file is found.</span>
 
 <span class="sd">        Args:</span>
@@ -129,7 +129,7 @@
 
 <div class="viewcode-block" id="ProteinAnnotationCache.store_annotations">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinAnnotationCache.store_annotations">[docs]</a>
-    <span class="k">def</span> <span class="nf">store_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinMetadata</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">store_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a pickle file with the given protein id in the file name. Loads the ProteinMetadata given into the file for storage.</span>
 
 <span class="sd">        Args:</span>
@@ -145,10 +145,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a file name with full location and the protein id (e.g. &quot;/path/to/desired/directory/NP_037407.4.pickle&quot;)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): The protein_id associated with the ProteinMetadata</span>
+<span class="sd">            prot_id (string): The protein_id associated with the ProteinMetadata</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prot_id</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datadir</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="ProtCachingMetadataService">

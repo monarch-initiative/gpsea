@@ -186,6 +186,31 @@
                 <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">all_patients</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">patient</span><span class="p">:</span> <span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
                 <span class="s1">&#39;excluded_patient_count&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">(),</span>
             <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+                <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+                <span class="s1">&#39;exons&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">exons</span><span class="p">,</span>
+                <span class="s1">&#39;cds_start&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">cds_start</span><span class="p">,</span>
+                <span class="s1">&#39;cds_end&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">cds_end</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;protein_id&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">protein_id</span><span class="p">,</span>
+                <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="s1">&#39;protein_features&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">protein_features</span><span class="p">,</span>
+                <span class="s1">&#39;protein_length&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">info</span><span class="p">,</span>
+                <span class="s1">&#39;feature_type&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">feature_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">FeatureInfo</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="p">)</span></div>
 </div>
@@ -203,6 +228,10 @@
     <span class="s1">&#39;gene_id&#39;</span><span class="p">,</span> <span class="s1">&#39;transcript_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hgvs_cdna&#39;</span><span class="p">,</span> <span class="s1">&#39;is_preferred&#39;</span><span class="p">,</span> <span class="s1">&#39;variant_effects&#39;</span><span class="p">,</span>
     <span class="s1">&#39;overlapping_exons&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_id&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_effect_location&#39;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="n">_TX_COORDINATES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="s1">&#39;exons&#39;</span><span class="p">,</span> <span class="s1">&#39;cds_start&#39;</span><span class="p">,</span> <span class="s1">&#39;cds_end&#39;</span><span class="p">)</span>
+<span class="n">_PROTEIN_METADATA</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;protein_id&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_features&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_length&#39;</span><span class="p">)</span>
+<span class="n">_PROTEIN_FEATURE</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_type&#39;</span><span class="p">)</span>
+<span class="n">_FEATURE_INFO</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>
 <span class="n">_PHENOTYPE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;term_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;is_present&#39;</span><span class="p">)</span>
 <span class="n">_DISEASE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;term_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;is_observed&#39;</span><span class="p">)</span>
 <span class="n">_PATIENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;phenotypes&#39;</span><span class="p">,</span> <span class="s1">&#39;diseases&#39;</span><span class="p">,</span> <span class="s1">&#39;variants&#39;</span><span class="p">)</span>
@@ -313,6 +342,29 @@
                 <span class="n">phenotypes</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;phenotypes&#39;</span><span class="p">],</span>
                 <span class="n">diseases</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;diseases&#39;</span><span class="p">],</span>
                 <span class="n">variants</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variants&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_TX_COORDINATES</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">TranscriptCoordinates</span><span class="p">(</span>
+                <span class="n">identifier</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;identifier&#39;</span><span class="p">],</span>
+                <span class="n">region</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">],</span>
+                <span class="n">exons</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;exons&#39;</span><span class="p">],</span>
+                <span class="n">cds_start</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;cds_start&#39;</span><span class="p">],</span>
+                <span class="n">cds_end</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;cds_end&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_PROTEIN_METADATA</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
+                <span class="n">protein_id</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;protein_id&#39;</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                <span class="n">protein_features</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;protein_features&#39;</span><span class="p">],</span>
+                <span class="n">protein_length</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;protein_length&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_PROTEIN_FEATURE</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">],</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">FeatureType</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;feature_type&#39;</span><span class="p">]],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_FEATURE_INFO</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">region</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_COHORT_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Cohort</span><span class="p">(</span>

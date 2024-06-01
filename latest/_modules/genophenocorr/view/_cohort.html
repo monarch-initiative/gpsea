@@ -86,7 +86,7 @@
 <span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Variant</span>
 
 
 <div class="viewcode-block" id="CohortViewable">
@@ -102,21 +102,17 @@
             <span class="n">hpo</span><span class="p">:</span> <span class="n">MinimalOntology</span><span class="p">,</span>
             <span class="n">top_phenotype_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
             <span class="n">top_variant_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            hpo(MinimalOntology): An HPO ontology object from hpo-toolkit</span>
 <span class="sd">            top_phenotype_count(int): Maximum number of HPO terms to display in the HTML table (default: 10)</span>
 <span class="sd">            top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)</span>
-<span class="sd">            transcript_id(str): The identifier (Only NCBI RefSeq supported!) to use for the HGVS-able variants</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span> <span class="o">=</span> <span class="n">top_phenotype_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span> <span class="o">=</span> <span class="n">top_variant_count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
-
-        <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;cohort.html&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CohortViewable.process">
@@ -124,47 +120,46 @@
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an HTML that should be shown with display(HTML(..)) of the ipython package.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cohort (Cohort): The cohort being analyzed in the current Notebook</span>
+<span class="sd">            transcript_id (str): the transcript that we map variants onto</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: an HTML string with parameterized template for rendering</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">transcript_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="n">n_patients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">)</span>
-        <span class="n">total_HPO_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">())</span>
-        <span class="n">top_hpos</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_present_phenotypes</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">)</span>
+
         <span class="n">hpo_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">top_hpos</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">hpo</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_present_phenotypes</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">):</span>
             <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">individual_count</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">hpo_label</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
             <span class="k">if</span> <span class="n">hpo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="p">:</span>
                 <span class="n">hpo_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
             <span class="n">hpo_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;HPO&quot;</span><span class="p">:</span> <span class="n">hpo_label</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">hpo_id</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">individual_count</span><span class="p">})</span>
-        <span class="n">top_vars</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">)</span>
+
         <span class="n">var_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">top_vars</span><span class="p">:</span>
+        <span class="n">variant_to_display_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variant_description</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">):</span>
             <span class="n">chrom_var</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">var_count</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="c1"># TODO get HGVS or human readable variant</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">variant</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_variant_by_key</span><span class="p">(</span><span class="n">chrom_var</span><span class="p">)</span>
-                <span class="n">var_name</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">get_hgvs_cdna_by_tx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">var_name</span> <span class="o">=</span> <span class="s2">&quot;ID with transcript&quot;</span>
+            <span class="c1"># get HGVS or human readable variant</span>
+            <span class="n">var_name</span> <span class="o">=</span> <span class="n">variant_to_display_d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chrom_var</span><span class="p">,</span> <span class="n">chrom_var</span><span class="p">)</span>
             <span class="n">var_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;variant&quot;</span><span class="p">:</span> <span class="n">chrom_var</span><span class="p">,</span> <span class="s2">&quot;variant_name&quot;</span><span class="p">:</span> <span class="n">var_name</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">var_count</span><span class="p">})</span>
+
         <span class="n">diseases</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_diseases</span><span class="p">()</span>
         <span class="n">n_diseases</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">diseases</span><span class="p">)</span>
         <span class="n">disease_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -176,21 +171,21 @@
                 <span class="k">if</span> <span class="n">dis</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
                     <span class="n">disease_name</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="n">name</span>
             <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">disease_id</span><span class="p">,</span> <span class="s2">&quot;disease_name&quot;</span><span class="p">:</span> <span class="n">disease_name</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">disease_count</span><span class="p">})</span>
+
         <span class="n">var_effects_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">has_transcript</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">data_by_tx</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">variant_effect_count_by_tx</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
-            <span class="n">counter_d</span> <span class="o">=</span> <span class="n">data_by_tx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
-            <span class="c1"># data structure -- {&#39;effect}&#39;: &#39;FRAMESHIFT_VARIANT&#39;, &#39;count&#39;: 175}, {&#39;effect}&#39;: &#39;STOP_GAINED&#39;, &#39;count&#39;: 67},</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counter_d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">transcript_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">has_transcript</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">data_by_tx</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">variant_effect_count_by_tx</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">transcript_id</span><span class="p">)</span>
+            <span class="c1"># e.g., data structure -- {&#39;effect}&#39;: &#39;FRAMESHIFT_VARIANT&#39;, &#39;count&#39;: 175}, {&#39;effect}&#39;: &#39;STOP_GAINED&#39;, &#39;count&#39;: 67},</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_by_tx</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">var_effects_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;effect&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">has_transcript</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">has_transcript</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="n">n_patients</span><span class="p">,</span>
+            <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">),</span>
             <span class="s2">&quot;n_excluded&quot;</span><span class="p">:</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">(),</span>
-            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">total_HPO_count</span><span class="p">,</span>
+            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">()),</span>
             <span class="s2">&quot;top_hpo_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">,</span>
             <span class="s2">&quot;hpo_counts&quot;</span><span class="p">:</span> <span class="n">hpo_counts</span><span class="p">,</span>
             <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()),</span>
@@ -200,7 +195,52 @@
             <span class="s2">&quot;disease_counts&quot;</span><span class="p">:</span> <span class="n">disease_counts</span><span class="p">,</span>
             <span class="s2">&quot;has_transcript&quot;</span><span class="p">:</span> <span class="n">has_transcript</span><span class="p">,</span>
             <span class="s2">&quot;var_effects_list&quot;</span><span class="p">:</span> <span class="n">var_effects_list</span><span class="p">,</span>
-        <span class="p">}</span></div>
+            <span class="s2">&quot;transcript_id&quot;</span><span class="p">:</span> <span class="n">transcript_id</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="CohortViewable.get_display">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.get_display">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_display</span><span class="p">(</span><span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">annot</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">annot</span><span class="o">.</span><span class="n">hgvs_cdna</span>
+        <span class="k">return</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span></div>
+
+
+<div class="viewcode-block" id="CohortViewable.get_variant_description">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.get_variant_description">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_variant_description</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cohort (Cohort): The cohort being analyzed in the current Notebook</span>
+<span class="sd">            transcript_id (str): the transcript that we map variants onto</span>
+<span class="sd">            only_hgvs (bool): do not show the transcript ID part of the HGVS annotation, just the annotation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            typing.Mapping[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chrom_to_display</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">all_var_set</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">all_var_set</span><span class="p">:</span>
+            <span class="n">var_string</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="o">.</span><span class="n">get_display</span><span class="p">(</span><span class="n">variant</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">transcript_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">only_hgvs</span><span class="p">:</span>
+                <span class="c1"># do not show the transcript id</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">display</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">display</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">chrom_to_display</span><span class="p">[</span><span class="n">var_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">display</span>
+        <span class="k">return</span> <span class="n">chrom_to_display</span></div>
+</div>
 
 </pre></div>
 

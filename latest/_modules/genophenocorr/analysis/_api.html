@@ -95,44 +95,61 @@
 <span class="n">PatientsByHPO</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PatientsByHPO&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all_with_hpo&#39;</span><span class="p">,</span> <span class="s1">&#39;all_without_hpo&#39;</span><span class="p">])</span>
 
 
-
-
 <div class="viewcode-block" id="HpoMtcReport">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport">[docs]</a>
 <span class="k">class</span> <span class="nc">HpoMtcReport</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses</span>
+<span class="sd">    Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">mtc_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">filter_results_map</span><span class="p">:</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">],</span> <span class="n">term_count</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span> <span class="o">=</span> <span class="n">filter_name</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">filter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">mtc_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">filter_results_map</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">term_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)</span>
+<span class="sd">            mtc_name:  name of the MTC function (e.g. `bonferroni`)</span>
+<span class="sd">            filter_results_map: mapping with reasons for filtering out a term as keys,</span>
+<span class="sd">             and counts of filtered terms as values</span>
+<span class="sd">            term_count: the number of HPO terms before filtering</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_name</span> <span class="o">=</span> <span class="n">filter_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">mtc_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span> <span class="o">=</span> <span class="n">filter_results_map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span> <span class="o">=</span> <span class="n">term_count</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filter_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of the HpoMtcFilter method used</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the name of the HpoMtcFilter method used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter_name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">skipped_terms_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dictionary with categories and counts of terms that were skipped</span>
+    <span class="k">def</span> <span class="nf">skipped_terms_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of the multiple testing correction method used</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the name of the multiple testing correction method used (e.g. `bonferroni`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_terms_tested</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;return the number of terms tested following our HpoMtcFilter</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of HPO terms before filtering.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span></div>
+
 
 
 <div class="viewcode-block" id="GenotypePhenotypeAnalysisResult">
@@ -143,13 +160,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">n_usable</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
             <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
             <span class="n">pvals</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
             <span class="n">corrected_pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
             <span class="n">phenotype_categories</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span>
             <span class="n">geno_predicate</span><span class="p">:</span> <span class="n">PolyPredicate</span><span class="p">,</span>
-            <span class="n">mtc_filter_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="o">=</span><span class="kc">None</span>
+            <span class="n">mtc_filter_report</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">HpoMtcReport</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">=</span> <span class="n">n_usable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">=</span> <span class="n">all_counts</span>
@@ -160,10 +178,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_report</span> <span class="o">=</span> <span class="n">mtc_filter_report</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_usable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">n_usable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a :class:`pandas.Series` with mapping from HPO term and number of patients where the term was either</span>
-<span class="sd">         present or excluded, and are, thus, usable for genotype-phenotype correlation analysis.</span>
+<span class="sd">        Get a mapping from a phenotype `P` (either an HPO term or a disease ID)</span>
+<span class="sd">        to an `int` with the number of patients where the phenotype was assessable,</span>
+<span class="sd">        and are, thus, usable for genotype-phenotype correlation analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span>
 
@@ -207,9 +226,9 @@
 <span class="sd">        Get a sequence of phenotype patient categories that can be investigated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span>
-    
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mtc_filter_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HpoMtcReport</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mtc_filter_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">HpoMtcReport</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_report</span>
 
 <div class="viewcode-block" id="GenotypePhenotypeAnalysisResult.summarize">
@@ -242,7 +261,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown phenotype category: </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">. Use one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_categories</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1"># Row index: a list of tested HPO terms</span>
-        <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="c1"># Column index: multiindex of counts and percentages for all genotype predicate groups</span>
         <span class="n">geno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
             <span class="n">iterables</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geno_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span> <span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">)),</span>
@@ -469,15 +488,39 @@
 
 
 <span class="k">class</span> <span class="nc">HpoMtcFilter</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes</span>
+<span class="sd">    are not worth testing in order to reduce the multiple testing burden.</span>
+
+<span class="sd">    Note, the filter works only when using the HPO term to represent the phenotype.</span>
+<span class="sd">    Therefore, the expected input asks for :class:`hpotk.TermId` items.</span>
+<span class="sd">    For instance, `n_usable` is a mapping from an *HPO term* to an `int` with the count of the patients</span>
+<span class="sd">    categorized according to the HPO term.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">n_usable</span><span class="p">:</span><span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
-        <span class="n">all_counts</span><span class="p">:</span><span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decide which terms to pass through for statistical testing.</span>
-<span class="sd">        The intention of this class is tto reduce multiple testing burden by removing terms that are unlikely to</span>
-<span class="sd">        lead to interesting statistical/analytical results.</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decide which terms to pass through for statistical testing.</span>
+<span class="sd">        The intention of this class is to reduce multiple testing burden by removing terms that are unlikely</span>
+<span class="sd">        to lead to interesting statistical/analytical results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients</span>
+<span class="sd">              that could be binned according to the used genotype/phenotype predicate.</span>
+<span class="sd">            all_counts: a mapping from the :class:`hpotk.TermId` to</span>
+<span class="sd">        Returns:</span>
+<span class="sd">           a tuple with three items:</span>
+<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
+<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
+<span class="sd">            - a mapping from a `str` with reason why a term was filtered out (e.g. *Skipping top level term*)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 

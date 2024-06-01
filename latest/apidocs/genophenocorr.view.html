@@ -102,23 +102,153 @@
 <span id="genophenocorr-view-package"></span><h1>genophenocorr.view package<a class="headerlink" href="#module-genophenocorr.view" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.view.CohortViewable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">CohortViewable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_phenotype_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_variant_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">CohortViewable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_phenotype_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_variant_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class to create a viewable object that is uses a Jinja2 template to create an HTML element
 for display in the Jupyter notebook.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.view.CohortViewable.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable.process" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable.process" title="Link to this definition"></a></dt>
 <dd><p>Create an HTML that should be shown with display(HTML(..)) of the ipython package.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – The cohort being analyzed in the current Notebook</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – The cohort being analyzed in the current Notebook</p></li>
+<li><p><strong>transcript_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – the transcript that we map variants onto</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>an HTML string with parameterized template for rendering</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.view.CohortViewable.get_display">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Variant" title="genophenocorr.model._variant.Variant"><span class="pre">Variant</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable.get_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable.get_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.view.CohortViewable.get_variant_description">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_variant_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_hgvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_cohort.html#CohortViewable.get_variant_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.CohortViewable.get_variant_description" title="Link to this definition"></a></dt>
+<dd><p>Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings
+:param cohort: The cohort being analyzed in the current Notebook
+:type cohort: Cohort
+:param transcript_id: the transcript that we map variants onto
+:type transcript_id: str
+:param only_hgvs: do not show the transcript ID part of the HGVS annotation, just the annotation.
+:type only_hgvs: bool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>key: chromosomal, value: display (e.g. HGVS) string of variant</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><em>Mapping</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">ProteinVisualizer</span></span><a class="reference internal" href="../_modules/genophenocorr/view/_protein_visualizer.html#ProteinVisualizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.ProteinVisualizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Draw a schema of a protein with variants of the cohort.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizer.draw_fig">
+<span class="sig-name descname"><span class="pre">draw_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#genophenocorr.view.ProteinVisualizable" title="genophenocorr.view._protein_visualizable.ProteinVisualizable"><span class="pre">ProteinVisualizable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeling_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'abbreviate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'enumerate'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'abbreviate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.87</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_protein_visualizer.html#ProteinVisualizer.draw_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.ProteinVisualizer.draw_fig" title="Link to this definition"></a></dt>
+<dd><p>Visualize the cohort variants on a protein diagram.</p>
+<p>By default, the legend is drawn to the right of the figure to avoid overlap between the variant markers
+and the legend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pvis</strong> – <a class="reference internal" href="#genophenocorr.view.ProteinVisualizable" title="genophenocorr.view.ProteinVisualizable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinVisualizable</span></code></a> with information about the transcript coordinates, protein metadata,
+and the cohort for plotting</p></li>
+<li><p><strong>ax</strong> – a Matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">plt.Axes</span></code> to plot on or <cite>None</cite> if a new <cite>Axes</cite> should be created</p></li>
+<li><p><strong>labeling_method</strong> – the strategy for generating labels.
+Valid values of labeling_method are <cite>{‘abbreviate’, ‘enumerate’}</cite></p></li>
+<li><p><strong>legend_x</strong> – left x coordinate of the legend bounding box</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>None</cite> if an <code class="xref py py-class docutils literal notranslate"><span class="pre">plt.Axes</span></code> was provided via <cite>ax</cite> argument
+or an <cite>Axes</cite> created by the visualizer if <cite>ax</cite> was <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">ProteinVisualizable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates" title="genophenocorr.model._tx.TranscriptCoordinates"><span class="pre">TranscriptCoordinates</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.ProteinMetadata" title="genophenocorr.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_protein_visualizable.html#ProteinVisualizable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.transcript_coordinates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transcript_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates" title="genophenocorr.model._tx.TranscriptCoordinates"><span class="pre">TranscriptCoordinates</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.transcript_coordinates" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.transcript_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transcript_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.transcript_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.ProteinMetadata" title="genophenocorr.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_feature_starts">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_feature_starts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_feature_starts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_feature_ends">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_feature_ends</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_feature_ends" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_length" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.protein_feature_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_feature_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.protein_feature_names" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.variant_effects">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_effects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantEffect" title="genophenocorr.model._variant_effects.VariantEffect"><span class="pre">VariantEffect</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.variant_effects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.variant_locations_counted_absolute">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_locations_counted_absolute</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.variant_locations_counted_absolute" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.marker_counts">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">marker_counts</span></span><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.marker_counts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.view.ProteinVisualizable.variant_locations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_locations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#genophenocorr.view.ProteinVisualizable.variant_locations" title="Link to this definition"></a></dt>
+<dd><p>Get an array with 0-based start coordinates of aminoacids that overlap with the variant regions.</p>
+<dl class="simple">
+<dt>Returns</dt><dd><p>a 1D array with ints containing a coordinate for each variant</p>
 </dd>
 </dl>
 </dd></dl>
@@ -138,32 +268,21 @@ for display in the Jupyter notebook.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.view.VariantDrawer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">VariantDrawer</span></span><a class="reference internal" href="../_modules/genophenocorr/view/_variant_drawer.html#VariantDrawer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.VariantDrawer" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="genophenocorr.view.StatsViewer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">StatsViewer</span></span><a class="reference internal" href="../_modules/genophenocorr/view/_stats.html#StatsViewer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.StatsViewer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>StatsViewer</cite> uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook
+or for writing into a standalone HTML file.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.VariantDrawer.draw_fig">
-<span class="sig-name descname"><span class="pre">draw_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ProteinVisualizable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_variant_drawer.html#VariantDrawer.draw_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.VariantDrawer.draw_fig" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="genophenocorr.view.StatsViewable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.view.</span></span><span class="sig-name descname"><span class="pre">StatsViewable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_mtc_report</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport" title="genophenocorr.analysis._api.HpoMtcReport"><span class="pre">HpoMtcReport</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/view/_stats.html#StatsViewable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.StatsViewable" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Class to create a viewable object that is uses a Jinja2 template to create an HTML element
-for display in the Jupyter notebook.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.view.StatsViewable.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_stats.html#StatsViewable.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.StatsViewable.process" title="Link to this definition"></a></dt>
-<dd><p>Create an HTML that should be shown with display(HTML(..)) of the ipython package.</p>
+<dt class="sig sig-object py" id="genophenocorr.view.StatsViewer.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo_mtc_report</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport" title="genophenocorr.analysis._api.HpoMtcReport"><span class="pre">HpoMtcReport</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/view/_stats.html#StatsViewer.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.view.StatsViewer.process" title="Link to this definition"></a></dt>
+<dd><p>Create an HTML that should be shown with <cite>display(HTML(..))</cite> of the ipython package.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cohort</strong> (<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><em>Cohort</em></a>) – The cohort being analyzed in the current Notebook</p>
+<dd class="field-odd"><p><strong>hpo_mtc_report</strong> (<a class="reference internal" href="genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport" title="genophenocorr.analysis.HpoMtcReport"><em>HpoMtcReport</em></a>) – summary of heuristic term filtering procedure</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an HTML string with parameterized template for rendering</p>
+<dd class="field-even"><p>an HTML string with parameterized template for rendering or writing into a standalone HTML file.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
