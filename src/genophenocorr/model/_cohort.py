@@ -273,15 +273,15 @@ class Cohort(typing.Sized):
             mapping: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.
         """
-        counters = defaultdict(Counter)
+        #counters = defaultdict(Counter)
+        counter = Counter()
 
         for v in self.all_variants():
             for txa in v.tx_annotations:
                 if tx_id is None or tx_id == txa.transcript_id:
-                    counter = counters[txa.transcript_id]
                     counter.update(ve.name for ve in txa.variant_effects)
 
-        return counters
+        return counter
 
     def get_excluded_count(self):
         return self._excluded_count
