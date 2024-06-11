@@ -7,58 +7,57 @@ from genophenocorr.analysis import HpoMtcReport
 from genophenocorr.model import Cohort
 
 
-class StatsViewable:
+class StatsViewer:
     """
-    Class to create a viewable object that is uses a Jinja2 template to create an HTML element
-    for display in the Jupyter notebook.
+    `StatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook
+    or for writing into a standalone HTML file.
     """
 
-    def __init__(
-            self,
-            hpo_mtc_report: HpoMtcReport,
-    ):
-        """
-        Args:
-            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure
-        """
-        self._hpo_mtc_filter_name = hpo_mtc_report.filter_method
-        self._mtc_name = hpo_mtc_report.mtc_method
-        self._results_map = hpo_mtc_report.skipped_terms_dict
-        if not isinstance(hpo_mtc_report.skipped_terms_dict, dict):
-            raise ValueError(f"hpo_mtc_report.skipped_terms_dict must be disctionary but was {type(hpo_mtc_report.skipped_terms_dict)}")
-        self._term_count = hpo_mtc_report.n_terms_tested
+    def __init__(self):
         environment = Environment(loader=(PackageLoader('genophenocorr.view', 'templates')))
         self._cohort_template = environment.get_template("stats.html")
 
     def process(
             self,
-            cohort: Cohort,
+            hpo_mtc_report: HpoMtcReport,
     ) -> str:
         """
-        Create an HTML that should be shown with display(HTML(..)) of the ipython package.
+        Create an HTML that should be shown with `display(HTML(..))` of the ipython package.
 
         Args:
-            cohort (Cohort): The cohort being analyzed in the current Notebook
+            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure
 
         Returns:
-            str: an HTML string with parameterized template for rendering
+            str: an HTML string with parameterized template for rendering or writing into a standalone HTML file.
         """
-        context = self._prepare_context(cohort)
+        context = self._prepare_context(hpo_mtc_report)
         return self._cohort_template.render(context)
 
+    @staticmethod
     def _prepare_context(
-            self,
-            cohort: Cohort,
+            hpo_mtc_report: HpoMtcReport,
     ) -> typing.Mapping[str, typing.Any]:
-       
-        skip_counts = list()
-        sort_by_value = dict(sorted(self._results_map.items(), key=lambda item: item[1], reverse=True))
-        for skipped, c in sort_by_value.items():
-            skip_counts.append({"Skipped": skipped, "count": c})
+        results_map = hpo_mtc_report.skipped_terms_dict
+        if not isinstance(results_map, dict):
+            raise ValueError(
+                "hpo_mtc_report.skipped_terms_dict must be dictionary "
+                f"but was {type(hpo_mtc_report.skipped_terms_dict)}"
+            )
+
+        n_skipped = 0
+        reason_to_count = list()
+        for reason, count in sorted(results_map.items(), key=lambda item: item[1], reverse=True):
+            reason_to_count.append({"reason": reason, "count": count})
+            n_skipped += count
+
+        n_tested = hpo_mtc_report.n_terms_tested - n_skipped
+
         # The following dictionary is used by the Jinja2 HTML template
         return {
-            "mtc_name": self._mtc_name,
-            "hpo_mtc_filter_name": self._hpo_mtc_filter_name ,
-            "total_hpo_count": self._term_count,
-            "skipped_counts": skip_counts,
+            "mtc_name": hpo_mtc_report.mtc_method,
+            "hpo_mtc_filter_name": hpo_mtc_report.filter_method,
+            "skipped_hpo_count": n_skipped,
+            "tested_hpo_count": n_tested,
+            "total_hpo_count": hpo_mtc_report.n_terms_tested,
+            "reason_to_count": reason_to_count,
         }

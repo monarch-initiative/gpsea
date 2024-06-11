@@ -6,6 +6,7 @@ from pkg_resources import resource_filename
 import pytest
 
 
+from genophenocorr.io import GenophenocorrJSONEncoder
 from genophenocorr.model.genome import GRCh38, Strand, transpose_coordinate
 
 from ._vv import VVHgvsVariantCoordinateFinder, VVTranscriptCoordinateService
@@ -193,6 +194,17 @@ class TestVVTranscriptCoordinateService:
 
         assert tc.cds_start == 112_419_111
         assert tc.cds_end == 112_504_764
+
+    @pytest.mark.skip('Run to manually regenerate SUOX MANE transcript JSON dump')
+    def test_fetch_suox(
+            self,
+            tx_coordinate_service: VVTranscriptCoordinateService,
+            fpath_suox_tx_coordinates: str,
+    ):
+        tx_id = 'NM_001032386.2'
+        response = tx_coordinate_service.fetch(tx_id)
+        with open(fpath_suox_tx_coordinates, 'w') as fh:
+            json.dump(response, fh, cls=GenophenocorrJSONEncoder, indent=2)
 
 
 def load_response_json(path: str):

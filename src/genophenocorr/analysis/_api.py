@@ -12,42 +12,59 @@ from .predicate.phenotype import P
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
 
-
-
 class HpoMtcReport:
     """
-    Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses
+    Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses.
     """
 
-    def __init__(self, filter_name:str, mtc_name:str, filter_results_map:typing.Dict[str,int], term_count:int) -> None:
-        self._hpo_mtc_filter_name = filter_name
+    def __init__(
+            self,
+            filter_name: str,
+            mtc_name: str,
+            filter_results_map: typing.Mapping[str, int],
+            term_count: int,
+    ):
+        """
+        Args:
+            filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)
+            mtc_name:  name of the MTC function (e.g. `bonferroni`)
+            filter_results_map: mapping with reasons for filtering out a term as keys,
+             and counts of filtered terms as values
+            term_count: the number of HPO terms before filtering
+        """
+        self._filter_name = filter_name
         self._mtc_name = mtc_name
         self._results_map = filter_results_map
         self._term_count = term_count
 
     @property
     def filter_method(self) -> str:
-        """Return the name of the HpoMtcFilter method used
         """
-        return self._hpo_mtc_filter_name
+        Get the name of the HpoMtcFilter method used.
+        """
+        return self._filter_name
 
     @property
-    def skipped_terms_dict(self) -> typing.Dict[str,int]:
-        """Return a dictionary with categories and counts of terms that were skipped
+    def skipped_terms_dict(self) -> typing.Mapping[str, int]:
+        """
+        Get a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.
         """
         return self._results_map
 
     @property
     def mtc_method(self) -> str:
-        """Return the name of the multiple testing correction method used
+        """
+        Get the name of the multiple testing correction method used (e.g. `bonferroni`).
         """
         return self._mtc_name
 
     @property
     def n_terms_tested(self) -> int:
-        """return the number of terms tested following our HpoMtcFilter
+        """
+        Get the number of HPO terms before filtering.
         """
         return self._term_count
+
 
 class GenotypePhenotypeAnalysisResult:
     """
@@ -55,13 +72,14 @@ class GenotypePhenotypeAnalysisResult:
     """
 
     def __init__(
-            self, n_usable: pd.Series,
+            self,
+            n_usable: typing.Mapping[P, int],
             all_counts: typing.Mapping[P, pd.DataFrame],
             pvals: pd.Series,
             corrected_pvals: typing.Optional[pd.Series],
             phenotype_categories: typing.Iterable[PatientCategory],
             geno_predicate: PolyPredicate,
-            mtc_filter_report: HpoMtcReport=None
+            mtc_filter_report: typing.Optional[HpoMtcReport] = None
     ):
         self._n_usable = n_usable
         self._all_counts = all_counts
@@ -72,10 +90,11 @@ class GenotypePhenotypeAnalysisResult:
         self._mtc_filter_report = mtc_filter_report
 
     @property
-    def n_usable(self) -> pd.Series:
+    def n_usable(self) -> typing.Mapping[P, int]:
         """
-        Get a :class:`pandas.Series` with mapping from HPO term and number of patients where the term was either
-         present or excluded, and are, thus, usable for genotype-phenotype correlation analysis.
+        Get a mapping from a phenotype `P` (either an HPO term or a disease ID)
+        to an `int` with the number of patients where the phenotype was assessable,
+        and are, thus, usable for genotype-phenotype correlation analysis.
         """
         return self._n_usable
 
@@ -119,9 +138,9 @@ class GenotypePhenotypeAnalysisResult:
         Get a sequence of phenotype patient categories that can be investigated.
         """
         return self._phenotype_categories
-    
+
     @property
-    def mtc_filter_report(self) -> HpoMtcReport:
+    def mtc_filter_report(self) -> typing.Optional[HpoMtcReport]:
         return self._mtc_filter_report
 
     def summarize(
@@ -152,7 +171,7 @@ class GenotypePhenotypeAnalysisResult:
             raise ValueError(f'Unknown phenotype category: {category}. Use one of {self._phenotype_categories}')
 
         # Row index: a list of tested HPO terms
-        pheno_idx = pd.Index(self._n_usable.index)
+        pheno_idx = pd.Index(self._n_usable.keys())
         # Column index: multiindex of counts and percentages for all genotype predicate groups
         geno_idx = pd.MultiIndex.from_product(
             iterables=(self._geno_predicate.get_categories(), ('Count', 'Percent')),
@@ -356,15 +375,39 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
 
 class HpoMtcFilter(metaclass=abc.ABCMeta):
+    """
+    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes
+    are not worth testing in order to reduce the multiple testing burden.
+
+    Note, the filter works only when using the HPO term to represent the phenotype.
+    Therefore, the expected input asks for :class:`hpotk.TermId` items.
+    For instance, `n_usable` is a mapping from an *HPO term* to an `int` with the count of the patients
+    categorized according to the HPO term.
+    """
     @abc.abstractmethod
     def filter_terms_to_test(
-        self, 
-        n_usable:typing.Mapping[hpotk.TermId, int], 
-        all_counts:typing.Mapping[hpotk.TermId, pd.DataFrame],
-    ) -> typing.Tuple[typing.Mapping[hpotk.TermId, int], typing.Mapping[hpotk.TermId, pd.DataFrame]]:
-        """Decide which terms to pass through for statistical testing.
-        The intention of this class is tto reduce multiple testing burden by removing terms that are unlikely to
-        lead to interesting statistical/analytical results.
+        self,
+        n_usable: typing.Mapping[hpotk.TermId, int],
+        all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
+    ) -> typing.Tuple[
+        typing.Mapping[hpotk.TermId, int],
+        typing.Mapping[hpotk.TermId, pd.DataFrame],
+        typing.Mapping[str, int],
+    ]:
+        """
+        Decide which terms to pass through for statistical testing.
+        The intention of this class is to reduce multiple testing burden by removing terms that are unlikely
+        to lead to interesting statistical/analytical results.
+
+        Args:
+            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients
+              that could be binned according to the used genotype/phenotype predicate.
+            all_counts: a mapping from the :class:`hpotk.TermId` to
+        Returns:
+           a tuple with three items:
+            - a mapping from :class:`hpotk.TermId` ->
+            - a mapping from :class:`hpotk.TermId` ->
+            - a mapping from a `str` with reason why a term was filtered out (e.g. *Skipping top level term*)
         """
         pass
 

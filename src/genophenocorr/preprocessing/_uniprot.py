@@ -23,48 +23,59 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
                     'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq,length'
 
-    
     @staticmethod
-    def parse_uniprot_json(json: str, protein_id: str) -> typing.Sequence[ProteinMetadata]:
-        results = json['results']
+    def parse_uniprot_json(
+            payload: typing.Mapping[str, typing.Any],
+            protein_id: str,
+    ) -> ProteinMetadata:
+        """
+        Try to extract `ProteinMetadata` corresponding to `protein_id` from the Uniprot JSON `payload`.
+
+        Args:
+            payload: a JSON object corresponding to Uniprot response
+            protein_id: a `str` with the accession the protein of interest
+        Returns:
+            a complete instance of `ProteinMetadata`
+        Raises:
+            `ValueError` if unable to parse a complete instance
+        """
+        results = payload['results']
         if len(results) == 0:
             raise ValueError(f"No proteins found for ID {protein_id}. Please verify refseq ID.")
-        protein_list = []
-        unis = []
+
         for protein in results:
-            for uni in protein['uniProtKBCrossReferences']:
-                unis.append(uni['id'])
-            protein_length = 0
-            try:
-                protein_length = protein["sequence"]["length"]
-            except:
-                print("Could not extract length of protein")
-            if protein_id in unis:
+            if any(uni['id'] == protein_id for uni in protein['uniProtKBCrossReferences']):
+                # `protein` has a cross-reference to the `protein_id` of interest
                 try:
                     protein_name = protein['proteinDescription']['recommendedName']['fullName']['value']
                 except KeyError:
                     protein_name = protein['proteinDescription']['submissionNames'][0]['fullName']['value']
+
                 all_features_list = []
                 try:
                     for feature in protein['features']:
-                        feat_type = feature['type']
-                        feat_name = feature['description']
-                        feat_start = int(feature['location']['start']['value'])
-                        feat_end = int(feature['location']['end']['value'])
-                        feat = ProteinFeature.create(FeatureInfo(feat_name, Region(feat_start, feat_end)), FeatureType[feat_type.upper()])
-                        all_features_list.append(feat)
+                        feature_start = int(feature['location']['start']['value'])
+                        feature_end = int(feature['location']['end']['value'])
+                        feature_info = FeatureInfo(
+                            feature['description'],
+                            Region(start=feature_start, end=feature_end),
+                        )
+                        feature_type = FeatureType[feature['type'].upper()]
+                        protein_feature = ProteinFeature.create(feature_info, feature_type)
+                        all_features_list.append(protein_feature)
                 except KeyError:
                     raise ValueError(f"No features for {protein_id}")
-                protein_list.append(ProteinMetadata(protein_id, protein_name, all_features_list, protein_length))
-        if len(protein_list) > 1:
-            logging.info('UniProt found %d results for ID %s', len(protein_list), protein_id)
-        elif len(protein_list) == 0:
-            raise ValueError(f"UniProt did not return a protein ID that matches the ID we searched for: {protein_id} not in {unis}")
-        return protein_list
-    
-    
-    
-    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
+
+                try:
+                    protein_length = protein["sequence"]["length"]
+                except KeyError as e:
+                    raise ValueError(e)
+
+                return ProteinMetadata(protein_id, protein_name, all_features_list, protein_length)
+
+        raise ValueError(f'Could not find an entry for {protein_id} in Uniprot response')
+
+    def annotate(self, protein_id: str) -> ProteinMetadata:
         """Get metadata for given protein ID. This class specifically only works with a RefSeq database ID (e.g. NP_037407.4)
 
         Args:
