@@ -51,7 +51,7 @@ We can then view the data using the list commands.
   >>> sorted(cohort.list_all_proteins())
   [('NP_09876.5', 29)]
   >>> tx_dict = cohort.variant_effect_count_by_tx(tx_id='NM_1234.5')
-  >>> sorted(tx_dict['NM_1234.5'].items())
+  >>> sorted(tx_dict.items())
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 
 Using the counts, we can choose and run what analyses we want.
