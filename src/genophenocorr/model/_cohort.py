@@ -273,7 +273,6 @@ class Cohort(typing.Sized):
             mapping: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.
         """
-        #counters = defaultdict(Counter)
         counter = Counter()
 
         for v in self.all_variants():
