@@ -36,3 +36,14 @@ class TestCohort:
         # print(mane_counts)
         assert mane_counts == {'MISSENSE_VARIANT': 29, 'STOP_GAINED': 10, 'FRAMESHIFT_VARIANT': 9}
 
+    def test_variant_effect_count_by_tx__singular(
+            self,
+            suox_cohort: Cohort,
+    ):
+        suox_mane = 'NM_001032386.2'
+        counts = suox_cohort.variant_effect_count_by_tx(tx_id=suox_mane)
+
+        assert suox_mane in counts
+        assert len(counts) == 1, 'The counts should only have one item'
+
+        assert counts[suox_mane] == {'MISSENSE_VARIANT': 29, 'STOP_GAINED': 10, 'FRAMESHIFT_VARIANT': 9}
