@@ -211,7 +211,7 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
                     prot_loc = ann.protein_effect_location
                     prot_id = ann.protein_id
                     if prot_id is not None and prot_loc is not None:
-                        protein = self._protein_service.annotate(prot_id)
+                        protein = self._protein_service.annotate(prot_id)[0]
                         for feat in protein.protein_features:
                             if feat.feature_type == self._feature_type:
                                 if prot_loc.overlaps_with(feat.info.region):
@@ -270,7 +270,7 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
                     prot_loc = ann.protein_effect_location
                     prot_id = ann.protein_id
                     if prot_id is not None and prot_loc is not None:
-                        protein = self._protein_service.annotate(prot_id)
+                        protein = self._protein_service.annotate(prot_id)[0]
                         for feat in protein.protein_features:
                             if feat.info.name == self._pf_name:
                                 if prot_loc.overlaps_with(feat.info.region):
