@@ -431,7 +431,7 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
             transcript_id (str): A transcript ID - i.e. 'NM_170707.4'
 
         Returns:
-            str or None: The hgvs cdna if available - i.e. 'c.1824C>T'
+            str or None: The hgvs cdna if available - i.e. 'NM_170707.4:c.1824C>T'
         """
         for tx in self.tx_annotations:
             if tx.transcript_id == transcript_id:

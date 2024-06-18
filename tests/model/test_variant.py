@@ -17,7 +17,7 @@ class TestVariant:
     @pytest.mark.parametrize(
             "tx_id, expected", 
             [
-                ("NM_001032386.2", 'c.1136A>G'),
+                ("NM_001032386.2", 'NM_001032386.2:c.1136A>G'),
                 ("Whatever", None),
             ])
     def test_get_hgvs_cdna_by_tx(

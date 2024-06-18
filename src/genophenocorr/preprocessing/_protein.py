@@ -35,10 +35,7 @@ class ProteinAnnotationCache:
         fpath = self._create_file_name(protein_id)
         if os.path.isfile(fpath):
             with open(fpath, 'rb') as fh:
-                result_list = pickle.load(fh)
-                if len(result_list) != 1:
-                    raise ValueError(f"An annotation file was saved for protein ID {protein_id} but either contains no annotations or more than one. Please examine the file and try again.")
-                return result_list[0]
+                return pickle.load(fh)
         else:
             return None
 
