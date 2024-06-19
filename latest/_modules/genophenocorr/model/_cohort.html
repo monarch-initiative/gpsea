@@ -402,26 +402,27 @@
 <span class="sd">            mapping: Each transcript ID references a Counter(), with the variant effect as the key</span>
 <span class="sd">              and the count of variants with that effect on the transcript id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">counters</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">Counter</span><span class="p">)</span>
+        <span class="n">counters</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">tx_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tx_id</span> <span class="o">==</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">:</span>
-                    <span class="n">counter</span> <span class="o">=</span> <span class="n">counters</span><span class="p">[</span><span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">]</span>
-                    <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ve</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ve</span> <span class="ow">in</span> <span class="n">txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">counters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">counters</span><span class="p">[</span><span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+                    <span class="n">counters</span><span class="p">[</span><span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ve</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ve</span> <span class="ow">in</span> <span class="n">txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">counters</span></div>
 
 
 <div class="viewcode-block" id="Cohort.get_excluded_count">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_excluded_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_excluded_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_excluded_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_count</span></div>
 
     
 <div class="viewcode-block" id="Cohort.get_variant_by_key">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_variant_by_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_variant_by_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_variant_by_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Variant</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="o">==</span> <span class="n">variant_key</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">v</span>

@@ -523,6 +523,23 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">genotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Genotypes</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span>
+    
+<div class="viewcode-block" id="Variant.get_hgvs_cdna_by_tx">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Variant.get_hgvs_cdna_by_tx">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_hgvs_cdna_by_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a transcript ID, will return the hgvs cdna string associated with that variant and transcript.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            transcript_id (str): A transcript ID - i.e. &#39;NM_170707.4&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str or None: The hgvs cdna if available - i.e. &#39;NM_170707.4:c.1824C&gt;T&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tx</span><span class="o">.</span><span class="n">hgvs_cdna</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Variant</span><span class="p">)</span> \
