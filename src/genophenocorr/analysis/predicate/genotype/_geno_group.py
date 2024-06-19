@@ -383,11 +383,10 @@ class ProtRegionsPredicate(GroupingPredicate):
     :param protein_region: a `Region` with the start and end coordinates.
     """
 
-    def __init__(self, transcript_id: str, protein_region_1: Region, protein_region_2: Region, protein_service:ProteinMetadataService) -> None:
+    def __init__(self, transcript_id: str, protein_region_1: Region, protein_region_2: Region) -> None:
         self._tx_id = transcript_id
         self._prot_region_1 = hpotk.util.validate_instance(protein_region_1, Region, 'protein_region_1')
         self._prot_region_2 = hpotk.util.validate_instance(protein_region_2, Region, 'protein_region_2')
-        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
         return f'Variant that affects an amino acid between {self._prot_region_1.start} and {self._prot_region_1.end} vs between {self._prot_region_2.start} and' \
@@ -432,4 +431,4 @@ class ProtRegionsPredicate(GroupingPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region}, protein_region_2={self._prot_region_2})'
+        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region_1}, protein_region_2={self._prot_region_2})'

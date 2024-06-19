@@ -297,10 +297,9 @@ class ProtRegionPredicate(GenotypeBooleanPredicate):
     :param protein_region: a `Region` with the start and end coordinates.
     """
 
-    def __init__(self, transcript_id: str, protein_region: Region, protein_service:ProteinMetadataService) -> None:
+    def __init__(self, transcript_id: str, protein_region: Region) -> None:
         self._tx_id = transcript_id
         self._prot_region = hpotk.util.validate_instance(protein_region, Region, 'protein_region')
-        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
 
     def get_question(self) -> str:
         return f'Variant that affects an amino acid between {self._prot_region.start} and {self._prot_region.end} on protein encoded by transcript {self._tx_id}'

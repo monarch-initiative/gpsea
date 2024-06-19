@@ -175,8 +175,8 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
                           ['HomoVar', Region(2000, 2500), PatientCategories.YES],
                           ['HetSingleVar', Region(2000, 2500), PatientCategories.YES],
                           ['HetDoubleVar1', Region(600, 650), PatientCategories.YES]))
-def test_ProteinRegionPredicate(patient_id, region, hasVarResult, toy_cohort, protein_test_service):
-    predicate = ProtRegionPredicate('NM_013275.6', region, protein_test_service)
+def test_ProteinRegionPredicate(patient_id, region, hasVarResult, toy_cohort):
+    predicate = ProtRegionPredicate('NM_013275.6', region)
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
