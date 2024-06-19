@@ -170,11 +170,11 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
     assert result.category == hasVarResult
 
 @pytest.mark.parametrize('patient_id, region, hasVarResult',
-                         (['HetDoubleVar2', Region(150, 200), PatientCategories.YES],
-                          ['HetDoubleVar2', Region(20, 50), PatientCategories.NO],
-                          ['HomoVar', Region(170, 180), PatientCategories.YES],
-                          ['HetSingleVar', Region(170, 180), PatientCategories.YES],
-                          ['HetDoubleVar1', Region(170, 180), PatientCategories.YES]))
+                         (['HetDoubleVar2', Region(2000, 2500), PatientCategories.YES],
+                          ['HetDoubleVar2', Region(1000, 1500), PatientCategories.NO],
+                          ['HomoVar', Region(2000, 2500), PatientCategories.YES],
+                          ['HetSingleVar', Region(2000, 2500), PatientCategories.YES],
+                          ['HetDoubleVar1', Region(600, 650), PatientCategories.YES]))
 def test_ProteinRegionPredicate(patient_id, region, hasVarResult, toy_cohort, protein_test_service):
     predicate = ProtRegionPredicate('NM_013275.6', region, protein_test_service)
     patient = find_patient(patient_id, toy_cohort)
