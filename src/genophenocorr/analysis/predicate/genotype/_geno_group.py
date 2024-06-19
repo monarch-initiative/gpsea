@@ -3,6 +3,7 @@ import typing
 import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 
 from .._api import PatientCategory, GroupingPredicate
@@ -330,7 +331,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
             patient (Patient): A Patient class representing a patient.
 
         Returns:
-            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+            typing.Optional[PatientCategory]: GroupingPredicate, either "FIRST" or "SECOND" 
                                              if it has the first given genotype or the
                                              second given genotype. 
         """
@@ -369,3 +370,66 @@ class ProtFeaturesPredicate(GroupingPredicate):
 
     def __repr__(self):
         return f'ProtFeaturePredicate(tx_id={self._tx_id}, protein_feature1_name={self._pf1_name}, protein_feature2_name={self._pf2_name}, protein_service={self._protein_service})'
+
+
+class ProtRegionsPredicate(GroupingPredicate):
+    """
+    `ProtRegionPredicate` tests if the `patient` has a variant that overlaps with a given region of the protein.
+
+    The predicate needs the start and end coordinate for the protein region, given as a `Region`.
+    For instance, Region(150, 175)
+
+    :param transcript_id: the accession of the transcript of interest.
+    :param protein_region: a `Region` with the start and end coordinates.
+    """
+
+    def __init__(self, transcript_id: str, protein_region_1: Region, protein_region_2: Region, protein_service:ProteinMetadataService) -> None:
+        self._tx_id = transcript_id
+        self._prot_region_1 = hpotk.util.validate_instance(protein_region_1, Region, 'protein_region_1')
+        self._prot_region_2 = hpotk.util.validate_instance(protein_region_2, Region, 'protein_region_2')
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
+
+    def get_question(self) -> str:
+        return f'Variant that affects an amino acid between {self._prot_region_1.start} and {self._prot_region_1.end} vs between {self._prot_region_2.start} and' \
+            f'{self._prot_region_2.end} on protein encoded by transcript {self._tx_id}'
+
+    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+        """A protein_region and ProteinMetadataService is given when initializing the class.
+        Given a Patient class, this function tests whether the patient does
+        or does not have a variant effecting that protein region on the given protein and
+        returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO"
+                                             if genotype is present or not.
+        """
+        self._check_patient(patient)
+        if len(patient.variants) == 0:
+            return None
+        
+        results = [False, False]
+        for variant in patient.variants:
+            for ann in variant.tx_annotations:
+                if ann.transcript_id == self._tx_id:
+                    prot_loc = ann.protein_effect_location
+                    if prot_loc is not None:
+                        if prot_loc.overlaps_with(self._prot_region_1):
+                            results[0] = True
+                        if prot_loc.overlaps_with(self._prot_region_2):
+                            results[1] = True
+
+        if results == [True, False]:
+            return GroupingPredicate.FIRST
+        elif results == [False, True]:
+            return GroupingPredicate.SECOND
+        else:
+            return None
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region}, protein_region_2={self._prot_region_2})'

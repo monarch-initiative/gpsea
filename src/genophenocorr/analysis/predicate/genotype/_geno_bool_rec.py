@@ -3,6 +3,7 @@ import typing
 import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 
 from .._api import Categorization, RecessiveGroupingPredicate
@@ -321,3 +322,63 @@ class RecessiveProtFeaturePredicate(RecessiveGroupingPredicate):
 
     def __repr__(self):
         return f'ProtFeaturePredicate(tx_id={self._tx_id}, exon_number={self._pf_name})'
+
+class RecessiveProtRegionPredicate(RecessiveGroupingPredicate):
+    """
+    `ProtRegionPredicate` tests if the `patient` has a variant that overlaps with a given region of the protein.
+
+    The predicate needs the start and end coordinate for the protein region, given as a `Region`.
+    For instance, Region(150, 175)
+
+    :param transcript_id: the accession of the transcript of interest.
+    :param protein_region: a `Region` with the start and end coordinates.
+    """
+
+    def __init__(self, transcript_id: str, protein_region: Region, protein_service:ProteinMetadataService) -> None:
+        self._tx_id = transcript_id
+        self._prot_region = hpotk.util.validate_instance(protein_region, Region, 'protein_region_1')
+        self._protein_service = hpotk.util.validate_instance(protein_service, ProteinMetadataService, 'protein_service')
+
+    def get_question(self) -> str:
+        return f'Variant that affects an amino acid between {self._prot_region.start} and {self._prot_region.end} on ' \
+            f'protein encoded by transcript {self._tx_id}'
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A protein_region and ProteinMetadataService is given when initializing the class.
+        Given a Patient class, this function tests whether the patient does
+        or does not have a variant effecting that protein region on the given protein and
+        returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: RecessiveGroupingPredicate, either "BOTH", "ONE" or "NEITHER"
+                                             if genotype is present on both alleles, one allele, or neither.
+        """
+        self._check_patient(patient)
+        if len(patient.variants) == 0:
+            return None
+        
+        results = []
+        for variant in patient.variants:
+            for ann in variant.tx_annotations:
+                if ann.transcript_id == self._tx_id:
+                    prot_loc = ann.protein_effect_location
+                    if prot_loc is not None:
+                        if prot_loc.overlaps_with(self._prot_region):
+                            results.append(True)
+
+
+        if len(results) == 2:
+            return RecessiveGroupingPredicate.BOTH
+        elif len(results) == 1:
+            return RecessiveGroupingPredicate.ONE
+        else:
+            return RecessiveGroupingPredicate.NEITHER
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region})'

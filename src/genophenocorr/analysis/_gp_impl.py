@@ -4,11 +4,12 @@ import typing
 import hpotk
 
 from genophenocorr.model import Cohort, VariantEffect, FeatureType
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate, GenotypeBooleanPredicate
-from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate
-from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate, ProtFeaturesPredicate, ProtFeatureTypesPredicate
-from .predicate.genotype import RecessiveVariantPredicate, RecessiveProtFeaturePredicate, RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantEffectPredicate
+from .predicate.genotype import VariantEffectPredicate, VariantPredicate, ExonPredicate, ProtFeatureTypePredicate, ProtFeaturePredicate, ProtRegionPredicate
+from .predicate.genotype import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate, ProtFeaturesPredicate, ProtFeatureTypesPredicate, ProtRegionsPredicate
+from .predicate.genotype import RecessiveVariantPredicate, RecessiveProtFeaturePredicate, RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantEffectPredicate, RecessiveProtRegionPredicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
@@ -64,6 +65,10 @@ class GpCohortAnalysis(CohortAnalysis):
     def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = ProtFeaturePredicate(tx_id, feature, self._protein_service)
         return self._apply_boolean_predicate_on_hpo_terms(predicate)
+    
+    def compare_by_protein_region(self, protein_region: Region, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = ProtRegionPredicate(tx_id, protein_region, self._protein_service)
+        return self._apply_boolean_predicate_on_hpo_terms(predicate)
 
     def compare_by_variant_effects(
             self,
@@ -100,6 +105,15 @@ class GpCohortAnalysis(CohortAnalysis):
         predicate = ProtFeaturesPredicate(tx_id, feature1, feature2, self._protein_service)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
     
+    def compare_by_protein_regions(
+        self,
+        region1: Region,
+        region2: Region, 
+        tx_id: str,
+    ) -> GenotypePhenotypeAnalysisResult:
+        predicate = ProtRegionsPredicate(tx_id, region1, region2, self._protein_service)
+        return self._apply_poly_predicate_on_hpo_terms(predicate)
+    
     def compare_by_recessive_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = RecessiveVariantEffectPredicate(tx_id, effect)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
@@ -118,6 +132,10 @@ class GpCohortAnalysis(CohortAnalysis):
 
     def compare_by_recessive_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         predicate = RecessiveProtFeaturePredicate(tx_id, feature, self._protein_service)
+        return self._apply_poly_predicate_on_hpo_terms(predicate)
+    
+    def compare_by_recessive_protein_region(self, region:Region, tx_id:str) -> GenotypePhenotypeAnalysisResult:
+        predicate = RecessiveProtRegionPredicate(tx_id, region, self._protein_service)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
 
     def compare_disease_vs_genotype(
