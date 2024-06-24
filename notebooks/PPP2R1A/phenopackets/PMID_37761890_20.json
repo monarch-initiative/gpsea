@@ -12,33 +12,6 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001511",
-        "label": "Intrauterine growth retardation"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0004322",
-        "label": "Short stature"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0000240",
-        "label": "Abnormality of skull size"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0001249",
-        "label": "Intellectual disability"
-      }
-    },
-    {
-      "type": {
         "id": "HP:0010864",
         "label": "Intellectual disability, severe"
       }
@@ -54,13 +27,6 @@
         "id": "HP:0001270",
         "label": "Motor delay"
       }
-    },
-    {
-      "type": {
-        "id": "HP:0001250",
-        "label": "Seizure"
-      },
-      "excluded": true
     },
     {
       "type": {
@@ -90,7 +56,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_ZPHUBmDnfChfzkbUYjaAatilQ",
+                "id": "var_RtJTfBOhcgCbzHVkJXfbhqLLi",
                 "geneContext": {
                   "valueId": "HGNC:9302",
                   "symbol": "PPP2R1A"
@@ -124,8 +90,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:616362",
+        "label": "Houge-Janssen syndrome 2"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-10-01T17:59:30.177509784Z",
+    "created": "2024-03-24T10:16:27.219820976Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -164,7 +138,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-03-06",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

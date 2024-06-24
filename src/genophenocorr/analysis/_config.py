@@ -171,7 +171,7 @@ class CohortAnalysisConfiguration:
             self._include_sv = include_sv
         else:
             self._logger.warning('Ignoring invalid `include_sv` value %s. Using %s', include_sv, self._include_sv)
-    
+
     @property
     def mtc_strategy(self) -> MTC_Strategy:
         """
@@ -222,11 +222,10 @@ def configure_cohort_analysis(cohort: Cohort,
         config.min_perc_patients_w_hpo,
     )
 
-    
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
-        mtc_filter = HeuristicSamplerMtcFilter(hpo_ontology=hpo)
+        mtc_filter = HeuristicSamplerMtcFilter(hpo=hpo)
     elif config.mtc_strategy == MTC_Strategy.ALL_HPO_TERMS:
-        mtc_filter =  IdentityTermMtcFilter()
+        mtc_filter = IdentityTermMtcFilter()
     else:
         raise ValueError(f"Did not recognize MtcStrategy {config.mtc_strategy}")
 
@@ -236,8 +235,6 @@ def configure_cohort_analysis(cohort: Cohort,
         p_val_correction=config.pval_correction,
         mtc_alpha=config.mtc_alpha,
     )
-
-    
 
     return GpCohortAnalysis(
         cohort=cohort,

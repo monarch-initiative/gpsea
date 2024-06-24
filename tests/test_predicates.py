@@ -7,6 +7,7 @@ from genophenocorr.analysis.predicate import PatientCategory, PatientCategories
 from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
 from genophenocorr.analysis.predicate.genotype import *
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
+from genophenocorr.model.genome import Region
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
@@ -168,3 +169,14 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
     result = predicate.test(patient)
     assert result.category == hasVarResult
 
+@pytest.mark.parametrize('patient_id, region, hasVarResult',
+                         (['HetDoubleVar2', Region(2000, 2500), PatientCategories.YES],
+                          ['HetDoubleVar2', Region(1000, 1500), PatientCategories.NO],
+                          ['HomoVar', Region(2000, 2500), PatientCategories.YES],
+                          ['HetSingleVar', Region(2000, 2500), PatientCategories.YES],
+                          ['HetDoubleVar1', Region(600, 650), PatientCategories.YES]))
+def test_ProteinRegionPredicate(patient_id, region, hasVarResult, toy_cohort):
+    predicate = ProtRegionPredicate('NM_013275.6', region)
+    patient = find_patient(patient_id, toy_cohort)
+    result = predicate.test(patient)
+    assert result.category == hasVarResult

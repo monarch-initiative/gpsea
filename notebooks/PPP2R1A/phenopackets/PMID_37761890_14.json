@@ -12,28 +12,8 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001511",
-        "label": "Intrauterine growth retardation"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0004322",
-        "label": "Short stature"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
         "id": "HP:0000256",
         "label": "Macrocephaly"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0001249",
-        "label": "Intellectual disability"
       }
     },
     {
@@ -41,13 +21,6 @@
         "id": "HP:0002342",
         "label": "Intellectual disability, moderate"
       }
-    },
-    {
-      "type": {
-        "id": "HP:0001250",
-        "label": "Seizure"
-      },
-      "excluded": true
     },
     {
       "type": {
@@ -95,7 +68,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_uKDlBNSYhqtqbmUsJHQpbPTFG",
+                "id": "var_GRFnyqxBuoFfjFKCqNuyNIolc",
                 "geneContext": {
                   "valueId": "HGNC:9302",
                   "symbol": "PPP2R1A"
@@ -129,8 +102,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:616362",
+        "label": "Houge-Janssen syndrome 2"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-10-01T17:59:30.177509784Z",
+    "created": "2024-03-24T10:16:27.190973043Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -169,7 +150,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-03-06",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

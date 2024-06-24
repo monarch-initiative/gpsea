@@ -1,0 +1,142 @@
+{
+  "seq_region_name": "16",
+  "start": 89279135,
+  "most_severe_consequence": "stop_gained",
+  "colocated_variants": [
+    {
+      "somatic": 1,
+      "seq_region_name": "16",
+      "phenotype_or_disease": 1,
+      "end": 89279135,
+      "var_synonyms": {
+        "COSMIC": [
+          "COSM9359179"
+        ]
+      },
+      "id": "COSV104615518",
+      "strand": 1,
+      "start": 89279135,
+      "allele_string": "COSMIC_MUTATION"
+    },
+    {
+      "clin_sig": [
+        "benign",
+        "likely_pathogenic"
+      ],
+      "var_synonyms": {
+        "ClinVar": [
+          "RCV001785936",
+          "VCV001323903",
+          "RCV002890416",
+          "VCV002038037"
+        ]
+      },
+      "end": 89279135,
+      "phenotype_or_disease": 1,
+      "seq_region_name": "16",
+      "clin_sig_allele": "A:benign;C:likely_pathogenic",
+      "allele_string": "G/A/C",
+      "start": 89279135,
+      "id": "rs370673579",
+      "strand": 1
+    }
+  ],
+  "assembly_name": "GRCh38",
+  "allele_string": "G/C",
+  "id": "16_89279135_G/C",
+  "input": "16 89279135 89279135 G/C 1",
+  "transcript_consequences": [
+    {
+      "cdna_end": 7939,
+      "strand": -1,
+      "hgvsc": "NM_001256182.2:c.7407C>G",
+      "gene_symbol_source": "EntrezGene",
+      "gene_id": "29123",
+      "transcript_id": "NM_001256182.2",
+      "exon": "10/14",
+      "codons": "taC/taG",
+      "biotype": "protein_coding",
+      "amino_acids": "Y/*",
+      "lof": "HC",
+      "variant_allele": "C",
+      "protein_end": 2469,
+      "given_ref": "G",
+      "consequence_terms": [
+        "stop_gained"
+      ],
+      "hgvsp": "NP_001243111.1:p.Tyr2469Ter",
+      "lof_info": "PERCENTILE:0.926801801801802,GERP_DIST:-4.79979183673861,BP_DIST:581,DIST_FROM_LAST_EXON:396,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT",
+      "used_ref": "G",
+      "cds_end": 7407,
+      "protein_id": "NP_001243111.1",
+      "impact": "HIGH",
+      "protein_start": 2469,
+      "cdna_start": 7939,
+      "gene_symbol": "ANKRD11",
+      "cds_start": 7407
+    },
+    {
+      "cdna_start": 7865,
+      "protein_id": "NP_001243112.1",
+      "impact": "HIGH",
+      "protein_start": 2469,
+      "gene_symbol": "ANKRD11",
+      "cds_start": 7407,
+      "consequence_terms": [
+        "stop_gained"
+      ],
+      "hgvsp": "NP_001243112.1:p.Tyr2469Ter",
+      "lof_info": "PERCENTILE:0.926801801801802,GERP_DIST:-4.79979183673861,BP_DIST:581,DIST_FROM_LAST_EXON:396,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT",
+      "used_ref": "G",
+      "cds_end": 7407,
+      "variant_allele": "C",
+      "lof": "HC",
+      "given_ref": "G",
+      "protein_end": 2469,
+      "codons": "taC/taG",
+      "biotype": "protein_coding",
+      "exon": "9/13",
+      "amino_acids": "Y/*",
+      "gene_id": "29123",
+      "gene_symbol_source": "EntrezGene",
+      "transcript_id": "NM_001256183.2",
+      "strand": -1,
+      "cdna_end": 7865,
+      "hgvsc": "NM_001256183.2:c.7407C>G"
+    },
+    {
+      "cdna_end": 7868,
+      "strand": -1,
+      "hgvsc": "NM_013275.6:c.7407C>G",
+      "gene_symbol_source": "EntrezGene",
+      "gene_id": "29123",
+      "transcript_id": "NM_013275.6",
+      "exon": "9/13",
+      "biotype": "protein_coding",
+      "mane_select": "ENST00000301030.10",
+      "codons": "taC/taG",
+      "amino_acids": "Y/*",
+      "lof": "HC",
+      "variant_allele": "C",
+      "protein_end": 2469,
+      "given_ref": "G",
+      "consequence_terms": [
+        "stop_gained"
+      ],
+      "lof_info": "PERCENTILE:0.926801801801802,GERP_DIST:-4.79979183673861,BP_DIST:581,DIST_FROM_LAST_EXON:396,50_BP_RULE:PASS,PHYLOCSF_TOO_SHORT",
+      "used_ref": "G",
+      "hgvsp": "NP_037407.4:p.Tyr2469Ter",
+      "canonical": 1,
+      "cds_end": 7407,
+      "impact": "HIGH",
+      "protein_id": "NP_037407.4",
+      "protein_start": 2469,
+      "cdna_start": 7868,
+      "gene_symbol": "ANKRD11",
+      "cds_start": 7407
+    }
+  ],
+  "strand": 1,
+  "end": 89279135,
+  "variant_class": "SNV"
+}

@@ -12,26 +12,6 @@
   "phenotypicFeatures": [
     {
       "type": {
-        "id": "HP:0001511",
-        "label": "Intrauterine growth retardation"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0004322",
-        "label": "Short stature"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0001249",
-        "label": "Intellectual disability"
-      }
-    },
-    {
-      "type": {
         "id": "HP:0002342",
         "label": "Intellectual disability, moderate"
       }
@@ -50,13 +30,6 @@
     },
     {
       "type": {
-        "id": "HP:0001250",
-        "label": "Seizure"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
         "id": "HP:0000729",
         "label": "Autistic behavior"
       }
@@ -71,26 +44,12 @@
       "type": {
         "id": "HP:0011968",
         "label": "Feeding difficulties"
-      },
-      "excluded": true
-    },
-    {
-      "type": {
-        "id": "HP:0000365",
-        "label": "Hearing impairment"
-      },
-      "excluded": true
+      }
     },
     {
       "type": {
         "id": "HP:0001382",
         "label": "Joint hypermobility"
-      }
-    },
-    {
-      "type": {
-        "id": "HP:0002650",
-        "label": "Scoliosis"
       }
     },
     {
@@ -115,7 +74,7 @@
             "interpretationStatus": "CAUSATIVE",
             "variantInterpretation": {
               "variationDescriptor": {
-                "id": "var_qLmrMsplcGAAubUpSnusvsSrY",
+                "id": "var_CcxGuEGEWyEPjqOoWWhvRxfha",
                 "geneContext": {
                   "valueId": "HGNC:9302",
                   "symbol": "PPP2R1A"
@@ -149,8 +108,16 @@
       }
     }
   ],
+  "diseases": [
+    {
+      "term": {
+        "id": "OMIM:616362",
+        "label": "Houge-Janssen syndrome 2"
+      }
+    }
+  ],
   "metaData": {
-    "created": "2023-10-01T17:59:30.177509784Z",
+    "created": "2024-03-24T10:16:27.172131061Z",
     "createdBy": "ORCID:0000-0002-0736-9199",
     "resources": [
       {
@@ -189,7 +156,7 @@
         "id": "hp",
         "name": "human phenotype ontology",
         "url": "http://purl.obolibrary.org/obo/hp.owl",
-        "version": "2023-09-01",
+        "version": "2024-03-06",
         "namespacePrefix": "HP",
         "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
       }

@@ -1,29 +1,35 @@
-from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect, FeatureType
+import typing
+
+from genophenocorr.model import *
 import numpy as np
 
 
-
 class ProteinVisualizable:
-    def __init__(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort) -> None:
-        self._tx_id = tx_coordinates.identifier
-        self._protein_id = protein_meta.protein_id
-        self._protein_features = list()
-        for feature in protein_meta.protein_features:
-            self._protein_features.append(feature)
-        variants = cohort.all_variants()
-         # store the annotations for the correct transcript
-        transcript_annotations = ProteinVisualizable._get_tx_anns(variants, self._tx_id)
-        self._variant_pos = list()
+
+    def __init__(
+            self,
+            tx_coordinates: TranscriptCoordinates,
+            protein_meta: ProteinMetadata,
+            cohort: Cohort,
+    ) -> None:
+        self._tx_coordinates = tx_coordinates
+        self._protein_meta = protein_meta
+
+        # store the annotations for the target transcript
+        transcript_annotations = ProteinVisualizable._get_tx_anns(
+            cohort.all_variants(), self._tx_coordinates.identifier
+        )
+        self._variant_regions_on_protein = list()
         self._variant_effect = list()
-        for tannot in transcript_annotations:
-            variant_effects = tannot.variant_effects
-            if variant_effects is None or len(variant_effects) == 0:
+        for tx_ann in transcript_annotations:
+            variant_effects = tx_ann.variant_effects
+            if len(variant_effects) == 0:
                 continue
-            prot_eff_loc = tannot.protein_effect_location
+            prot_eff_loc = tx_ann.protein_effect_location
             if prot_eff_loc is not None:
-                print("start ", prot_eff_loc.start, " end ", prot_eff_loc.end)
-                self._variant_pos.append([prot_eff_loc.start, prot_eff_loc.end])
+                self._variant_regions_on_protein.append(prot_eff_loc)
                 self._variant_effect.append(variant_effects[0])
+
         self._protein_feature_names = list()
         self._protein_feature_starts = list()
         self._protein_feature_ends = list()
@@ -32,31 +38,30 @@ class ProteinVisualizable:
             self._protein_feature_starts.append(feature.info.start)
             self._protein_feature_ends.append(feature.info.end)
 
-        variant_locations = list(item[0] for item in self._variant_pos)
-        self._variant_locations = np.array(variant_locations)
+        self._variant_locations = np.array([item.start for item in self._variant_regions_on_protein])
 
         #variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
         #variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
-        variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
-        self._variant_locations_counted_absolute = variant_locations_counted_absolute
-        self._marker_counts = marker_counts
+        self._variant_locations_counted_absolute, self._marker_counts = np.unique(
+            self._variant_locations, axis=0, return_counts=True,
+        )
+
         if protein_meta.protein_length > 0:
             self._protein_length = protein_meta.protein_length
         else:
-            raise ValueError(f"Unable to get protein_length for {protein_meta.label}. Consider deleting cache and trying again. Also check accession numbers")
+            raise ValueError(
+                f"Unable to get protein_length for {protein_meta.label}. "
+                "Consider deleting cache and trying again. Also check accession numbers"
+            )
 
     @staticmethod
-    def _get_protein_meta(protein_meta: ProteinMetadata):
-        protein_id = protein_meta.protein_id
-        for pm in protein_meta:
-            if pm._id == protein_id:
-                return pm
-    
-    @staticmethod
-    def _get_tx_anns(variants, tx_id):
+    def _get_tx_anns(
+            variants: typing.Iterable[Variant],
+            tx_id: str,
+    ) -> typing.Sequence[TranscriptAnnotation]:
         """
-        By default, the API returns transcript annotations for many transcripts. 
+        By default, the API returns transcript annotations for many transcripts.
         We would like to store the annotations only for our transcript of interest (tx_id)
         """
         tx_anns = []
@@ -72,45 +77,71 @@ class ProteinVisualizable:
                 tx_anns.append(tx_ann)
 
         return tx_anns
-    
+
     @property
-    def transcript_id(self):
-        return self._tx_id
-    
+    def transcript_coordinates(self) -> TranscriptCoordinates:
+        return self._tx_coordinates
+
     @property
-    def protein_id(self):
-        return self._protein_id
-    
+    def transcript_id(self) -> str:
+        return self._tx_coordinates.identifier
+
     @property
-    def protein_feature_starts(self):
+    def protein_id(self) -> str:
+        return self._protein_meta.protein_id
+
+    @property
+    def protein_metadata(self) -> ProteinMetadata:
+        return self._protein_meta
+
+    @property
+    def protein_feature_starts(self) -> typing.Sequence[int]:
         return self._protein_feature_starts
+
     @property
-    def protein_feature_ends(self):
+    def protein_feature_ends(self) -> typing.Sequence[int]:
         return self._protein_feature_ends
-    
+
     @property
-    def protein_length(self):
-        print("Warning need to implement protein_length")
-        max_feat = max(self._protein_feature_ends)
-        max_var = max(self._variant_locations)
-        return  max(max_feat, max_var) + 30
-    
+    def protein_length(self) -> int:
+        return self._protein_length
+        # TODO: ignoring the code below because we check the length in __init__ method.
+        #  Remove the commented code if there are no issues.
+        # """
+        # We try to parse the protein length from the UniProt API. If it worked, then self._protein_length is greater than zero.
+        # If it did not work, then we take the maximum value of the protein features and variants and add 30 amino acids to it so that
+        # the display will show something reasonable. We also print an error.
+        # """
+        # if self._protein_length > 0:
+        #     return self._protein_length
+        # else:
+        #     print("There was some problem parsing the protein length; here we estimate the length based on features and variants")
+        #     max_feat = max(self._protein_feature_ends)
+        #     max_var = max(self._variant_locations)
+        #     return  max(max_feat, max_var) + 30
+
     @property
-    def protein_feature_names(self):
+    def protein_feature_names(self) -> typing.Sequence[str]:
         return self._protein_feature_names
-    
+
     @property
-    def variant_effects(self):
+    def variant_effects(self) -> typing.Sequence[VariantEffect]:
         return self._variant_effect
-    
+
     @property
-    def variant_locations_counted_absolute(self):
+    def variant_locations_counted_absolute(self) -> np.ndarray:
         return self._variant_locations_counted_absolute
+
     @property
     def marker_counts(self):
         return self._marker_counts
-    
+
     @property
-    def variant_locations(self):
+    def variant_locations(self) -> np.ndarray:
+        """
+        Get an array with 0-based start coordinates of aminoacids that overlap with the variant regions.
+
+        Returns
+          a 1D array with ints containing a coordinate for each variant
+        """
         return self._variant_locations
-   
