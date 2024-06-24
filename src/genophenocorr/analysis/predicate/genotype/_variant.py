@@ -2,8 +2,10 @@ import abc
 import typing
 
 from genophenocorr.model import VariantEffect, Variant, FeatureType
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate
+from ._predicates import *
 
 
 class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
@@ -51,7 +53,7 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate for testing
         """
-        raise NotImplementedError('Not yet implemented')
+        return VariantEffectPredicate(effect, 'unknown')
 
     @staticmethod
     def variant_key(key: str) -> VariantPredicate:
@@ -75,7 +77,7 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        return VariantGenePredicate(symbol)
 
     @staticmethod
     def transcript(tx_id: str) -> VariantPredicate:
@@ -87,7 +89,7 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        return VariantTranscriptPredicate(tx_id)
 
     @staticmethod
     def exon(
@@ -103,7 +105,22 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        return VariantExonPredicate(exon, tx_id)
+    
+    @staticmethod
+    def region(
+        region: Region, 
+        tx_id: str
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with a region on a protein of a specific transcript.
+        Args:
+            region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.
+
+        Returns:
+            VariantPredicate: a predicate
+        """
+        return ProteinRegionPredicate(region, tx_id)
 
     @staticmethod
     def all_match(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:

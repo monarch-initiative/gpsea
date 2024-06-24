@@ -424,6 +424,12 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
     def genotypes(self) -> Genotypes:
         return self._gts
     
+    def get_tx_anno_by_id(self, transcript_id:str) -> typing.Optional[TranscriptAnnotation]:
+        for tx in self.tx_annotations:
+            if tx.transcript_id == transcript_id:
+                return tx
+        return None
+    
     def get_hgvs_cdna_by_tx(self, transcript_id:str) -> typing.Optional[str]:
         """Given a transcript ID, will return the hgvs cdna string associated with that variant and transcript.
 
