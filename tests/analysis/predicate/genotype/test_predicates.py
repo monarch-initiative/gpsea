@@ -25,7 +25,7 @@ class TestVariantPredicates:
             effect: VariantEffect,
             expected: bool,
     ):
-        predicate = VariantPredicates.variant_effect(effect)
+        predicate = VariantPredicates.variant_effect(effect, tx_id='tx:xyz')
 
         assert predicate.test(variant) == expected
 
@@ -60,7 +60,7 @@ class TestVariantPredicates:
             exon: int,
             expected: bool,
     ):
-        predicate = VariantPredicates.exon(exon)
+        predicate = VariantPredicates.exon(exon, tx_id='tx:xyz')
 
         assert predicate.test(variant) == expected
 
