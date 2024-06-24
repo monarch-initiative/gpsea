@@ -14,9 +14,9 @@ class ProteinAnnotationCache:
 
     Methods:
         get_annotations(protein_id:str): Searches a given data directory for a pickle file with given ID and returns ProteinMetadata
-        store_annotations(protein_id:str, annotation:Sequence[ProteinMetadata]): Creates a pickle file with given ID and stores the given ProteinMetadata into that file  
+        store_annotations(protein_id:str, annotation:Sequence[ProteinMetadata]): Creates a pickle file with given ID and stores the given ProteinMetadata into that file
     """
-    def __init__(self, datadir:str) -> None:
+    def __init__(self, datadir: str) -> None:
         """Constructs all necessary attributes for a ProteinAnnotationCache object
 
         Args:
@@ -26,7 +26,7 @@ class ProteinAnnotationCache:
             raise ValueError(f'datadir {datadir} must be an existing directory')
         self._datadir = datadir
 
-    def get_annotations(self, protein_id: str) -> typing.Optional[typing.Sequence[ProteinMetadata]]:
+    def get_annotations(self, protein_id: str) -> typing.Optional[ProteinMetadata]:
         """Searches a given data directory for a pickle file with given ID and returns ProteinMetadata from file. Returns None if no file is found.
 
         Args:
@@ -39,7 +39,7 @@ class ProteinAnnotationCache:
         else:
             return None
 
-    def store_annotations(self, protein_id: str, annotation: typing.Sequence[ProteinMetadata]):
+    def store_annotations(self, protein_id: str, annotation: ProteinMetadata):
         """Creates a pickle file with the given protein id in the file name. Loads the ProteinMetadata given into the file for storage.
 
         Args:
@@ -54,10 +54,11 @@ class ProteinAnnotationCache:
         """Creates a file name with full location and the protein id (e.g. "/path/to/desired/directory/NP_037407.4.pickle")
 
         Args:
-            protein_id (string): The protein_id associated with the ProteinMetadata
+            prot_id (string): The protein_id associated with the ProteinMetadata
         """
         fname = f'{prot_id}.pickle'
         return os.path.join(self._datadir, fname)
+
 
 class ProtCachingMetadataService(ProteinMetadataService):
     """A class that retrieves ProteinMetadata if it exists or will run the fallback Fuctional Annotator if it does not exist.

@@ -126,7 +126,7 @@ class GpCohortAnalysis(CohortAnalysis):
         pheno_predicates = []
         testing_diseases = []
         if disease_ids is None:
-            disease_ids = [dis.identifier for dis in self._cohort.all_diseases]
+            disease_ids = [dis.identifier for dis in self._cohort.all_diseases()]
         if len(disease_ids) < 1:
             raise ValueError("No diseases available for testing.")
         for dis in disease_ids:

@@ -27,7 +27,6 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """A VariantEffect is given when initializing the class.
-        Given a Patient class, this function tests whether the patient does
         or does not have the VariantEffect and returns the respective category.
 
         Args:
@@ -187,17 +186,17 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
         return f'Variant that affects {self._feature_type.name} feature type on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        """A FeatureType and ProteinMetadataService is given when initializing the class.
-        Given a Patient class, this function tests whether the patient does
-        or does not have a variant effecting that FeatureType on the given protein and
+        """A FeatureType and ProteinMetadataService is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have a variant effecting that FeatureType on the given protein and 
         returns the respective category.
 
         Args:
             patient (Patient): A Patient class representing a patient.
 
         Returns:
-            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO"
-                                             if genotype is present or not.
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
         """
         self._check_patient(patient)
 
@@ -210,13 +209,11 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
                     prot_loc = ann.protein_effect_location
                     prot_id = ann.protein_id
                     if prot_id is not None and prot_loc is not None:
-                        proteins = self._protein_service.annotate(prot_id)
-                        for prot in proteins:
-                            if prot.protein_id == prot_id:
-                                for feat in prot.protein_features:
-                                    if feat.feature_type == self._feature_type:
-                                        if prot_loc.overlaps_with(feat.info.region):
-                                            return GenotypeBooleanPredicate.YES
+                        protein = self._protein_service.annotate(prot_id)
+                        for feat in protein.protein_features:
+                            if feat.feature_type == self._feature_type:
+                                if prot_loc.overlaps_with(feat.info.region):
+                                    return GenotypeBooleanPredicate.YES
 
         return GenotypeBooleanPredicate.NO
         #TODO: Add a logger field, add a branch that handles the state where prot_id is set but prot_loc is not - gives warning
@@ -248,17 +245,17 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
         return f'Variant that affects {self._pf_name} feature on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        """A protein_feature_name and ProteinMetadataService is given when initializing the class.
-        Given a Patient class, this function tests whether the patient does
-        or does not have a variant effecting that protein feature on the given protein and
+        """A protein_feature_name and ProteinMetadataService is given when initializing the class. 
+        Given a Patient class, this function tests whether the patient does 
+        or does not have a variant effecting that protein feature on the given protein and 
         returns the respective category.
 
         Args:
             patient (Patient): A Patient class representing a patient.
 
         Returns:
-            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO"
-                                             if genotype is present or not.
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO" 
+                                             if genotype is present or not. 
         """
         self._check_patient(patient)
 
@@ -271,13 +268,11 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
                     prot_loc = ann.protein_effect_location
                     prot_id = ann.protein_id
                     if prot_id is not None and prot_loc is not None:
-                        proteins = self._protein_service.annotate(prot_id)
-                        for prot in proteins:
-                            if prot.protein_id == prot_id:
-                                for feat in prot.protein_features:
-                                    if feat.info.name == self._pf_name:
-                                        if prot_loc.overlaps_with(feat.info.region):
-                                            return GenotypeBooleanPredicate.YES
+                        protein = self._protein_service.annotate(prot_id)
+                        for feat in protein.protein_features:
+                            if feat.info.name == self._pf_name:
+                                if prot_loc.overlaps_with(feat.info.region):
+                                    return GenotypeBooleanPredicate.YES
 
         return GenotypeBooleanPredicate.NO
 
