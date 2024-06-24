@@ -37,12 +37,16 @@ class VariantPredicates:
     """
 
     @staticmethod
-    def variant_effect(effect: VariantEffect) -> VariantPredicate:
+    def variant_effect(
+        effect: VariantEffect,
+        tx_id: str,
+    ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to
         a certain variant effect.
         Args:
             effect: the target :class:`VariantEffect`
+            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
 
         Returns:
             VariantPredicate: a predicate for testing
@@ -71,24 +75,30 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate
         """
+        raise NotImplementedError('Not yet implemented')
 
     @staticmethod
     def transcript(tx_id: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a transcript.
         Args:
-            tx_id: a `str` with the transcript accession.
+            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
 
         Returns:
             VariantPredicate: a predicate
         """
+        raise NotImplementedError('Not yet implemented')
 
     @staticmethod
-    def exon(exon: int) -> VariantPredicate:
+    def exon(
+        exon: int,
+        tx_id: str,
+    ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.
         Args:
             exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
+            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
 
         Returns:
             VariantPredicate: a predicate
