@@ -11,7 +11,7 @@ from .._api import Categorization, RecessiveGroupingPredicate
 
 class RecessiveVariantEffectPredicate(RecessiveGroupingPredicate):
     """
-    `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have
+    `VariantEffectPredicate` tests if the patient has at least one variant that is predicted to have
     the functional `effect` on the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -68,7 +68,7 @@ class RecessiveVariantEffectPredicate(RecessiveGroupingPredicate):
 
 class RecessiveVariantPredicate(RecessiveGroupingPredicate):
     """
-    `VariantPredicate` tests if the `patient` has ar least one allele of the variant described by the `variant_key`.
+    `VariantPredicate` tests if the patient has ar least one allele of the variant described by the `variant_key`.
 
     .. note::
 
@@ -122,7 +122,7 @@ class RecessiveVariantPredicate(RecessiveGroupingPredicate):
 
 class RecessiveExonPredicate(RecessiveGroupingPredicate):
     """
-    `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.
+    `ExonPredicate` tests if the patient has a variant that affects *n*-th exon of the transcript of interest.
 
     .. warning::
 
@@ -192,7 +192,7 @@ class RecessiveExonPredicate(RecessiveGroupingPredicate):
 
 class RecessiveProtFeatureTypePredicate(RecessiveGroupingPredicate):
     """
-    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
+    `ProtFeatureTypePredicate` tests if the patient has a variant that affects a :class:`FeatureType`
     in the protein encoded by the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -259,7 +259,7 @@ class RecessiveProtFeatureTypePredicate(RecessiveGroupingPredicate):
 
 class RecessiveProtFeaturePredicate(RecessiveGroupingPredicate):
     """
-    `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.
+    `ProtFeaturePredicate` tests if the patient has a variant that overlaps with a protein feature.
 
     The predicate needs the name of the protein feature.
     For instance, `EGF-like 2` for `FBN1 <https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains>`_
@@ -325,7 +325,7 @@ class RecessiveProtFeaturePredicate(RecessiveGroupingPredicate):
 
 class RecessiveProtRegionPredicate(RecessiveGroupingPredicate):
     """
-    `ProtRegionPredicate` tests if the `patient` has a variant that overlaps with a given region of the protein.
+    `RecessiveProtRegionPredicate` tests if the patient has a variant that overlaps with a given region of the protein.
 
     The predicate needs the start and end coordinate for the protein region, given as a `Region`.
     For instance, Region(150, 175)
@@ -336,16 +336,16 @@ class RecessiveProtRegionPredicate(RecessiveGroupingPredicate):
 
     def __init__(self, transcript_id: str, protein_region: Region) -> None:
         self._tx_id = transcript_id
-        self._prot_region = hpotk.util.validate_instance(protein_region, Region, 'protein_region_1')
+        self._prot_region = hpotk.util.validate_instance(protein_region, Region, 'protein_region')
 
     def get_question(self) -> str:
         return f'Variant that affects an amino acid between {self._prot_region.start} and {self._prot_region.end} on ' \
             f'protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        """A protein_region and ProteinMetadataService is given when initializing the class.
+        """A protein_region is given when initializing the class.
         Given a Patient class, this function tests whether the patient does
-        or does not have a variant effecting that protein region on the given protein and
+        or does not have a variant within the protein region on the given protein and
         returns the respective category.
 
         Args:
@@ -380,4 +380,4 @@ class RecessiveProtRegionPredicate(RecessiveGroupingPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region})'
+        return f'RecessiveProtRegionPredicate(tx_id={self._tx_id}, protein_region={self._prot_region})'

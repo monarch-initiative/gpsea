@@ -32,7 +32,7 @@ NO_VARIANT = PatientCategory(cat_id=2,
 
 class VariantEffectsPredicate(GroupingPredicate):
     """
-    `VariantEffectsPredicate` tests if the `patient` has at least one variant that is predicted to have
+    `VariantEffectsPredicate` tests if the patient has at least one variant that is predicted to have
     one of the two functional `effects` on the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -93,7 +93,7 @@ class VariantEffectsPredicate(GroupingPredicate):
 
 class VariantsPredicate(GroupingPredicate):
     """
-    `VariantsPredicate` tests if the `patient` has at least one allele of one of the variants described by
+    `VariantsPredicate` tests if the patient has at least one allele of one of the variants described by
     the `variant_key1` and `variant_key2`.
     **If patient has both variant_keys, it is not included**
 
@@ -153,7 +153,7 @@ class VariantsPredicate(GroupingPredicate):
 
 class ExonsPredicate(GroupingPredicate):
     """
-    `ExonsPredicate` tests if the `patient` has a variant that affects one of the
+    `ExonsPredicate` tests if the patient has a variant that affects one of the
     two given *n*-th exons of the transcript of interest.
 
     .. warning::
@@ -228,7 +228,7 @@ class ExonsPredicate(GroupingPredicate):
 
 class ProtFeatureTypesPredicate(GroupingPredicate):
     """
-    `ProtFeatureTypesPredicate` tests if the `patient` has a variant that affects one of the two given
+    `ProtFeatureTypesPredicate` tests if the patient has a variant that affects one of the two given
     :class:`FeatureType`s in the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -299,7 +299,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
 
 class ProtFeaturesPredicate(GroupingPredicate):
     """
-    `ProtFeaturesPredicate` tests if the `patient` has a variant that overlaps with one of the two given
+    `ProtFeaturesPredicate` tests if the patient has a variant that overlaps with one of the two given
      protein features.
 
     The predicate needs the name of the protein feature.
@@ -374,7 +374,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
 
 class ProtRegionsPredicate(GroupingPredicate):
     """
-    `ProtRegionPredicate` tests if the `patient` has a variant that overlaps with a given region of the protein.
+    `ProtRegionsPredicate` tests if the patient has a variant that overlaps with a given region of the protein.
 
     The predicate needs the start and end coordinate for the protein region, given as a `Region`.
     For instance, Region(150, 175)
@@ -393,9 +393,9 @@ class ProtRegionsPredicate(GroupingPredicate):
             f'{self._prot_region_2.end} on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
-        """A protein_region and ProteinMetadataService is given when initializing the class.
+        """A protein_region is given when initializing the class.
         Given a Patient class, this function tests whether the patient does
-        or does not have a variant effecting that protein region on the given protein and
+        or does not have a variant withing the protein region on the given protein and
         returns the respective category.
 
         Args:
@@ -431,4 +431,4 @@ class ProtRegionsPredicate(GroupingPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProtRegionPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region_1}, protein_region_2={self._prot_region_2})'
+        return f'ProtRegionsPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region_1}, protein_region_2={self._prot_region_2})'

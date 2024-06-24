@@ -11,7 +11,7 @@ from .._api import Categorization, GenotypeBooleanPredicate
 
 class VariantEffectPredicate(GenotypeBooleanPredicate):
     """
-    `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have
+    `VariantEffectPredicate` tests if the patient has at least one variant that is predicted to have
     the functional `effect` on the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -61,7 +61,7 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
 
 class VariantPredicate(GenotypeBooleanPredicate):
     """
-    `VariantPredicate` tests if the `patient` has ar least one allele of the variant described by the `variant_key`.
+    `VariantPredicate` tests if the patient has ar least one allele of the variant described by the `variant_key`.
 
     .. note::
 
@@ -79,7 +79,7 @@ class VariantPredicate(GenotypeBooleanPredicate):
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """A variant key, such as `X_12345_12345_C_G`, is given when initializing the class.
 
-        Given a `patient`, we test whether the patient does
+        Given a patient, we test whether the patient does
         or does not have the variant and returns the respective category.
 
         Args:
@@ -109,7 +109,7 @@ class VariantPredicate(GenotypeBooleanPredicate):
 
 class ExonPredicate(GenotypeBooleanPredicate):
     """
-    `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.
+    `ExonPredicate` tests if the patient has a variant that affects *n*-th exon of the transcript of interest.
 
     .. warning::
 
@@ -172,7 +172,7 @@ class ExonPredicate(GenotypeBooleanPredicate):
 
 class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
     """
-    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`
+    `ProtFeatureTypePredicate` tests if the patient has a variant that affects a :class:`FeatureType`
     in the protein encoded by the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -230,7 +230,7 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
 
 class ProtFeaturePredicate(GenotypeBooleanPredicate):
     """
-    `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.
+    `ProtFeaturePredicate` tests if the patient has a variant that overlaps with a protein feature.
 
     The predicate needs the name of the protein feature.
     For instance, `EGF-like 2` for `FBN1 <https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains>`_
@@ -288,7 +288,7 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
 
 class ProtRegionPredicate(GenotypeBooleanPredicate):
     """
-    `ProtRegionPredicate` tests if the `patient` has a variant that overlaps with a given region of the protein.
+    `ProtRegionPredicate` tests if the patient has a variant that overlaps with a given region of the protein.
 
     The predicate needs the start and end coordinate for the protein region, given as a `Region`.
     For instance, Region(150, 175)
@@ -305,9 +305,9 @@ class ProtRegionPredicate(GenotypeBooleanPredicate):
         return f'Variant that affects an amino acid between {self._prot_region.start} and {self._prot_region.end} on protein encoded by transcript {self._tx_id}'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        """A protein_region and ProteinMetadataService is given when initializing the class.
+        """A protein_region is given when initializing the class.
         Given a Patient class, this function tests whether the patient does
-        or does not have a variant effecting that protein region on the given protein and
+        or does not have a variant in that protein region on the given protein and
         returns the respective category.
 
         Args:
