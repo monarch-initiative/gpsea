@@ -6,7 +6,7 @@ from genophenocorr.model import Patient, FeatureType, VariantEffect
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 
-from .._api import PatientCategory, GroupingPredicate
+from .._api import PatientCategory, GroupingPredicate, Categorization
 
 
 # TODO - should we remove these three?
@@ -49,7 +49,7 @@ class VariantEffectsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'{self._effect1.name} or {self._effect2.name} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two VariantEffects are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has either 
         VariantEffects and returns a category based off which one it does have, 
@@ -112,7 +112,7 @@ class VariantsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'>=1 allele of either variant {self._variant_key1} or variant {self._variant_key2}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two variant strings are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has either 
         variant and returns a category based off which one it does have, 
@@ -183,7 +183,7 @@ class ExonsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant in exon {self._exon1_number} vs in exon {self._exon2_number} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two exon numbers are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either exon and returns a category based off which one it does have an effect on, 
@@ -247,7 +247,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant that affects {self._feature_type1.name} protein feature type vs {self._feature_type2} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two FeatureTypes and a ProteinMetadataService are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either protein feature type and returns a category based off which one it does have an effect on, 
@@ -321,7 +321,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant that affects {self._pf1_name} protein feature vs {self._pf2_name} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two protein features and a ProteinMetadataService are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either protein feature and returns a category based off which one it does have an effect on, 
@@ -392,7 +392,7 @@ class ProtRegionsPredicate(GroupingPredicate):
         return f'Variant that affects an amino acid between {self._prot_region_1.start} and {self._prot_region_1.end} vs between {self._prot_region_2.start} and' \
             f'{self._prot_region_2.end} on protein encoded by transcript {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """A protein_region is given when initializing the class.
         Given a Patient class, this function tests whether the patient does
         or does not have a variant withing the protein region on the given protein and
