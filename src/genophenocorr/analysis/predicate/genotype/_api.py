@@ -49,4 +49,10 @@ class AlleleCounter:
         Returns:
             int: the count of the passing alleles
         """
-        raise NotImplementedError('Not yet implemented')
+        count = 0
+        
+        for var in patient.variants:
+            if self._predicate(var):
+                count += 1
+                
+        return count

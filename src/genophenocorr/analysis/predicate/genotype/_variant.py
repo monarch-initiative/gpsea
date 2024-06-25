@@ -53,7 +53,7 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate for testing
         """
-        return VariantEffectPredicate(effect, 'unknown')
+        return VariantEffectPredicate(effect, tx_id)
 
     @staticmethod
     def variant_key(key: str) -> VariantPredicate:
@@ -65,7 +65,7 @@ class VariantPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        return VariantKeyPredicate(key)
 
     @staticmethod
     def gene(symbol: str) -> VariantPredicate:
@@ -164,6 +164,7 @@ class ProteinPredicates:
     def protein_feature_type(
             self,
             feature_type: FeatureType,
+            tx_id: str
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
@@ -173,11 +174,12 @@ class ProteinPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        raise ProteinFeatureTypePredicate(feature_type, tx_id, self._protein_metadata_service)
 
     def protein_feature(
             self,
             feature_id: str,
+            tx_id: str
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
@@ -187,4 +189,4 @@ class ProteinPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise NotImplementedError('Not yet implemented')
+        raise ProteinFeaturePredicate(feature_id, tx_id, self._protein_metadata_service)
