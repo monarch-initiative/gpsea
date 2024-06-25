@@ -32,8 +32,8 @@ class TestVariantPredicates:
     @pytest.mark.parametrize(
         'variant_key, expected',
         [
-            ('1_101_101_C_G', True),
-            ('1_101_101_C_T', False),
+            ('22_101_101_C_G', True),
+            ('22_101_101_C_T', False),
         ]
     )
     def test_variant_key_predicate(
@@ -103,8 +103,7 @@ class TestProteinPredicates:
 
     @pytest.fixture(scope='class')
     def protein_metadata_service(self) -> ProteinMetadataService:
-        response = (
-            ProteinMetadata(
+        response = ProteinMetadata(
                 protein_id='pt:xyz',
                 label='xyz_label',
                 protein_features=(
@@ -117,8 +116,7 @@ class TestProteinPredicates:
                         FeatureType.DOMAIN,
                     ),
                 )
-            ),
-        )
+            )
         return MockProteinMetadataService(response)
 
     @pytest.fixture
@@ -142,7 +140,7 @@ class TestProteinPredicates:
             feature_type: FeatureType,
             expected: bool,
     ):
-        predicate = protein_predicates.protein_feature_type(feature_type)
+        predicate = protein_predicates.protein_feature_type(feature_type, tx_id='tx:xyz')
 
         assert predicate.test(variant) == expected
 
@@ -161,7 +159,7 @@ class TestProteinPredicates:
             feature_id: str,
             expected: bool,
     ):
-        predicate = protein_predicates.protein_feature(feature_id)
+        predicate = protein_predicates.protein_feature(feature_id, tx_id='tx:xyz')
 
         assert predicate.test(variant) == expected
 

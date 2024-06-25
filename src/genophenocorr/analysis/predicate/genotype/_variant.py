@@ -174,7 +174,7 @@ class ProteinPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise ProteinFeatureTypePredicate(feature_type, tx_id, self._protein_metadata_service)
+        return ProteinFeatureTypePredicate(feature_type, tx_id, self._protein_metadata_service)
 
     def protein_feature(
             self,
@@ -189,4 +189,4 @@ class ProteinPredicates:
         Returns:
             VariantPredicate: a predicate
         """
-        raise ProteinFeaturePredicate(feature_id, tx_id, self._protein_metadata_service)
+        return ProteinFeaturePredicate(feature_id, tx_id, self._protein_metadata_service)

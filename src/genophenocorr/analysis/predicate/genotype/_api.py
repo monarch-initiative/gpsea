@@ -52,7 +52,7 @@ class AlleleCounter:
         count = 0
         
         for var in patient.variants:
-            if self._predicate(var):
+            if self._predicate.test(var):
                 count += 1
                 
         return count

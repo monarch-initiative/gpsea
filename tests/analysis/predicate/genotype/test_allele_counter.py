@@ -1,6 +1,6 @@
 import pytest
 
-from genophenocorr.analysis.predicate.genotype import AlleleCounter, VariantPredicate
+from genophenocorr.analysis.predicate.genotype import AlleleCounter, VariantPredicates
 from genophenocorr.model import *
 from genophenocorr.model.genome import *
 
@@ -95,18 +95,43 @@ class TestAlleleCounter:
             ('1_156134853_156134853_G_A', 2),
         ]
     )
-    def test_count(
+    def test_count_keys(
             self,
             patient: Patient,
             variant_key: str,
             expected: int,
     ):
-        predicate = MockVariantPredicate(variant_key)
+        predicate = VariantPredicates.variant_key(variant_key)
         counter = AlleleCounter(predicate)
 
         assert counter.count(patient) == expected
 
+    @pytest.mark.parametrize(
+        'variant_effect, tx_id, expected',
+        [
+            (VariantEffect.START_LOST, 'NM_170707.4', 0),
+            (VariantEffect.INTRON_VARIANT, 'NM_170707.4', 1),
+            (VariantEffect.MISSENSE_VARIANT, 'NM_005572.4', 2),
+        ]
+    )
+    def test_count_effects(
+        self, 
+        patient: Patient, 
+        variant_effect: VariantEffect,
+        tx_id: str,
+        expected: int
+    ):
+        predicate = VariantPredicates.variant_effect(variant_effect, tx_id)
+        counter = AlleleCounter(predicate)
+        
+        assert counter.count(patient) == expected
 
+
+
+"""
+@Daniel - is there a reason to run a Mock predicate instead of a "real" one? 
+Or was this just created to test the code while VariantPredicates didn't have 
+working predicates? 
 class MockVariantPredicate(VariantPredicate):
 
     def __init__(
@@ -117,3 +142,4 @@ class MockVariantPredicate(VariantPredicate):
 
     def test(self, variant: Variant) -> bool:
         return variant.variant_coordinates.variant_key == self._variant_key
+"""

@@ -23,12 +23,12 @@ class VariantEffectPredicate(VariantPredicate):
     
 class VariantKeyPredicate(VariantPredicate):
     
-    def __init__(self, key:str) -> None:
+    def __init__(self, key: str) -> None:
         self._key = key
         
     def test(self, variant: Variant) -> bool:
         
-        if variant.variant_coordinates.variant_key == variant:
+        if variant.variant_coordinates.variant_key == self._key:
             return True
         return False
     
