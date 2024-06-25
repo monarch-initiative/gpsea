@@ -111,7 +111,8 @@ class TestAlleleCounter:
         [
             (VariantEffect.START_LOST, 'NM_170707.4', 0),
             (VariantEffect.INTRON_VARIANT, 'NM_170707.4', 1),
-            (VariantEffect.MISSENSE_VARIANT, 'NM_005572.4', 2),
+            (VariantEffect.MISSENSE_VARIANT, 'NM_170707.4', 2),
+            (VariantEffect.MISSENSE_VARIANT, 'NM_005572.4', 3),
         ]
     )
     def test_count_effects(

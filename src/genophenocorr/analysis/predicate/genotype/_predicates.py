@@ -7,12 +7,29 @@ from genophenocorr.preprocessing import ProteinMetadataService
 
 
 class VariantEffectPredicate(VariantPredicate):
+    """
+    `VariantEffectPredicate` is a `VariantPredicate` that sets up testing
+    for a specific `VariantEffect` on a given transcript ID. 
+    
+    Args:
+        effect (VariantEffect): 
+        tx_id (str): 
+    """
     
     def __init__(self, effect: VariantEffect, tx_id: str) -> None:
         self._effect = effect
         self._tx_id = tx_id
         
     def test(self, variant: Variant) -> bool:
+        """Tests if the `Variant` causes the specified `VariantEffect`
+        on the given transcript. 
+
+        Args:
+            variant (Variant): a 
+
+        Returns:
+            bool: _description_
+        """
         
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         for effect in tx_anno.variant_effects:

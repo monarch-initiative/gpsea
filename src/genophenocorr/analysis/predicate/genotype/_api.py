@@ -1,6 +1,7 @@
 import abc
 
 from genophenocorr.model import Patient, Variant
+from genophenocorr.model import *
 
 
 class VariantPredicate(metaclass=abc.ABCMeta):
@@ -53,6 +54,8 @@ class AlleleCounter:
         
         for var in patient.variants:
             if self._predicate.test(var):
-                count += 1
-                
+                if var.genotypes.for_sample(patient.labels) != Genotype.HETEROZYGOUS:
+                    count += 2
+                else:
+                    count += 1
         return count
