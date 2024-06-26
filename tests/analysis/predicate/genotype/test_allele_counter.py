@@ -9,16 +9,21 @@ from genophenocorr.model.genome import *
 def sample_labels() -> SampleLabels:
     return SampleLabels('A_III-1', meta_label='PMID_10580070_A_III')
 
+@pytest.fixture(scope='module')
+def chr1(genome_build: GenomeBuild) -> Contig:
+    contig = genome_build.contig_by_name('chr1')
+    assert contig is not None
+    return contig
 
 @pytest.fixture(scope='module')
 def het_lmna(
         sample_labels: SampleLabels,
-        genome_build: GenomeBuild,
+        chr1: Contig,
 ) -> Variant:
     return Variant(
         var_coordinates=VariantCoordinates(
             region=GenomicRegion(
-                contig=genome_build.contig_by_name('chr1'), start=156_137_755, end=156_137_756,
+                contig=chr1, start=156_137_755, end=156_137_756,
                 strand=Strand.POSITIVE,
             ),
             ref='C', alt='A', change_length=0,
@@ -42,12 +47,12 @@ def het_lmna(
 @pytest.fixture(scope='module')
 def hom_alt_lmna(
         sample_labels: SampleLabels,
-        genome_build: GenomeBuild,
+        chr1: Contig,
 ) -> Variant:
     return Variant(
         var_coordinates=VariantCoordinates(
             region=GenomicRegion(
-                contig=genome_build.contig_by_name('chr1'), start=156_134_852, end=156_134_853,
+                contig=chr1, start=156_134_852, end=156_134_853,
                 strand=Strand.POSITIVE,
             ),
             ref='G', alt='A', change_length=0,

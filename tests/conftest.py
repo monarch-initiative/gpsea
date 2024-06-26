@@ -76,7 +76,9 @@ def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.Validati
 
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
-    return GenomicRegion(GRCh38.contig_by_name(contig), start, end, Strand.POSITIVE)
+    a_contig = GRCh38.contig_by_name(contig)
+    assert a_contig is not None
+    return GenomicRegion(a_contig, start, end, Strand.POSITIVE)
 
 
 @pytest.fixture(scope='session')

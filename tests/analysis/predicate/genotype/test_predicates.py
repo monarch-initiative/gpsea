@@ -152,7 +152,7 @@ class TestProteinPredicates:
             ('MOCK_REPEAT', False),
         ]
     )
-    def test_protein_feature_type(
+    def test_protein_feature_id(
             self,
             protein_predicates: ProteinPredicates,
             variant: Variant,
@@ -168,20 +168,22 @@ class MockProteinMetadataService(ProteinMetadataService):
 
     def __init__(
             self,
-            response: typing.Sequence[ProteinMetadata]
+            response: ProteinMetadata
     ):
         self._response = response
 
-    def annotate(self, protein_id: str) -> typing.Sequence[ProteinMetadata]:
+    def annotate(self, protein_id: str) -> ProteinMetadata:
         return self._response
 
 
 @pytest.fixture
 def variant(genome_build: GenomeBuild) -> Variant:
+    chr22 = genome_build.contig_by_name('chr22')
+    assert chr22 is not None
     return Variant(
         var_coordinates=VariantCoordinates(
             region=GenomicRegion(
-                contig=genome_build.contig_by_name('chr22'),
+                contig=chr22,
                 start=100,
                 end=101,
                 strand=Strand.POSITIVE,
