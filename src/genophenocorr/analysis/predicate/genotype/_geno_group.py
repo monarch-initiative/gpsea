@@ -3,9 +3,10 @@ import typing
 import hpotk
 
 from genophenocorr.model import Patient, FeatureType, VariantEffect
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 
-from .._api import PatientCategory, GroupingPredicate
+from .._api import PatientCategory, GroupingPredicate, Categorization
 
 
 # TODO - should we remove these three?
@@ -31,7 +32,7 @@ NO_VARIANT = PatientCategory(cat_id=2,
 
 class VariantEffectsPredicate(GroupingPredicate):
     """
-    `VariantEffectsPredicate` tests if the `patient` has at least one variant that is predicted to have
+    `VariantEffectsPredicate` tests if the patient has at least one variant that is predicted to have
     one of the two functional `effects` on the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -48,7 +49,7 @@ class VariantEffectsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'{self._effect1.name} or {self._effect2.name} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two VariantEffects are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has either 
         VariantEffects and returns a category based off which one it does have, 
@@ -92,7 +93,7 @@ class VariantEffectsPredicate(GroupingPredicate):
 
 class VariantsPredicate(GroupingPredicate):
     """
-    `VariantsPredicate` tests if the `patient` has at least one allele of one of the variants described by
+    `VariantsPredicate` tests if the patient has at least one allele of one of the variants described by
     the `variant_key1` and `variant_key2`.
     **If patient has both variant_keys, it is not included**
 
@@ -111,7 +112,7 @@ class VariantsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'>=1 allele of either variant {self._variant_key1} or variant {self._variant_key2}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two variant strings are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has either 
         variant and returns a category based off which one it does have, 
@@ -152,7 +153,7 @@ class VariantsPredicate(GroupingPredicate):
 
 class ExonsPredicate(GroupingPredicate):
     """
-    `ExonsPredicate` tests if the `patient` has a variant that affects one of the
+    `ExonsPredicate` tests if the patient has a variant that affects one of the
     two given *n*-th exons of the transcript of interest.
 
     .. warning::
@@ -182,7 +183,7 @@ class ExonsPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant in exon {self._exon1_number} vs in exon {self._exon2_number} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two exon numbers are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either exon and returns a category based off which one it does have an effect on, 
@@ -227,7 +228,7 @@ class ExonsPredicate(GroupingPredicate):
 
 class ProtFeatureTypesPredicate(GroupingPredicate):
     """
-    `ProtFeatureTypesPredicate` tests if the `patient` has a variant that affects one of the two given
+    `ProtFeatureTypesPredicate` tests if the patient has a variant that affects one of the two given
     :class:`FeatureType`s in the transcript of interest.
 
     :param transcript_id: the accession of the transcript of interest.
@@ -246,7 +247,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant that affects {self._feature_type1.name} protein feature type vs {self._feature_type2} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two FeatureTypes and a ProteinMetadataService are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either protein feature type and returns a category based off which one it does have an effect on, 
@@ -298,7 +299,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
 
 class ProtFeaturesPredicate(GroupingPredicate):
     """
-    `ProtFeaturesPredicate` tests if the `patient` has a variant that overlaps with one of the two given
+    `ProtFeaturesPredicate` tests if the patient has a variant that overlaps with one of the two given
      protein features.
 
     The predicate needs the name of the protein feature.
@@ -320,7 +321,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
     def get_question(self) -> str:
         return f'Variant that affects {self._pf1_name} protein feature vs {self._pf2_name} on {self._tx_id}'
 
-    def test(self, patient: Patient) -> typing.Optional[PatientCategory]:
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
         """Two protein features and a ProteinMetadataService are given when initializing the class. 
         Given a Patient class, this function tests whether the patient has a variant effecting
         either protein feature and returns a category based off which one it does have an effect on, 
@@ -330,7 +331,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
             patient (Patient): A Patient class representing a patient.
 
         Returns:
-            typing.Optional[Categorization]: GroupingPredicate, either "FIRST" or "SECOND" 
+            typing.Optional[PatientCategory]: GroupingPredicate, either "FIRST" or "SECOND" 
                                              if it has the first given genotype or the
                                              second given genotype. 
         """
@@ -369,3 +370,65 @@ class ProtFeaturesPredicate(GroupingPredicate):
 
     def __repr__(self):
         return f'ProtFeaturePredicate(tx_id={self._tx_id}, protein_feature1_name={self._pf1_name}, protein_feature2_name={self._pf2_name}, protein_service={self._protein_service})'
+
+
+class ProtRegionsPredicate(GroupingPredicate):
+    """
+    `ProtRegionsPredicate` tests if the patient has a variant that overlaps with a given region of the protein.
+
+    The predicate needs the start and end coordinate for the protein region, given as a `Region`.
+    For instance, Region(150, 175)
+
+    :param transcript_id: the accession of the transcript of interest.
+    :param protein_region: a `Region` with the start and end coordinates.
+    """
+
+    def __init__(self, transcript_id: str, protein_region_1: Region, protein_region_2: Region) -> None:
+        self._tx_id = transcript_id
+        self._prot_region_1 = hpotk.util.validate_instance(protein_region_1, Region, 'protein_region_1')
+        self._prot_region_2 = hpotk.util.validate_instance(protein_region_2, Region, 'protein_region_2')
+
+    def get_question(self) -> str:
+        return f'Variant that affects an amino acid between {self._prot_region_1.start} and {self._prot_region_1.end} vs between {self._prot_region_2.start} and' \
+            f'{self._prot_region_2.end} on protein encoded by transcript {self._tx_id}'
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        """A protein_region is given when initializing the class.
+        Given a Patient class, this function tests whether the patient does
+        or does not have a variant withing the protein region on the given protein and
+        returns the respective category.
+
+        Args:
+            patient (Patient): A Patient class representing a patient.
+
+        Returns:
+            typing.Optional[Categorization]: GenotypeBooleanPredicate, either "YES" or "NO"
+                                             if genotype is present or not.
+        """
+        self._check_patient(patient)
+        if len(patient.variants) == 0:
+            return None
+        
+        results = [False, False]
+        for variant in patient.variants:
+            for ann in variant.tx_annotations:
+                if ann.transcript_id == self._tx_id:
+                    prot_loc = ann.protein_effect_location
+                    if prot_loc is not None:
+                        if prot_loc.overlaps_with(self._prot_region_1):
+                            results[0] = True
+                        if prot_loc.overlaps_with(self._prot_region_2):
+                            results[1] = True
+
+        if results == [True, False]:
+            return GroupingPredicate.FIRST
+        elif results == [False, True]:
+            return GroupingPredicate.SECOND
+        else:
+            return None
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ProtRegionsPredicate(tx_id={self._tx_id}, protein_region_1={self._prot_region_1}, protein_region_2={self._prot_region_2})'
