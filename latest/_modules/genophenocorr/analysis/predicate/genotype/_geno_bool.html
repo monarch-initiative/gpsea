@@ -86,6 +86,7 @@
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">GenotypeBooleanPredicate</span>
@@ -95,7 +96,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantEffectPredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantEffectPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `VariantEffectPredicate` tests if the `patient` has at least one variant that is predicted to have</span>
+<span class="sd">    `VariantEffectPredicate` tests if the patient has at least one variant that is predicted to have</span>
 <span class="sd">    the functional `effect` on the transcript of interest.</span>
 
 <span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
@@ -154,7 +155,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `VariantPredicate` tests if the `patient` has ar least one allele of the variant described by the `variant_key`.</span>
+<span class="sd">    `VariantPredicate` tests if the patient has ar least one allele of the variant described by the `variant_key`.</span>
 
 <span class="sd">    .. note::</span>
 
@@ -177,7 +178,7 @@
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A variant key, such as `X_12345_12345_C_G`, is given when initializing the class.</span>
 
-<span class="sd">        Given a `patient`, we test whether the patient does</span>
+<span class="sd">        Given a patient, we test whether the patient does</span>
 <span class="sd">        or does not have the variant and returns the respective category.</span>
 
 <span class="sd">        Args:</span>
@@ -211,7 +212,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ExonPredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">ExonPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ExonPredicate` tests if the `patient` has a variant that affects *n*-th exon of the transcript of interest.</span>
+<span class="sd">    `ExonPredicate` tests if the patient has a variant that affects *n*-th exon of the transcript of interest.</span>
 
 <span class="sd">    .. warning::</span>
 
@@ -283,7 +284,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeatureTypePredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">ProtFeatureTypePredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ProtFeatureTypePredicate` tests if the `patient` has a variant that affects a :class:`FeatureType`</span>
+<span class="sd">    `ProtFeatureTypePredicate` tests if the patient has a variant that affects a :class:`FeatureType`</span>
 <span class="sd">    in the protein encoded by the transcript of interest.</span>
 
 <span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
@@ -350,7 +351,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtFeaturePredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">ProtFeaturePredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ProtFeaturePredicate` tests if the `patient` has a variant that overlaps with a protein feature.</span>
+<span class="sd">    `ProtFeaturePredicate` tests if the patient has a variant that overlaps with a protein feature.</span>
 
 <span class="sd">    The predicate needs the name of the protein feature.</span>
 <span class="sd">    For instance, `EGF-like 2` for `FBN1 &lt;https://www.uniprot.org/uniprotkb/P35555/entry#family_and_domains&gt;`_</span>
@@ -409,7 +410,68 @@
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ProtFeaturePredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, exon_number=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ProtFeaturePredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, protein_feature_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pf_name</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="ProtRegionPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtRegionPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">ProtRegionPredicate</span><span class="p">(</span><span class="n">GenotypeBooleanPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ProtRegionPredicate` tests if the patient has a variant that overlaps with a given region of the protein.</span>
+
+<span class="sd">    The predicate needs the start and end coordinate for the protein region, given as a `Region`.</span>
+<span class="sd">    For instance, Region(150, 175)</span>
+
+<span class="sd">    :param transcript_id: the accession of the transcript of interest.</span>
+<span class="sd">    :param protein_region: a `Region` with the start and end coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">transcript_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prot_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">protein_region</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span> <span class="s1">&#39;protein_region&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProtRegionPredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtRegionPredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Variant that affects an amino acid between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prot_region</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prot_region</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1"> on protein encoded by transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="ProtRegionPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProtRegionPredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A protein_region is given when initializing the class.</span>
+<span class="sd">        Given a Patient class, this function tests whether the patient does</span>
+<span class="sd">        or does not have a variant in that protein region on the given protein and</span>
+<span class="sd">        returns the respective category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patient (Patient): A Patient class representing a patient.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            typing.Optional[Categorization]: GenotypeBooleanPredicate, either &quot;YES&quot; or &quot;NO&quot;</span>
+<span class="sd">                                             if genotype is present or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">:</span>
+                    <span class="n">prot_loc</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
+                    <span class="k">if</span> <span class="n">prot_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">prot_loc</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prot_region</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span>
+
+        <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ProtRegionPredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s1">, protein_region=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prot_region</span><span class="si">}</span><span class="s1">)&#39;</span></div>
 
 </pre></div>
 
