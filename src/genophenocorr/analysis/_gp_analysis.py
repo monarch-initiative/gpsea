@@ -105,32 +105,25 @@ class IdentityTermMtcFilter(HpoMtcFilter):
 
 class SpecifiedTermsMtcFilter(HpoMtcFilter):
     """
-    SpecifiedTermsMtcFilter` limits the HPO terms to be tested to a specified list
+    SpecifiedTermsMtcFilter` limits the HPO terms to be tested to a selection of provided terms.
 
     In cases where we have a hypothesis about which phenotypes are relevant for
     testing genotype-pehnotype correlations, we can pass the corresponding
     terms to the constructor of this class, thereby preventing other terms from
-    being tested and reducing the multiple testing burden
+    being tested and reducing the multiple testing burden.
     """
 
     def __init__(self,
                  hpo: hpotk.MinimalOntology,
-                 terms_to_test: typing.Collection[typing.Union[str,hpotk.TermId]]):
+                 terms_to_test: typing.Iterable[hpotk.TermId]):
         """
 
         Args:
             hpo: reference to HPO ontology object
-            terms_to_test: list of TermId or strings such as HP:0000123 (must be valid or exception is raised)
+            terms_to_test: an iterable of TermIds representing the terms to test
         """
-
         self._hpo = hpo
-        self._terms_to_test_set = set()
-        for trm in terms_to_test:
-            if isinstance(trm, str):
-                trm = hpotk.TermId.from_curie(trm)
-            if trm not in self._hpo:
-                raise ValueError(f"HPO ID {trm} not in HPO ontology")
-            self._terms_to_test_set.add(trm)
+        self._terms_to_test_set = set(terms_to_test)
 
     def filter_terms_to_test(
             self,
@@ -152,8 +145,7 @@ class SpecifiedTermsMtcFilter(HpoMtcFilter):
         """
         filtered_n_usable = {}
         filtered_all_counts = pd.Series()
-        reason_for_filtering_out = defaultdict(int)
-        tested_counts_pf = defaultdict(pd.DataFrame)  # key is an HP id, value is a tuple with counts, i.e.,
+        reason_for_filtering_out: typing.DefaultDict[str, int] = defaultdict(int)
 
         for term_id in n_usable.keys():
             if term_id not in self._terms_to_test_set:
