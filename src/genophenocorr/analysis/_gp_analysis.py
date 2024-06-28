@@ -103,6 +103,70 @@ class IdentityTermMtcFilter(HpoMtcFilter):
     def filter_method_name(self) -> str:
         return "identity filter"
 
+class SpecifiedTermsMtcFilter(HpoMtcFilter):
+    """
+    SpecifiedTermsMtcFilter` limits the HPO terms to be tested to a specified list
+
+    In cases where we have a hypothesis about which phenotypes are relevant for
+    testing genotype-pehnotype correlations, we can pass the corresponding
+    terms to the constructor of this class, thereby preventing other terms from
+    being tested and reducing the multiple testing burden
+    """
+
+    def __init__(self,
+                 hpo: hpotk.MinimalOntology,
+                 terms_to_test: typing.Collection[typing.Union[str,hpotk.TermId]]):
+        """
+
+        Args:
+            hpo: reference to HPO ontology object
+            terms_to_test: list of TermId or strings such as HP:0000123 (must be valid or exception is raised)
+        """
+
+        self._hpo = hpo
+        self._terms_to_test_set = set()
+        for trm in terms_to_test:
+            if isinstance(trm, str):
+                trm = hpotk.TermId.from_curie(trm)
+            if not trm in self._hpo:
+                raise ValueError(f"HPO ID {trm} not in HPO ontology")
+            self._terms_to_test_set.add(trm)
+
+    def filter_terms_to_test(
+            self,
+            n_usable: typing.Mapping[hpotk.TermId, int],
+            all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
+    ) -> typing.Tuple[
+        typing.Mapping[hpotk.TermId, int],
+        typing.Mapping[hpotk.TermId, pd.DataFrame],
+        typing.Mapping[str, int],
+    ]:
+        """
+        Remove terms that are not members of the specific set of HPO terms to be tested.
+        Args:
+            n_usable: dictionary with HPO term ids seen in our cohort and their counts
+            all_counts: Dictionary with HPO term ids from cohort and DataFrames with detailed GPC counts
+
+        Returns:
+            filtered versions of the two dictionaries above and dataframe with reasons for skipping
+        """
+        filtered_n_usable = {}
+        filtered_all_counts = pd.Series()
+        reason_for_filtering_out = defaultdict(int)
+        tested_counts_pf = defaultdict(pd.DataFrame)  # key is an HP id, value is a tuple with counts, i.e.,
+
+        for term_id in n_usable.keys():
+            if term_id not in self._terms_to_test_set:
+                reason_for_filtering_out["Skipping non-specified term"] += 1
+                continue
+            # if we get here, then the term is a member of our list of terms to be tested.
+            filtered_n_usable[term_id] = n_usable[term_id]
+            filtered_all_counts[term_id] = all_counts[term_id]
+
+        return filtered_n_usable, filtered_all_counts, reason_for_filtering_out
+
+    def filter_method_name(self) -> str:
+        return "specified terms filter"
 
 class HeuristicSamplerMtcFilter(HpoMtcFilter):
     """
