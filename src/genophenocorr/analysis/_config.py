@@ -9,7 +9,7 @@ from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMe
     ProtCachingMetadataService
 from ._api import CohortAnalysis, HpoMtcFilter
 from ._filter import SimplePhenotypeFilter
-from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicSamplerMtcFilter
+from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicSamplerMtcFilter, SpecifiedTermsMtcFilter
 from ._gp_impl import GpCohortAnalysis
 
 P_VAL_OPTIONS = (
@@ -28,6 +28,7 @@ P_VAL_OPTIONS = (
 class MTC_Strategy(enum.Enum):
     ALL_HPO_TERMS = 0
     HEURISTIC_SAMPLER = 1
+    SPECIFY_TERMS = 2
 
 
 
@@ -65,6 +66,7 @@ class CohortAnalysisConfiguration:
         self._min_perc_patients_w_hpo = .1
         self._include_sv = False
         self._mtc_strategy = MTC_Strategy.ALL_HPO_TERMS
+        self._terms_to_test = set() ## only relevant for SPECIFIED_TERMS strategy
 
     @property
     def missing_implies_excluded(self) -> bool:
@@ -192,6 +194,13 @@ class CohortAnalysisConfiguration:
     def heuristic_strategy(self):
         self.mtc_strategy = MTC_Strategy.HEURISTIC_SAMPLER
 
+    def specify_terms_strategy(self,  specified_term_set: typing.Collection[typing.Union[str, hpotk.TermId]] = None,):
+        self.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
+        self._terms_to_test = specified_term_set
+
+    def get_terms_to_test(self):
+        return self._terms_to_test
+
 
 def configure_cohort_analysis(cohort: Cohort,
                               hpo: hpotk.MinimalOntology,
@@ -224,6 +233,8 @@ def configure_cohort_analysis(cohort: Cohort,
 
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
         mtc_filter = HeuristicSamplerMtcFilter(hpo=hpo)
+    elif config.mtc_strategy == MTC_Strategy.SPECIFY_TERMS:
+        mtc_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test=config.get_terms_to_test())
     elif config.mtc_strategy == MTC_Strategy.ALL_HPO_TERMS:
         mtc_filter = IdentityTermMtcFilter()
     else:

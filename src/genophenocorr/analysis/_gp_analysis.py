@@ -128,7 +128,7 @@ class SpecifiedTermsMtcFilter(HpoMtcFilter):
         for trm in terms_to_test:
             if isinstance(trm, str):
                 trm = hpotk.TermId.from_curie(trm)
-            if not trm in self._hpo:
+            if trm not in self._hpo:
                 raise ValueError(f"HPO ID {trm} not in HPO ontology")
             self._terms_to_test_set.add(trm)
 
