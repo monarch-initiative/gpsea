@@ -189,6 +189,71 @@
     <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;identity filter&quot;</span>
 
+<div class="viewcode-block" id="SpecifiedTermsMtcFilter">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter">[docs]</a>
+<span class="k">class</span> <span class="nc">SpecifiedTermsMtcFilter</span><span class="p">(</span><span class="n">HpoMtcFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SpecifiedTermsMtcFilter` limits the HPO terms to be tested to a selection of provided terms.</span>
+
+<span class="sd">    In cases where we have a hypothesis about which phenotypes are relevant for</span>
+<span class="sd">    testing genotype-pehnotype correlations, we can pass the corresponding</span>
+<span class="sd">    terms to the constructor of this class, thereby preventing other terms from</span>
+<span class="sd">    being tested and reducing the multiple testing burden.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+                 <span class="n">terms_to_test</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hpo: reference to HPO ontology object</span>
+<span class="sd">            terms_to_test: an iterable of TermIds representing the terms to test</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">terms_to_test</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter_terms_to_test">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter.filter_terms_to_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove terms that are not members of the specific set of HPO terms to be tested.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            n_usable: dictionary with HPO term ids seen in our cohort and their counts</span>
+<span class="sd">            all_counts: Dictionary with HPO term ids from cohort and DataFrames with detailed GPC counts</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            filtered versions of the two dictionaries above and dataframe with reasons for skipping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filtered_n_usable</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">filtered_all_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
+        <span class="n">reason_for_filtering_out</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">DefaultDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="n">n_usable</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">term_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span><span class="p">:</span>
+                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="s2">&quot;Skipping non-specified term&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="c1"># if we get here, then the term is a member of our list of terms to be tested.</span>
+            <span class="n">filtered_n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
+            <span class="n">filtered_all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">filtered_n_usable</span><span class="p">,</span> <span class="n">filtered_all_counts</span><span class="p">,</span> <span class="n">reason_for_filtering_out</span></div>
+
+
+<div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter_method_name">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter.filter_method_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;specified terms filter&quot;</span></div>
+</div>
+
 
 <div class="viewcode-block" id="HeuristicSamplerMtcFilter">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicSamplerMtcFilter">[docs]</a>
