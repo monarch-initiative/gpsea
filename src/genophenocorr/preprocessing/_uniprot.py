@@ -56,8 +56,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                     for feature in protein['features']:
                         feature_start = int(feature['location']['start']['value'])
                         feature_end = int(feature['location']['end']['value'])
+                        feature_name = feature['description']
+                        feature_name, all_features_list = UniprotProteinMetadataService._update_duplicate_names(feature_name, all_features_list)
                         feature_info = FeatureInfo(
-                            feature['description'],
+                            feature_name,
                             Region(start=feature_start, end=feature_end),
                         )
                         feature_type = FeatureType[feature['type'].upper()]
@@ -74,6 +76,25 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                 return ProteinMetadata(protein_id, protein_name, all_features_list, protein_length)
 
         raise ValueError(f'Could not find an entry for {protein_id} in Uniprot response')
+
+    def _update_duplicate_names(feature_name: str, all_features_list: typing.Iterable[ProteinFeature]) -> typing.Tuple[str, typing.Iterable[ProteinFeature]]:
+        ending = 0
+        count = 0
+        for feats in all_features_list:
+            if feats.info.name == feature_name:
+                feat_info = FeatureInfo(feature_name + '_1', Region(feats.info.start, feats.info.end))
+                feats_new = ProteinFeature.create(feat_info, feats.feature_type)
+                all_features_list[count] = feats_new
+                return (feature_name + '_2', all_features_list)
+            elif feats.info.name.split('_')[0] == feature_name:
+                ending += 1
+                count += 1
+            else:
+                count += 1
+        if ending == 0:
+            return (feature_name, all_features_list)
+        else:
+            return (feature_name + '_' + str(ending + 1), all_features_list)
 
     def annotate(self, protein_id: str) -> ProteinMetadata:
         """Get metadata for given protein ID. This class specifically only works with a RefSeq database ID (e.g. NP_037407.4)
