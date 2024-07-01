@@ -116,24 +116,6 @@ class CohortAnalysisConfiguration:
         """
         return self._min_perc_patients_w_hpo
 
-    @min_perc_patients_w_hpo.setter
-    def min_perc_patients_w_hpo(self, min_perc_patients_w_hpo: float):
-        """
-        :param min_perc_patients_w_hpo: as a `float` with the lower acceptable bound of patients
-          for the phenotype feature to be included in the analysis
-          (e.g. `0.2` for needing 20% or more patients).
-        """
-        if not isinstance(min_perc_patients_w_hpo, float):
-            try:
-                min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
-            except ValueError:
-                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f",
-                                     min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
-        if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
-            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using %f",
-                                 min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
-        else:
-            self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
 
     @property
     def mtc_alpha(self) -> float:
@@ -198,8 +180,21 @@ class CohortAnalysisConfiguration:
         else:
             self._logger.warning('TODO DOCUMENT `include_sv` value %s. Using %s', strategy, self._mtc_strategy)
 
-    def heuristic_strategy(self):
+    def heuristic_strategy(self, threshold_HPO_observed_frequency: float=0.2):
         self.mtc_strategy = MTC_Strategy.HEURISTIC_SAMPLER
+        if not isinstance(threshold_HPO_observed_frequency, float):
+            try:
+                threshold_HPO_observed_frequency = float(threshold_HPO_observed_frequency)
+            except ValueError:
+                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f",
+                                     threshold_HPO_observed_frequency, self._min_perc_patients_w_hpo)
+        if threshold_HPO_observed_frequency > 1 or threshold_HPO_observed_frequency <= 0:
+            errmsg = f"min_perc_patients_w_hpo must be greater than 0 and at most 1, but was {threshold_HPO_observed_frequency}. Fix this before continuingf",
+            self._logger.warning(errmsg)
+            raise ValueError(errmsg)
+        else:
+            self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
+        self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
 
     def specify_terms_strategy(self,  specified_term_set: typing.Iterable[typing.Union[str, hpotk.TermId]]):
         self.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
