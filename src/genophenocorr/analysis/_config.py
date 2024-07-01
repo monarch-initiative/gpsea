@@ -9,7 +9,7 @@ from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMe
     ProtCachingMetadataService
 from ._api import CohortAnalysis, HpoMtcFilter
 from ._filter import SimplePhenotypeFilter
-from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicSamplerMtcFilter, SpecifiedTermsMtcFilter
+from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicMtcFilter, SpecifiedTermsMtcFilter
 from ._gp_impl import GpCohortAnalysis
 
 P_VAL_OPTIONS = (
@@ -64,7 +64,7 @@ class CohortAnalysisConfiguration:
         self._missing_implies_excluded = False
         self._pval_correction = 'bonferroni'
         self._mtc_alpha = .05
-        self._min_perc_patients_w_hpo = .1
+        self._min_perc_patients_w_hpo = .2
         self._include_sv = False
         self._mtc_strategy = MTC_Strategy.ALL_HPO_TERMS
         self._terms_to_test = set() ## only relevant for SPECIFIED_TERMS strategy
@@ -112,7 +112,7 @@ class CohortAnalysisConfiguration:
     def min_perc_patients_w_hpo(self) -> float:
         """
         A threshold for removing rare HPO terms, only the terms that are observed in at least this fraction of patients
-        will be retained for the analysis.
+        will be retained for the analysis (default 0.2).
         """
         return self._min_perc_patients_w_hpo
 
@@ -240,7 +240,7 @@ def configure_cohort_analysis(cohort: Cohort,
 
     mtc_filter: HpoMtcFilter
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
-        mtc_filter = HeuristicSamplerMtcFilter(hpo=hpo)
+        mtc_filter = HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter = config._min_perc_patients_w_hpo)
     elif config.mtc_strategy == MTC_Strategy.SPECIFY_TERMS:
         validated_terms_to_test = _validate_terms_to_test(hpo, config.get_terms_to_test())
         mtc_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test=validated_terms_to_test)
@@ -267,17 +267,17 @@ def configure_cohort_analysis(cohort: Cohort,
     )
 
 def _validate_terms_to_test(
-        hpo: hpotk.MinimalOntology, 
+        hpo: hpotk.MinimalOntology,
         terms_to_test: typing.Iterable[typing.Union[hpotk.TermId, str]],
     ) -> typing.Iterable[hpotk.TermId]:
     """
     Check that:
-     * all terms to test are valid TermIds/CURIES, 
-     * the term IDs are in used HPO, and 
+     * all terms to test are valid TermIds/CURIES,
+     * the term IDs are in used HPO, and
      * there is at least one term to test
     """
     validated_terms_to_test = set()
-    
+
     for term in terms_to_test:
         if isinstance(term, hpotk.TermId):
             pass
@@ -285,13 +285,13 @@ def _validate_terms_to_test(
             term = hpotk.TermId.from_curie(term)
         else:
             raise ValueError(f'{term} is neither a TermId nor a CURIE `str`!')
-        
+
         if term not in hpo:
             raise ValueError(f"HPO ID {term} not in HPO ontology {hpo.version}")
         validated_terms_to_test.add(term)
     if len(validated_terms_to_test) == 0:
         raise ValueError('Cannot run use {MTC_Strategy.SPECIFY_TERMS} with no HPO terms!')
-    
+
     return validated_terms_to_test
 
 

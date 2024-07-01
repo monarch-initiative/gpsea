@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from genophenocorr.analysis import HeuristicSamplerMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
+from genophenocorr.analysis import HeuristicMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
 from genophenocorr.analysis.predicate import PatientCategories, GenotypePolyPredicate
 from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate
 from genophenocorr.model import Cohort
@@ -14,8 +14,9 @@ from genophenocorr.model import Cohort
 class TestHeuristicSamplerMtcFilter:
 
     @pytest.fixture
-    def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicSamplerMtcFilter:
-        return HeuristicSamplerMtcFilter(hpo=hpo)
+    def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicMtcFilter:
+        default_freq_threshold=0.2
+        return HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter=default_freq_threshold)
 
     @pytest.fixture(scope='class')
     def patient_counts(
@@ -50,7 +51,7 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.one_genotype_has_zero_hpo_observations(counts=counts_df)
+        actual = HeuristicMtcFilter.one_genotype_has_zero_hpo_observations(counts=counts_df)
 
         assert actual == expected
 
@@ -74,7 +75,7 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
+        actual = HeuristicMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
 
         assert actual == expected
 
@@ -93,13 +94,13 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.genotypes_have_same_hpo_proportions(counts=counts_df)
+        actual = HeuristicMtcFilter.genotypes_have_same_hpo_proportions(counts=counts_df)
 
         assert actual == expected
 
     def test_filter_terms_to_test(
             self,
-            mtc_filter: HeuristicSamplerMtcFilter,
+            mtc_filter: HeuristicMtcFilter,
             patient_counts: typing.Tuple[
                 typing.Mapping[hpotk.TermId, int],
                 typing.Mapping[hpotk.TermId, pd.DataFrame],
