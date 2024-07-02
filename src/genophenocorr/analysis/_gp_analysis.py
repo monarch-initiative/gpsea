@@ -310,7 +310,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
             The maximum frequency of observed HPO annotations across all genotypes.
         """
         df = counts_frame.loc[PatientCategories.YES] / (counts_frame.loc[PatientCategories.YES] + counts_frame.loc[PatientCategories.NO])
-        return df.max().max()
+        return df.max()
 
     @staticmethod
     def one_genotype_has_zero_hpo_observations(counts: pd.DataFrame):

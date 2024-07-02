@@ -154,3 +154,48 @@ class TestHeuristicSamplerMtcFilter:
         values = np.array(counts).reshape((2, 2))
 
         return pd.DataFrame(data=values, index=index, columns=columns)
+
+
+    def test_min_observed_HPO_threshold(self,
+                                        hpo: hpotk.MinimalOntology,
+                                        patient_counts: typing.Tuple[
+                typing.Mapping[hpotk.TermId, int],
+                typing.Mapping[hpotk.TermId, pd.DataFrame],
+            ],
+                                        ) -> None:
+        """
+        In our heuristic filter, we only test terms that have at least a threshold
+        frequency in at least one of the groups. We use the "all counts" datastructure, that
+        is a dictionary whose keys are hpotoolkit TermIds and whose values are pandas DataFrames
+        with 2x2 contingenicy tables of counts. For instance, each column will have one row for
+        PatientCategories.YES and one for PatientCategories.NO, indicating counts of measured observed/excluded
+        HPO phenotypes. Each column is a certain genotype, e.g., MISSENSE or NON-MISSENSE. We want the
+        function to return the maximum frequency. In each column, the frequency is calculate by
+        PatientCategories.YES / (PatientCategories.YES+PatientCategories.NO). This function tests that this works
+        for all of the HPO terms in the dictionary.
+        """
+        EPSILON = 0.001
+        all_counts = patient_counts[1]
+        # Ectopia lentis HP:0001083  (6 9  1 2), freqs are 6/15=0.4 and 1/3=0.33
+        ectopia = all_counts[hpotk.TermId.from_curie("HP:0001083")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(ectopia)
+        assert abs(max_f - 0.4) < EPSILON
+        # Seizure HP:0001250 (17 7 11 0), freqs are 17/24=0.7083 and 11/11=1
+        seizure = all_counts[hpotk.TermId.from_curie("HP:0001250")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(seizure)
+        assert abs(max_f - 1.0) < EPSILON
+        # Sulfocysteinuria HP:0032350 (11 0 2 0), freqs are both 1
+        sulfocysteinuria = all_counts[hpotk.TermId.from_curie("HP:0032350")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(sulfocysteinuria)
+        assert abs(max_f - 1.0) < EPSILON
+        # Neurodevelopmental delay HP:0012758 (4 13 4 4), freqs are 4/17 = 0.235 and 4/8=0.5
+        ndelay = all_counts[hpotk.TermId.from_curie("HP:0012758")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(ndelay)
+        assert abs(max_f - 0.5) < EPSILON
+        # Hypertonia HP:0001276 (7 9 4 3) fresa are 7/16=0.4375 and 4/7=0.5714
+        hypertonia  = all_counts[hpotk.TermId.from_curie("HP:0001276")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(hypertonia)
+        assert abs(max_f - 0.5714) < EPSILON
+
+
+
