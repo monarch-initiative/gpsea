@@ -16,6 +16,12 @@ def chr1(genome_build: GenomeBuild) -> Contig:
     return contig
 
 @pytest.fixture(scope='module')
+def chrX(genome_build: GenomeBuild) -> Contig:
+    contig = genome_build.contig_by_name('chrX')
+    assert contig is not None
+    return contig
+
+@pytest.fixture(scope='module')
 def het_lmna(
         sample_labels: SampleLabels,
         chr1: Contig,
@@ -72,6 +78,33 @@ def hom_alt_lmna(
         genotypes=Genotypes.single(sample_labels, Genotype.HOMOZYGOUS_ALTERNATE),
     )
 
+@pytest.fixture(scope='module')
+def hemi_dmd(
+        sample_labels: SampleLabels,
+        chrX: Contig,
+) -> Variant:
+    return Variant(
+        var_coordinates=VariantCoordinates(
+            region=GenomicRegion(
+                contig=chrX, start=31_180_436, end=31_180_437,
+                strand=Strand.POSITIVE,
+            ),
+            ref='C', alt='T', change_length=0,
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id='DMD', tx_id='NM_000109.4', hgvs_cdna='NM_000109.4:c.9995G>A', is_preferred=False,
+                variant_effects=(VariantEffect.MISSENSE_VARIANT,), affected_exons=(69,),
+                protein_id='NP_000100.3', protein_effect_coordinates=Region(start=3331, end=3332)
+            ),
+            TranscriptAnnotation(
+                gene_id='DMD', tx_id='NM_004006.3', hgvs_cdna='NM_004006.3:c.10019G>A', is_preferred=True,
+                variant_effects=(VariantEffect.MISSENSE_VARIANT,), affected_exons=(69,),
+                protein_id='NP_003997.2', protein_effect_coordinates=Region(start=3339, end=3340)
+            ),
+        ),
+        genotypes=Genotypes.single(sample_labels, Genotype.HEMIZYGOUS),
+    )
 
 class TestAlleleCounter:
 
@@ -81,12 +114,14 @@ class TestAlleleCounter:
             sample_labels: SampleLabels,
             het_lmna: Variant,
             hom_alt_lmna: Variant,
+            hemi_dmd: Variant,
     ) -> Patient:
         return Patient(
             labels=sample_labels,
             variants=(
                 het_lmna,
                 hom_alt_lmna,
+                hemi_dmd,
             ),
             diseases=(),
             phenotypes=(),
@@ -98,6 +133,7 @@ class TestAlleleCounter:
             ('invariant', 0),
             ('1_156137756_156137756_C_A', 1),
             ('1_156134853_156134853_G_A', 2),
+            ('X_31180437_31180437_C_T', 1),
         ]
     )
     def test_count_keys(
