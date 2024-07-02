@@ -77,7 +77,11 @@ class UniprotProteinMetadataService(ProteinMetadataService):
 
         raise ValueError(f'Could not find an entry for {protein_id} in Uniprot response')
 
-    def _update_duplicate_names(feature_name: str, all_features_list: typing.Iterable[ProteinFeature]) -> typing.Tuple[str, typing.Iterable[ProteinFeature]]:
+    @staticmethod
+    def _update_duplicate_names(
+        feature_name: str, 
+        all_features_list: typing.Iterable[ProteinFeature],
+    ) -> typing.Tuple[str, typing.Iterable[ProteinFeature]]:
         ending = 0
         count = 0
         for feats in all_features_list:
