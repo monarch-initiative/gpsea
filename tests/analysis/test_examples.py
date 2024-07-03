@@ -65,7 +65,7 @@ class TestCohortAnalysis:
         all_counts = results.all_counts
         assert isinstance(all_counts, typing.Mapping)
 
-        # We tested 26 HPO terms
+        # We tested 69 HPO terms
         assert len(all_counts) == 69
 
         # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
