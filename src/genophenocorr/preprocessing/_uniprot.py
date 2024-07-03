@@ -85,10 +85,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         """
         if not isinstance(protein_id, str):
             raise ValueError(f'Protein ID must be a str but it was {type(protein_id)}')
-        if not protein_id.startswith("NP_"):
-            raise ValueError(f"only works with a RefSeq database ID (e.g. NP_037407.4), but we got {protein_id}")
         if protein_id.startswith(" ") or protein_id.endswith(" "):
             raise ValueError(f"Please remove whitespace from protein id: \"{protein_id}\" and try again!")
+        if not protein_id.startswith("NP_"):
+            raise ValueError(f"only works with a RefSeq database ID (e.g. NP_037407.4), but we got {protein_id}")
         api_url = self._url % protein_id
         r = requests.get(api_url).json()
         return UniprotProteinMetadataService.parse_uniprot_json(r, protein_id)
