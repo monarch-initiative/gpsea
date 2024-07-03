@@ -28,8 +28,7 @@ class HpoMtcReport:
         Args:
             filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)
             mtc_name:  name of the MTC function (e.g. `bonferroni`)
-            filter_results_map: mapping with reasons for filtering out a term as keys,
-             and counts of filtered terms as values
+            filter_results_map: mapping with reasons for filtering out a term as keys, and counts of filtered terms as values
             term_count: the number of HPO terms before filtering
         """
         self._filter_name = filter_name
@@ -40,28 +39,32 @@ class HpoMtcReport:
     @property
     def filter_method(self) -> str:
         """
-        Get the name of the HpoMtcFilter method used.
+        Returns:
+            the name of the HpoMtcFilter method used.
         """
         return self._filter_name
 
     @property
     def skipped_terms_dict(self) -> typing.Mapping[str, int]:
         """
-        Get a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.
+        Returns:
+            a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.
         """
         return self._results_map
 
     @property
     def mtc_method(self) -> str:
         """
-        Get the name of the multiple testing correction method used (e.g. `bonferroni`).
+         Returns:
+             the name of the multiple testing correction method used (e.g. `bonferroni`).
         """
         return self._mtc_name
 
     @property
     def n_terms_tested(self) -> int:
         """
-        Get the number of HPO terms before filtering.
+        Returns:
+            the number of HPO terms before filtering.
         """
         return self._term_count
 

@@ -160,9 +160,9 @@ class SpecifiedTermsMtcFilter(HpoMtcFilter):
     def filter_method_name(self) -> str:
         return "specified terms filter"
 
-class HeuristicSamplerMtcFilter(HpoMtcFilter):
+class HeuristicMtcFilter(HpoMtcFilter):
     """
-    `HeuristicSamplerMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
+    `HeuristicMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
 
     The class uses a number of heuristics and rules of thumb.
     1. Do not perform a test if there are less than min_annots annotations (default 2). That is, do not perform a
@@ -183,10 +183,16 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
     def __init__(
             self,
             hpo: hpotk.MinimalOntology,
-            second_level_pval_threshold: float = 1e-5,
+            hpo_term_frequency_filter: float,
     ):
+        """
+
+        Args:
+            hpo: reference to HPO ontology object
+            hpo_term_frequency_filter: Minimum frequency for an HPO term to have in at least one of the genotype groups (e.g., 22% in missense and 3% in nonsense genotypes would be ok, but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
+        """
         self._hpo = hpo
-        self._second_level_pval_threshold = second_level_pval_threshold
+        self._hpo_term_frequency_filter = hpo_term_frequency_filter
         # The following numbers of total observations in the genotype groups can never be significant,
         # so we just skip them see above explanation
         self._powerless_set = {(2, 4), (4, 2), (2, 3), (3, 3), (2, 2), (3, 2)}
@@ -229,20 +235,25 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
 
             counts_frame = all_counts[term_id]
             total = counts_frame.sum().sum()
+            max_freq = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(counts_frame)
+            if max_freq < self._hpo_term_frequency_filter:
+                reason = f"Skipping term with maximum frequency that was less than threshold {self._hpo_term_frequency_filter}"
+                reason_for_filtering_out[reason] += 1
+
             if counts_frame.shape == (2, 2) and total < 7:
                 reason = f"Skipping term with only {total} observations (not powered for 2x2)"
                 reason_for_filtering_out[reason] += 1
                 continue
             # todo -- similar for (3,2)
-            if not HeuristicSamplerMtcFilter.some_cell_has_greater_than_one_count(counts_frame):
+            if not HeuristicMtcFilter.some_cell_has_greater_than_one_count(counts_frame):
                 reason = "Skipping term because no genotype has more than one observed HPO count"
                 reason_for_filtering_out[reason] += 1
                 continue
-            elif HeuristicSamplerMtcFilter.genotypes_have_same_hpo_proportions(counts_frame):
+            elif HeuristicMtcFilter.genotypes_have_same_hpo_proportions(counts_frame):
                 reason = "Skipping term because all genotypes have same HPO observed proportions"
                 reason_for_filtering_out[reason] += 1
                 continue
-            elif HeuristicSamplerMtcFilter.one_genotype_has_zero_hpo_observations(counts_frame):
+            elif HeuristicMtcFilter.one_genotype_has_zero_hpo_observations(counts_frame):
                 reason = "Skipping term because one genotype had zero observations"
                 reason_for_filtering_out[reason] += 1
                 continue
@@ -255,7 +266,7 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
                         reason_for_filtering_out[reason] += 1
                         continue
 
-            total_HPO = HeuristicSamplerMtcFilter.get_number_of_observed_hpo_observations(counts_frame)
+            total_HPO = HeuristicMtcFilter.get_number_of_observed_hpo_observations(counts_frame)
             tested_counts_pf[term_id] = counts_frame
             ## Heuristic -- if a child of a second level term has at least 75% of the counts of its ancestor
             # second level term, then do not test because it is unlikely to add much insight
@@ -270,7 +281,7 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
                 do_test = True
                 for descendant in self._hpo.graph.get_descendants(term_id):
                     if descendant in tested_counts_pf:
-                        total_d_hpo = HeuristicSamplerMtcFilter.get_number_of_observed_hpo_observations(
+                        total_d_hpo = HeuristicMtcFilter.get_number_of_observed_hpo_observations(
                             tested_counts_pf[descendant]
                         )
                         if total_d_hpo / total_HPO >= SECOND_LEVEL_TERM_THRESHOLD:
@@ -291,6 +302,15 @@ class HeuristicSamplerMtcFilter(HpoMtcFilter):
     @staticmethod
     def get_number_of_observed_hpo_observations(counts_frame: pd.DataFrame) -> int:
         return counts_frame.loc[PatientCategories.YES].sum()
+
+    @staticmethod
+    def get_maximum_group_observed_HPO_frequency(counts_frame: pd.DataFrame) -> float:
+        """
+        Returns:
+            The maximum frequency of observed HPO annotations across all genotypes.
+        """
+        df = counts_frame.loc[PatientCategories.YES] / (counts_frame.loc[PatientCategories.YES] + counts_frame.loc[PatientCategories.NO])
+        return df.max()
 
     @staticmethod
     def one_genotype_has_zero_hpo_observations(counts: pd.DataFrame):
