@@ -113,8 +113,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)</span>
 <span class="sd">            mtc_name:  name of the MTC function (e.g. `bonferroni`)</span>
-<span class="sd">            filter_results_map: mapping with reasons for filtering out a term as keys,</span>
-<span class="sd">             and counts of filtered terms as values</span>
+<span class="sd">            filter_results_map: mapping with reasons for filtering out a term as keys, and counts of filtered terms as values</span>
 <span class="sd">            term_count: the number of HPO terms before filtering</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filter_name</span> <span class="o">=</span> <span class="n">filter_name</span>
@@ -125,28 +124,32 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filter_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the name of the HpoMtcFilter method used.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            the name of the HpoMtcFilter method used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">skipped_terms_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            a mapping with reasons why an HPO term was skipped as keys and counts of the skipped terms as values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the name of the multiple testing correction method used (e.g. `bonferroni`).</span>
+<span class="sd">         Returns:</span>
+<span class="sd">             the name of the multiple testing correction method used (e.g. `bonferroni`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_terms_tested</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the number of HPO terms before filtering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            the number of HPO terms before filtering.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span></div>
 
