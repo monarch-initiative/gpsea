@@ -432,6 +432,10 @@ class ProteinVisualizer:
                 ax, colored_circle_x, colored_circle_y, color_circle_radius,
                 line_color='black', fill_color=self.marker_colors[variant_effect],
             )
+            draw_string(
+                ax, variant_effect,
+                colored_circle_x + 2 * color_circle_radius, colored_circle_y,
+                fontsize=12, ha="left", va="center", color='black',)
 
         ax.set(
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
