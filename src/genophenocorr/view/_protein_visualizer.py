@@ -177,17 +177,7 @@ class ProteinVisualizer:
         for i in range(len(pvis.protein_feature_ends)):
             feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
         feature_limits = np.array(feature_limits)
-        color_idx = 0
-        protein_feature_colors = dict()
-        seen_features = set()
-        for feature_name in pvis.protein_feature_names:
-            if feature_name in seen_features:
-                continue
-            seen_features.add(feature_name)
-            color = self._available_colors[color_idx]
-            protein_feature_colors[feature_name] = color
-            color_idx += 1
-        feature_colors = [protein_feature_colors[ft] for ft in pvis.protein_feature_names]
+
         feature_names = pvis.protein_feature_names
         variant_locations = pvis.variant_locations
         # The following has the variant positions (in variant_locations_counted_absolute)
@@ -335,21 +325,42 @@ class ProteinVisualizer:
         for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
             marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
             cur_radius, cur_length = ProteinVisualizer._marker_dim(marker_count, protein_track_y_max)
-            x_start, x_end = marker, marker #  WAS  marker[0], marker[1]
+            x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
             self._draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
         feature_y_min, feature_y_max = 0.485, 0.515
 
         unique_feature_names = list(set(feature_names))
+        cleaned_unique_feature_names = set()
+        mapping_all2cleaned = {}
 
+        def remove_numbers(s: str):
+            return str(''.join(char for char in s if not char.isdigit()))
+
+        for feature_name in unique_feature_names:
+            cleaned_feature_name = remove_numbers(feature_name)
+            cleaned_unique_feature_names.add(cleaned_feature_name)
+            mapping_all2cleaned[feature_name] = cleaned_feature_name
+
+        color_idx = 0
+        protein_feature_colors = dict()
+        seen_features = set()
+        for feature_name in cleaned_unique_feature_names:
+            if feature_name in seen_features:
+                continue
+            seen_features.add(feature_name)
+            color = self._available_colors[color_idx]
+            protein_feature_colors[feature_name] = color
+            color_idx += 1
+        feature_colors = [protein_feature_colors[ft] for ft in cleaned_unique_feature_names]
 
         if labeling_method == 'enumerate':
             ascii_A = 65
-            labels = {fn: chr(ascii_A + i) for i, fn in enumerate(unique_feature_names)}
+            labels = {fn: chr(ascii_A + i) for i, fn in enumerate(cleaned_unique_feature_names)}
 
         elif labeling_method == 'abbreviate':
-            labels = {fn: fn[0:5] for fn in unique_feature_names}
+            labels = {fn: fn[0:5] for fn in cleaned_unique_feature_names}
         else:
             raise ValueError(f'Unsupported labeling method {labeling_method}')
 
@@ -362,7 +373,7 @@ class ProteinVisualizer:
             )
             if (feature_x_max - feature_x_min) <= 0.03:  # too small to display name
                 draw_string(
-                    ax, labels[feature_name],
+                    ax, labels[mapping_all2cleaned[feature_name]],
                     0.05 * (feature_x_max - feature_x_min) + feature_x_min,
                     0.55 * (feature_y_max - feature_y_min) + feature_y_min,
                     ha="left", va="center", rotation=90, color='black', fontsize=8,
@@ -372,14 +383,14 @@ class ProteinVisualizer:
                 pass
             else:
                 draw_string(
-                    ax, labels[feature_name],
+                    ax, labels[mapping_all2cleaned[feature_name]],
                     0.2 * (feature_x_max - feature_x_min) + feature_x_min,
                     0.4 * (feature_y_max - feature_y_min) + feature_y_min,
                     ha="left", va="center", color='black',
                 )
 
         # draw legend 1 for protein features
-        n_unique_features = len(unique_feature_names)
+        n_unique_features = len(cleaned_unique_feature_names)
         color_box_x_dim = 0.01
         color_box_y_dim = 0.01
         if labeling_method == 'abbreviate':
@@ -393,7 +404,7 @@ class ProteinVisualizer:
 
         # legend box
         draw_rectangle(ax, legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
-        for i, feature_name in enumerate(unique_feature_names):
+        for i, feature_name in enumerate(cleaned_unique_feature_names):
             # colored box
             color_box_min_x = legend_min_x + row_spacing
             color_box_max_x = color_box_min_x + color_box_x_dim
@@ -423,7 +434,8 @@ class ProteinVisualizer:
         legend2_min_x = 0.1
         legend2_max_x = 0.3
         legend2_max_y = 0.75
-        legend2_min_y = legend2_max_y - (n_unique_effects + 1) * row_spacing - n_unique_effects * 2 *color_circle_radius
+        legend2_min_y = legend2_max_y - (
+                n_unique_effects + 1) * row_spacing - n_unique_effects * 2 * color_circle_radius
         draw_rectangle(ax, legend2_min_x, legend2_min_y, legend2_max_x, legend2_max_y, 'black')
         for i, variant_effect in enumerate(unique_variant_effects):
             colored_circle_x = legend2_min_x + row_spacing + color_circle_radius
@@ -435,7 +447,7 @@ class ProteinVisualizer:
             draw_string(
                 ax, variant_effect,
                 colored_circle_x + 2 * color_circle_radius, colored_circle_y,
-                fontsize=12, ha="left", va="center", color='black',)
+                fontsize=12, ha="left", va="center", color='black', )
 
         ax.set(
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
