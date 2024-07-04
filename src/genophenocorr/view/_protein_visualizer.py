@@ -423,11 +423,11 @@ class ProteinVisualizer:
         legend2_min_x = 0.1
         legend2_max_x = 0.3
         legend2_max_y = 0.75
-        legend2_min_y = legend2_max_y - (n_unique_effects + 1) * row_spacing - n_unique_effects * color_circle_radius
+        legend2_min_y = legend2_max_y - (n_unique_effects + 1) * row_spacing - n_unique_effects * 2 *color_circle_radius
         draw_rectangle(ax, legend2_min_x, legend2_min_y, legend2_max_x, legend2_max_y, 'black')
         for i, variant_effect in enumerate(unique_variant_effects):
             colored_circle_x = legend2_min_x + row_spacing + color_circle_radius
-            colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * color_circle_radius
+            colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * 2 * color_circle_radius - color_circle_radius
             draw_circle(
                 ax, colored_circle_x, colored_circle_y, color_circle_radius,
                 line_color='black', fill_color=self.marker_colors[variant_effect],
