@@ -377,7 +377,7 @@ class ProteinVisualizer:
                     ha="left", va="center", color='black',
                 )
 
-        # draw legend
+        # draw legend 1 for protein features
         n_unique_features = len(unique_feature_names)
         color_box_x_dim = 0.01
         color_box_y_dim = 0.01
@@ -413,6 +413,14 @@ class ProteinVisualizer:
                 color_box_max_x + 0.005, color_box_min_y + 0.005,
                 fontsize=12, ha="left", va="center", color='black',
             )
+
+        # draw legend 2 for variant effects
+        unique_variant_effect_colors = list(set(variant_effect_colors))
+        unique_variant_effects = list(set(pvis.variant_effects))
+        n_unique_effects = len(set(variant_effect_colors))
+        draw_rectangle(ax, legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
+
+
 
         ax.set(
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
