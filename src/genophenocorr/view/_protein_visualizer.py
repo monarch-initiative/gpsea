@@ -419,7 +419,7 @@ class ProteinVisualizer:
         unique_variant_effect_colors = list(set(variant_effect_colors))
         unique_variant_effects = list(set(pvis.variant_effects))
         n_unique_effects = len(set(variant_effect_colors))
-        color_circle_radius = 0.0025
+        color_circle_radius = 0.005
         legend2_min_x = 0.1
         legend2_max_x = 0.3
         legend2_max_y = 0.75
