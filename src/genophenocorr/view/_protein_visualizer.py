@@ -426,7 +426,7 @@ class ProteinVisualizer:
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
             ylim=(0.3, 0.75),
             aspect='equal',
-            title=f'{pvis.protein_metadata.label}{os.linesep}transcript: {pvis.transcript_id}, '
+            title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
                   f'protein: {pvis.protein_id}',
         )
         ax.axis('off')
