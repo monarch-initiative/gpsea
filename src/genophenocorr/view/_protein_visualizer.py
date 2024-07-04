@@ -343,6 +343,7 @@ class ProteinVisualizer:
 
         unique_feature_names = list(set(feature_names))
 
+
         if labeling_method == 'enumerate':
             ascii_A = 65
             labels = {fn: chr(ascii_A + i) for i, fn in enumerate(unique_feature_names)}
@@ -418,9 +419,19 @@ class ProteinVisualizer:
         unique_variant_effect_colors = list(set(variant_effect_colors))
         unique_variant_effects = list(set(pvis.variant_effects))
         n_unique_effects = len(set(variant_effect_colors))
-        draw_rectangle(ax, legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
-
-
+        color_circle_radius = 0.0025
+        legend2_min_x = 0.1
+        legend2_max_x = 0.3
+        legend2_max_y = 0.75
+        legend2_min_y = legend2_max_y - (n_unique_effects + 1) * row_spacing - n_unique_effects * color_circle_radius
+        draw_rectangle(ax, legend2_min_x, legend2_min_y, legend2_max_x, legend2_max_y, 'black')
+        for i, variant_effect in enumerate(unique_variant_effects):
+            colored_circle_x = legend2_min_x + row_spacing + color_circle_radius
+            colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * color_circle_radius
+            draw_circle(
+                ax, colored_circle_x, colored_circle_y, color_circle_radius,
+                line_color='black', fill_color=self.marker_colors[variant_effect],
+            )
 
         ax.set(
             xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
@@ -429,6 +440,7 @@ class ProteinVisualizer:
             title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
                   f'protein: {pvis.protein_id}',
         )
+
         ax.axis('off')
 
         if should_return_ax:
