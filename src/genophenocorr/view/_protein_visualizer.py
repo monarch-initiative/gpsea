@@ -204,6 +204,14 @@ def draw_marker(
     draw_circle(ax, x, max_y, circle_radius, line_color=stem_color, fill_color=fill_color, line_width=0.5)
 
 
+def draw_variants(ax: plt.Axes, variant_locations_relative, variant_effect_colors, marker_counts, protein_track_y_max):
+    for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
+        marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
+        cur_radius, cur_length = marker_dim(marker_count, protein_track_y_max)
+        x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
+        draw_marker(ax, x_start, x_end, protein_track_y_max, cur_length, cur_radius, marker_color)
+
+
 def generate_features(pvis: ProteinVisualizable, labeling_method: str):
     feature_limits = list()
     for i in range(len(pvis.protein_feature_ends)):
@@ -422,13 +430,7 @@ class ProteinVisualizer:
                   self.axis_color, self.protein_track_color
                   )
 
-        # draw variants
-        marker_y_min = self.protein_track_y_max
-        for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
-            marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
-            cur_radius, cur_length = marker_dim(marker_count, self.protein_track_y_max)
-            x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
-            draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
+        draw_variants(ax, variant_locations_relative, variant_effect_colors, marker_counts, self.protein_track_y_max)
 
         # draw the features (protein track)
         for feature_x, feature_name in zip(feature_limits_relative, feature_names):
