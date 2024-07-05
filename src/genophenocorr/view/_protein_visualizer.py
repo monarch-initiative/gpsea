@@ -229,6 +229,9 @@ def generate_features(pvis: ProteinVisualizable, labeling_method: str):
     else:
         raise ValueError(f'Unsupported labeling method {labeling_method}')
 
+    cleaned_unique_feature_names = list(cleaned_unique_feature_names)
+    cleaned_unique_feature_names.sort()
+
     return feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels
 
 
