@@ -258,19 +258,19 @@ def generate_variant_markers(pvis, marker_colors):
     return marker_counts, variant_locations_counted_absolute, variant_effect_colors
 
 
-def assign_colors_to_protein_features(cleaned_unique_feature_names, available_colors):
+def assign_colors(names, available_colors):
     num_colors = 0
-    protein_feature_colors = dict()
-    seen_features = set()
-    for feature_name in cleaned_unique_feature_names:
-        if feature_name in seen_features:
+    _colors = dict()
+    seen = set()
+    for n in names:
+        if n in seen:
             continue
-        seen_features.add(feature_name)
+        seen.add(n)
         color = available_colors[num_colors]
-        protein_feature_colors[feature_name] = color
+        _colors[n] = color
         num_colors += 1
 
-    return protein_feature_colors
+    return _colors
 
 
 class ProteinVisualizer:
@@ -424,7 +424,7 @@ class ProteinVisualizer:
                                                        min_relative=self.protein_track_x_min,
                                                        max_relative=self.protein_track_x_max)
         # COLORS
-        protein_feature_colors = assign_colors_to_protein_features(cleaned_unique_feature_names, self._available_colors)
+        protein_feature_colors = assign_colors(cleaned_unique_feature_names, self._available_colors)
 
         # PLOTTING
         draw_axes(ax,
