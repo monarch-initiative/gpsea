@@ -22,7 +22,6 @@ def round_to_nearest_power_ten(x, base=None):
         return (base * np.round(x / base)).astype(int)
 
 
-#  BASIC DRAWING METHODS
 def draw_rectangle(
         ax: plt.Axes,
         start_x, start_y, end_x, end_y, line_color='black', fill_color=None, line_width=1.0,
@@ -200,6 +199,34 @@ def draw_marker(
     draw_circle(ax, x, max_y, circle_radius, line_color=stem_color, fill_color=fill_color, line_width=0.5)
 
 
+def generate_features(pvis: ProteinVisualizable, labeling_method: str):
+    feature_limits = list()
+    for i in range(len(pvis.protein_feature_ends)):
+        feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
+    feature_limits = np.array(feature_limits)
+    feature_names = pvis.protein_feature_names
+    # aggregate similar feature names into one category
+    unique_feature_names = list(set(feature_names))
+    cleaned_unique_feature_names = set()
+    mapping_all2cleaned = dict()
+    for feature_name in unique_feature_names:
+        # remove digits from feature name
+        cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
+        cleaned_unique_feature_names.add(cleaned_feature_name)
+        mapping_all2cleaned[feature_name] = cleaned_feature_name
+    # generate labels for features
+    if labeling_method == 'enumerate':
+        ascii_capital_a = ord('A')
+        labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
+
+    elif labeling_method == 'abbreviate':
+        labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
+    else:
+        raise ValueError(f'Unsupported labeling method {labeling_method}')
+
+    return feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels
+
+
 class ProteinVisualizer:
     """
     Draw a schema of a protein with variants of the cohort.
@@ -308,29 +335,8 @@ class ProteinVisualizer:
 
         # STATE
         # gather features
-        feature_limits = list()
-        for i in range(len(pvis.protein_feature_ends)):
-            feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
-        feature_limits = np.array(feature_limits)
-        feature_names = pvis.protein_feature_names
-        # aggregate similar feature names into one category
-        unique_feature_names = list(set(feature_names))
-        cleaned_unique_feature_names = set()
-        mapping_all2cleaned = dict()
-        for feature_name in unique_feature_names:
-            # remove digits from feature name
-            cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
-            cleaned_unique_feature_names.add(cleaned_feature_name)
-            mapping_all2cleaned[feature_name] = cleaned_feature_name
-        # generate labels for features
-        if labeling_method == 'enumerate':
-            ascii_capital_a = ord('A')
-            labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
-
-        elif labeling_method == 'abbreviate':
-            labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
-        else:
-            raise ValueError(f'Unsupported labeling method {labeling_method}')
+        feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels = (
+            generate_features(pvis, labeling_method))
 
         # gather variants
         variant_locations = pvis.variant_locations
@@ -393,8 +399,6 @@ class ProteinVisualizer:
             draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
-
-        print(f'{unique_feature_names=}\n')
         print(f'{cleaned_unique_feature_names=}\n')
         print(f'{mapping_all2cleaned=}\n')
         print(f'{protein_feature_colors=}\n')
