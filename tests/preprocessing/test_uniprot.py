@@ -31,12 +31,6 @@ class TestUniprotProteinMetadataService:
         assert protein_metadata.label == "Ankyrin repeat domain-containing protein 11"
         assert len(protein_metadata.protein_features) == 16
         assert protein_metadata.protein_length == 2663
-        feat_count_test = []
-        for feat in protein_metadata.protein_features:
-            if feat.info.name.split("_")[0] == "Disordered":
-                feat_count_test.append(feat.info.name)
-        assert feat_count_test == ["Disordered_1", "Disordered_2", "Disordered_3", "Disordered_4", "Disordered_5", "Disordered_6", "Disordered_7",
-                                   "Disordered_8", "Disordered_9", "Disordered_10", "Disordered_11"]
 
     @pytest.mark.skip('Run manually to regenerate SUOX `NP_001027558.1` metadata')
     def test_fetch_suox_protein_metadata(

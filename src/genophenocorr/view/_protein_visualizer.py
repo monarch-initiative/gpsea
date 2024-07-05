@@ -180,15 +180,15 @@ class ProteinVisualizer:
         color_idx = 0
         protein_feature_colors = dict()
         seen_features = set()
-        for feature_name in pvis.protein_feature_names:
+        for feature_name in pvis.protein_feature_unnumbered_names:
             if feature_name in seen_features:
                 continue
             seen_features.add(feature_name)
             color = self._available_colors[color_idx]
             protein_feature_colors[feature_name] = color
             color_idx += 1
-        feature_colors = [protein_feature_colors[ft] for ft in pvis.protein_feature_names]
-        feature_names = pvis.protein_feature_names
+        feature_colors = [protein_feature_colors[ft] for ft in pvis.protein_feature_unnumbered_names]
+        feature_names = pvis.protein_feature_unnumbered_names
         variant_locations = pvis.variant_locations
         # The following has the variant positions (in variant_locations_counted_absolute)
         # and the number of occurrences of each position (in marker counts)

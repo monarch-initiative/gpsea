@@ -240,6 +240,12 @@ class Region(typing.Sized):
         Get 0-based (included) end coordinate of the region.
         """
         return self._end
+    
+    def to_string(self) -> str:
+        """
+        Return `Region` as a string formatted "start - end"
+        """
+        return f"{self.start} - {self.end}"
 
     def overlaps_with(self, other) -> bool:
         """

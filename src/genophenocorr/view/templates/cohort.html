@@ -46,10 +46,6 @@
     text-align: left;
 }​
 
-
-
-
-
 caption {
   caption-side: bottom;
   text-align: left;
@@ -57,7 +53,7 @@ caption {
   font-weight: bold;
 }
 
-  </style>
+</style>
 </head>
 
 <body>
@@ -69,7 +65,7 @@ caption {
   <p>No errors encountered.</p>
   {% endif %}
 
-    <table align="left">
+    <table>
     <caption style="color: black;">
         <h3>Top {{top_hpo_count}} HPO Terms</h3>
         A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort. 
@@ -90,7 +86,7 @@ caption {
                 </tbody>
     </table>
 
-    <table align="right">
+    <table>
     <caption style="color: black;">
         <h3>Top {{top_var_count}} Variants</h3>
         Variants are shown according to {{ transcript_id }}. A total of {{ unique_variant_count}} unique variants were identified in the cohort.
@@ -110,7 +106,7 @@ caption {
                 {% endfor %}
             </tbody>
         </table>
-    <table align="left">
+    <table>
     <caption style="color: black;">
         <h3>Diseases</h3>
     </caption>
@@ -130,7 +126,7 @@ caption {
            </tbody>
     </table>
     {% if has_transcript > 0 %}
-    <table align="right">
+    <table>
     <caption style="color: black;">
         <h3>Variant categories for {{ transcript_id }}</h3>
     </caption>
