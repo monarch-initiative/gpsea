@@ -356,6 +356,7 @@ class ProteinVisualizer:
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
             generate_variant_markers(pvis, self.marker_colors))
         max_marker_count = np.max(marker_counts)
+        # TODO @frehburg, @pnrobinson: add option for disease based
 
         # generate tick mark locations
         x_ticks = generate_ticks(apprx_n_ticks=6, min=self.min_aa_pos, max=max_aa_pos)
