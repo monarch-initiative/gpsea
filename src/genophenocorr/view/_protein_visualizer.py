@@ -115,6 +115,7 @@ class ProteinVisualizer:
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
         mycolors = [m for m in mcolors.CSS4_COLORS.keys() if "grey" not in m and "white" not in m]
+        random.seed(42)
         random.shuffle(mycolors)
         self._available_colors = mycolors
         # self._color_idx = 0
