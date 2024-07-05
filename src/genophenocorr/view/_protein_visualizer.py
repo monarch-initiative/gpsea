@@ -400,6 +400,7 @@ class ProteinVisualizer:
         print('The following features overlap:')
         for ov in overlaps:
             print(ov)
+        print('^^^^^^The features above overlap ^^^^^^')
 
         # gather variants
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
