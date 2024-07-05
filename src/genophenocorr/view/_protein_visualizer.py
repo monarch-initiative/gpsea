@@ -389,8 +389,8 @@ class ProteinVisualizer:
         print(f'{len(feature_names)=} {feature_names=}\n')
 
         if labeling_method == 'enumerate':
-            ascii_A = 65
-            labels = {fn: chr(ascii_A + i) for i, fn in enumerate(cleaned_unique_feature_names)}
+            ascii_capital_a = ord('A')
+            labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
 
         elif labeling_method == 'abbreviate':
             labels = {fn: fn[0:5] for fn in cleaned_unique_feature_names}
