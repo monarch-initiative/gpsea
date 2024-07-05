@@ -316,7 +316,7 @@ class ProteinVisualizer:
         # aggregate similar feature names into one category
         unique_feature_names = list(set(feature_names))
         cleaned_unique_feature_names = set()
-        mapping_all2cleaned = dict
+        mapping_all2cleaned = dict()
         for feature_name in unique_feature_names:
             # remove digits from feature name
             cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
