@@ -354,6 +354,27 @@ class ProteinVisualizer:
         # gather features
         feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels = (
             generate_features(pvis, labeling_method))
+        # TODO: how to handle overlapping features?
+
+        def find_overlapping_intervals(intervals):
+            if isinstance(intervals , np.ndarray):
+                intervals = intervals.tolist()
+            intervals.sort(key=lambda x: x[0])
+            overlapping_pairs = []
+
+            for i, (start_i, end_i) in enumerate(intervals):
+                for start_j, end_j in intervals[i + 1:]:
+                    if start_j <= end_i:
+                        overlapping_pairs.append(([start_i, end_i], [start_j, end_j]))
+                    else:
+                        break
+
+            return overlapping_pairs
+
+        overlaps = find_overlapping_intervals(feature_limits)
+        print('The following features overlap:')
+        for ov in overlaps:
+            print(ov)
 
         # gather variants
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
@@ -409,14 +430,8 @@ class ProteinVisualizer:
             draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
-        print(f'{cleaned_unique_feature_names=}\n')
-        print(f'{mapping_all2cleaned=}\n')
-        print(f'{protein_feature_colors=}\n')
-        print(f'{len(feature_names)=} {feature_names=}\n')
-
         for feature_x, feature_name in zip(feature_limits_relative, feature_names):
             feature_color = protein_feature_colors[mapping_all2cleaned[feature_name]]
-            print(f'{feature_x=}, {feature_color=}, {feature_name=}')
             feature_x_min, feature_x_max = feature_x
             draw_rectangle(
                 ax,
