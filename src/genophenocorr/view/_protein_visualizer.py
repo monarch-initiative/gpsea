@@ -12,6 +12,12 @@ from genophenocorr.model import VariantEffect
 from ._protein_visualizable import ProteinVisualizable
 
 
+def marker_dim(marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
+    radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
+    length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
+    return radius, length
+
+
 def round_to_nearest_power_ten(x, base=None):
     if base is None:
         order_of_magnitude = np.floor(np.log10(np.abs(x)))
@@ -120,7 +126,7 @@ def draw_axes(ax, x_ticks, x_ticks_relative, y_ticks, max_marker_count,
         # y_axis
         y_axis_x = protein_track_x_min - 0.02
         y_axis_min_y = protein_track_y_max + 0.01
-        _, y_axis_max_y = ProteinVisualizer._marker_dim(max_marker_count, protein_track_y_max)
+        _, y_axis_max_y = marker_dim(max_marker_count, protein_track_y_max)
         y_ticks_relative = translate_to_ax_coordinates(
             y_ticks,
             min_absolute=0, max_absolute=max_marker_count, min_relative=y_axis_min_y, max_relative=y_axis_max_y,
@@ -309,12 +315,6 @@ class ProteinVisualizer:
         self.feature_y_min = 0.485
         self.feature_y_max = 0.515
 
-    @staticmethod
-    def _marker_dim(marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
-        radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
-        length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
-        return radius, length
-
     def draw_fig(
             self,
             pvis: ProteinVisualizable,
@@ -400,7 +400,7 @@ class ProteinVisualizer:
         marker_y_min = self.protein_track_y_max
         for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
             marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
-            cur_radius, cur_length = ProteinVisualizer._marker_dim(marker_count, self.protein_track_y_max)
+            cur_radius, cur_length = marker_dim(marker_count, self.protein_track_y_max)
             x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
             draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
