@@ -227,6 +227,21 @@ def generate_features(pvis: ProteinVisualizable, labeling_method: str):
     return feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels
 
 
+def generate_variant_markers(pvis, marker_colors):
+    variant_locations = pvis.variant_locations
+    # The following has the variant positions (in variant_locations_counted_absolute)
+    # and the number of occurrences of each position (in marker counts)
+    variant_locations_counted_absolute = pvis.variant_locations_counted_absolute
+    marker_counts = pvis.marker_counts
+    variant_effect_colors = []
+    for vl in variant_locations_counted_absolute:
+        i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
+        effect = pvis.variant_effects[i]
+        variant_effect_colors.append(marker_colors[effect])
+
+    return marker_counts, variant_locations_counted_absolute, variant_effect_colors
+
+
 class ProteinVisualizer:
     """
     Draw a schema of a protein with variants of the cohort.
@@ -339,16 +354,8 @@ class ProteinVisualizer:
             generate_features(pvis, labeling_method))
 
         # gather variants
-        variant_locations = pvis.variant_locations
-        # The following has the variant positions (in variant_locations_counted_absolute)
-        # and the number of occurrences of each position (in marker counts)
-        variant_locations_counted_absolute = pvis.variant_locations_counted_absolute
-        marker_counts = pvis.marker_counts
-        variant_effect_colors = []
-        for vl in variant_locations_counted_absolute:
-            i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
-            effect = pvis.variant_effects[i]
-            variant_effect_colors.append(self.marker_colors[effect])
+        marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
+            generate_variant_markers(pvis, self.marker_colors))
         max_marker_count = np.max(marker_counts)
 
         # generate tick mark locations
