@@ -354,10 +354,11 @@ class ProteinVisualizer:
         # gather features
         feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels = (
             generate_features(pvis, labeling_method))
+
         # TODO: how to handle overlapping features?
 
         def find_overlapping_intervals(intervals):
-            if isinstance(intervals , np.ndarray):
+            if isinstance(intervals, np.ndarray):
                 intervals = intervals.tolist()
             intervals.sort(key=lambda x: x[0])
             overlapping_pairs = []
