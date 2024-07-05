@@ -377,6 +377,7 @@ class ProteinVisualizer:
         # gather features
         feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels = (
             generate_features(pvis, labeling_method))
+        protein_feature_colors = assign_colors(cleaned_unique_feature_names, self._available_colors)
 
         # TODO: how to handle overlapping features?
 
@@ -423,8 +424,6 @@ class ProteinVisualizer:
                                                        max_absolute=max_aa_pos,
                                                        min_relative=self.protein_track_x_min,
                                                        max_relative=self.protein_track_x_max)
-        # COLORS
-        protein_feature_colors = assign_colors(cleaned_unique_feature_names, self._available_colors)
 
         # PLOTTING
         draw_axes(ax,
