@@ -265,6 +265,8 @@ class ProteinVisualizer:
         self.font_size = 12
         self.text_padding = 0.004
         self.min_aa_pos = 1
+        self.feature_y_min = 0.485
+        self.feature_y_max = 0.515
 
     @staticmethod
     def _marker_dim(marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
@@ -301,13 +303,36 @@ class ProteinVisualizer:
             _, ax = plt.subplots(figsize=(20, 20))
         else:
             should_return_ax = False
+
         max_aa_pos = pvis.protein_length
+
+        # STATE
+        # gather features
         feature_limits = list()
         for i in range(len(pvis.protein_feature_ends)):
             feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
         feature_limits = np.array(feature_limits)
-
         feature_names = pvis.protein_feature_names
+        # aggregate similar feature names into one category
+        unique_feature_names = list(set(feature_names))
+        cleaned_unique_feature_names = set()
+        mapping_all2cleaned = dict
+        for feature_name in unique_feature_names:
+            # remove digits from feature name
+            cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
+            cleaned_unique_feature_names.add(cleaned_feature_name)
+            mapping_all2cleaned[feature_name] = cleaned_feature_name
+        # generate labels for features
+        if labeling_method == 'enumerate':
+            ascii_capital_a = ord('A')
+            labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
+
+        elif labeling_method == 'abbreviate':
+            labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
+        else:
+            raise ValueError(f'Unsupported labeling method {labeling_method}')
+
+        # gather variants
         variant_locations = pvis.variant_locations
         # The following has the variant positions (in variant_locations_counted_absolute)
         # and the number of occurrences of each position (in marker counts)
@@ -318,14 +343,13 @@ class ProteinVisualizer:
             i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
             effect = pvis.variant_effects[i]
             variant_effect_colors.append(self.marker_colors[effect])
-
         max_marker_count = np.max(marker_counts)
 
+        # generate tick mark locations
         x_ticks = generate_ticks(apprx_n_ticks=6, min=self.min_aa_pos, max=max_aa_pos)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
 
         # normalize into [0, 1], leaving some space on the sides
-
         feature_limits_relative = translate_to_ax_coordinates(
             feature_limits, min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
             min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
@@ -338,7 +362,19 @@ class ProteinVisualizer:
                                                        max_absolute=max_aa_pos,
                                                        min_relative=self.protein_track_x_min,
                                                        max_relative=self.protein_track_x_max)
+        # COLORS
+        num_colors = 0
+        protein_feature_colors = dict()
+        seen_features = set()
+        for feature_name in cleaned_unique_feature_names:
+            if feature_name in seen_features:
+                continue
+            seen_features.add(feature_name)
+            color = self._available_colors[num_colors]
+            protein_feature_colors[feature_name] = color
+            num_colors += 1
 
+        # PLOTTING
         draw_axes(ax,
                   x_ticks, x_ticks_relative, y_ticks,
                   max_marker_count, self.min_aa_pos, max_aa_pos,
@@ -357,30 +393,6 @@ class ProteinVisualizer:
             draw_marker(ax, x_start, x_end, marker_y_min, cur_length, cur_radius, marker_color)
 
         # draw the features (protein track)
-        feature_y_min, feature_y_max = 0.485, 0.515
-
-        unique_feature_names = list(set(feature_names))
-        cleaned_unique_feature_names = set()
-        mapping_all2cleaned = {}
-
-        def remove_numbers(s: str):
-            return str(''.join(char for char in s if not char.isdigit()))
-
-        for feature_name in unique_feature_names:
-            cleaned_feature_name = remove_numbers(feature_name)
-            cleaned_unique_feature_names.add(cleaned_feature_name)
-            mapping_all2cleaned[feature_name] = cleaned_feature_name
-
-        color_idx = 0
-        protein_feature_colors = dict()
-        seen_features = set()
-        for feature_name in cleaned_unique_feature_names:
-            if feature_name in seen_features:
-                continue
-            seen_features.add(feature_name)
-            color = self._available_colors[color_idx]
-            protein_feature_colors[feature_name] = color
-            color_idx += 1
 
         print(f'{unique_feature_names=}\n')
         print(f'{cleaned_unique_feature_names=}\n')
@@ -388,39 +400,27 @@ class ProteinVisualizer:
         print(f'{protein_feature_colors=}\n')
         print(f'{len(feature_names)=} {feature_names=}\n')
 
-        if labeling_method == 'enumerate':
-            ascii_capital_a = ord('A')
-            labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
-
-        elif labeling_method == 'abbreviate':
-            labels = {fn: fn[0:5] for fn in cleaned_unique_feature_names}
-        else:
-            raise ValueError(f'Unsupported labeling method {labeling_method}')
-
         for feature_x, feature_name in zip(feature_limits_relative, feature_names):
             feature_color = protein_feature_colors[mapping_all2cleaned[feature_name]]
             print(f'{feature_x=}, {feature_color=}, {feature_name=}')
             feature_x_min, feature_x_max = feature_x
             draw_rectangle(
                 ax,
-                feature_x_min, feature_y_min, feature_x_max, feature_y_max,
+                feature_x_min, self.feature_y_min, feature_x_max, self.feature_y_max,
                 line_color=self.feature_outline_color, fill_color=feature_color, line_width=1.0,
             )
-            if (feature_x_max - feature_x_min) <= 0.03:  # too small to display name
+            if (feature_x_max - feature_x_min) <= 0.03:  # too small to display horizontally, so display vertically
                 draw_string(
                     ax, labels[mapping_all2cleaned[feature_name]],
                     0.05 * (feature_x_max - feature_x_min) + feature_x_min,
-                    0.55 * (feature_y_max - feature_y_min) + feature_y_min,
+                    0.55 * (self.feature_y_max - self.feature_y_min) + self.feature_y_min,
                     ha="left", va="center", rotation=90, color='black', fontsize=8,
                 )
-            elif (feature_x_max - feature_x_min) <= 0.005:  # too small even to draw vertical string
-                # TODO @ielis: How to display name here?
-                pass
             else:
                 draw_string(
                     ax, labels[mapping_all2cleaned[feature_name]],
                     0.2 * (feature_x_max - feature_x_min) + feature_x_min,
-                    0.4 * (feature_y_max - feature_y_min) + feature_y_min,
+                    0.4 * (self.feature_y_max - self.feature_y_min) + self.feature_y_min,
                     ha="left", va="center", color='black',
                 )
 
