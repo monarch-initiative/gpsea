@@ -1,5 +1,6 @@
 import random
-import typing
+from typing import Union, Tuple, List, Optional, Literal
+from dataclasses import dataclass
 
 from itertools import cycle
 
@@ -245,7 +246,7 @@ class DrawableProteinFeature:
                 ha="left", va="center", color='black',
             )
 
-    elif labeling_method == 'abbreviate':
+
 class DrawableProteinFeatureHandler:
     def __init__(self, pvis: ProteinVisualizable, labeling_method: str, colors: List[str]):
         self.pvis = pvis
@@ -401,10 +402,10 @@ class ProteinVisualizer:
     def draw_fig(
             self,
             pvis: ProteinVisualizable,
-            ax: typing.Optional[plt.Axes] = None,
-            labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate',
+            ax: Optional[plt.Axes] = None,
+            labeling_method: Literal['abbreviate', 'enumerate'] = 'abbreviate',
             legend_x: float = 0.87,
-    ) -> typing.Optional[plt.Axes]:
+    ) -> Optional[plt.Axes]:
         """
         Visualize the cohort variants on a protein diagram.
 
