@@ -433,9 +433,7 @@ class ProteinVisualizer:
 
         # STATE
         # gather features
-        feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels = (
-            generate_features(pvis, labeling_method))
-        protein_feature_colors = assign_colors(cleaned_unique_feature_names, self._available_colors)
+        feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
 
         # TODO: how to handle overlapping features?
 
@@ -471,10 +469,13 @@ class ProteinVisualizer:
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
 
         # normalize into [0, 1], leaving some space on the sides
-        feature_limits_relative = translate_to_ax_coordinates(
-            feature_limits, min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
-            min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
-        )
+        for f in feature_handler.features:
+            cur_limits = f.limits
+            f.min_pos, f.max_pos = translate_to_ax_coordinates(
+                np.array(cur_limits), min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
+                min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
+            )
+
         variant_locations_relative = translate_to_ax_coordinates(variant_locations_counted_absolute,
                                                                  min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
                                                                  min_relative=self.protein_track_x_min,
@@ -497,31 +498,10 @@ class ProteinVisualizer:
         draw_variants(ax, variant_locations_relative, variant_effect_colors, marker_counts, self.protein_track_y_max)
 
         # draw the features (protein track)
-        for feature_x, feature_name in zip(feature_limits_relative, feature_names):
-            feature_color = protein_feature_colors[mapping_all2cleaned[feature_name]]
-            feature_x_min, feature_x_max = feature_x
-            draw_rectangle(
-                ax,
-                feature_x_min, self.feature_y_min, feature_x_max, self.feature_y_max,
-                line_color=self.feature_outline_color, fill_color=feature_color, line_width=1.0,
-            )
-            if (feature_x_max - feature_x_min) <= 0.03:  # too small to display horizontally, so display vertically
-                draw_string(
-                    ax, labels[mapping_all2cleaned[feature_name]],
-                    0.05 * (feature_x_max - feature_x_min) + feature_x_min,
-                    0.55 * (self.feature_y_max - self.feature_y_min) + self.feature_y_min,
-                    ha="left", va="center", rotation=90, color='black', fontsize=8,
-                )
-            else:
-                draw_string(
-                    ax, labels[mapping_all2cleaned[feature_name]],
-                    0.2 * (feature_x_max - feature_x_min) + feature_x_min,
-                    0.4 * (self.feature_y_max - self.feature_y_min) + self.feature_y_min,
-                    ha="left", va="center", color='black',
-                )
+        feature_handler.draw_features(ax, self.feature_y_min, self.feature_y_max, self.feature_outline_color)
 
         # draw legend 1 for protein features
-        n_unique_features = len(cleaned_unique_feature_names)
+        n_unique_features = len(feature_handler.cleaned_unique_feature_names)
         color_box_x_dim = 0.01
         color_box_y_dim = 0.01
         if labeling_method == 'abbreviate':
@@ -535,7 +515,7 @@ class ProteinVisualizer:
 
         # legend box
         draw_rectangle(ax, legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
-        for i, feature_name in enumerate(cleaned_unique_feature_names):
+        for i, feature_name in enumerate(feature_handler.cleaned_unique_feature_names):
             # colored box
             color_box_min_x = legend_min_x + row_spacing
             color_box_max_x = color_box_min_x + color_box_x_dim
@@ -543,11 +523,11 @@ class ProteinVisualizer:
             color_box_min_y = color_box_max_y - color_box_y_dim
             draw_rectangle(
                 ax, color_box_min_x, color_box_min_y, color_box_max_x, color_box_max_y,
-                line_color='black', fill_color=protein_feature_colors[feature_name],
+                line_color='black', fill_color=feature_handler.colors[feature_name],
             )
             # label in colored box (same as on x axis in the boxes)
             draw_string(
-                ax, labels[feature_name], color_box_min_x + 0.002, color_box_min_y + 0.005,
+                ax, feature_handler.labels[feature_name], color_box_min_x + 0.002, color_box_min_y + 0.005,
                 fontsize=10, ha="left", va="center", color='black',
             )
             # full feature name
