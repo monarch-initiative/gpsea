@@ -212,25 +212,38 @@ def draw_variants(ax: plt.Axes, variant_locations_relative, variant_effect_color
         draw_marker(ax, x_start, x_end, protein_track_y_max, cur_length, cur_radius, marker_color)
 
 
-def generate_features(pvis: ProteinVisualizable, labeling_method: str):
-    feature_limits = list()
-    for i in range(len(pvis.protein_feature_ends)):
-        feature_limits.append((pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]))
-    feature_limits = np.array(feature_limits)
-    feature_names = pvis.protein_feature_names
-    # aggregate similar feature names into one category
-    unique_feature_names = list(set(feature_names))
-    cleaned_unique_feature_names = set()
-    mapping_all2cleaned = dict()
-    for feature_name in unique_feature_names:
-        # remove digits from feature name
-        cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
-        cleaned_unique_feature_names.add(cleaned_feature_name)
-        mapping_all2cleaned[feature_name] = cleaned_feature_name
-    # generate labels for features
-    if labeling_method == 'enumerate':
-        ascii_capital_a = ord('A')
-        labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
+@dataclass(slots=True)
+class DrawableProteinFeature:
+    name: str
+    min_pos: Union[int, float]
+    max_pos: Union[int, float]
+    label: str
+    color: str
+
+    @property
+    def limits(self) -> Tuple[int, int]:
+        return self.min_pos, self.max_pos
+
+    def draw(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
+        draw_rectangle(
+            ax,
+            self.min_pos, y_min, self.max_pos, y_max,
+            line_color=feature_outline_color, fill_color=self.color, line_width=1.0,
+        )
+        if (self.max_pos - self.min_pos) <= 0.03:  # too small to display horizontally, so display vertically
+            draw_string(
+                ax, self.label,
+                0.05 * (self.max_pos - self.min_pos) + self.min_pos,
+                0.55 * (y_max - y_min) + y_min,
+                ha="left", va="center", rotation=90, color='black', fontsize=8,
+            )
+        else:
+            draw_string(
+                ax, self.label,
+                0.2 * (self.max_pos - self.min_pos) + self.min_pos,
+                0.4 * (y_max - y_min) + y_min,
+                ha="left", va="center", color='black',
+            )
 
     elif labeling_method == 'abbreviate':
         labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
