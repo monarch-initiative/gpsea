@@ -506,7 +506,6 @@ class ProteinVisualizer:
             generate_variant_markers(pvis, self.marker_colors))
         max_marker_count = np.max(marker_counts)
 
-        # generate tick mark locations
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
 
