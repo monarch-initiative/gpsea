@@ -538,7 +538,6 @@ class ProteinVisualizer:
             )
 
         # draw legend 2 for variant effects
-        unique_variant_effect_colors = list(set(variant_effect_colors))
         unique_variant_effects = list(set(pvis.variant_effects))
         n_unique_effects = len(set(variant_effect_colors))
         color_circle_radius = 0.005
