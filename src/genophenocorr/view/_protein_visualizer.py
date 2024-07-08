@@ -500,7 +500,6 @@ class ProteinVisualizer:
             should_return_ax = False
 
         # STATE
-        # gather features
         feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
 
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
