@@ -13,21 +13,6 @@ from genophenocorr.model import VariantEffect
 from ._protein_visualizable import ProteinVisualizable
 
 
-def marker_dim(marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
-    radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
-    length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
-    return radius, length
-
-
-def round_to_nearest_power_ten(x, base=None):
-    if base is None:
-        order_of_magnitude = np.floor(np.log10(np.abs(x)))
-        base = 10 ** order_of_magnitude
-        return (base * np.round(x / base)).astype(int), base
-    else:
-        return (base * np.round(x / base)).astype(int)
-
-
 def draw_rectangle(
         ax: plt.Axes,
         start_x, start_y, end_x, end_y, line_color='black', fill_color=None, line_width=1.0,
@@ -58,6 +43,21 @@ def draw_string(
         text, x, y, ha, va, color='black', fontsize=12, rotation=0,
 ):
     ax.text(x, y, text, fontsize=fontsize, color=color, ha=ha, va=va, rotation=rotation)
+
+
+def marker_dim(marker_count, protein_track_y_max, marker_length=0.02, marker_radius=0.0025):
+    radius = marker_radius + np.sqrt(marker_count - 1) * marker_radius
+    length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
+    return radius, length
+
+
+def round_to_nearest_power_ten(x, base=None):
+    if base is None:
+        order_of_magnitude = np.floor(np.log10(np.abs(x)))
+        base = 10 ** order_of_magnitude
+        return (base * np.round(x / base)).astype(int), base
+    else:
+        return (base * np.round(x / base)).astype(int)
 
 
 def generate_ticks(apprx_n_ticks, min, max):
