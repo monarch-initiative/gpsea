@@ -503,35 +503,6 @@ class ProteinVisualizer:
         # gather features
         feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
 
-        # TODO: how to handle overlapping features?
-
-        # def find_overlapping_intervals(intervals):
-        #     if isinstance(intervals, np.ndarray):
-        #         intervals = intervals.tolist()
-        #     intervals.sort(key=lambda x: x[0])
-        #     overlapping_pairs = []
-        #
-        #     for i, (start_i, end_i) in enumerate(intervals):
-        #         for start_j, end_j in intervals[i + 1:]:
-        #             if start_j <= end_i:
-        #                 overlapping_pairs.append(([start_i, end_i], [start_j, end_j]))
-        #             else:
-        #                 break
-        #
-        #     return overlapping_pairs
-        #
-        # overlaps = find_overlapping_intervals(feature_limits)
-        # print('The following features overlap:')
-        # for ov in overlaps:
-        #     print(ov)
-        # print('^^^^^^The features above overlap ^^^^^^')
-
-        # gather variants
-        marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
-            generate_variant_markers(pvis, self.marker_colors))
-        max_marker_count = np.max(marker_counts)
-        # TODO @frehburg, @pnrobinson: add option for disease based
-
         # generate tick mark locations
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
