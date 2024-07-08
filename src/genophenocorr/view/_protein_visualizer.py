@@ -216,32 +216,31 @@ def draw_variants(ax: plt.Axes, variant_locations_relative, variant_effect_color
 @dataclass(slots=True)
 class DrawableProteinFeature:
     name: str
-    min_pos: Union[int, float]
-    max_pos: Union[int, float]
+    min_pos_abs: Union[int, float]
+    max_pos_abs: Union[int, float]
     label: str
     color: str
-
-    @property
-    def limits(self) -> Tuple[int, int]:
-        return self.min_pos, self.max_pos
+    min_pos_plotting: float
+    max_pos_plotting: float
 
     def draw(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
         draw_rectangle(
             ax,
-            self.min_pos, y_min, self.max_pos, y_max,
+            self.min_pos_plotting, y_min, self.max_pos_plotting, y_max,
             line_color=feature_outline_color, fill_color=self.color, line_width=1.0,
         )
-        if (self.max_pos - self.min_pos) <= 0.03:  # too small to display horizontally, so display vertically
+        # too small to display horizontally, so display vertically
+        if (self.max_pos_plotting - self.min_pos_plotting) <= 0.03:
             draw_string(
                 ax, self.label,
-                0.05 * (self.max_pos - self.min_pos) + self.min_pos,
+                0.05 * (self.max_pos_plotting - self.min_pos_plotting) + self.min_pos_plotting,
                 0.55 * (y_max - y_min) + y_min,
                 ha="left", va="center", rotation=90, color='black', fontsize=8,
             )
         else:
             draw_string(
                 ax, self.label,
-                0.2 * (self.max_pos - self.min_pos) + self.min_pos,
+                0.2 * (self.max_pos_plotting - self.min_pos_plotting) + self.min_pos_plotting,
                 0.4 * (y_max - y_min) + y_min,
                 ha="left", va="center", color='black',
             )
@@ -287,11 +286,12 @@ class DrawableProteinFeatureHandler:
         features = list()
         for i in range(len(self.pvis.protein_feature_ends)):
             features.append(DrawableProteinFeature(
-                min_pos=self.pvis.protein_feature_starts[i],
-                max_pos=self.pvis.protein_feature_ends[i],
+                min_pos_abs=self.pvis.protein_feature_starts[i],
+                max_pos_abs=self.pvis.protein_feature_ends[i],
                 name=self.pvis.protein_feature_names[i],
                 label=self.labels[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
-                color=self.colors[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]]
+                color=self.colors[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
+                min_pos_plotting=-1.0, max_pos_plotting=-1.0  # will be set later in draw_fig(), when plot limits known
             ))
 
         return features
@@ -470,8 +470,8 @@ class ProteinVisualizer:
 
         # normalize into [0, 1], leaving some space on the sides
         for f in feature_handler.features:
-            cur_limits = f.limits
-            f.min_pos, f.max_pos = translate_to_ax_coordinates(
+            cur_limits = f.min_pos_abs, f.max_pos_abs
+            f.min_pos_plotting, f.max_pos_plotting = translate_to_ax_coordinates(
                 np.array(cur_limits), min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
                 min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
             )
