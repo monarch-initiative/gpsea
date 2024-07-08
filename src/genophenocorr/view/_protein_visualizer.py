@@ -246,14 +246,58 @@ class DrawableProteinFeature:
             )
 
     elif labeling_method == 'abbreviate':
-        labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
-    else:
-        raise ValueError(f'Unsupported labeling method {labeling_method}')
+class DrawableProteinFeatureHandler:
+    def __init__(self, pvis: ProteinVisualizable, labeling_method: str, colors: List[str]):
+        self.pvis = pvis
+        self.labeling_method = labeling_method
+        self._available_colors = colors
 
-    cleaned_unique_feature_names = list(cleaned_unique_feature_names)
-    cleaned_unique_feature_names.sort()
+        self.cleaned_unique_feature_names, self.mapping_all2cleaned, self.labels, self.colors = self._generate_labels()
+        self.features = self._generate_features()
 
-    return feature_limits, feature_names, cleaned_unique_feature_names, mapping_all2cleaned, labels
+    def _generate_labels(self):
+        # aggregate similar feature names into one category
+        unique_feature_names = list(set(self.pvis.protein_feature_names))
+        cleaned_unique_feature_names = set()
+        mapping_all2cleaned = dict()
+        for feature_name in unique_feature_names:
+            # remove digits from feature name
+            cleaned_feature_name = str(''.join(char for char in feature_name if not char.isdigit()))
+            cleaned_unique_feature_names.add(cleaned_feature_name)
+            mapping_all2cleaned[feature_name] = cleaned_feature_name
+        # generate labels for features
+        if self.labeling_method == 'enumerate':
+            ascii_capital_a = ord('A')
+            labels = {fn: chr(ascii_capital_a + i) for i, fn in enumerate(cleaned_unique_feature_names)}
+
+        elif self.labeling_method == 'abbreviate':
+            labels = {feature_name: feature_name[0:5] for feature_name in cleaned_unique_feature_names}
+        else:
+            raise ValueError(f'Unsupported labeling method {self.labeling_method}')
+
+        cleaned_unique_feature_names = list(cleaned_unique_feature_names)
+        cleaned_unique_feature_names.sort()
+
+        colors = assign_colors(cleaned_unique_feature_names, self._available_colors)
+
+        return cleaned_unique_feature_names, mapping_all2cleaned, labels, colors
+
+    def _generate_features(self):
+        features = list()
+        for i in range(len(self.pvis.protein_feature_ends)):
+            features.append(DrawableProteinFeature(
+                min_pos=self.pvis.protein_feature_starts[i],
+                max_pos=self.pvis.protein_feature_ends[i],
+                name=self.pvis.protein_feature_names[i],
+                label=self.labels[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
+                color=self.colors[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]]
+            ))
+
+        return features
+
+    def draw_features(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
+        for f in self.features:
+            f.draw(ax, y_min, y_max, feature_outline_color)
 
 
 def generate_variant_markers(pvis, marker_colors):
