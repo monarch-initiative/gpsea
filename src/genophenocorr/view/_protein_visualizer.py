@@ -331,6 +331,67 @@ def assign_colors(names, available_colors):
     return _colors
 
 
+def draw_legends(ax: plt.Axes, feature_handler, pvis,
+                 color_box_x_dim, color_box_y_dim, color_circle_radius, row_spacing,
+                 legend1_min_x, legend1_max_y,
+                 legend2_min_x, legend2_max_y,
+                 variant_effect_colors, marker_colors,
+                 labeling_method,
+                 ):
+    # draw legend 1 for protein features
+    n_unique_features = len(feature_handler.cleaned_unique_feature_names)
+    if labeling_method == 'abbreviate':
+        color_box_x_dim *= 3.5
+    legend1_width = 0.2 + color_box_x_dim
+    legend1_min_y = legend1_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
+    legend1_max_x = legend1_min_x + legend1_width
+
+    # legend box
+    draw_rectangle(ax, legend1_min_x, legend1_min_y, legend1_max_x, legend1_max_y, 'black')
+    for i, feature_name in enumerate(feature_handler.cleaned_unique_feature_names):
+        # colored box
+        color_box_min_x = legend1_min_x + row_spacing
+        color_box_max_x = color_box_min_x + color_box_x_dim
+        color_box_max_y = legend1_max_y - (i + 1) * row_spacing - i * color_box_y_dim
+        color_box_min_y = color_box_max_y - color_box_y_dim
+        draw_rectangle(
+            ax, color_box_min_x, color_box_min_y, color_box_max_x, color_box_max_y,
+            line_color='black', fill_color=feature_handler.colors[feature_name],
+        )
+        # label in colored box (same as on x axis in the boxes)
+        draw_string(
+            ax, feature_handler.labels[feature_name], color_box_min_x + 0.002, color_box_min_y + 0.005,
+            fontsize=10, ha="left", va="center", color='black',
+                                                      )
+        # full feature name
+        draw_string(
+            ax, feature_name,
+            color_box_max_x + 0.005, color_box_min_y + 0.005,
+            fontsize=12, ha="left", va="center", color='black',
+            )
+
+    # draw legend 2 for variant effects
+    unique_variant_effects = list(set(pvis.variant_effects))
+    n_unique_effects = len(set(variant_effect_colors))
+    legend2_min_y = legend2_max_y - (
+            n_unique_effects + 1) * row_spacing - n_unique_effects * 2 * color_circle_radius
+    legend2_max_x = legend2_min_x + 0.2
+    draw_rectangle(ax, legend2_min_x, legend2_min_y, legend2_max_x, legend2_max_y, 'black')
+    for i, variant_effect in enumerate(unique_variant_effects):
+        colored_circle_x = legend2_min_x + row_spacing + color_circle_radius
+        colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * 2 * color_circle_radius - color_circle_radius
+        draw_circle(
+            ax, colored_circle_x, colored_circle_y, color_circle_radius,
+            line_color='black', fill_color=marker_colors[variant_effect],
+        )
+        draw_string(
+            ax, variant_effect,
+            colored_circle_x + 2 * color_circle_radius, colored_circle_y,
+            fontsize=12, ha="left", va="center", color='black', )
+        
+    return legend1_width
+
+
 class ProteinVisualizer:
     """
     Draw a schema of a protein with variants of the cohort.
@@ -379,6 +440,7 @@ class ProteinVisualizer:
             VariantEffect.INTERGENIC_VARIANT: "#ff00ff",
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
+        # colors
         mycolors = [m for m in mcolors.CSS4_COLORS.keys() if "grey" not in m and "white" not in m]
         random.seed(42)
         random.shuffle(mycolors)
@@ -389,22 +451,31 @@ class ProteinVisualizer:
         self.axis_color = 'black'
         self.protein_track_color = '#a9a9a9'
         self.transcript_track_color = '#a9a9a9'
+        # plot options
         self.protein_track_x_min = 0.15
         self.protein_track_x_max = 0.85
         self.protein_track_y_min = 0.492
         self.protein_track_y_max = 0.508
         self.font_size = 12
         self.text_padding = 0.004
-        self.min_aa_pos = 1
         self.feature_y_min = 0.485
         self.feature_y_max = 0.515
+        # legend
+        self.color_box_x_dim = 0.01
+        self.color_box_y_dim = 0.01
+        self.row_spacing = 0.005
+        self.legend1_max_y = 0.75
+        self.color_circle_radius = 0.005
+        self.legend1_min_x = 0.87
+        self.legend2_min_x = 0.1
+        self.legend2_max_x = 0.3
+        self.legend2_max_y = 0.75
 
     def draw_fig(
             self,
             pvis: ProteinVisualizable,
             ax: Optional[plt.Axes] = None,
-            labeling_method: Literal['abbreviate', 'enumerate'] = 'abbreviate',
-            legend_x: float = 0.87,
+            labeling_method: Literal['abbreviate', 'enumerate'] = 'abbreviate'
     ) -> Optional[plt.Axes]:
         """
         Visualize the cohort variants on a protein diagram.
@@ -418,7 +489,6 @@ class ProteinVisualizer:
              ax: a Matplotlib :class:`plt.Axes` to plot on or `None` if a new `Axes` should be created
              labeling_method: the strategy for generating labels.
                Valid values of labeling_method are `{'abbreviate', 'enumerate'}`
-             legend_x: left x coordinate of the legend bounding box
         Returns:
             `None` if an :class:`plt.Axes` was provided via `ax` argument
             or an `Axes` created by the visualizer if `ax` was `None`.
@@ -428,8 +498,6 @@ class ProteinVisualizer:
             _, ax = plt.subplots(figsize=(20, 20))
         else:
             should_return_ax = False
-
-        max_aa_pos = pvis.protein_length
 
         # STATE
         # gather features
@@ -465,30 +533,30 @@ class ProteinVisualizer:
         # TODO @frehburg, @pnrobinson: add option for disease based
 
         # generate tick mark locations
-        x_ticks = generate_ticks(apprx_n_ticks=6, min=self.min_aa_pos, max=max_aa_pos)
+        x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
 
         # normalize into [0, 1], leaving some space on the sides
         for f in feature_handler.features:
             cur_limits = f.min_pos_abs, f.max_pos_abs
             f.min_pos_plotting, f.max_pos_plotting = translate_to_ax_coordinates(
-                np.array(cur_limits), min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
+                np.array(cur_limits), min_absolute=1, max_absolute=pvis.protein_length,
                 min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
             )
 
         variant_locations_relative = translate_to_ax_coordinates(variant_locations_counted_absolute,
-                                                                 min_absolute=self.min_aa_pos, max_absolute=max_aa_pos,
+                                                                 min_absolute=1, max_absolute=pvis.protein_length,
                                                                  min_relative=self.protein_track_x_min,
                                                                  max_relative=self.protein_track_x_max, clip=True)
-        x_ticks_relative = translate_to_ax_coordinates(x_ticks, min_absolute=self.min_aa_pos,
-                                                       max_absolute=max_aa_pos,
+        x_ticks_relative = translate_to_ax_coordinates(x_ticks, min_absolute=1,
+                                                       max_absolute=pvis.protein_length,
                                                        min_relative=self.protein_track_x_min,
                                                        max_relative=self.protein_track_x_max)
 
         # PLOTTING
         draw_axes(ax,
                   x_ticks, x_ticks_relative, y_ticks,
-                  max_marker_count, self.min_aa_pos, max_aa_pos,
+                  max_marker_count, 1, pvis.protein_length,
                   self.protein_track_x_min, self.protein_track_x_max,
                   self.protein_track_y_min, self.protein_track_y_max,
                   self.font_size, self.text_padding,
@@ -497,70 +565,18 @@ class ProteinVisualizer:
 
         draw_variants(ax, variant_locations_relative, variant_effect_colors, marker_counts, self.protein_track_y_max)
 
-        # draw the features (protein track)
         feature_handler.draw_features(ax, self.feature_y_min, self.feature_y_max, self.feature_outline_color)
 
-        # draw legend 1 for protein features
-        n_unique_features = len(feature_handler.cleaned_unique_feature_names)
-        color_box_x_dim = 0.01
-        color_box_y_dim = 0.01
-        if labeling_method == 'abbreviate':
-            color_box_x_dim *= 3.5
-        row_spacing = 0.005
-        legend_width = 0.2 + color_box_x_dim
-        legend_max_y = 0.75
-        legend_min_y = legend_max_y - (n_unique_features + 1) * row_spacing - n_unique_features * color_box_y_dim
-        legend_min_x = legend_x
-        legend_max_x = legend_min_x + legend_width
-
-        # legend box
-        draw_rectangle(ax, legend_min_x, legend_min_y, legend_max_x, legend_max_y, 'black')
-        for i, feature_name in enumerate(feature_handler.cleaned_unique_feature_names):
-            # colored box
-            color_box_min_x = legend_min_x + row_spacing
-            color_box_max_x = color_box_min_x + color_box_x_dim
-            color_box_max_y = legend_max_y - (i + 1) * row_spacing - i * color_box_y_dim
-            color_box_min_y = color_box_max_y - color_box_y_dim
-            draw_rectangle(
-                ax, color_box_min_x, color_box_min_y, color_box_max_x, color_box_max_y,
-                line_color='black', fill_color=feature_handler.colors[feature_name],
-            )
-            # label in colored box (same as on x axis in the boxes)
-            draw_string(
-                ax, feature_handler.labels[feature_name], color_box_min_x + 0.002, color_box_min_y + 0.005,
-                fontsize=10, ha="left", va="center", color='black',
-            )
-            # full feature name
-            draw_string(
-                ax, feature_name,
-                color_box_max_x + 0.005, color_box_min_y + 0.005,
-                fontsize=12, ha="left", va="center", color='black',
-            )
-
-        # draw legend 2 for variant effects
-        unique_variant_effects = list(set(pvis.variant_effects))
-        n_unique_effects = len(set(variant_effect_colors))
-        color_circle_radius = 0.005
-        legend2_min_x = 0.1
-        legend2_max_x = 0.3
-        legend2_max_y = 0.75
-        legend2_min_y = legend2_max_y - (
-                n_unique_effects + 1) * row_spacing - n_unique_effects * 2 * color_circle_radius
-        draw_rectangle(ax, legend2_min_x, legend2_min_y, legend2_max_x, legend2_max_y, 'black')
-        for i, variant_effect in enumerate(unique_variant_effects):
-            colored_circle_x = legend2_min_x + row_spacing + color_circle_radius
-            colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * 2 * color_circle_radius - color_circle_radius
-            draw_circle(
-                ax, colored_circle_x, colored_circle_y, color_circle_radius,
-                line_color='black', fill_color=self.marker_colors[variant_effect],
-            )
-            draw_string(
-                ax, variant_effect,
-                colored_circle_x + 2 * color_circle_radius, colored_circle_y,
-                fontsize=12, ha="left", va="center", color='black', )
+        legend1_width = draw_legends(ax, feature_handler, pvis,
+                                     self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
+                                     self.row_spacing,
+                                     self.legend1_min_x, self.legend1_max_y,
+                                     self.legend2_min_x, self.legend2_max_y,
+                                     variant_effect_colors, self.marker_colors,
+                                     labeling_method,)
 
         ax.set(
-            xlim=(0, max(1.0, legend_x + legend_width + 0.02)),
+            xlim=(0, max(1.0, self.legend1_min_x + legend1_width + 0.02)),
             ylim=(0.3, 0.75),
             aspect='equal',
             title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
