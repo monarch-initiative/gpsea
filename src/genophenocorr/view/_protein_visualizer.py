@@ -381,26 +381,26 @@ class ProteinVisualizer:
 
         # TODO: how to handle overlapping features?
 
-        def find_overlapping_intervals(intervals):
-            if isinstance(intervals, np.ndarray):
-                intervals = intervals.tolist()
-            intervals.sort(key=lambda x: x[0])
-            overlapping_pairs = []
-
-            for i, (start_i, end_i) in enumerate(intervals):
-                for start_j, end_j in intervals[i + 1:]:
-                    if start_j <= end_i:
-                        overlapping_pairs.append(([start_i, end_i], [start_j, end_j]))
-                    else:
-                        break
-
-            return overlapping_pairs
-
-        overlaps = find_overlapping_intervals(feature_limits)
-        print('The following features overlap:')
-        for ov in overlaps:
-            print(ov)
-        print('^^^^^^The features above overlap ^^^^^^')
+        # def find_overlapping_intervals(intervals):
+        #     if isinstance(intervals, np.ndarray):
+        #         intervals = intervals.tolist()
+        #     intervals.sort(key=lambda x: x[0])
+        #     overlapping_pairs = []
+        #
+        #     for i, (start_i, end_i) in enumerate(intervals):
+        #         for start_j, end_j in intervals[i + 1:]:
+        #             if start_j <= end_i:
+        #                 overlapping_pairs.append(([start_i, end_i], [start_j, end_j]))
+        #             else:
+        #                 break
+        #
+        #     return overlapping_pairs
+        #
+        # overlaps = find_overlapping_intervals(feature_limits)
+        # print('The following features overlap:')
+        # for ov in overlaps:
+        #     print(ov)
+        # print('^^^^^^The features above overlap ^^^^^^')
 
         # gather variants
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
