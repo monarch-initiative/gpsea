@@ -621,8 +621,8 @@ def sweep_line(intervals: List[Tuple[int, int]]) -> int:
     """
     events = []
     for start, end in intervals:
-        events.append((start, 1))
-        events.append((end, -1))
+        events.append((start, 1))  # start event is +1
+        events.append((end, -1))  # end event is -1
     events.sort()
     max_overlaps = 0
     current_overlaps = 0
