@@ -245,7 +245,9 @@ class DrawableProteinFeatureHandler:
             f.draw(ax, features_y_max, feature_height, feature_outline_color)
 
     def _assign_track_numbers(self):
-        pass
+        track_numbers = resolve_overlap([(f.min_pos_abs, f.max_pos_abs) for f in self.features])
+        for f, cur_track_num in zip(self.features, track_numbers):
+            f.track = cur_track_num
 
 
 @dataclass(slots=True)
@@ -257,8 +259,13 @@ class DrawableProteinVariant:
     count: int
 
     def draw(self, ax: plt.Axes, y_max: float, stem_color: str):
-        cur_radius, cur_length = marker_dim(self.count, y_max)
-        draw_marker(ax, self.pos_plotting, y_max, cur_length, cur_radius, self.color, stem_color=stem_color)
+        """
+        Draw a lollipop representing a variant and the number of counts for the variant effect type
+        currently putting marker in the middle of start and end, can change this later
+        """
+        radius, stem_length = marker_dim(self.count, y_max)
+        draw_line(ax, self.pos_plotting, y_max, self.pos_plotting, stem_length - radius, line_color=stem_color, line_width=0.5)
+        draw_circle(ax, self.pos_plotting, stem_length, radius, line_color=stem_color, fill_color=self.color, line_width=0.5)
 
     @property
     def name(self):
@@ -528,18 +535,6 @@ def translate_to_ax_coordinates(
     shifted_to_0_1 = ((absolute - min_absolute) / (max_absolute - min_absolute))
     relative_scale = (max_relative - min_relative)
     return shifted_to_0_1 * relative_scale + min_relative
-
-
-def draw_marker(
-        ax: plt.Axes,
-        x, min_y, max_y, circle_radius, fill_color, stem_color='#a9a9a9',
-):
-    """
-    Draw a lollipop representing a variant and the number of counts for the variant effect type
-    currently putting marker in the middle of start and end, can change this later
-    """
-    draw_line(ax, x, min_y, x, max_y - circle_radius, line_color=stem_color, line_width=0.5)
-    draw_circle(ax, x, max_y, circle_radius, line_color=stem_color, fill_color=fill_color, line_width=0.5)
 
 
 def assign_colors(names, available_colors):
