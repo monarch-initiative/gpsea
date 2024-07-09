@@ -422,6 +422,7 @@ def draw_axes(ax, x_ticks, x_ticks_relative, y_ticks, max_marker_count,
               ):
     # draw the tracks
     protein_track_y_min = protein_track_y_max - num_tracks * (protein_track_height + 2 * protein_track_buffer)
+    protein_track_y_min += 2 * protein_track_buffer
     draw_rectangle(
         ax,
         protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
