@@ -34,12 +34,13 @@ class ProteinVisualizer:
         # plot options
         self.protein_track_x_min = 0.15
         self.protein_track_x_max = 0.85
-        self.protein_track_y_min = 0.4#0.492
         self.protein_track_y_max = 0.508
+        self.protein_track_height = 0.016
+        self.protein_track_buffer = 0.007
+        self.protein_feature_height = 0.030
+        self.protein_features_y_max = self.protein_track_y_max + self.protein_track_buffer
         self.font_size = 12
         self.text_padding = 0.004
-        self.feature_y_min = 0.485
-        self.feature_y_max = 0.515
         # legend
         self.color_box_x_dim = 0.01
         self.color_box_y_dim = 0.01
@@ -114,16 +115,19 @@ class ProteinVisualizer:
         # PLOTTING
         draw_axes(ax,
                   x_ticks, x_ticks_relative, y_ticks,
-                  variant_handler.max_marker_count, 1, pvis.protein_length,
+                  variant_handler.max_marker_count, 1, pvis.protein_length, max_overlapping_features,
                   self.protein_track_x_min, self.protein_track_x_max,
-                  self.protein_track_y_min, self.protein_track_y_max,
+                  self.protein_track_y_max, self.protein_track_height, self.protein_track_buffer,
                   self.font_size, self.text_padding,
                   self.axis_color, self.protein_track_color
                   )
 
         variant_handler.draw_variants(ax, self.protein_track_y_max, stem_color=self.variant_stem_color)
 
-        feature_handler.draw_features(ax, self.feature_y_min, self.feature_y_max, self.feature_outline_color)
+        feature_handler.draw_features(ax,
+                                      self.protein_features_y_max,
+                                      self.protein_feature_height,
+                                      self.protein_feature_outline_color)
 
         legend1_width = draw_legends(ax, feature_handler, pvis,
                                      self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
@@ -156,11 +160,14 @@ class DrawableProteinFeature:
     color: str
     min_pos_plotting: float
     max_pos_plotting: float
+    track: int
 
-    def draw(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
+    def draw(self, ax: plt.Axes, features_y_max: float, feature_height: float, feature_outline_color: str):
+        feature_y_max = features_y_max - self.track * feature_height
+        feature_y_min = feature_y_max - feature_height
         draw_rectangle(
             ax,
-            self.min_pos_plotting, y_min, self.max_pos_plotting, y_max,
+            self.min_pos_plotting, feature_y_min, self.max_pos_plotting, feature_y_max,
             line_color=feature_outline_color, fill_color=self.color, line_width=1.0,
         )
         # too small to display horizontally, so display vertically
@@ -168,14 +175,14 @@ class DrawableProteinFeature:
             draw_string(
                 ax, self.label,
                 0.05 * (self.max_pos_plotting - self.min_pos_plotting) + self.min_pos_plotting,
-                0.55 * (y_max - y_min) + y_min,
+                0.55 * (feature_y_max - feature_y_min) + feature_y_min,
                 ha="left", va="center", rotation=90, color='black', fontsize=8,
             )
         else:
             draw_string(
                 ax, self.label,
                 0.2 * (self.max_pos_plotting - self.min_pos_plotting) + self.min_pos_plotting,
-                0.4 * (y_max - y_min) + y_min,
+                0.4 * (feature_y_max - feature_y_min) + feature_y_min,
                 ha="left", va="center", color='black',
             )
 
@@ -225,14 +232,15 @@ class DrawableProteinFeatureHandler:
                 name=self.pvis.protein_feature_names[i],
                 label=self.labels[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
                 color=self.colors[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
-                min_pos_plotting=-1.0, max_pos_plotting=-1.0  # will be set later in draw_fig(), when plot limits known
+                min_pos_plotting=-1.0, max_pos_plotting=-1.0,  # will be set later in draw_fig(), when plot limits known
+                track=0
             ))
 
         return features
 
-    def draw_features(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
+    def draw_features(self, ax: plt.Axes, features_y_max: float, feature_height: float, feature_outline_color: str):
         for f in self.features:
-            f.draw(ax, y_min, y_max, feature_outline_color)
+            f.draw(ax, features_y_max, feature_height, feature_outline_color)
 
 
 @dataclass(slots=True)
@@ -394,12 +402,14 @@ def generate_ticks(apprx_n_ticks, min, max):
 
 def draw_axes(ax, x_ticks, x_ticks_relative, y_ticks, max_marker_count,
               min_aa_pos, max_aa_pos,
+              num_tracks: int,
               protein_track_x_min: float, protein_track_x_max: float,
-              protein_track_y_min: float, protein_track_y_max: float,
+              protein_track_y_max: float, protein_track_height: float, protein_track_buffer: float,
               font_size: int, text_padding: float,
               axis_color: str, protein_track_color: str
               ):
     # draw the tracks
+    protein_track_y_min = protein_track_y_max - num_tracks * (protein_track_height + 2 * protein_track_buffer)
     draw_rectangle(
         ax,
         protein_track_x_min, protein_track_y_min, protein_track_x_max, protein_track_y_max,
