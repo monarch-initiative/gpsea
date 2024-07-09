@@ -30,6 +30,7 @@ class ProteinVisualizer:
         self.axis_color = 'black'
         self.protein_track_color = '#a9a9a9'
         self.transcript_track_color = '#a9a9a9'
+        self.variant_stem_color = '#a9a9a9'
         # plot options
         self.protein_track_x_min = 0.15
         self.protein_track_x_max = 0.85
