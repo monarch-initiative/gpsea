@@ -19,48 +19,6 @@ class ProteinVisualizer:
     """
 
     def __init__(self) -> None:
-        self.marker_colors = {
-            VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
-            VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
-            VariantEffect.SPLICE_DONOR_VARIANT: "#ff0099",
-            VariantEffect.STOP_GAINED: "#ffcc00",
-            VariantEffect.FRAMESHIFT_VARIANT: "#990099",
-            VariantEffect.STOP_LOST: "#00ffff",
-            VariantEffect.START_LOST: "#ff9900",
-            VariantEffect.TRANSCRIPT_AMPLIFICATION: "#9900ff",
-            VariantEffect.INFRAME_INSERTION: "#0000ff",
-            VariantEffect.INFRAME_DELETION: "#990000",
-            VariantEffect.MISSENSE_VARIANT: "#ff0033",
-            VariantEffect.PROTEIN_ALTERING_VARIANT: "#99ff00",
-            VariantEffect.SPLICE_REGION_VARIANT: "#009900",
-            VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT: "#009999",
-            VariantEffect.SPLICE_DONOR_REGION_VARIANT: "#ffff00",
-            VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT: "#999900",
-            VariantEffect.INCOMPLETE_TERMINAL_CODON_VARIANT: "#999999",
-            VariantEffect.START_RETAINED_VARIANT: "#00ff99",
-            VariantEffect.STOP_RETAINED_VARIANT: "#ccff00",
-            VariantEffect.SYNONYMOUS_VARIANT: "#00ccff",
-            VariantEffect.CODING_SEQUENCE_VARIANT: "#ff00cc",
-            VariantEffect.MATURE_MIRNA_VARIANT: "#cc00ff",
-            VariantEffect.FIVE_PRIME_UTR_VARIANT: "#ff6600",
-            VariantEffect.THREE_PRIME_UTR_VARIANT: "#6600ff",
-            VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT: "#ff3366",
-            VariantEffect.INTRON_VARIANT: "#3366ff",
-            VariantEffect.NMD_TRANSCRIPT_VARIANT: "#ffcc99",
-            VariantEffect.NON_CODING_TRANSCRIPT_VARIANT: "#cc99ff",
-            VariantEffect.UPSTREAM_GENE_VARIANT: "#ff6633",
-            VariantEffect.DOWNSTREAM_GENE_VARIANT: "#6633ff",
-            VariantEffect.TFBS_ABLATION: "#cc3300",
-            VariantEffect.TFBS_AMPLIFICATION: "#ccff66",
-            VariantEffect.TF_BINDING_SITE_VARIANT: "#66ccff",
-            VariantEffect.REGULATORY_REGION_ABLATION: "#ff3366",
-            VariantEffect.REGULATORY_REGION_AMPLIFICATION: "#3366ff",
-            VariantEffect.FEATURE_ELONGATION: "#ffcc33",
-            VariantEffect.REGULATORY_REGION_VARIANT: "#ccff33",
-            VariantEffect.FEATURE_TRUNCATION: "#33ccff",
-            VariantEffect.INTERGENIC_VARIANT: "#ff00ff",
-            VariantEffect.SEQUENCE_VARIANT: "#33ff00",
-        }
         # colors
         mycolors = [m for m in mcolors.CSS4_COLORS.keys() if "grey" not in m and "white" not in m]
         random.seed(42)
@@ -123,8 +81,9 @@ class ProteinVisualizer:
         # STATE
         feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
 
-        marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
-            generate_variant_markers(pvis, self.marker_colors))
+        variant_handler = DrawableProteinVariantHandler()
+
+        print(f'{marker_counts=} \n{variant_locations_counted_absolute=} \n{variant_effect_colors=}')
 
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=np.max(marker_counts))
@@ -285,9 +244,74 @@ class DrawableProteinVariant:
 
 
 class DrawableProteinVariantHandler:
-    def __init__(self):
-        # TODO: implement
-        pass
+    def __init__(self, pvis: ProteinVisualizable, aggregation_method: Literal['standard', 'disease'] = 'standard'):
+        self.pvis = pvis
+        if aggregation_method in ['standard', 'disease']:
+            self.aggregation_method = aggregation_method
+        else:
+            raise ValueError(f'Unsupported aggregation method {aggregation_method}')
+
+        self.marker_colors = {
+            VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
+            VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
+            VariantEffect.SPLICE_DONOR_VARIANT: "#ff0099",
+            VariantEffect.STOP_GAINED: "#ffcc00",
+            VariantEffect.FRAMESHIFT_VARIANT: "#990099",
+            VariantEffect.STOP_LOST: "#00ffff",
+            VariantEffect.START_LOST: "#ff9900",
+            VariantEffect.TRANSCRIPT_AMPLIFICATION: "#9900ff",
+            VariantEffect.INFRAME_INSERTION: "#0000ff",
+            VariantEffect.INFRAME_DELETION: "#990000",
+            VariantEffect.MISSENSE_VARIANT: "#ff0033",
+            VariantEffect.PROTEIN_ALTERING_VARIANT: "#99ff00",
+            VariantEffect.SPLICE_REGION_VARIANT: "#009900",
+            VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT: "#009999",
+            VariantEffect.SPLICE_DONOR_REGION_VARIANT: "#ffff00",
+            VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT: "#999900",
+            VariantEffect.INCOMPLETE_TERMINAL_CODON_VARIANT: "#999999",
+            VariantEffect.START_RETAINED_VARIANT: "#00ff99",
+            VariantEffect.STOP_RETAINED_VARIANT: "#ccff00",
+            VariantEffect.SYNONYMOUS_VARIANT: "#00ccff",
+            VariantEffect.CODING_SEQUENCE_VARIANT: "#ff00cc",
+            VariantEffect.MATURE_MIRNA_VARIANT: "#cc00ff",
+            VariantEffect.FIVE_PRIME_UTR_VARIANT: "#ff6600",
+            VariantEffect.THREE_PRIME_UTR_VARIANT: "#6600ff",
+            VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT: "#ff3366",
+            VariantEffect.INTRON_VARIANT: "#3366ff",
+            VariantEffect.NMD_TRANSCRIPT_VARIANT: "#ffcc99",
+            VariantEffect.NON_CODING_TRANSCRIPT_VARIANT: "#cc99ff",
+            VariantEffect.UPSTREAM_GENE_VARIANT: "#ff6633",
+            VariantEffect.DOWNSTREAM_GENE_VARIANT: "#6633ff",
+            VariantEffect.TFBS_ABLATION: "#cc3300",
+            VariantEffect.TFBS_AMPLIFICATION: "#ccff66",
+            VariantEffect.TF_BINDING_SITE_VARIANT: "#66ccff",
+            VariantEffect.REGULATORY_REGION_ABLATION: "#ff3366",
+            VariantEffect.REGULATORY_REGION_AMPLIFICATION: "#3366ff",
+            VariantEffect.FEATURE_ELONGATION: "#ffcc33",
+            VariantEffect.REGULATORY_REGION_VARIANT: "#ccff33",
+            VariantEffect.FEATURE_TRUNCATION: "#33ccff",
+            VariantEffect.INTERGENIC_VARIANT: "#ff00ff",
+            VariantEffect.SEQUENCE_VARIANT: "#33ff00",
+        }
+        if self.aggregation_method == 'standard':
+            self.marker_counts, self.variant_locations_counted_absolute, self.variant_effect_colors = (
+                self._generate_variant_markers())
+        elif self.aggregation_method == 'disease':
+            raise NotImplementedError('Disease aggregation method not implemented')
+
+    def _generate_variant_markers(self):
+        variant_locations = self.pvis.variant_locations
+        # The following has the variant positions (in variant_locations_counted_absolute)
+        # and the number of occurrences of each position (in marker counts)
+        variant_locations_counted_absolute = self.pvis.variant_locations_counted_absolute
+        marker_counts = self.pvis.marker_counts
+        variant_effect_colors = []
+        for vl in variant_locations_counted_absolute:
+            i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
+            effect = self.pvis.variant_effects[i]
+            variant_effect_colors.append(self.marker_colors[effect])
+
+        return marker_counts, variant_locations_counted_absolute, variant_effect_colors
 
     def draw_variants(self):
         # TODO: implement
@@ -492,21 +516,6 @@ def draw_variants(ax: plt.Axes, variant_locations_relative, variant_effect_color
         cur_radius, cur_length = marker_dim(marker_count, protein_track_y_max)
         x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
         draw_marker(ax, x_start, x_end, protein_track_y_max, cur_length, cur_radius, marker_color)
-
-
-def generate_variant_markers(pvis, marker_colors):
-    variant_locations = pvis.variant_locations
-    # The following has the variant positions (in variant_locations_counted_absolute)
-    # and the number of occurrences of each position (in marker counts)
-    variant_locations_counted_absolute = pvis.variant_locations_counted_absolute
-    marker_counts = pvis.marker_counts
-    variant_effect_colors = []
-    for vl in variant_locations_counted_absolute:
-        i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
-        effect = pvis.variant_effects[i]
-        variant_effect_colors.append(marker_colors[effect])
-
-    return marker_counts, variant_locations_counted_absolute, variant_effect_colors
 
 
 def assign_colors(names, available_colors):
