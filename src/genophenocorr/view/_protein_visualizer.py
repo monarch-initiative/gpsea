@@ -1,6 +1,7 @@
 import random
 from typing import Union, Tuple, List, Optional, Literal
 from dataclasses import dataclass
+import heapq
 
 from itertools import cycle
 
@@ -630,3 +631,44 @@ def sweep_line(intervals: List[Tuple[int, int]]) -> int:
         current_overlaps += delta
         max_overlaps = max(max_overlaps, current_overlaps)
     return max_overlaps
+
+
+def resolve_overlap(intervals: List[Tuple[int, int]]) -> List[int]:
+    """
+    Given a list of intervals, assign each interval an integer y-position,
+    such that no two intervals overlap in the x dimension. Return the y-positions.
+    """
+
+    # Event structure: (position, type, index)
+    events = list()
+    for i, (start, end) in enumerate(intervals):
+        events.append((start, 1, i))
+        events.append((end, -1, i))
+
+    # Sort events: first by position, then by type (1 before -1 if same position)
+    events.sort(key=lambda x: (x[0], -x[1]))
+
+    # Min-heap to keep track of available y-positions
+    available_y_positions = list()
+    current_y_positions = dict()
+    result = [0] * len(intervals)
+    max_y = 0
+
+    for position, event_type, index in events:
+        if event_type == 1:
+            # Allocate the smallest available y-position
+            if available_y_positions:
+                y_pos = heapq.heappop(available_y_positions)
+            else:
+                y_pos = max_y
+                max_y += 1
+            result[index] = y_pos
+            current_y_positions[index] = y_pos
+        else:
+            # Release the y-position back to the pool
+            y_pos = current_y_positions.pop(index)
+            heapq.heappush(available_y_positions, y_pos)
+
+    return result
+
+
