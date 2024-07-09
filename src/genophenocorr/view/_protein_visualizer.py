@@ -607,7 +607,7 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
             line_color='black', fill_color=variant_effect_colors[variant_effect],
         )
         draw_string(
-            ax, variant_effect,
+            ax, str(variant_effect).replace('_', ' ').title(),
             colored_circle_x + 2 * color_circle_radius, colored_circle_y,
             fontsize=12, ha="left", va="center", color='black', )
 
