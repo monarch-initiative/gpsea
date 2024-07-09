@@ -82,11 +82,10 @@ class ProteinVisualizer:
         # STATE
         feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
 
-        variant_handler = DrawableProteinVariantHandler()
-
+        variant_handler = DrawableProteinVariantHandler(pvis)
 
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
-        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=np.max(marker_counts))
+        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=variant_handler.max_marker_count)
 
         # normalize into [0, 1], leaving some space on the sides
         for f in feature_handler.features:
