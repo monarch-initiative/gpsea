@@ -130,16 +130,6 @@ class ProteinVisualizable:
     @property
     def protein_feature_names(self) -> typing.Sequence[str]:
         return self._protein_feature_names
-    
-    @property
-    def protein_feature_unnumbered_names(self) -> typing.Sequence[str]:
-        # This was added to reduce the number of features shown in the visualizer. 
-        # It removes anything with a trailing number, i.e. EGF-like 1, EGF-like 2, etc. would all be lumped into one EGF-like
-        # But will not change things like gene name MFAP4 
-        unnumbered = []
-        for name in self.protein_feature_names:
-            unnumbered.append(re.sub(r"\s\d+", "", name))
-        return unnumbered
             
     @property
     def variant_effects(self) -> typing.Sequence[VariantEffect]:
