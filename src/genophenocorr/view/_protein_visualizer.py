@@ -109,27 +109,27 @@ class ProteinVisualizer:
         # PLOTTING
         draw_axes(ax,
                   x_ticks, x_ticks_relative, y_ticks,
-                  np.max(marker_counts), 1, pvis.protein_length,
+                  variant_handler.max_marker_count, 1, pvis.protein_length,
                   self.protein_track_x_min, self.protein_track_x_max,
                   self.protein_track_y_min, self.protein_track_y_max,
                   self.font_size, self.text_padding,
                   self.axis_color, self.protein_track_color
                   )
 
-        draw_variants(ax, variant_locations_relative, variant_effect_colors, marker_counts, self.protein_track_y_max)
+        variant_handler.draw_variants(ax, self.protein_track_y_max, stem_color=self.variant_stem_color)
 
         feature_handler.draw_features(ax, self.feature_y_min, self.feature_y_max, self.feature_outline_color)
 
-        legend1_width = draw_legends(ax, feature_handler, pvis,
-                                     self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
-                                     self.row_spacing,
-                                     self.legend1_min_x, self.legend1_max_y,
-                                     self.legend2_min_x, self.legend2_max_y,
-                                     variant_effect_colors, self.marker_colors,
-                                     labeling_method, )
+        # legend1_width = draw_legends(ax, feature_handler, pvis,
+        #                              self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
+        #                              self.row_spacing,
+        #                              self.legend1_min_x, self.legend1_max_y,
+        #                              self.legend2_min_x, self.legend2_max_y,
+        #                              variant_effect_colors, self.marker_colors,
+        #                              labeling_method, )
 
         ax.set(
-            xlim=(0, max(1.0, self.legend1_min_x + legend1_width + 0.02)),
+            xlim=(0, max(1.0, self.legend1_min_x)), #+ legend1_width + 0.02)),
             ylim=(0.3, 0.75),
             aspect='equal',
             title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
@@ -232,16 +232,19 @@ class DrawableProteinFeatureHandler:
 
 @dataclass(slots=True)
 class DrawableProteinVariant:
-    name: str
+    effect: VariantEffect
     pos_abs: Union[int, float]
-    label: str
     color: str
     pos_plotting: float
     count: int
 
-    def draw(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
-        # TODO: implement
-        pass
+    def draw(self, ax: plt.Axes, y_max: float, stem_color: str):
+        cur_radius, cur_length = marker_dim(self.count, y_max)
+        draw_marker(ax, self.pos_plotting, y_max, cur_length, cur_radius, self.color, stem_color=stem_color)
+
+    @property
+    def name(self):
+        return str(self.effect)
 
 
 class DrawableProteinVariantHandler:
@@ -252,7 +255,7 @@ class DrawableProteinVariantHandler:
         else:
             raise ValueError(f'Unsupported aggregation method {aggregation_method}')
 
-        self.marker_colors = {
+        self.variant_effect2color = {
             VariantEffect.TRANSCRIPT_ABLATION: "#ff0000",
             VariantEffect.SPLICE_ACCEPTOR_VARIANT: "#00ff00",
             VariantEffect.SPLICE_DONOR_VARIANT: "#ff0099",
