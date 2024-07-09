@@ -54,7 +54,7 @@ class AlleleCounter:
         
         for var in patient.variants:
             if self._predicate.test(var):
-                if var.genotypes.for_sample(patient.labels) in [Genotype.HOMOZYGOUS_ALTERNATE, Genotype.HOMOZYGOUS_REFERENCE]:
+                if var.genotypes.for_sample(patient.labels) == Genotype.HOMOZYGOUS_ALTERNATE:
                     count += 2
                 elif var.genotypes.for_sample(patient.labels) in [Genotype.HETEROZYGOUS, Genotype.HEMIZYGOUS]:
                     count += 1
