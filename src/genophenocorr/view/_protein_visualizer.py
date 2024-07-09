@@ -125,10 +125,9 @@ class ProteinVisualizer:
 
         marker_counts, variant_locations_counted_absolute, variant_effect_colors = (
             generate_variant_markers(pvis, self.marker_colors))
-        max_marker_count = np.max(marker_counts)
 
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
-        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=max_marker_count)
+        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=np.max(marker_counts))
 
         # normalize into [0, 1], leaving some space on the sides
         for f in feature_handler.features:
@@ -150,7 +149,7 @@ class ProteinVisualizer:
         # PLOTTING
         draw_axes(ax,
                   x_ticks, x_ticks_relative, y_ticks,
-                  max_marker_count, 1, pvis.protein_length,
+                  np.max(marker_counts), 1, pvis.protein_length,
                   self.protein_track_x_min, self.protein_track_x_max,
                   self.protein_track_y_min, self.protein_track_y_max,
                   self.font_size, self.text_padding,
