@@ -97,10 +97,13 @@ class ProteinVisualizer:
                 min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
             )
 
-        variant_locations_relative = translate_to_ax_coordinates(variant_locations_counted_absolute,
-                                                                 min_absolute=1, max_absolute=pvis.protein_length,
-                                                                 min_relative=self.protein_track_x_min,
-                                                                 max_relative=self.protein_track_x_max, clip=True)
+        for v in variant_handler.variants:
+            pos_abs = v.pos_abs
+            v.pos_plotting = translate_to_ax_coordinates(
+                np.array([pos_abs]), min_absolute=1, max_absolute=pvis.protein_length,
+                min_relative=self.protein_track_x_min,
+                max_relative=self.protein_track_x_max, clip=True)
+
         x_ticks_relative = translate_to_ax_coordinates(x_ticks, min_absolute=1,
                                                        max_absolute=pvis.protein_length,
                                                        min_relative=self.protein_track_x_min,
@@ -297,29 +300,31 @@ class DrawableProteinVariantHandler:
             VariantEffect.INTERGENIC_VARIANT: "#ff00ff",
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
+        self.max_marker_count = np.max(self.pvis.marker_counts)
         if self.aggregation_method == 'standard':
-            self.marker_counts, self.variant_locations_counted_absolute, self.variant_effect_colors = (
-                self._generate_variant_markers())
+            self.variants = self._generate_variant_markers()
         elif self.aggregation_method == 'disease':
             raise NotImplementedError('Disease aggregation method not implemented')
 
     def _generate_variant_markers(self):
-        variant_locations = self.pvis.variant_locations
-        # The following has the variant positions (in variant_locations_counted_absolute)
-        # and the number of occurrences of each position (in marker counts)
-        variant_locations_counted_absolute = self.pvis.variant_locations_counted_absolute
-        marker_counts = self.pvis.marker_counts
-        variant_effect_colors = []
-        for vl in variant_locations_counted_absolute:
-            i = np.where(variant_locations == vl)[0][0]  # find index of unique variant loc in all locs to find effect
+        variants = list()
+        print(f'{len(self.pvis.variant_locations_counted_absolute)=} {len(self.pvis.variant_effects)=} {len(self.pvis.marker_counts)=}')
+        for j, vl in enumerate(self.pvis.variant_locations_counted_absolute):
+            i = np.where(self.pvis.variant_locations == vl)[0][0]
             effect = self.pvis.variant_effects[i]
-            variant_effect_colors.append(self.marker_colors[effect])
+            v = DrawableProteinVariant(effect=effect,
+                                       pos_abs=vl,
+                                       color=self.variant_effect2color[effect],
+                                       pos_plotting=-1.0,
+                                       count=self.pvis.marker_counts[j])
+            variants.append(v)
+            # print(v)
 
-        return marker_counts, variant_locations_counted_absolute, variant_effect_colors
+        return variants
 
-    def draw_variants(self):
-        # TODO: implement
-        pass
+    def draw_variants(self, ax: plt.Axes, y_max: float, stem_color: str):
+        for v in self.variants:
+            v.draw(ax, y_max, stem_color)
 
 
 def draw_rectangle(
@@ -503,23 +508,14 @@ def translate_to_ax_coordinates(
 
 def draw_marker(
         ax: plt.Axes,
-        x_start, x_end, min_y, max_y, circle_radius, fill_color, stem_color='#a9a9a9',
+        x, min_y, max_y, circle_radius, fill_color, stem_color='#a9a9a9',
 ):
     """
     Draw a lollipop representing a variant and the number of counts for the variant effect type
     currently putting marker in the middle of start and end, can change this later
     """
-    x = (x_start + x_end) / 2
     draw_line(ax, x, min_y, x, max_y - circle_radius, line_color=stem_color, line_width=0.5)
     draw_circle(ax, x, max_y, circle_radius, line_color=stem_color, fill_color=fill_color, line_width=0.5)
-
-
-def draw_variants(ax: plt.Axes, variant_locations_relative, variant_effect_colors, marker_counts, protein_track_y_max):
-    for marker, marker_color in zip(variant_locations_relative, variant_effect_colors):
-        marker_count = marker_counts[np.where(variant_locations_relative == marker)[0][0]]
-        cur_radius, cur_length = marker_dim(marker_count, protein_track_y_max)
-        x_start, x_end = marker, marker  # WAS  marker[0], marker[1]
-        draw_marker(ax, x_start, x_end, protein_track_y_max, cur_length, cur_radius, marker_color)
 
 
 def assign_colors(names, available_colors):
