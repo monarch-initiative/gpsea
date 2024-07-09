@@ -196,6 +196,7 @@ class DrawableProteinFeatureHandler:
 
         self.cleaned_unique_feature_names, self.mapping_all2cleaned, self.labels, self.colors = self._generate_labels()
         self.features = self._generate_features()
+        self._assign_track_numbers()
 
     def _generate_labels(self):
         # aggregate similar feature names into one category
@@ -242,6 +243,9 @@ class DrawableProteinFeatureHandler:
     def draw_features(self, ax: plt.Axes, features_y_max: float, feature_height: float, feature_outline_color: str):
         for f in self.features:
             f.draw(ax, features_y_max, feature_height, feature_outline_color)
+
+    def _assign_track_numbers(self):
+        pass
 
 
 @dataclass(slots=True)
