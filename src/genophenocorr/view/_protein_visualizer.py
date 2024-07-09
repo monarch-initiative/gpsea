@@ -86,7 +86,6 @@ class ProteinVisualizer:
         max_overlapping_features = sweep_line(
             [(f.min_pos_abs, f.max_pos_abs) for f in feature_handler.features]  # define intervals
         )
-        print(f'{max_overlapping_features=}')
 
         variant_handler = DrawableProteinVariantHandler(pvis)
 
