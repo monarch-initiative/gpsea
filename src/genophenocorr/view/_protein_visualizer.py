@@ -121,13 +121,13 @@ class ProteinVisualizer:
 
         feature_handler.draw_features(ax, self.feature_y_min, self.feature_y_max, self.feature_outline_color)
 
-        # legend1_width = draw_legends(ax, feature_handler, pvis,
-        #                              self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
-        #                              self.row_spacing,
-        #                              self.legend1_min_x, self.legend1_max_y,
-        #                              self.legend2_min_x, self.legend2_max_y,
-        #                              variant_effect_colors, self.marker_colors,
-        #                              labeling_method, )
+        legend1_width = draw_legends(ax, feature_handler, pvis,
+                                     self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
+                                     self.row_spacing,
+                                     self.legend1_min_x, self.legend1_max_y,
+                                     self.legend2_min_x, self.legend2_max_y,
+                                     variant_handler.variant_effect_colors(),
+                                     labeling_method, )
 
         ax.set(
             xlim=(0, max(1.0, self.legend1_min_x)), #+ legend1_width + 0.02)),
@@ -323,6 +323,13 @@ class DrawableProteinVariantHandler:
     def draw_variants(self, ax: plt.Axes, y_max: float, stem_color: str):
         for v in self.variants:
             v.draw(ax, y_max, stem_color)
+
+    def variant_effect_colors(self):
+        colors = dict()
+        for v in self.variants:
+            colors[v.effect] = v.color
+
+        return colors
 
 
 def draw_rectangle(
@@ -535,7 +542,7 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
                  color_box_x_dim, color_box_y_dim, color_circle_radius, row_spacing,
                  legend1_min_x, legend1_max_y,
                  legend2_min_x, legend2_max_y,
-                 variant_effect_colors, marker_colors,
+                 variant_effect_colors,
                  labeling_method,
                  ):
     # draw legend 1 for protein features
@@ -571,8 +578,8 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
         )
 
     # draw legend 2 for variant effects
-    unique_variant_effects = list(set(pvis.variant_effects))
-    n_unique_effects = len(set(variant_effect_colors))
+    unique_variant_effects = list(variant_effect_colors.keys())
+    n_unique_effects = len(unique_variant_effects)
     legend2_min_y = legend2_max_y - (
             n_unique_effects + 1) * row_spacing - n_unique_effects * 2 * color_circle_radius
     legend2_max_x = legend2_min_x + 0.2
@@ -582,7 +589,7 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
         colored_circle_y = legend2_max_y - (i + 1) * row_spacing - i * 2 * color_circle_radius - color_circle_radius
         draw_circle(
             ax, colored_circle_x, colored_circle_y, color_circle_radius,
-            line_color='black', fill_color=marker_colors[variant_effect],
+            line_color='black', fill_color=variant_effect_colors[variant_effect],
         )
         draw_string(
             ax, variant_effect,
