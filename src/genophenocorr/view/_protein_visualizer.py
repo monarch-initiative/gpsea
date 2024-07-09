@@ -139,7 +139,7 @@ class ProteinVisualizer:
                                      labeling_method, )
 
         ax.set(
-            xlim=(0, max(1.0, self.legend1_min_x)), #+ legend1_width + 0.02)),
+            xlim=(0, max(1.0, self.legend1_min_x + legend1_width + 0.02)),
             ylim=(0.3, 0.75),
             aspect='equal',
             title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
