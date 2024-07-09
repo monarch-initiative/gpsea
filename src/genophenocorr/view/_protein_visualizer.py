@@ -284,6 +284,16 @@ class DrawableProteinVariant:
         pass
 
 
+class DrawableProteinVariantHandler:
+    def __init__(self):
+        # TODO: implement
+        pass
+
+    def draw_variants(self):
+        # TODO: implement
+        pass
+
+
 def draw_rectangle(
         ax: plt.Axes,
         start_x, start_y, end_x, end_y, line_color='black', fill_color=None, line_width=1.0,
