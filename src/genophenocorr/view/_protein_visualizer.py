@@ -24,7 +24,7 @@ class ProteinVisualizer:
         random.seed(42)
         random.shuffle(mycolors)
         self._available_colors = mycolors
-        self.feature_outline_color = 'black'
+        self.protein_feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
         self.exon_outline_color = 'black'
         self.axis_color = 'black'
