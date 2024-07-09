@@ -270,6 +270,20 @@ class DrawableProteinFeatureHandler:
             f.draw(ax, y_min, y_max, feature_outline_color)
 
 
+@dataclass(slots=True)
+class DrawableProteinVariant:
+    name: str
+    pos_abs: Union[int, float]
+    label: str
+    color: str
+    pos_plotting: float
+    count: int
+
+    def draw(self, ax: plt.Axes, y_min: float, y_max: float, feature_outline_color: str):
+        # TODO: implement
+        pass
+
+
 def draw_rectangle(
         ax: plt.Axes,
         start_x, start_y, end_x, end_y, line_color='black', fill_color=None, line_width=1.0,
