@@ -3,57 +3,63 @@
 <head>
   <meta charset="utf-8">
   <title>Cohort</title>
-  <style>table {
-    border-collapse: collapse;
-    margin: 25px 0;
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
       font-size: 0.9em;
       font-family: sans-serif;
       min-width: 400px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  }
+    }
 
-  .table .column-1 {
+    .table .column-1 {
       text-align: left;
-  }
-  th {
-    background-color: LightSkyBlue;
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 2px;
-  font-weight: bold;
-  font-size: 120%;
-}
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
 
+    tr {
+      border: 1px solid #dddddd;
+    }
 
-  tr {
-    border: 1px solid #dddddd;
-  }
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
 
-  td {
-    padding: 2px;
-    font-weight: bold;
-  }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
+    .table td, tr {
+      text-align: right;
+    }
 
-  .table td,tr {
-    text-align: right;
-}
+    .lft {
+      text-align: left;
+    }
 
-.lft {
-    text-align: left;
-}​
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
 
-caption {
-  caption-side: bottom;
-  text-align: left;
-  padding-bottom: 10px;
-  font-weight: bold;
-}
-
-</style>
+    caption {
+      caption-side: bottom;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
@@ -68,7 +74,7 @@ caption {
     <table>
     <caption style="color: black;">
         <h3>Top {{top_hpo_count}} HPO Terms</h3>
-        A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort. 
+        A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort.
     </caption>
         <tbody>
             <tr class="strng">
@@ -112,14 +118,14 @@ caption {
     </caption>
         <tbody>
             <tr class="strng">
-                <th class="lft">Disease ID</th>
-                <th>Disease Name</th>
+                <th class="lft">Disease Name</th>
+                <th >Disease ID</th>
                 <th>Annotation Count</th>
               </tr>
               {% for disease_count in disease_counts %}
               <tr>
-                <td class="lft">{{ disease_count.disease_id }}</td>
-                <td>{{ disease_count.disease_name }}</td>
+                <td class="lft">{{ disease_count.disease_name   }}</td>
+                <td>{{ disease_count.disease_id }}</td>
                 <td>{{ disease_count.count }}</td>
                 </tr>
             {% endfor %}
