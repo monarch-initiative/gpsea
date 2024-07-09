@@ -493,11 +493,16 @@ def draw_axes(ax, x_ticks, x_ticks_relative, y_ticks, max_marker_count,
             str(max_marker_count), y_axis_x - small_tick_length - text_padding, y_axis_max_y,
             fontsize=font_size, ha='right', va='center',
         )
-        draw_string(  # x axis label
+        draw_string(  # y axis label
             ax,
             "# Variants", y_axis_x - 0.05, (y_axis_min_y + y_axis_max_y) / 2,
             fontsize=font_size, ha='center', va='center', rotation=90,
         )
+        draw_string(  # x axis label
+            ax,
+            "# Codons", (x_axis_min_x + x_axis_max_x) / 2, x_axis_y - 0.05,
+            fontsize=font_size, ha='center', va='center', rotation=0,
+                          )
         # draw y ticks
         draw_line(  # 0 tick
             ax,
