@@ -84,7 +84,6 @@ class ProteinVisualizer:
 
         variant_handler = DrawableProteinVariantHandler()
 
-        print(f'{marker_counts=} \n{variant_locations_counted_absolute=} \n{variant_effect_colors=}')
 
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
         y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=np.max(marker_counts))
