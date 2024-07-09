@@ -34,7 +34,7 @@ class ProteinVisualizer:
         # plot options
         self.protein_track_x_min = 0.15
         self.protein_track_x_max = 0.85
-        self.protein_track_y_min = 0.492
+        self.protein_track_y_min = 0.4#0.492
         self.protein_track_y_max = 0.508
         self.font_size = 12
         self.text_padding = 0.004
@@ -81,6 +81,10 @@ class ProteinVisualizer:
 
         # STATE
         feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
+        max_overlapping_features = sweep_line(
+            [(f.min_pos_abs, f.max_pos_abs) for f in feature_handler.features]  # define intervals
+        )
+        print(f'{max_overlapping_features=}')
 
         variant_handler = DrawableProteinVariantHandler(pvis)
 
@@ -597,3 +601,22 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
             fontsize=12, ha="left", va="center", color='black', )
 
     return legend1_width
+
+
+def sweep_line(intervals: List[Tuple[int, int]]) -> int:
+    """
+    Given a list of intervals, find the maximum number of overlapping intervals.
+
+    O(n log n) time complexity, where n is the number of intervals.
+    """
+    events = []
+    for start, end in intervals:
+        events.append((start, 1))
+        events.append((end, -1))
+    events.sort()
+    max_overlaps = 0
+    current_overlaps = 0
+    for _, delta in events:
+        current_overlaps += delta
+        max_overlaps = max(max_overlaps, current_overlaps)
+    return max_overlaps
