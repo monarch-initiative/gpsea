@@ -54,10 +54,7 @@ class VariantKeyPredicate(VariantPredicate):
         return f'variant has ID of {self._key}'
 
     def test(self, variant: Variant) -> bool:
-        
-        if variant.variant_coordinates.variant_key == self._key:
-            return True
-        return False
+        return self._key == variant.variant_coordinates.variant_key
     
 class VariantGenePredicate(VariantPredicate):
     # TODO: add __repr__, __str__, __hash__, __eq__
@@ -104,9 +101,8 @@ class VariantExonPredicate(VariantPredicate):
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
             return False
-        if self._exon in tx_anno.overlapping_exons:
-            return True
-        return False
+        
+        return any(self._exon == exon for exon in tx_anno.overlapping_exons)
     
 class ProteinRegionPredicate(VariantPredicate):
     # TODO: add __repr__, __str__, __hash__, __eq__
@@ -122,9 +118,10 @@ class ProteinRegionPredicate(VariantPredicate):
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
             return False
-        if tx_anno.protein_effect_location.overlaps_with(self._region):
-            return True
-        return False
+        location = tx_anno.protein_effect_location
+        if location is None:
+            return False
+        return location.overlaps_with(self._region)
     
 class ProteinFeatureTypePredicate(VariantPredicate):
     # TODO: add __repr__, __str__, __hash__, __eq__
@@ -141,9 +138,13 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
             return False
+        location = tx_anno.protein_effect_location
+        if location is None:
+            return False
+        
         protein = self._prot_service.annotate(tx_anno.protein_id)
-        for feat in protein.protein_features:
-            if feat.feature_type == self._feature_type and tx_anno.protein_effect_location.overlaps_with(feat.info.region):
+        for feat in protein.protein_features:    
+            if feat.feature_type == self._feature_type and location.overlaps_with(feat.info.region):
                 return True
         return False
     
@@ -162,9 +163,14 @@ class ProteinFeaturePredicate(VariantPredicate):
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
             return False
+        
+        location = tx_anno.protein_effect_location
+        if location is None:
+            return False
+        
         protein = self._prot_service.annotate(tx_anno.protein_id)
-        for feat in protein.protein_features:
-            if feat.info.name == self._feature and tx_anno.protein_effect_location.overlaps_with(feat.info.region):
+        for feat in protein.protein_features:    
+            if feat.info.name == self._feature and location.overlaps_with(feat.info.region):
                 return True
         return False
     
