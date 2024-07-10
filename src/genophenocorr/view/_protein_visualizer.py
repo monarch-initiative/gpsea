@@ -333,7 +333,6 @@ class DrawableProteinVariantHandler:
 
     def _generate_variant_markers(self):
         variants = list()
-        print(f'{len(self.pvis.variant_locations_counted_absolute)=} {len(self.pvis.variant_effects)=} {len(self.pvis.marker_counts)=}')
         for j, vl in enumerate(self.pvis.variant_locations_counted_absolute):
             i = np.where(self.pvis.variant_locations == vl)[0][0]
             effect = self.pvis.variant_effects[i]
@@ -343,7 +342,6 @@ class DrawableProteinVariantHandler:
                                        pos_plotting=-1.0,
                                        count=self.pvis.marker_counts[j])
             variants.append(v)
-            # print(v)
 
         return variants
 
