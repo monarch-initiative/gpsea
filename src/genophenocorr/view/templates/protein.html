@@ -74,12 +74,12 @@ caption {
             </tr> 
             {% for feat in protein_features %}
             <tr>
-                <td>{{ feat.feature_name }}</td>
-                <td>{{ feat.feature_type }}</td>
+                <td>{{ feat.name }}</td>
+                <td>{{ feat.type }}</td>
                 <td>{{ feat.region.start }} - {{ feat.region.end }}</td>
                 <td>{{ feat.variant_count }}</td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>
     </table>
 </body>

@@ -1,11 +1,25 @@
 import typing
 
+from dataclasses import dataclass
+
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple
 
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import Region
 from ._protein_visualizable import ProteinVisualizable
+
+@dataclass(frozen=False)
+class Feature:
+    """
+    A private dataclass for representing a table row.
+
+    Any edits to the dataclass must also be followed by an update of the Jinja template.
+    """
+    name: str
+    type: str
+    region: Region
+    variant_count: int
 
 
 class ProteinViewable:
@@ -30,31 +44,32 @@ class ProteinViewable:
         context = self._prepare_context(cohort, pvis)
         return self._cohort_template.render(context)
     
-    @staticmethod
-    def _get_start(feat_tuple: namedtuple) -> int:
-        return feat_tuple.region.start
-    
     def _prepare_context(self, cohort: Cohort, pvis: ProteinVisualizable) -> typing.Mapping[str, typing.Any]:
         protein_id = pvis.protein_id
-        Feature = namedtuple('Feature', ['feature_name', 'feature_type', 'region', 'variant_count'])
+        
         protein_features = []
         
         for i in range(len(pvis.protein_feature_names)):
-            protein_features.append(Feature(pvis.protein_feature_names[i], pvis._protein_feature_types[i], Region(pvis.protein_feature_starts[i],pvis.protein_feature_ends[i]), 0))
-        
-        final_protein_features = []
+            feature = Feature(
+                name=pvis.protein_feature_names[i], 
+                type=pvis.protein_feature_types[i], 
+                region=Region(pvis.protein_feature_starts[i], pvis.protein_feature_ends[i]), 
+                variant_count=0,
+            )
+            protein_features.append(feature)
             
-        for feat_list in protein_features:
+        for feature in protein_features:
             count = 0
             for var in cohort.all_variants():
                 tx_anno = var.get_tx_anno_by_tx_id(pvis.transcript_id)
                 if tx_anno is not None:
-                    if tx_anno.protein_effect_location is not None and tx_anno.protein_effect_location.overlaps_with(feat_list.region):
+                    location = tx_anno.protein_effect_location
+                    if location is not None and location.overlaps_with(feature.region):
                         count += 1
-            final_protein_features.append(feat_list._replace(variant_count=count))
             
+            feature.variant_count = count
             
-        final_protein_features = sorted(final_protein_features, key=self._get_start)
+        final_protein_features = sorted(protein_features, key=lambda f: f.region.start)
 
         return {
             'protein_id': protein_id,
