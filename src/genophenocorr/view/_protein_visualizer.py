@@ -19,11 +19,11 @@ class ProteinVisualizer:
     Draw a schema of a protein with variants of the cohort.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, random_seed: int = 42) -> None:
         # colors
         mycolors = [m for m in mcolors.CSS4_COLORS.keys() if "grey" not in m and "white" not in m]
-        random.seed(42)
-        random.shuffle(mycolors)
+        rng = random.Random(random_seed)
+        rng.shuffle(mycolors)
         self._available_colors = mycolors
         self.protein_feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
