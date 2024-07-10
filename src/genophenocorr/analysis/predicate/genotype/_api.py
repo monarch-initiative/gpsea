@@ -37,14 +37,36 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         Create a variant predicate passes if *BOTH* `self` and `other` pass.
         """
         # TODO: check the other is not the same as `self`
-        return AllVariantPredicate(self, other)
+        if isinstance(self, AllVariantPredicate):
+            # We do not need to create another predicate 
+            # if we are adding `other` to an already existing "Und" predicate.
+            if isinstance(other, AllVariantPredicate):
+                # We will make a union of all predicates of `self` and `other` 
+                # and we will just use self!
+                self.predicates.extend(other.predicates)
+            else:
+                self.predicates.append(other)
+            return self
+        else:
+            return AllVariantPredicate(self, other)
     
     def oder(self, other):
         """
         Create a variant predicate passes if *EITHER* `self` *OR* `other` passes.
         """
         # TODO: check the other is not the same as `self`
-        return AnyVariantPredicate(self, other)
+        if isinstance(self, AnyVariantPredicate):
+            # We do not need to create another predicate 
+            # if we are adding `other` to an already existing "Oder" predicate.
+            if isinstance(other, AnyVariantPredicate):
+                # We will make a union of all predicates of `self` and `other` 
+                # and we will just use self!
+                self.predicates.extend(other.predicates)
+            else:
+                self.predicates.append(other)
+            return self
+        else:
+            return AnyVariantPredicate(self, other)
 
 
 class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
@@ -54,7 +76,11 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
             self,
             *args,
     ):
-        self._predicates = tuple(args)
+        self._predicates = list(args)
+
+    @property
+    def predicates(self) -> typing.MutableSequence[VariantPredicate]:
+        self._predicates
 
 
 class AnyVariantPredicate(LogicalVariantPredicate):
