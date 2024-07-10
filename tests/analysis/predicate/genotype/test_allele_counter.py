@@ -177,6 +177,9 @@ class MockVariantKeyPredicate(VariantPredicate):
     ):
         self._variant_key = variant_key
 
+    def get_question(self) -> str:
+        return f'variant is {self._variant_key}'
+
     def test(self, variant: Variant) -> bool:
         return variant.variant_coordinates.variant_key == self._variant_key
 
@@ -186,6 +189,9 @@ class MockVariantEffectPredicate(VariantPredicate):
                  variant_effect: VariantEffect, tx_id: str) -> None:
         self._variant_effect = variant_effect
         self._tx_id = tx_id
+
+    def get_question(self) -> str:
+        return f'variant has {self._variant_effect} on {self._tx_id}'
         
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)

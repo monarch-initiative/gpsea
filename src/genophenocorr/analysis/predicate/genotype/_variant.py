@@ -21,12 +21,18 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
 class AnyVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
 
+    def get_question(self) -> str:
+        return ' OR '.join(predicate.get_question() for predicate in self._predicates)
+
     def test(self, variant: Variant) -> bool:
         return any(predicate.test(variant) for predicate in self._predicates)
 
 
 class AllVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
+
+    def get_question(self) -> str:
+        return ' AND '.join(predicate.get_question() for predicate in self._predicates)
 
     def test(self, variant: Variant) -> bool:
         return all(predicate.test(variant) for predicate in self._predicates)

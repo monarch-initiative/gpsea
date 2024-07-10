@@ -20,6 +20,9 @@ class VariantEffectPredicate(VariantPredicate):
         self._effect = effect
         self._tx_id = tx_id
         
+    def get_question(self) -> str:
+        return f'{self._effect.name} on {self._tx_id}'
+
     def test(self, variant: Variant) -> bool:
         """Tests if the `Variant` causes the specified `VariantEffect`
         on the given transcript. 
@@ -39,12 +42,15 @@ class VariantEffectPredicate(VariantPredicate):
                 return True
         return False
     
-    
+
 class VariantKeyPredicate(VariantPredicate):
     
     def __init__(self, key: str) -> None:
         self._key = key
         
+    def get_question(self) -> str:
+        return f'variant has ID of {self._key}'
+
     def test(self, variant: Variant) -> bool:
         
         if variant.variant_coordinates.variant_key == self._key:
@@ -55,7 +61,10 @@ class VariantGenePredicate(VariantPredicate):
     
     def __init__(self, gene_symbol:str) -> None:
         self._symbol = gene_symbol
-        
+
+    def get_question(self) -> str:
+        return f'variant affects gene {self._symbol}'
+
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
             if tx.gene_id == self._symbol:
@@ -66,6 +75,9 @@ class VariantTranscriptPredicate(VariantPredicate):
     
     def __init__(self, tx_id: str) -> None:
         self._tx_id = tx_id
+
+    def get_question(self) -> str:
+        return f'variant affects transcript {self._tx_id}'
         
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
@@ -80,6 +92,9 @@ class VariantExonPredicate(VariantPredicate):
         self._exon = exon
         self._tx_id = tx_id
         
+    def get_question(self) -> str:
+        return f'variant affects exon {self._exon} on {self._tx_id}'
+
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
@@ -94,6 +109,9 @@ class ProteinRegionPredicate(VariantPredicate):
         self._region = region
         self._tx_id = tx_id
         
+    def get_question(self) -> str:
+        return f'variant affects aminoacid(s) between {self._prot_region.start} and {self._prot_region.end} on protein encoded by transcript {self._tx_id}'
+
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
@@ -109,6 +127,9 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         self._tx_id = tx_id
         self._prot_service = protein_metadata_service
         
+    def get_question(self) -> str:
+        return f'variant affects {self._feature_type.name} feature type on the protein encoded by transcript {self._tx_id}'
+
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
         if tx_anno is None:
@@ -125,6 +146,9 @@ class ProteinFeaturePredicate(VariantPredicate):
         self._feature = feature_name
         self._tx_id = tx_id
         self._prot_service = protein_metadata_service
+
+    def get_question(self) -> str:
+        return f'Variant that affects {self._feature} feature on the protein encoded by transcript {self._tx_id}'
         
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
