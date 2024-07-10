@@ -116,6 +116,21 @@ class CohortAnalysisConfiguration:
         """
         return self._min_perc_patients_w_hpo
 
+    @min_perc_patients_w_hpo.setter
+    def min_perc_patients_w_hpo(self, value: float):
+        """
+        Set new multiple testing correction alpha value.
+
+        :param mtc_alpha: a `float` in range :math:`(0,1]`.
+        """
+        if isinstance(value, float) and 0. < value <= 1.:
+            self._min_perc_patients_w_hpo = value
+        else:
+            self._logger.warning(
+                '`value` should be a `float` in range `(0, 1]` but was %s. Keeping the previous value %s',
+                value, self._min_perc_patients_w_hpo
+            )
+
 
     @property
     def mtc_alpha(self) -> float:
