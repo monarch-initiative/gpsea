@@ -63,10 +63,12 @@ For instance, we can partition the patients into two groups based on presence/ab
   >>> pd.set_option('expand_frame_repr', False)
   >>> from genophenocorr.analysis import configure_cohort_analysis
   >>> from genophenocorr.analysis.predicate import PatientCategories  # TODO - explain the predicate or update the API
+  >>> from genophenocorr.analysis.predicate.genotype import VariantPredicate, VariantPredicates
   >>> from genophenocorr.model import VariantEffect
 
   >>> cohort_analysis = configure_cohort_analysis(cohort, hpo)
-  >>> missense = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+  >>> missense_in_tx = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+  >>> missense = cohort_analysis.compare_hpo_vs_genotype(missense_in_tx)
   >>> summary_df = missense.summarize(hpo, PatientCategories.YES)
   >>> summary_df.head(1)  # doctest: +NORMALIZE_WHITESPACE
     MISSENSE_VARIANT on NM_1234.5    Yes             No
