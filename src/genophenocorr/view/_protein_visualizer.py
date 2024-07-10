@@ -151,7 +151,7 @@ class ProteinVisualizer:
             return ax
 
 
-@dataclass(slots=True)
+@dataclass
 class DrawableProteinFeature:
     name: str
     min_pos_abs: Union[int, float]
@@ -161,6 +161,8 @@ class DrawableProteinFeature:
     min_pos_plotting: float
     max_pos_plotting: float
     track: int
+
+    __slots__ = ['name', 'min_pos_abs', 'max_pos_abs', 'label', 'color', 'min_pos_plotting', 'max_pos_plotting', 'track']
 
     def draw(self, ax: plt.Axes, features_y_max: float, feature_height: float, feature_outline_color: str):
         feature_y_max = features_y_max - self.track * feature_height
@@ -249,13 +251,15 @@ class DrawableProteinFeatureHandler:
             f.track = cur_track_num
 
 
-@dataclass(slots=True)
+@dataclass
 class DrawableProteinVariant:
     effect: VariantEffect
     pos_abs: Union[int, float]
     color: str
     pos_plotting: float
     count: int
+
+    __slots__ = ['effect', 'pos_abs', 'color', 'pos_plotting', 'count']
 
     def draw(self, ax: plt.Axes, y_max: float, stem_color: str):
         """
