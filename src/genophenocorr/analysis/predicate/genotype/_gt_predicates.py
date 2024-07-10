@@ -44,7 +44,7 @@ def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypeBooleanPre
     to test for presence of at least one matching allele in the patient.
     """
     return AlleleCountingGenotypeBooleanPredicate.for_variant_predicate(
-        variant_predicate=variant_predicate,
+        predicate=variant_predicate,
     )
 
 
