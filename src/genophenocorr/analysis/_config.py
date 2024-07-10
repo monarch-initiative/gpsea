@@ -9,7 +9,7 @@ from genophenocorr.preprocessing import ProteinMetadataService, UniprotProteinMe
     ProtCachingMetadataService
 from ._api import CohortAnalysis, HpoMtcFilter
 from ._filter import SimplePhenotypeFilter
-from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicSamplerMtcFilter
+from ._gp_analysis import FisherExactAnalyzer, IdentityTermMtcFilter, HeuristicMtcFilter, SpecifiedTermsMtcFilter
 from ._gp_impl import GpCohortAnalysis
 
 P_VAL_OPTIONS = (
@@ -28,6 +28,7 @@ P_VAL_OPTIONS = (
 class MTC_Strategy(enum.Enum):
     ALL_HPO_TERMS = 0
     HEURISTIC_SAMPLER = 1
+    SPECIFY_TERMS = 2
 
 
 
@@ -45,15 +46,16 @@ class CohortAnalysisConfiguration:
     Default values
     ^^^^^^^^^^^^^^
 
-    ==============================  ===========  ====================
-        Option                        Type           Default value
-    ==============================  ===========  ====================
-     ``missing_implies_excluded``    `bool`      `False`
-     ``pval_correction``             `str`       `bonferroni`
-     ``min_perc_patients_w_hpo``     `float`     `0.1`
-     ``mtc_alpha``                   `float`     `0.05`
-     ``include_sv``                  `bool`      `False`
-    ==============================  ===========  ====================
+    ==============================  =======================  =====================================
+        Option                        Type                    Default value
+    ==============================  =======================  =====================================
+     ``missing_implies_excluded``    `bool`                   `False`
+     ``pval_correction``             `str`                    `bonferroni`
+     ``min_perc_patients_w_hpo``     `float`                  `0.1`
+     ``mtc_alpha``                   `float`                  `0.05`
+     ``include_sv``                  `bool`                   `False`
+     ``mtc_strategy``                :class:`MTC_Strategy`    :class:`MTC_Strategy.ALL_HPO_TERMS`
+    ==============================  =======================  =====================================
 
     """
 
@@ -62,9 +64,10 @@ class CohortAnalysisConfiguration:
         self._missing_implies_excluded = False
         self._pval_correction = 'bonferroni'
         self._mtc_alpha = .05
-        self._min_perc_patients_w_hpo = .1
+        self._min_perc_patients_w_hpo = .2
         self._include_sv = False
         self._mtc_strategy = MTC_Strategy.ALL_HPO_TERMS
+        self._terms_to_test = set() ## only relevant for SPECIFIED_TERMS strategy
 
     @property
     def missing_implies_excluded(self) -> bool:
@@ -109,28 +112,10 @@ class CohortAnalysisConfiguration:
     def min_perc_patients_w_hpo(self) -> float:
         """
         A threshold for removing rare HPO terms, only the terms that are observed in at least this fraction of patients
-        will be retained for the analysis.
+        will be retained for the analysis (default 0.2).
         """
         return self._min_perc_patients_w_hpo
 
-    @min_perc_patients_w_hpo.setter
-    def min_perc_patients_w_hpo(self, min_perc_patients_w_hpo: float):
-        """
-        :param min_perc_patients_w_hpo: as a `float` with the lower acceptable bound of patients
-          for the phenotype feature to be included in the analysis
-          (e.g. `0.2` for needing 20% or more patients).
-        """
-        if not isinstance(min_perc_patients_w_hpo, float):
-            try:
-                min_perc_patients_w_hpo = float(min_perc_patients_w_hpo)
-            except ValueError:
-                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f",
-                                     min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
-        if min_perc_patients_w_hpo > 1 or min_perc_patients_w_hpo <= 0:
-            self._logger.warning("min_perc_patients_w_hpo must be greater than 0 and at most 1, but was %f. Using %f",
-                                 min_perc_patients_w_hpo, self._min_perc_patients_w_hpo)
-        else:
-            self._min_perc_patients_w_hpo = min_perc_patients_w_hpo
 
     @property
     def mtc_alpha(self) -> float:
@@ -184,13 +169,39 @@ class CohortAnalysisConfiguration:
         """
         TODO
         """
+        # TODO: this needs to be removed to prevent inconsistent configuration.
+        # If we use:
+        # ```
+        # config.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
+        # ````
+        # then the user will get an errror because of missing terms to test.
         if isinstance(strategy, MTC_Strategy):
             self._mtc_strategy = strategy
         else:
             self._logger.warning('TODO DOCUMENT `include_sv` value %s. Using %s', strategy, self._mtc_strategy)
 
-    def heuristic_strategy(self):
+    def heuristic_strategy(self, threshold_HPO_observed_frequency: float=0.2):
         self.mtc_strategy = MTC_Strategy.HEURISTIC_SAMPLER
+        if not isinstance(threshold_HPO_observed_frequency, float):
+            try:
+                threshold_HPO_observed_frequency = float(threshold_HPO_observed_frequency)
+            except ValueError:
+                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f",
+                                     threshold_HPO_observed_frequency, self._min_perc_patients_w_hpo)
+        if threshold_HPO_observed_frequency > 1 or threshold_HPO_observed_frequency <= 0:
+            errmsg = f"min_perc_patients_w_hpo must be greater than 0 and at most 1, but was {threshold_HPO_observed_frequency}. Fix this before continuingf",
+            self._logger.warning(errmsg)
+            raise ValueError(errmsg)
+        else:
+            self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
+        self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
+
+    def specify_terms_strategy(self,  specified_term_set: typing.Iterable[typing.Union[str, hpotk.TermId]]):
+        self.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
+        self._terms_to_test = specified_term_set
+
+    def get_terms_to_test(self):
+        return self._terms_to_test
 
 
 def configure_cohort_analysis(cohort: Cohort,
@@ -222,8 +233,12 @@ def configure_cohort_analysis(cohort: Cohort,
         config.min_perc_patients_w_hpo,
     )
 
+    mtc_filter: HpoMtcFilter
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
-        mtc_filter = HeuristicSamplerMtcFilter(hpo=hpo)
+        mtc_filter = HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter = config._min_perc_patients_w_hpo)
+    elif config.mtc_strategy == MTC_Strategy.SPECIFY_TERMS:
+        validated_terms_to_test = _validate_terms_to_test(hpo, config.get_terms_to_test())
+        mtc_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test=validated_terms_to_test)
     elif config.mtc_strategy == MTC_Strategy.ALL_HPO_TERMS:
         mtc_filter = IdentityTermMtcFilter()
     else:
@@ -245,6 +260,34 @@ def configure_cohort_analysis(cohort: Cohort,
         missing_implies_excluded=config.missing_implies_excluded,
         include_sv=config.include_sv,
     )
+
+def _validate_terms_to_test(
+        hpo: hpotk.MinimalOntology,
+        terms_to_test: typing.Iterable[typing.Union[hpotk.TermId, str]],
+    ) -> typing.Iterable[hpotk.TermId]:
+    """
+    Check that:
+     * all terms to test are valid TermIds/CURIES,
+     * the term IDs are in used HPO, and
+     * there is at least one term to test
+    """
+    validated_terms_to_test = set()
+
+    for term in terms_to_test:
+        if isinstance(term, hpotk.TermId):
+            pass
+        if isinstance(term, str):
+            term = hpotk.TermId.from_curie(term)
+        else:
+            raise ValueError(f'{term} is neither a TermId nor a CURIE `str`!')
+
+        if term not in hpo:
+            raise ValueError(f"HPO ID {term} not in HPO ontology {hpo.version}")
+        validated_terms_to_test.add(term)
+    if len(validated_terms_to_test) == 0:
+        raise ValueError('Cannot run use {MTC_Strategy.SPECIFY_TERMS} with no HPO terms!')
+
+    return validated_terms_to_test
 
 
 def _configure_protein_service(protein_fallback: str, cache_dir) -> ProteinMetadataService:

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from genophenocorr.analysis import HeuristicSamplerMtcFilter, apply_predicates_on_patients
+from genophenocorr.analysis import HeuristicMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
 from genophenocorr.analysis.predicate import PatientCategories, GenotypePolyPredicate
 from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate
 from genophenocorr.model import Cohort
@@ -14,8 +14,9 @@ from genophenocorr.model import Cohort
 class TestHeuristicSamplerMtcFilter:
 
     @pytest.fixture
-    def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicSamplerMtcFilter:
-        return HeuristicSamplerMtcFilter(hpo=hpo)
+    def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicMtcFilter:
+        default_freq_threshold=0.2
+        return HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter=default_freq_threshold)
 
     @pytest.fixture(scope='class')
     def patient_counts(
@@ -50,7 +51,7 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.one_genotype_has_zero_hpo_observations(counts=counts_df)
+        actual = HeuristicMtcFilter.one_genotype_has_zero_hpo_observations(counts=counts_df)
 
         assert actual == expected
 
@@ -74,7 +75,7 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
+        actual = HeuristicMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
 
         assert actual == expected
 
@@ -93,13 +94,13 @@ class TestHeuristicSamplerMtcFilter:
     ):
         counts_df = self.prepare_counts_df(counts)
 
-        actual = HeuristicSamplerMtcFilter.genotypes_have_same_hpo_proportions(counts=counts_df)
+        actual = HeuristicMtcFilter.genotypes_have_same_hpo_proportions(counts=counts_df)
 
         assert actual == expected
 
     def test_filter_terms_to_test(
             self,
-            mtc_filter: HeuristicSamplerMtcFilter,
+            mtc_filter: HeuristicMtcFilter,
             patient_counts: typing.Tuple[
                 typing.Mapping[hpotk.TermId, int],
                 typing.Mapping[hpotk.TermId, pd.DataFrame],
@@ -120,6 +121,32 @@ class TestHeuristicSamplerMtcFilter:
         assert len(filtered_n_usable) == 4
         assert len(filtered_all_counts) == 4
 
+    def test_specified_term_mtc_filter(
+            self,
+            hpo: hpotk.MinimalOntology,
+            patient_counts: typing.Tuple[
+                typing.Mapping[hpotk.TermId, int],
+                typing.Mapping[hpotk.TermId, pd.DataFrame],
+            ],
+    ):
+        """
+        The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
+        is the only term that should survive the filter. We start with a total of five terms (n_usable==5),
+        but after our filter, only one survives (filtered_n_usable == 1), and we have four cases in which the
+        reason for filtering out is 'Skipping non-specified term'
+        """
+        specified_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test={hpotk.TermId.from_curie("HP:0032350")})
+        n_usable, all_counts = patient_counts
+        mtc_report = specified_filter.filter_terms_to_test(n_usable, all_counts)
+        assert isinstance(mtc_report, tuple)
+        assert len(mtc_report) == 3 ## Skipping non-specified term (n=5)
+
+        filtered_n_usable, filtered_all_counts, reason_for_filtering_out = mtc_report
+        assert len(n_usable) == 5
+        assert len(filtered_n_usable) == 1
+        assert reason_for_filtering_out['Skipping non-specified term'] == 4
+
+
     @staticmethod
     def prepare_counts_df(counts):
         index = pd.Index([PatientCategories.YES, PatientCategories.NO])
@@ -127,3 +154,52 @@ class TestHeuristicSamplerMtcFilter:
         values = np.array(counts).reshape((2, 2))
 
         return pd.DataFrame(data=values, index=index, columns=columns)
+
+
+    def test_min_observed_HPO_threshold(
+        self,
+        patient_counts: typing.Tuple[
+            typing.Mapping[hpotk.TermId, int],
+            typing.Mapping[hpotk.TermId, pd.DataFrame],
+            ],
+    ):
+        """
+        In our heuristic filter, we only test terms that have at least a threshold
+        frequency in at least one of the groups. We use the "all counts" datastructure, that
+        is a dictionary whose keys are hpotoolkit TermIds and whose values are pandas DataFrames
+        with 2x2 contingenicy tables of counts. For instance, each column will have one row for
+        PatientCategories.YES and one for PatientCategories.NO, indicating counts of measured observed/excluded
+        HPO phenotypes. Each column is a certain genotype, e.g., MISSENSE or NON-MISSENSE. We want the
+        function to return the maximum frequency. In each column, the frequency is calculate by
+        PatientCategories.YES / (PatientCategories.YES+PatientCategories.NO). This function tests that this works
+        for all of the HPO terms in the dictionary.
+        """
+        EPSILON = 0.001
+        _, all_counts = patient_counts
+        # Ectopia lentis HP:0001083  (6 9  1 2), freqs are 6/15=0.4 and 1/3=0.33
+        ectopia = all_counts[hpotk.TermId.from_curie("HP:0001083")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(ectopia)
+        assert max_f == pytest.approx(0.4, abs=EPSILON)
+        
+        # Seizure HP:0001250 (17 7 11 0), freqs are 17/24=0.7083 and 11/11=1
+        seizure = all_counts[hpotk.TermId.from_curie("HP:0001250")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(seizure)
+        assert max_f == pytest.approx(1.0, abs=EPSILON)
+        
+        # Sulfocysteinuria HP:0032350 (11 0 2 0), freqs are both 1
+        sulfocysteinuria = all_counts[hpotk.TermId.from_curie("HP:0032350")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(sulfocysteinuria)
+        assert max_f == pytest.approx(1.0, abs=EPSILON)
+        
+        # Neurodevelopmental delay HP:0012758 (4 13 4 4), freqs are 4/17 = 0.235 and 4/8=0.5
+        ndelay = all_counts[hpotk.TermId.from_curie("HP:0012758")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(ndelay)
+        assert max_f == pytest.approx(0.5, abs=EPSILON)
+        
+        # Hypertonia HP:0001276 (7 9 4 3) fresa are 7/16=0.4375 and 4/7=0.5714
+        hypertonia  = all_counts[hpotk.TermId.from_curie("HP:0001276")]
+        max_f = HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency(hypertonia)
+        assert max_f == pytest.approx(0.5714, abs=EPSILON)
+
+
+
