@@ -102,6 +102,9 @@ class VariantExonPredicate(VariantPredicate):
         if tx_anno is None:
             return False
         
+        if tx_anno.overlapping_exons is None:
+            return False
+
         return any(self._exon == exon for exon in tx_anno.overlapping_exons)
     
 class ProteinRegionPredicate(VariantPredicate):

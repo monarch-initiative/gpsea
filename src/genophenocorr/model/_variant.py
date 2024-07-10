@@ -117,7 +117,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._variant_effects
 
     @property
-    def overlapping_exons(self) -> typing.Sequence[int]:
+    def overlapping_exons(self) -> typing.Optional[typing.Sequence[int]]:
         """
         Returns:
             Sequence[integer]: A sequence of 1-based exon indices (the index of the 1st exon is `1`)
