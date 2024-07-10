@@ -1,8 +1,8 @@
 import random
-from typing import Union, Tuple, List, Optional, Literal
-from dataclasses import dataclass
 import heapq
+import typing
 
+from dataclasses import dataclass
 from itertools import cycle
 
 import matplotlib.pyplot as plt
@@ -56,9 +56,9 @@ class ProteinVisualizer:
     def draw_fig(
             self,
             pvis: ProteinVisualizable,
-            ax: Optional[plt.Axes] = None,
-            labeling_method: Literal['abbreviate', 'enumerate'] = 'abbreviate'
-    ) -> Optional[plt.Axes]:
+            ax: typing.Optional[plt.Axes] = None,
+            labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate'
+    ) -> typing.Optional[plt.Axes]:
         """
         Visualize the cohort variants on a protein diagram.
 
@@ -154,8 +154,8 @@ class ProteinVisualizer:
 @dataclass
 class DrawableProteinFeature:
     name: str
-    min_pos_abs: Union[int, float]
-    max_pos_abs: Union[int, float]
+    min_pos_abs: typing.Union[int, float]
+    max_pos_abs: typing.Union[int, float]
     label: str
     color: str
     min_pos_plotting: float
@@ -190,7 +190,7 @@ class DrawableProteinFeature:
 
 
 class DrawableProteinFeatureHandler:
-    def __init__(self, pvis: ProteinVisualizable, labeling_method: str, colors: List[str]):
+    def __init__(self, pvis: ProteinVisualizable, labeling_method: str, colors: typing.Sequence[str]):
         self.pvis = pvis
         self.labeling_method = labeling_method
         self._available_colors = colors
@@ -254,7 +254,7 @@ class DrawableProteinFeatureHandler:
 @dataclass
 class DrawableProteinVariant:
     effect: VariantEffect
-    pos_abs: Union[int, float]
+    pos_abs: typing.Union[int, float]
     color: str
     pos_plotting: float
     count: int
@@ -276,7 +276,7 @@ class DrawableProteinVariant:
 
 
 class DrawableProteinVariantHandler:
-    def __init__(self, pvis: ProteinVisualizable, aggregation_method: Literal['standard', 'disease'] = 'standard'):
+    def __init__(self, pvis: ProteinVisualizable, aggregation_method: typing.Literal['standard', 'disease'] = 'standard'):
         self.pvis = pvis
         if aggregation_method in ['standard', 'disease']:
             self.aggregation_method = aggregation_method
@@ -544,7 +544,7 @@ def translate_to_ax_coordinates(
     return shifted_to_0_1 * relative_scale + min_relative
 
 
-def assign_colors(names, available_colors):
+def assign_colors(names: typing.Iterable[str], available_colors: typing.Sequence[str]):
     num_colors = 0
     _colors = dict()
     seen = set()
@@ -620,7 +620,7 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
     return legend1_width
 
 
-def sweep_line(intervals: List[Tuple[int, int]]) -> int:
+def sweep_line(intervals: typing.Iterable[typing.Tuple[int, int]]) -> int:
     """
     Given a list of intervals, find the maximum number of overlapping intervals.
 
@@ -639,7 +639,7 @@ def sweep_line(intervals: List[Tuple[int, int]]) -> int:
     return max_overlaps
 
 
-def resolve_overlap(intervals: List[Tuple[int, int]]) -> List[int]:
+def resolve_overlap(intervals: typing.Collection[typing.Tuple[int, int]]) -> typing.Sequence[int]:
     """
     Given a list of intervals, assign each interval an integer y-position,
     such that no two intervals overlap in the x dimension. Return the y-positions.
