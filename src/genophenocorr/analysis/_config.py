@@ -236,9 +236,8 @@ def configure_cohort_analysis(cohort: Cohort,
     """
     if config is None:
         config = CohortAnalysisConfiguration()  # Use the default config
-    if cache_dir is None:
-        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
-    protein_metadata_service = _configure_protein_service(protein_source, cache_dir)
+    cache_dir = _configure_cache_dir(cache_dir)
+    protein_metadata_service = configure_default_protein_metadata_service(protein_source, cache_dir)
 
     # Phenotype filter defines how we select the HPO terms of interest.
     # For instance, we may choose to only investigate the terms
@@ -304,8 +303,22 @@ def _validate_terms_to_test(
 
     return validated_terms_to_test
 
+def configure_default_protein_metadata_service(
+    protein_source: str = 'UNIPROT',
+    cache_dir: typing.Optional[str] = None,
+) -> ProteinMetadataService:
+    """
+    Create default protein metadata service that will cache the protein metadata 
+    in current working directory under `.genophenocorr_cache/protein_cache` 
+    and reach out to UNIPROT REST API if a cache entry is missing.
+    """
+    cache_dir = _configure_cache_dir(cache_dir)
+    return _configure_protein_service(protein_fallback=protein_source, cache_dir=cache_dir)
 
-def _configure_protein_service(protein_fallback: str, cache_dir) -> ProteinMetadataService:
+def _configure_protein_service(
+        protein_fallback: str, 
+        cache_dir: str,
+) -> ProteinMetadataService:
     # (1) ProteinMetadataService
     # Setup fallback
     protein_fallback = _configure_fallback_protein_service(protein_fallback)
@@ -324,3 +337,8 @@ def _configure_fallback_protein_service(protein_fallback: str) -> ProteinMetadat
     else:
         raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
     return fallback1
+
+def _configure_cache_dir(cache_dir: typing.Optional[str]) -> str:
+    if cache_dir is None:
+        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    return cache_dir
