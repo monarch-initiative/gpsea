@@ -10,23 +10,22 @@ from ._protein_visualizable import ProteinVisualizable
 
 class ProteinViewable:
     """
-    Class to create a viewable table for the protein information that is uses a Jinja2 template to 
-    create an HTML element for display in the Jupyter notebook.
+    Class to create a pretty HTML table to display the protein information in the Jupyter notebook.
     """
     def __init__(self) -> None:
         environment = Environment(loader=(PackageLoader('genophenocorr.view', 'templates')))
         self._cohort_template = environment.get_template("protein.html")
         
     def process(self, cohort: Cohort, pvis: ProteinVisualizable) -> str:
-        """ This organizes the necessary data found through the UniProt API into a 
-        easy to read table about the given protein.
+        """
+        Summarize the data regarding the protein into a HTML table.
 
         Args:
             cohort (Cohort): the cohort of patients being analyzed
             pvis (ProteinVisualizable): The class that collects data from the UniProt API for a given protein ID
 
         Returns:
-            str: an HTML string with parameterized template for rendering
+            str: an HTML document for showing in Jupyter notebook
         """
         context = self._prepare_context(cohort, pvis)
         return self._cohort_template.render(context)
