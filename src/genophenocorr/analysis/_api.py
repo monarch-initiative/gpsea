@@ -7,6 +7,7 @@ import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient, FeatureType
 from .predicate import PolyPredicate, PatientCategory
+from .predicate.genotype import VariantPredicate
 from .predicate.phenotype import P
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -316,6 +317,31 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         Args:
             feature (string): feature identifier, e.g. ``DNA-binding``.
             tx_id (string): the accession of the transcript of interest
+        """
+        pass
+
+    @abc.abstractmethod
+    def compare_hpo_vs_genotype(
+            self,
+            predicate: VariantPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        """
+        Bin patients according to a presence of at least one allele that matches `predicate` 
+        and test for genotype-phenotype correlations.
+        """
+        pass
+
+    @abc.abstractmethod
+    def compare_hpo_vs_genotype_groups(
+            self,
+            first: VariantPredicate,
+            second: VariantPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        """
+        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
+        and test for genotype-phenotype correlations between the groups.
+
+        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!
         """
         pass
 
