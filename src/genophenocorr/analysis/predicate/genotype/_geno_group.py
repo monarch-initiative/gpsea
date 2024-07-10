@@ -39,6 +39,7 @@ class VariantEffectsPredicate(GroupingPredicate):
     :param effect1: the first tested variant effect.
     :param effect2: the second tested variant effect.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str,
                  effect1: VariantEffect, effect2: VariantEffect) -> None:
@@ -171,6 +172,7 @@ class ExonsPredicate(GroupingPredicate):
     :param exon1_number: a positive `int` of the first target exon.
     :param exon2_number: a positive `int` of the second target exon.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str,
                  exon1_number: int, exon2_number: int) -> None:
@@ -235,6 +237,7 @@ class ProtFeatureTypesPredicate(GroupingPredicate):
     :param feature_type1: an instance of the first target :class:`FeatureType`.
     :param feature_type2: an instance of the second target :class:`FeatureType`.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, feature_type1: FeatureType, feature_type2: FeatureType, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
@@ -309,6 +312,7 @@ class ProtFeaturesPredicate(GroupingPredicate):
     :param protein_feature1_name: a `str` with the name of the first protein feature.
     :param protein_feature2_name: a `str` with the name of the second protein feature.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, protein_feature1_name: str, protein_feature2_name: str, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
@@ -382,6 +386,7 @@ class ProtRegionsPredicate(GroupingPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param protein_region: a `Region` with the start and end coordinates.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, protein_region_1: Region, protein_region_2: Region) -> None:
         self._tx_id = transcript_id

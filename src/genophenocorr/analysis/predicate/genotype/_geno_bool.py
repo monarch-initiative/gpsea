@@ -8,7 +8,6 @@ from genophenocorr.preprocessing import ProteinMetadataService
 
 from .._api import Categorization, GenotypeBooleanPredicate
 
-
 class VariantEffectPredicate(GenotypeBooleanPredicate):
     """
     `VariantEffectPredicate` tests if the patient has at least one variant that is predicted to have
@@ -17,6 +16,7 @@ class VariantEffectPredicate(GenotypeBooleanPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param effect: the tested variant effect.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str,
                  effect: VariantEffect) -> None:
@@ -68,6 +68,7 @@ class VariantKeyPredicate(GenotypeBooleanPredicate):
 
     :param variant_key: a `str` with the variant key.
     """
+    # TODO: remove
 
     def __init__(self, variant_key: str) -> None:
         self._variant_key = hpotk.util.validate_instance(variant_key, str, 'variant_key')
@@ -124,6 +125,7 @@ class ExonPredicate(GenotypeBooleanPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param exon_number: a positive `int` of the target exon.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str,
                  exon_number: int) -> None:
@@ -177,6 +179,7 @@ class ProtFeatureTypePredicate(GenotypeBooleanPredicate):
     :param feature_type: an instance of the target :class:`FeatureType`.
     :param protein_service: an instance of a :class:`ProteinMetadataService`.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, feature_type: FeatureType, protein_service: ProteinMetadataService) -> None:
         self._tx_id = transcript_id
@@ -236,6 +239,7 @@ class ProtFeaturePredicate(GenotypeBooleanPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param protein_feature_name: a `str` with the name of the protein feature.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, protein_feature_name: str, protein_service:ProteinMetadataService) -> None:
         self._tx_id = transcript_id
@@ -294,6 +298,7 @@ class ProtRegionPredicate(GenotypeBooleanPredicate):
     :param transcript_id: the accession of the transcript of interest.
     :param protein_region: a `Region` with the start and end coordinates.
     """
+    # TODO: remove
 
     def __init__(self, transcript_id: str, protein_region: Region) -> None:
         self._tx_id = transcript_id
