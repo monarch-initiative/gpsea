@@ -1,5 +1,4 @@
 import typing
-import regex as re
 
 from genophenocorr.model import *
 import numpy as np

@@ -20,7 +20,7 @@
     background-color: LightSkyBlue;
     border: 1px solid #dddddd;
     text-align: left;
-    padding: 2px;
+    padding: 5px;
   font-weight: bold;
   font-size: 120%;
 }
@@ -31,7 +31,7 @@
   }
 
   td {
-    padding: 2px;
+    padding: 5px;
     font-weight: bold;
   }
 
@@ -40,7 +40,7 @@
   }
 
   .table td,tr {
-    text-align: right;
+    text-align: left;
 }
 
 .table td:first-child, tr:first-child {
@@ -71,13 +71,13 @@ caption {
                 <th>Feature Type</th>
                 <th>Feature Coordinates</th>
                 <th>Variants in Feature</th>
-            </tr>
+            </tr> 
             {% for feat in protein_features %}
             <tr>
-                <td>{{ feat[0] }}</td>
-                <td>{{ feat[1] }}</td>
-                <td>{{ feat[2].to_string() }}</td>
-                <td>{{ feat[3] }}</td>
+                <td>{{ feat.feature_name }}</td>
+                <td>{{ feat.feature_type }}</td>
+                <td>{{ feat.region.start }} - {{ feat.region.end }}</td>
+                <td>{{ feat.variant_count }}</td>
             </tr>
         {% endfor %}
         </tbody>
