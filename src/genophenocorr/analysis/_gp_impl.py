@@ -49,30 +49,34 @@ class GpCohortAnalysis(CohortAnalysis):
         self._missing_implies_excluded = missing_implies_excluded
 
     def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        # TODO: remove in favor of a method that takes a variant predicate, when the variant predicate builder is ready.
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = VariantPredicates.variant_effect(effect, tx_id)
-        
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
 
     def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = VariantPredicates.variant_key(variant_key)
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
 
     def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = VariantPredicates.exon(exon_number, tx_id)
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
 
     def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = self._protein_predicates.protein_feature_type(feature_type, tx_id)
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
 
     def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = self._protein_predicates.protein_feature(feature, tx_id)
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
     
     def compare_by_protein_region(self, protein_region: Region, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
         predicate = VariantPredicates.region(protein_region, tx_id)
-        return self._apply_variant_predicate_on_hpo_terms(predicate)
+        return self.compare_hpo_vs_genotype(predicate)
 
     def compare_by_variant_effects(
             self,
@@ -80,19 +84,22 @@ class GpCohortAnalysis(CohortAnalysis):
             effect2: VariantEffect,
             tx_id: str,
     ) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=VariantPredicates.variant_effect(effect=effect1, tx_id=tx_id),
             second=VariantPredicates.variant_effect(effect=effect2, tx_id=tx_id),
         )
 
     def compare_by_variant_keys(self, variant_key1: str, variant_key2: str) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=VariantPredicates.variant_key(variant_key1),
             second=VariantPredicates.variant_key(variant_key2),
         )
 
     def compare_by_exons(self, exon1_number: int, exon2_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=VariantPredicates.exon(exon=exon1_number, tx_id=tx_id),
             second=VariantPredicates.exon(exon=exon2_number, tx_id=tx_id),
         )
@@ -103,7 +110,8 @@ class GpCohortAnalysis(CohortAnalysis):
             feature_type2: FeatureType,
             tx_id: str,
     ) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+    # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=self._protein_predicates.protein_feature_type(feature_type=feature_type1, tx_id=tx_id),
             second=self._protein_predicates.protein_feature_type(feature_type=feature_type2, tx_id=tx_id),
         )
@@ -114,7 +122,8 @@ class GpCohortAnalysis(CohortAnalysis):
             feature2: str,
             tx_id: str,
     ) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=self._protein_predicates.protein_feature(feature_id=feature1, tx_id=tx_id),
             second=self._protein_predicates.protein_feature(feature_id=feature2, tx_id=tx_id),
         )
@@ -125,7 +134,8 @@ class GpCohortAnalysis(CohortAnalysis):
         region2: Region, 
         tx_id: str,
     ) -> GenotypePhenotypeAnalysisResult:
-        return self._apply_grouping_predicate_on_hpo_terms(
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
             first=VariantPredicates.region(region=region1, tx_id=tx_id),
             second=VariantPredicates.region(region=region2, tx_id=tx_id),
         )
@@ -154,8 +164,40 @@ class GpCohortAnalysis(CohortAnalysis):
         predicate = RecessiveProtRegionPredicate(tx_id, region)
         return self._apply_poly_predicate_on_hpo_terms(predicate)
 
+    def compare_hpo_vs_genotype(
+            self,
+            predicate: VariantPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        """
+        Bin patients according to a presence of at least one allele that matches `predicate` 
+        and test for genotype-phenotype correlations.
+        """
+        assert isinstance(predicate, VariantPredicate), \
+            f'{type(predicate)} is not an instance of `VariantPredicate`'
+        predicate = wrap_as_boolean_predicate(predicate) 
+        return self._apply_poly_predicate_on_hpo_terms(predicate)
+    
+    def compare_hpo_vs_genotype_groups(
+            self,
+            first: VariantPredicate,
+            second: VariantPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        """
+        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
+        and test for genotype-phenotype correlations between the groups.
+
+        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!
+        """
+        predicate = wrap_as_grouping_predicate(
+            first=first,
+            second=second,
+        )
+        return self._apply_poly_predicate_on_hpo_terms(predicate)
+
     def compare_disease_vs_genotype(
-        self, genotype_predicate: GenotypePolyPredicate, disease_ids:typing.Sequence[typing.Union[str, hpotk.TermId]] = None
+        self, 
+        genotype_predicate: GenotypePolyPredicate, 
+        disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]] = None,
     ) -> GenotypePhenotypeAnalysisResult:
         pheno_predicates = []
         testing_diseases = []
@@ -173,24 +215,6 @@ class GpCohortAnalysis(CohortAnalysis):
             pheno_predicates.append(DiseasePresencePredicate(disease))
 
         return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
-
-    def _apply_variant_predicate_on_hpo_terms(
-            self,
-            predicate: VariantPredicate,
-    ) -> GenotypePhenotypeAnalysisResult:
-        assert isinstance(predicate, VariantPredicate), \
-            f'{type(predicate)} is not an instance of `VariantPredicate`'
-        predicate = wrap_as_boolean_predicate(predicate) 
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
-
-    def _apply_grouping_predicate_on_hpo_terms(
-            self, first: VariantPredicate, second: VariantPredicate,
-    ) -> GenotypePhenotypeAnalysisResult:
-        predicate = wrap_as_grouping_predicate(
-            first=first,
-            second=second,
-        )
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
 
     def _apply_poly_predicate_on_hpo_terms(
             self,
