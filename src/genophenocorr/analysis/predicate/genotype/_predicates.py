@@ -15,6 +15,7 @@ class VariantEffectPredicate(VariantPredicate):
         effect (VariantEffect): 
         tx_id (str): 
     """
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, effect: VariantEffect, tx_id: str) -> None:
         self._effect = effect
@@ -44,6 +45,7 @@ class VariantEffectPredicate(VariantPredicate):
     
 
 class VariantKeyPredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, key: str) -> None:
         self._key = key
@@ -58,6 +60,7 @@ class VariantKeyPredicate(VariantPredicate):
         return False
     
 class VariantGenePredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, gene_symbol:str) -> None:
         self._symbol = gene_symbol
@@ -72,6 +75,7 @@ class VariantGenePredicate(VariantPredicate):
         return False
     
 class VariantTranscriptPredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, tx_id: str) -> None:
         self._tx_id = tx_id
@@ -87,6 +91,7 @@ class VariantTranscriptPredicate(VariantPredicate):
     
     
 class VariantExonPredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, exon: int, tx_id: str) -> None:
         self._exon = exon
@@ -104,6 +109,7 @@ class VariantExonPredicate(VariantPredicate):
         return False
     
 class ProteinRegionPredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, region: Region, tx_id: str) -> None:
         self._region = region
@@ -121,6 +127,7 @@ class ProteinRegionPredicate(VariantPredicate):
         return False
     
 class ProteinFeatureTypePredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, feature_type: FeatureType, tx_id: str, protein_metadata_service: ProteinMetadataService) -> None:
         self._feature_type = feature_type
@@ -141,6 +148,7 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         return False
     
 class ProteinFeaturePredicate(VariantPredicate):
+    # TODO: add __repr__, __str__, __hash__, __eq__
     
     def __init__(self, feature_name: str, tx_id: str, protein_metadata_service: ProteinMetadataService) -> None:
         self._feature = feature_name

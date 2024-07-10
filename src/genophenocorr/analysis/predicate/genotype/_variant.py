@@ -1,42 +1,8 @@
-import abc
-import typing
-
-from genophenocorr.model import VariantEffect, Variant, FeatureType
+from genophenocorr.model import VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate
 from ._predicates import *
-
-
-class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
-    # NOT PART OF THE PUBLIC API
-
-    def __init__(
-            self,
-            predicates: typing.Iterable[VariantPredicate],
-    ):
-        self._predicates = tuple(predicates)
-
-
-class AnyVariantPredicate(LogicalVariantPredicate):
-    # NOT PART OF THE PUBLIC API
-
-    def get_question(self) -> str:
-        return ' OR '.join(predicate.get_question() for predicate in self._predicates)
-
-    def test(self, variant: Variant) -> bool:
-        return any(predicate.test(variant) for predicate in self._predicates)
-
-
-class AllVariantPredicate(LogicalVariantPredicate):
-    # NOT PART OF THE PUBLIC API
-
-    def get_question(self) -> str:
-        return ' AND '.join(predicate.get_question() for predicate in self._predicates)
-
-    def test(self, variant: Variant) -> bool:
-        return all(predicate.test(variant) for predicate in self._predicates)
-
 
 class VariantPredicates:
     """
@@ -127,32 +93,6 @@ class VariantPredicates:
             VariantPredicate: a predicate
         """
         return ProteinRegionPredicate(region, tx_id)
-
-    @staticmethod
-    def all_match(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:
-        """
-        Prepare a :class:`VariantPredicate` that tests if the variant passes testing
-        with *all* of the provided `predicates`.
-        Args:
-            predicates: an iterable with the :class:`VariantPredicate` instances to test.
-
-        Returns:
-            VariantPredicate: a predicate
-        """
-        return AllVariantPredicate(predicates)
-
-    @staticmethod
-    def any_match(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:
-        """
-        Prepare a :class:`VariantPredicate` that tests if the variant passes testing
-        with *any* of the provided `predicates`.
-        Args:
-            predicates: an iterable with the :class:`VariantPredicate` instances to test.
-
-        Returns:
-            VariantPredicate: a predicate
-        """
-        return AnyVariantPredicate(predicates)
 
 
 class ProteinPredicates:

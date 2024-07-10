@@ -1,11 +1,8 @@
 import abc
 import typing
 
-from genophenocorr.model import Patient, Variant
+from genophenocorr.model import Variant
 from genophenocorr.model import *
-
-
-from .._api import GenotypeBooleanPredicate, GroupingPredicate, Categorization
 
 
 class VariantPredicate(metaclass=abc.ABCMeta):
@@ -35,125 +32,50 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         """
         pass
 
+    def und(self, other):
+        """
+        Create a variant predicate passes if *BOTH* `self` and `other` pass.
+        """
+        # TODO: check the other is not the same as `self`
+        return AllVariantPredicate(self, other)
+    
+    def oder(self, other):
+        """
+        Create a variant predicate passes if *EITHER* `self` *OR* `other` passes.
+        """
+        # TODO: check the other is not the same as `self`
+        return AnyVariantPredicate(self, other)
 
-class AlleleCounter:
-    """
-    `AlleleCounter` counts the number of alleles of all variants that pass the selection with a given `predicate`.
 
-    :param predicate: a :class:`VariantPredicate` for selecting the target variants.
-    """
+class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
+    # NOT PART OF THE PUBLIC API
 
     def __init__(
             self,
-            predicate: VariantPredicate,
+            *args,
     ):
-        self._predicate = predicate
-
-    def get_question(self) -> str:
-        """
-        Get the question tested by the predicate.
-
-        Returns:
-            str: the question tested by the predicate
-        """
-        return self._predicate.get_question()
-
-    def count(
-            self,
-            patient: Patient,
-    ) -> int:
-        """
-        Count the number of alleles of all variants that pass the predicate.
-        Args:
-            patient: the patient to test
-
-        Returns:
-            int: the count of the passing alleles
-        """
-        count = 0
-
-        for var in patient.variants:
-            if self._predicate.test(var):
-                genotype = var.genotypes.for_sample(patient.labels)
-                if genotype == Genotype.HOMOZYGOUS_ALTERNATE:
-                    count += 2
-                elif genotype == Genotype.HETEROZYGOUS or genotype == Genotype.HEMIZYGOUS:
-                    count += 1
-        return count
+        self._predicates = tuple(args)
 
 
-class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
+class AnyVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
-    """
-    The predicate tests presence of at least one matching allele in the patient.
-    """
-
-    @staticmethod
-    def for_variant_predicate(predicate: VariantPredicate):
-        allele_counter = AlleleCounter(predicate=predicate)
-        return AlleleCountingGenotypeBooleanPredicate(allele_counter=allele_counter)
-
-    def __init__(self, allele_counter: AlleleCounter):
-        self._allele_counter = allele_counter
 
     def get_question(self) -> str:
-        return self._allele_counter.get_question()
+        return ' OR '.join(predicate.get_question() for predicate in self._predicates)
 
-    def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        self._check_patient(patient)
-
-        allele_count = self._allele_counter.count(patient)
-        if allele_count > 0:
-            return GenotypeBooleanPredicate.YES
-        elif allele_count == 0:
-            return GenotypeBooleanPredicate.NO
-        else:
-            raise ValueError(
-                f"Allele counter should return a non-negative allele count: {allele_count}"
-            )
+    def test(self, variant: Variant) -> bool:
+        return any(predicate.test(variant) for predicate in self._predicates)
+    
+    # TODO: add __repr__, __str__, __hash__, __eq__
 
 
-class AlleleCountingGenotypeGroupingPredicate(GroupingPredicate):
+class AllVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
-    """
-    The predicate assigns a patient into first or second group based on the provided allele counters.
-
-    The patient is assigned into a group if *at least one allele* of a matching variant is present in the patient.
-    If the patient contains alleles that match both groups, the patient is *NOT* assigned into any group.
-    """
-
-    @staticmethod
-    def for_variant_predicates(first: VariantPredicate, second: VariantPredicate):
-        first_counter = AlleleCounter(predicate=first)
-        second_counter = AlleleCounter(predicate=second)
-        return AlleleCountingGenotypeBooleanPredicate(
-            first_counter=first_counter,
-            second_counter=second_counter,
-        )
-
-    def __init__(
-        self,
-        first_counter: AlleleCounter,
-        second_counter: AlleleCounter,
-    ):
-        self._first = first_counter
-        self._second = second_counter
 
     def get_question(self) -> str:
-        return f'first: {self._first.get_question()}, second: {self._second.get_question()}'
+        return ' AND '.join(predicate.get_question() for predicate in self._predicates)
 
-    def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        self._check_patient(patient)
-        
-        first_count = self._first.count(patient)
-        is_first = True if first_count > 0 else False
-        
-        second_count = self._second.count(patient)
-        is_second = True if second_count > 0 else False
+    def test(self, variant: Variant) -> bool:
+        return all(predicate.test(variant) for predicate in self._predicates)
 
-        if is_first and not is_second:
-            return GroupingPredicate.FIRST
-        elif not is_first and is_second:
-            return GroupingPredicate.SECOND
-        else:
-            return None
+    # TODO: add __repr__, __str__, __hash__, __eq__

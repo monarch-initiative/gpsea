@@ -6,7 +6,7 @@ import hpotk
 import pytest
 
 from genophenocorr.analysis.predicate import GenotypePolyPredicate
-from genophenocorr.analysis.predicate.genotype import VariantEffectPredicate
+from genophenocorr.analysis.predicate.genotype import VariantPredicates, VariantPredicate, boolean_predicate
 from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
 from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
 from genophenocorr.model import *
@@ -110,7 +110,12 @@ def suox_cohort(
 def suox_gt_predicate() -> GenotypePolyPredicate:
     # To bin the patients to a group with >1 MISSENSE variant or 0 MISSENSE variants.
     suox_mane_tx_id = 'NM_001032386.2'
-    return VariantEffectPredicate(transcript_id=suox_mane_tx_id, effect=VariantEffect.MISSENSE_VARIANT)
+    return boolean_predicate(
+        variant_predicate=VariantPredicates.variant_effect(
+            effect=VariantEffect.MISSENSE_VARIANT, 
+            tx_id=suox_mane_tx_id
+        )
+    )
 
 
 @pytest.fixture(scope='session')

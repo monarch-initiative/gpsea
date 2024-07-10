@@ -1,11 +1,8 @@
-import typing
-
 import pytest
 
 from genophenocorr.analysis.predicate.genotype import VariantPredicates, ProteinPredicates
 from genophenocorr.model import *
 from genophenocorr.model.genome import *
-from genophenocorr.preprocessing import ProteinMetadataService
 
 
 class TestVariantPredicates:
@@ -101,31 +98,6 @@ class TestVariantPredicates:
 
 class TestProteinPredicates:
 
-    @pytest.fixture(scope='class')
-    def protein_metadata_service(self) -> ProteinMetadataService:
-        response = ProteinMetadata(
-                protein_id='pt:xyz',
-                label='xyz_label',
-                protein_features=(
-                    ProteinFeature.create(
-                        FeatureInfo(name='MOCK_REPEAT', region=Region(55, 80)),
-                        FeatureType.REPEAT,
-                    ),
-                    ProteinFeature.create(
-                        FeatureInfo(name='MOCK_DOMAIN', region=Region(30, 50)),
-                        FeatureType.DOMAIN,
-                    ),
-                )
-            )
-        return MockProteinMetadataService(response)
-
-    @pytest.fixture
-    def protein_predicates(
-            self,
-            protein_metadata_service: ProteinMetadataService,
-    ) -> ProteinPredicates:
-        return ProteinPredicates(protein_metadata_service)
-
     @pytest.mark.parametrize(
         'feature_type, expected',
         [
@@ -164,48 +136,11 @@ class TestProteinPredicates:
         assert predicate.test(variant) == expected
 
 
-class MockProteinMetadataService(ProteinMetadataService):
+class TestBuildGenotypePredicate:
 
-    def __init__(
-            self,
-            response: ProteinMetadata
-    ):
-        self._response = response
+    def test_build_it(self):
+        """
+        """
+        predicate = VariantPredicates.gene(symbol='A').oder(VariantPredicates.gene(symbol='B'))
+        print(predicate)
 
-    def annotate(self, protein_id: str) -> ProteinMetadata:
-        return self._response
-
-
-@pytest.fixture
-def variant(genome_build: GenomeBuild) -> Variant:
-    chr22 = genome_build.contig_by_name('chr22')
-    assert chr22 is not None
-    return Variant(
-        var_coordinates=VariantCoordinates(
-            region=GenomicRegion(
-                contig=chr22,
-                start=100,
-                end=101,
-                strand=Strand.POSITIVE,
-            ),
-            ref='C',
-            alt='G',
-            change_length=0,
-        ),
-        tx_annotations=(
-            TranscriptAnnotation(
-                gene_id='a_gene',
-                tx_id='tx:xyz',
-                hgvs_cdna=None,
-                is_preferred=False,
-                variant_effects=(
-                    VariantEffect.MISSENSE_VARIANT,
-                    VariantEffect.SPLICE_DONOR_VARIANT,
-                ),
-                affected_exons=(4,),
-                protein_id='pt:xyz',
-                protein_effect_coordinates=Region(40, 41),
-            ),
-        ),
-        genotypes=Genotypes.single(SampleLabels('jim'), Genotype.HETEROZYGOUS)
-    )
