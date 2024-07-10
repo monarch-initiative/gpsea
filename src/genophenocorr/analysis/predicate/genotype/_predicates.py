@@ -115,7 +115,7 @@ class ProteinRegionPredicate(VariantPredicate):
         self._tx_id = tx_id
         
     def get_question(self) -> str:
-        return f'variant affects aminoacid(s) between {self._prot_region.start} and {self._prot_region.end} on protein encoded by transcript {self._tx_id}'
+        return f'variant affects aminoacid(s) between {self._region.start} and {self._region.end} on protein encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_id(self._tx_id)
