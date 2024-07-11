@@ -6,6 +6,7 @@ import hpotk
 import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient, FeatureType
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, PatientCategory
 from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPredicates
