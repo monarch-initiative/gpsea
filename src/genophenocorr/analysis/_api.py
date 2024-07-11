@@ -7,7 +7,7 @@ import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient, FeatureType
 from .predicate import PolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate
+from .predicate.genotype import VariantPredicate, VariantPredicates
 from .predicate.phenotype import P
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -234,7 +234,6 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     into :class:`GenotypePhenotypeAnalysisResult`.
     """
 
-    @abc.abstractmethod
     def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variants with `effect` vs. variants with all other variant effects.
@@ -242,9 +241,10 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         :param effect: variant effect
         :param tx_id: the accession of the transcript of interest
         """
-        pass
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = VariantPredicates.variant_effect(effect, tx_id)
+        return self.compare_hpo_vs_genotype(predicate)
 
-    @abc.abstractmethod
     def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variant with `variant_key` vs all the other variants.
@@ -255,9 +255,10 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
         :param variant_key: a `str` with the variant key, e.g. ``X_12345_12345_C_G``
         """
-        pass
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = VariantPredicates.variant_key(variant_key)
+        return self.compare_hpo_vs_genotype(predicate)
 
-    @abc.abstractmethod
     def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compares variants with `effect` vs. variants with all other variant effects.
@@ -276,23 +277,10 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         :param exon_number: a positive `int` with exon number
         :param tx_id: the accession of the transcript of interest
         """
-        pass
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = VariantPredicates.exon(exon_number, tx_id)
+        return self.compare_hpo_vs_genotype(predicate)
 
-    @abc.abstractmethod
-    def compare_by_variant_keys(self, a: str, b: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.
-
-        .. seealso::
-
-          :attr:`genophenocorr.model.VariantCoordinates.variant_key`
-
-        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``
-        :param b: a `str` with variant key of variant `b`
-        """
-        pass
-
-    @abc.abstractmethod
     def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compare genotype-phenotype correlation between variants that affect a given `feature_type` and the variants
@@ -302,9 +290,10 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
             feature_type (FeatureType): the protein feature type of interest
             tx_id: the accession of the transcript of interest
         """
-        pass
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = self._protein_predicates.protein_feature_type(feature_type, tx_id)
+        return self.compare_hpo_vs_genotype(predicate)
 
-    @abc.abstractmethod
     def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
         Compare genotype-phenotype correlation between variants that affect a given `feature` and the variants
@@ -318,7 +307,86 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
             feature (string): feature identifier, e.g. ``DNA-binding``.
             tx_id (string): the accession of the transcript of interest
         """
-        pass
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = self._protein_predicates.protein_feature(feature, tx_id)
+        return self.compare_hpo_vs_genotype(predicate)
+    
+    def compare_by_protein_region(self, protein_region: Region, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
+        predicate = VariantPredicates.region(protein_region, tx_id)
+        return self.compare_hpo_vs_genotype(predicate)
+
+    def compare_by_variant_effects(
+            self,
+            effect1: VariantEffect,
+            effect2: VariantEffect,
+            tx_id: str,
+    ) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=VariantPredicates.variant_effect(effect=effect1, tx_id=tx_id),
+            second=VariantPredicates.variant_effect(effect=effect2, tx_id=tx_id),
+        )
+
+    def compare_by_variant_keys(self, variant_key1: str, variant_key2: str) -> GenotypePhenotypeAnalysisResult:
+        """
+        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.
+
+        .. seealso::
+
+          :attr:`genophenocorr.model.VariantCoordinates.variant_key`
+
+        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``
+        :param b: a `str` with variant key of variant `b`
+        """
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=VariantPredicates.variant_key(variant_key1),
+            second=VariantPredicates.variant_key(variant_key2),
+        )
+
+    def compare_by_exons(self, exon1_number: int, exon2_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=VariantPredicates.exon(exon=exon1_number, tx_id=tx_id),
+            second=VariantPredicates.exon(exon=exon2_number, tx_id=tx_id),
+        )
+
+    def compare_by_protein_feature_types(
+            self,
+            feature_type1: FeatureType,
+            feature_type2: FeatureType,
+            tx_id: str,
+    ) -> GenotypePhenotypeAnalysisResult:
+    # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=self._protein_predicates.protein_feature_type(feature_type=feature_type1, tx_id=tx_id),
+            second=self._protein_predicates.protein_feature_type(feature_type=feature_type2, tx_id=tx_id),
+        )
+
+    def compare_by_protein_features(
+            self,
+            feature1: str,
+            feature2: str,
+            tx_id: str,
+    ) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=self._protein_predicates.protein_feature(feature_id=feature1, tx_id=tx_id),
+            second=self._protein_predicates.protein_feature(feature_id=feature2, tx_id=tx_id),
+        )
+    
+    def compare_by_protein_regions(
+        self,
+        region1: Region,
+        region2: Region, 
+        tx_id: str,
+    ) -> GenotypePhenotypeAnalysisResult:
+        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
+        return self.compare_hpo_vs_genotype_groups(
+            first=VariantPredicates.region(region=region1, tx_id=tx_id),
+            second=VariantPredicates.region(region=region2, tx_id=tx_id),
+        )
 
     @abc.abstractmethod
     def compare_hpo_vs_genotype(
