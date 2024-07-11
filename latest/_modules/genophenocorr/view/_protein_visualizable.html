@@ -116,10 +116,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_effects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_starts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">feature_type</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
 
@@ -186,6 +188,10 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_feature_ends</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_feature_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -208,7 +214,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span>
-
+            
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variant_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effect</span>
