@@ -56,8 +56,9 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                     for feature in protein['features']:
                         feature_start = int(feature['location']['start']['value'])
                         feature_end = int(feature['location']['end']['value'])
+                        feature_name = feature['description']
                         feature_info = FeatureInfo(
-                            feature['description'],
+                            feature_name,
                             Region(start=feature_start, end=feature_end),
                         )
                         feature_type = FeatureType[feature['type'].upper()]

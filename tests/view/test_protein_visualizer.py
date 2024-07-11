@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pytest
 
 from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Cohort
-from genophenocorr.view import ProteinVisualizer, ProteinVisualizable
+from genophenocorr.view import ProteinVisualizer, ProteinVisualizable, ProteinViewable
 
 
 class TestProteinVisualizer:
@@ -37,3 +37,14 @@ class TestProteinVisualizer:
         )
 
         fig.savefig('protein.png')
+
+    @pytest.mark.skip('Run manually on demand')
+    def test_protein_viewable(
+        self, 
+        suox_cohort: Cohort,
+        visualizable: ProteinVisualizable,
+    ):
+        protein_viewable = ProteinViewable()
+        view = protein_viewable.process(suox_cohort, visualizable)
+        with open('protein_viewable.html', 'w') as fh:
+            fh.write(view)        

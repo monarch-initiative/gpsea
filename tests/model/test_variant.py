@@ -26,6 +26,6 @@ class TestVariant:
         tx_id: str,
         expected: typing.Optional[str],
     ):
-        hgvs = some_variant.get_hgvs_cdna_by_tx(transcript_id=tx_id)
+        hgvs = some_variant.get_hgvs_cdna_by_tx_id(transcript_id=tx_id)
 
         assert hgvs == expected
