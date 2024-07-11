@@ -359,7 +359,11 @@ class ProteinFeaturePredicate(VariantPredicate):
         if location is None:
             return False
         
-        protein = self._prot_service.annotate(tx_anno.protein_id)
+        protein_id = tx_anno.protein_id
+        if protein_id is None:
+            return False
+
+        protein = self._prot_service.annotate(protein_id)
         for feat in protein.protein_features:    
             if feat.info.name == self._feature_name and location.overlaps_with(feat.info.region):
                 return True
