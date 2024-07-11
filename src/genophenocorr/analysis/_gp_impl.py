@@ -9,7 +9,6 @@ from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate
 from .predicate.genotype import RecessiveVariantPredicate, RecessiveProtFeaturePredicate, RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantEffectPredicate, RecessiveProtRegionPredicate
 from .predicate.genotype import VariantPredicate
-from .predicate.genotype import VariantPredicates, ProteinPredicates
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate, grouping_predicate as wrap_as_grouping_predicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
 
@@ -20,22 +19,22 @@ from ._gp_analysis import GPAnalyzer
 
 class GpCohortAnalysis(CohortAnalysis):
 
-    def __init__(self, cohort: Cohort,
-                 hpo: hpotk.MinimalOntology,
-                 protein_service: ProteinMetadataService,
-                 phenotype_filter: PhenotypeFilter,
-                 gp_analyzer: GPAnalyzer,
-                 missing_implies_excluded: bool,
-                 include_sv: bool = False,
-                 ):
+    def __init__(
+        self, cohort: Cohort,
+        hpo: hpotk.MinimalOntology,
+        protein_service: ProteinMetadataService,
+        phenotype_filter: PhenotypeFilter,
+        gp_analyzer: GPAnalyzer,
+        missing_implies_excluded: bool,
+        include_sv: bool = False,
+    ):
+        super().__init__(protein_service)
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
         self._logger = logging.getLogger(__name__)
         self._cohort = cohort
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
-        self._protein_service = protein_service
-        self._protein_predicates = ProteinPredicates(self._protein_service)
         self._phenotype_filter = hpotk.util.validate_instance(phenotype_filter, PhenotypeFilter, 'phenotype_filter')
         self._gp_analyzer = hpotk.util.validate_instance(gp_analyzer, GPAnalyzer, 'gp_analyzer')
 

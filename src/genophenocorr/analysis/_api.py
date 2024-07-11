@@ -6,8 +6,9 @@ import hpotk
 import pandas as pd
 
 from genophenocorr.model import VariantEffect, Patient, FeatureType
+from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate, VariantPredicates
+from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPredicates
 from .predicate.phenotype import P
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -233,6 +234,13 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     The class provides various methods to test genotype-phenotype correlations. All methods wrap results
     into :class:`GenotypePhenotypeAnalysisResult`.
     """
+
+    def __init__(
+        self,
+        protein_service: ProteinMetadataService,
+    ):
+        self._protein_service = protein_service
+        self._protein_predicates = ProteinPredicates(self._protein_service)
 
     def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
         """
