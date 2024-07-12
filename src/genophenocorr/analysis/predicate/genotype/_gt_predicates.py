@@ -2,9 +2,13 @@ import typing
 
 from genophenocorr.model import Patient
 
-from .._api import GenotypeBooleanPredicate, GroupingPredicate, Categorization
+from .._api import Categorization
+from .._api import GenotypePolyPredicate, GenotypeBooleanPredicate, GroupingPredicate, RecessiveGroupingPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
+
+
+# TODO: implement `__eq__`, `__hash__`, `__str__`, `__repr__`.
 
 
 class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
@@ -110,3 +114,50 @@ def grouping_predicate(
         first=first,
         second=second,
     )
+
+
+class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
+    # NOT PART OF THE PUBLIC API
+    # TODO: this predicate is a bit weird and I think it should eventually go away.
+    #  Therefore, I do not write any tests at this point.
+
+    def __init__(
+        self, 
+        allele_counter: AlleleCounter,
+    ):
+        self._allele_counter = allele_counter
+
+    def get_question(self) -> str:
+        return self._allele_counter.get_question()
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        self._check_patient(patient)
+
+        allele_count = self._allele_counter.count(patient)
+        if allele_count == 0:
+            return RecessiveGroupingPredicate.NEITHER
+        elif allele_count == 1:
+            return RecessiveGroupingPredicate.ONE
+        elif allele_count == 2:
+            return RecessiveGroupingPredicate.BOTH
+        else:
+            return None
+
+
+def recessive_predicate(
+    variant_predicate: VariantPredicate,
+) -> GenotypePolyPredicate:
+    """
+    Create a recessive grouping predicate from given `variant_predicate`
+    to bin the patient into :class:`RecessiveGroupingPredicate.NEITHER`, 
+    :class:`RecessiveGroupingPredicate.ONE`, or :class:`RecessiveGroupingPredicate.BOTH`, 
+    depending on the number of variant alleles matching the variant predicate.
+
+    The patient is assigned into a group in the following manner:
+    * 0 alleles: :class:`RecessiveGroupingPredicate.NEITHER`
+    * 1 alleles: :class:`RecessiveGroupingPredicate.ONE`
+    * 2 alleles: :class:`RecessiveGroupingPredicate.BOTH`
+    * other: `None`
+    """
+    allele_counter = AlleleCounter(predicate=variant_predicate)
+    return AlleleCountingRecessivePredicate(allele_counter=allele_counter)
