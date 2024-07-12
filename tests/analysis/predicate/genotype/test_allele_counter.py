@@ -194,7 +194,7 @@ class MockVariantEffectPredicate(VariantPredicate):
         return f'variant has {self._variant_effect} on {self._tx_id}'
         
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         for effect in tx_anno.variant_effects:

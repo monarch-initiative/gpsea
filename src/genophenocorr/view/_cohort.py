@@ -86,11 +86,13 @@ class CohortViewable:
 
         var_effects_list = list()
         if transcript_id is not None:
-            has_transcript = False
+            has_transcript = True
             data_by_tx = cohort.variant_effect_count_by_tx(tx_id=transcript_id)
             # e.g., data structure -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175}, {'effect}': 'STOP_GAINED', 'count': 67},
-            for k, v in data_by_tx.items():
-                var_effects_list.append({"effect": k, "count": v})
+            for tx_id, counter in data_by_tx.items():
+                if tx_id == transcript_id:
+                    for effect, count in counter.items():
+                        var_effects_list.append({"effect": effect, "count": count})
         else:
             has_transcript = False
         # The following dictionary is used by the Jinja2 HTML template

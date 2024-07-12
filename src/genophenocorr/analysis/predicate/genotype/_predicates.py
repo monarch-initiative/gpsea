@@ -32,7 +32,7 @@ class VariantEffectPredicate(VariantPredicate):
             bool: _description_
         """
         
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         for effect in tx_anno.variant_effects:
@@ -199,7 +199,7 @@ class VariantExonPredicate(VariantPredicate):
         return f'variant affects exon {self._exon} on {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         
@@ -248,7 +248,7 @@ class ProteinRegionPredicate(VariantPredicate):
         return f'variant affects aminoacid(s) between {self._region.start} and {self._region.end} on protein encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         location = tx_anno.protein_effect_location
@@ -297,7 +297,7 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         return f'variant affects {self._feature_type.name} feature type on the protein encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         location = tx_anno.protein_effect_location
@@ -351,7 +351,7 @@ class ProteinFeaturePredicate(VariantPredicate):
         return f'Variant that affects {self._feature_name} feature on the protein encoded by transcript {self._tx_id}'
         
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_id(self._tx_id)
+        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
         

@@ -223,7 +223,11 @@ class ProteinMetadata:
         return self._features
     
     @property
-    def protein_length(self):
+    def protein_length(self) -> int:
+        """
+        Returns:
+            int: length of protein
+        """
         return self._protein_length
 
     def domains(self) -> typing.Iterable[ProteinFeature]:
