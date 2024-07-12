@@ -72,6 +72,18 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 protein_id="pt:xyz",
                 protein_effect_coordinates=Region(40, 41),
             ),
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:abc",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(
+                    VariantEffect.INTRON_VARIANT,
+                ),
+                affected_exons=None,
+                protein_id=None,
+                protein_effect_coordinates=None,
+            ),
         ),
         genotypes=Genotypes.single(SampleLabels("jim"), Genotype.HETEROZYGOUS),
     )

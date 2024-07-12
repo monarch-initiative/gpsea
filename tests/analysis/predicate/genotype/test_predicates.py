@@ -135,12 +135,57 @@ class TestProteinPredicates:
 
         assert predicate.test(variant) == expected
 
+class TestLogicalVariantPredicate:
+    """
+    Test that the AND and OR variant predicate combinators work as expected.
+    """
 
-class TestBuildGenotypePredicate:
+    def test_equivalent_predicates_are_not_chained(self):
+        a1 = VariantPredicates.gene(symbol='A')
+        a2 = VariantPredicates.gene(symbol='A')
 
-    def test_build_it(self):
-        """
-        """
-        predicate = VariantPredicates.gene(symbol='A').oder(VariantPredicates.gene(symbol='B'))
-        print(predicate)
+        assert a1.und(a2) is a1
+        assert a1.oder(a2) is a1
 
+        assert a2.und(a1) is a2
+        assert a2.oder(a1) is a2
+
+    @pytest.mark.parametrize(
+        'left,right,expected',
+        [
+            ('tx:abc', 'tx:xyz', True),
+            ('tx:abc', 'whatever', False),
+            ('whatever', 'tx:xyz', False),
+            ('whatever', 'whoever', False),
+        ]
+    )
+    def test_und_predicate(
+        self,
+        variant: Variant,
+        left: str,
+        right: str,
+        expected: bool,
+    ):
+        predicate = VariantPredicates.transcript(tx_id=left).und(VariantPredicates.transcript(tx_id=right))
+
+        assert predicate.test(variant) == expected
+
+    @pytest.mark.parametrize(
+        'left,right,expected',
+        [
+            ('tx:abc', 'tx:xyz', True),
+            ('tx:abc', 'whatever', True),
+            ('whatever', 'tx:xyz', True),
+            ('whatever', 'whoever', False),
+        ]
+    )
+    def test_oder_predicate(
+        self,
+        variant: Variant,
+        left: str,
+        right: str,
+        expected: bool,
+    ):
+        predicate = VariantPredicates.transcript(tx_id=left).oder(VariantPredicates.transcript(tx_id=right))
+
+        assert predicate.test(variant) == expected

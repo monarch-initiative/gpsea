@@ -96,7 +96,7 @@ class AnyVariantPredicate(LogicalVariantPredicate):
         return False
     
     def __str__(self) -> str:
-        return ' OR '.join(self._predicates)
+        return ' OR '.join(str(p) for p in self._predicates)
 
     def __repr__(self) -> str:
         return f'AnyVariantPredicate(predicates={self._predicates})'
@@ -117,7 +117,7 @@ class AllVariantPredicate(LogicalVariantPredicate):
         return False
 
     def __str__(self) -> str:
-        return ' AND '.join(self._predicates)
+        return ' AND '.join(str(p) for p in self._predicates)
     
     def __repr__(self) -> str:
         return f'AllVariantPredicate(predicates={self._predicates})'
