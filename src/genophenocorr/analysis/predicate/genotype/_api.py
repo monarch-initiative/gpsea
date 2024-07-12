@@ -72,7 +72,7 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
 
     @property
     def predicates(self) -> typing.Sequence[VariantPredicate]:
-        self._predicates
+        return self._predicates
 
     def __hash__(self) -> int:
         # Per Python's doc at https://docs.python.org/3/reference/datamodel.html#object.__hash__

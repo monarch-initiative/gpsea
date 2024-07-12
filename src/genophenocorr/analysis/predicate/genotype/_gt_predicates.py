@@ -8,9 +8,6 @@ from ._api import VariantPredicate
 from ._counter import AlleleCounter
 
 
-# TODO: implement `__eq__`, `__hash__`, `__str__`, `__repr__`.
-
-
 class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
     # NOT PART OF THE PUBLIC API
     """
@@ -40,6 +37,18 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
             raise ValueError(
                 f"Allele counter should return a non-negative allele count: {allele_count}"
             )
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AlleleCountingGenotypeBooleanPredicate) and self._allele_counter == value._allele_counter
+    
+    def __hash__(self) -> int:
+        return hash((self._allele_counter,))
+    
+    def __str__(self) -> str:
+        return f'AlleleCountingGenotypeBooleanPredicate(allele_counter={self._allele_counter})'
+    
+    def __repr__(self) -> str:
+        return str(self)
 
 
 def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypeBooleanPredicate:
@@ -96,6 +105,18 @@ class AlleleCountingGenotypeGroupingPredicate(GroupingPredicate):
             return GroupingPredicate.SECOND
         else:
             return None
+        
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AlleleCountingGenotypeGroupingPredicate) and self._first == value._first and self._second == value._second
+    
+    def __hash__(self) -> int:
+        return hash((self._first, self._second,))
+    
+    def __str__(self) -> str:
+        return f'AlleleCountingGenotypeGroupingPredicate(first_counter={self._first}, second_counter={self._second})'
+    
+    def __repr__(self) -> str:
+        return str(self)
 
 
 def grouping_predicate(
@@ -142,6 +163,18 @@ class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
             return RecessiveGroupingPredicate.BOTH
         else:
             return None
+    
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AlleleCountingRecessivePredicate) and self._allele_counter == value._allele_counter
+    
+    def __hash__(self) -> int:
+        return hash((self._allele_counter,))
+    
+    def __str__(self) -> str:
+        return f'AlleleCountingRecessivePredicate(allele_counter={self._allele_counter})'
+    
+    def __repr__(self) -> str:
+        return str(self)
 
 
 def recessive_predicate(
