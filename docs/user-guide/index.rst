@@ -11,3 +11,4 @@ TODO - write high level overview and bridge to individual sections.
   :caption: Contents:
 
   input-data
+  predicates
