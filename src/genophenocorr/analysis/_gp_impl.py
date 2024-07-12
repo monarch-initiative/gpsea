@@ -7,9 +7,10 @@ from genophenocorr.model import Cohort, VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate
-from .predicate.genotype import RecessiveVariantPredicate, RecessiveProtFeaturePredicate, RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantEffectPredicate, RecessiveProtRegionPredicate
-from .predicate.genotype import VariantPredicate
-from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate, grouping_predicate as wrap_as_grouping_predicate
+from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPredicates
+from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
+from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
+from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
@@ -49,28 +50,39 @@ class GpCohortAnalysis(CohortAnalysis):
     
     # TODO: remove
     def compare_by_recessive_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveVariantEffectPredicate(tx_id, effect)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = VariantPredicates.variant_effect(effect=effect, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
+    # TODO: remove
     def compare_by_recessive_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveVariantPredicate(variant_key)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = VariantPredicates.variant_key(key=variant_key)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
+    # TODO: remove
     def compare_by_recessive_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveExonPredicate(tx_id, exon_number)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = VariantPredicates.exon(exon=exon_number, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
+    # TODO: remove
     def compare_by_recessive_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveProtFeatureTypePredicate(tx_id, feature_type, self._protein_service)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = self._protein_predicates.protein_feature_type(feature_type=feature_type, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
+    # TODO: remove
     def compare_by_recessive_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveProtFeaturePredicate(tx_id, feature, self._protein_service)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = self._protein_predicates.protein_feature(feature_id=feature, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
     
+    # TODO: remove
     def compare_by_recessive_protein_region(self, region:Region, tx_id:str) -> GenotypePhenotypeAnalysisResult:
-        predicate = RecessiveProtRegionPredicate(tx_id, region)
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        predicate = VariantPredicates.region(region=region, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
     def compare_hpo_vs_genotype(
             self,
@@ -82,8 +94,8 @@ class GpCohortAnalysis(CohortAnalysis):
         """
         assert isinstance(predicate, VariantPredicate), \
             f'{type(predicate)} is not an instance of `VariantPredicate`'
-        predicate = wrap_as_boolean_predicate(predicate) 
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        bool_predicate = wrap_as_boolean_predicate(predicate) 
+        return self._apply_poly_predicate_on_hpo_terms(bool_predicate)
     
     def compare_hpo_vs_genotype_groups(
             self,
