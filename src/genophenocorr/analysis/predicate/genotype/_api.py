@@ -2,16 +2,16 @@ import abc
 import typing
 
 from genophenocorr.model import Variant
-from genophenocorr.model import *
 
 
 class VariantPredicate(metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
-    """
 
-    # TODO: should this implement `__eq__` and `__hash__` to enable using a `set`
-    #  to prevent applying the same predicate more than once?
+    *Implementation note*: the predicate *MUST* implement `__eq__` and `__hash__`
+    to support predicate chaining. 
+    We recommend implementing `__str__` and `__repr__` as well.
+    """
 
     @abc.abstractmethod
     def get_question(self) -> str:
@@ -36,17 +36,13 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         """
         Create a variant predicate passes if *BOTH* `self` and `other` pass.
         """
-        # TODO: check the other is not the same as `self`
-        if isinstance(self, AllVariantPredicate):
-            # We do not need to create another predicate 
-            # if we are adding `other` to an already existing "Und" predicate.
-            if isinstance(other, AllVariantPredicate):
-                # We will make a union of all predicates of `self` and `other` 
-                # and we will just use self!
-                self.predicates.extend(other.predicates)
-            else:
-                self.predicates.append(other)
+        if self == other:
             return self
+    
+        if isinstance(self, AllVariantPredicate) and isinstance(other, AllVariantPredicate):
+            # Merging two *all* variant predicates is equivalent 
+            # to chaining their predicates
+            return AllVariantPredicate(*self.predicates, *other.predicates)
         else:
             return AllVariantPredicate(self, other)
     
@@ -54,17 +50,13 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         """
         Create a variant predicate passes if *EITHER* `self` *OR* `other` passes.
         """
-        # TODO: check the other is not the same as `self`
-        if isinstance(self, AnyVariantPredicate):
-            # We do not need to create another predicate 
-            # if we are adding `other` to an already existing "Oder" predicate.
-            if isinstance(other, AnyVariantPredicate):
-                # We will make a union of all predicates of `self` and `other` 
-                # and we will just use self!
-                self.predicates.extend(other.predicates)
-            else:
-                self.predicates.append(other)
+        if self == other:
             return self
+        
+        if isinstance(self, AnyVariantPredicate) and isinstance(other, AnyVariantPredicate):
+            # Merging two any variant predicates is equivalent 
+            # to chaining their predicates
+            return AnyVariantPredicate(*self.predicates, *other.predicates)
         else:
             return AnyVariantPredicate(self, other)
 
@@ -73,14 +65,20 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
     # NOT PART OF THE PUBLIC API
 
     def __init__(
-            self,
-            *args,
+        self,
+        *args,
     ):
-        self._predicates = list(args)
+        self._predicates = tuple(args)
 
     @property
-    def predicates(self) -> typing.MutableSequence[VariantPredicate]:
+    def predicates(self) -> typing.Sequence[VariantPredicate]:
         self._predicates
+
+    def __hash__(self) -> int:
+        # Per Python's doc at https://docs.python.org/3/reference/datamodel.html#object.__hash__
+        # "The only required property is that objects which compare equal have the same hash value".
+        # Both `AnyVariantPredicate` and `AllVariantPredicate` will meet this requirement.
+        return hash(self._predicates)
 
 
 class AnyVariantPredicate(LogicalVariantPredicate):
@@ -92,7 +90,16 @@ class AnyVariantPredicate(LogicalVariantPredicate):
     def test(self, variant: Variant) -> bool:
         return any(predicate.test(variant) for predicate in self._predicates)
     
-    # TODO: add __repr__, __str__, __hash__, __eq__
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, AnyVariantPredicate):
+            return self._predicates == value._predicates
+        return False
+    
+    def __str__(self) -> str:
+        return ' OR '.join(self._predicates)
+
+    def __repr__(self) -> str:
+        return f'AnyVariantPredicate(predicates={self._predicates})'
 
 
 class AllVariantPredicate(LogicalVariantPredicate):
@@ -104,4 +111,13 @@ class AllVariantPredicate(LogicalVariantPredicate):
     def test(self, variant: Variant) -> bool:
         return all(predicate.test(variant) for predicate in self._predicates)
 
-    # TODO: add __repr__, __str__, __hash__, __eq__
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, AllVariantPredicate):
+            return self._predicates == value._predicates
+        return False
+
+    def __str__(self) -> str:
+        return ' AND '.join(self._predicates)
+    
+    def __repr__(self) -> str:
+        return f'AllVariantPredicate(predicates={self._predicates})'
