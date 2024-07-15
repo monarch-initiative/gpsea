@@ -32,35 +32,39 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         """
         pass
 
-    # TODO: overload the operators instead of `und` and `oder`?
-
-    def und(self, other):
+    def __and__(self, other):
         """
         Create a variant predicate passes if *BOTH* `self` and `other` pass.
         """
-        if self == other:
-            return self
+        if isinstance(other, VariantPredicate):
+            if self == other:
+                return self
     
-        if isinstance(self, AllVariantPredicate) and isinstance(other, AllVariantPredicate):
-            # Merging two *all* variant predicates is equivalent 
-            # to chaining their predicates
-            return AllVariantPredicate(*self.predicates, *other.predicates)
+            if isinstance(self, AllVariantPredicate) and isinstance(other, AllVariantPredicate):
+                # Merging two *all* variant predicates is equivalent 
+                # to chaining their predicates
+                return AllVariantPredicate(*self.predicates, *other.predicates)
+            else:
+                return AllVariantPredicate(self, other)
         else:
-            return AllVariantPredicate(self, other)
+            return NotImplemented
     
-    def oder(self, other):
+    def __or__(self, value):
         """
         Create a variant predicate passes if *EITHER* `self` *OR* `other` passes.
         """
-        if self == other:
-            return self
-        
-        if isinstance(self, AnyVariantPredicate) and isinstance(other, AnyVariantPredicate):
-            # Merging two any variant predicates is equivalent 
-            # to chaining their predicates
-            return AnyVariantPredicate(*self.predicates, *other.predicates)
+        if isinstance(value, VariantPredicate):
+            if self == value:
+                return self
+            
+            if isinstance(self, AnyVariantPredicate) and isinstance(value, AnyVariantPredicate):
+                # Merging two any variant predicates is equivalent 
+                # to chaining their predicates
+                return AnyVariantPredicate(*self.predicates, *value.predicates)
+            else:
+                return AnyVariantPredicate(self, value)
         else:
-            return AnyVariantPredicate(self, other)
+            return NotImplemented
 
 
 class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):

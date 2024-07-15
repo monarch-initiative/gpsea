@@ -95,39 +95,16 @@ The simple predicates can be combined to test for more elaborate conditions.
 For instance, we can test if the variant meets *any* or several conditions:
 
 >>> missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=ankrd11_mane_tx_id)
->>> missense_or_nonsense = missense.oder(nonsense)
+>>> missense_or_nonsense = missense | nonsense
 >>> missense_or_nonsense.test(variant)
 True
 
 or *all* conditions:
 
->>> nonsense_and_exon9 = nonsense.und(exon9)
+>>> nonsense_and_exon9 = nonsense & exon9
 >>> nonsense_and_exon9.test(variant)
 True
 
-We use the fluent predicate builder API to build compound predicates.
-
-.. note:
-
-  We use *und* and *oder* as these are German equivalents of *and* and *or* which are Python keywords, 
-  and, thus, unsuitable for using as function names.
-
-The compound predicates can also be built using :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates.und` 
-
->>> nonsense_and_exon9 = VariantPredicates.und(
-...   nonsense,
-...   exon9,
-... )
->>> nonsense_and_exon9.test(variant)
-True
-
-or :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates.oder`:
-
->>> missense_or_nonsense = VariantPredicates.oder(
-...   missense,
-...   nonsense,
-... )
->>> missense_or_nonsense.test(variant)
-True
+The `VariantPredicate` overloads Python `&` (AND) and `|` (OR) operators to build a compound predicate from a building block.
 
 That's it for predicates.

@@ -11,32 +11,6 @@ class VariantPredicates:
     """
 
     @staticmethod
-    def und(*predicates: VariantPredicate) -> VariantPredicate:
-        """
-        Prepare a :class:`VariantPredicate` to test if the variant passes *all* of the `predicates`.
-        
-        Args:
-            predicates: the predicates to test
-
-        Returns:
-            VariantPredicate: a predicate to test if the variant passes all input predicates
-        """
-        return AllVariantPredicate(*predicates)
-
-    @staticmethod
-    def oder(*predicates: VariantPredicate) -> VariantPredicate:
-        """
-        Prepare a :class:`VariantPredicate` to test if the variant passes *any* of the `predicates`.
-        
-        Args:
-            predicates: the predicates to test
-
-        Returns:
-            VariantPredicate: a predicate to test if the variant passes any input predicates
-        """
-        return AnyVariantPredicate(*predicates)
-
-    @staticmethod
     def variant_effect(
         effect: VariantEffect,
         tx_id: str,
