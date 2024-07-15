@@ -1,6 +1,6 @@
 import pytest
 
-from genophenocorr.analysis.predicate.genotype import VariantPredicates, ProteinPredicates
+from genophenocorr.analysis.predicate.genotype import VariantPredicates, ProteinPredicates, VariantPredicate
 from genophenocorr.model import *
 from genophenocorr.model.genome import *
 
@@ -159,7 +159,7 @@ class TestLogicalVariantPredicate:
             ('whatever', 'whoever', False),
         ]
     )
-    def test_und_predicate(
+    def test_und_predicate__fluent_builder(
         self,
         variant: Variant,
         left: str,
@@ -174,12 +174,34 @@ class TestLogicalVariantPredicate:
         'left,right,expected',
         [
             ('tx:abc', 'tx:xyz', True),
+            ('tx:abc', 'whatever', False),
+            ('whatever', 'tx:xyz', False),
+            ('whatever', 'whoever', False),
+        ]
+    )
+    def test_und_predicate__static_constructor(
+        self,
+        variant: Variant,
+        left: str,
+        right: str,
+        expected: bool,
+    ):
+        predicate = VariantPredicates.und(
+            VariantPredicates.transcript(tx_id=left),
+            VariantPredicates.transcript(tx_id=right),
+        )
+        assert predicate.test(variant) == expected
+
+    @pytest.mark.parametrize(
+        'left,right,expected',
+        [
+            ('tx:abc', 'tx:xyz', True),
             ('tx:abc', 'whatever', True),
             ('whatever', 'tx:xyz', True),
             ('whatever', 'whoever', False),
         ]
     )
-    def test_oder_predicate(
+    def test_oder_predicate__fluent_builder(
         self,
         variant: Variant,
         left: str,
@@ -187,5 +209,49 @@ class TestLogicalVariantPredicate:
         expected: bool,
     ):
         predicate = VariantPredicates.transcript(tx_id=left).oder(VariantPredicates.transcript(tx_id=right))
-
+        
         assert predicate.test(variant) == expected
+
+    @pytest.mark.parametrize(
+        'left,right,expected',
+        [
+            ('tx:abc', 'tx:xyz', True),
+            ('tx:abc', 'whatever', True),
+            ('whatever', 'tx:xyz', True),
+            ('whatever', 'whoever', False),
+        ]
+    )
+    def test_oder_predicate__static_constructor(
+        self,
+        variant: Variant,
+        left: str,
+        right: str,
+        expected: bool,
+    ):
+        predicate = VariantPredicates.oder(
+            VariantPredicates.transcript(tx_id=left),
+            VariantPredicates.transcript(tx_id=right),
+        )
+        assert predicate.test(variant) == expected
+
+    def test_oder_works_with_varargs(self):
+        predicate = VariantPredicates.oder(
+            VariantPredicates.transcript(tx_id='a'),
+            VariantPredicates.transcript(tx_id='b'),
+            VariantPredicates.transcript(tx_id='c'),
+            VariantPredicates.transcript(tx_id='d'),
+        )
+
+        assert predicate is not None
+        assert isinstance(predicate, VariantPredicate)
+
+    def test_und_works_with_varargs(self):
+        predicate = VariantPredicates.und(
+            VariantPredicates.transcript(tx_id='a'),
+            VariantPredicates.transcript(tx_id='b'),
+            VariantPredicates.transcript(tx_id='c'),
+            VariantPredicates.transcript(tx_id='d'),
+        )
+
+        assert predicate is not None
+        assert isinstance(predicate, VariantPredicate)

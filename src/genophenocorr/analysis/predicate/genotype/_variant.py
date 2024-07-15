@@ -1,7 +1,7 @@
 from genophenocorr.model import VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
-from ._api import VariantPredicate
+from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
 from ._predicates import *
 
 class VariantPredicates:
@@ -9,6 +9,32 @@ class VariantPredicates:
     `VariantPredicates` is a static utility class to provide the variant predicates
     that are relatively simple to configure.
     """
+
+    @staticmethod
+    def und(*predicates: VariantPredicate) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` to test if the variant passes *all* of the `predicates`.
+        
+        Args:
+            predicates: the predicates to test
+
+        Returns:
+            VariantPredicate: a predicate to test if the variant passes all input predicates
+        """
+        return AllVariantPredicate(*predicates)
+
+    @staticmethod
+    def oder(*predicates: VariantPredicate) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` to test if the variant passes *any* of the `predicates`.
+        
+        Args:
+            predicates: the predicates to test
+
+        Returns:
+            VariantPredicate: a predicate to test if the variant passes any input predicates
+        """
+        return AnyVariantPredicate(*predicates)
 
     @staticmethod
     def variant_effect(
