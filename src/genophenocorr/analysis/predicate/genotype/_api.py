@@ -32,6 +32,8 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         """
         pass
 
+    # TODO: overload the operators instead of `und` and `oder`?
+
     def und(self, other):
         """
         Create a variant predicate passes if *BOTH* `self` and `other` pass.
