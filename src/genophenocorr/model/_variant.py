@@ -6,8 +6,8 @@ import hpotk
 
 from .genome import Region, GenomicRegion
 from ._gt import Genotyped, Genotypes
-from ._protein import ProteinMetadata
 from ._variant_effects import VariantEffect
+from ._formatter import Formatter
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):
@@ -262,7 +262,17 @@ class VariantCoordinates:
         if self.is_structural():
             return f'{self.chrom}_{self.start + 1}_{self.end}_{self.alt[1:-1]}'
         else:
-            return f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
+            key = f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
+            if len(key) > 50:
+                ref = None
+                alt = None
+                if len(self.ref) > 10:
+                    ref = f"--{len(self.ref)}bp--"
+                if len(self.alt) > 10:
+                    alt = f"--{len(self.alt)}bp--"
+                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref if not None else self.ref}_{alt if not None else self.alt}"
+            else:
+                return key
 
     @property
     def variant_class(self) -> str:
@@ -450,6 +460,25 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
         return self._tx_annotations
 
     @property
+    def mane_tx_annotation(self) -> typing.Optional[TranscriptAnnotation]:
+        """A TranscriptAnnotation that represents the result of the functional annotation
+        of a variant with respect to the MANE transcript of a gene. Will return None if there is 
+        no MANE transcript found. 
+        
+        @ielis (Daniel): Would this be a function for FunctionalAnnotationAware as well? Or should
+        it be left here? 
+
+        Returns:
+            typing.Optional[TranscriptAnnotation]: A TranscriptAnnotation object representing the 
+                                                    MANE transcript if one can be found
+        """
+        for tx in self.tx_annotations:
+            if tx.is_preferred:
+                return tx
+        return None
+
+
+    @property
     def genotypes(self) -> Genotypes:
         return self._gts
 
@@ -470,3 +499,29 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
         return (f"Variant(variant_coordinates:{str(self.variant_coordinates)}, "
                 f"tx_annotations:{self.tx_annotations}, "
                 f"genotypes:{self.genotypes})")
+
+class VariantFormatter(Formatter[Variant]):
+    """
+    A class that can be used to format a `Variant` to a human readable string
+    """
+    def format_as_string(self, item: Variant, tx_id: typing.Optional[str] = None) -> str:
+        """ 
+        Args:
+            item (Variant): An object of class `Variant` representing a variant.
+            tx_id (typing.Optional[str]): The transcript ID, needed if using a transcript other than the MANE transcript.
+
+        Returns:
+            str: A human readable string for the variant.
+        """
+        if tx_id is not None:
+            transcript = item.get_tx_anno_by_tx_id(tx_id)
+        else:
+            transcript = item.mane_tx_annotation
+        if transcript is not None:
+            if len(transcript.hgvs_cdna) > 50:
+                return "Long HGVS"
+            return transcript.hgvs_cdna
+        elif item.variant_coordinates.variant_key is not None:
+            return item.variant_coordinates.variant_key
+        else:
+            return f"Variant {item} has no string format."
