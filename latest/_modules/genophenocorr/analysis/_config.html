@@ -201,6 +201,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span>
 
+    <span class="nd">@min_perc_patients_w_hpo</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">min_perc_patients_w_hpo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set new multiple testing correction alpha value.</span>
+
+<span class="sd">        :param mtc_alpha: a `float` in range :math:`(0,1]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;`value` should be a `float` in range `(0, 1]` but was </span><span class="si">%s</span><span class="s1">. Keeping the previous value </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span>
+            <span class="p">)</span>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -318,9 +333,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>  <span class="c1"># Use the default config</span>
-    <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
-    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">_configure_protein_service</span><span class="p">(</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">(</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span>
 
     <span class="c1"># Phenotype filter defines how we select the HPO terms of interest.</span>
     <span class="c1"># For instance, we may choose to only investigate the terms</span>
@@ -387,8 +401,25 @@
 
     <span class="k">return</span> <span class="n">validated_terms_to_test</span>
 
+<div class="viewcode-block" id="configure_default_protein_metadata_service">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.configure_default_protein_metadata_service">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_default_protein_metadata_service</span><span class="p">(</span>
+    <span class="n">protein_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create default protein metadata service that will cache the protein metadata </span>
+<span class="sd">    in current working directory under `.genophenocorr_cache/protein_cache` </span>
+<span class="sd">    and reach out to UNIPROT REST API if a cache entry is missing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_configure_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="o">=</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span></div>
 
-<span class="k">def</span> <span class="nf">_configure_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+
+<span class="k">def</span> <span class="nf">_configure_protein_service</span><span class="p">(</span>
+        <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
     <span class="c1"># (1) ProteinMetadataService</span>
     <span class="c1"># Setup fallback</span>
     <span class="n">protein_fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">)</span>
@@ -407,6 +438,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fallback1</span>
+
+<span class="k">def</span> <span class="nf">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;.genophenocorr_cache&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cache_dir</span>
 </pre></div>
 
            </div>

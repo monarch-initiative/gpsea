@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genophenocorr.analysis.predicate.genotype._variant &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/genophenocorr.css?v=a9fa5eb9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genophenocorr.analysis.predicate.genotype._variant</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genophenocorr.analysis.predicate.genotype._variant</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">AllVariantPredicate</span><span class="p">,</span> <span class="n">AnyVariantPredicate</span>
+<span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="VariantPredicates">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantPredicates</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VariantPredicates` is a static utility class to provide the variant predicates</span>
+<span class="sd">    that are relatively simple to configure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VariantPredicates.variant_effect">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_effect">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">variant_effect</span><span class="p">(</span>
+        <span class="n">effect</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to</span>
+<span class="sd">        a certain variant effect.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            effect: the target :class:`VariantEffect`</span>
+<span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate for testing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantEffectPredicate</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.variant_key">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_key">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">variant_key</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant matches the provided `key`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key: a `str` with the variant key (e.g. `X_12345_12345_C_G` or `22_10001_20000_INV`)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantKeyPredicate</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.gene">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.gene">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gene</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a given gene.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            symbol: a `str` with the gene symbol (e.g. `FBN1`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantGenePredicate</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.transcript">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.transcript">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transcript</span><span class="p">(</span><span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a transcript.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantTranscriptPredicate</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.exon">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.exon">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">exon</span><span class="p">(</span>
+        <span class="n">exon</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)</span>
+<span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantExonPredicate</span><span class="p">(</span><span class="n">exon</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="VariantPredicates.region">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.region">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> 
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with a region on a protein of a specific transcript.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ProteinRegionPredicate</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProteinPredicates">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates">[docs]</a>
+<span class="k">class</span> <span class="nc">ProteinPredicates</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ProteinPredicates` prepares variant predicates that need to consult :class:`ProteinMetadataService`</span>
+<span class="sd">    to categorize a :class:`Variant`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span> <span class="o">=</span> <span class="n">protein_metadata_service</span>
+
+<div class="viewcode-block" id="ProteinPredicates.protein_feature_type">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            feature_type: the target protein :class:`FeatureType` (e.g. ``)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProteinPredicates.protein_feature">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates.protein_feature">[docs]</a>
+    <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            feature_id: the id of the target protein feature (e.g. `ANK 1`)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span><span class="n">feature_id</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -89,7 +89,10 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 <span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span>
+<span class="kn">from</span> <span class="nn">.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">ProteinPredicates</span>
 <span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">P</span>
 
 <span class="n">PatientsByHPO</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PatientsByHPO&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all_with_hpo&#39;</span><span class="p">,</span> <span class="s1">&#39;all_without_hpo&#39;</span><span class="p">])</span>
@@ -327,9 +330,15 @@
 <span class="sd">    into :class:`GenotypePhenotypeAnalysisResult`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">protein_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span> <span class="o">=</span> <span class="n">protein_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span> <span class="o">=</span> <span class="n">ProteinPredicates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_service</span><span class="p">)</span>
+
 <div class="viewcode-block" id="CohortAnalysis.compare_by_variant_effect">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_effect">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_by_variant_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compares variants with `effect` vs. variants with all other variant effects.</span>
@@ -337,12 +346,13 @@
 <span class="sd">        :param effect: variant effect</span>
 <span class="sd">        :param tx_id: the accession of the transcript of interest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CohortAnalysis.compare_by_variant_key">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_key">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_by_variant_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compares variant with `variant_key` vs all the other variants.</span>
@@ -353,12 +363,13 @@
 
 <span class="sd">        :param variant_key: a `str` with the variant key, e.g. ``X_12345_12345_C_G``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">(</span><span class="n">variant_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CohortAnalysis.compare_by_exon">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_exon">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_by_exon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exon_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compares variants with `effect` vs. variants with all other variant effects.</span>
@@ -377,29 +388,13 @@
 <span class="sd">        :param exon_number: a positive `int` with exon number</span>
 <span class="sd">        :param tx_id: the accession of the transcript of interest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_keys">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_keys">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">compare_by_variant_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.</span>
-
-<span class="sd">        .. seealso::</span>
-
-<span class="sd">          :attr:`genophenocorr.model.VariantCoordinates.variant_key`</span>
-
-<span class="sd">        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``</span>
-<span class="sd">        :param b: a `str` with variant key of variant `b`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon_number</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CohortAnalysis.compare_by_protein_feature_type">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature_type">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_by_protein_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare genotype-phenotype correlation between variants that affect a given `feature_type` and the variants</span>
@@ -409,12 +404,13 @@
 <span class="sd">            feature_type (FeatureType): the protein feature type of interest</span>
 <span class="sd">            tx_id: the accession of the transcript of interest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature_type</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CohortAnalysis.compare_by_protein_feature">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_by_protein_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare genotype-phenotype correlation between variants that affect a given `feature` and the variants</span>
@@ -427,6 +423,137 @@
 <span class="sd">        Args:</span>
 <span class="sd">            feature (string): feature identifier, e.g. ``DNA-binding``.</span>
 <span class="sd">            tx_id (string): the accession of the transcript of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_region">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_region">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">region</span><span class="p">(</span><span class="n">protein_region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_effects">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_effects">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_variant_effects</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">effect1</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span>
+            <span class="n">effect2</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="o">=</span><span class="n">effect1</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="o">=</span><span class="n">effect2</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_variant_keys">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_variant_keys">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_variant_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_key1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variant_key2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">          :attr:`genophenocorr.model.VariantCoordinates.variant_key`</span>
+
+<span class="sd">        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``</span>
+<span class="sd">        :param b: a `str` with variant key of variant `b`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">(</span><span class="n">variant_key1</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">(</span><span class="n">variant_key2</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_exons">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_exons">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_exons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exon1_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exon2_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="n">exon1_number</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="n">exon2_number</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_feature_types">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_feature_types">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_feature_types</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">feature_type1</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+            <span class="n">feature_type2</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+    <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature_type</span><span class="p">(</span><span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type1</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature_type</span><span class="p">(</span><span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type2</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_features">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_features">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_features</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">feature1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">feature2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature1</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_predicates</span><span class="o">.</span><span class="n">protein_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature2</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="CohortAnalysis.compare_by_protein_regions">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_by_protein_regions">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_by_protein_regions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">region1</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span>
+        <span class="n">region2</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> 
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="n">first</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="n">region1</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+            <span class="n">second</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="n">region2</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_hpo_vs_genotype">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_hpo_vs_genotype">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_hpo_vs_genotype</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bin patients according to a presence of at least one allele that matches `predicate` </span>
+<span class="sd">        and test for genotype-phenotype correlations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_hpo_vs_genotype_groups">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_hpo_vs_genotype_groups">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">first</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+            <span class="n">second</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate </span>
+<span class="sd">        and test for genotype-phenotype correlations between the groups.</span>
+
+<span class="sd">        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 

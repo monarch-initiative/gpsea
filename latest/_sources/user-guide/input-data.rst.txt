@@ -53,7 +53,8 @@ Next, let's get a `CohortCreator` for loading the phenopackets. We use the
 
 We can create a cohort starting from a folder with phenopackets stored as JSON files.
 For the purpose of this example, we will use a folder `simple_cohort` with 5 example phenopackets located in
-`genophenocorr's repository <https://github.com/monarch-initiative/genophenocorr/tree/main/docs/data/simple_cohort>`_
+`docs/data/simple_cohort <https://github.com/monarch-initiative/genophenocorr/tree/main/docs/data/simple_cohort>`_ 
+folder of the `genophenocorr` repository:
 
 .. doctest:: input-data
 

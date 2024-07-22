@@ -88,31 +88,15 @@
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span>
 
-<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Categorization</span>
+<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="p">,</span> <span class="n">Categorization</span>
 
 
-<div class="viewcode-block" id="Comparable">
-<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.Comparable">[docs]</a>
-<span class="k">class</span> <span class="nc">Comparable</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A protocol for annotating comparable types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">pass</span></div>
-
-
-
-<span class="n">P</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Hashable</span><span class="p">,</span> <span class="n">Comparable</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Phenotype entity of interest, such as :class:`hpotk.model.TermId`, representing an HPO term or an OMIM/MONDO term.</span>
 
-<span class="sd">However, phenotype entity can be anything as long as it is hashable and comparable.</span>
+<span class="sd">However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable </span>
+<span class="sd">(have `__eq__` and `__lt__` magic methods).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -180,7 +164,7 @@
 
 <div class="viewcode-block" id="PropagatingPhenotypePredicate">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">PropagatingPhenotypePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]):</span>
+<span class="k">class</span> <span class="nc">PropagatingPhenotypePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PropagatingPhenotypePredicate` tests if a patient is annotated with an HPO term.</span>
 
@@ -202,11 +186,11 @@
                                                                       <span class="s1">&#39;missing_implies_phenotype_excluded&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
             <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span>
-            <span class="n">phenotype</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+            <span class="n">phenotype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
             <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">NO</span><span class="p">,</span>
-            <span class="n">phenotype</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+            <span class="n">phenotype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="PropagatingPhenotypePredicate.get_question">
@@ -222,13 +206,13 @@
 
 <div class="viewcode-block" id="PropagatingPhenotypePredicate.get_categorizations">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">C</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span></div>
 
 
 <div class="viewcode-block" id="PropagatingPhenotypePredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test">[docs]</a>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">P</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;An HPO TermID is given when initializing the class.</span>
 <span class="sd">        Given a Patient class, this function tests whether the patient has the</span>
 <span class="sd">        given phenotype.</span>
@@ -273,7 +257,7 @@
 
 <div class="viewcode-block" id="DiseasePresencePredicate">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">DiseasePresencePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]):</span>
+<span class="k">class</span> <span class="nc">DiseasePresencePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `DiseasePresencePredicate` tests if the patient was diagnosed with a disease.</span>
 
@@ -307,13 +291,13 @@
 
 <div class="viewcode-block" id="DiseasePresencePredicate.get_categorizations">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">C</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_present</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_excluded</span></div>
 
 
 <div class="viewcode-block" id="DiseasePresencePredicate.test">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.DiseasePresencePredicate.test">[docs]</a>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">P</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the `patient` was diagnosed with a disease.</span>
 
