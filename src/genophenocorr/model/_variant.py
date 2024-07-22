@@ -7,7 +7,6 @@ import hpotk
 from .genome import Region, GenomicRegion
 from ._gt import Genotyped, Genotypes
 from ._variant_effects import VariantEffect
-from ..view._formatter import Formatter
 
 
 class TranscriptInfoAware(metaclass=abc.ABCMeta):

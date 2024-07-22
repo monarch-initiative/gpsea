@@ -3,7 +3,7 @@ import typing
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 
-from genophenocorr.model import Cohort, Variant
+from genophenocorr.model import Cohort
 from ._formatter import VariantFormatter
 
 
