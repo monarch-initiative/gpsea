@@ -133,10 +133,10 @@ class CohortViewable:
         """
         chrom_to_display = dict()
         all_var_set = cohort.all_variants()
-        var_formatter = VariantFormatter()
+        var_formatter = VariantFormatter(transcript_id)
         for var in all_var_set:
             var_string = var.variant_coordinates.variant_key
-            display = var_formatter.format_as_string(var, transcript_id)
+            display = var_formatter.format_as_string(var)
             if only_hgvs:
                 # do not show the transcript id
                 fields = display.split(":")
