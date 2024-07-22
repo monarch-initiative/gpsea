@@ -3,7 +3,8 @@ import typing
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 
-from genophenocorr.model import Cohort, Variant, VariantFormatter
+from genophenocorr.model import Cohort, Variant
+from ._formatter import VariantFormatter
 
 
 class CohortViewable:
@@ -51,7 +52,7 @@ class CohortViewable:
     def _prepare_context(
             self,
             cohort: Cohort,
-            transcript_id: str
+            transcript_id: typing.Optional[str]
     ) -> typing.Mapping[str, typing.Any]:
 
         hpo_counts = list()
