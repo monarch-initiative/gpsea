@@ -1,8 +1,6 @@
 import json
 import os
 
-from pkg_resources import resource_filename
-
 import pytest
 
 
@@ -18,7 +16,7 @@ def coordinate_finder() -> VVHgvsVariantCoordinateFinder:
 
 
 class TestVVHgvsVariantCoordinateFinder:
-    TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vv_response'))
+    TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data', 'vv_response')
 
     def test_load_hgvs_MC4R_missense(self, coordinate_finder: VVHgvsVariantCoordinateFinder):
         response_fpath = os.path.join(self.TEST_DATA_DIR, 'hgvs_MC4R_missense.json')
@@ -98,7 +96,7 @@ class TestVVHgvsVariantCoordinateFinder:
 
 
 class TestVVTranscriptCoordinateService:
-    TEST_DATA_DIR = resource_filename(__name__, os.path.join('test_data', 'vv_response'))
+    TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data', 'vv_response')
 
     @pytest.fixture
     def tx_coordinate_service(self) -> VVTranscriptCoordinateService:
@@ -163,8 +161,12 @@ class TestVVTranscriptCoordinateService:
         assert last.end_on_strand(Strand.POSITIVE) == 52_25_726
         assert all(exon.strand == tx_region.strand for exon in exons)
 
-        assert transpose_coordinate(tc.region.contig, tc.cds_start) == 5_227_021
-        assert transpose_coordinate(tc.region.contig, tc.cds_end) == 5_225_597
+        cds_start = tc.cds_start
+        assert cds_start is not None
+        assert transpose_coordinate(tc.region.contig, cds_start) == 5_227_021
+        cds_end = tc.cds_end
+        assert cds_end is not None
+        assert transpose_coordinate(tc.region.contig, cds_end) == 5_225_597
         assert tc.cds_start == 129_859_601
         assert tc.cds_end == 129_861_025
 

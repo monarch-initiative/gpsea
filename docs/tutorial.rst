@@ -55,23 +55,55 @@ We can then view the data using the list commands.
   [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
 
 Using the counts, we can choose and run what analyses we want.
+
 For instance, we can partition the patients into two groups based on presence/absence of a *missense* variant:
 
 .. doctest:: tutorial
 
-  >>> import pandas as pd
-  >>> pd.set_option('expand_frame_repr', False)
-  >>> from genophenocorr.analysis import configure_cohort_analysis
-  >>> from genophenocorr.analysis.predicate import PatientCategories  # TODO - explain the predicate or update the API
+  >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
   >>> from genophenocorr.model import VariantEffect
 
-  >>> cohort_analysis = configure_cohort_analysis(cohort, hpo)
-  >>> missense = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+  >>> missense_in_tx = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+
+We created a predicate `missense_in_tx` that tests 
+if a variant leads to an aminoacid change in a transcript `NM_1234.5`.
+We will use the predicate in the downstream analysis to assign the patients 
+into a group and test for genotype-phenotype correlation between the groups.
+
+.. note::
+
+  There are many other ways to set up a predicate for testing 
+  for genotype-phenotype correlation.
+  See the :ref:`predicates` section to learn more about building
+  a predicate for the analysis of interest.
+
+Next, we will prepare and run the genotype-phenotype analysis 
+to test the correlation between phenotypes and presence of a missense variant.
+
+.. doctest:: tutorial
+
+  >>> from genophenocorr.analysis import configure_cohort_analysis
+  >>> from genophenocorr.analysis.predicate import PatientCategories  # TODO - explain the predicate or update the API
+  
+  >>> cohort_analysis = configure_cohort_analysis(cohort, hpo)  
+  >>> missense = cohort_analysis.compare_hpo_vs_genotype(missense_in_tx)
+  
+We prepared the `cohort_analysis` and we ran the analysis to test for correlation 
+between the clinical signs and symptoms of patients encoded into HPO terms 
+and presence of a missense variant in the patient.
+
+We stored the results into `missense` variable. We can summarize the results
+by showing a data frame with results for each tested HPO term. 
+We show the first two terms here:
+
+  >>> import pandas as pd
+  >>> pd.set_option('expand_frame_repr', False)
   >>> summary_df = missense.summarize(hpo, PatientCategories.YES)
-  >>> summary_df.head(1)  # doctest: +NORMALIZE_WHITESPACE
+  >>> summary_df.head(2)  # doctest: +NORMALIZE_WHITESPACE
     MISSENSE_VARIANT on NM_1234.5    Yes             No
-                                    Count   Percent Count Percent   p value Corrected p value
-    Arachnodactyly [HP:0001166]    13/16     81%  1/10  10%  0.000781          0.020299
+                                    Count   Percent Count Percent   p value    Corrected p value
+    Arachnodactyly [HP:0001166]     13/16   81%     1/10  10%       0.000781   0.020299
+    Spasticity [HP:0001257]         11/16   69%     6/10  60%       0.692449   1.000000
 
 ..
 

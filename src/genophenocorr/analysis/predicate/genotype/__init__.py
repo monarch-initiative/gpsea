@@ -1,15 +1,10 @@
-from ._geno_bool import ProtFeaturePredicate, ProtFeatureTypePredicate, ProtRegionPredicate
-from ._geno_bool import VariantEffectPredicate, VariantPredicate, ExonPredicate
-from ._geno_group import VariantEffectsPredicate, VariantsPredicate, ExonsPredicate
-from ._geno_group import ProtFeaturesPredicate, ProtFeatureTypesPredicate, ProtRegionsPredicate
-from ._geno_bool_rec import RecessiveExonPredicate, RecessiveProtFeatureTypePredicate, RecessiveVariantPredicate
-from ._geno_bool_rec import RecessiveProtFeaturePredicate, RecessiveVariantEffectPredicate, RecessiveProtRegionPredicate
+from ._api import VariantPredicate
+from ._counter import AlleleCounter
+from ._gt_predicates import boolean_predicate, grouping_predicate, recessive_predicate
+from ._variant import VariantPredicates, ProteinPredicates
 
 __all__ = [
-    'VariantEffectPredicate', 'VariantEffectsPredicate', 'RecessiveVariantEffectPredicate',
-    'VariantPredicate', 'VariantsPredicate', 'RecessiveVariantPredicate',
-    'ExonPredicate', 'ExonsPredicate', 'RecessiveExonPredicate',
-    'ProtFeaturePredicate', 'ProtFeaturesPredicate', 'RecessiveProtFeaturePredicate',
-    'ProtFeatureTypePredicate', 'ProtFeatureTypesPredicate', 'RecessiveProtFeatureTypePredicate',
-    'ProtRegionPredicate', 'ProtRegionsPredicate', 'RecessiveProtRegionPredicate'
+    'boolean_predicate', 'grouping_predicate', 'recessive_predicate',
+    'AlleleCounter', 'VariantPredicate',
+    'VariantPredicates', 'ProteinPredicates', 
 ]

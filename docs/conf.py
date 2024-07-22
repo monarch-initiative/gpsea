@@ -191,7 +191,7 @@ doctest_default_flags = (doctest.REPORT_ONLY_FIRST_FAILURE
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     # TODO - change to stable when we arrive there
-    "hpotk": ("https://thejacksonlaboratory.github.io/hpo-toolkit/latest/", None),
+    "hpotk": ("https://ielis.github.io/hpo-toolkit/latest/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/version/2.0.0/", None),
     "requests": ("https://docs.python-requests.org/en/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy-1.11.0/", None),

@@ -1,6 +1,5 @@
+import os
 import pytest
-
-from pkg_resources import resource_filename
 
 from google.protobuf.json_format import Parse
 
@@ -34,17 +33,17 @@ def pp_vc_finder(build: GenomeBuild,
 
 @pytest.mark.online
 @pytest.mark.parametrize("pp_path, expected",
-                         [('test_data/deletion_test.json', '16_89284129_89284134_CTTTTT_C'),
-                          ('test_data/insertion_test.json', '16_89280829_89280829_C_CA'),
-                          ('test_data/missense_test.json', '16_89279135_89279135_G_C'),
-                          ('test_data/missense_hgvs_test.json', '16_89279135_89279135_G_C'),
-                          ('test_data/duplication_test.json', '16_89279850_89279850_G_GC'),
-                          ('test_data/delinsert_test.json', '16_89284601_89284602_GG_A'),
-                          ('test_data/CVDup_test.json', '16_89284523_89373231_DUP'),
-                          ('test_data/CVDel_test.json', '16_89217281_89506042_DEL')
+                         [('deletion_test.json', '16_89284129_89284134_CTTTTT_C'),
+                          ('insertion_test.json', '16_89280829_89280829_C_CA'),
+                          ('missense_test.json', '16_89279135_89279135_G_C'),
+                          ('missense_hgvs_test.json', '16_89279135_89279135_G_C'),
+                          ('duplication_test.json', '16_89279850_89279850_G_GC'),
+                          ('delinsert_test.json', '16_89284601_89284602_GG_A'),
+                          ('CVDup_test.json', '16_89284523_89373231_DUP'),
+                          ('CVDel_test.json', '16_89217281_89506042_DEL')
                           ])
 def test_find_coordinates(pp_path, expected, pp_vc_finder):
-    fname = resource_filename(__name__, pp_path)
+    fname = os.path.join(os.path.dirname(__file__), 'test_data', pp_path)
     gi = read_genomic_interpretation_json(fname)
 
     vc, gt = pp_vc_finder.find_coordinates(gi)
@@ -69,7 +68,7 @@ def caching_annotator(variant_annotator, tmp_path):
 
 @pytest.mark.online
 def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator):
-    fname = resource_filename(__name__, 'test_data/missense_test.json')
+    fname = os.path.join(os.path.dirname(__file__), 'test_data', 'missense_test.json')
     gi = read_genomic_interpretation_json(fname)
     var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)
@@ -79,14 +78,14 @@ def test_caching_full_circle(caching_annotator, pp_vc_finder, variant_annotator)
 
 @pytest.fixture
 def oldfile_cache_annotator(variant_annotator):
-    data = resource_filename(__name__, 'test_data/annotations')
+    data = os.path.join(os.path.dirname(__file__), 'test_data', 'annotations')
     vac = VariantAnnotationCache(data)
     return VarCachingFunctionalAnnotator(vac, variant_annotator)
 
 
 @pytest.mark.skip("Skipped until new Pickle files are generated")
 def test_cache_from_older_file(oldfile_cache_annotator, pp_vc_finder, variant_annotator):
-    fname = resource_filename(__name__, 'test_data/missense_test.json')
+    fname = os.path.join(os.path.dirname(__file__), 'test_data', 'missense_test.json')
     gi = read_genomic_interpretation_json(fname)
     var_coords, gt = pp_vc_finder.find_coordinates(gi)
     var_anno_results = variant_annotator.annotate(var_coords)

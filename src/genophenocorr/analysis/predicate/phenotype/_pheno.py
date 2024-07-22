@@ -5,28 +5,15 @@ import hpotk
 
 from genophenocorr.model import Patient
 
-from .._api import PolyPredicate, PatientCategory, PatientCategories, C, Categorization
+from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization
 
 
-class Comparable(metaclass=abc.ABCMeta):
-    """
-    A protocol for annotating comparable types.
-    """
-
-    @abc.abstractmethod
-    def __eq__(self, other: typing.Any) -> bool:
-        pass
-
-    @abc.abstractmethod
-    def __lt__(self, other: typing.Any) -> bool:
-        pass
-
-
-P = typing.TypeVar('P', typing.Hashable, Comparable)
+P = typing.TypeVar('P')
 """
 Phenotype entity of interest, such as :class:`hpotk.model.TermId`, representing an HPO term or an OMIM/MONDO term.
 
-However, phenotype entity can be anything as long as it is hashable and comparable.
+However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable 
+(have `__eq__` and `__lt__` magic methods).
 """
 
 
@@ -86,7 +73,7 @@ class PhenotypePolyPredicate(typing.Generic[P], PolyPredicate[PhenotypeCategoriz
         pass
 
 
-class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hpotk.TermId]]):
+class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
     `PropagatingPhenotypePredicate` tests if a patient is annotated with an HPO term.
 
@@ -108,11 +95,11 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
                                                                       'missing_implies_phenotype_excluded')
         self._phenotype_observed = PhenotypeCategorization(
             category=PatientCategories.YES,
-            phenotype=query,
+            phenotype=self._query,
         )
         self._phenotype_excluded = PhenotypeCategorization(
             category=PatientCategories.NO,
-            phenotype=query,
+            phenotype=self._query,
         )
 
     def get_question(self) -> str:
@@ -123,10 +110,10 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
         # We usually test just a single HPO term, so we return a tuple with a single member.
         return self._query,
 
-    def get_categorizations(self) -> typing.Sequence[C]:
+    def get_categorizations(self) -> typing.Sequence[PhenotypeCategorization[hpotk.TermId]]:
         return self._phenotype_observed, self._phenotype_excluded
 
-    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
+    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[hpotk.TermId]]:
         """An HPO TermID is given when initializing the class.
         Given a Patient class, this function tests whether the patient has the
         given phenotype.
@@ -167,7 +154,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[PhenotypeCategorizati
         return f'PropagatingPhenotypeBooleanPredicate(query={self._query})'
 
 
-class DiseasePresencePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hpotk.TermId]]):
+class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
     `DiseasePresencePredicate` tests if the patient was diagnosed with a disease.
 
@@ -196,10 +183,10 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[PhenotypeCategorization[hp
         # We usually test just a single Disease, so we return a tuple with a single member.
         return self._query,
 
-    def get_categorizations(self) -> typing.Sequence[C]:
+    def get_categorizations(self) -> typing.Sequence[PhenotypeCategorization[hpotk.TermId]]:
         return self._diagnosis_present, self._diagnosis_excluded
 
-    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[P]]:
+    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[hpotk.TermId]]:
         """
         Test if the `patient` was diagnosed with a disease.
 
