@@ -2,7 +2,8 @@ import pytest
 
 import typing
 
-from genophenocorr.model import Variant, Cohort, VariantFormatter
+from genophenocorr.model import Variant, Cohort
+from genophenocorr.view import VariantFormatter
 
 
 class TestVariant:
