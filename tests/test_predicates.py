@@ -8,6 +8,7 @@ from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredi
 from genophenocorr.analysis.predicate.genotype import *
 from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
 from genophenocorr.model.genome import Region
+from genophenocorr.preprocessing import ProteinMetadataService
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
@@ -101,7 +102,7 @@ def test_VariantEffectPredicate(patient_id: str,
                                 expected_result: PatientCategory,
                                 toy_cohort: Cohort):
     patient = find_patient(patient_id, toy_cohort)
-    predicate = VariantEffectPredicate('NM_013275.6', effect=variant_effect)
+    predicate = boolean_predicate(VariantPredicates.variant_effect(effect=variant_effect, tx_id='NM_013275.6'))
     result = predicate.test(patient)
     assert result.category == expected_result
 
@@ -118,8 +119,8 @@ def test_VariantEffectPredicate(patient_id: str,
                           ['HomoVar', '16_89280752_89280752_G_T', PatientCategories.NO],
                           ['HomoVar', '16_89279458_89279459_TG_T', PatientCategories.YES],
                           ['LargeCNV', '16_89190071_89439815_DEL', PatientCategories.YES]))
-def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
-    predicate = VariantPredicate(variant_key=variant)
+def test_VariantKeyPredicate(patient_id, variant, hasVarResult, toy_cohort):
+    predicate = boolean_predicate(VariantPredicates.variant_key(key=variant))
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
@@ -137,22 +138,28 @@ def test_VariantPredicate(patient_id, variant, hasVarResult, toy_cohort):
                           ['LargeCNV', 13, PatientCategories.YES]))
 def test_ExonPredicate(patient_id, exon, hasVarResult, toy_cohort):
     patient = find_patient(patient_id, toy_cohort)
-    predicate = ExonPredicate('NM_013275.6', exon_number=exon)
+    predicate = VariantPredicates.exon(exon=exon, tx_id='NM_013275.6')
+    predicate = boolean_predicate(predicate)
     result = predicate.test(patient)
     assert result.category == hasVarResult
 
 
+@pytest.fixture(scope='module')
+def protein_predicates(protein_test_service: ProteinMetadataService) -> ProteinPredicates:
+    return ProteinPredicates(protein_metadata_service=protein_test_service)
+
+
 @pytest.mark.parametrize('patient_id, feature_type, hasVarResult',
-                         (['HetDoubleVar2', FeatureType.REGION, PatientCategories.YES],
-                          ['HetDoubleVar2', FeatureType.REPEAT, PatientCategories.NO],
-                          ['HetSingleVar', FeatureType.REGION, PatientCategories.YES],
-                          ['HomoVar', FeatureType.REGION, PatientCategories.YES],
-                          ['HetDoubleVar1', FeatureType.REPEAT, PatientCategories.NO]))
+                        (['HetDoubleVar2', FeatureType.REGION, PatientCategories.YES],
+                        ['HetDoubleVar2', FeatureType.REPEAT, PatientCategories.NO],
+                        ['HetSingleVar', FeatureType.REGION, PatientCategories.YES],
+                        ['HomoVar', FeatureType.REGION, PatientCategories.YES],
+                        ['HetDoubleVar1', FeatureType.REPEAT, PatientCategories.NO]))
 ## TODO Why do CNV not show as affecting a feature?
 ##['LargeCNV', FeatureType.REGION , HETEROZYGOUS]))
-def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy_cohort, protein_test_service):
+def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy_cohort, protein_predicates):
     patient = find_patient(patient_id, toy_cohort)
-    predicate = ProtFeatureTypePredicate('NM_013275.6', feature_type=feature_type, protein_service=protein_test_service)
+    predicate = boolean_predicate(protein_predicates.protein_feature_type(feature_type=feature_type, tx_id='NM_013275.6'))
     result = predicate.test(patient)
     assert result.category == hasVarResult
 
@@ -163,8 +170,8 @@ def test_ProteinFeatureTypePredicate(patient_id, feature_type, hasVarResult, toy
                           ['HetSingleVar', 'Disordered', PatientCategories.YES],
                           ['HomoVar', 'Disordered', PatientCategories.YES],
                           ['HetDoubleVar1', 'Disordered', PatientCategories.YES]))
-def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, protein_test_service):
-    predicate = ProtFeaturePredicate('NM_013275.6', protein_feature_name=feature, protein_service=protein_test_service)
+def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, protein_predicates):
+    predicate = boolean_predicate(protein_predicates.protein_feature(feature_id=feature, tx_id='NM_013275.6'))
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult
@@ -176,7 +183,7 @@ def test_ProteinFeaturePredicate(patient_id, feature, hasVarResult, toy_cohort, 
                           ['HetSingleVar', Region(2000, 2500), PatientCategories.YES],
                           ['HetDoubleVar1', Region(600, 650), PatientCategories.YES]))
 def test_ProteinRegionPredicate(patient_id, region, hasVarResult, toy_cohort):
-    predicate = ProtRegionPredicate('NM_013275.6', region)
+    predicate = boolean_predicate(VariantPredicates.region(region=region, tx_id='NM_013275.6'))
     patient = find_patient(patient_id, toy_cohort)
     result = predicate.test(patient)
     assert result.category == hasVarResult

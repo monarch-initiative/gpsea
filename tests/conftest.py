@@ -6,7 +6,7 @@ import hpotk
 import pytest
 
 from genophenocorr.analysis.predicate import GenotypePolyPredicate
-from genophenocorr.analysis.predicate.genotype import VariantEffectPredicate
+from genophenocorr.analysis.predicate.genotype import VariantPredicates, VariantPredicate, boolean_predicate
 from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
 from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
 from genophenocorr.model import *
@@ -76,7 +76,9 @@ def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.Validati
 
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
-    return GenomicRegion(GRCh38.contig_by_name(contig), start, end, Strand.POSITIVE)
+    a_contig = GRCh38.contig_by_name(contig)
+    assert a_contig is not None
+    return GenomicRegion(a_contig, start, end, Strand.POSITIVE)
 
 
 @pytest.fixture(scope='session')
@@ -108,7 +110,12 @@ def suox_cohort(
 def suox_gt_predicate() -> GenotypePolyPredicate:
     # To bin the patients to a group with >1 MISSENSE variant or 0 MISSENSE variants.
     suox_mane_tx_id = 'NM_001032386.2'
-    return VariantEffectPredicate(transcript_id=suox_mane_tx_id, effect=VariantEffect.MISSENSE_VARIANT)
+    return boolean_predicate(
+        variant_predicate=VariantPredicates.variant_effect(
+            effect=VariantEffect.MISSENSE_VARIANT, 
+            tx_id=suox_mane_tx_id
+        )
+    )
 
 
 @pytest.fixture(scope='session')
@@ -310,3 +317,8 @@ def test_diseases() -> typing.Mapping[str, Disease]:
         'KBG_T': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
         'KBG_F': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
     }
+
+
+@pytest.fixture(scope='session')
+def genome_build() -> GenomeBuild:
+    return GRCh38
