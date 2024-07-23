@@ -396,13 +396,15 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
         return None
     
     def get_preferred_tx_annotation(self) -> typing.Optional[TranscriptAnnotation]:
-        """A TranscriptAnnotation that represents the result of the functional annotation
-        of a variant with respect to the preferred transcript of a gene. Will return None if there is 
-        no preferred transcript found. 
+        """Get the `TranscriptAnnotation` that represents the result of the functional annotation
+        with respect to the preferred transcript of a gene. 
+        
+        Returns `None` if transcript annotations is no preferred transcript found. 
 
         Returns:
-            typing.Optional[TranscriptAnnotation]: A TranscriptAnnotation object representing the 
-                                                    preferred transcript if one can be found
+            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect 
+                                                   to the preferred transcript 
+                                                   or `None` if the preferred transcript info is not available.
         """
         for tx in self.tx_annotations:
             if tx.is_preferred:
