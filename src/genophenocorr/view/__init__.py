@@ -5,6 +5,7 @@ from ._protein_visualizable import ProteinVisualizable
 from ._stats import StatsViewer
 from ._txp import VariantTranscriptVisualizer
 from ._protein_visualizer import ProteinVisualizer
+from ._formatter import VariantFormatter
 
 __all__ = [
     'CohortViewable',
@@ -12,4 +13,5 @@ __all__ = [
     'DiseaseViewable',
     'StatsViewer',
     'VariantTranscriptVisualizer',
+    'VariantFormatter',
 ]
