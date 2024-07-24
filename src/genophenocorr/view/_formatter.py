@@ -13,8 +13,7 @@ class Formatter(typing.Generic[T], metaclass=abc.ABCMeta):
         to more easily read the item in tables or other visualizers.
 
         Args:
-            item (T): a genophenocorr class
-            tx_id (typing.Optional[str]): The desired transcript ID, if not the MANE transcript
+            item (T): an element to be formatted
 
         Returns:
             str: a human readable string 
@@ -32,7 +31,6 @@ class VariantFormatter(Formatter[Variant]):
         """ 
         Args:
             item (Variant): An object of class `Variant` representing a variant.
-            tx_id (typing.Optional[str]): The transcript ID, needed if using a transcript other than the MANE transcript.
 
         Returns:
             str: A human readable string for the variant.
@@ -48,4 +46,5 @@ class VariantFormatter(Formatter[Variant]):
         elif item.variant_coordinates.variant_key is not None:
             return item.variant_coordinates.variant_key
         else:
+            # To be reevaluated
             return f"Variant {item} has no string format."
