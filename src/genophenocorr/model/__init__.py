@@ -16,7 +16,7 @@ from ._variant_effects import VariantEffect
 __all__ = [
     'Cohort', 'Patient', 'SampleLabels',
     'Phenotype', 'Disease',
-    'Variant', 'VariantCoordinates', 'Genotype', 'Genotypes', 'Genotyped',
+    'Variant', 'VariantCoordinates', 'Genotype', 'Genotypes', 'Genotyped', 
     'TranscriptAnnotation', 'VariantEffect', 'TranscriptInfoAware', 'TranscriptCoordinates',
     'ProteinMetadata', 'ProteinFeature', 'FeatureInfo', 'FeatureType',
 ]

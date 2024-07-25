@@ -6,7 +6,6 @@ import hpotk
 
 from .genome import Region, GenomicRegion
 from ._gt import Genotyped, Genotypes
-from ._protein import ProteinMetadata
 from ._variant_effects import VariantEffect
 
 
@@ -262,7 +261,17 @@ class VariantCoordinates:
         if self.is_structural():
             return f'{self.chrom}_{self.start + 1}_{self.end}_{self.alt[1:-1]}'
         else:
-            return f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
+            key = f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
+            if len(key) > 50:
+                ref = None
+                alt = None
+                if len(self.ref) > 10:
+                    ref = f"--{len(self.ref)}bp--"
+                if len(self.alt) > 10:
+                    alt = f"--{len(self.alt)}bp--"
+                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref if not None else self.ref}_{alt if not None else self.alt}"
+            else:
+                return key
 
     @property
     def variant_class(self) -> str:
@@ -385,6 +394,22 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
             if tx_ann.transcript_id == transcript_id:
                 return tx_ann.hgvs_cdna
         return None
+    
+    def get_preferred_tx_annotation(self) -> typing.Optional[TranscriptAnnotation]:
+        """Get the `TranscriptAnnotation` that represents the result of the functional annotation
+        with respect to the preferred transcript of a gene. 
+        
+        Returns `None` if transcript annotations is no preferred transcript found. 
+
+        Returns:
+            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect 
+                                                   to the preferred transcript 
+                                                   or `None` if the preferred transcript info is not available.
+        """
+        for tx in self.tx_annotations:
+            if tx.is_preferred:
+                return tx
+        return None
 
 
 class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
@@ -470,3 +495,4 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
         return (f"Variant(variant_coordinates:{str(self.variant_coordinates)}, "
                 f"tx_annotations:{self.tx_annotations}, "
                 f"genotypes:{self.genotypes})")
+

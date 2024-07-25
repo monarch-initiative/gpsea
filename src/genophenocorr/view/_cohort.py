@@ -3,7 +3,8 @@ import typing
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 
-from genophenocorr.model import Cohort, Variant
+from genophenocorr.model import Cohort
+from ._formatter import VariantFormatter
 
 
 class CohortViewable:
@@ -33,7 +34,7 @@ class CohortViewable:
     def process(
             self,
             cohort: Cohort,
-            transcript_id: str
+            transcript_id: typing.Optional[str] = None
     ) -> str:
         """
         Create an HTML that should be shown with display(HTML(..)) of the ipython package.
@@ -51,7 +52,7 @@ class CohortViewable:
     def _prepare_context(
             self,
             cohort: Cohort,
-            transcript_id: str
+            transcript_id: typing.Optional[str]
     ) -> typing.Mapping[str, typing.Any]:
 
         hpo_counts = list()
@@ -95,6 +96,8 @@ class CohortViewable:
                         var_effects_list.append({"effect": effect, "count": count})
         else:
             has_transcript = False
+        if transcript_id is None:
+            transcript_id = "MANE transcript ID"
         # The following dictionary is used by the Jinja2 HTML template
         return {
             "n_individuals": len(cohort.all_patients),
@@ -113,16 +116,9 @@ class CohortViewable:
         }
 
     @staticmethod
-    def get_display(variant: Variant, transcript_id: str) -> str:
-        for annot in variant.tx_annotations:
-            if annot.transcript_id == transcript_id:
-                return annot.hgvs_cdna
-        return variant.variant_coordinates.variant_key
-
-    @staticmethod
     def get_variant_description(
             cohort: Cohort,
-            transcript_id: str,
+            transcript_id: typing.Optional[str],
             only_hgvs: bool = True,
     ) -> typing.Mapping[str, str]:
         """
@@ -137,9 +133,10 @@ class CohortViewable:
         """
         chrom_to_display = dict()
         all_var_set = cohort.all_variants()
+        var_formatter = VariantFormatter(transcript_id)
         for var in all_var_set:
             var_string = var.variant_coordinates.variant_key
-            display = CohortViewable.get_display(variant=var, transcript_id=transcript_id)
+            display = var_formatter.format_as_string(var)
             if only_hgvs:
                 # do not show the transcript id
                 fields = display.split(":")

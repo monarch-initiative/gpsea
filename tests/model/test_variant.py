@@ -4,7 +4,6 @@ import typing
 
 from genophenocorr.model import Variant, Cohort
 
-
 class TestVariant:
 
     @pytest.fixture
