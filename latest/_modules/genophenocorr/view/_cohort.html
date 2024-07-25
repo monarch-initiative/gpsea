@@ -86,7 +86,8 @@
 <span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Variant</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">._formatter</span> <span class="kn">import</span> <span class="n">VariantFormatter</span>
 
 
 <div class="viewcode-block" id="CohortViewable">
@@ -120,7 +121,7 @@
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
-            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an HTML that should be shown with display(HTML(..)) of the ipython package.</span>
@@ -139,7 +140,7 @@
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
-            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 
         <span class="n">hpo_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -183,6 +184,8 @@
                         <span class="n">var_effects_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;effect&quot;</span><span class="p">:</span> <span class="n">effect</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">has_transcript</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">transcript_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transcript_id</span> <span class="o">=</span> <span class="s2">&quot;MANE transcript ID&quot;</span>
         <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">),</span>
@@ -200,22 +203,12 @@
             <span class="s2">&quot;transcript_id&quot;</span><span class="p">:</span> <span class="n">transcript_id</span><span class="p">,</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="CohortViewable.get_display">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.get_display">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_display</span><span class="p">(</span><span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">annot</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">annot</span><span class="o">.</span><span class="n">hgvs_cdna</span>
-        <span class="k">return</span> <span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span></div>
-
-
 <div class="viewcode-block" id="CohortViewable.get_variant_description">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.CohortViewable.get_variant_description">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_variant_description</span><span class="p">(</span>
             <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
-            <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
             <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -230,9 +223,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chrom_to_display</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">all_var_set</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()</span>
+        <span class="n">var_formatter</span> <span class="o">=</span> <span class="n">VariantFormatter</span><span class="p">(</span><span class="n">transcript_id</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">all_var_set</span><span class="p">:</span>
             <span class="n">var_string</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
-            <span class="n">display</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="o">.</span><span class="n">get_display</span><span class="p">(</span><span class="n">variant</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">transcript_id</span><span class="p">)</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="n">var_formatter</span><span class="o">.</span><span class="n">format_as_string</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">only_hgvs</span><span class="p">:</span>
                 <span class="c1"># do not show the transcript id</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
