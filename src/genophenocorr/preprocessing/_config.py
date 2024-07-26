@@ -241,7 +241,7 @@ def load_phenopacket_folder(
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
-    cohort_iter = tqdm(pps, desc='Patients Created', file=sys.stdout)
+    cohort_iter = tqdm(pps, desc='Patients Created', file=sys.stdout, colour='green')
     notepad = cohort_creator.prepare_notepad(f'{len(pps)} phenopacket(s) found at `{pp_directory}`')
     cohort = cohort_creator.process(cohort_iter, notepad)
     
