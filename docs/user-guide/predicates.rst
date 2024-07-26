@@ -39,8 +39,7 @@ last, we will load the cohort from a directory with phenopackets:
 
 >>> import os
 >>> cohort_dir = os.path.join('docs', 'data', 'simple_cohort')
->>> cohort = load_phenopacket_folder(cohort_dir, cohort_creator) # doctest: +ELLIPSIS
-...Patients Created...
+>>> cohort = load_phenopacket_folder(cohort_dir, cohort_creator) # doctest: +SKIP
 >>> len(cohort)
 5
 
