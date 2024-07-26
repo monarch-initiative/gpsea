@@ -7,7 +7,7 @@ import hpotk
 # pyright: reportGeneralTypeIssues=false
 from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
@@ -241,7 +241,7 @@ def load_phenopacket_folder(
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
-    cohort_iter = tqdm(pps, desc='Patients Created')
+    cohort_iter = tqdm(pps, desc='Patients Created', file=sys.stdout)
     notepad = cohort_creator.prepare_notepad(f'{len(pps)} phenopacket(s) found at `{pp_directory}`')
     cohort = cohort_creator.process(cohort_iter, notepad)
     
