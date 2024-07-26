@@ -293,8 +293,8 @@ def _summarize_validation(policy: str,
                                      + (f'. {warning.solution}' if warning.solution else ''))
     else:
         warn_lines.append('No errors or warnings were found')
-        l_pad = ' ' * (node.level * indent)
-        warn_lines.append(l_pad + node.label)
+        l_pad = ' ' * (notepad.level * indent)
+        warn_lines.append(l_pad + notepad.label)
     return (warn_lines, error_lines)
 
 
