@@ -68,7 +68,8 @@ We load the phenopackets using `cohort_creator` defined above together with anot
 
   >>> from genophenocorr.preprocessing import load_phenopacket_folder
 
-  >>> cohort = load_phenopacket_folder(simple_cohort_path, cohort_creator)# doctest: +SKIP
+  >>> cohort = load_phenopacket_folder(simple_cohort_path, cohort_creator) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+  Patients Created...
 
   >>> len(cohort)
   5
