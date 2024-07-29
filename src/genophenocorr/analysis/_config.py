@@ -323,7 +323,7 @@ def _validate_terms_to_test(
     for term in terms_to_test:
         if isinstance(term, hpotk.TermId):
             pass
-        if isinstance(term, str):
+        elif isinstance(term, str):
             term = hpotk.TermId.from_curie(term)
         else:
             raise ValueError(f'{term} is neither a TermId nor a CURIE `str`!')
