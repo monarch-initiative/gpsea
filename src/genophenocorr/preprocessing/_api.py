@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from genophenocorr.model import VariantCoordinates, Genotype, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation
+from genophenocorr.model import VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation
 
 T = typing.TypeVar('T')
 
@@ -9,12 +9,12 @@ T = typing.TypeVar('T')
 class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def find_coordinates(self, item: T) -> typing.Tuple[typing.Optional[VariantCoordinates], Genotype]:
+    def find_coordinates(self, item: T) -> typing.Optional[VariantCoordinates]:
         """
-        Try to find :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+        Try to find :class:`VariantCoordinates` from an `item` of some sort.
 
         The variant coordinates may not be available all the time, 
-        and `None` may be returned as the first tuple element.
+        and `None` may be returned.
 
         Raises:
             ValueError: if there is an error of any kind.

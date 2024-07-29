@@ -18,6 +18,40 @@ from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
 
 
+class PhenopacketGenotypeParser:
+    """
+    `PhenopacketGenotypeParser` tries to extract :class:`Genotype` from `GenomicInterpretation`.
+    """
+
+    def find_genotype(
+        self,
+        item: GenomicInterpretation,
+    ) -> typing.Optional[Genotype]:
+        if item.HasField('variant_interpretation'):
+            variant_interpretation = item.variant_interpretation
+            if variant_interpretation.HasField('variation_descriptor'):
+                variation_descriptor = variant_interpretation.variation_descriptor
+                if variation_descriptor.HasField('allelic_state'):
+                    genotype = variation_descriptor.allelic_state.label
+                    return self._map_geno_genotype_label(genotype)
+        
+        return None
+
+    @staticmethod
+    def _map_geno_genotype_label(genotype: str) -> Genotype:
+        """
+        Mapping from labels of the relevant GENO terms that is valid as of Oct 2nd, 2023.
+        """
+        if genotype in ("heterozygous", "compound heterozygous", "simple heterozygous"):
+            return Genotype.HETEROZYGOUS
+        elif genotype == "homozygous":
+            return Genotype.HOMOZYGOUS_ALTERNATE
+        elif genotype in ("hemizygous", "hemizygous X-linked", "hemizygous Y-linked"):
+            return Genotype.HEMIZYGOUS
+        else:
+            raise ValueError(f"Unknown genotype {genotype}")
+
+
 class PhenopacketVariantCoordinateFinder(
     VariantCoordinateFinder[GenomicInterpretation]
 ):
@@ -45,13 +79,14 @@ class PhenopacketVariantCoordinateFinder(
     def find_coordinates(
         self,
         item: GenomicInterpretation,
-    ) -> typing.Tuple[typing.Optional[VariantCoordinates], Genotype]:
-        """Tries to a VariantCoordinates object from the data in a given Phenopacket
+    ) -> typing.Optional[VariantCoordinates]:
+        """
+        Tries to extract the variant coordinates from the `GenomicInterpretation`.
 
         Args:
             item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema
         Returns:
-            tuple[VariantCall, Genotype]: A tuple of :class:`VariantCoordinates` and :class:`Genotype`
+            VariantCoordinates: variant coordinates or 
         """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(
@@ -77,7 +112,7 @@ class PhenopacketVariantCoordinateFinder(
             change_length = end - start
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-            vc = VariantCoordinates(region, ref, alt, change_length)
+            return VariantCoordinates(region, ref, alt, change_length)
         elif self._cnv_is_available(variation_descriptor.variation):
             # We have a CNV.
             variation = variation_descriptor.variation
@@ -98,7 +133,7 @@ class PhenopacketVariantCoordinateFinder(
             change_length = end - start
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
-            vc = VariantCoordinates(region, ref, alt, change_length)
+            return VariantCoordinates(region, ref, alt, change_length)
         elif len(variation_descriptor.expressions) > 0:
             # We have some expressions. Let's try to find the 1st expression with `hgvs.c` syntax.
             for expression in variation_descriptor.expressions:
@@ -107,15 +142,9 @@ class PhenopacketVariantCoordinateFinder(
                     break
         elif self._looks_like_large_sv(variation_descriptor):
             # We cannot extract exact variant coordinates from a variation descriptor in this format.
-            vc = None
+            return None
         else:
             raise ValueError("Unable to find variant coordinates.")
-
-        # Last, parse genotype.
-        genotype = variation_descriptor.allelic_state.label
-        gt = self._map_geno_genotype_label(genotype)
-
-        return vc, gt
 
     def _check_assembly(self, genome_assembly: str) -> bool:
         if "38" in genome_assembly and self._build.identifier == "GRCh38.p13":
@@ -171,20 +200,6 @@ class PhenopacketVariantCoordinateFinder(
         else:
             return False
 
-    @staticmethod
-    def _map_geno_genotype_label(genotype: str) -> Genotype:
-        """
-        Mapping from labels of the relevant GENO terms that is valid as of Oct 2nd, 2023.
-        """
-        if genotype in ("heterozygous", "compound heterozygous", "simple heterozygous"):
-            return Genotype.HETEROZYGOUS
-        elif genotype == "homozygous":
-            return Genotype.HOMOZYGOUS_ALTERNATE
-        elif genotype in ("hemizygous", "hemizygous X-linked", "hemizygous Y-linked"):
-            return Genotype.HEMIZYGOUS
-        else:
-            raise ValueError(f"Unknown genotype {genotype}")
-
 
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     """
@@ -203,6 +218,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._coord_finder = PhenopacketVariantCoordinateFinder(
             build, hgvs_coordinate_finder
         )
+        self._gt_parser = PhenopacketGenotypeParser()
         self._phenotype_creator = hpotk.util.validate_instance(
             phenotype_creator, PhenotypeCreator, "phenotype_creator"
         )
@@ -248,6 +264,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         Args:
             diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects
+            notepad (Notepad): notepad to write down the issues
         Returns:
             Sequence[Dis]: A list of Disease objects
         """
@@ -270,39 +287,52 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         Args:
             pp (Phenopacket): A Phenopacket object
+            notepad (Notepad): notepad to write down the issues
         Returns:
             Sequence[Variant]: A list of Variant objects
         """
         variants = []
-        for i, interp in enumerate(pp.interpretations):
-            for genomic_interp in interp.diagnosis.genomic_interpretations:
-                try:
-                    vc, gt = self._coord_finder.find_coordinates(genomic_interp)
-                except ValueError:
-                    notepad.add_warning(
-                        f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
-                        "Remove variant from testing",
-                    )
-                    continue
+        
+        for i, interpretation in enumerate(pp.interpretations):
+            sub_note = notepad.add_subsection(f'#{i}')
+            if interpretation.HasField('diagnosis'):
+                for genomic_interpretation in interpretation.diagnosis.genomic_interpretations:
+                    try:
+                        vc = self._coord_finder.find_coordinates(genomic_interpretation)
+                    except ValueError:
+                        sub_note.add_warning(
+                            f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
+                            "Remove variant from testing",
+                        )
+                        continue
+                    # TODO: handle missing variant coordinates
 
-                try:
-                    tx_annotations = self._func_ann.annotate(vc)
-                except ValueError:
-                    notepad.add_warning(
-                        f"Patient {pp.id} has an error with variant {vc.variant_key}",
-                        "Try again or remove variant form testing",
-                    )
-                    continue
+                    gt = self._gt_parser.find_genotype(genomic_interpretation)
+                    if gt is None:
+                        sub_note.add_warning(
+                            f"Could not extract genotype from genomic interpretation",
+                            "Remove variant from testing",
+                        )
+                        continue
 
-                if len(tx_annotations) == 0:
-                    notepad.add_warning(
-                        f"Patient {pp.id} has an error with variant {vc.variant_key}",
-                        "Remove variant from testing",
-                    )
-                    continue
+                    try:
+                        tx_annotations = self._func_ann.annotate(vc)
+                    except ValueError:
+                        sub_note.add_warning(
+                            f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                            "Try again or remove variant form testing",
+                        )
+                        continue
 
-                genotype = Genotypes.single(sample_id, gt)
-                variants.append(Variant(vc, tx_annotations, genotype))
+                    if len(tx_annotations) == 0:
+                        sub_note.add_warning(
+                            f"Patient {pp.id} has an error with variant {vc.variant_key}",
+                            "Remove variant from testing",
+                        )
+                        continue
+
+                    genotype = Genotypes.single(sample_id, gt)
+                    variants.append(Variant(vc, tx_annotations, genotype))
 
         if len(variants) == 0:
             notepad.add_warning(f"Patient {pp.id} has no variants to work with")

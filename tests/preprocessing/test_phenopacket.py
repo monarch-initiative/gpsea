@@ -42,33 +42,31 @@ class TestPhenopacketVariantCoordinateFinder:
 
     @pytest.mark.online
     @pytest.mark.parametrize(
-        "pp_name, variant_key, genotype",
+        "pp_name, variant_key",
         [
-            ("deletion_test.json", "16_89284129_89284134_CTTTTT_C", Genotype.HETEROZYGOUS,),
-            ("insertion_test.json", "16_89280829_89280829_C_CA", Genotype.HETEROZYGOUS,),
-            ("missense_test.json", "16_89279135_89279135_G_C", Genotype.HETEROZYGOUS,),
-            ("missense_hgvs_test.json", "16_89279135_89279135_G_C", Genotype.HETEROZYGOUS,),
-            ("duplication_test.json", "16_89279850_89279850_G_GC", Genotype.HETEROZYGOUS,),
-            ("delinsert_test.json", "16_89284601_89284602_GG_A", Genotype.HETEROZYGOUS,),
-            ("CVDup_test.json", "16_89284523_89373231_DUP", Genotype.HETEROZYGOUS,),
-            ("CVDel_test.json", "16_89217281_89506042_DEL", Genotype.HETEROZYGOUS,),
+            ("deletion_test.json", "16_89284129_89284134_CTTTTT_C",),
+            ("insertion_test.json", "16_89280829_89280829_C_CA",),
+            ("missense_test.json", "16_89279135_89279135_G_C",),
+            ("missense_hgvs_test.json", "16_89279135_89279135_G_C",),
+            ("duplication_test.json", "16_89279850_89279850_G_GC",),
+            ("delinsert_test.json", "16_89284601_89284602_GG_A",),
+            ("CVDup_test.json", "16_89284523_89373231_DUP",),
+            ("CVDel_test.json", "16_89217281_89506042_DEL",),
         ],
     )
     def test_find_coordinates(
         self, 
         pp_name : str,
         variant_key: str, 
-        genotype: Genotype,
         fpath_test_genomic_interpretations: str,
         pp_vc_finder: PhenopacketVariantCoordinateFinder,
     ):
         fpath_pp = os.path.join(fpath_test_genomic_interpretations, pp_name)
         gi = read_genomic_interpretation_json(fpath_pp)
 
-        vc, gt = pp_vc_finder.find_coordinates(gi)
+        vc= pp_vc_finder.find_coordinates(gi)
 
         assert vc.variant_key == variant_key
-        assert gt == genotype
 
     def test_find_large_structural(
         self,
@@ -78,10 +76,8 @@ class TestPhenopacketVariantCoordinateFinder:
         fpath_pp = os.path.join(fpath_test_genomic_interpretations, 'chromosomal_deletion.ANKRD11.json')
         gi = read_genomic_interpretation_json(fpath_pp)
 
-        vc, gt = pp_vc_finder.find_coordinates(gi)
-        
+        vc = pp_vc_finder.find_coordinates(gi)
         assert vc is None
-        assert gt == Genotype.HETEROZYGOUS
 
 
 def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:

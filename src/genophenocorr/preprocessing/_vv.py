@@ -31,7 +31,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
         self._headers = {'Content-type': 'application/json'}
         self._hgvs_pattern = re.compile(r'^(?P<tx>NM_\d+\.\d+):c.\d+(_\d+)?.*')
 
-    def find_coordinates(self, item: str) -> VariantCoordinates:
+    def find_coordinates(self, item: str) -> typing.Optional[VariantCoordinates]:
         """
         Extracts variant coordinates from an HGVS string using Variant Validator's REST API.
 
