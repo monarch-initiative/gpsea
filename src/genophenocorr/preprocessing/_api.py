@@ -9,9 +9,12 @@ T = typing.TypeVar('T')
 class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
+    def find_coordinates(self, item: T) -> typing.Tuple[typing.Optional[VariantCoordinates], Genotype]:
         """
-        Determine :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+        Try to find :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+
+        The variant coordinates may not be available all the time, 
+        and `None` may be returned as the first tuple element.
 
         Raises:
             ValueError: if there is an error of any kind.
