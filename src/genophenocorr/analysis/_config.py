@@ -113,6 +113,10 @@ class CohortAnalysisConfiguration:
     @pval_correction.setter
     def pval_correction(self, pval_correction: typing.Optional[str]):
         """
+        Set the method for p value correction. 
+        See Statsmodels' `documentation <https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html>`_ 
+        for the acceptable values.
+
         :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`
           if no MTC should be applied.
         """
@@ -205,7 +209,10 @@ class CohortAnalysisConfiguration:
         threshold_HPO_observed_frequency: float = 0.2,
     ):
         """
-        Only test the HPO terms that are present at least in a certain fraction of patients.
+        Only test the HPO terms that pass all rules of the heuristic strategy.
+
+        See :ref:`heuristic sampler strategy <heuristic-sampler-strategy-section>` section 
+        for more info on the rules.
 
         :param threshold_HPO_observed_frequency: the float in range *(0, 1]* to represent 
           the minimum fraction of patients for an HPO term to be included.
@@ -236,7 +243,7 @@ class CohortAnalysisConfiguration:
         """
         if self._terms_to_test is not None:
             self._terms_to_test.clear()
-        self._terms_to_test = set(specified_term_set)
+        self._terms_to_test = tuple(specified_term_set)
         self._mtc_strategy = MTC_Strategy.SPECIFY_TERMS
 
     @property
