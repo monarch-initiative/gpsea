@@ -1,7 +1,7 @@
 import itertools
 import typing
 
-from collections import Counter, defaultdict
+from collections import Counter
 
 import hpotk
 
