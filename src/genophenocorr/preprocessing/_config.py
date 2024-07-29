@@ -245,10 +245,7 @@ def load_phenopacket_folder(
     notepad = cohort_creator.prepare_notepad(f'{len(pps)} phenopacket(s) found at `{pp_directory}`')
     cohort = cohort_creator.process(cohort_iter, notepad)
     
-    validation_summary = _summarize_validation(validation_policy, notepad)
-    sys.stdout.write(os.linesep.join(validation_summary[0]))
-    # stderr prints in red on Jupyter-notebook. We only want red if there are errors. 
-    sys.stderr.write(os.linesep.join(validation_summary[1]))
+    _summarize_validation(validation_policy, notepad)
     
     if validation_policy == 'none':
         # No validation
@@ -269,33 +266,33 @@ def load_phenopacket_folder(
 
 def _summarize_validation(policy: str,
                           notepad: NotepadTree,
-                          indent: int = 2) -> typing.Tuple[typing.Sequence[str], typing.Sequence[str]]:
-    warn_lines = [f'Validated under {policy} policy']
-    error_lines = []
+                          indent: int = 2):
+    lines = [f'Validated under {policy} policy']
     n_errors = sum(node.error_count() for node in notepad.iterate_nodes())
     n_warnings = sum(node.warning_count() for node in notepad.iterate_nodes())
     if n_errors > 0 or n_warnings > 0:
-        warn_lines.append('Showing errors and warnings')
+        lines.append('Showing errors and warnings')
         for node in notepad.iterate_nodes():
             if node.has_errors_or_warnings(include_subsections=True):
                 # We must report the node label even if there are no issues with the node.
                 l_pad = ' ' * (node.level * indent)
-                warn_lines.append(l_pad + node.label)
+                lines.append(l_pad + node.label)
                 if node.has_errors():
-                    error_lines.append(l_pad + ' errors:')
+                    lines.append(l_pad + ' errors:')
                     for error in node.errors():
-                        error_lines.append(l_pad + ' ' + error.message
+                        lines.append(l_pad + ' ' + error.message
                                      + (f'. {error.solution}' if error.solution else ''))
                 if node.has_warnings():
-                    warn_lines.append(l_pad + ' warnings:')
+                    lines.append(l_pad + ' warnings:')
                     for warning in node.warnings():
-                        warn_lines.append(l_pad + ' ·' + warning.message
+                        lines.append(l_pad + ' ·' + warning.message
                                      + (f'. {warning.solution}' if warning.solution else ''))
+        sys.stderr.write(os.linesep.join(lines))
     else:
-        warn_lines.append('No errors or warnings were found')
+        lines.append('No errors or warnings were found')
         l_pad = ' ' * (notepad.level * indent)
-        warn_lines.append(l_pad + notepad.label)
-    return (warn_lines, error_lines)
+        lines.append(l_pad + notepad.label)
+        sys.stdout.write(os.linesep.join(lines))
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
