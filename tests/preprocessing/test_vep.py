@@ -56,9 +56,9 @@ ANKRD11_MANE_TX_ID = 'NM_013275.6'
 )
 def test_verify_start_end_coordinates(
         contig_name, start, end, ref, alt, chlen, expected,
-        genome_build_hg38: GenomeBuild,
+        genome_build: GenomeBuild,
 ):
-    contig = genome_build_hg38.contig_by_name(contig_name)
+    contig = genome_build.contig_by_name(contig_name)
     region = GenomicRegion(contig, start, end, Strand.POSITIVE)
     vc = VariantCoordinates(region, ref, alt, chlen)
     out = VepFunctionalAnnotator.format_coordinates_for_vep_query(vc)
@@ -71,12 +71,12 @@ class TestVepFunctionalAnnotator:
     The test that regenerates the files is skipped and designed to be run manually.
     """
 
-    @pytest.fixture
+    @pytest.fixture(scope='class')
     def fpath_vep_response_dir(
-            self,
-            fpath_test_data_dir: str,
+        self,
+        fpath_preprocessing_data_dir: str,
     ) -> str:
-        return os.path.join(fpath_test_data_dir, 'vep_response')
+        return os.path.join(fpath_preprocessing_data_dir, 'vep_response')
 
     @pytest.fixture
     def variant_annotator(
@@ -85,9 +85,9 @@ class TestVepFunctionalAnnotator:
         return VepFunctionalAnnotator()
 
     def test_process_response_missense(
-            self,
-            variant_annotator: VepFunctionalAnnotator,
-            fpath_vep_response_dir: str,
+        self,
+        variant_annotator: VepFunctionalAnnotator,
+        fpath_vep_response_dir: str,
     ):
         # ('16', 89_279_134, 89_279_135, 'G', 'C', 0, ),  # `16_89279135_89279135_G_C`
         variant_key = '16_89279135_89279135_G_C'
@@ -160,11 +160,11 @@ class TestVepFunctionalAnnotator:
             self,
             fpath_vep_response_dir: str,
             variant_annotator: VepFunctionalAnnotator,
-            genome_build_hg38: GenomeBuild,
+            genome_build: GenomeBuild,
             contig_name: str, start: int, end: int, ref: str, alt: str, chlen: int, mane_tx_id: str,
             exp_protein_id: str, exp_protein_start: int, exp_protein_end: int,
     ):
-        contig = genome_build_hg38.contig_by_name(contig_name)
+        contig = genome_build.contig_by_name(contig_name)
         region = GenomicRegion(contig, start, end, Strand.POSITIVE)
         vc = VariantCoordinates(region, ref, alt, chlen)
         fpath_response = os.path.join(fpath_vep_response_dir, f'{vc.variant_key}.json')
@@ -194,10 +194,10 @@ class TestVepFunctionalAnnotator:
             self,
             fpath_vep_response_dir: str,
             variant_annotator: VepFunctionalAnnotator,
-            genome_build_hg38: GenomeBuild,
+            genome_build: GenomeBuild,
             contig_name: str, start: int, end: int, ref: str, alt: str, chlen: int,
     ):
-        contig = genome_build_hg38.contig_by_name(contig_name)
+        contig = genome_build.contig_by_name(contig_name)
         region = GenomicRegion(contig, start, end, Strand.POSITIVE)
         vc = VariantCoordinates(region, ref, alt, chlen)
 

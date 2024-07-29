@@ -4,20 +4,25 @@ import typing
 
 import pytest
 
+from genophenocorr.io import GenophenocorrJSONEncoder
 from genophenocorr.model.genome import GenomeBuild, Strand
 from genophenocorr.preprocessing import VVTranscriptCoordinateService
 
+from genophenocorr.model.genome import transpose_coordinate
+
 
 @pytest.fixture(scope='module')
-def fpath_vv_response_dir(fpath_test_data: str) -> str:
-    return os.path.join(fpath_test_data, 'vv')
+def fpath_vv_response_dir(
+    fpath_preprocessing_data_dir: str,
+) -> str:
+    return os.path.join(fpath_preprocessing_data_dir, 'vv_response')
 
 
 @pytest.fixture(scope='module')
 def coordinate_service(
-        genome_build_hg38: GenomeBuild,
+        genome_build: GenomeBuild,
 ) -> VVTranscriptCoordinateService:
-    return VVTranscriptCoordinateService(genome_build_hg38)
+    return VVTranscriptCoordinateService(genome_build)
 
 
 class TestVVTranscriptCoordinateServiceProcessResponse:
@@ -209,3 +214,138 @@ class TestVVTranscriptCoordinateServiceGeneralProperties:
         assert hg38span.get("end_position") == 56005525
         assert len(hg38span.get("exon_structure")) == 4
         assert hg38span.get("total_exons") == 4
+
+
+class TestVVTranscriptCoordinateServiceOffline:
+    """
+    Test processing of a cached JSON response to check if we parse the response well.
+    """
+
+    @pytest.fixture
+    def tx_coordinate_service(
+        self,
+        genome_build: GenomeBuild,
+    ) -> VVTranscriptCoordinateService:
+        return VVTranscriptCoordinateService(genome_build=genome_build)
+
+    def test_ptpn11(
+            self, 
+            tx_coordinate_service: VVTranscriptCoordinateService,
+            fpath_vv_response_dir: str,
+        ):
+        tx_id = 'NM_002834.5'
+
+        response_fpath = os.path.join(fpath_vv_response_dir, 'txid-NM_002834.5-PTPN11.json')
+        response = load_response_json(response_fpath)
+
+        tc = tx_coordinate_service.parse_response(tx_id, response)
+
+        assert tc.identifier == tx_id
+
+        tx_region = tc.region
+        assert tx_region.contig.name == '12'
+        assert tx_region.start == 112_418_946
+        assert tx_region.end == 112_509_918
+        assert tx_region.strand == Strand.POSITIVE
+
+        exons = tc.exons
+        assert len(exons) == 16
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.end == 112_419_125
+        last = exons[-1]
+        assert last.start == 112_505_824
+        assert last.end == tx_region.end
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        assert tc.cds_start == 112_419_111
+        assert tc.cds_end == 112_504_764
+
+    def test_hbb(
+        self, 
+        tx_coordinate_service: VVTranscriptCoordinateService,
+        fpath_vv_response_dir: str,
+    ):
+        tx_id = 'NM_000518.4'
+
+        response_fpath = os.path.join(fpath_vv_response_dir, 'txid-NM_000518.4-HBB.json')
+        response = load_response_json(response_fpath)
+
+        tc = tx_coordinate_service.parse_response(tx_id, response)
+
+        assert tc.identifier == tx_id
+
+        tx_region = tc.region
+        assert tx_region.contig.name == '11'
+        assert tx_region.start_on_strand(Strand.POSITIVE) == 5_225_465
+        assert tx_region.end_on_strand(Strand.POSITIVE) == 5_227_071
+        assert tx_region.strand == Strand.NEGATIVE
+
+        exons = tc.exons
+        assert len(exons) == 3
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.start_on_strand(Strand.POSITIVE) == 5_226_929
+        assert first.end_on_strand(Strand.POSITIVE) == 5_227_071
+
+
+        last = exons[-1]
+        assert last.end == tx_region.end
+        assert last.start_on_strand(Strand.POSITIVE) == 5_225_465
+        assert last.end_on_strand(Strand.POSITIVE) == 52_25_726
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        cds_start = tc.cds_start
+        assert cds_start is not None
+        assert transpose_coordinate(tc.region.contig, cds_start) == 5_227_021
+        cds_end = tc.cds_end
+        assert cds_end is not None
+        assert transpose_coordinate(tc.region.contig, cds_end) == 5_225_597
+        assert tc.cds_start == 129_859_601
+        assert tc.cds_end == 129_861_025
+
+    @pytest.mark.skip('Online tests are disabled by default')
+    def test_fetch_ptpn11(
+        self, 
+        tx_coordinate_service: VVTranscriptCoordinateService,
+    ):
+        tx_id = 'NM_002834.5'
+
+        tc = tx_coordinate_service.fetch(tx_id)
+
+        assert tc.identifier == tx_id
+
+        tx_region = tc.region
+        assert tx_region.contig.name == '12'
+        assert tx_region.start == 112_418_946
+        assert tx_region.end == 112_509_918
+        assert tx_region.strand == Strand.POSITIVE
+
+        exons = tc.exons
+        assert len(exons) == 16
+        first = exons[0]
+        assert first.start == tx_region.start
+        assert first.end == 112_419_125
+        last = exons[-1]
+        assert last.start == 112_505_824
+        assert last.end == tx_region.end
+        assert all(exon.strand == tx_region.strand for exon in exons)
+
+        assert tc.cds_start == 112_419_111
+        assert tc.cds_end == 112_504_764
+
+    @pytest.mark.skip('Run to manually regenerate SUOX MANE transcript JSON dump')
+    def test_fetch_suox(
+        self,
+        tx_coordinate_service: VVTranscriptCoordinateService,
+        fpath_suox_tx_coordinates: str,
+    ):
+        tx_id = 'NM_001032386.2'
+        response = tx_coordinate_service.fetch(tx_id)
+        with open(fpath_suox_tx_coordinates, 'w') as fh:
+            json.dump(response, fh, cls=GenophenocorrJSONEncoder, indent=2)
+
+
+def load_response_json(path: str):
+    with open(path) as fh:
+        return json.load(fh)
