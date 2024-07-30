@@ -287,12 +287,12 @@ def _summarize_validation(policy: str,
                     for warning in node.warnings():
                         lines.append(l_pad + ' ·' + warning.message
                                      + (f'. {warning.solution}' if warning.solution else ''))
-        sys.stderr.write(os.linesep.join(lines))
+        print(os.linesep.join(lines), file=sys.stderr)
     else:
         lines.append('No errors or warnings were found')
         l_pad = ' ' * (notepad.level * indent)
         lines.append(l_pad + notepad.label)
-        sys.stdout.write(os.linesep.join(lines))
+        print(os.linesep.join(lines))
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:
