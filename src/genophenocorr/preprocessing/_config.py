@@ -241,13 +241,12 @@ def load_phenopacket_folder(
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
-    cohort_iter = tqdm(pps, desc='Patients Created')
+    cohort_iter = tqdm(pps, desc='Patients Created', file=sys.stdout, colour='green')
     notepad = cohort_creator.prepare_notepad(f'{len(pps)} phenopacket(s) found at `{pp_directory}`')
     cohort = cohort_creator.process(cohort_iter, notepad)
-
-
-    validation_summary = _summarize_validation(validation_policy, notepad)
-    print(os.linesep.join(validation_summary), file=sys.stderr)
+    
+    _summarize_validation(validation_policy, notepad)
+    
     if validation_policy == 'none':
         # No validation
         return cohort
@@ -288,9 +287,12 @@ def _summarize_validation(policy: str,
                     for warning in node.warnings():
                         lines.append(l_pad + ' ·' + warning.message
                                      + (f'. {warning.solution}' if warning.solution else ''))
+        print(os.linesep.join(lines), file=sys.stderr)
     else:
         lines.append('No errors or warnings were found')
-    return lines
+        l_pad = ' ' * (notepad.level * indent)
+        lines.append(l_pad + notepad.label)
+        print(os.linesep.join(lines))
 
 
 def _load_phenopacket_dir(pp_dir: str) -> typing.Sequence[Phenopacket]:

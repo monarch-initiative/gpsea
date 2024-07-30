@@ -48,7 +48,7 @@ class CohortCreator(typing.Generic[T], Auditor[typing.Iterable[T], Cohort]):
 
         # We should have >1 patients in the cohort, right?
         if len(patients) <= 1:
-            notepad.add_warning(f'Cohort must include {len(patients)}>=1 members',
+            notepad.add_warning(f'Cohort must include {len(patients)}>1 members',
                                 'Fix issues in patients to enable the analysis')
 
         return Cohort.from_patients(patients)
