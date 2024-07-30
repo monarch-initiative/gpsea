@@ -138,7 +138,7 @@
 
         <span class="c1"># We should have &gt;1 patients in the cohort, right?</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cohort must include </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1">&gt;=1 members&#39;</span><span class="p">,</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cohort must include </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1">&gt;1 members&#39;</span><span class="p">,</span>
                                 <span class="s1">&#39;Fix issues in patients to enable the analysis&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span></div>

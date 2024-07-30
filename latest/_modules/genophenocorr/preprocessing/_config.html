@@ -338,13 +338,12 @@
     <span class="c1"># Turn phenopackets into a cohort using the cohort creator.</span>
     <span class="c1"># Keep track of the progress by wrapping the list of phenopackets</span>
     <span class="c1"># with TQDM 😎</span>
-    <span class="n">cohort_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Patients Created&#39;</span><span class="p">)</span>
+    <span class="n">cohort_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Patients Created&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
     <span class="n">notepad</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">prepare_notepad</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span><span class="si">}</span><span class="s1"> phenopacket(s) found at `</span><span class="si">{</span><span class="n">pp_directory</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
     <span class="n">cohort</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort_iter</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
-
-
-    <span class="n">validation_summary</span> <span class="o">=</span> <span class="n">_summarize_validation</span><span class="p">(</span><span class="n">validation_policy</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">validation_summary</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    
+    <span class="n">_summarize_validation</span><span class="p">(</span><span class="n">validation_policy</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
+    
     <span class="k">if</span> <span class="n">validation_policy</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
         <span class="c1"># No validation</span>
         <span class="k">return</span> <span class="n">cohort</span>
@@ -386,9 +385,12 @@
                     <span class="k">for</span> <span class="n">warning</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">warnings</span><span class="p">():</span>
                         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l_pad</span> <span class="o">+</span> <span class="s1">&#39; ·&#39;</span> <span class="o">+</span> <span class="n">warning</span><span class="o">.</span><span class="n">message</span>
                                      <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;. </span><span class="si">{</span><span class="n">warning</span><span class="o">.</span><span class="n">solution</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">warning</span><span class="o">.</span><span class="n">solution</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;No errors or warnings were found&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">lines</span>
+        <span class="n">l_pad</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">notepad</span><span class="o">.</span><span class="n">level</span> <span class="o">*</span> <span class="n">indent</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l_pad</span> <span class="o">+</span> <span class="n">notepad</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">_load_phenopacket_dir</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>

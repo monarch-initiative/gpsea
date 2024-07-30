@@ -122,7 +122,8 @@ along with the pathogenic <em>ANKRD11</em> variant.</p>
 <p>last, we will load the cohort from a directory with phenopackets:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;simple_cohort&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">cohort_dir</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">cohort_dir</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span> 
+<span class="go">Patients Created...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 <span class="go">5</span>
 </pre></div>
