@@ -38,11 +38,11 @@ the standard `genophenocorr` installation:
 Next, let's get a `CohortCreator` for loading the phenopackets. We use the
 :func:`genophenocorr.preprocessing.configure_caching_cohort_creator` convenience method:
 
-.. doctest:: input-data
+.. doctest:: input-data 
 
   >>> from genophenocorr.preprocessing import configure_caching_cohort_creator
 
-  >>> cohort_creator = configure_caching_cohort_creator(hpo)
+  >>> cohort_creator = configure_caching_cohort_creator(hpo) 
 
 .. note::
 
@@ -68,7 +68,9 @@ We load the phenopackets using `cohort_creator` defined above together with anot
 
   >>> from genophenocorr.preprocessing import load_phenopacket_folder
 
-  >>> cohort = load_phenopacket_folder(simple_cohort_path, cohort_creator)
+  >>> cohort = load_phenopacket_folder(simple_cohort_path, cohort_creator) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+  Patients Created...
+
   >>> len(cohort)
   5
 
