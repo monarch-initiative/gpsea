@@ -54,7 +54,7 @@ def configure_caching_cohort_creator(
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, timeout)
-    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, timeout)
+    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, cache_dir, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
     pc = PhenopacketPatientCreator(
         build=build, 
@@ -245,8 +245,15 @@ def _configure_fallback_functional(
 
 def _configure_imprecise_sv_annotator(
     genome_build: GenomeBuild, 
+    cache_dir: str,
     timeout: float,
 ):
+    # Setup cache for SVs
+    sv_cache_dir = os.path.join(cache_dir, 'sv_cache')
+    # TODO: implement the cache.
+    # os.makedirs(sv_cache_dir, exist_ok=True)
+    # var_cache = VariantAnnotationCache(sv_cache_dir)
+
     return DefaultImpreciseSvFunctionalAnnotator(
         gene_coordinate_service=VVMultiCoordinateService(
             genome_build=genome_build,
