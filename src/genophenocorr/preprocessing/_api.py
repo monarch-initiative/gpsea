@@ -42,6 +42,13 @@ class ImpreciseSvFunctionalAnnotator(metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
     def annotate(self, item: ImpreciseSvInfo) -> typing.Sequence[TranscriptAnnotation]:
+        """
+        Compute functional annotations for a large SV.
+
+        Returns: a sequence of transcript annotations
+        Raises:
+            ValueError if the annotation cannot proceed due to the remote resource being offline, etc.
+        """
         pass
 
 

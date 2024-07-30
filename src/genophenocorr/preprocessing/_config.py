@@ -59,7 +59,7 @@ def configure_caching_cohort_creator(
     pc = PhenopacketPatientCreator(
         build=build, 
         phenotype_creator=phenotype_creator, 
-        var_func_ann=functional_annotator, 
+        functional_annotator=functional_annotator, 
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )
@@ -103,7 +103,7 @@ def configure_caching_patient_creator(
     return PhenopacketPatientCreator(
         build=build, 
         phenotype_creator=phenotype_creator, 
-        var_func_ann=functional_annotator, 
+        functional_annotator=functional_annotator, 
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )
@@ -139,7 +139,7 @@ def configure_cohort_creator(
     pc = PhenopacketPatientCreator(
         build=build, 
         phenotype_creator=phenotype_creator, 
-        var_func_ann=functional_annotator, 
+        functional_annotator=functional_annotator, 
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )
@@ -184,7 +184,7 @@ def configure_patient_creator(
     return PhenopacketPatientCreator(
         build=build, 
         phenotype_creator=phenotype_creator, 
-        var_func_ann=functional_annotator, 
+        functional_annotator=functional_annotator, 
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )

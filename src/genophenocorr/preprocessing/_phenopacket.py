@@ -210,7 +210,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self,
         build: GenomeBuild,
         phenotype_creator: PhenotypeCreator,
-        var_func_ann: FunctionalAnnotator,
+        functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
     ):
@@ -223,8 +223,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._phenotype_creator = hpotk.util.validate_instance(
             phenotype_creator, PhenotypeCreator, "phenotype_creator"
         )
-        self._func_ann = hpotk.util.validate_instance(
-            var_func_ann, FunctionalAnnotator, "var_func_ann"
+        self._functional_annotator = hpotk.util.validate_instance(
+            functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
         self._imprecise_sv_functional_annotator = hpotk.util.validate_instance(
             imprecise_sv_functional_annotator, ImpreciseSvFunctionalAnnotator, "imprecise_sv_functional_annotator"
@@ -320,41 +320,35 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                         )
                         continue
                     
-                    variant_coordinates = None
-                    sv_info = None
-                    try:
-                        variant_coordinates = self._coord_finder.find_coordinates(genomic_interpretation)
-                    except ValueError:
-                        sub_note.add_warning(
-                            f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
-                            "Remove variant from testing",
-                        )
+                    variant_info = self._extract_variant_info(sample_id, genomic_interpretation, sub_note)
+                    if variant_info is None:
+                        # We already complained in the extract function
                         continue
-                    if variant_coordinates is None:
-                        sv_info = self._map_to_imprecise_sv(genomic_interpretation)
-                        if sv_info is None:
-                            sub_note.add_warning(
-                                f"Could not extract the information for large SV annotation",
-                                "Remove variant from testing",
-                            )
-                            continue
                     
-                    variant_info = VariantInfo(
-                        variant_coordinates=variant_coordinates,
-                        sv_info=sv_info,
-                    )
-
-                    if variant_coordinates is None:
-                        tx_annotations = self._imprecise_sv_functional_annotator.annotate(sv_info)                        
-                    else:
+                    if variant_info.has_variant_coordinates():
                         try:
-                            tx_annotations = self._func_ann.annotate(variant_coordinates)
+                            tx_annotations = self._functional_annotator.annotate(
+                                variant_coordinates=variant_info.variant_coordinates,
+                            )
                         except ValueError:
                             sub_note.add_warning(
                                 f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
                                 "Try again or remove variant form testing",
                             )
                             continue
+                    elif variant_info.has_sv_info():
+                        try:
+                            tx_annotations = self._imprecise_sv_functional_annotator.annotate(
+                                item=variant_info.sv_info,
+                            )
+                        except ValueError:
+                            sub_note.add_warning(
+                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
+                                "Try again or remove variant form testing",
+                            )
+                            continue
+                    else:
+                        raise ValueError('VariantInfo should have either the coordinates or the SV info, but had neither!')
 
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
@@ -376,6 +370,38 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             notepad.add_warning(f"Patient {pp.id} has no variants to work with")
 
         return variants
+
+    def _extract_variant_info(
+        self,
+        sample_id: SampleLabels,
+        genomic_interpretation: GenomicInterpretation,
+        notepad: Notepad,
+    ) -> typing.Optional[VariantInfo]:
+        variant_coordinates = None
+        sv_info = None
+
+        try:
+            variant_coordinates = self._coord_finder.find_coordinates(genomic_interpretation)
+        except ValueError:
+            notepad.add_warning(
+                f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
+                "Remove variant from testing",
+            )
+            return None
+        
+        if variant_coordinates is None:
+            sv_info = self._map_to_imprecise_sv(genomic_interpretation)
+            if sv_info is None:
+                notepad.add_warning(
+                    f"Could not extract the information for large SV annotation",
+                    "Remove variant from testing",
+                )
+                return None
+        
+        return VariantInfo(
+            variant_coordinates=variant_coordinates,
+            sv_info=sv_info,
+        )
 
     def _map_to_imprecise_sv(
         self, 
