@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from genophenocorr.model import VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation
+from genophenocorr.model import VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation, ImpreciseSvInfo
 
 T = typing.TypeVar('T')
 
@@ -34,6 +34,21 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
             ValueError if the annotation cannot proceed due to the remote resource being offline, etc.
         """
         pass
+
+class ImpreciseSvFunctionalAnnotator(metaclass=abc.ABCMeta):
+    """
+    Annotator for large SVs that lack the exact breakpoint coordinates.
+    """
+    
+    @abc.abstractmethod
+    def annotate(self, item: ImpreciseSvInfo) -> typing.Sequence[TranscriptAnnotation]:
+        pass
+
+
+class NoOpImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
+    
+    def annotate(self, item: ImpreciseSvInfo) -> typing.Sequence[TranscriptAnnotation]:
+        return ()
 
 
 class TranscriptCoordinateService(metaclass=abc.ABCMeta):

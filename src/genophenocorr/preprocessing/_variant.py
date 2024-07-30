@@ -101,9 +101,3 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
             self._cache.store_annotations(variant_coordinates, ann)
             return ann
 
-
-class EnsemblTranscriptCoordinateService(TranscriptCoordinateService):
-
-    def fetch(self, tx: TranscriptInfoAware) -> TranscriptCoordinates:
-        # TODO - implement
-        pass

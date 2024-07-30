@@ -159,9 +159,9 @@ class Notepad(metaclass=abc.ABCMeta):
     and the convenience functions provide iterators over error and warnings.
     """
 
-    def __init__(self, label: typing.Optional[str]):
+    def __init__(self, label: str):
         self._label = label
-        self._issues = []
+        self._issues: typing.MutableSequence[DataSanityIssue] = []
 
 
     @abc.abstractmethod
@@ -178,7 +178,6 @@ class Notepad(metaclass=abc.ABCMeta):
     def label(self) -> str:
         """
         Get a `str` with the section label.
-
         """
         return self._label
 

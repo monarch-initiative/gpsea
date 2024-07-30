@@ -41,7 +41,7 @@ class GpCohortAnalysis(CohortAnalysis):
 
         self._patient_list = list(cohort.all_patients) \
             if include_sv \
-            else [pat for pat in cohort.all_patients if not all(var.variant_coordinates.is_structural() for var in pat.variants)]
+            else [pat for pat in cohort.all_patients if not all(var.variant_info.is_structural() for var in pat.variants)]
         if len(self._patient_list) == 0:
             raise ValueError('No patients left for analysis!')
 

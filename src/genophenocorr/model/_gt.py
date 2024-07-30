@@ -112,7 +112,7 @@ class Genotypes(typing.Sized, typing.Iterable):
 
         indices = np.argsort(samples)
 
-        return samples[indices], gts[indices]
+        return tuple(samples[indices]), tuple(gts[indices])
 
     def __init__(self, samples: typing.Iterable[SampleLabels], genotypes: typing.Iterable[Genotype]):
         self._samples = tuple(samples)

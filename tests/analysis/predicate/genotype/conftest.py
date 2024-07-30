@@ -47,16 +47,18 @@ def variant(genome_build: GenomeBuild) -> Variant:
     chr22 = genome_build.contig_by_name("chr22")
     assert chr22 is not None
     return Variant(
-        var_coordinates=VariantCoordinates(
-            region=GenomicRegion(
-                contig=chr22,
-                start=100,
-                end=101,
-                strand=Strand.POSITIVE,
-            ),
-            ref="C",
-            alt="G",
-            change_length=0,
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chr22,
+                    start=100,
+                    end=101,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="C",
+                alt="G",
+                change_length=0,
+            )
         ),
         tx_annotations=(
             TranscriptAnnotation(
@@ -77,9 +79,7 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 tx_id="tx:abc",
                 hgvs_cdna=None,
                 is_preferred=False,
-                variant_effects=(
-                    VariantEffect.INTRON_VARIANT,
-                ),
+                variant_effects=(VariantEffect.INTRON_VARIANT,),
                 affected_exons=None,
                 protein_id=None,
                 protein_effect_coordinates=None,

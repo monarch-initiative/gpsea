@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
-from ._api import FunctionalAnnotator
+from ._api import FunctionalAnnotator, NoOpImpreciseSvFunctionalAnnotator
 from ._audit import NotepadTree
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
@@ -54,7 +54,13 @@ def configure_caching_cohort_creator(
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    pc = PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
+    pc = PhenopacketPatientCreator(
+        build=build, 
+        phenotype_creator=phenotype_creator, 
+        var_func_ann=functional_annotator, 
+        imprecise_sv_functional_annotator=NoOpImpreciseSvFunctionalAnnotator(),
+        hgvs_coordinate_finder=hgvs_annotator,
+    )
 
     return CohortCreator(pc)
 

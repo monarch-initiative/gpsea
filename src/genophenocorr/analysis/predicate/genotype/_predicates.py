@@ -73,7 +73,7 @@ class VariantKeyPredicate(VariantPredicate):
         return f'variant has ID of {self._key}'
 
     def test(self, variant: Variant) -> bool:
-        return self._key == variant.variant_coordinates.variant_key
+        return self._key == variant.variant_info.variant_key
     
     def __eq__(self, value: object) -> bool:
         if isinstance(value, VariantKeyPredicate):
