@@ -30,7 +30,7 @@ def configure_caching_cohort_creator(
     validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
     cache_dir: typing.Optional[str] = None,
     variant_fallback: str = 'VEP',
-    timeout: float = 10.,
+    timeout: float = 30.,
 ) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
@@ -73,7 +73,7 @@ def configure_caching_patient_creator(
     validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
     cache_dir: typing.Optional[str] = None,
     variant_fallback: str = 'VEP',
-    timeout: float = 10.,
+    timeout: float = 30.,
 ) -> PhenopacketPatientCreator:
     """
     A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
@@ -114,7 +114,7 @@ def configure_cohort_creator(
         genome_build: str = 'GRCh38.p13',
         validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
         variant_fallback: str = 'VEP',
-        timeout: float = 10.,
+        timeout: float = 30.,
         ) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
@@ -153,7 +153,7 @@ def configure_patient_creator(
         validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
         variant_fallback: str = 'VEP',
         validation: str = 'lenient',
-        timeout: float = 10.,
+        timeout: float = 30.,
 ) -> PhenopacketPatientCreator: #Rename to something more understandable by user
     """
                                 ^^^ none, lenient, strict -
