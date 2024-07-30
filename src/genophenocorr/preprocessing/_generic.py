@@ -44,6 +44,8 @@ class DefaultImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
     ) -> typing.Sequence[VariantEffect]:
         if variant_class == 'DEL':
             return (VariantEffect.TRANSCRIPT_ABLATION,)
+        elif variant_class == 'DUP':
+            return (VariantEffect.TRANSCRIPT_AMPLIFICATION,)
         else:
             # This mapping is most likely incomplete.
             # Please open a ticket if support 

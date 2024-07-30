@@ -194,11 +194,9 @@ class PhenopacketVariantCoordinateFinder(
             else None
         )
 
-        if structural_type is not None and gene_context is not None:
-            # `SO:1000029` is `chromosomal_deletion`
-            return structural_type.id == 'SO:1000029'
-        else:
-            return False
+        # If we have these fields, we seem to have all information 
+        # to parse the variation descriptor elsewhere.
+        return structural_type is not None and gene_context is not None
 
 
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
@@ -236,6 +234,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             '1000029', # chromosomal deletion: An incomplete chromosome.
             '0001893', # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
             '0001879', # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.
+        }
+        self._so_duplications = {
+            '1000037', # chromosomal_duplication
         }
 
     def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:
@@ -438,6 +439,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         if structural_type.prefix == 'SO':
             if structural_type.id in self._so_deletions:
                 return 'DEL'
+            elif structural_type.id in self._so_duplications:
+                return 'DUP'
             else:
                 raise ValueError(f'Unknown structural type {structural_type}')
         else:
