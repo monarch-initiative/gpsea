@@ -229,6 +229,14 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._imprecise_sv_functional_annotator = hpotk.util.validate_instance(
             imprecise_sv_functional_annotator, ImpreciseSvFunctionalAnnotator, "imprecise_sv_functional_annotator"
         )
+        
+        # Set of sequence ontology IDs that we will treat as a deletion (`DEL`)
+        # for the purpose of assigning imprecise SV info with a variant class.
+        self._so_deletions = {
+            '1000029', # chromosomal deletion: An incomplete chromosome.
+            '0001893', # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
+            '0001879', # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.
+        }
 
     def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
@@ -285,7 +293,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return final_diseases
 
     def _add_variants(
-        self, sample_id: SampleLabels, pp: Phenopacket, notepad: Notepad
+        self, 
+        sample_id: SampleLabels, 
+        pp: Phenopacket, 
+        notepad: Notepad,
     ) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
 
@@ -327,6 +338,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                                 "Remove variant from testing",
                             )
                             continue
+                    
                     variant_info = VariantInfo(
                         variant_coordinates=variant_coordinates,
                         sv_info=sv_info,
@@ -339,18 +351,19 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             tx_annotations = self._func_ann.annotate(variant_coordinates)
                         except ValueError:
                             sub_note.add_warning(
-                                f"Patient {pp.id} has an error with variant {variant_coordinates.variant_key}",
+                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
                                 "Try again or remove variant form testing",
                             )
                             continue
 
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
-                            f"Patient {pp.id} has an error with variant {variant_coordinates.variant_key}",
+                            f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
                             "Remove variant from testing",
                         )
                         continue
 
+                    
                     genotype = Genotypes.single(sample_id, gt)
                     variants.append(
                         Variant(
@@ -377,12 +390,29 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 gene_context = variation_descriptor.gene_context if variation_descriptor.HasField('gene_context') else None
 
                 if structural_type is not None and gene_context is not None:
-                    variant_class = 'DEL'
+                    st = hpotk.TermId.from_curie(curie=structural_type.id)
+                    variant_class = self._map_structural_type_to_variant_class(st)
                     return ImpreciseSvInfo(
-                        structural_type=structural_type.id,
+                        structural_type=st,
                         variant_class=variant_class,
                         gene_id=gene_context.value_id,
                         gene_symbol=gene_context.symbol,
                     )
                 
         return None
+    
+    def _map_structural_type_to_variant_class(
+            self,
+        structural_type: hpotk.TermId,
+    ) -> str:
+        # This method is most likely incomplete.
+        # Please open a ticket if you receive a `ValueError` 
+        # for a structural type, that is not mapped at the moment,
+        # to help us enhance the mapping.
+        if structural_type.prefix == 'SO':
+            if structural_type.id in self._so_deletions:
+                return 'DEL'
+            else:
+                raise ValueError(f'Unknown structural type {structural_type}')
+        else:
+            raise ValueError(f'Unknown structural type {structural_type}')

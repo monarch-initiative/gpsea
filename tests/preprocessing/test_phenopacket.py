@@ -5,7 +5,6 @@ import pytest
 from google.protobuf.json_format import Parse
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 
-from genophenocorr.model import Genotype
 from genophenocorr.model.genome import GenomeBuild
 
 from genophenocorr.preprocessing import VVHgvsVariantCoordinateFinder
@@ -64,8 +63,9 @@ class TestPhenopacketVariantCoordinateFinder:
         fpath_pp = os.path.join(fpath_test_genomic_interpretations, pp_name)
         gi = read_genomic_interpretation_json(fpath_pp)
 
-        vc= pp_vc_finder.find_coordinates(gi)
+        vc = pp_vc_finder.find_coordinates(gi)
 
+        assert vc is not None
         assert vc.variant_key == variant_key
 
     def test_find_large_structural(

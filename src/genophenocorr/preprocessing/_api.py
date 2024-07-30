@@ -72,6 +72,26 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
         pass
 
 
+class GeneCoordinateService(metaclass=abc.ABCMeta):
+    """
+    `GeneCoordinateService` gets transcript (Tx) coordinates for a gene ID.
+    """
+
+    @abc.abstractmethod
+    def fetch_for_gene(self, gene: str) -> typing.Sequence[TranscriptCoordinates]:
+        """
+        Get Tx coordinates for a gene ID.
+
+        The method will raise an exception in case of an issue.
+
+        Args:
+            gene: a `str` with tx ID (e.g. `HGNC:3603`)
+
+        Returns: a sequence of transcript coordinates for the gene.
+        """
+        pass
+
+
 class ProteinMetadataService(metaclass=abc.ABCMeta):
     """
     A service for obtaining annotations for a given protein accession ID.

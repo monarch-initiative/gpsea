@@ -10,7 +10,10 @@ import json
 
 from genophenocorr.model import VariantCoordinates, TranscriptInfoAware, TranscriptCoordinates
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand, Contig, transpose_coordinate
-from ._api import VariantCoordinateFinder, TranscriptCoordinateService
+from ._api import VariantCoordinateFinder, TranscriptCoordinateService, GeneCoordinateService
+
+# To match strings such as `NM_1234.56`, `NM_1234`, or `XM_123456.7`
+REFSEQ_TX_PT = re.compile(r'^[NX]M_\d+(\.\d+)?$')
 
 
 class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
@@ -117,9 +120,10 @@ class VariantValidatorDecodeException(BaseException):
     pass
 
 
-class VVTranscriptCoordinateService(TranscriptCoordinateService):
+class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateService):
     """
-    `VVTranscriptCoordinateService` fetches the transcript coordinates from the Variant Validator REST API.
+    `VVMultiCoordinateService` uses the Variant Validator REST API to fetch transcript coordinates for 
+    both a *gene* ID and a specific *transcript* ID.
 
     :param genome_build: the genome build for constructing the transcript coordinates.
     :param timeout: a positive `float` with the REST API timeout in seconds.
@@ -140,6 +144,10 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
         tx_id = self._parse_tx(tx)
         response_json = self.get_response(tx_id)
         return self.parse_response(tx_id, response_json)
+
+    def fetch_for_gene(self, gene: str) -> typing.Sequence[TranscriptCoordinates]:
+        response_json = self.get_response(gene)
+        return self.parse_multiple(response_json)
 
     @staticmethod
     def _parse_tx(tx: typing.Union[str, TranscriptInfoAware]) -> str:
@@ -171,26 +179,56 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
             error_string = f"Not able to find {tx_id} in the `requested_symbol` field in the response from Variant Validator API: \n{json_formatted_str}"
             raise ValueError(error_string)
         if 'transcripts' not in transcript_response:
-            json_formatted_str = json.dumps(response, indent=2)
-            error_string = f"A required `transcripts` field is missing in the response from Variant Validator API: \n{json_formatted_str}"
-            raise ValueError(error_string)
-        tx = self._find_tx_data(tx_id, transcript_response['transcripts'])
-        if 'genomic_spans' not in tx:
+            VVMultiCoordinateService._handle_missing_field(
+                response=response, 
+                field='transcripts',
+            )
+        tx_data = self._find_tx_data(tx_id, transcript_response['transcripts'])
+        if 'genomic_spans' not in tx_data:
             raise ValueError(f'A required `genomic_spans` field is missing in the response from Variant Validator API')
-        contig, genomic_span = self._find_genomic_span(tx['genomic_spans'])
+        
+        return VVMultiCoordinateService._parse_tx_coordinates(
+            genome_build=self._genome_build,
+            tx_id=tx_id,
+            tx_data=tx_data,
+        )
 
-        strand = self._parse_strand(genomic_span)
-        start_pos = genomic_span['start_position']
-        end_pos = genomic_span['end_position']
-        region = self._parse_tx_region(contig, start_pos, end_pos, strand)
+    def parse_multiple(
+        self, 
+        response: typing.Mapping[str, typing.Any],
+    ) -> typing.Sequence[TranscriptCoordinates]:
+        if 'transcripts' not in response:
+            VVMultiCoordinateService._handle_missing_field(
+                response=response, 
+                field='transcripts',
+            )
+        transcripts: typing.Sequence[typing.Mapping[str, typing.Any]] = response['transcripts']
+        coordinates = []
+        for tx_data in transcripts:
+            if 'reference' not in tx_data:
+                VVMultiCoordinateService._handle_missing_field(
+                    response=response, 
+                    field='reference',
+                )
+            tx_id = tx_data['reference']
+            matcher = REFSEQ_TX_PT.match(tx_id)
+            if not matcher:
+                self._logger.debug('Skipping processing transcript %s', tx_id)
+                continue
+            tx_coordinates = VVMultiCoordinateService._parse_tx_coordinates(
+                genome_build=self._genome_build,
+                tx_id=tx_id,
+                tx_data=tx_data,
+            )
+            coordinates.append(tx_coordinates)
 
-        exons = self._parse_exons(contig, strand, genomic_span)
+        return tuple(coordinates)
 
-        cds_start, cds_end = self._parse_cds(tx['coding_start'], tx['coding_end'], exons)
-
-        return TranscriptCoordinates(tx_id, region, exons, cds_start, cds_end)
-
-    def _find_tx_data(self, tx_id: str, txs: typing.Dict) -> typing.Dict:
+    def _find_tx_data(
+        self, 
+        tx_id: str, 
+        txs: typing.Dict,
+    ) -> typing.Dict:
         for i, tx_data in enumerate(txs):
             if 'reference' not in tx_data:
                 self._logger.warning('Skipping `transcripts` element %d due to missing `reference` field', i)
@@ -201,14 +239,46 @@ class VVTranscriptCoordinateService(TranscriptCoordinateService):
         # If we get here, we did not find the transcript data, so we raise.
         raise ValueError(f'Did not find transcript data for the requested transcript {tx_id}')
 
-    def _find_genomic_span(self, genomic_spans: typing.Dict) -> typing.Tuple[Contig, typing.Dict]:
+    @staticmethod
+    def _handle_missing_field(response, field: str):
+        json_formatted_str = json.dumps(response, indent=2)
+        error_string = f"A required `{field}` field is missing in the response from Variant Validator API: \n{json_formatted_str}"
+        raise ValueError(error_string)
+
+    @staticmethod
+    def _parse_tx_coordinates(
+        genome_build: GenomeBuild,
+        tx_id: str,
+        tx_data: typing.Mapping[str, typing.Any],
+    ) -> TranscriptCoordinates:
+        contig, genomic_span = VVMultiCoordinateService._find_genomic_span(
+            genome_build=genome_build, 
+            genomic_spans=tx_data['genomic_spans'],
+        )
+
+        strand = VVMultiCoordinateService._parse_strand(genomic_span)
+        start_pos = genomic_span['start_position']
+        end_pos = genomic_span['end_position']
+        region = VVMultiCoordinateService._parse_tx_region(contig, start_pos, end_pos, strand)
+
+        exons = VVMultiCoordinateService._parse_exons(contig, strand, genomic_span)
+
+        cds_start, cds_end = VVMultiCoordinateService._parse_cds(tx_data['coding_start'], tx_data['coding_end'], exons)
+
+        return TranscriptCoordinates(tx_id, region, exons, cds_start, cds_end)
+
+    @staticmethod
+    def _find_genomic_span(
+        genome_build: GenomeBuild,
+        genomic_spans: typing.Dict,
+    ) -> typing.Tuple[Contig, typing.Dict]:
         for contig_name, value in genomic_spans.items():
-            contig = self._genome_build.contig_by_name(contig_name)
+            contig = genome_build.contig_by_name(contig_name)
             if contig is not None:
                 return contig, value
 
         contig_names = sorted(genomic_spans.keys())
-        raise ValueError(f'Contigs {contig_names} were not found in genome build `{self._genome_build.identifier}`')
+        raise ValueError(f'Contigs {contig_names} were not found in genome build `{genome_build.identifier}`')
 
     @staticmethod
     def _parse_strand(genomic_span) -> Strand:

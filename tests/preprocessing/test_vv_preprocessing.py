@@ -6,7 +6,7 @@ import pytest
 
 from genophenocorr.io import GenophenocorrJSONEncoder
 from genophenocorr.model.genome import GenomeBuild, Strand
-from genophenocorr.preprocessing import VVTranscriptCoordinateService
+from genophenocorr.preprocessing import VVMultiCoordinateService
 
 from genophenocorr.model.genome import transpose_coordinate
 
@@ -19,10 +19,10 @@ def fpath_vv_response_dir(
 
 
 @pytest.fixture(scope='module')
-def coordinate_service(
+def vv_multi_coordinate_service(
         genome_build: GenomeBuild,
-) -> VVTranscriptCoordinateService:
-    return VVTranscriptCoordinateService(genome_build)
+) -> VVMultiCoordinateService:
+    return VVMultiCoordinateService(genome_build)
 
 
 class TestVVTranscriptCoordinateServiceProcessResponse:
@@ -44,11 +44,11 @@ class TestVVTranscriptCoordinateServiceProcessResponse:
     )
     def test_fetch__end_to_end(
             self,
-            coordinate_service: VVTranscriptCoordinateService,
+            vv_multi_coordinate_service: VVMultiCoordinateService,
             tx_id: str,
             contig: str, start: int, end: int, strand: Strand,
     ):
-        tx_coordinates = coordinate_service.fetch(tx_id)
+        tx_coordinates = vv_multi_coordinate_service.fetch(tx_id)
 
         assert tx_coordinates.identifier == tx_id
         assert tx_coordinates.region.contig.name == contig
@@ -68,10 +68,10 @@ class TestVVTranscriptCoordinateServiceProcessResponse:
     def test_get_response(
             self,
             tx_id: str,
-            coordinate_service: VVTranscriptCoordinateService,
+            vv_multi_coordinate_service: VVMultiCoordinateService,
             fpath_vv_response_dir: str,
     ):
-        response = coordinate_service.get_response(tx_id)
+        response = vv_multi_coordinate_service.get_response(tx_id)
         fpath_vv_response_json = os.path.join(fpath_vv_response_dir, f'{tx_id}.json')
         with open(fpath_vv_response_json, 'w') as fh:
             json.dump(
@@ -93,7 +93,7 @@ class TestVVTranscriptCoordinateServiceProcessResponse:
     def test_parse_response(
             self,
             fpath_vv_response_dir: str,
-            coordinate_service: VVTranscriptCoordinateService,
+            vv_multi_coordinate_service: VVMultiCoordinateService,
             tx_id: str,
             contig: str, start: int, end: int, strand: Strand,
     ):
@@ -101,7 +101,7 @@ class TestVVTranscriptCoordinateServiceProcessResponse:
         with open(fpath_vv_response_json) as fh:
             payload = json.load(fh)
 
-        tx_coordinates = coordinate_service.parse_response(tx_id, payload)
+        tx_coordinates = vv_multi_coordinate_service.parse_response(tx_id, payload)
 
         assert tx_coordinates.identifier == tx_id
         assert tx_coordinates.region.contig.name == contig
@@ -120,20 +120,13 @@ class TestVVTranscriptCoordinateServiceGeneralProperties:
     """
 
     @pytest.fixture(scope='class')
-    def coordinate_service(
-            self,
-            genome_build_hg38: GenomeBuild,
-    ) -> VVTranscriptCoordinateService:
-        return VVTranscriptCoordinateService(genome_build_hg38)
-
-    @pytest.fixture(scope='class')
     def response(
             self,
-            coordinate_service: VVTranscriptCoordinateService,
+            vv_multi_coordinate_service: VVMultiCoordinateService,
     ) -> typing.Mapping[str, typing.Any]:
         # We test general properties of the response for a query for a transcript of *SUOX* gene
         tx_id = 'NM_001032386.2'
-        return coordinate_service.get_response(tx_id)
+        return vv_multi_coordinate_service.get_response(tx_id)
 
     def test_keys(
             self,
@@ -216,21 +209,16 @@ class TestVVTranscriptCoordinateServiceGeneralProperties:
         assert hg38span.get("total_exons") == 4
 
 
+
+
 class TestVVTranscriptCoordinateServiceOffline:
     """
     Test processing of a cached JSON response to check if we parse the response well.
     """
 
-    @pytest.fixture
-    def tx_coordinate_service(
-        self,
-        genome_build: GenomeBuild,
-    ) -> VVTranscriptCoordinateService:
-        return VVTranscriptCoordinateService(genome_build=genome_build)
-
     def test_ptpn11(
             self, 
-            tx_coordinate_service: VVTranscriptCoordinateService,
+            vv_multi_coordinate_service: VVMultiCoordinateService,
             fpath_vv_response_dir: str,
         ):
         tx_id = 'NM_002834.5'
@@ -238,7 +226,7 @@ class TestVVTranscriptCoordinateServiceOffline:
         response_fpath = os.path.join(fpath_vv_response_dir, 'txid-NM_002834.5-PTPN11.json')
         response = load_response_json(response_fpath)
 
-        tc = tx_coordinate_service.parse_response(tx_id, response)
+        tc = vv_multi_coordinate_service.parse_response(tx_id, response)
 
         assert tc.identifier == tx_id
 
@@ -263,7 +251,7 @@ class TestVVTranscriptCoordinateServiceOffline:
 
     def test_hbb(
         self, 
-        tx_coordinate_service: VVTranscriptCoordinateService,
+        vv_multi_coordinate_service: VVMultiCoordinateService,
         fpath_vv_response_dir: str,
     ):
         tx_id = 'NM_000518.4'
@@ -271,7 +259,7 @@ class TestVVTranscriptCoordinateServiceOffline:
         response_fpath = os.path.join(fpath_vv_response_dir, 'txid-NM_000518.4-HBB.json')
         response = load_response_json(response_fpath)
 
-        tc = tx_coordinate_service.parse_response(tx_id, response)
+        tc = vv_multi_coordinate_service.parse_response(tx_id, response)
 
         assert tc.identifier == tx_id
 
@@ -307,11 +295,11 @@ class TestVVTranscriptCoordinateServiceOffline:
     @pytest.mark.skip('Online tests are disabled by default')
     def test_fetch_ptpn11(
         self, 
-        tx_coordinate_service: VVTranscriptCoordinateService,
+        vv_multi_coordinate_service: VVMultiCoordinateService,
     ):
         tx_id = 'NM_002834.5'
 
-        tc = tx_coordinate_service.fetch(tx_id)
+        tc = vv_multi_coordinate_service.fetch(tx_id)
 
         assert tc.identifier == tx_id
 
@@ -337,13 +325,54 @@ class TestVVTranscriptCoordinateServiceOffline:
     @pytest.mark.skip('Run to manually regenerate SUOX MANE transcript JSON dump')
     def test_fetch_suox(
         self,
-        tx_coordinate_service: VVTranscriptCoordinateService,
+        vv_multi_coordinate_service: VVMultiCoordinateService,
         fpath_suox_tx_coordinates: str,
     ):
         tx_id = 'NM_001032386.2'
-        response = tx_coordinate_service.fetch(tx_id)
+        response = vv_multi_coordinate_service.fetch(tx_id)
         with open(fpath_suox_tx_coordinates, 'w') as fh:
             json.dump(response, fh, cls=GenophenocorrJSONEncoder, indent=2)
+
+
+class TestVVMultiCoordinateService_as_GeneCoordinateService:
+
+    def test_parse_hbb(
+        self,
+        vv_multi_coordinate_service: VVMultiCoordinateService,
+        fpath_vv_response_dir: str,
+    ):
+        response_fpath = os.path.join(fpath_vv_response_dir, 'gene-HBB.json')
+        response = load_response_json(response_fpath)
+
+        txs = vv_multi_coordinate_service.parse_multiple(response=response)
+        
+        assert len(txs) == 2
+        tx_ids = [txc.identifier for txc in txs]
+        assert tx_ids == ['NM_000518.5', 'NM_000518.4']
+
+    def test_parse_ptpn11(
+        self,
+        vv_multi_coordinate_service: VVMultiCoordinateService,
+        fpath_vv_response_dir: str,
+    ):
+        response_fpath = os.path.join(fpath_vv_response_dir, 'gene-PTPN11.json')
+        response = load_response_json(response_fpath)
+
+        txs = vv_multi_coordinate_service.parse_multiple(response=response)
+        
+        assert len(txs) == 9
+        tx_ids = [txc.identifier for txc in txs]
+        assert tx_ids == [
+            'NM_001374625.1', 
+            'NM_001330437.2', 
+            'NM_080601.3', 
+            'NM_002834.5', 
+            'NM_002834.3', 
+            'NM_001330437.1', 
+            'NM_080601.2', 
+            'NM_080601.1', 
+            'NM_002834.4',
+        ]
 
 
 def load_response_json(path: str):
