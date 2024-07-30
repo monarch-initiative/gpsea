@@ -28,7 +28,7 @@ def test_regenerate_cohort(
     """
     fpath_suox_pp_dir = "/path/to/SUOX/phenopackets"
 
-    cohort_creator = configure_caching_cohort_creator(hpo, timeout=30)
+    cohort_creator = configure_caching_cohort_creator(hpo, timeout=30.)
     cohort = load_phenopacket_folder(
         fpath_suox_pp_dir, cohort_creator, validation_policy="strict"
     )

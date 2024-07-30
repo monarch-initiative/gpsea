@@ -37,7 +37,7 @@ class GenophenocorrJSONEncoder(JSONEncoder):
             }
         elif isinstance(o, ImpreciseSvInfo):
             return {
-                'structural_type': o.structural_type,
+                'structural_type': o.structural_type.value,
                 'variant_class': o.variant_class,
                 'gene_id': o.gene_id,
                 'gene_symbol': o.gene_symbol

@@ -5,6 +5,7 @@ import typing
 
 import hpotk
 import requests
+import ratelimit
 import json
 
 
@@ -14,6 +15,22 @@ from ._api import VariantCoordinateFinder, TranscriptCoordinateService, GeneCoor
 
 # To match strings such as `NM_1234.56`, `NM_1234`, or `XM_123456.7`
 REFSEQ_TX_PT = re.compile(r'^[NX]M_\d+(\.\d+)?$')
+
+
+@ratelimit.sleep_and_retry
+@ratelimit.limits(calls=1, period=1.1)
+def fetch_response(
+    url, 
+    headers, 
+    timeout,
+):
+    # This is the only place we interact with the Variant validator REST API.
+    # Per documentation at `https://rest.variantvalidator.org/`,
+    # we must limit requests to up to 1 request per second (+ 100ms buffer).
+    print(f'Fetching {url}')
+    response = requests.get(url, headers=headers, timeout=timeout)
+    response.raise_for_status()
+    return response.json()
 
 
 class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
@@ -47,9 +64,7 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
             request_url = self._url % (self._build.genome_build_id.major_assembly, item, transcript)
 
             try:
-                response = requests.get(request_url, headers=self._headers, timeout=self._timeout)
-                response.raise_for_status()
-                response = response.json()
+                response = fetch_response(request_url, self._headers, self._timeout)
                 variant_coordinates = self._extract_variant_coordinates(response)
             except (requests.exceptions.RequestException, VariantValidatorDecodeException) as e:
                 raise ValueError(f'Error processing {item}', e)
@@ -164,12 +179,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
 
     def get_response(self, tx_id: str):
         api_url = self._url % tx_id
-        response = requests.get(api_url, headers=self._headers, timeout=self._timeout)
-
-        if not response.ok:
-            response.raise_for_status()
-
-        return response.json()
+        return fetch_response(api_url, self._headers, self._timeout)
 
     def parse_response(self, tx_id: str, response) -> TranscriptCoordinates:
         if not isinstance(response, list):
