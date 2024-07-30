@@ -129,7 +129,11 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
     :param timeout: a positive `float` with the REST API timeout in seconds.
     """
 
-    def __init__(self, genome_build: GenomeBuild, timeout: float = 30.):
+    def __init__(
+        self,
+        genome_build: GenomeBuild, 
+        timeout: float = 30.,
+    ):
         self._logger = logging.getLogger(__name__)
         self._genome_build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
 
@@ -265,7 +269,16 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
 
         cds_start, cds_end = VVMultiCoordinateService._parse_cds(tx_data['coding_start'], tx_data['coding_end'], exons)
 
-        return TranscriptCoordinates(tx_id, region, exons, cds_start, cds_end)
+        is_preferred = VVMultiCoordinateService._parse_is_preferred(tx_data)
+
+        return TranscriptCoordinates(
+            identifier=tx_id, 
+            region=region, 
+            exons=exons, 
+            cds_start=cds_start, 
+            cds_end=cds_end,
+            is_preferred=is_preferred,
+        )
 
     @staticmethod
     def _find_genomic_span(
@@ -349,3 +362,15 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
             processed += exon_len
 
         raise ValueError(f'Could not parse CDS start and end from given coordinates')
+
+    @staticmethod
+    def _parse_is_preferred(
+        tx_data: typing.Mapping[str, typing.Any],
+    ) -> typing.Optional[bool]:
+        if 'annotations' in tx_data:
+            annotations = tx_data['annotations']
+            if 'mane_select' in annotations:
+                assert type(annotations['mane_select']) == bool, '\'mane_select\' field must be `bool`'
+                return annotations['mane_select']
+        
+        return None

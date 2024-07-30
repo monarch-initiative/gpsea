@@ -13,11 +13,15 @@ class TranscriptCoordinates:
     If both CDS coordinates are `None`, then the transcript coordinates are assumed to represent a non-coding transcript.
     """
 
-    def __init__(self, identifier: str,
-                 region: GenomicRegion,
-                 exons: typing.Iterable[GenomicRegion],
-                 cds_start: typing.Optional[int],
-                 cds_end: typing.Optional[int]):
+    def __init__(
+        self, 
+        identifier: str,
+        region: GenomicRegion,
+        exons: typing.Iterable[GenomicRegion],
+        cds_start: typing.Optional[int],
+        cds_end: typing.Optional[int],
+        is_preferred: typing.Optional[bool] = None
+    ):
         self._id = hpotk.util.validate_instance(identifier, str, 'identifier')
         self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
         self._exons = tuple(exons)
@@ -37,6 +41,7 @@ class TranscriptCoordinates:
                                  f'in the tx region: ({self._region.end}, {self._region.end}]')
         self._cds_start = cds_start
         self._cds_end = cds_end
+        self._is_preferred = is_preferred
 
     @property
     def identifier(self) -> str:
@@ -188,17 +193,28 @@ class TranscriptCoordinates:
                         coding_regions.append(cds)
 
         return tuple(coding_regions)
+    
+    @property
+    def is_preferred(self) -> typing.Optional[bool]:
+        """
+        Check if the transcript belongs among the preferred transcripts of the gene. 
+        This usually means that the transcript was chosen by the MANE project or similar.
+        
+        Returns `None` if the info is not available.
+        """
+        return self._is_preferred
 
     def __eq__(self, other):
         return (isinstance(other, TranscriptCoordinates)
-                and self.identifier == other.identifier
-                and self.region == other.region
-                and self.exons == other.exons
-                and self.cds_start == other.cds_start
-                and self.cds_end == other.cds_end)
+                and self._id == other._id
+                and self._region == other._region
+                and self._exons == other._exons
+                and self._cds_start == other._cds_start
+                and self._cds_end == other._cds_end
+                and self._is_preferred == other._is_preferred)
 
     def __hash__(self):
-        return hash((self._id, self._region, self._exons, self._cds_start, self._cds_end))
+        return hash((self._id, self._region, self._exons, self._cds_start, self._cds_end, self._is_preferred))
 
     def __str__(self):
         return f'TranscriptCoordinates(identifier={self.identifier}, region={self.region})'

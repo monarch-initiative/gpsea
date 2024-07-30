@@ -45,12 +45,6 @@ class ImpreciseSvFunctionalAnnotator(metaclass=abc.ABCMeta):
         pass
 
 
-class NoOpImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
-    
-    def annotate(self, item: ImpreciseSvInfo) -> typing.Sequence[TranscriptAnnotation]:
-        return ()
-
-
 class TranscriptCoordinateService(metaclass=abc.ABCMeta):
     """
     `TranscriptCoordinateService` gets transcript (tx) coordinates for a given transcript ID.

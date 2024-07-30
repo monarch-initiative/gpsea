@@ -1,8 +1,9 @@
 from ._api import TranscriptCoordinateService, GeneCoordinateService
-from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, ProteinMetadataService, NoOpImpreciseSvFunctionalAnnotator
+from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, ProteinMetadataService
 from ._audit import Auditor, DataSanityIssue, Level, Notepad, NotepadTree
 from ._config import configure_caching_patient_creator, configure_patient_creator, load_phenopacket_folder, load_phenopacket
 from ._config import configure_caching_cohort_creator, configure_cohort_creator
+from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import PatientCreator, CohortCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
@@ -25,5 +26,5 @@ __all__ = [
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
     'VVHgvsVariantCoordinateFinder', 'VVMultiCoordinateService',
     'Auditor', 'DataSanityIssue', 'Level', 'Notepad', 'NotepadTree',
-    'NoOpImpreciseSvFunctionalAnnotator',
+    'DefaultImpreciseSvFunctionalAnnotator',
 ]

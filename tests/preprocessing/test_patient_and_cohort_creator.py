@@ -5,8 +5,9 @@ import pytest
 
 from genophenocorr.model.genome import GenomeBuild
 from genophenocorr.preprocessing import PhenotypeCreator, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, VariantCoordinateFinder
-from genophenocorr.preprocessing import VepFunctionalAnnotator, VarCachingFunctionalAnnotator, NoOpImpreciseSvFunctionalAnnotator, VVHgvsVariantCoordinateFinder
+from genophenocorr.preprocessing import VepFunctionalAnnotator, VarCachingFunctionalAnnotator, VVHgvsVariantCoordinateFinder, DefaultImpreciseSvFunctionalAnnotator
 from genophenocorr.preprocessing import PhenopacketPatientCreator
+from genophenocorr.preprocessing import VVMultiCoordinateService
 from genophenocorr.preprocessing import CohortCreator, load_phenopacket_folder
 
 
@@ -40,8 +41,15 @@ class TestPhenopacketCohortCreator:
         )
 
     @pytest.fixture
-    def imprecise_so_functional_annotator(self) -> ImpreciseSvFunctionalAnnotator:
-        return NoOpImpreciseSvFunctionalAnnotator()
+    def imprecise_sv_functional_annotator(
+        self,
+        genome_build: GenomeBuild,
+    ) -> ImpreciseSvFunctionalAnnotator:
+        return DefaultImpreciseSvFunctionalAnnotator(
+            gene_coordinate_service=VVMultiCoordinateService(
+                genome_build=genome_build,
+            ),
+        )
 
     @pytest.fixture
     def variant_coordinate_finder(
@@ -58,14 +66,14 @@ class TestPhenopacketCohortCreator:
         genome_build: GenomeBuild,
         phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
-        imprecise_so_functional_annotator: ImpreciseSvFunctionalAnnotator,
+        imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         variant_coordinate_finder: VariantCoordinateFinder,
     ) -> CohortCreator:
         patient_creator = PhenopacketPatientCreator(
             build=genome_build,
             phenotype_creator=phenotype_creator,
             var_func_ann=functional_annotator,
-            imprecise_sv_functional_annotator=imprecise_so_functional_annotator,
+            imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
             hgvs_coordinate_finder=variant_coordinate_finder,
         )
         return CohortCreator(

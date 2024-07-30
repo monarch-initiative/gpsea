@@ -347,8 +347,12 @@ class TestVVMultiCoordinateService_as_GeneCoordinateService:
         txs = vv_multi_coordinate_service.parse_multiple(response=response)
         
         assert len(txs) == 2
+        
         tx_ids = [txc.identifier for txc in txs]
         assert tx_ids == ['NM_000518.5', 'NM_000518.4']
+        
+        preferred = [txc.is_preferred for txc in txs]
+        assert preferred == [True, False]
 
     def test_parse_ptpn11(
         self,
@@ -361,6 +365,7 @@ class TestVVMultiCoordinateService_as_GeneCoordinateService:
         txs = vv_multi_coordinate_service.parse_multiple(response=response)
         
         assert len(txs) == 9
+        
         tx_ids = [txc.identifier for txc in txs]
         assert tx_ids == [
             'NM_001374625.1', 
@@ -373,6 +378,9 @@ class TestVVMultiCoordinateService_as_GeneCoordinateService:
             'NM_080601.1', 
             'NM_002834.4',
         ]
+        
+        preferred = [txc.is_preferred for txc in txs]
+        assert preferred == [False, False, False, True, False, False, False, False, False]
 
 
 def load_response_json(path: str):
