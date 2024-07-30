@@ -18,7 +18,7 @@ REFSEQ_TX_PT = re.compile(r'^[NX]M_\d+(\.\d+)?$')
 
 
 @ratelimit.sleep_and_retry
-@ratelimit.limits(calls=1, period=1.1)
+@ratelimit.limits(calls=1, period=1.2)
 def fetch_response(
     url, 
     headers, 
@@ -27,7 +27,6 @@ def fetch_response(
     # This is the only place we interact with the Variant validator REST API.
     # Per documentation at `https://rest.variantvalidator.org/`,
     # we must limit requests to up to 1 request per second (+ 100ms buffer).
-    print(f'Fetching {url}')
     response = requests.get(url, headers=headers, timeout=timeout)
     response.raise_for_status()
     return response.json()
@@ -152,7 +151,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         self._logger = logging.getLogger(__name__)
         self._genome_build = hpotk.util.validate_instance(genome_build, GenomeBuild, 'genome_build')
 
-        self._timeout = hpotk.util.validate_instance(timeout, float, 'timeout')
+        self._timeout = timeout
         if self._timeout <= 0:
             raise ValueError(f'`timeout` must be a positive `float` but got {timeout}')
 
