@@ -26,10 +26,24 @@ P_VAL_OPTIONS = (
 )
 
 class MTC_Strategy(enum.Enum):
+    """
+    A strategy for mitigating the multiple testing correction (MTC) burden.
+    """
+    
     ALL_HPO_TERMS = 0
-    HEURISTIC_SAMPLER = 1
-    SPECIFY_TERMS = 2
+    """
+    All HPO terms will be tested.
+    """
 
+    HEURISTIC_SAMPLER = 1
+    """
+    Only HPO terms present in at least a certain fraction of patients will be tested.
+    """
+    
+    SPECIFY_TERMS = 2
+    """
+    Only the manually provided HPO terms will be tested.
+    """
 
 
 
@@ -67,7 +81,7 @@ class CohortAnalysisConfiguration:
         self._min_perc_patients_w_hpo = .2
         self._include_sv = False
         self._mtc_strategy = MTC_Strategy.ALL_HPO_TERMS
-        self._terms_to_test = set() ## only relevant for SPECIFIED_TERMS strategy
+        self._terms_to_test = None ## only relevant for SPECIFIED_TERMS strategy
 
     @property
     def missing_implies_excluded(self) -> bool:
@@ -99,6 +113,10 @@ class CohortAnalysisConfiguration:
     @pval_correction.setter
     def pval_correction(self, pval_correction: typing.Optional[str]):
         """
+        Set the method for p value correction. 
+        See Statsmodels' `documentation <https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html>`_ 
+        for the acceptable values.
+
         :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`
           if no MTC should be applied.
         """
@@ -175,47 +193,61 @@ class CohortAnalysisConfiguration:
     @property
     def mtc_strategy(self) -> MTC_Strategy:
         """
-        TODO
+        Get the MTC strategy to be used.
         """
         return self._mtc_strategy
 
-    @mtc_strategy.setter
-    def mtc_strategy(self, strategy: MTC_Strategy):
+    def all_terms_strategy(self):
         """
-        TODO
+        Test all HPO terms (the default).
         """
-        # TODO: this needs to be removed to prevent inconsistent configuration.
-        # If we use:
-        # ```
-        # config.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
-        # ````
-        # then the user will get an errror because of missing terms to test.
-        if isinstance(strategy, MTC_Strategy):
-            self._mtc_strategy = strategy
-        else:
-            self._logger.warning('TODO DOCUMENT `include_sv` value %s. Using %s', strategy, self._mtc_strategy)
+        self._mtc_strategy = MTC_Strategy.ALL_HPO_TERMS
+        self._terms_to_test = None
 
-    def heuristic_strategy(self, threshold_HPO_observed_frequency: float=0.2):
-        self.mtc_strategy = MTC_Strategy.HEURISTIC_SAMPLER
+    def heuristic_strategy(
+        self, 
+        threshold_HPO_observed_frequency: float = 0.2,
+    ):
+        """
+        Only test the HPO terms that pass all rules of the heuristic strategy.
+
+        See :ref:`heuristic sampler strategy <heuristic-sampler-strategy-section>` section 
+        for more info on the rules.
+
+        :param threshold_HPO_observed_frequency: the float in range *(0, 1]* to represent 
+          the minimum fraction of patients for an HPO term to be included.
+        """
         if not isinstance(threshold_HPO_observed_frequency, float):
-            try:
-                threshold_HPO_observed_frequency = float(threshold_HPO_observed_frequency)
-            except ValueError:
-                self._logger.warning("min_perc_patients_w_hpo must be a number, but was %s. Using %f",
-                                     threshold_HPO_observed_frequency, self._min_perc_patients_w_hpo)
-        if threshold_HPO_observed_frequency > 1 or threshold_HPO_observed_frequency <= 0:
-            errmsg = f"min_perc_patients_w_hpo must be greater than 0 and at most 1, but was {threshold_HPO_observed_frequency}. Fix this before continuingf",
-            self._logger.warning(errmsg)
-            raise ValueError(errmsg)
-        else:
-            self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
+            raise ValueError(f'`threshold_HPO_observed_frequency` is not a `float`: {threshold_HPO_observed_frequency}')
+        if not 0 < threshold_HPO_observed_frequency <= 1:
+            raise ValueError(f'`threshold_HPO_observed_frequency` must be in range (0, 1] but was {threshold_HPO_observed_frequency}')
+       
+        self._mtc_strategy = MTC_Strategy.HEURISTIC_SAMPLER
+        # TODO: this will be retained if we choose `all_termds_strategy` after `heuristic_strategy`. See issue #194.
         self._min_perc_patients_w_hpo = threshold_HPO_observed_frequency
+        self._terms_to_test = None
 
-    def specify_terms_strategy(self,  specified_term_set: typing.Iterable[typing.Union[str, hpotk.TermId]]):
-        self.mtc_strategy = MTC_Strategy.SPECIFY_TERMS
-        self._terms_to_test = specified_term_set
+    def specify_terms_strategy(
+        self, 
+        specified_term_set: typing.Iterable[typing.Union[str, hpotk.TermId]],
+    ):
+        """
+        Mitigate the MTC burden by only testing the specified HPO terms.
 
-    def get_terms_to_test(self):
+        Note, the HPO terms are validated before running the analysis,
+        to point out invalid CURIE (e.g. `WHATEVER`) values, 
+        or HPO term IDs that are not in the currently used HPO.
+
+        :param specified_term_set: an iterable with CURIEs (e.g. `HP:0001250`) 
+          or :class:`hpotk.TermId` instances representing the terms to test.
+        """
+        if self._terms_to_test is not None:
+            self._terms_to_test.clear()
+        self._terms_to_test = tuple(specified_term_set)
+        self._mtc_strategy = MTC_Strategy.SPECIFY_TERMS
+
+    @property
+    def terms_to_test(self) -> typing.Optional[typing.Iterable[typing.Union[str, hpotk.TermId]]]:
         return self._terms_to_test
 
 
@@ -249,9 +281,10 @@ def configure_cohort_analysis(cohort: Cohort,
 
     mtc_filter: HpoMtcFilter
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
-        mtc_filter = HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter = config._min_perc_patients_w_hpo)
+        mtc_filter = HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter = config.min_perc_patients_w_hpo)
     elif config.mtc_strategy == MTC_Strategy.SPECIFY_TERMS:
-        validated_terms_to_test = _validate_terms_to_test(hpo, config.get_terms_to_test())
+        assert config.terms_to_test is not None, '`terms_to_test` must not be none if `SPECIFY_TERMS` strategy is used'
+        validated_terms_to_test = _validate_terms_to_test(hpo, config.terms_to_test)
         mtc_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test=validated_terms_to_test)
     elif config.mtc_strategy == MTC_Strategy.ALL_HPO_TERMS:
         mtc_filter = IdentityTermMtcFilter()
@@ -290,7 +323,7 @@ def _validate_terms_to_test(
     for term in terms_to_test:
         if isinstance(term, hpotk.TermId):
             pass
-        if isinstance(term, str):
+        elif isinstance(term, str):
             term = hpotk.TermId.from_curie(term)
         else:
             raise ValueError(f'{term} is neither a TermId nor a CURIE `str`!')
