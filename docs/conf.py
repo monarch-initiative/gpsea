@@ -25,8 +25,18 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
-    'sphinx_copybutton'
+    'sphinx_copybutton',
+    'sphinx.ext.mathjax',
 ]
+
+
+mathjax3_config = {
+    'TeX': {
+        'Macros': {
+            'RR': '{\\mathbb{R}}',
+        },
+    },
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -42,8 +52,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'genophenocorr'
-copyright = u'2023'
-author = u'Lauren Rekerle, Peter N Robinson'
+copyright = u'2024'
+author = u'Lauren Rekerle, Daniel Danis, Peter N Robinson'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
