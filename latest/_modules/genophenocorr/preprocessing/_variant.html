@@ -167,6 +167,24 @@
 <span class="sd">        annotate(variant_coordinates:VariantCoordinates): Gets data and returns a Variant object for given variant coordinates</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="VarCachingFunctionalAnnotator.with_cache_folder">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.VarCachingFunctionalAnnotator.with_cache_folder">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">with_cache_folder</span><span class="p">(</span>
+        <span class="n">fpath_cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">fallback</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create caching functional annotator that will store the data in `fpath_cache_dir` </span>
+<span class="sd">        and use `fallback` to annotate the missing variants.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">VariantAnnotationCache</span><span class="p">(</span><span class="n">fpath_cache_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">(</span>
+            <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>
+            <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="n">VariantAnnotationCache</span><span class="p">,</span> <span class="n">fallback</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a VarCachingFunctionalAnnotator object</span>
 
@@ -199,12 +217,6 @@
 </div>
 
 
-
-<span class="k">class</span> <span class="nc">EnsemblTranscriptCoordinateService</span><span class="p">(</span><span class="n">TranscriptCoordinateService</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="n">TranscriptInfoAware</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TranscriptCoordinates</span><span class="p">:</span>
-        <span class="c1"># TODO - implement</span>
-        <span class="k">pass</span>
 </pre></div>
 
            </div>

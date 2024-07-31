@@ -82,9 +82,10 @@
              
   <h1>Source code for genophenocorr.io</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecoder</span><span class="p">,</span> <span class="n">JSONEncoder</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecoder</span><span class="p">,</span> <span class="n">JSONEncoder</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="o">*</span>
@@ -105,9 +106,14 @@
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Variant</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
-                <span class="s1">&#39;variant_coordinates&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span>
+                <span class="s1">&#39;variant_info&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_info</span><span class="p">,</span>
                 <span class="s1">&#39;tx_annotations&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">,</span>
                 <span class="s1">&#39;genotypes&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">genotypes</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">):</span> 
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;variant_coordinates&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span>
+                <span class="s1">&#39;sv_info&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">sv_info</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -115,6 +121,13 @@
                 <span class="s1">&#39;ref&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span>
                 <span class="s1">&#39;alt&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">alt</span><span class="p">,</span>
                 <span class="s1">&#39;change_length&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">change_length</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ImpreciseSvInfo</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;structural_type&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">structural_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;variant_class&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_class</span><span class="p">,</span>
+                <span class="s1">&#39;gene_id&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">gene_id</span><span class="p">,</span>
+                <span class="s1">&#39;gene_symbol&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">gene_symbol</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="p">{</span>
@@ -217,7 +230,9 @@
 
 
 
-<span class="n">_VARIANT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;variant_coordinates&#39;</span><span class="p">,</span> <span class="s1">&#39;tx_annotations&#39;</span><span class="p">,</span> <span class="s1">&#39;genotypes&#39;</span><span class="p">)</span>
+<span class="n">_VARIANT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;variant_info&#39;</span><span class="p">,</span> <span class="s1">&#39;tx_annotations&#39;</span><span class="p">,</span> <span class="s1">&#39;genotypes&#39;</span><span class="p">)</span>
+<span class="n">_VARIANT_INFO_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;variant_coordinates&#39;</span><span class="p">,</span> <span class="s1">&#39;sv_info&#39;</span><span class="p">)</span>
+<span class="n">_IMPRECISE_SV_INFO_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;structural_type&#39;</span><span class="p">,</span> <span class="s1">&#39;variant_class&#39;</span><span class="p">,</span> <span class="s1">&#39;gene_id&#39;</span><span class="p">,</span> <span class="s1">&#39;gene_symbol&#39;</span><span class="p">)</span>
 <span class="n">_VARIANT_COORDINATES_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="s1">&#39;ref&#39;</span><span class="p">,</span> <span class="s1">&#39;alt&#39;</span><span class="p">,</span> <span class="s1">&#39;change_length&#39;</span><span class="p">)</span>
 <span class="n">_REGION_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
 <span class="n">_GENOMIC_REGION_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;contig&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;strand&#39;</span><span class="p">)</span>
@@ -264,6 +279,13 @@
             <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query</span><span class="p">)</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_has_any_field</span><span class="p">(</span>
+            <span class="n">obj</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+            <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GenophenocorrJSONDecoder.object_hook">
 <a class="viewcode-back" href="../../apidocs/genophenocorr.io.html#genophenocorr.io.GenophenocorrJSONDecoder.object_hook">[docs]</a>
@@ -271,9 +293,14 @@
     <span class="k">def</span> <span class="nf">object_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_VARIANT_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span>
-                <span class="n">var_coordinates</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_coordinates&#39;</span><span class="p">],</span>
+                <span class="n">variant_info</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_info&#39;</span><span class="p">],</span>
                 <span class="n">tx_annotations</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;tx_annotations&#39;</span><span class="p">],</span>
                 <span class="n">genotypes</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;genotypes&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_any_field</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_VARIANT_INFO_FIELDS</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">VariantInfo</span><span class="p">(</span>
+                <span class="n">variant_coordinates</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_coordinates&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;variant_coordinates&#39;</span> <span class="ow">in</span> <span class="n">obj</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">sv_info</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;sv_info&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;sv_info&#39;</span> <span class="ow">in</span> <span class="n">obj</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_VARIANT_COORDINATES_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span>
@@ -281,6 +308,13 @@
                 <span class="n">ref</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;ref&#39;</span><span class="p">],</span>
                 <span class="n">alt</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;alt&#39;</span><span class="p">],</span>
                 <span class="n">change_length</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;change_length&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_IMPRECISE_SV_INFO_FIELDS</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ImpreciseSvInfo</span><span class="p">(</span>
+                <span class="n">structural_type</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;structural_type&#39;</span><span class="p">]),</span>
+                <span class="n">variant_class</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_class&#39;</span><span class="p">],</span>
+                <span class="n">gene_id</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;gene_id&#39;</span><span class="p">],</span>
+                <span class="n">gene_symbol</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;gene_symbol&#39;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_REGION_FIELDS</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_GENOMIC_REGION_FIELDS</span><span class="p">):</span>

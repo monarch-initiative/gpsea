@@ -98,11 +98,15 @@
 <span class="sd">    If both CDS coordinates are `None`, then the transcript coordinates are assumed to represent a non-coding transcript.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">region</span><span class="p">:</span> <span class="n">GenomicRegion</span><span class="p">,</span>
-                 <span class="n">exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">],</span>
-                 <span class="n">cds_start</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                 <span class="n">cds_end</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">GenomicRegion</span><span class="p">,</span>
+        <span class="n">exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">],</span>
+        <span class="n">cds_start</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">cds_end</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">is_preferred</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;identifier&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">exons</span><span class="p">)</span>
@@ -122,6 +126,7 @@
                                  <span class="sa">f</span><span class="s1">&#39;in the tx region: (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span> <span class="o">=</span> <span class="n">cds_start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span> <span class="o">=</span> <span class="n">cds_end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">=</span> <span class="n">is_preferred</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -291,17 +296,28 @@
 
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">coding_regions</span><span class="p">)</span></div>
 
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_preferred</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the transcript belongs among the preferred transcripts of the gene. </span>
+<span class="sd">        This usually means that the transcript was chosen by the MANE project or similar.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns `None` if the info is not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">identifier</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">region</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">exons</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cds_start</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">cds_start</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cds_end</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">cds_end</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_id</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_region</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_exons</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_cds_start</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_cds_end</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_is_preferred</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;TranscriptCoordinates(identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">, region=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="si">}</span><span class="s1">)&#39;</span>

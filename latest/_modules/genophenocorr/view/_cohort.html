@@ -222,10 +222,9 @@
 <span class="sd">            typing.Mapping[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chrom_to_display</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">all_var_set</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()</span>
         <span class="n">var_formatter</span> <span class="o">=</span> <span class="n">VariantFormatter</span><span class="p">(</span><span class="n">transcript_id</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">all_var_set</span><span class="p">:</span>
-            <span class="n">var_string</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
+            <span class="n">variant_key</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span>
             <span class="n">display</span> <span class="o">=</span> <span class="n">var_formatter</span><span class="o">.</span><span class="n">format_as_string</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">only_hgvs</span><span class="p">:</span>
                 <span class="c1"># do not show the transcript id</span>
@@ -234,7 +233,8 @@
                     <span class="n">display</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">display</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">chrom_to_display</span><span class="p">[</span><span class="n">var_string</span><span class="p">]</span> <span class="o">=</span> <span class="n">display</span>
+            <span class="n">chrom_to_display</span><span class="p">[</span><span class="n">variant_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">display</span>
+
         <span class="k">return</span> <span class="n">chrom_to_display</span></div>
 </div>
 

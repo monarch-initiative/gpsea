@@ -130,11 +130,8 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">transcript</span><span class="o">.</span><span class="n">hgvs_cdna</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;Long HGVS&quot;</span>
             <span class="k">return</span> <span class="n">transcript</span><span class="o">.</span><span class="n">hgvs_cdna</span>
-        <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># To be reevaluated</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variant </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> has no string format.&quot;</span></div>
+            <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span></div>
 </div>
 
 </pre></div>

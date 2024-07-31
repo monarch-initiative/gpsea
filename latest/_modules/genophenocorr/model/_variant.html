@@ -83,7 +83,6 @@
   <h1>Source code for genophenocorr.model._variant</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
@@ -137,14 +136,17 @@
 <span class="sd">         of the effect on the protein sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">hgvs_cdna</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                 <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-                 <span class="n">variant_effects</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">],</span>
-                 <span class="n">affected_exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-                 <span class="n">protein_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                 <span class="n">protein_effect_coordinates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gene_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hgvs_cdna</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">variant_effects</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">],</span>
+        <span class="n">affected_exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">protein_effect_coordinates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">],</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">gene_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;gene_id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">tx_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;tx_id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_cdna</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_optional_instance</span><span class="p">(</span><span class="n">hgvs_cdna</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;hgvs_cdna&#39;</span><span class="p">)</span>
@@ -431,27 +433,194 @@
 
 
 
-<span class="k">class</span> <span class="nc">VariantCoordinateAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="ImpreciseSvInfo">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.ImpreciseSvInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">ImpreciseSvInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data regarding a structural variant (SV) with imprecise breakpoint coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">structural_type</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
+        <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">gene_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">gene_symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">structural_type</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="s1">&#39;structural_type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_class</span> <span class="o">=</span> <span class="n">variant_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">=</span> <span class="n">gene_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span> <span class="o">=</span> <span class="n">gene_symbol</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantCoordinates</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variant_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;variant_string` was deprecated and will be removed in v0.2.0. &#39;</span>
-                      <span class="s1">&#39;Use `variant_coordinates.variant_key` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="c1"># TODO[0.2.0] - remove</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
+    <span class="k">def</span> <span class="nf">structural_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get term ID of the structural type (e.g. `SO:1000029` for chromosomal deletion).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)</span>
+<span class="sd">        Get a `str` with VCF-like variant class (e.g. `DEL`, `DUP`, `INV`, `INS`, `CNV`, etc.).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_class</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_class</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `str` with gene identifier CURIE (e.g. `HGNC:3603`) or `None` if the identifier is not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gene_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `str` with HGVS gene symbol (e.g. *FBN1*) or `None` if the symbol is not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a readable representation of the variant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ImpreciseSvInfo</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_structural_type</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_class</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_variant_class</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_gene_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_gene_symbol</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ImpreciseSv(&#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;structural_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span><span class="si">}</span><span class="s1">, &#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;variant_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_class</span><span class="si">}</span><span class="s1">, &#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;gene_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span><span class="si">}</span><span class="s1">, &#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;gene_symbol=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gene_symbol</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="VariantInfo">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VariantInfo` consists of either variant coordinates or imprecise SV data.</span>
+
+<span class="sd">    The class is conceptually similar to Rust enum - only one of the fields can be set at any point in time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantCoordinates</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sv_info</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ImpreciseSvInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">variant_coordinates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">sv_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># At most one field can be set.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_variant_coordinates</span> <span class="o">=</span> <span class="n">variant_coordinates</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sv_info</span> <span class="o">=</span> <span class="n">sv_info</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Only one field can be set: variant_coordinates=</span><span class="si">{</span><span class="n">variant_coordinates</span><span class="si">}</span><span class="s1">, sv_info=</span><span class="si">{</span><span class="n">sv_info</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantCoordinates</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_coordinates</span>
+
+<div class="viewcode-block" id="VariantInfo.has_variant_coordinates">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantInfo.has_variant_coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">has_variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sv_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ImpreciseSvInfo</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sv_info</span>
+
+<div class="viewcode-block" id="VariantInfo.has_sv_info">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantInfo.has_sv_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">has_sv_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_variant_coordinates</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_info</span><span class="o">.</span><span class="n">variant_key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_missing_state</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `str` with VCF-like variant class (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_variant_coordinates</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_class</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_info</span><span class="o">.</span><span class="n">variant_class</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_missing_state</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VariantInfo.is_structural">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantInfo.is_structural">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_structural</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the variant is a structural variant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_variant_coordinates</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">is_structural</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_missing_state</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_handle_missing_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;VariantInfo should have either variant coordinates or SV info!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_coordinates</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_variant_coordinates</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sv_info</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_sv_info</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_coordinates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sv_info</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;VariantInfo(&#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;variant_coordinates=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_coordinates</span><span class="si">}</span><span class="s1">, &#39;</span> \
+            <span class="sa">f</span><span class="s1">&#39;sv_info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sv_info</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="VariantInfoAware">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantInfoAware">[docs]</a>
+<span class="k">class</span> <span class="nc">VariantInfoAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An entity where :class:`VariantInfo` is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">variant_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantInfo</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the variant data with coordinates or other info available for large imprecise SVs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">FunctionalAnnotationAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
@@ -460,7 +629,7 @@
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">tx_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
         <span class="k">pass</span>
-    
+
     <span class="k">def</span> <span class="nf">get_tx_anno_by_tx_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a transcript ID, this will return the `TranscriptAnnotation` associated with that</span>
 <span class="sd">        variant and transcript.</span>
@@ -475,7 +644,7 @@
             <span class="k">if</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tx_ann</span>
         <span class="k">return</span> <span class="kc">None</span>
-    
+
     <span class="k">def</span> <span class="nf">get_hgvs_cdna_by_tx_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a transcript ID, will return the hgvs cdna string associated with that variant and transcript.</span>
 
@@ -489,16 +658,16 @@
             <span class="k">if</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">hgvs_cdna</span>
         <span class="k">return</span> <span class="kc">None</span>
-    
+
     <span class="k">def</span> <span class="nf">get_preferred_tx_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the `TranscriptAnnotation` that represents the result of the functional annotation</span>
-<span class="sd">        with respect to the preferred transcript of a gene. </span>
-<span class="sd">        </span>
-<span class="sd">        Returns `None` if transcript annotations is no preferred transcript found. </span>
+<span class="sd">        with respect to the preferred transcript of a gene.</span>
+
+<span class="sd">        Returns `None` if transcript annotations is no preferred transcript found.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect </span>
-<span class="sd">                                                   to the preferred transcript </span>
+<span class="sd">            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect</span>
+<span class="sd">                                                   to the preferred transcript</span>
 <span class="sd">                                                   or `None` if the preferred transcript info is not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
@@ -509,60 +678,54 @@
 
 <div class="viewcode-block" id="Variant">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Variant">[docs]</a>
-<span class="k">class</span> <span class="nc">Variant</span><span class="p">(</span><span class="n">VariantCoordinateAware</span><span class="p">,</span> <span class="n">FunctionalAnnotationAware</span><span class="p">,</span> <span class="n">Genotyped</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that represents results of the functional annotation of a variant with all included transcripts.</span>
-
-<span class="sd">    :param var_coordinates: the coordinates of the variant.</span>
-<span class="sd">    :param tx_annotations: an iterable of functional annotations.</span>
-<span class="sd">    :param genotypes: the genotypes</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        variant_coordinates (VariantCoordinates):</span>
-<span class="sd">        variant_string (string): A readable representation of the variant coordinates</span>
-<span class="sd">        tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant</span>
-<span class="sd">        variant_class (string): The variant class (e.g. Duplication, SNV, etc.)</span>
+<span class="k">class</span> <span class="nc">Variant</span><span class="p">(</span><span class="n">VariantInfoAware</span><span class="p">,</span> <span class="n">FunctionalAnnotationAware</span><span class="p">,</span> <span class="n">Genotyped</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Variant includes three lines of information:</span>
+<span class="sd">     * the variant data with coordinates or other info available for large imprecise SVs,</span>
+<span class="sd">     * results of the functional annotation with respect to relevant transcripts, and</span>
+<span class="sd">     * the genotypes for the known samples</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Variant.create_variant_from_scratch">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.Variant.create_variant_from_scratch">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_variant_from_scratch</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
-                                    <span class="n">gene_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                    <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                    <span class="n">hgvs_cdna</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                    <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-                                    <span class="n">consequences</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">],</span>
-                                    <span class="n">exons_effected</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                                    <span class="n">protein_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                                    <span class="n">protein_effect_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                                    <span class="n">protein_effect_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                                    <span class="n">genotypes</span><span class="p">:</span> <span class="n">Genotypes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_variant_from_scratch</span><span class="p">(</span>
+        <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
+        <span class="n">gene_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hgvs_cdna</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">is_preferred</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">consequences</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">],</span>
+        <span class="n">exons_effected</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">protein_effect_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">protein_effect_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">genotypes</span><span class="p">:</span> <span class="n">Genotypes</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">variant_info</span> <span class="o">=</span> <span class="n">VariantInfo</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="o">=</span><span class="n">variant_coordinates</span><span class="p">)</span>
         <span class="n">protein_effect</span> <span class="o">=</span> <span class="n">Region</span><span class="p">(</span><span class="n">protein_effect_start</span><span class="p">,</span> <span class="n">protein_effect_end</span><span class="p">)</span>
         <span class="n">transcript</span> <span class="o">=</span> <span class="n">TranscriptAnnotation</span><span class="p">(</span><span class="n">gene_name</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">hgvs_cdna</span><span class="p">,</span> <span class="n">is_preferred</span><span class="p">,</span> <span class="n">consequences</span><span class="p">,</span> <span class="n">exons_effected</span><span class="p">,</span>
                                           <span class="n">protein_id</span><span class="p">,</span> <span class="n">protein_effect</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">,</span> <span class="p">(</span><span class="n">transcript</span><span class="p">,),</span> <span class="n">genotypes</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Variant</span><span class="p">(</span><span class="n">variant_info</span><span class="p">,</span> <span class="p">(</span><span class="n">transcript</span><span class="p">,),</span> <span class="n">genotypes</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
-                 <span class="n">tx_annotations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">],</span>
-                 <span class="n">genotypes</span><span class="p">:</span> <span class="n">Genotypes</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a Variant object</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant</span>
-<span class="sd">            tx_annotations (typing.Sequence[TranscriptAnnotation]): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant</span>
-<span class="sd">            genotypes (Genotypes): genotypes container</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_coordinates</span> <span class="o">=</span> <span class="n">var_coordinates</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">variant_info</span><span class="p">:</span> <span class="n">VariantInfo</span><span class="p">,</span>
+        <span class="n">tx_annotations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">],</span>
+        <span class="n">genotypes</span><span class="p">:</span> <span class="n">Genotypes</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_info</span> <span class="o">=</span> <span class="n">variant_info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span> <span class="o">=</span> <span class="n">genotypes</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantCoordinates</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">variant_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantInfo</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            VariantCoordinates: A representation of coordinates of a sequence and symbolic variant.</span>
+<span class="sd">            VariantInfo: A representation of the variant data for sequence and symbolic variants, as well as for large imprecise SVs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_coordinates</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_info</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tx_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
@@ -580,21 +743,20 @@
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Variant</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_coordinates</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">tx_annotations</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotypes</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">genotypes</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_info</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_variant_info</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_tx_annotations</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_gts</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genotypes</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gts</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variant(variant_coordinates:</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;tx_annotations:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;genotypes:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">genotypes</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variant(variant_info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_info</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;tx_annotations=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_annotations</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;genotypes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gts</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 
 </pre></div>
