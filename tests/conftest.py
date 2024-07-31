@@ -33,30 +33,35 @@ def pytest_collection_modifyitems(config, items):
         if "online" in item.keywords:
             item.add_marker(skip_online)
 
-
 @pytest.fixture(scope='session')
-def fpath_test_data() -> str:
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
-
-
-@pytest.fixture(scope='session')
-def fpath_toy_hpo(fpath_test_data: str) -> str:
-    return os.path.join(fpath_test_data, 'hp.toy.json')
+def fpath_project_dir(fpath_test_dir: str) -> str:
+    """
+    Path to project folder, where `pyproject.toml`, `README.md`,
+    as well as `src` and `tests` folders are located.
+    """
+    return os.path.dirname(fpath_test_dir)
 
 
 @pytest.fixture(scope='session')
-def fpath_test_zn462_human_uniprot(fpath_test_data: str) -> str:
-    return os.path.join(fpath_test_data, "uniprot", "ZN462_HUMAN.json")
+def fpath_test_dir() -> str:
+    """
+    Path to `tests` folder
+    """
+    return os.path.dirname(os.path.abspath(__file__))
+
+@pytest.fixture(scope='session')
+def fpath_test_data_dir(fpath_test_dir: str) -> str:
+    return os.path.join(fpath_test_dir, 'test_data')
+
+
+@pytest.fixture(scope='session')
+def fpath_toy_hpo(fpath_test_data_dir: str) -> str:
+    return os.path.join(fpath_test_data_dir, 'hp.toy.json')
 
 
 @pytest.fixture(scope='session')
 def toy_hpo(fpath_toy_hpo: str) -> hpotk.MinimalOntology:
     return hpotk.load_minimal_ontology(fpath_toy_hpo)
-
-
-@pytest.fixture(scope='session')
-def genome_build_hg38() -> GenomeBuild:
-    return GRCh38
 
 
 @pytest.fixture(scope='session')
@@ -66,7 +71,7 @@ def hpo(fpath_test_data_dir: str) -> hpotk.MinimalOntology:
 
 
 @pytest.fixture(scope='session')
-def toy_validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+def validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
     validators = (
         hpotk.validate.ObsoleteTermIdsValidator(hpo),
         hpotk.validate.AnnotationPropagationValidator(hpo),
@@ -84,11 +89,6 @@ def make_region(contig: str, start: int, end: int) -> GenomicRegion:
 @pytest.fixture(scope='session')
 def protein_test_service() -> ProteinTestMetadataService:
     return ProteinTestMetadataService.create()
-
-
-@pytest.fixture(scope='session')
-def fpath_test_data_dir() -> str:
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
 
 
 @pytest.fixture(scope='session')
@@ -153,9 +153,9 @@ def suox_pheno_predicates(
 
 
 @pytest.fixture(scope='session')
-def fpath_suox_tx_coordinates(fpath_test_data: str) -> str:
+def fpath_suox_tx_coordinates(fpath_test_data_dir: str) -> str:
     suox_mane_tx_id = 'NM_001032386.2'
-    return os.path.join(fpath_test_data, f'SUOX-{suox_mane_tx_id}.json')
+    return os.path.join(fpath_test_data_dir, f'SUOX-{suox_mane_tx_id}.json')
 
 
 @pytest.fixture(scope='session')
@@ -167,9 +167,9 @@ def suox_mane_tx_coordinates(
 
 
 @pytest.fixture(scope='session')
-def fpath_suox_protein_metadata(fpath_test_data: str) -> str:
+def fpath_suox_protein_metadata(fpath_test_data_dir: str) -> str:
     suox_mane_tx_protein_id = 'NP_001027558.1'
-    return os.path.join(fpath_test_data, f'SUOX-{suox_mane_tx_protein_id}.json')
+    return os.path.join(fpath_test_data_dir, f'SUOX-{suox_mane_tx_protein_id}.json')
 
 
 @pytest.fixture(scope='session')
@@ -178,25 +178,6 @@ def suox_protein_metadata(
 ) -> ProteinMetadata:
     with open(fpath_suox_protein_metadata) as fh:
         return json.load(fh, cls=GenophenocorrJSONDecoder)
-
-
-@pytest.mark.skip('Run manually to regenerate `suox_cohort`')
-def test_regenerate_cohort(
-        fpath_suox_cohort: str,
-        hpo: hpotk.MinimalOntology,
-):
-    """
-    The test for regenerating the `SUOX.json` file based on a cohort of phenopackets.
-    The test needs path to a folder with phenopacket JSON files (empty `str` below).
-    """
-    fpath_suox_pp_dir = '/path/to/SUOX/phenopackets'
-
-    from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopacket_folder
-
-    cohort_creator = configure_caching_cohort_creator(hpo)
-    cohort = load_phenopacket_folder(fpath_suox_pp_dir, cohort_creator, validation_policy='strict')
-    with open(fpath_suox_cohort, 'w') as fh:
-        json.dump(cohort, fh, cls=GenophenocorrJSONEncoder, indent=2)
 
 
 @pytest.fixture(scope='session')

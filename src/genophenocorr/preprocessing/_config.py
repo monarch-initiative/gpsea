@@ -13,24 +13,25 @@ from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
 from ._api import FunctionalAnnotator
 from ._audit import NotepadTree
+from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
 from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
-from ._vv import VVHgvsVariantCoordinateFinder
+from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService
 
 VALIDATION_POLICIES = {'none', 'lenient', 'strict'}
 
 
 def configure_caching_cohort_creator(
-        hpo: hpotk.MinimalOntology,
-        genome_build: str = 'GRCh38.p13',
-        validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
-        cache_dir: typing.Optional[str] = None,
-        variant_fallback: str = 'VEP',
-        timeout: int = 10,
-        ) -> CohortCreator[Phenopacket]:
+    hpo: hpotk.MinimalOntology,
+    genome_build: str = 'GRCh38.p13',
+    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
+    cache_dir: typing.Optional[str] = None,
+    variant_fallback: str = 'VEP',
+    timeout: float = 30.,
+) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
@@ -44,7 +45,7 @@ def configure_caching_cohort_creator(
      In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
-    :param timeout: timeout in seconds for the VEP API
+    :param timeout: timeout in seconds for the REST APIs
     """
     if cache_dir is None:
         cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
@@ -53,20 +54,27 @@ def configure_caching_cohort_creator(
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, timeout)
+    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, cache_dir, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    pc = PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
+    pc = PhenopacketPatientCreator(
+        build=build, 
+        phenotype_creator=phenotype_creator, 
+        functional_annotator=functional_annotator, 
+        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
+        hgvs_coordinate_finder=hgvs_annotator,
+    )
 
     return CohortCreator(pc)
 
 
 def configure_caching_patient_creator(
-        hpo: hpotk.MinimalOntology,
-        genome_build: str = 'GRCh38.p13',
-        validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
-        cache_dir: typing.Optional[str] = None,
-        variant_fallback: str = 'VEP',
-        timeout: int = 10,
-    ) -> PhenopacketPatientCreator:
+    hpo: hpotk.MinimalOntology,
+    genome_build: str = 'GRCh38.p13',
+    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
+    cache_dir: typing.Optional[str] = None,
+    variant_fallback: str = 'VEP',
+    timeout: float = 30.,
+) -> PhenopacketPatientCreator:
     """
     A convenience function for configuring a caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
@@ -80,7 +88,7 @@ def configure_caching_patient_creator(
      In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
-    :param timeout: timeout in seconds for the VEP API
+    :param timeout: timeout in seconds for the REST APIs
     """
     warnings.warn('`configure_caching_patient_creator` was deprecated. '
                   'Use `configure_caching_cohort_creator` instead', DeprecationWarning, stacklevel=2)
@@ -90,8 +98,15 @@ def configure_caching_patient_creator(
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(cache_dir, variant_fallback, timeout)
+    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    return PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
+    return PhenopacketPatientCreator(
+        build=build, 
+        phenotype_creator=phenotype_creator, 
+        functional_annotator=functional_annotator, 
+        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
+        hgvs_coordinate_finder=hgvs_annotator,
+    )
 
 
 def configure_cohort_creator(
@@ -99,7 +114,7 @@ def configure_cohort_creator(
         genome_build: str = 'GRCh38.p13',
         validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
         variant_fallback: str = 'VEP',
-        timeout: int = 10,
+        timeout: float = 30.,
         ) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
@@ -119,17 +134,27 @@ def configure_cohort_creator(
 
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
     functional_annotator = _configure_fallback_functional(variant_fallback, timeout)
+    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    pc = PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
+    pc = PhenopacketPatientCreator(
+        build=build, 
+        phenotype_creator=phenotype_creator, 
+        functional_annotator=functional_annotator, 
+        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
+        hgvs_coordinate_finder=hgvs_annotator,
+    )
 
     return CohortCreator(pc)
 
 
-def configure_patient_creator(hpo: hpotk.MinimalOntology,
-                              genome_build: str = 'GRCh38.p13',
-                              validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
-                              variant_fallback: str = 'VEP',
-                              validation: str = 'lenient') -> PhenopacketPatientCreator: #Rename to something more understandable by user
+def configure_patient_creator(
+        hpo: hpotk.MinimalOntology,
+        genome_build: str = 'GRCh38.p13',
+        validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
+        variant_fallback: str = 'VEP',
+        validation: str = 'lenient',
+        timeout: float = 30.,
+) -> PhenopacketPatientCreator: #Rename to something more understandable by user
     """
                                 ^^^ none, lenient, strict -
                                 none = run unless unrunnable
@@ -153,9 +178,16 @@ def configure_patient_creator(hpo: hpotk.MinimalOntology,
     build = _configure_build(genome_build)
 
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
-    functional_annotator = _configure_fallback_functional(variant_fallback)
+    functional_annotator = _configure_fallback_functional(variant_fallback, timeout)
+    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(build, timeout)
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    return PhenopacketPatientCreator(build, phenotype_creator, functional_annotator, hgvs_annotator)
+    return PhenopacketPatientCreator(
+        build=build, 
+        phenotype_creator=phenotype_creator, 
+        functional_annotator=functional_annotator, 
+        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
+        hgvs_coordinate_finder=hgvs_annotator,
+    )
 
 
 def _configure_build(genome_build: str) -> GenomeBuild:
@@ -184,7 +216,7 @@ def _setup_phenotype_creator(hpo: hpotk.MinimalOntology,
 def _configure_functional_annotator(
         cache_dir: str,
         variant_fallback: str,
-        timeout: int,
+        timeout: float,
         ) -> FunctionalAnnotator:
 
     # (2) FunctionalAnnotator
@@ -202,13 +234,32 @@ def _configure_functional_annotator(
 
 def _configure_fallback_functional(
         variant_fallback: str,
-        timeout: int,
+        timeout: float,
         ) -> FunctionalAnnotator:
     if variant_fallback == 'VEP':
         fallback = VepFunctionalAnnotator(timeout=timeout)
     else:
         raise ValueError(f'Unknown variant fallback annotator type {variant_fallback}')
     return fallback
+
+
+def _configure_imprecise_sv_annotator(
+    genome_build: GenomeBuild, 
+    cache_dir: str,
+    timeout: float,
+):
+    # Setup cache for SVs
+    sv_cache_dir = os.path.join(cache_dir, 'sv_cache')
+    # TODO: implement the cache.
+    # os.makedirs(sv_cache_dir, exist_ok=True)
+    # var_cache = VariantAnnotationCache(sv_cache_dir)
+
+    return DefaultImpreciseSvFunctionalAnnotator(
+        gene_coordinate_service=VVMultiCoordinateService(
+            genome_build=genome_build,
+            timeout=timeout,
+        )
+    )
 
 
 def load_phenopacket_folder(

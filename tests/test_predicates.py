@@ -11,10 +11,11 @@ from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 
 
-def find_patient(pat_id: str, cohort: Cohort) -> typing.Optional[Patient]:
+def find_patient(pat_id: str, cohort: Cohort) -> Patient:
     for pat in cohort.all_patients:
         if pat.patient_id == pat_id:
             return pat
+    raise ValueError(f'Could not find patient {pat_id}')
 
 
 class TestPropagatingPhenotypeBooleanPredicate:

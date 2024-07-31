@@ -132,10 +132,9 @@ class CohortViewable:
             typing.Mapping[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant
         """
         chrom_to_display = dict()
-        all_var_set = cohort.all_variants()
         var_formatter = VariantFormatter(transcript_id)
-        for var in all_var_set:
-            var_string = var.variant_coordinates.variant_key
+        for var in cohort.all_variants():
+            variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
             if only_hgvs:
                 # do not show the transcript id
@@ -144,5 +143,6 @@ class CohortViewable:
                     display = fields[1]
                 else:
                     display = [0]
-            chrom_to_display[var_string] = display
+            chrom_to_display[variant_key] = display
+
         return chrom_to_display

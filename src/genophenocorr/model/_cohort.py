@@ -241,7 +241,7 @@ class Cohort(typing.Sized):
         """
         counter = Counter()
         for patient in self._patient_set:
-            counter.update(variant.variant_coordinates.variant_key for variant in patient.variants)
+            counter.update(variant.variant_info.variant_key for variant in patient.variants)
         return counter.most_common(top)
 
     def list_all_proteins(
@@ -289,7 +289,7 @@ class Cohort(typing.Sized):
     
     def get_variant_by_key(self, variant_key) -> Variant:
         for v in self.all_variants():
-            if v.variant_coordinates.variant_key == variant_key:
+            if v.variant_info.variant_key == variant_key:
                 return v
         else:
             raise ValueError(f"Variant key {variant_key} not found in cohort.")

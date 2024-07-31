@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from genophenocorr.model import VariantCoordinates, Genotype, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation
+from genophenocorr.model import VariantCoordinates, ProteinMetadata, TranscriptInfoAware, TranscriptCoordinates, TranscriptAnnotation, ImpreciseSvInfo
 
 T = typing.TypeVar('T')
 
@@ -9,9 +9,12 @@ T = typing.TypeVar('T')
 class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def find_coordinates(self, item: T) -> typing.Tuple[VariantCoordinates, Genotype]:
+    def find_coordinates(self, item: T) -> typing.Optional[VariantCoordinates]:
         """
-        Determine :class:`VariantCoordinates` and :class:`Genotype` from an `item` of some sort.
+        Try to find :class:`VariantCoordinates` from an `item` of some sort.
+
+        The variant coordinates may not be available all the time, 
+        and `None` may be returned.
 
         Raises:
             ValueError: if there is an error of any kind.
@@ -25,6 +28,22 @@ class FunctionalAnnotator(metaclass=abc.ABCMeta):
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
         """
         Compute functional annotations for the variant coordinates. The annotations can be empty.
+
+        Returns: a sequence of transcript annotations
+        Raises:
+            ValueError if the annotation cannot proceed due to the remote resource being offline, etc.
+        """
+        pass
+
+class ImpreciseSvFunctionalAnnotator(metaclass=abc.ABCMeta):
+    """
+    Annotator for large SVs that lack the exact breakpoint coordinates.
+    """
+    
+    @abc.abstractmethod
+    def annotate(self, item: ImpreciseSvInfo) -> typing.Sequence[TranscriptAnnotation]:
+        """
+        Compute functional annotations for a large SV.
 
         Returns: a sequence of transcript annotations
         Raises:
@@ -50,6 +69,26 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
             (e.g. :class:`genophenocorr.model.TranscriptAnnotation`).
 
         Returns: the transcript coordinates.
+        """
+        pass
+
+
+class GeneCoordinateService(metaclass=abc.ABCMeta):
+    """
+    `GeneCoordinateService` gets transcript (Tx) coordinates for a gene ID.
+    """
+
+    @abc.abstractmethod
+    def fetch_for_gene(self, gene: str) -> typing.Sequence[TranscriptCoordinates]:
+        """
+        Get Tx coordinates for a gene ID.
+
+        The method will raise an exception in case of an issue.
+
+        Args:
+            gene: a `str` with tx ID (e.g. `HGNC:3603`)
+
+        Returns: a sequence of transcript coordinates for the gene.
         """
         pass
 

@@ -1,7 +1,8 @@
 import typing
-from json import JSONDecoder, JSONEncoder
 
 import hpotk
+
+from json import JSONDecoder, JSONEncoder
 
 from genophenocorr.model import *
 from genophenocorr.model.genome import *
@@ -18,9 +19,14 @@ class GenophenocorrJSONEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, Variant):
             return {
-                'variant_coordinates': o.variant_coordinates,
+                'variant_info': o.variant_info,
                 'tx_annotations': o.tx_annotations,
                 'genotypes': o.genotypes,
+            }
+        elif isinstance(o, VariantInfo): 
+            return {
+                'variant_coordinates': o.variant_coordinates,
+                'sv_info': o.sv_info,
             }
         elif isinstance(o, VariantCoordinates):
             return {
@@ -28,6 +34,13 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'ref': o.ref,
                 'alt': o.alt,
                 'change_length': o.change_length,
+            }
+        elif isinstance(o, ImpreciseSvInfo):
+            return {
+                'structural_type': o.structural_type.value,
+                'variant_class': o.variant_class,
+                'gene_id': o.gene_id,
+                'gene_symbol': o.gene_symbol
             }
         elif isinstance(o, Region):
             val = {
@@ -128,7 +141,9 @@ class GenophenocorrJSONEncoder(JSONEncoder):
             return super().default(o)
 
 
-_VARIANT_FIELDS = ('variant_coordinates', 'tx_annotations', 'genotypes')
+_VARIANT_FIELDS = ('variant_info', 'tx_annotations', 'genotypes')
+_VARIANT_INFO_FIELDS = ('variant_coordinates', 'sv_info')
+_IMPRECISE_SV_INFO_FIELDS = ('structural_type', 'variant_class', 'gene_id', 'gene_symbol')
 _VARIANT_COORDINATES_FIELDS = ('region', 'ref', 'alt', 'change_length')
 _REGION_FIELDS = ('start', 'end')
 _GENOMIC_REGION_FIELDS = ('contig', 'start', 'end', 'strand')
@@ -173,14 +188,26 @@ class GenophenocorrJSONDecoder(JSONDecoder):
             query: typing.Iterable[str],
     ) -> bool:
         return all(key in obj for key in query)
+    
+    @staticmethod
+    def _has_any_field(
+            obj: typing.Dict[str, typing.Any],
+            query: typing.Iterable[str],
+    ) -> bool:
+        return any(key in obj for key in query)
 
     @staticmethod
     def object_hook(obj: typing.Dict[typing.Any, typing.Any]) -> typing.Any:
         if GenophenocorrJSONDecoder._has_all_fields(obj, _VARIANT_FIELDS):
             return Variant(
-                var_coordinates=obj['variant_coordinates'],
+                variant_info=obj['variant_info'],
                 tx_annotations=obj['tx_annotations'],
                 genotypes=obj['genotypes'],
+            )
+        elif GenophenocorrJSONDecoder._has_any_field(obj, _VARIANT_INFO_FIELDS):
+            return VariantInfo(
+                variant_coordinates=obj['variant_coordinates'] if 'variant_coordinates' in obj else None,
+                sv_info=obj['sv_info'] if 'sv_info' in obj else None,
             )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _VARIANT_COORDINATES_FIELDS):
             return VariantCoordinates(
@@ -188,6 +215,13 @@ class GenophenocorrJSONDecoder(JSONDecoder):
                 ref=obj['ref'],
                 alt=obj['alt'],
                 change_length=obj['change_length'],
+            )
+        elif GenophenocorrJSONDecoder._has_all_fields(obj, _IMPRECISE_SV_INFO_FIELDS):
+            return ImpreciseSvInfo(
+                structural_type=hpotk.TermId.from_curie(obj['structural_type']),
+                variant_class=obj['variant_class'],
+                gene_id=obj['gene_id'],
+                gene_symbol=obj['gene_symbol'],
             )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _REGION_FIELDS):
             if GenophenocorrJSONDecoder._has_all_fields(obj, _GENOMIC_REGION_FIELDS):

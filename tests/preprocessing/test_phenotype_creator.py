@@ -9,9 +9,9 @@ class TestPhenotypeCreator:
     @pytest.fixture
     def phenotype_creator(
             self, hpo: hpotk.MinimalOntology,
-            toy_validation_runner: hpotk.validate.ValidationRunner,
+            validation_runner: hpotk.validate.ValidationRunner,
     ) -> PhenotypeCreator:
-        return PhenotypeCreator(hpo, toy_validation_runner)
+        return PhenotypeCreator(hpo, validation_runner)
 
     @pytest.mark.parametrize(
         'curie, message, solution',

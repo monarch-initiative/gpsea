@@ -43,8 +43,5 @@ class VariantFormatter(Formatter[Variant]):
             if len(transcript.hgvs_cdna) > 50:
                 return "Long HGVS"
             return transcript.hgvs_cdna
-        elif item.variant_coordinates.variant_key is not None:
-            return item.variant_coordinates.variant_key
         else:
-            # To be reevaluated
-            return f"Variant {item} has no string format."
+            return item.variant_info.variant_key

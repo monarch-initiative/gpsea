@@ -41,7 +41,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
 
     def __init__(self,
                  include_computational_txs: bool = False,
-                 timeout: int = 10):
+                 timeout: float = 10.):
         self._logger = logging.getLogger(__name__)
         self._url = 'https://rest.ensembl.org/vep/human/region/%s?LoF=1&canonical=1' \
                     '&domains=1&hgvs=1' \

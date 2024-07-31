@@ -73,6 +73,21 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
         annotate(variant_coordinates:VariantCoordinates): Gets data and returns a Variant object for given variant coordinates
     """
 
+    @staticmethod
+    def with_cache_folder(
+        fpath_cache_dir: str, 
+        fallback: FunctionalAnnotator,
+    ):
+        """
+        Create caching functional annotator that will store the data in `fpath_cache_dir` 
+        and use `fallback` to annotate the missing variants.
+        """
+        cache = VariantAnnotationCache(fpath_cache_dir)
+        return VarCachingFunctionalAnnotator(
+            cache=cache,
+            fallback=fallback,
+        )
+
     def __init__(self, cache: VariantAnnotationCache, fallback: FunctionalAnnotator):
         """Constructs all necessary attributes for a VarCachingFunctionalAnnotator object
 
@@ -101,9 +116,3 @@ class VarCachingFunctionalAnnotator(FunctionalAnnotator):
             self._cache.store_annotations(variant_coordinates, ann)
             return ann
 
-
-class EnsemblTranscriptCoordinateService(TranscriptCoordinateService):
-
-    def fetch(self, tx: TranscriptInfoAware) -> TranscriptCoordinates:
-        # TODO - implement
-        pass

@@ -1,6 +1,5 @@
 import abc
 import typing
-import warnings
 
 import hpotk
 
@@ -49,14 +48,17 @@ class TranscriptAnnotation(TranscriptInfoAware):
          of the effect on the protein sequence.
     """
 
-    def __init__(self, gene_id: str,
-                 tx_id: str,
-                 hgvs_cdna: typing.Optional[str],
-                 is_preferred: bool,
-                 variant_effects: typing.Iterable[VariantEffect],
-                 affected_exons: typing.Optional[typing.Iterable[int]],
-                 protein_id: typing.Optional[str],
-                 protein_effect_coordinates: typing.Optional[Region]):
+    def __init__(
+        self,
+        gene_id: str,
+        tx_id: str,
+        hgvs_cdna: typing.Optional[str],
+        is_preferred: bool,
+        variant_effects: typing.Iterable[VariantEffect],
+        affected_exons: typing.Optional[typing.Iterable[int]],
+        protein_id: typing.Optional[str],
+        protein_effect_coordinates: typing.Optional[Region],
+    ):
         self._gene_id = hpotk.util.validate_instance(gene_id, str, 'gene_id')
         self._tx_id = hpotk.util.validate_instance(tx_id, str, 'tx_id')
         self._hgvs_cdna = hpotk.util.validate_optional_instance(hgvs_cdna, str, 'hgvs_cdna')
@@ -336,27 +338,176 @@ class VariantCoordinates:
         return str(self)
 
 
-class VariantCoordinateAware(metaclass=abc.ABCMeta):
+class ImpreciseSvInfo:
+    """
+    Data regarding a structural variant (SV) with imprecise breakpoint coordinates.
+    """
+
+    def __init__(
+        self,
+        structural_type: hpotk.TermId,
+        variant_class: str,
+        gene_id: str,
+        gene_symbol: str,
+    ):
+        self._structural_type = hpotk.util.validate_instance(structural_type, hpotk.TermId, 'structural_type')
+        self._variant_class = variant_class
+        self._gene_id = gene_id
+        self._gene_symbol = gene_symbol
 
     @property
-    @abc.abstractmethod
-    def variant_coordinates(self) -> VariantCoordinates:
-        pass
-
-    @property
-    def variant_string(self) -> str:
-        warnings.warn('variant_string` was deprecated and will be removed in v0.2.0. '
-                      'Use `variant_coordinates.variant_key` instead', DeprecationWarning, stacklevel=2)
-        # TODO[0.2.0] - remove
-        return self.variant_coordinates.variant_key
+    def structural_type(self) -> hpotk.TermId:
+        """
+        Get term ID of the structural type (e.g. `SO:1000029` for chromosomal deletion).
+        """
+        return self._structural_type
 
     @property
     def variant_class(self) -> str:
         """
-        Returns:
-            string: The variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...)
+        Get a `str` with VCF-like variant class (e.g. `DEL`, `DUP`, `INV`, `INS`, `CNV`, etc.).
         """
-        return self.variant_coordinates.variant_class
+        return self._variant_class
+
+    @property
+    def gene_id(self) -> str:
+        """
+        Get a `str` with gene identifier CURIE (e.g. `HGNC:3603`) or `None` if the identifier is not available.
+        """
+        return self._gene_id
+
+    @property
+    def gene_symbol(self) -> str:
+        """
+        Get a `str` with HGVS gene symbol (e.g. *FBN1*) or `None` if the symbol is not available.
+        """
+        return self._gene_symbol
+
+    @property
+    def variant_key(self) -> str:
+        """
+        Get a readable representation of the variant.
+        """
+        return f"{self._structural_type}_{self._gene_id}_{self._gene_symbol}"
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, ImpreciseSvInfo) \
+            and self._structural_type == value._structural_type \
+            and self._variant_class == value._variant_class \
+            and self._gene_id == value._gene_id \
+            and self._gene_symbol == value._gene_symbol
+
+    def __hash__(self) -> int:
+        return hash((self._structural_type, self._variant_class, self._gene_id, self._gene_symbol))
+
+    def __str__(self) -> str:
+        return f'ImpreciseSv(' \
+            f'structural_type={self._structural_type}, ' \
+            f'variant_class={self._variant_class}, ' \
+            f'gene_id={self._gene_id}, ' \
+            f'gene_symbol={self._gene_symbol})'
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+class VariantInfo:
+    """
+    `VariantInfo` consists of either variant coordinates or imprecise SV data.
+
+    The class is conceptually similar to Rust enum - only one of the fields can be set at any point in time.
+    """
+
+    def __init__(
+        self,
+        variant_coordinates: typing.Optional[VariantCoordinates] = None,
+        sv_info: typing.Optional[ImpreciseSvInfo] = None,
+    ):
+        if (variant_coordinates is None) != (sv_info is None):
+            # At most one field can be set.
+            self._variant_coordinates = variant_coordinates
+            self._sv_info = sv_info
+        else:
+            raise ValueError(f'Only one field can be set: variant_coordinates={variant_coordinates}, sv_info={sv_info}')
+
+    @property
+    def variant_coordinates(self) -> typing.Optional[VariantCoordinates]:
+        return self._variant_coordinates
+
+    def has_variant_coordinates(self) -> bool:
+        return self.variant_coordinates is not None
+
+    @property
+    def sv_info(self) -> typing.Optional[ImpreciseSvInfo]:
+        return self._sv_info
+
+    def has_sv_info(self) -> bool:
+        return self.sv_info is not None
+
+    @property
+    def variant_key(self) -> str:
+        if self.has_variant_coordinates():
+            return self.variant_coordinates.variant_key
+        elif self.has_sv_info():
+            return self.sv_info.variant_key
+        else:
+            self._handle_missing_state()
+
+    @property
+    def variant_class(self) -> str:
+        """
+        Get a `str` with VCF-like variant class (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).
+        """
+        if self.has_variant_coordinates():
+            return self.variant_coordinates.variant_class
+        elif self.has_sv_info():
+            return self.sv_info.variant_class
+        else:
+            self._handle_missing_state()
+
+    def is_structural(self) -> bool:
+        """
+        Test if the variant is a structural variant.
+        """
+        if self.has_variant_coordinates():
+            return self.variant_coordinates.is_structural()
+        elif self.has_sv_info():
+            return True
+        else:
+            self._handle_missing_state()
+
+    def _handle_missing_state(self):
+        raise ValueError('VariantInfo should have either variant coordinates or SV info!')
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, VariantInfo) \
+            and self._variant_coordinates == value._variant_coordinates \
+            and self._sv_info == value._sv_info
+
+    def __hash__(self) -> int:
+        return hash((self._variant_coordinates, self._sv_info))
+
+    def __str__(self) -> str:
+        return f'VariantInfo(' \
+            f'variant_coordinates={self._variant_coordinates}, ' \
+            f'sv_info={self._sv_info})'
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+class VariantInfoAware(metaclass=abc.ABCMeta):
+    """
+    An entity where :class:`VariantInfo` is available.
+    """
+
+    @property
+    @abc.abstractmethod
+    def variant_info(self) -> VariantInfo:
+        """
+        Get the variant data with coordinates or other info available for large imprecise SVs.
+        """
+        pass
 
 
 class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
@@ -365,7 +516,7 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
         pass
-    
+
     def get_tx_anno_by_tx_id(self, transcript_id:str) -> typing.Optional[TranscriptAnnotation]:
         """Given a transcript ID, this will return the `TranscriptAnnotation` associated with that
         variant and transcript.
@@ -380,7 +531,7 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
             if tx_ann.transcript_id == transcript_id:
                 return tx_ann
         return None
-    
+
     def get_hgvs_cdna_by_tx_id(self, transcript_id:str) -> typing.Optional[str]:
         """Given a transcript ID, will return the hgvs cdna string associated with that variant and transcript.
 
@@ -394,16 +545,16 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
             if tx_ann.transcript_id == transcript_id:
                 return tx_ann.hgvs_cdna
         return None
-    
+
     def get_preferred_tx_annotation(self) -> typing.Optional[TranscriptAnnotation]:
         """Get the `TranscriptAnnotation` that represents the result of the functional annotation
-        with respect to the preferred transcript of a gene. 
-        
-        Returns `None` if transcript annotations is no preferred transcript found. 
+        with respect to the preferred transcript of a gene.
+
+        Returns `None` if transcript annotations is no preferred transcript found.
 
         Returns:
-            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect 
-                                                   to the preferred transcript 
+            typing.Optional[TranscriptAnnotation]: The `TranscriptAnnotation` with respect
+                                                   to the preferred transcript
                                                    or `None` if the preferred transcript info is not available.
         """
         for tx in self.tx_annotations:
@@ -412,57 +563,51 @@ class FunctionalAnnotationAware(metaclass=abc.ABCMeta):
         return None
 
 
-class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
-    """Class that represents results of the functional annotation of a variant with all included transcripts.
-
-    :param var_coordinates: the coordinates of the variant.
-    :param tx_annotations: an iterable of functional annotations.
-    :param genotypes: the genotypes
-    Attributes:
-        variant_coordinates (VariantCoordinates):
-        variant_string (string): A readable representation of the variant coordinates
-        tx_annotations (Sequence[TranscriptAnnotation], Optional): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
-        variant_class (string): The variant class (e.g. Duplication, SNV, etc.)
+class Variant(VariantInfoAware, FunctionalAnnotationAware, Genotyped):
+    """
+    Variant includes three lines of information:
+     * the variant data with coordinates or other info available for large imprecise SVs,
+     * results of the functional annotation with respect to relevant transcripts, and
+     * the genotypes for the known samples
     """
 
     @staticmethod
-    def create_variant_from_scratch(variant_coordinates: VariantCoordinates,
-                                    gene_name: str,
-                                    trans_id: str,
-                                    hgvs_cdna: str,
-                                    is_preferred: bool,
-                                    consequences: typing.Iterable[VariantEffect],
-                                    exons_effected: typing.Sequence[int],
-                                    protein_id: typing.Optional[str],
-                                    protein_effect_start: int,
-                                    protein_effect_end: int,
-                                    genotypes: Genotypes):
+    def create_variant_from_scratch(
+        variant_coordinates: VariantCoordinates,
+        gene_name: str,
+        trans_id: str,
+        hgvs_cdna: str,
+        is_preferred: bool,
+        consequences: typing.Iterable[VariantEffect],
+        exons_effected: typing.Sequence[int],
+        protein_id: typing.Optional[str],
+        protein_effect_start: int,
+        protein_effect_end: int,
+        genotypes: Genotypes,
+    ):
+        variant_info = VariantInfo(variant_coordinates=variant_coordinates)
         protein_effect = Region(protein_effect_start, protein_effect_end)
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvs_cdna, is_preferred, consequences, exons_effected,
                                           protein_id, protein_effect)
-        return Variant(variant_coordinates, (transcript,), genotypes)
+        return Variant(variant_info, (transcript,), genotypes)
 
-    def __init__(self, var_coordinates: VariantCoordinates,
-                 tx_annotations: typing.Iterable[TranscriptAnnotation],
-                 genotypes: Genotypes):
-        """Constructs all necessary attributes for a Variant object
-
-        Args:
-            var_coordinates (VariantCoordinates): A VariantCoordinates object with coordinates for this Variant
-            tx_annotations (typing.Sequence[TranscriptAnnotation]): A sequence of TranscriptAnnotation objects representing transcripts affected by this variant
-            genotypes (Genotypes): genotypes container
-        """
-        self._var_coordinates = var_coordinates
+    def __init__(
+        self,
+        variant_info: VariantInfo,
+        tx_annotations: typing.Iterable[TranscriptAnnotation],
+        genotypes: Genotypes,
+    ):
+        self._variant_info = variant_info
         self._tx_annotations = tuple(tx_annotations)
         self._gts = genotypes
 
     @property
-    def variant_coordinates(self) -> VariantCoordinates:
+    def variant_info(self) -> VariantInfo:
         """
         Returns:
-            VariantCoordinates: A representation of coordinates of a sequence and symbolic variant.
+            VariantInfo: A representation of the variant data for sequence and symbolic variants, as well as for large imprecise SVs.
         """
-        return self._var_coordinates
+        return self._variant_info
 
     @property
     def tx_annotations(self) -> typing.Sequence[TranscriptAnnotation]:
@@ -480,19 +625,18 @@ class Variant(VariantCoordinateAware, FunctionalAnnotationAware, Genotyped):
 
     def __eq__(self, other) -> bool:
         return isinstance(other, Variant) \
-            and self.variant_coordinates == other.variant_coordinates \
-            and self.tx_annotations == other.tx_annotations \
-            and self.genotypes == other.genotypes
+            and self._variant_info == other._variant_info \
+            and self._tx_annotations == other._tx_annotations \
+            and self._gts == other._gts
 
     def __hash__(self) -> int:
-        return hash(
-            (self.variant_coordinates, self.tx_annotations, self.genotypes))
+        return hash((self._variant_info, self._tx_annotations, self._gts))
 
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
-        return (f"Variant(variant_coordinates:{str(self.variant_coordinates)}, "
-                f"tx_annotations:{self.tx_annotations}, "
-                f"genotypes:{self.genotypes})")
+        return (f"Variant(variant_info={self._variant_info}, "
+                f"tx_annotations={self._tx_annotations}, "
+                f"genotypes={self._gts})")
 
