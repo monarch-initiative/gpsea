@@ -210,3 +210,49 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
     def __repr__(self):
         return f'DiseasePresencePredicate(query={self._query})'
+
+
+class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
+    """
+    `CountingPhenotypePredicate` bins the patient 
+    according to the count of present phenotypes that are either 
+    an exact match to the `query` terms or their descendants.
+    """
+
+    def __init__(
+        self, 
+        hpo: hpotk.MinimalOntology,
+        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+    ):
+        self._hpo = hpo
+        # `query` is an iterable of either CURIEs (e.g. `HP:0001250`) or `TermId`s.
+        # We take curies as a convenience to the user. Ensure we map a curie to `TermId` using `TermId.from_curie`.
+        # 
+        # Then, validate the `query`:
+        # - each query term must be in `hpo`
+        # - the query terms must not include a term and its ancestor
+        # Ensure that the query set does not include a term and its ancestor
+        self._query = set(query)
+
+    def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[int]]:
+        self._check_patient(patient)
+        # For each query
+        #  test if any of the patient's *present* phenotypic features 
+        #  is a query term or its descendant
+        #  if yes, increment the count
+        # return the count
+        raise NotImplementedError
+
+    @property
+    def phenotypes(self) -> typing.Sequence[P]:
+        # e.g. [0, .. , 5]
+        raise NotImplementedError
+
+    def get_question(self) -> str:
+        # What does this predicate answer?
+        raise NotImplementedError
+
+    def get_categorizations(self) -> typing.Sequence[PhenotypeCategorization[int]]:
+        # e.g. [0, .. , 5]
+        # This should return descriptions of all categories that the predicate can produce.
+        raise NotImplementedError
