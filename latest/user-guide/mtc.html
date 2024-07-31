@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiple-testing correction &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/genophenocorr.css?v=a9fa5eb9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" href="autosomal_recessive.html" />
+    <link rel="prev" title="Predicates" href="predicates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Multiple-testing correction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation-in-genophenocorr">Implementation in genophenocorr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-testing-correction-mtc-procedures">Multiple-testing correction (MTC) procedures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mtc-heuristics-choosing-which-terms-to-test">MTC Heuristics: Choosing which terms to test</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#specify-terms-strategy">specify terms strategy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#heuristic-sampler-strategy">heuristic sampler strategy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">Multiple-testing correction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/mtc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multiple-testing-correction">
+<span id="mtc"></span><h1>Multiple-testing correction<a class="headerlink" href="#multiple-testing-correction" title="Link to this heading"></a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
+<p>A p-value is the probability that a test result, under the null hypothesis, assumes the observed or a more extreme value. It is important to realize that if we
+perform many tests, we are likely to get a “significant” result by chance alone. For instance, if
+we test a null hypothesis that is true using a significance level of
+<span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>, then there is a probability of <span class="math notranslate nohighlight">\(1-\alpha = 0.95\)</span> of
+arriving at a correct conclusion of non-significance. If we now test
+two independent true null hypotheses, the probability that neither
+test is significant is <span class="math notranslate nohighlight">\(0.95\times 0.95 = 0.90.\)</span> If we test 20
+independent null hypotheses, the probability that none will be
+significant is then <span class="math notranslate nohighlight">\((0.95)^{20}=0.36\)</span>. This corresponds to a
+probability of <span class="math notranslate nohighlight">\(1-0.36=0.64\)</span> of getting at least one spurious
+significant result, and the expected number of spurious significant
+results in 20 tests is <span class="math notranslate nohighlight">\(20\times 0.05=1\)</span>. If we perform 100 such
+tests, the probability that none will be significant is
+<span class="math notranslate nohighlight">\((0.95)^{100}=0.01\)</span> and there is a 99% probability of getting at
+least one significant result.</p>
+</section>
+<section id="implementation-in-genophenocorr">
+<h2>Implementation in genophenocorr<a class="headerlink" href="#implementation-in-genophenocorr" title="Link to this heading"></a></h2>
+<p>By default, genephenocorr performs a hypothesis test for each HPO term found at least twice
+in the cohort, meaning that we may
+perform up to hundreds of tests. Therefore, unless we take into
+account the fact that multiple statistical tests are being performed,
+it is likely that we will obtain one or more false-positive
+results.</p>
+<p>Genephenocorr offers two approaches to mitigate this problem: multiple-testing correction procedures
+and heuristic methods to reduce the number of terms to be tested.</p>
+<p>Here we will show how to configure the MTC approach
+using <a class="reference internal" href="../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration" title="genophenocorr.analysis.CohortAnalysisConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.analysis.CohortAnalysisConfiguration</span></code></a> class.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysisConfiguration</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="multiple-testing-correction-mtc-procedures">
+<h3>Multiple-testing correction (MTC) procedures<a class="headerlink" href="#multiple-testing-correction-mtc-procedures" title="Link to this heading"></a></h3>
+<p>A number of MTC procedures have
+been developed to limit the probability of false-positive results. The
+MTC procedures differ in complexity, in their assumptions about the
+data, and in the type of control they provide.</p>
+<p>The genephenocorr package uses the Python package <a class="reference external" href="https://www.statsmodels.org/devel/">statsmodels</a> to implement
+MTC. See the <a class="reference external" href="https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html">documentation</a> for details;
+the following table shows allowable options.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>MTC procedure</p></th>
+<th class="head"><p>abbreviation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>bonferroni</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-odd"><td><p>sidak</p></td>
+<td><p>s</p></td>
+</tr>
+<tr class="row-even"><td><p>holm-sidak</p></td>
+<td><p>hs</p></td>
+</tr>
+<tr class="row-odd"><td><p>holm</p></td>
+<td><p>h</p></td>
+</tr>
+<tr class="row-even"><td><p>simes-hochberg</p></td>
+<td><p>sh</p></td>
+</tr>
+<tr class="row-odd"><td><p>hommel</p></td>
+<td><p>ho</p></td>
+</tr>
+<tr class="row-even"><td><p>fdr_bh</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fdr_by</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fdr_tsbh</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fdr_tsbky</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fdr_gbs</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The oldest and simplest MTC procedure is the Bonferroni
+correction. The Bonferroni procedure thus provides control of the family-wise
+error rate (FWER), which is the probability of at least one Type I
+error.  The Bonferroni method multiplies the p-value
+returned by each test (which is call the <em>nominal</em> p-value)
+by the number of tests performed (the result is capped at 1.0). This is the <em>default</em> method in genephenocorr.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span>
+<span class="go">&#39;bonferroni&#39;</span>
+</pre></div>
+</div>
+<p>Alternatively, procedures that control the false-discovery rate (FDR),
+limit the proportion of significant results that are type I
+errors (false discoveries). The Benjamini and Hochberg method (<code class="docutils literal notranslate"><span class="pre">fdr_bh</span></code>) is probably the most commonly used one.</p>
+<p>This is how we can set an alternative MTC correction procedure:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span> <span class="o">=</span> <span class="s1">&#39;fdr_bh&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span>
+<span class="go">&#39;fdr_bh&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="mtc-heuristics-choosing-which-terms-to-test">
+<h3>MTC Heuristics: Choosing which terms to test<a class="headerlink" href="#mtc-heuristics-choosing-which-terms-to-test" title="Link to this heading"></a></h3>
+<p>We can reduce the overall MTC burden by choosing which terms to test.
+For example, if we choose to test only ten terms out of 450,
+then the mutliplication factor of the Bonferroni correction
+is only 10 instead of 450, and more p-values
+may “survive” the multiple-testing correction.</p>
+<p>The genephenocorr package offers two options,
+each of which can be combined with any of the MTC methods.</p>
+</section>
+</section>
+<section id="specify-terms-strategy">
+<h2>specify terms strategy<a class="headerlink" href="#specify-terms-strategy" title="Link to this heading"></a></h2>
+<p>If you have a specific hypothesis as to which terms may be different between groups,
+then you can specify these terms using the <code class="docutils literal notranslate"><span class="pre">specify_terms_strategy</span></code> function.</p>
+<p>For example if we want to specifically test
+* <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0031982">Abnormal putamen morphology (HP:0031982)</a> and
+* <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0002339">Abnormal caudate nucleus morphology (HP:0002339)</a>,,</p>
+<p>we pass an iterable with these two terms
+as an argument to <a class="reference internal" href="../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy" title="genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy()</span></code></a> method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">abn_putamen</span> <span class="o">=</span> <span class="s2">&quot;HP:0031982&quot;</span>  <span class="c1"># Abnormal putamen morphology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">abn_caudate_nucleus</span> <span class="o">=</span> <span class="s2">&quot;HP:0002339&quot;</span>  <span class="c1"># Abnormal caudate nucleus morphology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">specify_terms_strategy</span><span class="p">(</span><span class="n">specified_term_set</span><span class="o">=</span><span class="p">(</span><span class="n">abn_putamen</span><span class="p">,</span> <span class="n">abn_caudate_nucleus</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Later, when using the <cite>config</cite> object in analysis,
+this will cause genophenocorr to perform only two hypothesis tests, one for each of the two terms</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span>
+<span class="go">&lt;MTC_Strategy.SPECIFY_TERMS: 2&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span>
+<span class="go">(&#39;HP:0031982&#39;, &#39;HP:0002339&#39;)</span>
+</pre></div>
+</div>
+</section>
+<section id="heuristic-sampler-strategy">
+<h2>heuristic sampler strategy<a class="headerlink" href="#heuristic-sampler-strategy" title="Link to this heading"></a></h2>
+<p id="heuristic-sampler-strategy-section">The heuristic sampler strategy is chosen by invoking
+<a class="reference internal" href="../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy" title="genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy()</span></code></a> method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">heuristic_strategy</span><span class="p">(</span><span class="n">threshold_HPO_observed_frequency</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The method takes a threshold as an argument (e.g. 50% here, more info below)
+and the method’s logic is made up of 8 individual heuristics
+designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:</p>
+<ol class="arabic">
+<li><dl>
+<dt>Skip terms that occurr very rarely</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">threshold_HPO_observed_frequency</span></code> determines the mininum proportion of individuals
+with direct or indirect annotation by the HPO term to test.
+We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE), and we only retain a term for testing
+if the proportion of individuals in at least one genotype group is at least <code class="docutils literal notranslate"><span class="pre">threshold_HPO_observed_frequency</span></code>.</p>
+<p>This is because of our assumption that even if there is statistical significance,
+if a term is only seen in (for example) 7% of individuals in the MISSENSE group and 2% in the not-MISSENSE group,
+the term is unlikely to be of great interest because it is rare.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Skip terms if no cell has more than one count</dt><dd><p>In a related heuristic, we skip terms if no genotype group has more than one count.
+This is not completely redundant with the previous condition,
+because some terms may have a small number of total observations.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Skip terms if all counts are identical to counts for a child term</dt><dd><p>Let’s say a term such as
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001115">Posterior polar cataract (HP:0001115)</a>
+was observed in 7 of 11 individuals with MISSENSE variants
+and in 3 of 8 individuals with NONSENSE variants.
+If we find the same patient counts (7 of 11 and 3 of 8) in the parent term
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0010696">Polar cataract HP:0010696</a>,
+then we choose to not test the parent term.</p>
+<p>This is because the more specific an HPO term is,
+the more information it has (the more interesting the correlation would be if it exists),
+and the result of the Fisher Exact test for <em>Polar cataract</em>
+would be exactly the same as for <em>Posterior polar cataract</em>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Skip terms if genotypes have same HPO proportions</dt><dd><p>If both (or all) of the genotype groups have the same proportion of individuals
+observed to be annotated to an HPO term, e.g., both are 50%, then skip the term,
+because it is not possible that the Fisher exact test will return a significant result.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Skip terms if there are no HPO observations in a group</dt><dd><p>If one of the genotype groups has neither observed nor excluded observations for an HPO term, skip it.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Skipping terms that are not descendents of <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality (HP:0000118)</a></dt><dd><p>The HPO has a number of other branches that describe modes of inheritance,
+past medical history, and clinical modifiers.
+We do not think it makes much sense to test for enrichment of these terms,
+and so they are filtered out.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Skipping top level terms</dt><dd><p>All the direct children of the root phenotype term
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality (HP:0000118)</a> are skipped,
+because of the assumption that if there is a valid signal,
+it will derive from one of the more specific descendents.</p>
+<p>For instance, <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000707">Abnormality of the nervous system (HP:0000707)</a>
+is a child of <em>Phenotypic abnormality</em>, and this assumption implies
+that if there is a signal from the nervous system,
+it will lead to at least one of the descendents of
+<em>Abnormality of the nervous system</em> being significant.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Second-level terms</dt><dd><p>For the same reason that the first level term are judged to be less relevant than more specific terms,
+the second level terms are also assumed by this heuristic to be less interesting.</p>
+<p>For instance, a typical first level term in the HPO would be
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000478">Abnormality of the eye HP:0000478</a>,
+and a typical second level term would be <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0012372">Abnormal eye morphology HP:0012372</a>,
+but an interesting term would be one such as <em>Posterior polar cataract</em>.
+With this heuristic, if any child of a second level term has at least 75% of the terms,
+then do not test the second level term because it is unlikely to add much insight.
+Only if the second level term has a <em>lot</em> more annotations, then we <em>do</em> test
+(this might mean that many different specific forms of <em>Abnormal eye morphology</em> are overrepresented).</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="predicates.html" class="btn btn-neutral float-left" title="Predicates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autosomal_recessive.html" class="btn btn-neutral float-right" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

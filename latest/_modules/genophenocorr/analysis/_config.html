@@ -108,10 +108,27 @@
     <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
 
+<div class="viewcode-block" id="MTC_Strategy">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MTC_Strategy">[docs]</a>
 <span class="k">class</span> <span class="nc">MTC_Strategy</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A strategy for mitigating the multiple testing correction (MTC) burden.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">ALL_HPO_TERMS</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    All HPO terms will be tested.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">HEURISTIC_SAMPLER</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only HPO terms present in at least a certain fraction of patients will be tested.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">SPECIFY_TERMS</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only the manually provided HPO terms will be tested.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
@@ -152,7 +169,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="mf">.2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_include_sv</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1">## only relevant for SPECIFIED_TERMS strategy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">## only relevant for SPECIFIED_TERMS strategy</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -184,6 +201,10 @@
     <span class="nd">@pval_correction</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the method for p value correction. </span>
+<span class="sd">        See Statsmodels&#39; `documentation &lt;https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html&gt;`_ </span>
+<span class="sd">        for the acceptable values.</span>
+
 <span class="sd">        :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`</span>
 <span class="sd">          if no MTC should be applied.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -260,57 +281,71 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MTC_Strategy</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO</span>
+<span class="sd">        Get the MTC strategy to be used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span>
 
-    <span class="nd">@mtc_strategy</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">mtc_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">MTC_Strategy</span><span class="p">):</span>
+<div class="viewcode-block" id="CohortAnalysisConfiguration.all_terms_strategy">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.all_terms_strategy">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_terms_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO</span>
+<span class="sd">        Test all HPO terms (the default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: this needs to be removed to prevent inconsistent configuration.</span>
-        <span class="c1"># If we use:</span>
-        <span class="c1"># ```</span>
-        <span class="c1"># config.mtc_strategy = MTC_Strategy.SPECIFY_TERMS</span>
-        <span class="c1"># ````</span>
-        <span class="c1"># then the user will get an errror because of missing terms to test.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="n">MTC_Strategy</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">strategy</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;TODO DOCUMENT `include_sv` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
 <div class="viewcode-block" id="CohortAnalysisConfiguration.heuristic_strategy">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy">[docs]</a>
-    <span class="k">def</span> <span class="nf">heuristic_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold_HPO_observed_frequency</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span>
+    <span class="k">def</span> <span class="nf">heuristic_strategy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">threshold_HPO_observed_frequency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Only test the HPO terms that pass all rules of the heuristic strategy.</span>
+
+<span class="sd">        See :ref:`heuristic sampler strategy &lt;heuristic-sampler-strategy-section&gt;` section </span>
+<span class="sd">        for more info on the rules.</span>
+
+<span class="sd">        :param threshold_HPO_observed_frequency: the float in range *(0, 1]* to represent </span>
+<span class="sd">          the minimum fraction of patients for an HPO term to be included.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold_HPO_observed_frequency</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">threshold_HPO_observed_frequency</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold_HPO_observed_frequency</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;min_perc_patients_w_hpo must be a number, but was </span><span class="si">%s</span><span class="s2">. Using </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span>
-                                     <span class="n">threshold_HPO_observed_frequency</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">threshold_HPO_observed_frequency</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">threshold_HPO_observed_frequency</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">errmsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;min_perc_patients_w_hpo must be greater than 0 and at most 1, but was </span><span class="si">{</span><span class="n">threshold_HPO_observed_frequency</span><span class="si">}</span><span class="s2">. Fix this before continuingf&quot;</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">threshold_HPO_observed_frequency</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">threshold_HPO_observed_frequency</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`threshold_HPO_observed_frequency` is not a `float`: </span><span class="si">{</span><span class="n">threshold_HPO_observed_frequency</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">threshold_HPO_observed_frequency</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`threshold_HPO_observed_frequency` must be in range (0, 1] but was </span><span class="si">{</span><span class="n">threshold_HPO_observed_frequency</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+       
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span>
+        <span class="c1"># TODO: this will be retained if we choose `all_termds_strategy` after `heuristic_strategy`. See issue #194.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span> <span class="o">=</span> <span class="n">threshold_HPO_observed_frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="CohortAnalysisConfiguration.specify_terms_strategy">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy">[docs]</a>
-    <span class="k">def</span> <span class="nf">specify_terms_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">specified_term_set</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">SPECIFY_TERMS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="n">specified_term_set</span></div>
+    <span class="k">def</span> <span class="nf">specify_terms_strategy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">specified_term_set</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mitigate the MTC burden by only testing the specified HPO terms.</span>
+
+<span class="sd">        Note, the HPO terms are validated before running the analysis,</span>
+<span class="sd">        to point out invalid CURIE (e.g. `WHATEVER`) values, </span>
+<span class="sd">        or HPO term IDs that are not in the currently used HPO.</span>
+
+<span class="sd">        :param specified_term_set: an iterable with CURIEs (e.g. `HP:0001250`) </span>
+<span class="sd">          or :class:`hpotk.TermId` instances representing the terms to test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">specified_term_set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">SPECIFY_TERMS</span></div>
 
 
-<div class="viewcode-block" id="CohortAnalysisConfiguration.get_terms_to_test">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.get_terms_to_test">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_terms_to_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">terms_to_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span></div>
-</div>
 
 
 
@@ -346,9 +381,10 @@
 
     <span class="n">mtc_filter</span><span class="p">:</span> <span class="n">HpoMtcFilter</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span><span class="p">:</span>
-        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicMtcFilter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpo_term_frequency_filter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_min_perc_patients_w_hpo</span><span class="p">)</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicMtcFilter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpo_term_frequency_filter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">SPECIFY_TERMS</span><span class="p">:</span>
-        <span class="n">validated_terms_to_test</span> <span class="o">=</span> <span class="n">_validate_terms_to_test</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get_terms_to_test</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;`terms_to_test` must not be none if `SPECIFY_TERMS` strategy is used&#39;</span>
+        <span class="n">validated_terms_to_test</span> <span class="o">=</span> <span class="n">_validate_terms_to_test</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span><span class="p">)</span>
         <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">SpecifiedTermsMtcFilter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">terms_to_test</span><span class="o">=</span><span class="n">validated_terms_to_test</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">ALL_HPO_TERMS</span><span class="p">:</span>
         <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">IdentityTermMtcFilter</span><span class="p">()</span>
@@ -388,7 +424,7 @@
     <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms_to_test</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">term</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s1"> is neither a TermId nor a CURIE `str`!&#39;</span><span class="p">)</span>
@@ -452,7 +488,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023.</p>
+    <p>&#169; Copyright 2024.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -395,8 +395,8 @@ Therefore, it is <em>impossible</em> to mis-configure the analysis.</p>
 <td><p><cite>False</cite></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mtc_strategy</span></code></p></td>
-<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MTC_Strategy</span></code></p></td>
-<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MTC_Strategy.ALL_HPO_TERMS</span></code></p></td>
+<td><p><a class="reference internal" href="#genophenocorr.analysis.MTC_Strategy" title="genophenocorr.analysis.MTC_Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">MTC_Strategy</span></code></a></p></td>
+<td><p><a class="reference internal" href="#genophenocorr.analysis.MTC_Strategy.ALL_HPO_TERMS" title="genophenocorr.analysis.MTC_Strategy.ALL_HPO_TERMS"><code class="xref py py-class docutils literal notranslate"><span class="pre">MTC_Strategy.ALL_HPO_TERMS</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -440,26 +440,76 @@ will be retained for the analysis (default 0.2).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.mtc_strategy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtc_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MTC_Strategy</span></em><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_strategy" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtc_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.analysis.MTC_Strategy" title="genophenocorr.analysis._config.MTC_Strategy"><span class="pre">MTC_Strategy</span></a></em><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_strategy" title="Link to this definition"></a></dt>
+<dd><p>Get the MTC strategy to be used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.all_terms_strategy">
+<span class="sig-name descname"><span class="pre">all_terms_strategy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_config.html#CohortAnalysisConfiguration.all_terms_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.all_terms_strategy" title="Link to this definition"></a></dt>
+<dd><p>Test all HPO terms (the default).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy">
 <span class="sig-name descname"><span class="pre">heuristic_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold_HPO_observed_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_config.html#CohortAnalysisConfiguration.heuristic_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Only test the HPO terms that pass all rules of the heuristic strategy.</p>
+<p>See <a class="reference internal" href="../user-guide/mtc.html#heuristic-sampler-strategy-section"><span class="std std-ref">heuristic sampler strategy</span></a> section
+for more info on the rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threshold_HPO_observed_frequency</strong> – the float in range <em>(0, 1]</em> to represent
+the minimum fraction of patients for an HPO term to be included.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy">
 <span class="sig-name descname"><span class="pre">specify_terms_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specified_term_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_config.html#CohortAnalysisConfiguration.specify_terms_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Mitigate the MTC burden by only testing the specified HPO terms.</p>
+<p>Note, the HPO terms are validated before running the analysis,
+to point out invalid CURIE (e.g. <cite>WHATEVER</cite>) values,
+or HPO term IDs that are not in the currently used HPO.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>specified_term_set</strong> – an iterable with CURIEs (e.g. <cite>HP:0001250</cite>)
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">hpotk.TermId</span></code> instances representing the terms to test.</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.get_terms_to_test">
-<span class="sig-name descname"><span class="pre">get_terms_to_test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_config.html#CohortAnalysisConfiguration.get_terms_to_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.get_terms_to_test" title="Link to this definition"></a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysisConfiguration.terms_to_test">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">terms_to_test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysisConfiguration.terms_to_test" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.analysis.MTC_Strategy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.</span></span><span class="sig-name descname"><span class="pre">MTC_Strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_config.html#MTC_Strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.MTC_Strategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>A strategy for mitigating the multiple testing correction (MTC) burden.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.analysis.MTC_Strategy.ALL_HPO_TERMS">
+<span class="sig-name descname"><span class="pre">ALL_HPO_TERMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#genophenocorr.analysis.MTC_Strategy.ALL_HPO_TERMS" title="Link to this definition"></a></dt>
+<dd><p>All HPO terms will be tested.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.analysis.MTC_Strategy.HEURISTIC_SAMPLER">
+<span class="sig-name descname"><span class="pre">HEURISTIC_SAMPLER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#genophenocorr.analysis.MTC_Strategy.HEURISTIC_SAMPLER" title="Link to this definition"></a></dt>
+<dd><p>Only HPO terms present in at least a certain fraction of patients will be tested.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.analysis.MTC_Strategy.SPECIFY_TERMS">
+<span class="sig-name descname"><span class="pre">SPECIFY_TERMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#genophenocorr.analysis.MTC_Strategy.SPECIFY_TERMS" title="Link to this definition"></a></dt>
+<dd><p>Only the manually provided HPO terms will be tested.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -704,7 +754,7 @@ and reach out to UNIPROT REST API if a cache entry is missing.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023.</p>
+    <p>&#169; Copyright 2024.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
