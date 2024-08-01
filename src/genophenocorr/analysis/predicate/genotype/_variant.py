@@ -1,7 +1,7 @@
 from genophenocorr.model import VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
-from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
+from ._api import VariantPredicate
 from ._predicates import *
 
 class VariantPredicates:
@@ -93,6 +93,18 @@ class VariantPredicates:
             VariantPredicate: a predicate
         """
         return ProteinRegionPredicate(region, tx_id)
+    
+    @staticmethod
+    def is_structural_variant() -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant.
+
+        Check :meth:`genophenocorr.model.VariantInfo.is_structural` for the 
+
+        Returns:
+            VariantPredicate: a predicate
+        """
+        return IS_STRUCTURAL
 
 
 class ProteinPredicates:

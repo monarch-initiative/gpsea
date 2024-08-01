@@ -95,6 +95,16 @@ class TestVariantPredicates:
 
         assert predicate.test(variant) == expected
 
+    def test_is_structural_predicate(
+        self,
+        variant: Variant,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.is_structural_variant()
+
+        assert predicate.test(variant) == False
+        assert predicate.test(structural_variant) == True
+
 
 class TestProteinPredicates:
 

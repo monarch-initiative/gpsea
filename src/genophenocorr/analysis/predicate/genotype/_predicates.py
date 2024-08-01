@@ -223,6 +223,34 @@ class VariantExonPredicate(VariantPredicate):
         return f'VariantExonPredicate(exon={self._exon}, tx_id={self._tx_id})'
 
 
+class IsStructuralVariantPredicate(VariantPredicate):
+    """
+    `IsStructuralVariantPredicate` tests if the variant is structural,
+    as described by :meth:`VariantInfo.is_structural`.
+    """
+
+    def get_question(self) -> str:
+        return 'is structural variant'
+
+    def test(self, variant: Variant) -> bool:
+        return variant.variant_info.is_structural()
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, IsStructuralVariantPredicate)
+    
+    def __hash__(self) -> int:
+        return hash(())
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return 'IsStructuralVariantPredicate'
+
+# We do not need more than just an instance of this field-less predicate.
+IS_STRUCTURAL = IsStructuralVariantPredicate()
+
+
 class ProteinRegionPredicate(VariantPredicate):
     """
     `ProteinRegionPredicate` tests if the variant 

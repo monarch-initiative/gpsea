@@ -1,5 +1,7 @@
 import pytest
 
+import hpotk
+
 from genophenocorr.model import *
 from genophenocorr.model.genome import *
 from genophenocorr.preprocessing import ProteinMetadataService
@@ -81,6 +83,33 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 is_preferred=False,
                 variant_effects=(VariantEffect.INTRON_VARIANT,),
                 affected_exons=None,
+                protein_id=None,
+                protein_effect_coordinates=None,
+            ),
+        ),
+        genotypes=Genotypes.single(SampleLabels("jim"), Genotype.HETEROZYGOUS),
+    )
+
+
+@pytest.fixture(scope="package")
+def structural_variant() -> Variant:
+    return Variant(
+        variant_info=VariantInfo(
+            sv_info=ImpreciseSvInfo(
+                structural_type=hpotk.TermId.from_curie('SO:1000029'),  # chromosomal_deletion
+                variant_class='DEL',
+                gene_id='HGNC:21316',
+                gene_symbol='ANKRD11',
+            ),
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="ANKRD11",
+                tx_id="NM_013275.6",
+                hgvs_cdna=None,
+                is_preferred=True,
+                variant_effects=(VariantEffect.TRANSCRIPT_ABLATION,),
+                affected_exons=range(13),  # I counted 13 exons
                 protein_id=None,
                 protein_effect_coordinates=None,
             ),
