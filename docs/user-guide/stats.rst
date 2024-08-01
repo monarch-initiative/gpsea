@@ -43,7 +43,7 @@ This is a non-parametric test that compares the medians of the two groups to det
 >>> group2 = [4, 5, 3, 4, 3, 3, 3, 4, 4, 5, 5, 2, 3, 0, 3, 5, 2, 3]
 >>> r = stats.mannwhitneyu(x=group1, y=group2, alternative = 'two-sided')
 >>> pval = r.pvalue
->>> pval
-np.float64(6.348081479150902e-06)
+>>> float(pval)
+6.348081479150902e-06
 
 ``pval`` evaluates to `6.348081479150901e-06`, meaning there is a significant difference between the groups.
