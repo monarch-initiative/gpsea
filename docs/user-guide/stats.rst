@@ -22,7 +22,35 @@ The results of FET are expressed in terms of an exact probability (P-value), var
 considered statistically significant if the P-value is less than the chosen
 significance level (usually &alpha;=0.05). 
 
+The following graphic shows an example contingency table that is used to conduct a Fisher exact test.
+We are comparing the frequency of Strabismus (HP:0000486) in individuals with missense and nonsense variants.
 
+.. image:: ./img/fisher.png
+   :alt: Fisher Exact text example
+   :align: center
+   :width: 600px
+ 
+To perform the corresponding test in Python, we would use the following code.
+
+>>> import scipy.stats as stats
+>>> # [[Missense observed, Nonsense observed],
+>>> #  [Missense excluded, Nonsense excluded]]
+>>> contingency_table = [
+>>>     [17, 6],  # HP:0000486 observed
+>>>     [1, 19]   # HP:0000486 excluded
+>>> ]
+>>> oddsratio, p_value = stats.fisher_exact(contingency_table)
+>>> print(f"Odds Ratio: {oddsratio}")
+>>> print(f"P-value: {p_value}")
+
+The p-value evaluates to 5.432292015291845e-06, meaning there is a significant difference between the groups.
+
+The Fisher Exact Test evaluates whether the observed frequencies in a contingency table significantly 
+deviate from the frequencies we would expect if there were no association between the variables.
+We want to test whether the frequency of HP:0000486 is significantly higher or lower in 
+one genotype group compared to what would be expected if there were no association. 
+Note that by default, the two-tailed Fisher exact test is performed, meaning we have no 
+hypothesis as to whether there is a higher or lower frequency in one of the genotype groups. 
 
 
 
