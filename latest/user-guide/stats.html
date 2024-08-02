@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Statistical tests &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/genophenocorr.css?v=a9fa5eb9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multiple-testing correction" href="mtc.html" />
+    <link rel="prev" title="Predicates" href="predicates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Statistical tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fisher-exact-test-fet">Fisher exact test (FET)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mann-whitney-u-test">Mann-Whitney U Test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">Statistical tests</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/stats.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="statistical-tests">
+<span id="stats"></span><h1>Statistical tests<a class="headerlink" href="#statistical-tests" title="Link to this heading"></a></h1>
+<p>There are many different ways of statistically testing for genotype-phenotype correlations,
+and the appropriate statistical test depends on the question.
+This document provides an overview of the tests offered by the genophenocorr library
+and explanations of how they are implemented by our software.</p>
+<section id="fisher-exact-test-fet">
+<h2>Fisher exact test (FET)<a class="headerlink" href="#fisher-exact-test-fet" title="Link to this heading"></a></h2>
+<p>The Fisher exact test (FET) calculates the exact probability value
+for the relationship between two dichotomous variables.
+In our implementation, the two dichotomous variables are the genotype and the phenotype.
+For instance, the individuals of the cohort may be divided
+according to whether or not they have a nonsense variant
+and according to whether or not they have Strabismus (<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000486">HP:0000486</a>).</p>
+<p>The results of FET are expressed in terms of an exact probability (P-value), varying within 0 and 1.
+Two groups are considered statistically significant if the P-value is less
+than the chosen significance level (usually <span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>).</p>
+<p>The following graphic shows an example contingency table that is used to conduct a Fisher exact test.
+We are comparing the frequency of <em>strabismus</em> in individuals with missense and nonsense variants:</p>
+<a class="reference internal image-reference" href="../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../_images/fisher.png" style="width: 600px;" /></a>
+<p>To perform the corresponding test in Python, we would use the following code.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contingency_table</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span><span class="c1">#   Missense,    Nonsense</span>
+<span class="gp">... </span>   <span class="p">[</span><span class="mi">17</span><span class="p">,</span>          <span class="mi">6</span>       <span class="p">],</span>  <span class="c1"># Strabismus observed</span>
+<span class="gp">... </span>   <span class="p">[</span><span class="mi">1</span><span class="p">,</span>          <span class="mi">19</span>       <span class="p">],</span>  <span class="c1"># Strabismus excluded</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oddsratio</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="n">oddsratio</span><span class="p">)</span>
+<span class="go">53.833333333333336</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="n">p_value</span><span class="p">)</span>
+<span class="go">5.432292015291845e-06</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">p_value</span></code> evaluates to <cite>5.432292015291845e-06</cite>, meaning there is a significant difference between the groups.</p>
+<p>The Fisher exact test evaluates whether the observed frequencies in a contingency table significantly
+deviate from the frequencies we would expect if there were no association between the variables.
+We want to test whether the frequency of <cite>HP:0000486`</cite> is significantly higher or lower in
+one genotype group compared to what would be expected if there were no association.
+Note that by default, the <em>two-tailed</em> Fisher exact test is performed, meaning we have no
+hypothesis as to whether there is a higher or lower frequency in one of the genotype groups.</p>
+</section>
+<section id="mann-whitney-u-test">
+<h2>Mann-Whitney U Test<a class="headerlink" href="#mann-whitney-u-test" title="Link to this heading"></a></h2>
+<p>We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype groups.
+For instance, <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/29330883/">Jordan et al (2018)</a> found that the total number of structural defects
+of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of the RERE gene
+is significantly higher than expected based on the number of similar defects seen in individuals with putative loss-of-function variants.
+Since there are five potential defects, each individual has a count ranging between 0 and 5.</p>
+<p>We perform a Mann-Whitney U Test (or Wilcoxon Rank-Sum Test) to compare the distribution of such counts between genotype groups.
+This is a non-parametric test that compares the medians of the two groups to determine if they come from the same distribution.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">group1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">group2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">group1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">group2</span><span class="p">,</span> <span class="n">alternative</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p_value</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">pvalue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="n">p_value</span><span class="p">)</span>
+<span class="go">6.348081479150902e-06</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">p_value</span></code> evaluates to <cite>6.348081479150901e-06</cite>, meaning there is a significant difference between the groups.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="predicates.html" class="btn btn-neutral float-left" title="Predicates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mtc.html" class="btn btn-neutral float-right" title="Multiple-testing correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
