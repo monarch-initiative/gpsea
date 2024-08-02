@@ -229,20 +229,20 @@ class VariantExonPredicate(VariantPredicate):
         return f'VariantExonPredicate(exon={self._exon}, tx_id={self._tx_id})'
 
 
-class IsStructuralVariantPredicate(VariantPredicate):
+class IsLargeImpreciseStructuralVariantPredicate(VariantPredicate):
     """
-    `IsStructuralVariantPredicate` tests if the variant is structural,
-    as described by :meth:`VariantInfo.is_structural`.
+    `IsLargeImpreciseStructuralVariantPredicate` tests if the variant is a large imprecise SV 
+    where the exact breakpoint coordinates are not available.
     """
 
     def get_question(self) -> str:
-        return 'is structural variant'
+        return 'is large imprecise structural variant'
 
     def test(self, variant: Variant) -> bool:
-        return variant.variant_info.is_structural()
+        return variant.variant_info.has_sv_info()
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, IsStructuralVariantPredicate)
+        return isinstance(value, IsLargeImpreciseStructuralVariantPredicate)
     
     def __hash__(self) -> int:
         return hash(())
@@ -251,10 +251,7 @@ class IsStructuralVariantPredicate(VariantPredicate):
         return repr(self)
 
     def __repr__(self):
-        return 'IsStructuralVariantPredicate'
-
-# We do not need more than just an instance of this field-less predicate.
-IS_STRUCTURAL = IsStructuralVariantPredicate()
+        return 'IsLargeImpreciseStructuralVariantPredicate'
 
 
 class VariantClassPredicate(VariantPredicate):

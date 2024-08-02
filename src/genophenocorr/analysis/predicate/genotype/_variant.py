@@ -7,6 +7,11 @@ from ._api import VariantPredicate
 from ._predicates import *
 
 
+# We do not need more than just one instance of these predicates.
+IS_BND = VariantClassPredicate(VariantClass.BND)
+IS_LARGE_IMPRECISE_SV = IsLargeImpreciseStructuralVariantPredicate()
+
+
 class VariantPredicates:
     """
     `VariantPredicates` is a static utility class to provide the variant predicates
@@ -101,16 +106,32 @@ class VariantPredicates:
         return ProteinRegionPredicate(region, tx_id)
 
     @staticmethod
-    def is_structural_variant() -> VariantPredicate:
+    def is_large_imprecise_sv() -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant.
-
-        Check :meth:`genophenocorr.model.VariantInfo.is_structural` for more info
-
-        Returns:
-            VariantPredicate: a predicate
+        Prepare a :class:`VariantPredicate` for testing if the variant is a large structural variant (SV)
+        without exact breakpoint coordinates.
         """
-        return IS_STRUCTURAL
+        return IS_LARGE_IMPRECISE_SV
+
+    @staticmethod
+    def is_structural_variant(
+        threshold: int = 50,
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant (SV).
+
+        SVs are usually defined as variant affecting more than a certain number of base pairs.
+        The thresholds vary in the literature, but here we use 50bp as a default.
+
+        Any variant that affects at least `threshold` base pairs is considered an SV. 
+        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`) 
+        are always considered as an SV.
+
+        Args:
+            threshold: a non-negative `int` with the number of base pairs that must be affected
+        """
+        assert threshold >= 0, '`threshold` must be non-negative!'
+        return VariantPredicates.change_length('<=', -threshold) | VariantPredicates.change_length('>=', threshold) | VariantPredicates.is_large_imprecise_sv() | IS_BND
 
     @staticmethod
     def structural_type(
