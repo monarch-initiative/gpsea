@@ -1,4 +1,5 @@
 import abc
+import enum
 import typing
 
 import hpotk
@@ -172,6 +173,50 @@ class TranscriptAnnotation(TranscriptInfoAware):
                      self.protein_id, self.protein_effect_location))
 
 
+class VariantClass(enum.Enum):
+    """
+    `VariantClass` represents a high-level variant category 
+    which mostly corresponds to the structural variant categories
+    of the Variant Call Format specification.
+    """
+
+    DEL = 0
+    """
+    Deletion - either a deletion of 1 base pair or of 1000 base pairs.
+    """
+
+    DUP = 1
+    """
+    Duplication (tandem or interspersed).
+    """
+    
+    INS = 2
+    """
+    Insertion of a novel sequence.
+    """
+
+    INV = 3
+    """
+    Inversion of a chromosome segment.
+    """
+    
+    MNV = 4
+    """
+    Multi-nucleotide variant (e.g. `AG>CT`) that is not a duplication, deletion, or insertion. 
+    May be called INDEL.
+    """
+
+    SNV = 5
+    """
+    Single nucleotide variant.
+    """
+
+    BND = 6
+    """
+    Breakend.
+    """
+
+
 class VariantCoordinates:
     """A representation of coordinates of sequence and symbolic variants.
     The breakend variants are not supported.
@@ -276,28 +321,28 @@ class VariantCoordinates:
                 return key
 
     @property
-    def variant_class(self) -> str:
+    def variant_class(self) -> VariantClass:
         """
-        Get a `str` with the variant class. (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).
+        Get a :class:`VariantClass` category.
         """
-
         if self.is_structural():
             # Expecting a `str` like <DEL>, <INS>, <DUP>, <INV>, ...
-            return self.alt[1:-1]
+            return VariantClass[self.alt[1:-1]]
         else:
             if len(self.ref) > len(self.alt):
-                return 'DEL'
+                return VariantClass.DEL
             elif len(self.ref) < len(self.alt):
                 # may also be a duplication, but it's hard to say from this
-                return 'INS'
+                return VariantClass.INS
             else:
                 if len(self.ref) == 1:
-                    return 'SNV'
+                    return VariantClass.SNV
                 else:
-                    return 'MNV'
+                    return VariantClass.MNV
 
     def is_structural(self) -> bool:
-        """Checks if the variant coordinates use structural variant notation as described by Variant Call Format
+        """
+        Checks if the variant coordinates use structural variant notation as described by Variant Call Format
         (`VCF <https://en.wikipedia.org/wiki/Variant_Call_Format>`_).
 
         Ane example of *structural* variant notation::
@@ -346,12 +391,12 @@ class ImpreciseSvInfo:
     def __init__(
         self,
         structural_type: hpotk.TermId,
-        variant_class: str,
+        variant_class: VariantClass,
         gene_id: str,
         gene_symbol: str,
     ):
         self._structural_type = hpotk.util.validate_instance(structural_type, hpotk.TermId, 'structural_type')
-        self._variant_class = variant_class
+        self._variant_class = hpotk.util.validate_instance(variant_class, VariantClass, 'variant_class')
         self._gene_id = gene_id
         self._gene_symbol = gene_symbol
 
@@ -363,9 +408,9 @@ class ImpreciseSvInfo:
         return self._structural_type
 
     @property
-    def variant_class(self) -> str:
+    def variant_class(self) -> VariantClass:
         """
-        Get a `str` with VCF-like variant class (e.g. `DEL`, `DUP`, `INV`, `INS`, `CNV`, etc.).
+        Get a :class:`VariantClass` category.
         """
         return self._variant_class
 
@@ -432,20 +477,35 @@ class VariantInfo:
 
     @property
     def variant_coordinates(self) -> typing.Optional[VariantCoordinates]:
+        """
+        Get variant coordinates if available.
+        """
         return self._variant_coordinates
 
     def has_variant_coordinates(self) -> bool:
+        """
+        Returns `True` if the variant coordinates are available.
+        """
         return self.variant_coordinates is not None
 
     @property
     def sv_info(self) -> typing.Optional[ImpreciseSvInfo]:
+        """
+        Get information about large imprecise SV.
+        """
         return self._sv_info
 
     def has_sv_info(self) -> bool:
+        """
+        Returns `True` if the variant is a large imprecise SV and the exact coordinates are thus unavailable.
+        """
         return self.sv_info is not None
 
     @property
     def variant_key(self) -> str:
+        """
+        Get a readable representation of the variant's coordinates or the large SV info.
+        """
         if self.has_variant_coordinates():
             return self.variant_coordinates.variant_key
         elif self.has_sv_info():
@@ -454,9 +514,9 @@ class VariantInfo:
             self._handle_missing_state()
 
     @property
-    def variant_class(self) -> str:
+    def variant_class(self) -> VariantClass:
         """
-        Get a `str` with VCF-like variant class (e.g. `DUP`, `SNV`, `INS`, `MNV`, `INV`, ...).
+        Get a :class:`VariantClass` category.
         """
         if self.has_variant_coordinates():
             return self.variant_coordinates.variant_class
@@ -468,6 +528,10 @@ class VariantInfo:
     def is_structural(self) -> bool:
         """
         Test if the variant is a structural variant.
+
+        This can either be because the variant coordinates 
+        use the structural variant notation (see :meth:`VariantCoordinates.is_structural`)
+        or if the variant is large imprecise SV.
         """
         if self.has_variant_coordinates():
             return self.variant_coordinates.is_structural()

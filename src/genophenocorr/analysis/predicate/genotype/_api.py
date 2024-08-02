@@ -8,9 +8,10 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
 
-    *Implementation note*: the predicate *MUST* implement `__eq__` and `__hash__`
-    to support predicate chaining. 
-    We recommend implementing `__str__` and `__repr__` as well.
+    The subclasses are expected to implement all abstract methods of this class 
+    *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.
+
+    We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.
     """
 
     @abc.abstractmethod
@@ -24,6 +25,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     def test(self, variant: Variant) -> bool:
         """
         Test if the `variant` meets a criterion.
+        
         Args:
             variant: an instance of :class:`Variant` to test.
 
@@ -91,7 +93,7 @@ class AnyVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
 
     def get_question(self) -> str:
-        return ' OR '.join(predicate.get_question() for predicate in self._predicates)
+        return '(' + ' OR '.join(predicate.get_question() for predicate in self._predicates) + ')'
 
     def test(self, variant: Variant) -> bool:
         return any(predicate.test(variant) for predicate in self._predicates)
@@ -102,7 +104,7 @@ class AnyVariantPredicate(LogicalVariantPredicate):
         return False
     
     def __str__(self) -> str:
-        return ' OR '.join(str(p) for p in self._predicates)
+        return '(' + ' OR '.join(str(p) for p in self._predicates) + ')'
 
     def __repr__(self) -> str:
         return f'AnyVariantPredicate(predicates={self._predicates})'
@@ -112,7 +114,7 @@ class AllVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
 
     def get_question(self) -> str:
-        return ' AND '.join(predicate.get_question() for predicate in self._predicates)
+        return '(' + ' AND '.join(predicate.get_question() for predicate in self._predicates) + ')'
 
     def test(self, variant: Variant) -> bool:
         return all(predicate.test(variant) for predicate in self._predicates)
@@ -123,7 +125,7 @@ class AllVariantPredicate(LogicalVariantPredicate):
         return False
 
     def __str__(self) -> str:
-        return ' AND '.join(str(p) for p in self._predicates)
+        return '(' + ' AND '.join(str(p) for p in self._predicates) + ')'
     
     def __repr__(self) -> str:
         return f'AllVariantPredicate(predicates={self._predicates})'

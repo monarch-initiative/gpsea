@@ -1,8 +1,11 @@
+import typing
+
 from genophenocorr.model import VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate
 from ._predicates import *
+
 
 class VariantPredicates:
     """
@@ -18,6 +21,7 @@ class VariantPredicates:
         """
         Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to
         a certain variant effect.
+
         Args:
             effect: the target :class:`VariantEffect`
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
@@ -31,6 +35,7 @@ class VariantPredicates:
     def variant_key(key: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant matches the provided `key`.
+
         Args:
             key: a `str` with the variant key (e.g. `X_12345_12345_C_G` or `22_10001_20000_INV`)
 
@@ -43,6 +48,7 @@ class VariantPredicates:
     def gene(symbol: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a given gene.
+
         Args:
             symbol: a `str` with the gene symbol (e.g. `FBN1`).
 
@@ -55,6 +61,7 @@ class VariantPredicates:
     def transcript(tx_id: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a transcript.
+
         Args:
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
 
@@ -70,6 +77,7 @@ class VariantPredicates:
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.
+
         Args:
             exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
@@ -78,14 +86,12 @@ class VariantPredicates:
             VariantPredicate: a predicate
         """
         return VariantExonPredicate(exon, tx_id)
-    
+
     @staticmethod
-    def region(
-        region: Region, 
-        tx_id: str
-    ) -> VariantPredicate:
+    def region(region: Region, tx_id: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant overlaps with a region on a protein of a specific transcript.
+
         Args:
             region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.
 
@@ -93,28 +99,122 @@ class VariantPredicates:
             VariantPredicate: a predicate
         """
         return ProteinRegionPredicate(region, tx_id)
-    
+
     @staticmethod
     def is_structural_variant() -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant.
 
-        Check :meth:`genophenocorr.model.VariantInfo.is_structural` for the 
+        Check :meth:`genophenocorr.model.VariantInfo.is_structural` for more info
 
         Returns:
             VariantPredicate: a predicate
         """
         return IS_STRUCTURAL
-    
+
     @staticmethod
-    def is_chromosomal_deletion() -> VariantPredicate:
+    def structural_type(
+        curie: typing.Union[str, hpotk.TermId],
+    ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant is a chromosomal deletion.
+        Prepare a :class:`VariantPredicate` for testing if the variant has a certain structural type.
+
+        We recommend using a descendant of `structural_variant` (`SO:0001537 <https://purl.obolibrary.org/obo/SO_0001537>`_)
+        as the structural type.
+
+        **Example**
+
+        Make a predicate for testing if the variant is a chromosomal deletion (`SO:1000029`):
+
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.structural_type('SO:1000029')
+        >>> predicate
+        StructuralTypePredicate(query=SO:1000029)
+
+        Args:
+            curie: compact uniform resource identifier (CURIE) with the structural type to test.
 
         Returns:
             VariantPredicate: a predicate
         """
-        return IS_CHROMOSOMAL_DELETION
+        return StructuralTypePredicate.from_curie(curie)
+
+    @staticmethod
+    def variant_class(
+        variant_class: VariantClass,
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`VariantClass`.
+
+        Args:
+            variant_class: the variant class to test.
+
+        Returns:
+            VariantPredicate: a predicate
+        """
+        return VariantClassPredicate(
+            query=variant_class,
+        )
+
+    @staticmethod
+    def change_length(
+        operator: typing.Literal["<", "<=", "==", "!=", ">=", ">"],
+        threshold: int,
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant's change length
+        is above, below, or (not) equal to certain `threshold`.
+
+        .. seealso::
+
+            See :meth:`genophenocorr.model.VariantCoordinates.change_length` for more info on change length.
+
+        **Example**
+
+        Make a predicate for testing if the change length is less than or equal to `-10`, 
+        e.g. to test if a variant is a *deletion* leading to removal of at least 10 base pairs:
+
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.change_length('<=', -10)
+        >>> predicate
+        ChangeLengthPredicate(operator='<=', threshold=-10)
+
+        Args:
+            operator: a `str` with the desired test. Must be one of ``{ '<', '<=', '==', '!=', '>=', '>' }``.
+        """
+        return ChangeLengthPredicate(operator, threshold)
+
+    @staticmethod
+    def is_structural_deletion(
+        threshold: int = -50,
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant 
+        is a `chromosomal deletion <https://purl.obolibrary.org/obo/SO_1000029>`_ or a structural variant deletion 
+        that leads to removal of at least *n* base pairs (50bp by default).
+        
+        .. note::
+
+            The predicate uses See :meth:`genophenocorr.model.VariantCoordinates.change_length`
+            to determine if the length of the variant is above or below `threshold`.
+            
+            **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele is shorter than the reference allele.
+
+        **Example**
+
+        Prepare a predicate for testing if the variant is a chromosomal destructural deletion with more than 
+
+        Args:
+            threshold: an `int` with the change length threshold to determine if a variant is "structural" (-50 bp by default).
+
+        Returns:
+            VariantPredicate: a predicate
+        """
+        chromosomal_deletion = "SO:1000029"
+        return VariantPredicates.structural_type(chromosomal_deletion) | (
+            VariantPredicates.variant_class(VariantClass.DEL)
+            & VariantPredicates.change_length("<=", threshold)
+        )
 
 
 class ProteinPredicates:
@@ -124,37 +224,43 @@ class ProteinPredicates:
     """
 
     def __init__(
-            self,
-            protein_metadata_service: ProteinMetadataService,
+        self,
+        protein_metadata_service: ProteinMetadataService,
     ):
         self._protein_metadata_service = protein_metadata_service
 
     def protein_feature_type(
-            self,
-            feature_type: FeatureType,
-            tx_id: str
+        self,
+        feature_type: FeatureType,
+        tx_id: str
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+
         Args:
             feature_type: the target protein :class:`FeatureType` (e.g. ``)
 
         Returns:
             VariantPredicate: a predicate
         """
-        return ProteinFeatureTypePredicate(feature_type, tx_id, self._protein_metadata_service)
+        return ProteinFeatureTypePredicate(
+            feature_type, tx_id, self._protein_metadata_service
+        )
 
     def protein_feature(
-            self,
-            feature_id: str,
-            tx_id: str
+        self,
+        feature_id: str,
+        tx_id: str
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+
         Args:
             feature_id: the id of the target protein feature (e.g. `ANK 1`)
 
         Returns:
             VariantPredicate: a predicate
         """
-        return ProteinFeaturePredicate(feature_id, tx_id, self._protein_metadata_service)
+        return ProteinFeaturePredicate(
+            feature_id, tx_id, self._protein_metadata_service
+        )

@@ -1,8 +1,13 @@
-from genophenocorr.model import Variant, VariantEffect, FeatureType
-from genophenocorr.model.genome import Region
+import typing
 import hpotk
-from ._api import VariantPredicate
+
+import operator
+
+from genophenocorr.model import Variant, VariantEffect, VariantClass, FeatureType
+from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
+
+from ._api import VariantPredicate
 
 
 class VariantEffectPredicate(VariantPredicate):
@@ -252,14 +257,20 @@ class IsStructuralVariantPredicate(VariantPredicate):
 IS_STRUCTURAL = IsStructuralVariantPredicate()
 
 
-class IsChromosomalDeletionPredicate(VariantPredicate):
+class VariantClassPredicate(VariantPredicate):
     """
-    `IsStructuralVariantPredicate` tests if the variant is structural,
-    as described by :meth:`VariantInfo.is_structural`.
+    `VariantClassPredicate` tests if the variant class matches the query (e.g. `DEL`).
     """
 
+    def __init__(
+        self,
+        query: VariantClass
+    ):
+        assert isinstance(query, VariantClass), 'query must be `VariantClass`'
+        self._query = query
+
     def get_question(self) -> str:
-        return 'is chromosomal deletion'
+        return f'variant class is {self._query.name}'
 
     def test(self, variant: Variant) -> bool:
         """
@@ -268,28 +279,120 @@ class IsChromosomalDeletionPredicate(VariantPredicate):
         1. Imprecisely, using the sequence ontology term for deletion (see code)
         2. Using the VCF-syntax "DEL"
         """
-        chrom_del = hpotk.TermId.from_curie("SO:1000029")
-        if variant.variant_info.has_sv_info():
-            sv_info = variant.variant_info.sv_info
-            if chrom_del == sv_info.structural_type:
-                return True
-        else:
-            return variant.variant_info.variant_class == "DEL"
+        return variant.variant_info.variant_class == self._query
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, IsChromosomalDeletionPredicate)
+        return isinstance(value, VariantClassPredicate) and self._query == value._query
     
     def __hash__(self) -> int:
-        return hash(())
+        return hash((self._query,))
 
     def __str__(self):
         return repr(self)
 
     def __repr__(self):
-        return 'IsChromosomalDeletionPredicate'
+        return f'VariantClassPredicate(query={self._query})'
+    
 
-# We do not need more than just one instance of this field-less predicate.
-IS_CHROMOSOMAL_DELETION = IsChromosomalDeletionPredicate()
+class StructuralTypePredicate(VariantPredicate):
+    """
+    `StructuralTypePredicate` tests if the variant has a certain structural type, 
+    e.g. `chromosomal_deletion` (`SO:1000029 <http://purl.obolibrary.org/obo/SO_1000029>`_).
+    """
+
+    @staticmethod
+    def from_curie(curie: typing.Union[str, hpotk.TermId]):
+        if isinstance(curie, str):
+            query = hpotk.TermId.from_curie(curie)
+        elif isinstance(curie, hpotk.TermId):
+            query = curie
+        else:
+            raise ValueError(f'curie `{curie}` must be a `str` or `TermId` but was f{type(curie)}')
+        
+        return StructuralTypePredicate(query)
+
+    def __init__(
+        self,
+        query: hpotk.TermId,
+    ):
+        assert isinstance(query, hpotk.TermId), 'query must be a `TermId`'
+        self._query = query
+
+    def get_question(self) -> str:
+        return f'structural type is {self._query}'
+
+    def test(self, variant: Variant) -> bool:
+        if variant.variant_info.has_sv_info():
+            return variant.variant_info.sv_info.structural_type == self._query
+        return False
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, StructuralTypePredicate) and self._query == value._query
+    
+    def __hash__(self) -> int:
+        return hash((self._query,))
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'StructuralTypePredicate(query={self._query})'
+
+
+class ChangeLengthPredicate(VariantPredicate):
+    """
+    `ChangeLengthPredicate` tests if the variant's change length is above, below, or equal to a threshold.
+    """
+    
+    def __init__(
+        self,
+        operator: typing.Literal['<', '<=', '==', '!=', '>=', '>'],
+        threshold: int,
+    ):
+        self._operator_str = operator
+        self._operator = ChangeLengthPredicate._decode_operator(operator)
+        
+        assert isinstance(threshold, int), 'threshold must be an `int`'
+        self._threshold = threshold
+
+    def get_question(self) -> str:
+        return f'change length is {self._operator_str}{self._threshold}'
+
+    def test(self, variant: Variant) -> bool:
+        if variant.variant_info.has_variant_coordinates():
+            return self._operator(variant.variant_info.variant_coordinates.change_length, self._threshold)
+        return False
+
+    @staticmethod
+    def _decode_operator(op: str) -> typing.Callable[[int, int], bool]:
+        if op == '<':
+            return operator.lt
+        elif op == '<=':
+            return operator.le
+        elif op == '==':
+            return operator.eq
+        elif op == '!=':
+            return operator.ne
+        elif op == '>=':
+            return operator.ge
+        elif op == '>':
+            return operator.gt
+        else:
+            raise ValueError(f'Unsupported operator {op}')
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, ChangeLengthPredicate) \
+            and self._operator_str == value._operator_str \
+            and self._threshold == value._threshold
+    
+    def __hash__(self) -> int:
+        return hash((self._operator_str, self._threshold,))
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'ChangeLengthPredicate(operator=\'{self._operator_str}\', threshold={self._threshold})'
 
 
 class ProteinRegionPredicate(VariantPredicate):
