@@ -177,12 +177,16 @@ class VariantClass(enum.Enum):
     """
     `VariantClass` represents a high-level variant category 
     which mostly corresponds to the structural variant categories
-    of the Variant Call Format specification.
+    of the Variant Call Format specification, 
+    but includes type for single nucleotide variants (SNV) and multi-nucleotide variant (MNV).
     """
 
     DEL = 0
     """
-    Deletion - either a deletion of 1 base pair or of 1000 base pairs.
+    A deletion - a variant with a net loss of sequence from the alternative allele 
+    regardless of its size.
+    
+    Both a deletion of 1 base pair and a deletion of 1000 base pairs are acceptable.
     """
 
     DUP = 1
@@ -213,7 +217,7 @@ class VariantClass(enum.Enum):
 
     BND = 6
     """
-    Breakend.
+    A breakend.
     """
 
 
