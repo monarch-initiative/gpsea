@@ -1,5 +1,6 @@
 from genophenocorr.model import Variant, VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
+import hpotk
 from ._api import VariantPredicate
 from genophenocorr.preprocessing import ProteinMetadataService
 
@@ -249,6 +250,46 @@ class IsStructuralVariantPredicate(VariantPredicate):
 
 # We do not need more than just an instance of this field-less predicate.
 IS_STRUCTURAL = IsStructuralVariantPredicate()
+
+
+class IsChromosomalDeletionPredicate(VariantPredicate):
+    """
+    `IsStructuralVariantPredicate` tests if the variant is structural,
+    as described by :meth:`VariantInfo.is_structural`.
+    """
+
+    def get_question(self) -> str:
+        return 'is chromosomal deletion'
+
+    def test(self, variant: Variant) -> bool:
+        """
+        We are testing for a structural variant that is a deletion.
+        Deletions can be represented in two ways in our data.
+        1. Imprecisely, using the sequence ontology term for deletion (see code)
+        2. Using the VCF-syntax "DEL"
+        """
+        chrom_del = hpotk.TermId.from_curie("SO:1000029")
+        if variant.variant_info.has_sv_info():
+            sv_info = variant.variant_info.sv_info
+            if chrom_del == sv_info.structural_type:
+                return True
+        else:
+            return variant.variant_info.variant_class == "DEL"
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, IsChromosomalDeletionPredicate)
+    
+    def __hash__(self) -> int:
+        return hash(())
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return 'IsChromosomalDeletionPredicate'
+
+# We do not need more than just one instance of this field-less predicate.
+IS_CHROMOSOMAL_DELETION = IsChromosomalDeletionPredicate()
 
 
 class ProteinRegionPredicate(VariantPredicate):

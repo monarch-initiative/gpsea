@@ -105,6 +105,16 @@ class VariantPredicates:
             VariantPredicate: a predicate
         """
         return IS_STRUCTURAL
+    
+    @staticmethod
+    def is_chromosomal_deletion() -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the variant is a chromosomal deletion.
+
+        Returns:
+            VariantPredicate: a predicate
+        """
+        return IS_CHROMOSOMAL_DELETION
 
 
 class ProteinPredicates:
