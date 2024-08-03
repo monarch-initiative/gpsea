@@ -10,7 +10,7 @@ from phenopackets.vrsatile.v1.vrsatile_pb2 import VcfRecord, VariationDescriptor
 from phenopackets.vrs.v1.vrs_pb2 import Variation
 
 from genophenocorr.model import Patient, SampleLabels, Disease
-from genophenocorr.model import VariantCoordinates, ImpreciseSvInfo, VariantInfo, Variant, Genotype, Genotypes 
+from genophenocorr.model import  VariantClass, VariantCoordinates, ImpreciseSvInfo, VariantInfo, Variant, Genotype, Genotypes 
 from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator
 from ._audit import Notepad
@@ -429,18 +429,18 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return None
     
     def _map_structural_type_to_variant_class(
-            self,
+        self,
         structural_type: hpotk.TermId,
-    ) -> str:
+    ) -> VariantClass:
         # This method is most likely incomplete.
         # Please open a ticket if you receive a `ValueError` 
         # for a structural type, that is not mapped at the moment,
         # to help us enhance the mapping.
         if structural_type.prefix == 'SO':
             if structural_type.id in self._so_deletions:
-                return 'DEL'
+                return VariantClass.DEL
             elif structural_type.id in self._so_duplications:
-                return 'DUP'
+                return VariantClass.DUP
             else:
                 raise ValueError(f'Unknown structural type {structural_type}')
         else:

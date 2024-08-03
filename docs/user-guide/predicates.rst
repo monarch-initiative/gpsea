@@ -106,6 +106,20 @@ or *all* conditions:
 >>> nonsense_and_exon9.test(variant)
 True
 
-The `VariantPredicate` overloads Python `&` (AND) and `|` (OR) operators to build a compound predicate from a building block.
+The `VariantPredicate` overloads Python ``&`` (AND) and ``|`` (OR) operators to build a compound predicate from lower level building blocks.
 
-That's it for predicates.
+Therefore, there is nothing that prevents us to combine the predicates into multi-level tests, 
+such as testing if the variant is a *"chromosomal deletion" or a deletion which removes at least 50 bp*:
+
+>>> from genophenocorr.model import VariantClass
+>>> chromosomal_deletion = "SO:1000029"
+>>> predicate = VariantPredicates.structural_type(chromosomal_deletion) | (VariantPredicates.variant_class(VariantClass.DEL) & VariantPredicates.change_length("<=", -50))
+>>> predicate.get_question()
+'(structural type is SO:1000029 OR (variant class is DEL AND change length is <=-50))'
+
+
+That's it for predicates. Please see :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates` 
+and :class:`genophenocorr.analysis.predicate.genotype.ProteinPredicates` 
+for a comprehensive list of the predicates available off the shelf.
+
+Please open an issue on our `GitHub tracker <https://github.com/monarch-initiative/genophenocorr/issues>`_ if a predicate seems to be missing.
