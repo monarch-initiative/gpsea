@@ -13,5 +13,6 @@ TODO - write high level overview and bridge to individual sections.
   input-data
   exploratory
   predicates
+  stats
   mtc
   autosomal_recessive
