@@ -81,11 +81,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for genophenocorr.analysis.predicate.genotype._variant</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">FeatureType</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">AllVariantPredicate</span><span class="p">,</span> <span class="n">AnyVariantPredicate</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span>
 <span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c1"># We do not need more than just one instance of these predicates.</span>
+<span class="n">IS_BND</span> <span class="o">=</span> <span class="n">VariantClassPredicate</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">BND</span><span class="p">)</span>
+<span class="n">IS_LARGE_IMPRECISE_SV</span> <span class="o">=</span> <span class="n">IsLargeImpreciseStructuralVariantPredicate</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="VariantPredicates">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates">[docs]</a>
@@ -105,6 +113,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to</span>
 <span class="sd">        a certain variant effect.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            effect: the target :class:`VariantEffect`</span>
 <span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
@@ -121,6 +130,7 @@
     <span class="k">def</span> <span class="nf">variant_key</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant matches the provided `key`.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            key: a `str` with the variant key (e.g. `X_12345_12345_C_G` or `22_10001_20000_INV`)</span>
 
@@ -136,6 +146,7 @@
     <span class="k">def</span> <span class="nf">gene</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a given gene.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            symbol: a `str` with the gene symbol (e.g. `FBN1`).</span>
 
@@ -151,6 +162,7 @@
     <span class="k">def</span> <span class="nf">transcript</span><span class="p">(</span><span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a transcript.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
 
@@ -169,6 +181,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)</span>
 <span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
@@ -178,16 +191,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">VariantExonPredicate</span><span class="p">(</span><span class="n">exon</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="VariantPredicates.region">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.region">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span>
-        <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> 
-        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with a region on a protein of a specific transcript.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.</span>
 
@@ -195,6 +206,156 @@
 <span class="sd">            VariantPredicate: a predicate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinRegionPredicate</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.is_large_imprecise_sv">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.is_large_imprecise_sv">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_large_imprecise_sv</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is a large structural variant (SV)</span>
+<span class="sd">        without exact breakpoint coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">IS_LARGE_IMPRECISE_SV</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.is_structural_variant">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.is_structural_variant">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_structural_variant</span><span class="p">(</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant (SV).</span>
+
+<span class="sd">        SVs are usually defined as variant affecting more than a certain number of base pairs.</span>
+<span class="sd">        The thresholds vary in the literature, but here we use 50bp as a default.</span>
+
+<span class="sd">        Any variant that affects at least `threshold` base pairs is considered an SV. </span>
+<span class="sd">        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`) </span>
+<span class="sd">        are always considered as an SV.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            threshold: a non-negative `int` with the number of base pairs that must be affected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;`threshold` must be non-negative!&#39;</span>
+        <span class="k">return</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="o">-</span><span class="n">threshold</span><span class="p">)</span> <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;&gt;=&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">is_large_imprecise_sv</span><span class="p">()</span> <span class="o">|</span> <span class="n">IS_BND</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.structural_type">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.structural_type">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">structural_type</span><span class="p">(</span>
+        <span class="n">curie</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant has a certain structural type.</span>
+
+<span class="sd">        We recommend using a descendant of `structural_variant` (`SO:0001537 &lt;https://purl.obolibrary.org/obo/SO_0001537&gt;`_)</span>
+<span class="sd">        as the structural type.</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Make a predicate for testing if the variant is a chromosomal deletion (`SO:1000029`):</span>
+
+<span class="sd">        &gt;&gt;&gt; from genophenocorr.analysis.predicate.genotype import VariantPredicates</span>
+<span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.structural_type(&#39;SO:1000029&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; predicate</span>
+<span class="sd">        StructuralTypePredicate(query=SO:1000029)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curie: compact uniform resource identifier (CURIE) with the structural type to test.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">StructuralTypePredicate</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.variant_class">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_class">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span>
+        <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`VariantClass`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variant_class: the variant class to test.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VariantClassPredicate</span><span class="p">(</span>
+            <span class="n">query</span><span class="o">=</span><span class="n">variant_class</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.change_length">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.change_length">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">change_length</span><span class="p">(</span>
+        <span class="n">operator</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">],</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant&#39;s change length</span>
+<span class="sd">        is above, below, or (not) equal to certain `threshold`.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            See :meth:`genophenocorr.model.VariantCoordinates.change_length` for more info on change length.</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Make a predicate for testing if the change length is less than or equal to `-10`, </span>
+<span class="sd">        e.g. to test if a variant is a *deletion* leading to removal of at least 10 base pairs:</span>
+
+<span class="sd">        &gt;&gt;&gt; from genophenocorr.analysis.predicate.genotype import VariantPredicates</span>
+<span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.change_length(&#39;&lt;=&#39;, -10)</span>
+<span class="sd">        &gt;&gt;&gt; predicate</span>
+<span class="sd">        ChangeLengthPredicate(operator=&#39;&lt;=&#39;, threshold=-10)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            operator: a `str` with the desired test. Must be one of ``{ &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39;, &#39;!=&#39;, &#39;&gt;=&#39;, &#39;&gt;&#39; }``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ChangeLengthPredicate</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantPredicates.is_structural_deletion">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.is_structural_deletion">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_structural_deletion</span><span class="p">(</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant </span>
+<span class="sd">        is a `chromosomal deletion &lt;https://purl.obolibrary.org/obo/SO_1000029&gt;`_ or a structural variant deletion </span>
+<span class="sd">        that leads to removal of at least *n* base pairs (50bp by default).</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The predicate uses See :meth:`genophenocorr.model.VariantCoordinates.change_length`</span>
+<span class="sd">            to determine if the length of the variant is above or below `threshold`.</span>
+<span class="sd">            </span>
+<span class="sd">            **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele is shorter than the reference allele.</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Prepare a predicate for testing if the variant is a chromosomal destructural deletion with more than </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            threshold: an `int` with the change length threshold to determine if a variant is &quot;structural&quot; (-50 bp by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VariantPredicate: a predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chromosomal_deletion</span> <span class="o">=</span> <span class="s2">&quot;SO:1000029&quot;</span>
+        <span class="k">return</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">structural_type</span><span class="p">(</span><span class="n">chromosomal_deletion</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+            <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -208,45 +369,51 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span> <span class="o">=</span> <span class="n">protein_metadata_service</span>
 
 <div class="viewcode-block" id="ProteinPredicates.protein_feature_type">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">[docs]</a>
     <span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
-            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            feature_type: the target protein :class:`FeatureType` (e.g. ``)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            VariantPredicate: a predicate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
+            <span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProteinPredicates.protein_feature">
 <a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates.protein_feature">[docs]</a>
     <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            feature_id: the id of the target protein feature (e.g. `ANK 1`)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            VariantPredicate: a predicate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span><span class="n">feature_id</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span>
+            <span class="n">feature_id</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

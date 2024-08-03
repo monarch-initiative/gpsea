@@ -93,9 +93,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantPredicate` tests if a variant meets a certain criterion.</span>
 
-<span class="sd">    *Implementation note*: the predicate *MUST* implement `__eq__` and `__hash__`</span>
-<span class="sd">    to support predicate chaining. </span>
-<span class="sd">    We recommend implementing `__str__` and `__repr__` as well.</span>
+<span class="sd">    The subclasses are expected to implement all abstract methods of this class </span>
+<span class="sd">    *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.</span>
+
+<span class="sd">    We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="VariantPredicate.get_question">
@@ -114,6 +115,7 @@
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the `variant` meets a criterion.</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            variant: an instance of :class:`Variant` to test.</span>
 
@@ -183,7 +185,7 @@
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
 
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39; OR &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="s1">&#39; OR &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
@@ -194,7 +196,7 @@
         <span class="k">return</span> <span class="kc">False</span>
     
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39; OR &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="s1">&#39; OR &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;AnyVariantPredicate(predicates=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="si">}</span><span class="s1">)&#39;</span>
@@ -204,7 +206,7 @@
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
 
     <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
@@ -215,7 +217,7 @@
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;AllVariantPredicate(predicates=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_predicates</span><span class="si">}</span><span class="s1">)&#39;</span>

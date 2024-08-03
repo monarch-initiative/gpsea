@@ -189,8 +189,20 @@ For instance, we can test if the variant meets <em>any</em> or several condition
 <span class="go">True</span>
 </pre></div>
 </div>
-<p>The <cite>VariantPredicate</cite> overloads Python <cite>&amp;</cite> (AND) and <cite>|</cite> (OR) operators to build a compound predicate from a building block.</p>
-<p>That’s it for predicates.</p>
+<p>The <cite>VariantPredicate</cite> overloads Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators to build a compound predicate from lower level building blocks.</p>
+<p>Therefore, there is nothing that prevents us to combine the predicates into multi-level tests,
+such as testing if the variant is a <em>“chromosomal deletion” or a deletion which removes at least 50 bp</em>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chromosomal_deletion</span> <span class="o">=</span> <span class="s2">&quot;SO:1000029&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">structural_type</span><span class="p">(</span><span class="n">chromosomal_deletion</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length is &lt;=-50))&#39;</span>
+</pre></div>
+</div>
+<p>That’s it for predicates. Please see <a class="reference internal" href="../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates" title="genophenocorr.analysis.predicate.genotype.VariantPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.analysis.predicate.genotype.VariantPredicates</span></code></a>
+and <a class="reference internal" href="../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates" title="genophenocorr.analysis.predicate.genotype.ProteinPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.analysis.predicate.genotype.ProteinPredicates</span></code></a>
+for a comprehensive list of the predicates available off the shelf.</p>
+<p>Please open an issue on our <a class="reference external" href="https://github.com/monarch-initiative/genophenocorr/issues">GitHub tracker</a> if a predicate seems to be missing.</p>
 </section>
 </section>
 

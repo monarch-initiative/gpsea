@@ -93,7 +93,7 @@
 <span class="kn">from</span> <span class="nn">phenopackets.vrs.v1.vrs_pb2</span> <span class="kn">import</span> <span class="n">Variation</span>
 
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Disease</span>
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">Genotypes</span> 
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span>  <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">Genotypes</span> 
 <span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantCoordinateFinder</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ImpreciseSvFunctionalAnnotator</span>
 <span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Notepad</span>
@@ -523,18 +523,18 @@
         <span class="k">return</span> <span class="kc">None</span>
     
     <span class="k">def</span> <span class="nf">_map_structural_type_to_variant_class</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">structural_type</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantClass</span><span class="p">:</span>
         <span class="c1"># This method is most likely incomplete.</span>
         <span class="c1"># Please open a ticket if you receive a `ValueError` </span>
         <span class="c1"># for a structural type, that is not mapped at the moment,</span>
         <span class="c1"># to help us enhance the mapping.</span>
         <span class="k">if</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s1">&#39;SO&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_so_deletions</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;DEL&#39;</span>
+                <span class="k">return</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span>
             <span class="k">elif</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_so_duplications</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;DUP&#39;</span>
+                <span class="k">return</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DUP</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

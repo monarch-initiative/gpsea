@@ -632,6 +632,61 @@ of a variant with respect to single transcript of a gene.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">VariantClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantClass" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p><cite>VariantClass</cite> represents a high-level variant category
+which mostly corresponds to the structural variant categories
+of the Variant Call Format specification,
+but includes type for single nucleotide variants (SNV) and multi-nucleotide variant (MNV).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.DEL">
+<span class="sig-name descname"><span class="pre">DEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.DEL" title="Link to this definition"></a></dt>
+<dd><p>A deletion - a variant with a net loss of sequence from the alternative allele
+regardless of its size.</p>
+<p>Both a deletion of 1 base pair and a deletion of 1000 base pairs are acceptable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.DUP">
+<span class="sig-name descname"><span class="pre">DUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.DUP" title="Link to this definition"></a></dt>
+<dd><p>Duplication (tandem or interspersed).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.INS">
+<span class="sig-name descname"><span class="pre">INS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.INS" title="Link to this definition"></a></dt>
+<dd><p>Insertion of a novel sequence.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.INV">
+<span class="sig-name descname"><span class="pre">INV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.INV" title="Link to this definition"></a></dt>
+<dd><p>Inversion of a chromosome segment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.MNV">
+<span class="sig-name descname"><span class="pre">MNV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.MNV" title="Link to this definition"></a></dt>
+<dd><p>Multi-nucleotide variant (e.g. <cite>AG&gt;CT</cite>) that is not a duplication, deletion, or insertion.
+May be called INDEL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.SNV">
+<span class="sig-name descname"><span class="pre">SNV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.SNV" title="Link to this definition"></a></dt>
+<dd><p>Single nucleotide variant.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantClass.BND">
+<span class="sig-name descname"><span class="pre">BND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#genophenocorr.model.VariantClass.BND" title="Link to this definition"></a></dt>
+<dd><p>A breakend.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">VariantCoordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenomicRegion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantCoordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantCoordinates" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -746,8 +801,8 @@ and positive change lengths, respectively.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.variant_class">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with the variant class. (e.g. <cite>DUP</cite>, <cite>SNV</cite>, <cite>INS</cite>, <cite>MNV</cite>, <cite>INV</cite>, …).</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model._variant.VariantClass"><span class="pre">VariantClass</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.variant_class" title="Link to this definition"></a></dt>
+<dd><p>Get a <a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a> category.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -774,7 +829,7 @@ and positive change lengths, respectively.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.model.ImpreciseSvInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">ImpreciseSvInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_symbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#ImpreciseSvInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.ImpreciseSvInfo" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.model.</span></span><span class="sig-name descname"><span class="pre">ImpreciseSvInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model._variant.VariantClass"><span class="pre">VariantClass</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_symbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#ImpreciseSvInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.ImpreciseSvInfo" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Data regarding a structural variant (SV) with imprecise breakpoint coordinates.</p>
 <dl class="py property">
@@ -790,8 +845,8 @@ and positive change lengths, respectively.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.ImpreciseSvInfo.variant_class">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.ImpreciseSvInfo.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with VCF-like variant class (e.g. <cite>DEL</cite>, <cite>DUP</cite>, <cite>INV</cite>, <cite>INS</cite>, <cite>CNV</cite>, etc.).</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model._variant.VariantClass"><span class="pre">VariantClass</span></a></em><a class="headerlink" href="#genophenocorr.model.ImpreciseSvInfo.variant_class" title="Link to this definition"></a></dt>
+<dd><p>Get a <a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a> category.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -828,38 +883,46 @@ and positive change lengths, respectively.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.variant_coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantCoordinates" title="genophenocorr.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantInfo.variant_coordinates" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get variant coordinates if available.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.has_variant_coordinates">
 <span class="sig-name descname"><span class="pre">has_variant_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantInfo.has_variant_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantInfo.has_variant_coordinates" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns <cite>True</cite> if the variant coordinates are available.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.sv_info">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sv_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.ImpreciseSvInfo" title="genophenocorr.model._variant.ImpreciseSvInfo"><span class="pre">ImpreciseSvInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantInfo.sv_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get information about large imprecise SV.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.has_sv_info">
 <span class="sig-name descname"><span class="pre">has_sv_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantInfo.has_sv_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantInfo.has_sv_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns <cite>True</cite> if the variant is a large imprecise SV and the exact coordinates are thus unavailable.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.variant_key">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantInfo.variant_key" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get a readable representation of the variant’s coordinates or the large SV info.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.variant_class">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantInfo.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with VCF-like variant class (e.g. <cite>DUP</cite>, <cite>SNV</cite>, <cite>INS</cite>, <cite>MNV</cite>, <cite>INV</cite>, …).</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model._variant.VariantClass"><span class="pre">VariantClass</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantInfo.variant_class" title="Link to this definition"></a></dt>
+<dd><p>Get a <a class="reference internal" href="#genophenocorr.model.VariantClass" title="genophenocorr.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a> category.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantInfo.is_structural">
 <span class="sig-name descname"><span class="pre">is_structural</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantInfo.is_structural"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantInfo.is_structural" title="Link to this definition"></a></dt>
 <dd><p>Test if the variant is a structural variant.</p>
+<p>This can either be because the variant coordinates
+use the structural variant notation (see <a class="reference internal" href="#genophenocorr.model.VariantCoordinates.is_structural" title="genophenocorr.model.VariantCoordinates.is_structural"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VariantCoordinates.is_structural()</span></code></a>)
+or if the variant is large imprecise SV.</p>
 </dd></dl>
 
 </dd></dl>
