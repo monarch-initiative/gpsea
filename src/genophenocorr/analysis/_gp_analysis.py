@@ -160,6 +160,7 @@ class SpecifiedTermsMtcFilter(HpoMtcFilter):
     def filter_method_name(self) -> str:
         return "specified terms filter"
 
+
 class HeuristicMtcFilter(HpoMtcFilter):
     """
     `HeuristicMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
@@ -176,7 +177,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
                 oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
         This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
         ## TODO -- similar calculate for 3x2
-    3. Do not perform a test for the top level terms such as `Abnormality of the nervous system HP:0000707``
+    3. Do not perform a test for the general, relatively top level terms such as `Abnormality of the nervous system HP:0000707``
     4. Do not perform a test if the counts are the same as a child (more specific) term‚
     """
 
@@ -203,8 +204,34 @@ class HeuristicMtcFilter(HpoMtcFilter):
         self._top_level_terms = set(self._hpo.graph.get_children(PHENOTYPIC_ABNORMALITY))
         # e.g. Abnormality of the vasculature (HP:0002597)
         self._second_level_terms = set()
-        for top_level_child in self._top_level_terms:
-            self._second_level_terms.update(self._hpo.graph.get_children(top_level_child))
+        self._third_level_terms = set()
+        # the second level (children of the top level), contains terms we want to keep,
+        # such as HP:0001611	Hypernasal speech, but it also contains "general" terms that
+        # we skip according to this heuristic, e.g., HP:0030680	Abnormal cardiovascular system morphology
+        for t in self._top_level_terms:
+            l2_terms = hpo.graph.get_children(t.tid, include_source=False)
+            for t in l2_terms:
+                tid = t
+                label = hpo.get_term_name(tid)
+                if "Abnormal" in label:
+                    self._second_level_terms.add(tid)
+        # the third level (children of the second level), contains terms we want to keep,
+        # such as HP:0031109	Agalactia, but it also contains "general" terms that
+        # we skip according to this heuristic, e.g., HP:0006500	Abnormal lower limb epiphysis morphology
+        for t in self._second_level_terms:
+            l3_terms = hpo.graph.get_children(t.tid, include_source=False)
+            for t in l3_terms:
+                tid = t
+                label = hpo.get_term_name(tid)
+                if "Abnormal" in label:
+                    self._third_level_terms.add(tid)
+        # for now, we combine all of these terms into one "general" set that we skip
+        # in the future, one could do this on a per-level basis
+        self._general_hpo_term_set = set()
+        self._general_hpo_term_set.update(self._top_level_terms)
+        self._general_hpo_term_set.update(self._second_level_terms)
+        self._general_hpo_term_set.update(self._third_level_terms)
+
 
     def filter_terms_to_test(
             self,
@@ -220,10 +247,10 @@ class HeuristicMtcFilter(HpoMtcFilter):
         reason_for_filtering_out = defaultdict(int)
         tested_counts_pf = defaultdict(pd.DataFrame)  # key is an HP id, value is a tuple with counts, i.e.,
 
-        # TODO: w/PNR iterate through the terms in the sorted order, starting from the leaves of the induced graph.
+        # iterate through the terms in the sorted order, starting from the leaves of the induced graph.
         for term_id in self._get_ordered_terms(n_usable.keys()):
-            if term_id in self._top_level_terms:
-                reason_for_filtering_out["Skipping top level term"] += 1
+            if term_id in self._general_hpo_term_set:
+                reason_for_filtering_out["Skipping general term"] += 1
                 continue
             if not self._hpo.graph.is_ancestor_of(PHENOTYPIC_ABNORMALITY, term_id):
                 reason_for_filtering_out["Skipping non phenotype term"] += 1
@@ -265,32 +292,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
                         reason = "Child term with same counts previously tested"
                         reason_for_filtering_out[reason] += 1
                         continue
-
-            total_HPO = HeuristicMtcFilter.get_number_of_observed_hpo_observations(counts_frame)
-            tested_counts_pf[term_id] = counts_frame
-            ## Heuristic -- if a child of a second level term has at least 75% of the counts of its ancestor
-            # second level term, then do not test because it is unlikely to add much insight
-            # Only of the second level term has a lot more annotations do we test
-            # A first level term is like Abnormality of the digestive system (HP:0025031)
-            # A second level term is like Abnormality of digestive system physiology (HP:0025032)
-            # A specific term in this hierarchy would be like Esophageal diverticulum HP:0100628
-            # TODO: w/PNR discuss this with Peter because it is unclear to me now if the variables of the method
-            #  at the time we get here will ensure the expected outcome.
-            SECOND_LEVEL_TERM_THRESHOLD = 0.75
-            if term_id in self._second_level_terms:
-                do_test = True
-                for descendant in self._hpo.graph.get_descendants(term_id):
-                    if descendant in tested_counts_pf:
-                        total_d_hpo = HeuristicMtcFilter.get_number_of_observed_hpo_observations(
-                            tested_counts_pf[descendant]
-                        )
-                        if total_d_hpo / total_HPO >= SECOND_LEVEL_TERM_THRESHOLD:
-                            do_test = False
-                            break
-                if not do_test:
-                    continue
-
-            # if we get here, then we do the test for `term_id`
+            # if we get here, then we include the test for `term_id`
             filtered_n_usable[term_id] = n_usable[term_id]
             filtered_all_counts[term_id] = all_counts[term_id]
 

@@ -14,4 +14,5 @@ TODO - write high level overview and bridge to individual sections.
   exploratory
   predicates
   mtc
+  general_hpo_terms
   autosomal_recessive
