@@ -50,7 +50,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
     def __repr__(self) -> str:
         return str(self)
 
-
+# TODO: write AD, AR, XLR, XLD
 def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypeBooleanPredicate:
     """
     Create a genotype boolean predicate from given `variant_predicate`

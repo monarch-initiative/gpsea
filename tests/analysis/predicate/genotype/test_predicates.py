@@ -95,6 +95,73 @@ class TestVariantPredicates:
 
         assert predicate.test(variant) == expected
 
+    def test_is_large_imprecise_sv(
+        self,
+        variant: Variant,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.is_large_imprecise_sv()
+
+        assert predicate.test(variant) == False
+        assert predicate.test(structural_variant) == True
+
+    def test_is_structural_predicate(
+        self,
+        variant: Variant,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.is_structural_variant()
+
+        assert predicate.test(variant) == False
+        assert predicate.test(structural_variant) == True
+
+    def test_structural_type(
+        self,
+        variant: Variant,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.structural_type('SO:1000029')
+
+        assert predicate.test(variant) == False
+        assert predicate.test(structural_variant) == True
+
+    def test_variant_class(
+        self,
+        variant: Variant,
+    ):
+        predicate = VariantPredicates.variant_class(VariantClass.SNV)
+
+        assert predicate.test(variant) == True
+
+    def test_change_length(
+        self,
+        variant: Variant,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.change_length('==', 0)
+        
+        # variant is an SNP
+        assert predicate.test(variant) == True
+
+        # structural_variant is an imprecise DEL, hence False
+        assert predicate.test(structural_variant) == False
+
+    def test_change_length_is_false_for_imprecise_SVs_no_matter_what(
+        self,
+        structural_variant: Variant,
+    ):
+        for op in ("<", "<=", "==", "!=", ">=", ">"):
+            predicate = VariantPredicates.change_length(op, 0)
+            assert predicate.test(structural_variant) == False
+
+    def test_structural_deletion(
+        self,
+        structural_variant: Variant,
+    ):
+        predicate = VariantPredicates.is_structural_deletion()
+
+        assert predicate.test(structural_variant) == True
+
 
 class TestProteinPredicates:
 
