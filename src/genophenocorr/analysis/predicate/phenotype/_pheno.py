@@ -5,14 +5,13 @@ import hpotk
 
 from genophenocorr.model import Patient
 
-from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization
-
+from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization, IntegerCountCategory
 
 P = typing.TypeVar('P')
 """
 Phenotype entity of interest, such as :class:`hpotk.model.TermId`, representing an HPO term or an OMIM/MONDO term.
 
-However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable 
+However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable
 (have `__eq__` and `__lt__` magic methods).
 """
 
@@ -214,16 +213,16 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
 class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
     """
-    `CountingPhenotypePredicate` bins the patient 
-    according to the count of present phenotypes that are either 
+    `CountingPhenotypePredicate` bins the patient
+    according to the count of present phenotypes that are either
     an exact match to the `query` terms or their descendants. For instance, we may want to count whether an individual has
-    brain, liver, kidney, and skin abormalities. In the case, the query would include the corresponding terms (e.g., 
+    brain, liver, kidney, and skin abormalities. In the case, the query would include the corresponding terms (e.g.,
     Abnormal brain morphology HP:0012443). An individual can then have between 0 and 4. This predicate is intended
     to be used with the Mann Whitney U test.
     """
 
     def __init__(
-        self, 
+        self,
         hpo: hpotk.MinimalOntology,
         query: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
@@ -254,14 +253,16 @@ class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
         """
         self._check_patient(patient)
         matching_termid_set = set() ## use a set to avoid double-counting. We add terms from self._query that are matched
-        for pf in patient.present_phenotypes:
+        for pf in patient.present_phenotypes():
             hpo_id = pf.identifier
             ancs = self._hpo.graph.get_ancestors(hpo_id, include_source=True)
             for anc in ancs:
                 if anc in self._query:
                     matching_termid_set.add(anc)
-        
-        return PhenotypeCategorization(phenotype=len(matching_termid_set))
+        ## Note the categories are only needed for 2x2 or 2x3 tests. They
+        ## are not needed for Mann Whitney U test. The following is just to satisfy the API.
+        countCategorization = PatientCategory(cat_id=424242, name="counting")
+        return PhenotypeCategorization(phenotype=len(matching_termid_set), category=countCategorization)
 
     @property
     def phenotypes(self) -> typing.Sequence[P]:
@@ -273,9 +274,9 @@ class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
 
     def get_question(self) -> str:
         # What does this predicate answer?
-        raise "how many of the target HPO terms (or their descendants) are does the individual display?"
+        return "how many of the target HPO terms (or their descendants) are does the individual display?"
 
     def get_categorizations(self) -> typing.Sequence[PhenotypeCategorization[int]]:
         # e.g. [0, .. , 5]
         # This should return descriptions of all categories that the predicate can produce.
-        return self.phenotypes()
+        return [PhenotypeCategorization(IntegerCountCategory(p), p) for p in self.phenotypes]
