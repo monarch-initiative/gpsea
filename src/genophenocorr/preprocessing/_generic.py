@@ -1,6 +1,6 @@
 import typing
 
-from genophenocorr.model import ImpreciseSvInfo, TranscriptAnnotation, VariantEffect
+from genophenocorr.model import ImpreciseSvInfo, TranscriptAnnotation, VariantEffect, VariantClass
 
 from ._api import ImpreciseSvFunctionalAnnotator, GeneCoordinateService
 
@@ -42,9 +42,9 @@ class DefaultImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
         self, 
         variant_class: str,
     ) -> typing.Sequence[VariantEffect]:
-        if variant_class == 'DEL':
+        if variant_class == VariantClass.DEL:
             return (VariantEffect.TRANSCRIPT_ABLATION,)
-        elif variant_class == 'DUP':
+        elif variant_class == VariantClass.DUP:
             return (VariantEffect.TRANSCRIPT_AMPLIFICATION,)
         else:
             # This mapping is most likely incomplete.
