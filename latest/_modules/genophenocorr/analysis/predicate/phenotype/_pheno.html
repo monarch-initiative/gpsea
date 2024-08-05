@@ -90,12 +90,11 @@
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="p">,</span> <span class="n">Categorization</span>
 
-
 <span class="n">P</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Phenotype entity of interest, such as :class:`hpotk.model.TermId`, representing an HPO term or an OMIM/MONDO term.</span>
 
-<span class="sd">However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable </span>
+<span class="sd">However, phenotype entity can be anything as long as it is :class:`typing.Hashable` and comparable</span>
 <span class="sd">(have `__eq__` and `__lt__` magic methods).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -322,6 +321,126 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;DiseasePresencePredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="CountingPhenotypePredicate">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.CountingPhenotypePredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">CountingPhenotypePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `CountingPhenotypePredicate` bins the patient</span>
+<span class="sd">    according to the count of present phenotypes that are either</span>
+<span class="sd">    an exact match to the `query` terms or their descendants. For instance, we may want to count whether an individual has</span>
+<span class="sd">    brain, liver, kidney, and skin abormalities. In the case, the query would include the corresponding terms (e.g.,</span>
+<span class="sd">    Abnormal brain morphology HP:0012443). An individual can then have between 0 and 4. This predicate is intended</span>
+<span class="sd">    to be used with the Mann Whitney U test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CountingPhenotypePredicate.from_query_curies">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.CountingPhenotypePredicate.from_query_curies">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_query_curies</span><span class="p">(</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `CountingPhenotypePredicate` from HPO and </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query_term_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+            <span class="c1"># First check if the query items are Term IDs or curies.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query argument must be iterable of hpotk TermId&#39;s or strings but we found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Now chack that the term IDs are HPO term IDs.</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hpo</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The query </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> was not found in the HPO&quot;</span><span class="p">)</span>
+            <span class="n">query_term_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_term_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`query` must not be empty&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># the query terms must not include a term and its ancestor</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query_term_ids</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">anc</span> <span class="ow">in</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ancestors</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">anc</span> <span class="ow">in</span> <span class="n">query_term_ids</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Both </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> and its ancestor term </span><span class="si">{</span><span class="n">anc</span><span class="si">}</span><span class="s2"> were found in the query, but query terms must not include a term and its ancestor&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">CountingPhenotypePredicate</span><span class="p">(</span>
+            <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
+            <span class="n">query</span><span class="o">=</span><span class="n">query_term_ids</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">PhenotypeCategorization</span><span class="p">(</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">PatientCategory</span><span class="p">(</span>
+                    <span class="n">cat_id</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;1 phenotype&#39;</span> <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1"> phenotypes&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">phenotype</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="p">)</span> 
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_to_categorization</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">cat</span><span class="o">.</span><span class="n">phenotype</span><span class="p">:</span> <span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="CountingPhenotypePredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.CountingPhenotypePredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the count (number) of terms in the query set that have matching terms (exact matches or descendants) in the patient.</span>
+<span class="sd">        Do not double count if the patient has two terms (e.g., two different descendants) of one of the query terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">present_phenotypes</span><span class="p">():</span>
+                <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">identifier</span>
+                <span class="k">if</span> <span class="n">hpo_id</span> <span class="o">==</span> <span class="n">q</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">anc</span> <span class="o">==</span> <span class="n">q</span> <span class="k">for</span> <span class="n">anc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ancestors</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)):</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># We break the inner loop to continue the outer.</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># We cannot produce more counts than there are categories!</span>
+        <span class="k">assert</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_to_categorization</span><span class="p">[</span><span class="n">count</span><span class="p">]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">P</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The phenotype ranges from 0 (none of the target HPO ids in self._query match) to self._max_terms (all of the target HPO ids match)</span>
+<span class="sd">        We return a list of corresponding integers, e.g.,  [0, .. , 5]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span>
+
+<div class="viewcode-block" id="CountingPhenotypePredicate.get_question">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.CountingPhenotypePredicate.get_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;How many of the target HPO terms (or their descendants) does the individual display?&quot;</span></div>
+
+
+<div class="viewcode-block" id="CountingPhenotypePredicate.get_categorizations">
+<a class="viewcode-back" href="../../../../../apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.CountingPhenotypePredicate.get_categorizations">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span></div>
+</div>
 
 </pre></div>
 
