@@ -3,7 +3,6 @@ import typing
 import hpotk
 import pytest
 
-from genophenocorr.analysis.predicate._api import IntegerCountCategory
 from genophenocorr.model import Patient, Phenotype, SampleLabels
 from genophenocorr.analysis.predicate import PatientCategory
 from genophenocorr.analysis.predicate.phenotype import (
@@ -19,7 +18,7 @@ class TestCountingPhenotypePredicate:
             self,
             hpo: hpotk.MinimalOntology,
     ) -> CountingPhenotypePredicate:
-        return CountingPhenotypePredicate(
+        return CountingPhenotypePredicate.from_query_curies(
             hpo=hpo,
             query=(
                 "HP:0000478",  # Abnormality of the eye
@@ -86,14 +85,18 @@ class TestCountingPhenotypePredicate:
             counting_predicate: CountingPhenotypePredicate,
     ):
         categories = list(counting_predicate.get_categories())
-        assert categories == [IntegerCountCategory(cat_id=0), IntegerCountCategory(1), IntegerCountCategory(2)]
+        assert categories == [
+            PatientCategory(cat_id=0, name='0 phenotypes'), 
+            PatientCategory(cat_id=1, name='1 phenotype'), 
+            PatientCategory(cat_id=2, name='2 phenotypes'),
+        ]
 
         assert counting_predicate.n_categorizations() == 3
 
         categorizations = list(counting_predicate.get_categorizations())
         examples = [
-            PhenotypeCategorization(IntegerCountCategory(0), 0),
-            PhenotypeCategorization(IntegerCountCategory(1), 1),
+            PhenotypeCategorization(PatientCategory(cat_id=0, name='0 phenotypes'), 0),
+            PhenotypeCategorization(PatientCategory(cat_id=1, name='1 phenotype'), 1),
         ]
 
         assert all(example in categorizations for example in examples)
@@ -103,7 +106,7 @@ class TestCountingPhenotypePredicate:
             counting_predicate: CountingPhenotypePredicate,
     ):
         actual = counting_predicate.get_question()
-        assert actual == "how many of the target HPO terms (or their descendants) are does the individual display?"
+        assert actual == "How many of the target HPO terms (or their descendants) does the individual display?"
 
     def test_creating_predicate_with_term_and_ancestor_fails(
             self,
@@ -114,7 +117,7 @@ class TestCountingPhenotypePredicate:
                 "HP:0001250",  # Seizure
                 "HP:0012638",  # Abnormal nervous system physiology
             )
-            CountingPhenotypePredicate(hpo, query)
+            CountingPhenotypePredicate.from_query_curies(hpo, query)
 
         assert e.value.args[
                    0] == "Both HP:0001250 and its ancestor term HP:0012638 were found in the query, but query terms must not include a term and its ancestor"
@@ -128,6 +131,6 @@ class TestCountingPhenotypePredicate:
                 "HP:0",  # Does not exist
                 "HP:1",  # Does not exist
             )
-            CountingPhenotypePredicate(hpo, query)
+            CountingPhenotypePredicate.from_query_curies(hpo, query)
 
         assert e.value.args[0] == "The query HP:0 was not found in the HPO"

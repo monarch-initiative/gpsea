@@ -5,7 +5,7 @@ import hpotk
 
 from genophenocorr.model import Patient
 
-from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization, IntegerCountCategory
+from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization
 
 P = typing.TypeVar('P')
 """
@@ -221,48 +221,85 @@ class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
     to be used with the Mann Whitney U test.
     """
 
-    def __init__(
-        self,
+    @staticmethod
+    def from_query_curies(
         hpo: hpotk.MinimalOntology,
         query: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
-        self._hpo = hpo
-        # `query` is an iterable of either CURIEs (e.g. `HP:0001250`) or `TermId`s.
-        # We take curies as a convenience to the user. Ensure we map a curie to `TermId` using `TermId.from_curie`.
-        self._query = set()
+        """
+        Create `CountingPhenotypePredicate` from HPO and 
+        """
+        query_term_ids = set()
         for q in query:
-            if isinstance(q,str):
+            # First check if the query items are Term IDs or curies.
+            if isinstance(q, str):
                 q = hpotk.TermId.from_curie(q)
-            if not isinstance(q, hpotk.TermId):
+            elif isinstance(q, hpotk.TermId):
+                pass
+            else:
                 raise ValueError(f"query argument must be iterable of hpotk TermId's or strings but we found {type(q)}")
-            if not q in self._hpo:
+            
+            # Now chack that the term IDs are HPO term IDs.
+            if q not in hpo:
                 raise ValueError(f"The query {q} was not found in the HPO")
-            self._query.add(q)
+            query_term_ids.add(q)
+
+        if len(query_term_ids) == 0:
+            raise ValueError('`query` must not be empty')
+        
         # the query terms must not include a term and its ancestor
-        for q in self._query:
-            ancs = self._hpo.graph.get_ancestors(q, include_source=False)
-            for anc in ancs:
-                if anc in self._query:
+        for q in query_term_ids:
+            for anc in hpo.graph.get_ancestors(q):
+                if anc in query_term_ids:
                     raise ValueError(f"Both {q} and its ancestor term {anc} were found in the query, but query terms must not include a term and its ancestor")
-        self._max_terms = len(self._query)
+        
+        return CountingPhenotypePredicate(
+            hpo=hpo,
+            query=query_term_ids,
+        )
+
+    def __init__(
+        self,
+        hpo: hpotk.MinimalOntology,
+        query: typing.Iterable[hpotk.TermId],
+    ):
+        self._hpo = hpo
+        self._query = set(query)
+        self._phenotypes = tuple(range(len(self._query) + 1))
+        self._categorizations = tuple(
+            PhenotypeCategorization(
+                category=PatientCategory(
+                    cat_id=p,
+                    name='1 phenotype' if p == 1 else f'{p} phenotypes',
+                ),
+                phenotype=p,
+            ) 
+            for p in self._phenotypes
+        )
+        self._count_to_categorization = {
+            cat.phenotype: cat for cat in self._categorizations
+        }
 
     def test(self, patient: Patient) -> typing.Optional[PhenotypeCategorization[int]]:
         """
-        return the count (number) of terms in the target set (self._query) that have matching terms (exact matches or descendants) in the patient.
+        Get the count (number) of terms in the query set that have matching terms (exact matches or descendants) in the patient.
         Do not double count if the patient has two terms (e.g., two different descendants) of one of the query terms.
         """
         self._check_patient(patient)
-        matching_termid_set = set() ## use a set to avoid double-counting. We add terms from self._query that are matched
-        for pf in patient.present_phenotypes():
-            hpo_id = pf.identifier
-            ancs = self._hpo.graph.get_ancestors(hpo_id, include_source=True)
-            for anc in ancs:
-                if anc in self._query:
-                    matching_termid_set.add(anc)
-        ## Note the categories are only needed for 2x2 or 2x3 tests. They
-        ## are not needed for Mann Whitney U test. The following is just to satisfy the API.
-        countCategorization = PatientCategory(cat_id=424242, name="counting")
-        return PhenotypeCategorization(phenotype=len(matching_termid_set), category=countCategorization)
+
+        count = 0
+        for q in self._query:
+            for pf in patient.present_phenotypes():
+                hpo_id = pf.identifier
+                if hpo_id == q or any(anc == q for anc in self._hpo.graph.get_ancestors(hpo_id)):
+                    count += 1
+                    # We break the inner loop to continue the outer.
+                    break
+
+        # We cannot produce more counts than there are categories!
+        assert count <= len(self._phenotypes)
+        
+        return self._count_to_categorization[count]
 
     @property
     def phenotypes(self) -> typing.Sequence[P]:
@@ -270,13 +307,10 @@ class CountingPhenotypePredicate(PhenotypePolyPredicate[int]):
         The phenotype ranges from 0 (none of the target HPO ids in self._query match) to self._max_terms (all of the target HPO ids match)
         We return a list of corresponding integers, e.g.,  [0, .. , 5]
         """
-        return list(range(self._max_terms + 1))
+        return self._phenotypes
 
     def get_question(self) -> str:
-        # What does this predicate answer?
-        return "how many of the target HPO terms (or their descendants) are does the individual display?"
+        return "How many of the target HPO terms (or their descendants) does the individual display?"
 
     def get_categorizations(self) -> typing.Sequence[PhenotypeCategorization[int]]:
-        # e.g. [0, .. , 5]
-        # This should return descriptions of all categories that the predicate can produce.
-        return [PhenotypeCategorization(IntegerCountCategory(p), p) for p in self.phenotypes]
+        return self._categorizations

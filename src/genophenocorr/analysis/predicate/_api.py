@@ -60,17 +60,6 @@ class PatientCategory:
         return hash((self.cat_id, self.name, self.description))
 
 
-class IntegerCountCategory(PatientCategory):
-    """
-    This is a patient category intended for use with the Mann Whitney test of how many items in a targetset of HPO ids a proband has
-    """
-    def __init__(self, cat_id: int):
-        self._cat_id = hpotk.util.validate_instance(cat_id, int, 'cat_id')
-        self._name = f"{cat_id} counts category"
-        self._description = f"category of probands with {cat_id} counts for a target set of HPO ids"
-
-
-
 class PatientCategories(metaclass=abc.ABCMeta):
     """
     A static utility class to serve common patient categories.
