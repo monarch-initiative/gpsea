@@ -3,7 +3,7 @@ import typing
 from genophenocorr.model import VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
-from ._api import VariantPredicate
+from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
 from ._predicates import *
 
 
@@ -17,6 +17,64 @@ class VariantPredicates:
     `VariantPredicates` is a static utility class to provide the variant predicates
     that are relatively simple to configure.
     """
+
+    @staticmethod
+    def all(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` that returns `True` if ALL `predicates` evaluate to `True`.
+
+        This is useful for building compound predicates programmatically.
+
+        **Example**
+
+        Build a predicate to test if variant has a functional annotation to genes *SURF1* and *SURF2*:
+
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        
+        >>> genes = ('SURF1', 'SURF2',)
+        >>> predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)
+        >>> predicate.get_question()
+        '(impacts SURF1 AND impacts SURF2)'
+        
+        Args:
+            predicates: an iterable of predicates to test
+        """
+        predicates = tuple(predicates)
+        if len(predicates) == 1:
+            # No need to wrap one predicate into a logical predicate.
+            return predicates[0]
+        else:
+            return AllVariantPredicate(*predicates)
+
+    @staticmethod
+    def any(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` that returns `True` if ANY of the `predicates` evaluates to `True`.
+
+        This can be useful for building compound predicates programmatically.
+
+        **Example**
+
+        Build a predicate to test if variant leads to a missense or non-sense change on a fictive transcript `NM_123456.7`:
+
+        >>> from genophenocorr.model import VariantEffect
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        
+        >>> tx_id = 'NM_123456.7'
+        >>> effects = (VariantEffect.MISSENSE_VARIANT, VariantEffect.STOP_GAINED,)
+        >>> predicate = VariantPredicates.any(VariantPredicates.variant_effect(e, tx_id) for e in effects)
+        >>> predicate.get_question()
+        '(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)'
+
+        Args:
+            predicates: an iterable of predicates to test
+        """
+        predicates = tuple(predicates)
+        if len(predicates) == 1:
+            # No need to wrap one predicate into a logical predicate.
+            return predicates[0]
+        else:
+            return AnyVariantPredicate(*predicates)
 
     @staticmethod
     def variant_effect(
@@ -55,7 +113,7 @@ class VariantPredicates:
         Prepare a :class:`VariantPredicate` that tests if the variant affects a given gene.
 
         Args:
-            symbol: a `str` with the gene symbol (e.g. `FBN1`).
+            symbol: a `str` with the gene symbol (e.g. ``'FBN1'``).
 
         Returns:
             VariantPredicate: a predicate

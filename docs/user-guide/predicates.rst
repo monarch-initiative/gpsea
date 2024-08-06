@@ -115,7 +115,7 @@ such as testing if the variant is a *"chromosomal deletion" or a deletion which 
 >>> chromosomal_deletion = "SO:1000029"
 >>> predicate = VariantPredicates.structural_type(chromosomal_deletion) | (VariantPredicates.variant_class(VariantClass.DEL) & VariantPredicates.change_length("<=", -50))
 >>> predicate.get_question()
-'(structural type is SO:1000029 OR (variant class is DEL AND change length is <=-50))'
+'(structural type is SO:1000029 OR (variant class is DEL AND change length <= -50))'
 
 
 That's it for predicates. Please see :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates` 

@@ -74,9 +74,12 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        *args,
+        *predicates,
     ):
-        self._predicates = tuple(args)
+        if len(predicates) == 0:
+            raise ValueError('Predicates must not be empty!')
+        self._predicates = tuple(predicates)
+        
 
     @property
     def predicates(self) -> typing.Sequence[VariantPredicate]:

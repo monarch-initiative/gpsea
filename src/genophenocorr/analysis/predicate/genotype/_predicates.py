@@ -109,7 +109,7 @@ class VariantGenePredicate(VariantPredicate):
         self._symbol = symbol
 
     def get_question(self) -> str:
-        return f'variant affects gene {self._symbol}'
+        return f'impacts {self._symbol}'
 
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
