@@ -85,12 +85,19 @@ class VariantPredicates:
         Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to
         a certain variant effect.
 
+        **Example**
+
+        Make a predicate for testing if the variant leads to a missense change on transcript `NM_123.4`:
+
+        >>> from genophenocorr.model import VariantEffect
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_123.4')
+        >>> predicate.get_question()
+        'MISSENSE_VARIANT on NM_123.4'
+
         Args:
             effect: the target :class:`VariantEffect`
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
-
-        Returns:
-            VariantPredicate: a predicate for testing
         """
         return VariantEffectPredicate(effect, tx_id)
 
@@ -101,9 +108,6 @@ class VariantPredicates:
 
         Args:
             key: a `str` with the variant key (e.g. `X_12345_12345_C_G` or `22_10001_20000_INV`)
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return VariantKeyPredicate(key)
 
@@ -114,9 +118,6 @@ class VariantPredicates:
 
         Args:
             symbol: a `str` with the gene symbol (e.g. ``'FBN1'``).
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return VariantGenePredicate(symbol)
 
@@ -127,9 +128,6 @@ class VariantPredicates:
 
         Args:
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return VariantTranscriptPredicate(tx_id)
 
@@ -144,9 +142,6 @@ class VariantPredicates:
         Args:
             exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return VariantExonPredicate(exon, tx_id)
 
@@ -157,9 +152,6 @@ class VariantPredicates:
 
         Args:
             region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return ProteinRegionPredicate(region, tx_id)
 
@@ -207,14 +199,11 @@ class VariantPredicates:
 
         >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.structural_type('SO:1000029')
-        >>> predicate
-        StructuralTypePredicate(query=SO:1000029)
+        >>> predicate.get_question()
+        'structural type is SO:1000029'
 
         Args:
             curie: compact uniform resource identifier (CURIE) with the structural type to test.
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return StructuralTypePredicate.from_curie(curie)
 
@@ -225,15 +214,90 @@ class VariantPredicates:
         """
         Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`VariantClass`.
 
+        **Example**
+
+        Make a predicate to test if the variant is a deletion:
+
+        >>> from genophenocorr.model import VariantClass
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.variant_class(VariantClass.DEL)
+        >>> predicate.get_question()
+        'variant class is DEL'
+
         Args:
             variant_class: the variant class to test.
-
-        Returns:
-            VariantPredicate: a predicate
         """
         return VariantClassPredicate(
             query=variant_class,
         )
+
+    @staticmethod
+    def ref_length(
+        operator: typing.Literal["<", "<=", "==", "!=", ">=", ">"],
+        length: int,
+    ) -> VariantPredicate:
+        """
+        Prepare a :class:`VariantPredicate` for testing if the reference (REF) allele 
+        of variant is above, below, or (not) equal to certain `length`.
+
+        The length of the REF allele corresponds to the length of the genomic region affected by the variant.
+        Let's show a few examples.
+
+        >>> from genophenocorr.model import VariantCoordinates
+        >>> from genophenocorr.model.genome import GRCh38
+        >>> chr1 = GRCh38.contig_by_name("chr1")
+
+        The length of the reference allele of a missense variant is 1 
+        because the variant affects a 1-bp region spanned by the ``C`` nucleotide:
+
+        >>> missense = VariantCoordinates.from_vcf_literal(chr1, 1001, 'C', 'T')
+        >>> len(missense)
+        1
+
+        The length of a "small" deletion is the same as the length of the ref allele `str`:
+        (``'CCC'`` in the example below):
+
+        >>> deletion = VariantCoordinates.from_vcf_literal(chr1, 1001, 'CCC', 'C')
+        >>> len(deletion)
+        3
+
+        This is because the literal notation spells out the alleles. 
+        However, this simple rule does not apply in symbolic notation. 
+        Here, the REF length corresponds to the length of the allele region.
+
+        For instance, for the following structural variant
+
+        .. code::
+           
+           #CHROM   POS    ID   REF  ALT     QUAL   FILTER   INFO 
+           1        1001   .    C    <DEL>   6      PASS     SVTYPE=DEL;END=1003;SVLEN=-3
+
+        the length of the REF allele is `3`:
+
+        >>> sv_deletion = VariantCoordinates.from_vcf_symbolic(
+        ...     chr1, pos=1001, end=1003, 
+        ...     ref='C', alt='<DEL>', svlen=-3,
+        ... )
+        >>> len(sv_deletion)
+        3
+
+        because the deletion removes 3 base pairs at the coordinates :math:`[1001, 1003]`.
+
+        **Example**
+
+        Prepare a predicate that tests that the REF allele includes more than 5 base pairs:
+
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.ref_length('>', 5)
+        >>> predicate.get_question()
+        'ref allele length > 5'
+        
+        Args:
+            operator: a `str` with the desired test. Must be one of ``{ '<', '<=', '==', '!=', '>=', '>' }``.
+            length: a non-negative `int` with the length threshold.
+        """
+        return RefAlleleLengthPredicate(operator, length)
+        
 
     @staticmethod
     def change_length(
@@ -255,11 +319,12 @@ class VariantPredicates:
 
         >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.change_length('<=', -10)
-        >>> predicate
-        ChangeLengthPredicate(operator='<=', threshold=-10)
+        >>> predicate.get_question()
+        'change length <= -10'
 
         Args:
             operator: a `str` with the desired test. Must be one of ``{ '<', '<=', '==', '!=', '>=', '>' }``.
+            threshold: an `int` with the threshold. Can be negative, zero, or positive.
         """
         return ChangeLengthPredicate(operator, threshold)
 
@@ -274,20 +339,23 @@ class VariantPredicates:
         
         .. note::
 
-            The predicate uses See :meth:`genophenocorr.model.VariantCoordinates.change_length`
+            The predicate uses :meth:`genophenocorr.model.VariantCoordinates.change_length`
             to determine if the length of the variant is above or below `threshold`.
             
-            **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele is shorter than the reference allele.
+            **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele 
+            is shorter than the reference allele. See the method's documentation for more info.
 
         **Example**
 
-        Prepare a predicate for testing if the variant is a chromosomal destructural deletion with more than 
+        Prepare a predicate for testing if the variant is a chromosomal deletion that removes at least 20 base pairs:
+
+        >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+        >>> predicate = VariantPredicates.is_structural_deletion(-20)
+        >>> predicate.get_question()
+        '(structural type is SO:1000029 OR (variant class is DEL AND change length <= -20))'
 
         Args:
             threshold: an `int` with the change length threshold to determine if a variant is "structural" (-50 bp by default).
-
-        Returns:
-            VariantPredicate: a predicate
         """
         chromosomal_deletion = "SO:1000029"
         return VariantPredicates.structural_type(chromosomal_deletion) | (
@@ -317,10 +385,7 @@ class ProteinPredicates:
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
 
         Args:
-            feature_type: the target protein :class:`FeatureType` (e.g. ``)
-
-        Returns:
-            VariantPredicate: a predicate
+            feature_type: the target protein :class:`FeatureType` (e.g. :class:`FeatureType.DOMAIN`)
         """
         return ProteinFeatureTypePredicate(
             feature_type, tx_id, self._protein_metadata_service
@@ -336,9 +401,7 @@ class ProteinPredicates:
 
         Args:
             feature_id: the id of the target protein feature (e.g. `ANK 1`)
-
-        Returns:
-            VariantPredicate: a predicate
+            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
         """
         return ProteinFeaturePredicate(
             feature_id, tx_id, self._protein_metadata_service

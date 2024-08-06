@@ -336,32 +336,7 @@ class StructuralTypePredicate(VariantPredicate):
         return f'StructuralTypePredicate(query={self._query})'
 
 
-class ChangeLengthPredicate(VariantPredicate):
-    """
-    `ChangeLengthPredicate` tests if the variant's change length is above, below, or equal to a threshold.
-    """
-    
-    def __init__(
-        self,
-        operator: typing.Literal['<', '<=', '==', '!=', '>=', '>'],
-        threshold: int,
-    ):
-        self._operator_str = operator
-        self._operator = ChangeLengthPredicate._decode_operator(operator)
-        
-        assert isinstance(threshold, int), 'threshold must be an `int`'
-        self._threshold = threshold
-
-    def get_question(self) -> str:
-        return f'change length is {self._operator_str}{self._threshold}'
-
-    def test(self, variant: Variant) -> bool:
-        if variant.variant_info.has_variant_coordinates():
-            return self._operator(variant.variant_info.variant_coordinates.change_length, self._threshold)
-        return False
-
-    @staticmethod
-    def _decode_operator(op: str) -> typing.Callable[[int, int], bool]:
+def _decode_operator(op: str) -> typing.Callable[[int, int], bool]:
         if op == '<':
             return operator.lt
         elif op == '<=':
@@ -377,6 +352,31 @@ class ChangeLengthPredicate(VariantPredicate):
         else:
             raise ValueError(f'Unsupported operator {op}')
 
+
+class ChangeLengthPredicate(VariantPredicate):
+    """
+    `ChangeLengthPredicate` tests if the variant's change length is above, below, or equal to a threshold.
+    """
+    
+    def __init__(
+        self,
+        operator: typing.Literal['<', '<=', '==', '!=', '>=', '>'],
+        threshold: int,
+    ):
+        self._operator_str = operator
+        self._operator = _decode_operator(operator)
+        
+        assert isinstance(threshold, int), 'threshold must be an `int`'
+        self._threshold = threshold
+
+    def get_question(self) -> str:
+        return f'change length {self._operator_str} {self._threshold}'
+
+    def test(self, variant: Variant) -> bool:
+        if variant.variant_info.has_variant_coordinates():
+            return self._operator(variant.variant_info.variant_coordinates.change_length, self._threshold)
+        return False
+
     def __eq__(self, value: object) -> bool:
         return isinstance(value, ChangeLengthPredicate) \
             and self._operator_str == value._operator_str \
@@ -390,6 +390,47 @@ class ChangeLengthPredicate(VariantPredicate):
 
     def __repr__(self):
         return f'ChangeLengthPredicate(operator=\'{self._operator_str}\', threshold={self._threshold})'
+
+
+class RefAlleleLengthPredicate(VariantPredicate):
+    """
+    `RefAlleleLengthPredicate` tests if the length of the variant's reference allele 
+    is greater than, equal, or less than certain value.
+    """
+
+    def __init__(
+        self,
+        operator: typing.Literal['<', '<=', '==', '!=', '>=', '>'],
+        length: int,
+    ):
+        self._operator_str = operator
+        self._operator = _decode_operator(operator)
+        
+        assert isinstance(length, int), 'length must be an `int`'
+        assert length >= 0, 'length must be non-negative'
+        self._length = length
+
+    def get_question(self) -> str:
+        return f'ref allele length {self._operator_str} {self._length}'
+
+    def test(self, variant: Variant) -> bool:
+        if variant.variant_info.has_variant_coordinates():
+            return self._operator(len(variant.variant_info.variant_coordinates), self._length)
+        return False
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, RefAlleleLengthPredicate) \
+            and self._operator_str == value._operator_str \
+            and self._length == value._length
+    
+    def __hash__(self) -> int:
+        return hash((self._operator_str, self._length,))
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'RefAlleleLengthPredicate(operator=\'{self._operator_str}\', length={self._length})'
 
 
 class ProteinRegionPredicate(VariantPredicate):
