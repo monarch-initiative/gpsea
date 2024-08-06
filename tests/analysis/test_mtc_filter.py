@@ -16,7 +16,10 @@ class TestHeuristicSamplerMtcFilter:
     @pytest.fixture
     def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicMtcFilter:
         default_freq_threshold=0.2
-        return HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter=default_freq_threshold)
+        return HeuristicMtcFilter.default_filter(
+            hpo=hpo, 
+            term_frequency_threshold=default_freq_threshold,
+        )
 
     @pytest.fixture(scope='class')
     def patient_counts(
