@@ -27,7 +27,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" href="autosomal_recessive.html" />
+    <link rel="next" title="General HPO terms" href="general_hpo_terms.html" />
     <link rel="prev" title="Statistical tests" href="stats.html" /> 
 </head>
 
@@ -73,6 +73,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#heuristic-sampler-strategy">heuristic sampler strategy</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
 </ul>
 </li>
@@ -311,7 +312,7 @@ and so they are filtered out.</p>
 </dl>
 </li>
 <li><dl>
-<dt>Skipping top level terms</dt><dd><p>All the direct children of the root phenotype term
+<dt>Skipping “general” level terms</dt><dd><p>All the direct children of the root phenotype term
 <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality (HP:0000118)</a> are skipped,
 because of the assumption that if there is a valid signal,
 it will derive from one of the more specific descendents.</p>
@@ -320,20 +321,7 @@ is a child of <em>Phenotypic abnormality</em>, and this assumption implies
 that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 <em>Abnormality of the nervous system</em> being significant.</p>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Second-level terms</dt><dd><p>For the same reason that the first level term are judged to be less relevant than more specific terms,
-the second level terms are also assumed by this heuristic to be less interesting.</p>
-<p>For instance, a typical first level term in the HPO would be
-<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000478">Abnormality of the eye HP:0000478</a>,
-and a typical second level term would be <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0012372">Abnormal eye morphology HP:0012372</a>,
-but an interesting term would be one such as <em>Posterior polar cataract</em>.
-With this heuristic, if any child of a second level term has at least 75% of the terms,
-then do not test the second level term because it is unlikely to add much insight.
-Only if the second level term has a <em>lot</em> more annotations, then we <em>do</em> test
-(this might mean that many different specific forms of <em>Abnormal eye morphology</em> are overrepresented).</p>
+<p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> for details.</p>
 </dd>
 </dl>
 </li>
@@ -346,7 +334,7 @@ Only if the second level term has a <em>lot</em> more annotations, then we <em>d
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="stats.html" class="btn btn-neutral float-left" title="Statistical tests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="autosomal_recessive.html" class="btn btn-neutral float-right" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="general_hpo_terms.html" class="btn btn-neutral float-right" title="General HPO terms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

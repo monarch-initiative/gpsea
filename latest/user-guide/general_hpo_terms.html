@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>General HPO terms &mdash; genophenocorr 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/genophenocorr.css?v=a9fa5eb9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" href="autosomal_recessive.html" />
+    <link rel="prev" title="Multiple-testing correction" href="mtc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            genophenocorr
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats.html">Statistical tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">General HPO terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genophenocorr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">General HPO terms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/general_hpo_terms.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="general-hpo-terms">
+<span id="id1"></span><h1>General HPO terms<a class="headerlink" href="#general-hpo-terms" title="Link to this heading"></a></h1>
+<p>Our heuristic for avoiding unnecessary statistical tests (See <a class="reference internal" href="mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a>) skips HPO terms that
+are unlikely to lead to interesting results on statistical testing.
+This is a domain judgment rather than a statistical one.
+The HPO is hierarchically arranged from general to specific, and the more specific a term is,
+the more interest we deem a significant genotype phenotype correlation to be.
+Therefore, we decide not to test terms such as
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000818">Abnormality of the endocrine system (HP:0000818)</a>.
+The top-level term <cite>Phenotypic abnormality (HP:0000118</cite>)&lt;<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">https://hpo.jax.org/browse/term/HP:0000118</a>&gt;`_ is the
+root of all phenotypic abnormality terms, and we refer to the children of this term as <cite>level 1</cite>.</p>
+<p>Most of the HPO is arranged according to morphological abnormalities (a structural abnormality) and physiological abnormalities.
+Therefore, the above term has the children
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0031072">Abnormal endocrine physiology (HP:0031072)</a>
+and
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0031071">Abnormal endocrine morphology (HP:0031071)</a>.
+We consider these terms to be uninteresting for the same reason - they are too general to bring much medical insight,
+and we expect that if there is a signal it will usually be driven by one or more specific terms.
+We call these terms <cite>level 2</cite>.</p>
+<p>Many but not all terms on <cite>level 3</cite> are also “general” in this sense,
+e.g., <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000828">Abnormality of the parathyroid gland  (HP:0000828)</a>.
+We also skip such <cite>level 3</cite> terms. Our heursitic for identifying these terms is to search the primary label for the word
+<code class="docutils literal notranslate"><span class="pre">'Abnormal'</span></code>, and remove all terms that start with this string.</p>
+<p>According to our heuristic sampler strategy (see <a class="reference internal" href="mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a>), we stop at <cite>level 3</cite>,
+because the terms at lower levels are more likely to be specific,
+even if they contain the word “Abnormal” or “Abnormality” in their label.
+Users can adapt the procedure if desired.</p>
+<p>The following table shows a list of HPO terms that are removed from consideration by the heuristic sampler strategy.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>level</p></th>
+<th class="head"><p>Term Id</p></th>
+<th class="head"><p>Label</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0002664</p></td>
+<td><p>Neoplasm</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001574</p></td>
+<td><p>Abnormality of the integument</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0040064</p></td>
+<td><p>Abnormality of limbs</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001871</p></td>
+<td><p>Abnormality of blood and blood-forming tissues</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0000598</p></td>
+<td><p>Abnormality of the ear</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001197</p></td>
+<td><p>Abnormality of prenatal development or birth</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0000818</p></td>
+<td><p>Abnormality of the endocrine system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0000119</p></td>
+<td><p>Abnormality of the genitourinary system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0045027</p></td>
+<td><p>Abnormality of the thoracic cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0000478</p></td>
+<td><p>Abnormality of the eye</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0025142</p></td>
+<td><p>Constitutional symptom</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0000707</p></td>
+<td><p>Abnormality of the nervous system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0033127</p></td>
+<td><p>Abnormality of the musculoskeletal system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001939</p></td>
+<td><p>Abnormality of metabolism/homeostasis</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0025354</p></td>
+<td><p>Abnormal cellular phenotype</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0002086</p></td>
+<td><p>Abnormality of the respiratory system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0000152</p></td>
+<td><p>Abnormality of head or neck</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001507</p></td>
+<td><p>Growth abnormality</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0000769</p></td>
+<td><p>Abnormality of the breast</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0002715</p></td>
+<td><p>Abnormality of the immune system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0001608</p></td>
+<td><p>Abnormality of the voice</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 1</p></td>
+<td><p>HP:0001626</p></td>
+<td><p>Abnormality of the cardiovascular system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 1</p></td>
+<td><p>HP:0025031</p></td>
+<td><p>Abnormality of the digestive system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0031094</p></td>
+<td><p>Abnormal breast physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0045026</p></td>
+<td><p>Abnormal mediastinum morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0011025</p></td>
+<td><p>Abnormal cardiovascular system physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0032180</p></td>
+<td><p>Abnormal circulating metabolite concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0032245</p></td>
+<td><p>Abnormal metabolism</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0012372</p></td>
+<td><p>Abnormal eye morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0025461</p></td>
+<td><p>Abnormal cell morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000002</p></td>
+<td><p>Abnormality of body height</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0003110</p></td>
+<td><p>Abnormality of urine homeostasis</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001892</p></td>
+<td><p>Abnormal bleeding</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0012093</p></td>
+<td><p>Abnormality of endocrine pancreas physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000777</p></td>
+<td><p>Abnormal thymus morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:3000013</p></td>
+<td><p>Abnormal platysma muscle morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0032251</p></td>
+<td><p>Abnormal immune system morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000079</p></td>
+<td><p>Abnormality of the urinary system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0012680</p></td>
+<td><p>Abnormality of the pineal gland</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0030680</p></td>
+<td><p>Abnormal cardiovascular system morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000847</p></td>
+<td><p>Abnormality of renin-angiotensin system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0025429</p></td>
+<td><p>Abnormal cry</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0002597</p></td>
+<td><p>Abnormality of the vasculature</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0025454</p></td>
+<td><p>Abnormal CSF metabolite concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0005561</p></td>
+<td><p>Abnormal bone marrow cell morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0025456</p></td>
+<td><p>Abnormal CSF protein concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0003549</p></td>
+<td><p>Abnormality of connective tissue</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0011843</p></td>
+<td><p>Abnormal musculoskeletal physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0032243</p></td>
+<td><p>Abnormal tissue metabolite concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0003011</p></td>
+<td><p>Abnormality of the musculature</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0012639</p></td>
+<td><p>Abnormal nervous system morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0031704</p></td>
+<td><p>Abnormal ear physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0002814</p></td>
+<td><p>Abnormality of the lower limb</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000834</p></td>
+<td><p>Abnormality of the adrenal glands</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0004323</p></td>
+<td><p>Abnormality of body weight</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000828</p></td>
+<td><p>Abnormality of the parathyroid gland</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0020169</p></td>
+<td><p>Abnormal drug response</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0033796</p></td>
+<td><p>Abnormal leukocyte physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000078</p></td>
+<td><p>Abnormality of the genital system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0001928</p></td>
+<td><p>Abnormality of coagulation</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0031072</p></td>
+<td><p>Abnormal endocrine physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000234</p></td>
+<td><p>Abnormality of the head</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0025033</p></td>
+<td><p>Abnormal digestive system morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0002012</p></td>
+<td><p>Abnormality of the abdominal organs</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0031550</p></td>
+<td><p>Abnormal flow cytometry test result</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0031093</p></td>
+<td><p>Abnormal breast morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001787</p></td>
+<td><p>Abnormal delivery</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0031703</p></td>
+<td><p>Abnormal ear morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0031685</p></td>
+<td><p>Abnormal stool composition</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0034684</p></td>
+<td><p>Abnormal enzyme concentration or activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001877</p></td>
+<td><p>Abnormal erythrocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0033334</p></td>
+<td><p>Abnormal embryonic development</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0002795</p></td>
+<td><p>Abnormal respiratory system physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0004378</p></td>
+<td><p>Abnormality of the anus</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0011138</p></td>
+<td><p>Abnormal skin adnexa morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0003117</p></td>
+<td><p>Abnormal circulating hormone concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0025021</p></td>
+<td><p>Abnormal erythrocyte sedimentation rate</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0001872</p></td>
+<td><p>Abnormality of thrombocytes</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0020054</p></td>
+<td><p>Abnormal erythrocyte physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0001438</p></td>
+<td><p>Abnormal abdomen morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001977</p></td>
+<td><p>Abnormal thrombosis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000924</p></td>
+<td><p>Abnormality of the skeletal system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0100763</p></td>
+<td><p>Abnormality of the lymphatic system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000951</p></td>
+<td><p>Abnormality of the skin</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0025032</p></td>
+<td><p>Abnormality of digestive system physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0000820</p></td>
+<td><p>Abnormality of the thyroid gland</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0012029</p></td>
+<td><p>Abnormal urine hormone level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0033012</p></td>
+<td><p>Abnormal salivary metabolite concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000464</p></td>
+<td><p>Abnormality of the neck</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0025276</p></td>
+<td><p>Abnormality of skin adnexa physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0031071</p></td>
+<td><p>Abnormal endocrine morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0001560</p></td>
+<td><p>Abnormality of the amniotic fluid</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0011024</p></td>
+<td><p>Abnormality of the gastrointestinal tract</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0012638</p></td>
+<td><p>Abnormal nervous system physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0000864</p></td>
+<td><p>Abnormality of the hypothalamus-pituitary axis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0009127</p></td>
+<td><p>Abnormality of the musculature of the limbs</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0410008</p></td>
+<td><p>Abnormality of the peripheral nervous system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0010932</p></td>
+<td><p>Abnormal circulating nucleobase concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0004298</p></td>
+<td><p>Abnormality of the abdominal wall</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0500015</p></td>
+<td><p>Abnormal cardiac test</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0012337</p></td>
+<td><p>Abnormal homeostasis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0010978</p></td>
+<td><p>Abnormality of immune system physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001194</p></td>
+<td><p>Abnormalities of placenta or umbilical cord</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0012373</p></td>
+<td><p>Abnormal eye physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0001881</p></td>
+<td><p>Abnormal leukocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0002817</p></td>
+<td><p>Abnormality of the upper limb</p></td>
+</tr>
+<tr class="row-even"><td><p>level 2</p></td>
+<td><p>HP:0040068</p></td>
+<td><p>Abnormality of limb bone</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 2</p></td>
+<td><p>HP:0011017</p></td>
+<td><p>Abnormal cellular physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0006500</p></td>
+<td><p>Abnormal lower limb epiphysis morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004337</p></td>
+<td><p>Abnormality of amino acid metabolism</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031409</p></td>
+<td><p>Abnormal lymphocyte physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040214</p></td>
+<td><p>Abnormal circulating insulin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034251</p></td>
+<td><p>Abnormal corneal reflex</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012772</p></td>
+<td><p>Abnormal upper to lower segment ratio</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0040231</p></td>
+<td><p>Abnormal onset of bleeding</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012379</p></td>
+<td><p>Abnormal circulating enzyme concentration or activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030875</p></td>
+<td><p>Abnormality of pulmonary circulation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012111</p></td>
+<td><p>Abnormality of circulating glucocorticoid level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100491</p></td>
+<td><p>Abnormality of lower limb joint</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0002793</p></td>
+<td><p>Abnormal pattern of respiration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012261</p></td>
+<td><p>Abnormal respiratory motile cilium physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001597</p></td>
+<td><p>Abnormality of the nail</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010881</p></td>
+<td><p>Abnormality of the umbilical cord</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0025463</p></td>
+<td><p>Abnormality of redox activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010991</p></td>
+<td><p>Abnormal morphology of the abdominal musculature</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0020155</p></td>
+<td><p>Abnormal oocyte morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010974</p></td>
+<td><p>Abnormal myeloid leukocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0100705</p></td>
+<td><p>Abnormal glial cell morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:3000050</p></td>
+<td><p>Abnormal odontoid tissue morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:6000231</p></td>
+<td><p>Abnormal tissue enzyme concentration or activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002981</p></td>
+<td><p>Abnormality of the calf</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030956</p></td>
+<td><p>Abnormality of cardiovascular system electrophysiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031884</p></td>
+<td><p>Abnormal CSF glucose concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0430071</p></td>
+<td><p>Abnormal circulating organic compound concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004352</p></td>
+<td><p>Abnormal circulating purine concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012103</p></td>
+<td><p>Abnormality of the mitochondrion</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012614</p></td>
+<td><p>Abnormal urine cytology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0010969</p></td>
+<td><p>Abnormality of glycolipid metabolism</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012718</p></td>
+<td><p>Abnormal gastrointestinal tract morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012700</p></td>
+<td><p>Abnormal large intestine physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001760</p></td>
+<td><p>Abnormal foot morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012131</p></td>
+<td><p>Abnormal number of erythroid precursors</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0003839</p></td>
+<td><p>Abnormal upper limb epiphysis morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0010977</p></td>
+<td><p>Abnormal phagocytosis</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0500019</p></td>
+<td><p>Abnormal resting energy expenditure from metabolic cart test</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004329</p></td>
+<td><p>Abnormal posterior eye segment morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000539</p></td>
+<td><p>Abnormality of refraction</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001311</p></td>
+<td><p>Abnormal nervous system electrophysiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0006529</p></td>
+<td><p>Abnormal pulmonary lymphatics</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0025668</p></td>
+<td><p>Abnormal neck morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012654</p></td>
+<td><p>Abnormal CSF dopamine concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004353</p></td>
+<td><p>Abnormal circulating pyrimidine concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0032367</p></td>
+<td><p>Abnormal growth hormone level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031657</p></td>
+<td><p>Abnormal heart sound</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011409</p></td>
+<td><p>Abnormal placental membrane morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004371</p></td>
+<td><p>Abnormality of glycosaminoglycan metabolism</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000080</p></td>
+<td><p>Abnormality of reproductive system physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:3000036</p></td>
+<td><p>Abnormal head blood vessel morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0500114</p></td>
+<td><p>Abnormal stool urobilinogen concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012640</p></td>
+<td><p>Abnormality of intracranial pressure</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030800</p></td>
+<td><p>Abnormal visual accommodation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040085</p></td>
+<td><p>Abnormal circulating aldosterone</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002926</p></td>
+<td><p>Abnormality of thyroid physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0100016</p></td>
+<td><p>Abnormal mesentery morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034737</p></td>
+<td><p>Abnormal erythrocyte metabolite concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012757</p></td>
+<td><p>Abnormal neuron morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025669</p></td>
+<td><p>Abnormal neck physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000271</p></td>
+<td><p>Abnormality of the face</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000777</p></td>
+<td><p>Abnormal thymus morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034482</p></td>
+<td><p>Abnormal spinal cord physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011014</p></td>
+<td><p>Abnormal glucose homeostasis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011121</p></td>
+<td><p>Abnormal skin morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100536</p></td>
+<td><p>Abnormality of the fascia</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031427</p></td>
+<td><p>Abnormal circulating osteocalcin level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011032</p></td>
+<td><p>Abnormality of fluid regulation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0020061</p></td>
+<td><p>Abnormal hemoglobin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0003220</p></td>
+<td><p>Abnormality of chromosome stability</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031508</p></td>
+<td><p>Abnormal circulating thyroid hormone concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0020058</p></td>
+<td><p>Abnormal red blood cell count</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0033013</p></td>
+<td><p>Abnormal salivary cortisol level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012591</p></td>
+<td><p>Abnormal urinary electrolyte concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500117</p></td>
+<td><p>Abnormal CSF urate concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0033354</p></td>
+<td><p>Abnormal urine metabolite level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0003111</p></td>
+<td><p>Abnormal blood ion concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000370</p></td>
+<td><p>Abnormality of the middle ear</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000223</p></td>
+<td><p>Abnormality of taste sensation</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0009124</p></td>
+<td><p>Abnormal adipose tissue morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011277</p></td>
+<td><p>Abnormality of the urinary system physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031097</p></td>
+<td><p>Abnormal thyroid-stimulating hormone level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011869</p></td>
+<td><p>Abnormal platelet function</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004356</p></td>
+<td><p>Abnormality of lysosomal metabolism</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0033335</p></td>
+<td><p>Abnormal preimplantation embryonic development</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0008047</p></td>
+<td><p>Abnormality of the vasculature of the eye</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004370</p></td>
+<td><p>Abnormality of temperature regulation</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011018</p></td>
+<td><p>Abnormality of the cell cycle</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0032314</p></td>
+<td><p>Abnormal areolar morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0033358</p></td>
+<td><p>Abnormal urine osmolality</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011884</p></td>
+<td><p>Abnormal umbilical stump bleeding</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012345</p></td>
+<td><p>Abnormal glycosylation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500018</p></td>
+<td><p>Abnormal cardiac exercise stress test</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030860</p></td>
+<td><p>Abnormal CSF amyloid concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011772</p></td>
+<td><p>Abnormal thyroid morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011122</p></td>
+<td><p>Abnormality of skin physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0100022</p></td>
+<td><p>Abnormality of movement</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025015</p></td>
+<td><p>Abnormal vascular morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:6000489</p></td>
+<td><p>Abnormal circulating fibroblast growth factor 23 concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100887</p></td>
+<td><p>Abnormality of globe size</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011732</p></td>
+<td><p>Abnormal adrenal morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001155</p></td>
+<td><p>Abnormality of the hand</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001595</p></td>
+<td><p>Abnormal hair morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002270</p></td>
+<td><p>Abnormality of the autonomic nervous system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011843</p></td>
+<td><p>Abnormal musculoskeletal physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000929</p></td>
+<td><p>Abnormal skull morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:6000673</p></td>
+<td><p>Abnormal CSF N-acetylaspartic acid concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012681</p></td>
+<td><p>Abnormal pineal morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500166</p></td>
+<td><p>Abnormal circulating gastrin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012447</p></td>
+<td><p>Abnormal myelination</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034977</p></td>
+<td><p>Abnormal pituitary stalk morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001446</p></td>
+<td><p>Abnormality of the musculature of the upper limbs</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031101</p></td>
+<td><p>Abnormal circulating antimullerian hormone concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012099</p></td>
+<td><p>Abnormality of circulating catecholamine level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0045081</p></td>
+<td><p>Abnormality of body mass index</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025443</p></td>
+<td><p>Abnormal cardiac atrial physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031099</p></td>
+<td><p>Abnormal circulating inhibin level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012338</p></td>
+<td><p>Abnormal energy expenditure</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001551</p></td>
+<td><p>Abnormal umbilicus morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031383</p></td>
+<td><p>Abnormal lymphocyte surface marker expression</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000356</p></td>
+<td><p>Abnormality of the outer ear</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100767</p></td>
+<td><p>Abnormal placenta morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040069</p></td>
+<td><p>Abnormal lower limb bone morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004360</p></td>
+<td><p>Abnormality of acid-base homeostasis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030687</p></td>
+<td><p>Abnormal glucagon level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031910</p></td>
+<td><p>Abnormal cranial nerve physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040127</p></td>
+<td><p>Abnormal sweat homeostasis</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100886</p></td>
+<td><p>Abnormality of globe location</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000927</p></td>
+<td><p>Abnormality of skeletal maturation</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0032488</p></td>
+<td><p>Abnormal fecal pH</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0010876</p></td>
+<td><p>Abnormal circulating protein concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030972</p></td>
+<td><p>Abnormal systemic blood pressure</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040207</p></td>
+<td><p>Abnormal CSF biopterin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011730</p></td>
+<td><p>Abnormal central sensory function</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012415</p></td>
+<td><p>Abnormal blood gas level</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034190</p></td>
+<td><p>Abnormal fetal cardiovascular physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001437</p></td>
+<td><p>Abnormality of the musculature of the lower limbs</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0033170</p></td>
+<td><p>Abnormal skinfold thickness measurement</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0033799</p></td>
+<td><p>Abnormal circulating sex hormone concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031073</p></td>
+<td><p>Abnormal response to endocrine stimulation test</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034899</p></td>
+<td><p>Abnormal amniotic fluid protein concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031653</p></td>
+<td><p>Abnormal heart valve physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034552</p></td>
+<td><p>Abnormal peroxisomal morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0500238</p></td>
+<td><p>Abnormal CSF albumin concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034442</p></td>
+<td><p>Abnormal circulating erythropoietin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025640</p></td>
+<td><p>Abnormal urinary mineral level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012243</p></td>
+<td><p>Abnormal reproductive system morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0033796</p></td>
+<td><p>Abnormal leukocyte physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012769</p></td>
+<td><p>Abnormal arm span</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031871</p></td>
+<td><p>Abnormal Langerhans cell morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0010936</p></td>
+<td><p>Abnormality of the lower urinary tract</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012145</p></td>
+<td><p>Abnormality of multiple cell lineages in the bone marrow</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004930</p></td>
+<td><p>Abnormality of the pulmonary vasculature</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031818</p></td>
+<td><p>Abnormal waist to hip ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031850</p></td>
+<td><p>Abnormal hematocrit</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002916</p></td>
+<td><p>Abnormality of chromosome segregation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0032226</p></td>
+<td><p>Abnormal sebaceous gland morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030684</p></td>
+<td><p>Abnormal adiponectin level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500183</p></td>
+<td><p>Abnormal CSF carboxylic acid concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030872</p></td>
+<td><p>Abnormal cardiac ventricular function</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011442</p></td>
+<td><p>Abnormal central motor function</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031416</p></td>
+<td><p>Abnormal nasal mucus secretion</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0006490</p></td>
+<td><p>Abnormal lower-limb metaphysis morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012285</p></td>
+<td><p>Abnormal hypothalamus physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0009810</p></td>
+<td><p>Abnormality of upper limb joint</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004312</p></td>
+<td><p>Abnormal reticulocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011805</p></td>
+<td><p>Abnormal skeletal muscle morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025065</p></td>
+<td><p>Abnormal mean corpuscular volume</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0020047</p></td>
+<td><p>Abnormal myeloid cell morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031602</p></td>
+<td><p>Abnormal mucociliary clearance</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031685</p></td>
+<td><p>Abnormal stool composition</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031377</p></td>
+<td><p>Abnormal cell proliferation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012252</p></td>
+<td><p>Abnormal respiratory system morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010968</p></td>
+<td><p>Abnormality of liposaccharide metabolism</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011766</p></td>
+<td><p>Abnormal parathyroid morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011804</p></td>
+<td><p>Abnormal muscle physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0003256</p></td>
+<td><p>Abnormality of the coagulation cascade</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0040224</p></td>
+<td><p>Abnormality of fibrinolysis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000496</p></td>
+<td><p>Abnormality of eye movement</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004404</p></td>
+<td><p>Abnormal nipple morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011875</p></td>
+<td><p>Abnormal platelet morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100765</p></td>
+<td><p>Abnormality of the tonsils</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034370</p></td>
+<td><p>Abnormal muscle tissue metabolite concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012647</p></td>
+<td><p>Abnormal inflammatory response</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040084</p></td>
+<td><p>Abnormal circulating renin</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0007686</p></td>
+<td><p>Abnormal pupillary function</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001454</p></td>
+<td><p>Abnormality of the upper arm</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011043</p></td>
+<td><p>Abnormal circulating adrenocorticotropin concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031476</p></td>
+<td><p>Abnormal buccal mucosa cell morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004328</p></td>
+<td><p>Abnormal anterior eye segment morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011902</p></td>
+<td><p>Abnormal hemoglobin</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0032120</p></td>
+<td><p>Abnormal peripheral nervous system physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031411</p></td>
+<td><p>Abnormal chromosome morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012143</p></td>
+<td><p>Abnormal megakaryocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030878</p></td>
+<td><p>Abnormality on pulmonary function testing</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025688</p></td>
+<td><p>Abnormal amyloid beta peptide CSF concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011111</p></td>
+<td><p>Abnormal immune serum protein physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011019</p></td>
+<td><p>Abnormality of chromosome condensation</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012688</p></td>
+<td><p>Abnormality of pineal physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031389</p></td>
+<td><p>Abnormal MHC II surface expression</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0005368</p></td>
+<td><p>Abnormality of humoral immunity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001392</p></td>
+<td><p>Abnormality of the liver</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0033072</p></td>
+<td><p>Abnormal macroscopic urine appearance</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034263</p></td>
+<td><p>Abnormal vaginal bleeding</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000359</p></td>
+<td><p>Abnormality of the inner ear</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034644</p></td>
+<td><p>Abnormal liver metabolite concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030085</p></td>
+<td><p>Abnormal CSF lactate concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034916</p></td>
+<td><p>Abnormal anus physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000971</p></td>
+<td><p>Abnormal sweat gland morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004361</p></td>
+<td><p>Abnormal circulating leptin concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0025155</p></td>
+<td><p>Abnormality of hepatobiliary system physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002585</p></td>
+<td><p>Abnormal peritoneum morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012535</p></td>
+<td><p>Abnormal synaptic transmission</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002973</p></td>
+<td><p>Abnormal forearm morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034430</p></td>
+<td><p>Abnormal joint physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100508</p></td>
+<td><p>Abnormality of vitamin metabolism</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040172</p></td>
+<td><p>Abnormality of occipitofrontalis muscle</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031331</p></td>
+<td><p>Abnormal cardiomyocyte morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0100763</p></td>
+<td><p>Abnormality of the lymphatic system</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034698</p></td>
+<td><p>Abnormal aromatase activity</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011446</p></td>
+<td><p>Abnormality of mental function</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000553</p></td>
+<td><p>Abnormal uvea morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0012632</p></td>
+<td><p>Abnormal intraocular pressure</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010935</p></td>
+<td><p>Abnormality of the upper urinary tract</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001627</p></td>
+<td><p>Abnormal heart morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0030352</p></td>
+<td><p>Abnormal serum insulin-like growth factor 1 level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0001965</p></td>
+<td><p>Abnormal scalp morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0006476</p></td>
+<td><p>Abnormality of the pancreatic islet cells</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0006707</p></td>
+<td><p>Abnormality of the hepatic vasculature</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0004408</p></td>
+<td><p>Abnormality of the sense of smell</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030163</p></td>
+<td><p>Abnormal vascular physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012129</p></td>
+<td><p>Abnormality of bone marrow stromal cells</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0410014</p></td>
+<td><p>Abnormal ganglion morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100766</p></td>
+<td><p>Abnormal lymphatic vessel morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040203</p></td>
+<td><p>Abnormal CSF neopterin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0032943</p></td>
+<td><p>Abnormal urine pH</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034858</p></td>
+<td><p>Abnormal leukocyte enzyme concentration or activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0000504</p></td>
+<td><p>Abnormality of vision</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030453</p></td>
+<td><p>Abnormal visual electrophysiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011893</p></td>
+<td><p>Abnormal leukocyte count</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0009809</p></td>
+<td><p>Abnormal upper limb metaphysis morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012135</p></td>
+<td><p>Abnormal granulocytopoietic cell morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011767</p></td>
+<td><p>Abnormality of the parathyroid physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0040070</p></td>
+<td><p>Abnormal upper limb bone morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030829</p></td>
+<td><p>Abnormal breath sound</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0010987</p></td>
+<td><p>Abnormal cellular immune system morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011028</p></td>
+<td><p>Abnormality of blood circulation</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:4000056</p></td>
+<td><p>Abnormal apoptosis</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500020</p></td>
+<td><p>Abnormal cardiac biomarker test</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0500012</p></td>
+<td><p>Abnormal gonadotropin-releasing hormone concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0025427</p></td>
+<td><p>Abnormal bronchus physiology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001743</p></td>
+<td><p>Abnormality of the spleen</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000759</p></td>
+<td><p>Abnormal peripheral nervous system morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012130</p></td>
+<td><p>Abnormal erythroid lineage cell morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0004332</p></td>
+<td><p>Abnormal lymphocyte morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0003254</p></td>
+<td><p>Abnormality of DNA repair</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0032485</p></td>
+<td><p>Abnormal fecal osmolality</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0500017</p></td>
+<td><p>Abnormal cardiac catheterization</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0500016</p></td>
+<td><p>Abnormal cardiac MRI</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0032481</p></td>
+<td><p>Abnormal pituitary glycoprotein hormone alpha subunit level</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:6000062</p></td>
+<td><p>Abnormal nipple discharge</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0001732</p></td>
+<td><p>Abnormality of the pancreas</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0011620</p></td>
+<td><p>Abnormality of abdominal situs</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0031285</p></td>
+<td><p>Abnormal perifollicular morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0000591</p></td>
+<td><p>Abnormal sclera morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0034200</p></td>
+<td><p>Abnormal CSF homovanillic acid concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:4000183</p></td>
+<td><p>Abnormal erythrocyte adenosine triphosphate concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0100530</p></td>
+<td><p>Abnormal circulating calcium-phosphate regulating hormone concentration</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0100685</p></td>
+<td><p>Abnormal Sharpey fiber morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0025590</p></td>
+<td><p>Abnormal extraocular muscle physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030338</p></td>
+<td><p>Abnormal circulating gonadotropin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0012503</p></td>
+<td><p>Abnormal pituitary gland morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0040068</p></td>
+<td><p>Abnormality of limb bone</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002733</p></td>
+<td><p>Abnormal lymph node morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0025546</p></td>
+<td><p>Abnormal mean corpuscular hemoglobin concentration</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0410009</p></td>
+<td><p>Abnormality of the somatic nervous system</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0030272</p></td>
+<td><p>Abnormal erythrocyte enzyme concentration or activity</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011733</p></td>
+<td><p>Abnormality of adrenal physiology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0010948</p></td>
+<td><p>Abnormal fetal cardiovascular morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0011842</p></td>
+<td><p>Abnormal skeletal morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0034915</p></td>
+<td><p>Abnormal anus morphology</p></td>
+</tr>
+<tr class="row-even"><td><p>level 3</p></td>
+<td><p>HP:0002813</p></td>
+<td><p>Abnormal limb bone morphology</p></td>
+</tr>
+<tr class="row-odd"><td><p>level 3</p></td>
+<td><p>HP:0031340</p></td>
+<td><p>Abnormal lysosomal morphology</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mtc.html" class="btn btn-neutral float-left" title="Multiple-testing correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autosomal_recessive.html" class="btn btn-neutral float-right" title="Genotype-Phenotype Correlations in Autosomal Recessive Diseases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
