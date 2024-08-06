@@ -4,32 +4,36 @@
 General HPO terms
 =================
 
-Our heuristic for avoiding unnecessary statistical tests (See :ref:`mtc``) skips HPO terms that 
-are unlikely to lead to interesting results on statistical testing. This is a domain judgment rather than 
-a statistical one. The HPO is hierarchically arranged from general to specific, and the more specific 
-a term is, the more interest we deem a significant genotype phenotype correlation to be. Therefore, we 
-decide not to test terms such as 
+Our heuristic for avoiding unnecessary statistical tests (See :ref:`mtc`) skips HPO terms that 
+are unlikely to lead to interesting results on statistical testing. 
+This is a domain judgment rather than a statistical one. 
+The HPO is hierarchically arranged from general to specific, and the more specific a term is, 
+the more interest we deem a significant genotype phenotype correlation to be. 
+Therefore, we decide not to test terms such as 
 `Abnormality of the endocrine system (HP:0000818) <https://hpo.jax.org/browse/term/HP:0000818>`_. 
 The top-level term `Phenotypic abnormality (HP:0000118`)<https://hpo.jax.org/browse/term/HP:0000118>`_ is the 
-root of all phenotypic abnormality terms, and we refer to the children of this term as ``level 1''.
+root of all phenotypic abnormality terms, and we refer to the children of this term as `level 1`.
 
-Most of the HPO is arranged according to Morphological abnormalities (a structural abnormality) and physiological abnormalities.
+Most of the HPO is arranged according to morphological abnormalities (a structural abnormality) and physiological abnormalities.
 Therefore, the above term has the children
 `Abnormal endocrine physiology (HP:0031072) <https://hpo.jax.org/browse/term/HP:0031072>`_
 and
 `Abnormal endocrine morphology (HP:0031071) <https://hpo.jax.org/browse/term/HP:0031071>`_.
-We consider these terms to be uniniteresting for the same reason - they are too general to bring much medical insight,
-and we expect that if there is a signal it will usually be driven by one or more specific terms. We call these terms``level 2''.
-Many but not all terms on level 3 are also ``general'' in this sense, e.g., 
-`Abnormality of the parathyroid gland  (HP:0000828) <https://hpo.jax.org/browse/term/HP:0000828>`_.
-We also skip such level 3 terms. Our heursitc for identifying these terms is to search the primary label for the word
-``Abnormal'', and remove all terms that contain this string.
+We consider these terms to be uninteresting for the same reason - they are too general to bring much medical insight,
+and we expect that if there is a signal it will usually be driven by one or more specific terms. 
+We call these terms `level 2`.
 
-According to our heuristic sampler strategy (see :ref:`mtc`), we stop at level 3, because the terms at lower levels are more likely to be specific, even if
-they contain the word "Abnormal" or "Abnormality" in their label. Users can adapt the heuristic if desired.
+Many but not all terms on `level 3` are also "general" in this sense,
+e.g., `Abnormality of the parathyroid gland  (HP:0000828) <https://hpo.jax.org/browse/term/HP:0000828>`_.
+We also skip such `level 3` terms. Our heursitic for identifying these terms is to search the primary label for the word
+``'Abnormal'``, and remove all terms that start with this string.
+
+According to our heuristic sampler strategy (see :ref:`mtc`), we stop at `level 3`, 
+because the terms at lower levels are more likely to be specific, 
+even if they contain the word "Abnormal" or "Abnormality" in their label. 
+Users can adapt the procedure if desired.
 
 The following table shows a list of HPO terms that are removed from consideration by the heuristic sampler strategy.
-
 
 
 

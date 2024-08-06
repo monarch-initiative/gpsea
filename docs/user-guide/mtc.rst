@@ -201,7 +201,7 @@ designed to skip testing the HPO terms that are unlikely to yield significant or
     We do not think it makes much sense to test for enrichment of these terms, 
     and so they are filtered out.
 
-#. Skipping general level terms 
+#. Skipping "general" level terms 
     All the direct children of the root phenotype term 
     `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_ are skipped, 
     because of the assumption that if there is a valid signal, 
