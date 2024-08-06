@@ -201,7 +201,7 @@ designed to skip testing the HPO terms that are unlikely to yield significant or
     We do not think it makes much sense to test for enrichment of these terms, 
     and so they are filtered out.
 
-#. Skipping top level terms 
+#. Skipping "general" level terms 
     All the direct children of the root phenotype term 
     `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_ are skipped, 
     because of the assumption that if there is a valid signal, 
@@ -213,15 +213,6 @@ designed to skip testing the HPO terms that are unlikely to yield significant or
     it will lead to at least one of the descendents of 
     *Abnormality of the nervous system* being significant.
 
-#. Second-level terms 
-    For the same reason that the first level term are judged to be less relevant than more specific terms, 
-    the second level terms are also assumed by this heuristic to be less interesting. 
-    
-    For instance, a typical first level term in the HPO would be 
-    `Abnormality of the eye HP:0000478 <https://hpo.jax.org/browse/term/HP:0000478>`_, 
-    and a typical second level term would be `Abnormal eye morphology HP:0012372 <https://hpo.jax.org/browse/term/HP:0012372>`_, 
-    but an interesting term would be one such as *Posterior polar cataract*. 
-    With this heuristic, if any child of a second level term has at least 75% of the terms, 
-    then do not test the second level term because it is unlikely to add much insight. 
-    Only if the second level term has a *lot* more annotations, then we *do* test 
-    (this might mean that many different specific forms of *Abnormal eye morphology* are overrepresented).
+    See :ref:`general_hpo_terms` for details.
+
+
