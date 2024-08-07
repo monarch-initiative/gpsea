@@ -58,6 +58,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         variant_effects: typing.Iterable[VariantEffect],
         affected_exons: typing.Optional[typing.Iterable[int]],
         protein_id: typing.Optional[str],
+        hgvsp: typing.Optional[str],
         protein_effect_coordinates: typing.Optional[Region],
     ):
         self._gene_id = hpotk.util.validate_instance(gene_id, str, 'gene_id')
@@ -73,6 +74,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
             self._protein_id = hpotk.util.validate_instance(protein_id, str, 'protein_id')
         else:
             self._protein_id = None
+        self._hgvsp = hpotk.util.validate_instance(hgvsp, str, 'hgvsp')
         self._protein_effect_location = hpotk.util.validate_optional_instance(protein_effect_coordinates, Region,
                                                                              'protein_effect_coordinates')
 
@@ -134,6 +136,14 @@ class TranscriptAnnotation(TranscriptInfoAware):
             Optional[str]: The protein accession ID for the protein relevant to the variant
         """
         return self._protein_id
+    
+    @property
+    def hgvsp(self) -> typing.Optional[str]:
+        """
+        Returns:
+            Optional[str]: The HGVS protein sequence name
+        """
+        return self._hgvsp
 
     @property
     def protein_effect_location(self) -> typing.Optional[Region]:

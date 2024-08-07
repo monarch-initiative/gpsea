@@ -100,13 +100,17 @@
             <tbody>
                 <tr class="strng">
                     <th class="lft">Variant</th>
-                    <th>Variant name</th>
+                    <th>Variant Name</th>
+                    <th>Protein Variant</th>
+                    <th>Variant Class</th>
                     <th>Variant Count</th>
                 </tr>
                 {% for var_count in var_counts %}
                 <tr>
                     <td class="lft">{{ var_count.variant }}</td>
                     <td>{{ var_count.variant_name }}</td>
+                    <td>{{ var_count.protein_name }}</td>
+                    <td>{{ var_count.variant_effects }}</td>
                     <td>{{ var_count.Count }}</td>
                     </tr>
                 {% endfor %}
