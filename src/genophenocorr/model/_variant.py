@@ -304,6 +304,7 @@ class VariantCoordinates:
         Get a readable representation of the variant's coordinates.
 
         For instance, ``X_12345_12345_C_G`` for a sequence variant or ``22_10001_20000_INV`` for a symbolic variant.
+        If the 'ref' or 'alt' sequences are over 50 bases, they are replaced with the number of bases. Example: ``16_78386858_78425054_--38197bp--_A``
 
         .. note::
 
@@ -314,13 +315,15 @@ class VariantCoordinates:
         else:
             key = f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
             if len(key) > 50:
-                ref = None
-                alt = None
                 if len(self.ref) > 10:
                     ref = f"--{len(self.ref)}bp--"
+                else:
+                    ref = self.ref
                 if len(self.alt) > 10:
                     alt = f"--{len(self.alt)}bp--"
-                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref if not None else self.ref}_{alt if not None else self.alt}"
+                else:
+                    alt = self.alt
+                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref}_{alt}"
             else:
                 return key
 

@@ -16,6 +16,7 @@ class TestCohort:
             "NM_001032387.2",
             "NM_001351089.2",
             "NM_000456.3",
+            "NM_016373.4",
         }
 
     def test_variant_effect_count_by_tx(
