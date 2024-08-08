@@ -74,7 +74,10 @@ class TranscriptAnnotation(TranscriptInfoAware):
             self._protein_id = hpotk.util.validate_instance(protein_id, str, 'protein_id')
         else:
             self._protein_id = None
-        self._hgvsp = hpotk.util.validate_instance(hgvsp, str, 'hgvsp')
+        if hgvsp is not None:
+            self._hgvsp = hpotk.util.validate_instance(hgvsp, str, 'hgvsp')
+        else:
+            self._hgvsp = None
         self._protein_effect_location = hpotk.util.validate_optional_instance(protein_effect_coordinates, Region,
                                                                              'protein_effect_coordinates')
 

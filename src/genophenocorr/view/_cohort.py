@@ -145,7 +145,7 @@ class CohortViewable:
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
-                fields_ps = hgvsp.split(":")
+                fields_ps = hgvsp.split(":") if hgvsp is not None else [None]
                 if len(fields_dna) > 1:
                     display = fields_dna[1]
                 else:
