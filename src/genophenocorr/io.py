@@ -69,6 +69,7 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'variant_effects': o.variant_effects,
                 'overlapping_exons': o.overlapping_exons,
                 'protein_id': o.protein_id,
+                'hgvsp': o.hgvsp,
                 'protein_effect_location': o.protein_effect_location,
             }
         elif isinstance(o, Genotypes):
@@ -263,6 +264,7 @@ class GenophenocorrJSONDecoder(JSONDecoder):
                 variant_effects=(VariantEffect[ve] for ve in obj['variant_effects']),
                 affected_exons=obj['overlapping_exons'],
                 protein_id=obj['protein_id'],
+                hgvsp=obj['hgvsp'],
                 protein_effect_coordinates=obj['protein_effect_location'],
             )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _PHENOTYPE_FIELDS):

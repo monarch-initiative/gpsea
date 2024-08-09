@@ -52,6 +52,7 @@ def het_lmna(
                 variant_effects=(VariantEffect.INTRON_VARIANT,),
                 affected_exons=None,
                 protein_id="NP_733821.1",
+                hgvsp="NP_733821.1:UNK",
                 protein_effect_coordinates=None,
             ),
             TranscriptAnnotation(
@@ -62,6 +63,7 @@ def het_lmna(
                 variant_effects=(VariantEffect.MISSENSE_VARIANT,),
                 affected_exons=(10,),
                 protein_id="NP_005563.1",
+                hgvsp="NP_005563.1:UNK",
                 protein_effect_coordinates=Region(570, 571),
             ),
         ),
@@ -97,6 +99,7 @@ def hom_alt_lmna(
                 variant_effects=(VariantEffect.MISSENSE_VARIANT,),
                 affected_exons=(4,),
                 protein_id="NP_733821.1",
+                hgvsp="NP_733821.1:UNK",
                 protein_effect_coordinates=Region(229, 230),
             ),
             TranscriptAnnotation(
@@ -107,6 +110,7 @@ def hom_alt_lmna(
                 variant_effects=(VariantEffect.MISSENSE_VARIANT,),
                 affected_exons=(4,),
                 protein_id="NP_005563.1",
+                hgvsp="NP_005563.1:UNK",
                 protein_effect_coordinates=Region(229, 230),
             ),
         ),
@@ -142,6 +146,7 @@ def hemi_dmd(
                 variant_effects=(VariantEffect.MISSENSE_VARIANT,),
                 affected_exons=(69,),
                 protein_id="NP_000100.3",
+                hgvsp="NP_000100.3:UNK",
                 protein_effect_coordinates=Region(start=3331, end=3332),
             ),
             TranscriptAnnotation(
@@ -152,6 +157,7 @@ def hemi_dmd(
                 variant_effects=(VariantEffect.MISSENSE_VARIANT,),
                 affected_exons=(69,),
                 protein_id="NP_003997.2",
+                hgvsp="NP_003997.2:UNK",
                 protein_effect_coordinates=Region(start=3339, end=3340),
             ),
         ),

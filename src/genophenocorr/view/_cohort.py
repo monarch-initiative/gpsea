@@ -73,7 +73,9 @@ class CohortViewable:
             # get HGVS or human readable variant
             display = variant_to_display_d.get(chrom_var, chrom_var)
             var_counts.append({"variant": chrom_var, "variant_name": display.hgvs_cdna,\
-                "protein_name": display.hgvsp, "variant_effects": ", ".join(display.variant_effects),"Count": var_count})
+                "protein_name": display.hgvsp, \
+                    "variant_effects": ", ".join(display.variant_effects) if display.variant_effects is not None else None,\
+                    "Count": var_count})
 
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
@@ -140,8 +142,12 @@ class CohortViewable:
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
             tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
-            hgvsp = tx_annotation.hgvsp
-            var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            if tx_annotation is not None:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            else:
+                hgvsp = None
+                var_effects = None
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
