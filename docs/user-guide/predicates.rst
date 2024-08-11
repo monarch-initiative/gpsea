@@ -118,6 +118,37 @@ such as testing if the variant is a *"chromosomal deletion" or a deletion which 
 '(structural type is SO:1000029 OR (variant class is DEL AND change length is <=-50))'
 
 
+Inverted predicate
+******************
+
+Sometimes we may want to test the variant for a condition that must *not* be met.
+For instance, we may want to test if the variant is a deletion 
+that is *not* predicted to shift the transcript reading frame.
+One of doing this would be to build a compound predicates 
+for all variant effects except of `VariantEffect.FRAMESHIFT_VARIANT`:
+
+>>> non_frameshift_effects = (
+...   VariantEffect.SYNONYMOUS_VARIANT, VariantEffect.MISSENSE_VARIANT, VariantEffect.INTRON_VARIANT,
+...   # and many more effects..
+... )
+>>> non_frameshift_predicate = VariantPredicates.and(VariantPredicates.variant_effect(eff, tx_id=ankrd11_mane_tx_id) for eff in non_frameshift_effects)
+
+However, this is clearly tedious and it would be much better implemented 
+by a simple logical not of a predicate for a frameshift variant effect.
+
+To support this, `VariantPredicate` implements *logical inversion* 
+which corresponds to Python's ``~`` operator (tilde), to wrap
+the underlying predicate and to invert its test result.
+
+This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:
+
+>>> non_frameshift_del = ~VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id=ankrd11_mane_tx_id) & VariantPredicates.variant_class(VariantClass.DEL)
+>>> non_frameshift_del.get_question()
+'(NOT FRAMESHIFT_VARIANT on NM_013275.6 AND variant class is DEL)'
+
+Note the presence of a tilde ``~`` before the variant effect predicate and resulting ``NOT`` in the predicate question.
+
+
 That's it for predicates. Please see :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates` 
 and :class:`genophenocorr.analysis.predicate.genotype.ProteinPredicates` 
 for a comprehensive list of the predicates available off the shelf.
