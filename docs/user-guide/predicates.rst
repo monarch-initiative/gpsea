@@ -131,7 +131,7 @@ for all variant effects except of `VariantEffect.FRAMESHIFT_VARIANT`:
 ...   VariantEffect.SYNONYMOUS_VARIANT, VariantEffect.MISSENSE_VARIANT, VariantEffect.INTRON_VARIANT,
 ...   # and many more effects..
 ... )
->>> non_frameshift_predicate = VariantPredicates.and(VariantPredicates.variant_effect(eff, tx_id=ankrd11_mane_tx_id) for eff in non_frameshift_effects)
+>>> non_frameshift_predicate = VariantPredicates.all(VariantPredicates.variant_effect(eff, tx_id=ankrd11_mane_tx_id) for eff in non_frameshift_effects)
 
 However, this is clearly tedious and it would be much better implemented 
 by a simple logical not of a predicate for a frameshift variant effect.
