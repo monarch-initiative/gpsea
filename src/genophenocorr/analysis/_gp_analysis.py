@@ -165,26 +165,76 @@ class HeuristicMtcFilter(HpoMtcFilter):
     """
     `HeuristicMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
 
-    The class uses a number of heuristics and rules of thumb.
-    1. Do not perform a test if there are less than min_annots annotations (default 2). That is, do not perform a
-        test if an HPO term is used only once for annotation
-    2. Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
-        for i in range(2,6):
-            for j in range(2,6):
-                # create a table with the most extreme possible counts. If this is not significant, then
-                # other counts also cannot be
-                two_by_two_table = [[i, 0], [0, j]]
-                oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
-        This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
-        ## TODO -- similar calculate for 3x2
-    3. Do not perform a test for the general, relatively top level terms such as `Abnormality of the nervous system HP:0000707``
-    4. Do not perform a test if the counts are the same as a child (more specific) term‚
+    The class leverages a number of heuristics and domain decisions. See :ref:`heuristic-sampler-strategy-section` for more info.
     """
+    # TODO: this has been here before. Is it still valid?
+    # 2. Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
+    # for i in range(2,6):
+    #     for j in range(2,6):
+    #         # create a table with the most extreme possible counts. If this is not significant, then
+    #         # other counts also cannot be
+    #         two_by_two_table = [[i, 0], [0, j]]
+    #         oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
+    # This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
+    # ## TODO -- similar calculate for 3x2
+
+    @staticmethod
+    def default_filter(
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float,
+    ):
+        """
+        Args:
+            hpo: HPO 
+            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency 
+              for an HPO term to have in at least one of the genotype groups 
+              (e.g., 22% in missense and 3% in nonsense genotypes would be OK, 
+              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
+        """
+        ## Collect sets of top-level and second-level terms
+        # e.g., Abnormality of the cardiovascular system (HP:0001626)
+        top_level_terms = set(hpo.graph.get_children(PHENOTYPIC_ABNORMALITY))
+        
+        # e.g. Abnormality of the vasculature (HP:0002597)
+        second_level_terms = set()
+        third_level_terms = set()
+        
+        # the second level (children of the top level), contains terms we want to keep,
+        # such as HP:0001611 Hypernasal speech, but it also contains "general" terms that
+        # we skip according to this heuristic, e.g., HP:0030680	Abnormal cardiovascular system morphology
+        for t1 in top_level_terms:
+            for t2 in hpo.graph.get_children(t1):
+                label = hpo.get_term_name(t2)
+                if label is not None and label.startswith("Abnormal"):
+                    second_level_terms.add(t2)
+        
+        # The third level (children of the second level), contains terms we want to keep,
+        # such as HP:0031109 Agalactia, but it also contains "general" terms 
+        # that we skip according to this heuristic, e.g., HP:0006500 Abnormal lower limb epiphysis morphology
+        for t2 in second_level_terms:
+            for t3 in hpo.graph.get_children(t2):
+                label = hpo.get_term_name(t3)
+                if label is not None and label.startswith("Abnormal"):
+                    third_level_terms.add(t3)
+        
+        # For now, we combine all of these terms into one "general" set that we skip.
+        # In the future, one could do this on a per-level basis.
+        general_hpo_term_set = set()
+        general_hpo_term_set.update(top_level_terms)
+        general_hpo_term_set.update(second_level_terms)
+        general_hpo_term_set.update(third_level_terms)
+        
+        return HeuristicMtcFilter(
+            hpo=hpo, 
+            term_frequency_threshold=term_frequency_threshold, 
+            general_hpo_terms=general_hpo_term_set,
+        )
 
     def __init__(
-            self,
-            hpo: hpotk.MinimalOntology,
-            hpo_term_frequency_filter: float,
+        self,
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float,
+        general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         """
 
@@ -193,44 +243,13 @@ class HeuristicMtcFilter(HpoMtcFilter):
             hpo_term_frequency_filter: Minimum frequency for an HPO term to have in at least one of the genotype groups (e.g., 22% in missense and 3% in nonsense genotypes would be ok, but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
         """
         self._hpo = hpo
-        self._hpo_term_frequency_filter = hpo_term_frequency_filter
+        self._hpo_term_frequency_filter = term_frequency_threshold
         # The following numbers of total observations in the genotype groups can never be significant,
         # so we just skip them see above explanation
         self._powerless_set = {(2, 4), (4, 2), (2, 3), (3, 3), (2, 2), (3, 2)}
         # thus if the total count is 6 or less, there is no power - CAN WE SIMPLIFY?
 
-        ## Collect sets of top-level and second-level terms
-        # e.g., Abnormality of the cardiovascular system (HP:0001626)
-        self._top_level_terms = set(self._hpo.graph.get_children(PHENOTYPIC_ABNORMALITY))
-        # e.g. Abnormality of the vasculature (HP:0002597)
-        self._second_level_terms = set()
-        self._third_level_terms = set()
-        # the second level (children of the top level), contains terms we want to keep,
-        # such as HP:0001611	Hypernasal speech, but it also contains "general" terms that
-        # we skip according to this heuristic, e.g., HP:0030680	Abnormal cardiovascular system morphology
-        for t in self._top_level_terms:
-            l2_terms = hpo.graph.get_children(t.tid, include_source=False)
-            for t in l2_terms:
-                tid = t
-                label = hpo.get_term_name(tid)
-                if "Abnormal" in label:
-                    self._second_level_terms.add(tid)
-        # the third level (children of the second level), contains terms we want to keep,
-        # such as HP:0031109	Agalactia, but it also contains "general" terms that
-        # we skip according to this heuristic, e.g., HP:0006500	Abnormal lower limb epiphysis morphology
-        for t in self._second_level_terms:
-            l3_terms = hpo.graph.get_children(t.tid, include_source=False)
-            for t in l3_terms:
-                tid = t
-                label = hpo.get_term_name(tid)
-                if "Abnormal" in label:
-                    self._third_level_terms.add(tid)
-        # for now, we combine all of these terms into one "general" set that we skip
-        # in the future, one could do this on a per-level basis
-        self._general_hpo_term_set = set()
-        self._general_hpo_term_set.update(self._top_level_terms)
-        self._general_hpo_term_set.update(self._second_level_terms)
-        self._general_hpo_term_set.update(self._third_level_terms)
+        self._general_hpo_terms = set(general_hpo_terms)
 
 
     def filter_terms_to_test(
@@ -249,7 +268,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
 
         # iterate through the terms in the sorted order, starting from the leaves of the induced graph.
         for term_id in self._get_ordered_terms(n_usable.keys()):
-            if term_id in self._general_hpo_term_set:
+            if term_id in self._general_hpo_terms:
                 reason_for_filtering_out["Skipping general term"] += 1
                 continue
             if not self._hpo.graph.is_ancestor_of(PHENOTYPIC_ABNORMALITY, term_id):

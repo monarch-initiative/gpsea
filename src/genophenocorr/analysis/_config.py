@@ -281,7 +281,10 @@ def configure_cohort_analysis(cohort: Cohort,
 
     mtc_filter: HpoMtcFilter
     if config.mtc_strategy == MTC_Strategy.HEURISTIC_SAMPLER:
-        mtc_filter = HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter = config.min_perc_patients_w_hpo)
+        mtc_filter = HeuristicMtcFilter.default_filter(
+            hpo=hpo, 
+            term_frequency_threshold = config.min_perc_patients_w_hpo,
+        )
     elif config.mtc_strategy == MTC_Strategy.SPECIFY_TERMS:
         assert config.terms_to_test is not None, '`terms_to_test` must not be none if `SPECIFY_TERMS` strategy is used'
         validated_terms_to_test = _validate_terms_to_test(hpo, config.terms_to_test)

@@ -286,3 +286,19 @@ class TestLogicalVariantPredicate:
         # No double negation!
         inv_inv_predicate = ~inv_predicate
         assert inv_inv_predicate is predicate
+
+    def test_empty_all_predicate_raises_error(
+        self,
+    ):
+        with pytest.raises(ValueError) as e:
+            empty = ()
+            VariantPredicates.all(empty)
+        assert e.value.args[0] == 'Predicates must not be empty!'
+    
+    def test_empty_any_predicate_raises_error(
+        self,
+    ):
+        with pytest.raises(ValueError) as e:
+            empty = ()
+            VariantPredicates.any(empty)
+        assert e.value.args[0] == 'Predicates must not be empty!'
