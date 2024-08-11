@@ -256,3 +256,33 @@ class TestLogicalVariantPredicate:
         predicate = VariantPredicates.transcript(tx_id=left) | VariantPredicates.transcript(tx_id=right)
         
         assert predicate.test(variant) == expected
+
+    @pytest.mark.parametrize(
+        'tx_id,expected',
+        [
+            ('tx:abc', False),
+            ('whatever', True),
+        ]
+    )
+    def test_inv_predicate(
+        self,
+        variant: Variant,
+        tx_id: str,
+        expected: bool,
+    ):
+        predicate = ~VariantPredicates.transcript(tx_id)
+
+        assert predicate.test(variant) == expected
+    
+    def test_no_double_inv_happens(
+        self,
+    ):
+        predicate = VariantPredicates.gene('FBN1')
+        
+        # Inverting a predicate must produce a new predicate.
+        inv_predicate = ~predicate
+        assert inv_predicate is not predicate
+
+        # No double negation!
+        inv_inv_predicate = ~inv_predicate
+        assert inv_inv_predicate is predicate
