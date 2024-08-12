@@ -194,7 +194,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6691dup', False, [VariantEffect.FRAMESHIFT_VARIANT], [9],
-                prot_id, Region(2230, 2231))
+                prot_id, "NP_001243112.1:p.Ala2231GlyfsTer29", Region(2230, 2231))
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HetSingleVar'): Genotype.HETEROZYGOUS}),
     )
@@ -205,7 +205,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.1940_1941delinsT', False, [VariantEffect.FRAMESHIFT_VARIANT], [9], 
-                prot_id, Region(646, 647))
+                prot_id, "NP_001243111.1:p.Ser647LeufsTer6", Region(646, 647))
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HetDoubleVar1'): Genotype.HETEROZYGOUS}),
     )
@@ -216,7 +216,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.5790C>A', False, [VariantEffect.STOP_GAINED], [9], 
-                prot_id, Region(1929, 1930))
+                prot_id, "NP_037407.4:p.Tyr1930Ter", Region(1929, 1930))
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HetDoubleVar1'): Genotype.HETEROZYGOUS}),
     )
@@ -227,7 +227,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7534C>T', False, [VariantEffect.MISSENSE_VARIANT], [10], 
-                prot_id, Region(2511, 2512))
+                prot_id, "NP_037407.4:p.Arg2512Trp", Region(2511, 2512))
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HetDoubleVar2'): Genotype.HETEROZYGOUS}),
     )
@@ -238,7 +238,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.6817_6833del', False, [VariantEffect.FRAMESHIFT_VARIANT], [9], 
-                prot_id, Region(2272, 2278),
+                prot_id, "NP_037407.4:p.Gly2273CysfsTer17", Region(2272, 2278),
             )
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HetDoubleVar2'): Genotype.HETEROZYGOUS}),
@@ -250,7 +250,7 @@ def toy_cohort(
         tx_annotations=[
             TranscriptAnnotation(
                 'ANKRD11', 'NM_013275.6', 'NM_013275.6:c.7083del', False, [VariantEffect.FRAMESHIFT_VARIANT], [9],
-                prot_id, Region(2360, 2362))
+                prot_id, "NP_037407.4:p.Thr2362ProfsTer39", Region(2360, 2362))
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('HomoVar'): Genotype.HOMOZYGOUS_ALTERNATE}),
     )
@@ -263,7 +263,7 @@ def toy_cohort(
                 'ANKRD11', 'NM_013275.6', None, False, 
                 [VariantEffect.STOP_LOST, VariantEffect.FEATURE_TRUNCATION, VariantEffect.CODING_SEQUENCE_VARIANT, VariantEffect.FIVE_PRIME_UTR_VARIANT, VariantEffect.THREE_PRIME_UTR_VARIANT, VariantEffect.INTRON_VARIANT], 
                 [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-                prot_id, None
+                prot_id, None, None
             )
         ],
         genotypes=Genotypes.from_mapping({SampleLabels('LargeCNV'): Genotype.HETEROZYGOUS}))

@@ -58,6 +58,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         variant_effects: typing.Iterable[VariantEffect],
         affected_exons: typing.Optional[typing.Iterable[int]],
         protein_id: typing.Optional[str],
+        hgvsp: typing.Optional[str],
         protein_effect_coordinates: typing.Optional[Region],
     ):
         self._gene_id = hpotk.util.validate_instance(gene_id, str, 'gene_id')
@@ -73,6 +74,10 @@ class TranscriptAnnotation(TranscriptInfoAware):
             self._protein_id = hpotk.util.validate_instance(protein_id, str, 'protein_id')
         else:
             self._protein_id = None
+        if hgvsp is not None:
+            self._hgvsp = hpotk.util.validate_instance(hgvsp, str, 'hgvsp')
+        else:
+            self._hgvsp = None
         self._protein_effect_location = hpotk.util.validate_optional_instance(protein_effect_coordinates, Region,
                                                                              'protein_effect_coordinates')
 
@@ -134,6 +139,14 @@ class TranscriptAnnotation(TranscriptInfoAware):
             Optional[str]: The protein accession ID for the protein relevant to the variant
         """
         return self._protein_id
+    
+    @property
+    def hgvsp(self) -> typing.Optional[str]:
+        """
+        Returns:
+            Optional[str]: The HGVS protein sequence name
+        """
+        return self._hgvsp
 
     @property
     def protein_effect_location(self) -> typing.Optional[Region]:
@@ -649,6 +662,7 @@ class Variant(VariantInfoAware, FunctionalAnnotationAware, Genotyped):
         consequences: typing.Iterable[VariantEffect],
         exons_effected: typing.Sequence[int],
         protein_id: typing.Optional[str],
+        hgvsp: typing.Optional[str],
         protein_effect_start: int,
         protein_effect_end: int,
         genotypes: Genotypes,
@@ -656,7 +670,7 @@ class Variant(VariantInfoAware, FunctionalAnnotationAware, Genotyped):
         variant_info = VariantInfo(variant_coordinates=variant_coordinates)
         protein_effect = Region(protein_effect_start, protein_effect_end)
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvs_cdna, is_preferred, consequences, exons_effected,
-                                          protein_id, protein_effect)
+                                          protein_id, hgvsp, protein_effect)
         return Variant(variant_info, (transcript,), genotypes)
 
     def __init__(

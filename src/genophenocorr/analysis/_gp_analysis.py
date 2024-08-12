@@ -209,7 +209,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
         # such as HP:0001611	Hypernasal speech, but it also contains "general" terms that
         # we skip according to this heuristic, e.g., HP:0030680	Abnormal cardiovascular system morphology
         for t in self._top_level_terms:
-            l2_terms = hpo.graph.get_children(t.tid, include_source=False)
+            l2_terms = hpo.graph.get_children(t, include_source=False)
             for t in l2_terms:
                 tid = t
                 label = hpo.get_term_name(tid)
@@ -219,7 +219,7 @@ class HeuristicMtcFilter(HpoMtcFilter):
         # such as HP:0031109	Agalactia, but it also contains "general" terms that
         # we skip according to this heuristic, e.g., HP:0006500	Abnormal lower limb epiphysis morphology
         for t in self._second_level_terms:
-            l3_terms = hpo.graph.get_children(t.tid, include_source=False)
+            l3_terms = hpo.graph.get_children(t, include_source=False)
             for t in l3_terms:
                 tid = t
                 label = hpo.get_term_name(tid)

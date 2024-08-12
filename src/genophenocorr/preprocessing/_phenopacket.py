@@ -331,10 +331,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             tx_annotations = self._functional_annotator.annotate(
                                 variant_coordinates=variant_info.variant_coordinates,
                             )
-                        except ValueError:
+                        except ValueError as error:
                             sub_note.add_warning(
                                 f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                "Try again or remove variant form testing",
+                                f"Try again or remove variant form testing... {error}",
                             )
                             continue
                     elif variant_info.has_sv_info():
@@ -342,10 +342,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             tx_annotations = self._imprecise_sv_functional_annotator.annotate(
                                 item=variant_info.sv_info,
                             )
-                        except ValueError:
+                        except ValueError as error:
                             sub_note.add_warning(
                                 f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                "Try again or remove variant form testing",
+                                f"Try again or remove variant form testing... {error}",
                             )
                             continue
                     else:
@@ -354,7 +354,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
                             f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                            "Remove variant from testing",
+                            f"Remove variant from testing... tx_anno == 0",
                         )
                         continue
 
