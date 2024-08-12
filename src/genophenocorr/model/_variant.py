@@ -45,6 +45,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         variant_effects (Iterable[string]): An iterable of predicted effects given by VEP
         affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.
         protein_id (string): The protein ID for the protein encoded by the transcript.
+        hgvsp (Optional[str]): Predicted effect on the encoded protein or `None` if not available`.
         protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates
          of the effect on the protein sequence.
     """
@@ -158,32 +159,45 @@ class TranscriptAnnotation(TranscriptInfoAware):
         return self._protein_effect_location
 
     def __str__(self) -> str:
-        return f"TranscriptAnnotation(gene_id:{self.gene_id}," \
-               f"transcript_id:{self.transcript_id}," \
-               f"hgvs_cdna:{self.hgvs_cdna}," \
-               f"is_preferred:{self.is_preferred}," \
-               f"variant_effects:{self.variant_effects}," \
-               f"overlapping_exons:{self.overlapping_exons}," \
-               f"protein_id:{self.protein_id}," \
-               f"protein_effect_location:{self.protein_effect_location})"
+        return f"TranscriptAnnotation(gene_id:{self._gene_id}," \
+               f"transcript_id:{self._tx_id}," \
+               f"hgvs_cdna:{self._hgvs_cdna}," \
+               f"is_preferred:{self._is_preferred}," \
+               f"variant_effects:{self._variant_effects}," \
+               f"overlapping_exons:{self._affected_exons}," \
+               f"protein_id:{self._protein_id}," \
+               f"hgvsp:{self._hgvsp}," \
+               f"protein_effect_location:{self._protein_effect_location})"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, TranscriptAnnotation) \
-            and self.gene_id == other.gene_id \
-            and self.hgvs_cdna == other.hgvs_cdna \
-            and self.is_preferred == other.is_preferred \
-            and self.transcript_id == other.transcript_id \
-            and self.variant_effects == other.variant_effects \
-            and self.overlapping_exons == other.overlapping_exons \
-            and self.protein_id == other.protein_id \
-            and self.protein_effect_location == other.protein_effect_location
+            and self._gene_id == other._gene_id \
+            and self._tx_id == other._tx_id \
+            and self._hgvs_cdna == other._hgvs_cdna \
+            and self._is_preferred == other._is_preferred \
+            and self._variant_effects == other._variant_effects \
+            and self._affected_exons == other._affected_exons \
+            and self._protein_id == other._protein_id \
+            and self._hgvsp == other._hgvsp \
+            and self._protein_effect_location == other._protein_effect_location
 
     def __repr__(self) -> str:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvs_cdna, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
-                     self.protein_id, self.protein_effect_location))
+        return hash(
+            (
+                self._gene_id, 
+                self._tx_id, 
+                self._hgvs_cdna, 
+                self._is_preferred, 
+                self._variant_effects, 
+                self._affected_exons,
+                self._protein_id, 
+                self._hgvsp,
+                self._protein_effect_location,
+            )
+        )
 
 
 class VariantClass(enum.Enum):
