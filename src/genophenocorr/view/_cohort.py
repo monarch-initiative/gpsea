@@ -2,6 +2,7 @@ import typing
 
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
+from collections import namedtuple
 
 from genophenocorr.model import Cohort
 from ._formatter import VariantFormatter
@@ -70,8 +71,11 @@ class CohortViewable:
             chrom_var = var[0]
             var_count = var[1]
             # get HGVS or human readable variant
-            var_name = variant_to_display_d.get(chrom_var, chrom_var)
-            var_counts.append({"variant": chrom_var, "variant_name": var_name, "Count": var_count})
+            display = variant_to_display_d.get(chrom_var, chrom_var)
+            var_counts.append({"variant": chrom_var, "variant_name": display.hgvs_cdna,\
+                "protein_name": display.hgvsp, \
+                    "variant_effects": ", ".join(display.variant_effects) if display.variant_effects is not None else None,\
+                    "Count": var_count})
 
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
@@ -120,7 +124,7 @@ class CohortViewable:
             cohort: Cohort,
             transcript_id: typing.Optional[str],
             only_hgvs: bool = True,
-    ) -> typing.Mapping[str, str]:
+    ) -> typing.Mapping[str, namedtuple]:
         """
         Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings
         Args:
@@ -129,20 +133,33 @@ class CohortViewable:
             only_hgvs (bool): do not show the transcript ID part of the HGVS annotation, just the annotation.
 
         Returns:
-            typing.Mapping[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant
+            typing.Mapping[str, namedtuple]: key: chromosomal, value: namedtuple(display (e.g. HGVS) string of variant, hgvsp protein string of variant)
         """
         chrom_to_display = dict()
         var_formatter = VariantFormatter(transcript_id)
+        to_display = namedtuple('to_display', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
         for var in cohort.all_variants():
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
+            tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
+            if tx_annotation is not None:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            else:
+                hgvsp = None
+                var_effects = None
             if only_hgvs:
                 # do not show the transcript id
-                fields = display.split(":")
-                if len(fields) > 1:
-                    display = fields[1]
+                fields_dna = display.split(":")
+                fields_ps = hgvsp.split(":") if hgvsp is not None else [None]
+                if len(fields_dna) > 1:
+                    display = fields_dna[1]
                 else:
-                    display = [0]
-            chrom_to_display[variant_key] = display
+                    display = fields_dna[0]
+                if len(fields_ps) > 1:
+                    hgvsp = fields_ps[1]
+                else:
+                    hgvsp = fields_ps[0]
+            chrom_to_display[variant_key] = to_display(display, hgvsp, var_effects)
 
         return chrom_to_display

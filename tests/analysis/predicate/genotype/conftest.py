@@ -74,6 +74,7 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 ),
                 affected_exons=(4,),
                 protein_id="pt:xyz",
+                hgvsp=None,
                 protein_effect_coordinates=Region(40, 41),
             ),
             TranscriptAnnotation(
@@ -84,6 +85,7 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 variant_effects=(VariantEffect.INTRON_VARIANT,),
                 affected_exons=None,
                 protein_id=None,
+                hgvsp=None,
                 protein_effect_coordinates=None,
             ),
         ),
@@ -111,6 +113,7 @@ def structural_variant() -> Variant:
                 variant_effects=(VariantEffect.TRANSCRIPT_ABLATION,),
                 affected_exons=range(13),  # I counted 13 exons
                 protein_id=None,
+                hgvsp=None,
                 protein_effect_coordinates=None,
             ),
         ),

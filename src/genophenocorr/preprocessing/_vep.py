@@ -121,6 +121,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             exons_effected = (int(x) for x in exons_effected)
 
         protein_id = item.get('protein_id')
+        hgvsp = item.get('hgvsp')
         protein_effect_start = item.get('protein_start')
         protein_effect_end = item.get('protein_end')
         if protein_effect_start is None or protein_effect_end is None:
@@ -141,6 +142,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
                                     var_effects,
                                     exons_effected,
                                     protein_id,
+                                    hgvsp,
                                     protein_effect)
 
     def fetch_response(

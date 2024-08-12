@@ -35,7 +35,7 @@ def get_toy_cohort() -> Cohort:
 
     snv = Variant.create_variant_from_scratch(VariantCoordinates(make_region(280, 281), 'A', 'G', 0), 'FakeGene',
                                                   'NM_1234.5', 'NM_1234.5:c.180A>G', False, [VariantEffect.MISSENSE_VARIANT], [1],
-                                                  'NP_09876.5', 60, 60,
+                                                  'NP_09876.5', 'NP_09876.5:p.Unk200', 60, 60,
                                                   Genotypes.from_mapping({
                                                       SampleLabels('A'): Genotype.HETEROZYGOUS, SampleLabels('B'): Genotype.HETEROZYGOUS,
                                                       SampleLabels('C'): Genotype.HOMOZYGOUS_ALTERNATE,
@@ -52,7 +52,7 @@ def get_toy_cohort() -> Cohort:
     deletion = Variant.create_variant_from_scratch(VariantCoordinates(make_region(360, 363), 'TTC', 'T', -2),
                                                   'FakeGene', 'NM_1234.5', 'NM_1234.5:c.261_263del',
                                                   False, [VariantEffect.FRAMESHIFT_VARIANT],
-                                                  [2], 'NP_09876.5', 86, 87,
+                                                  [2], 'NP_09876.5','NP_09876.5:p.Unk200', 86, 87,
                                                   Genotypes.from_mapping({
                                                       SampleLabels('D'): Genotype.HETEROZYGOUS, SampleLabels('F'): Genotype.HETEROZYGOUS,
                                                       SampleLabels('G'): Genotype.HETEROZYGOUS, SampleLabels('H'): Genotype.HETEROZYGOUS,
@@ -66,11 +66,11 @@ def get_toy_cohort() -> Cohort:
                                                    )
     het_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1), 'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 'NP_09876.5:p.Unk200', 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
     hom_dup = Variant.create_variant_from_scratch(
         VariantCoordinates(make_region(175, 176), 'T', 'TG', 1),'FakeGene', 'NM_1234.5',
-        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 25, 25,
+        'NM_1234.5:c.75A>G', False, [VariantEffect.FRAMESHIFT_VARIANT], [1], 'NP_09876.5', 'NP_09876.5:p.Unk200', 25, 25,
         Genotypes.empty())  # Not used in the patients below, hence `empty()`.
 
     patients = (
