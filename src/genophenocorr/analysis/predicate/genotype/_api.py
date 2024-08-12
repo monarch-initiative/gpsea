@@ -36,7 +36,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
 
     def __and__(self, other):
         """
-        Create a variant predicate passes if *BOTH* `self` and `other` pass.
+        Create a variant predicate which passes if *BOTH* `self` and `other` pass.
         """
         if isinstance(other, VariantPredicate):
             if self == other:
@@ -51,22 +51,32 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         else:
             return NotImplemented
     
-    def __or__(self, value):
+    def __or__(self, other):
         """
-        Create a variant predicate passes if *EITHER* `self` *OR* `other` passes.
+        Create a variant predicate which passes if *EITHER* `self` *OR* `other` passes.
         """
-        if isinstance(value, VariantPredicate):
-            if self == value:
+        if isinstance(other, VariantPredicate):
+            if self == other:
                 return self
             
-            if isinstance(self, AnyVariantPredicate) and isinstance(value, AnyVariantPredicate):
+            if isinstance(self, AnyVariantPredicate) and isinstance(other, AnyVariantPredicate):
                 # Merging two any variant predicates is equivalent 
                 # to chaining their predicates
-                return AnyVariantPredicate(*self.predicates, *value.predicates)
+                return AnyVariantPredicate(*self.predicates, *other.predicates)
             else:
-                return AnyVariantPredicate(self, value)
+                return AnyVariantPredicate(self, other)
         else:
             return NotImplemented
+        
+    def __invert__(self):
+        """
+        Create a variant predicate that passes if the underlying predicate fails.
+        """    
+        if isinstance(self, InvVariantPredicate):
+            # Unwrap to prevent double negation
+            return self._inner
+        else:
+            return InvVariantPredicate(self)
 
 
 class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
@@ -74,9 +84,12 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        *args,
+        *predicates,
     ):
-        self._predicates = tuple(args)
+        if len(predicates) == 0:
+            raise ValueError('Predicates must not be empty!')
+        self._predicates = tuple(predicates)
+        
 
     @property
     def predicates(self) -> typing.Sequence[VariantPredicate]:
@@ -129,3 +142,31 @@ class AllVariantPredicate(LogicalVariantPredicate):
     
     def __repr__(self) -> str:
         return f'AllVariantPredicate(predicates={self._predicates})'
+
+
+class InvVariantPredicate(VariantPredicate):
+    # NOT PART OF THE PUBLIC API
+    
+    def __init__(
+        self,
+        inner: VariantPredicate,
+    ):
+        self._inner = inner
+
+    def get_question(self) -> str:
+        return 'NOT ' + self._inner.get_question()
+
+    def test(self, variant: Variant) -> bool:
+        return not self._inner.test(variant)
+
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, InvVariantPredicate):
+            return self._inner == value._inner
+        return False
+
+    def __str__(self) -> str:
+        return f'NOT {self._inner}'
+    
+    def __repr__(self) -> str:
+        return f'NotVariantPredicate(inner={self._inner})'
+    

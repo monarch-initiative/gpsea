@@ -16,7 +16,10 @@ class TestHeuristicSamplerMtcFilter:
     @pytest.fixture
     def mtc_filter(self, hpo: hpotk.MinimalOntology) -> HeuristicMtcFilter:
         default_freq_threshold=0.2
-        return HeuristicMtcFilter(hpo=hpo, hpo_term_frequency_filter=default_freq_threshold)
+        return HeuristicMtcFilter.default_filter(
+            hpo=hpo, 
+            term_frequency_threshold=default_freq_threshold,
+        )
 
     @pytest.fixture(scope='class')
     def patient_counts(
@@ -114,10 +117,10 @@ class TestHeuristicSamplerMtcFilter:
 
         filtered_n_usable, filtered_all_counts, reason_for_filtering_out = mtc_report
 
-        # After updating SUOX.json to include hgvsp, results changed. I (Lauren) don't understand why, could someone check on this test? 
         assert reason_for_filtering_out['Skipping term because all genotypes have same HPO observed proportions'] == 1
-        assert reason_for_filtering_out['Skipping non-target term'] == 5 # Originally 14
-        assert reason_for_filtering_out['Skipping top level term'] == 0 # Originally 5
+        assert reason_for_filtering_out['Skipping general term'] == 14
+        assert reason_for_filtering_out['Skipping non-target term'] == 5
+        assert reason_for_filtering_out['Skipping top level term'] == 0
 
         assert len(filtered_n_usable) == 4
         assert len(filtered_all_counts) == 4
