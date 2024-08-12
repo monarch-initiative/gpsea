@@ -156,6 +156,7 @@
                 <span class="s1">&#39;variant_effects&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">,</span>
                 <span class="s1">&#39;overlapping_exons&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">,</span>
                 <span class="s1">&#39;protein_id&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">protein_id</span><span class="p">,</span>
+                <span class="s1">&#39;hgvsp&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">hgvsp</span><span class="p">,</span>
                 <span class="s1">&#39;protein_effect_location&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Genotypes</span><span class="p">):</span>
@@ -356,6 +357,7 @@
                 <span class="n">variant_effects</span><span class="o">=</span><span class="p">(</span><span class="n">VariantEffect</span><span class="p">[</span><span class="n">ve</span><span class="p">]</span> <span class="k">for</span> <span class="n">ve</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_effects&#39;</span><span class="p">]),</span>
                 <span class="n">affected_exons</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;overlapping_exons&#39;</span><span class="p">],</span>
                 <span class="n">protein_id</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;protein_id&#39;</span><span class="p">],</span>
+                <span class="n">hgvsp</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;hgvsp&#39;</span><span class="p">],</span>
                 <span class="n">protein_effect_coordinates</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;protein_effect_location&#39;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_PHENOTYPE_FIELDS</span><span class="p">):</span>

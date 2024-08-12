@@ -425,10 +425,10 @@
                             <span class="n">tx_annotations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
                                 <span class="n">variant_coordinates</span><span class="o">=</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span>
                             <span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                             <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="s2">&quot;Try again or remove variant form testing&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant form testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="k">continue</span>
                     <span class="k">elif</span> <span class="n">variant_info</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
@@ -436,10 +436,10 @@
                             <span class="n">tx_annotations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
                                 <span class="n">item</span><span class="o">=</span><span class="n">variant_info</span><span class="o">.</span><span class="n">sv_info</span><span class="p">,</span>
                             <span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                             <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="s2">&quot;Try again or remove variant form testing&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant form testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="k">continue</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -448,7 +448,7 @@
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;Remove variant from testing&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;Remove variant from testing... tx_anno == 0&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
 

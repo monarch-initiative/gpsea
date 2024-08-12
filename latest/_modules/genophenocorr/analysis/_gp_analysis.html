@@ -306,7 +306,7 @@
         <span class="c1"># such as HP:0001611	Hypernasal speech, but it also contains &quot;general&quot; terms that</span>
         <span class="c1"># we skip according to this heuristic, e.g., HP:0030680	Abnormal cardiovascular system morphology</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_terms</span><span class="p">:</span>
-            <span class="n">l2_terms</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tid</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">l2_terms</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">l2_terms</span><span class="p">:</span>
                 <span class="n">tid</span> <span class="o">=</span> <span class="n">t</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
@@ -316,7 +316,7 @@
         <span class="c1"># such as HP:0031109	Agalactia, but it also contains &quot;general&quot; terms that</span>
         <span class="c1"># we skip according to this heuristic, e.g., HP:0006500	Abnormal lower limb epiphysis morphology</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_second_level_terms</span><span class="p">:</span>
-            <span class="n">l3_terms</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tid</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">l3_terms</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">l3_terms</span><span class="p">:</span>
                 <span class="n">tid</span> <span class="o">=</span> <span class="n">t</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
