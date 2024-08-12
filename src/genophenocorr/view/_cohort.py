@@ -2,10 +2,13 @@ import typing
 
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
+from collections import namedtuple
 
 from genophenocorr.model import Cohort
 from ._formatter import VariantFormatter
 
+
+ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
 class CohortViewable:
     """
@@ -32,9 +35,9 @@ class CohortViewable:
         self._cohort_template = environment.get_template("cohort.html")
 
     def process(
-            self,
-            cohort: Cohort,
-            transcript_id: typing.Optional[str] = None
+        self,
+        cohort: Cohort,
+        transcript_id: typing.Optional[str] = None,
     ) -> str:
         """
         Create an HTML that should be shown with display(HTML(..)) of the ipython package.
@@ -50,9 +53,9 @@ class CohortViewable:
         return self._cohort_template.render(context)
 
     def _prepare_context(
-            self,
-            cohort: Cohort,
-            transcript_id: typing.Optional[str]
+        self,
+        cohort: Cohort,
+        transcript_id: typing.Optional[str],
     ) -> typing.Mapping[str, typing.Any]:
 
         hpo_counts = list()
@@ -62,28 +65,54 @@ class CohortViewable:
             hpo_label = "n/a"
             if hpo_id in self._hpo:
                 hpo_label = self._hpo.get_term(hpo_id).name
-            hpo_counts.append({"HPO": hpo_label, "ID": hpo_id, "Count": individual_count})
+            hpo_counts.append(
+                {
+                    "HPO": hpo_label, 
+                    "ID": hpo_id, 
+                    "Count": individual_count,
+                }
+            )
 
-        var_counts = list()
-        variant_to_display_d = self.get_variant_description(cohort, transcript_id)
-        for var in cohort.list_all_variants(top=self._top_variant_count):
-            chrom_var = var[0]
-            var_count = var[1]
+        variant_counts = list()
+        variant_to_display_d = CohortViewable._get_variant_description(cohort, transcript_id)
+        for variant_key, count in cohort.list_all_variants(top=self._top_variant_count):
             # get HGVS or human readable variant
-            var_name = variant_to_display_d.get(chrom_var, chrom_var)
-            var_counts.append({"variant": chrom_var, "variant_name": var_name, "Count": var_count})
+            if variant_key in variant_to_display_d:
+                display = variant_to_display_d[variant_key]
+                hgvs_cdna = display.hgvs_cdna
+                protein_name = display.hgvsp
+                effects = '' if display.variant_effects is None else ", ".join(display.variant_effects)
+            else:
+                display = variant_key
+                hgvs_cdna = ''
+                protein_name = ''
+                effects = ''
+            
+            variant_counts.append(
+                {
+                    "variant": variant_key, 
+                    "variant_name": hgvs_cdna,
+                    "protein_name": protein_name, 
+                    "variant_effects": effects,
+                    "Count": count,
+                }
+            )
 
-        diseases = cohort.list_all_diseases()
-        n_diseases = len(diseases)
         disease_counts = list()
-        for d in diseases:
-            disease_id = d[0]
-            disease_count = d[1]
+        for disease_id, disease_count in cohort.list_all_diseases():
             disease_name = "Unknown"
-            for dis in cohort.all_diseases():
-                if dis.identifier == d[0]:
-                    disease_name = dis.name
-            disease_counts.append({"disease_id": disease_id, "disease_name": disease_name, "count": disease_count})
+            for disease in cohort.all_diseases():
+                if disease.identifier == disease_id:
+                    disease_name = disease.name
+            disease_counts.append(
+                {
+                    "disease_id": disease_id, 
+                    "disease_name": disease_name, 
+                    "count": disease_count,
+                }
+            )
+        
+        n_diseases = len(disease_counts)
 
         var_effects_list = list()
         if transcript_id is not None:
@@ -107,7 +136,7 @@ class CohortViewable:
             "hpo_counts": hpo_counts,
             "unique_variant_count": len(cohort.all_variants()),
             "top_var_count": self._top_variant_count,
-            "var_counts": var_counts,
+            "var_counts": variant_counts,
             "n_diseases": n_diseases,
             "disease_counts": disease_counts,
             "has_transcript": has_transcript,
@@ -116,11 +145,11 @@ class CohortViewable:
         }
 
     @staticmethod
-    def get_variant_description(
-            cohort: Cohort,
-            transcript_id: typing.Optional[str],
-            only_hgvs: bool = True,
-    ) -> typing.Mapping[str, str]:
+    def _get_variant_description(
+        cohort: Cohort,
+        transcript_id: typing.Optional[str],
+        only_hgvs: bool = True,
+    ) -> typing.Mapping[str, ToDisplay]:
         """
         Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings
         Args:
@@ -129,20 +158,33 @@ class CohortViewable:
             only_hgvs (bool): do not show the transcript ID part of the HGVS annotation, just the annotation.
 
         Returns:
-            typing.Mapping[str, str]: key: chromosomal, value: display (e.g. HGVS) string of variant
+            typing.Mapping[str, ToDisplay]: key: variant key, value: namedtuple(display (e.g. HGVS) string of variant, hgvsp protein string of variant)
         """
         chrom_to_display = dict()
         var_formatter = VariantFormatter(transcript_id)
+        
         for var in cohort.all_variants():
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
+            tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
+            if tx_annotation is not None:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            else:
+                hgvsp = None
+                var_effects = None
             if only_hgvs:
                 # do not show the transcript id
-                fields = display.split(":")
-                if len(fields) > 1:
-                    display = fields[1]
+                fields_dna = display.split(":")
+                fields_ps = hgvsp.split(":") if hgvsp is not None else [None]
+                if len(fields_dna) > 1:
+                    display = fields_dna[1]
                 else:
-                    display = [0]
-            chrom_to_display[variant_key] = display
+                    display = fields_dna[0]
+                if len(fields_ps) > 1:
+                    hgvsp = fields_ps[1]
+                else:
+                    hgvsp = fields_ps[0]
+            chrom_to_display[variant_key] = ToDisplay(display, hgvsp, var_effects)
 
         return chrom_to_display

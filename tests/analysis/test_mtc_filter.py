@@ -120,6 +120,7 @@ class TestHeuristicSamplerMtcFilter:
         assert reason_for_filtering_out['Skipping term because all genotypes have same HPO observed proportions'] == 1
         assert reason_for_filtering_out['Skipping general term'] == 14
         assert reason_for_filtering_out['Skipping non-target term'] == 5
+        assert reason_for_filtering_out['Skipping top level term'] == 0
 
         assert len(filtered_n_usable) == 4
         assert len(filtered_all_counts) == 4
