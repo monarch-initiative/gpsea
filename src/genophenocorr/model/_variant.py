@@ -45,6 +45,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
         variant_effects (Iterable[string]): An iterable of predicted effects given by VEP
         affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.
         protein_id (string): The protein ID for the protein encoded by the transcript.
+        hgvsp (Optional[str]): Predicted effect on the encoded protein or `None` if not available`.
         protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates
          of the effect on the protein sequence.
     """
@@ -165,6 +166,7 @@ class TranscriptAnnotation(TranscriptInfoAware):
                f"variant_effects:{self.variant_effects}," \
                f"overlapping_exons:{self.overlapping_exons}," \
                f"protein_id:{self.protein_id}," \
+               f"hgvsp:{self._hgvsp}," \
                f"protein_effect_location:{self.protein_effect_location})"
 
     def __eq__(self, other) -> bool:
@@ -176,14 +178,26 @@ class TranscriptAnnotation(TranscriptInfoAware):
             and self.variant_effects == other.variant_effects \
             and self.overlapping_exons == other.overlapping_exons \
             and self.protein_id == other.protein_id \
+            and self._hgvsp == other._hgvsp \
             and self.protein_effect_location == other.protein_effect_location
 
     def __repr__(self) -> str:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.gene_id, self.hgvs_cdna, self.is_preferred, self.transcript_id, self.overlapping_exons, self.variant_effects,
-                     self.protein_id, self.protein_effect_location))
+        return hash(
+            (
+                self.gene_id, 
+                self.hgvs_cdna, 
+                self.is_preferred, 
+                self.transcript_id, 
+                self.overlapping_exons, 
+                self.variant_effects,
+                self.protein_id, 
+                self._hgvsp,
+                self.protein_effect_location,
+            )
+        )
 
 
 class VariantClass(enum.Enum):
