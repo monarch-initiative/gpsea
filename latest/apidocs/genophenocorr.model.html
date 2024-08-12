@@ -1097,6 +1097,7 @@ or if the variant is large imprecise SV.</p>
 <li><p><strong>variant_effects</strong> (<em>Iterable</em><em>[</em><em>string</em><em>]</em>) – An iterable of predicted effects given by VEP</p></li>
 <li><p><strong>affected_exons</strong> (<em>Iterable</em><em>[</em><em>integer</em><em>]</em>) – An iterable of exons affected by the variant. Returns None if none are affected.</p></li>
 <li><p><strong>protein_id</strong> (<em>string</em>) – The protein ID for the protein encoded by the transcript.</p></li>
+<li><p><strong>hgvsp</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – Predicted effect on the encoded protein or <cite>None</cite> if not available`.</p></li>
 <li><p><strong>protein_effect_coordinates</strong> (<em>Region</em><em>, </em><em>optional</em>) – An optional <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> with start and end coordinates
 of the effect on the protein sequence.</p></li>
 </ul>

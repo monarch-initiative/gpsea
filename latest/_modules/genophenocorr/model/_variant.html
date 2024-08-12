@@ -133,6 +133,7 @@
 <span class="sd">        variant_effects (Iterable[string]): An iterable of predicted effects given by VEP</span>
 <span class="sd">        affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.</span>
 <span class="sd">        protein_id (string): The protein ID for the protein encoded by the transcript.</span>
+<span class="sd">        hgvsp (Optional[str]): Predicted effect on the encoded protein or `None` if not available`.</span>
 <span class="sd">        protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates</span>
 <span class="sd">         of the effect on the protein sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -246,32 +247,45 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TranscriptAnnotation(gene_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;transcript_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;hgvs_cdna:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hgvs_cdna</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;is_preferred:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;variant_effects:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;overlapping_exons:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;protein_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;protein_effect_location:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TranscriptAnnotation(gene_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;transcript_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;hgvs_cdna:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_cdna</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;is_preferred:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;variant_effects:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;overlapping_exons:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;protein_id:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_id</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;hgvsp:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span><span class="si">}</span><span class="s2">,&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;protein_effect_location:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">gene_id</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvs_cdna</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">hgvs_cdna</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">is_preferred</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">transcript_id</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variant_effects</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">overlapping_exons</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_id</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_effect_location</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_gene_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_tx_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_cdna</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_hgvs_cdna</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_is_preferred</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_variant_effects</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_affected_exons</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_protein_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_hgvsp</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_protein_effect_location</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hgvs_cdna</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_preferred</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">,</span>
-                     <span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_effect_location</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_cdna</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_protein_id</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
