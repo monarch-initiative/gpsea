@@ -22,6 +22,8 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -196,22 +198,73 @@ depending on the number of variant alleles matching the variant predicate.</p>
 <p><cite>VariantPredicates</cite> is a static utility class to provide the variant predicates
 that are relatively simple to configure.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicates.all">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_variant.html#VariantPredicates.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicates.all" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that returns <cite>True</cite> if ALL <cite>predicates</cite> evaluate to <cite>True</cite>.</p>
+<p>This is useful for building compound predicates programmatically.</p>
+<p><strong>Example</strong></p>
+<p>Build a predicate to test if variant has a functional annotation to genes <em>SURF1</em> and <em>SURF2</em>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SURF1&#39;</span><span class="p">,</span> <span class="s1">&#39;SURF2&#39;</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genes</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(impacts SURF1 AND impacts SURF2)&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicates</strong> – an iterable of predicates to test</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicates.any">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_variant.html#VariantPredicates.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicates.any" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that returns <cite>True</cite> if ANY of the <cite>predicates</cite> evaluates to <cite>True</cite>.</p>
+<p>This can be useful for building compound predicates programmatically.</p>
+<p><strong>Example</strong></p>
+<p>Build a predicate to test if variant leads to a missense or non-sense change on a fictive transcript <cite>NM_123456.7</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_123456.7&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">effects</span> <span class="o">=</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicates</strong> – an iterable of predicates to test</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_effect">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantEffect" title="genophenocorr.model._variant_effects.VariantEffect"><span class="pre">VariantEffect</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_variant.html#VariantPredicates.variant_effect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_effect" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> to test if the functional annotation predicts the variant to lead to
 a certain variant effect.</p>
+<p><strong>Example</strong></p>
+<p>Make a predicate for testing if the variant leads to a missense change on transcript <cite>NM_123.4</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_123.4&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;MISSENSE_VARIANT on NM_123.4&#39;</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>effect</strong> – the target <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></p></li>
 <li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate for testing</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -224,12 +277,6 @@ a certain variant effect.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> – a <cite>str</cite> with the variant key (e.g. <cite>X_12345_12345_C_G</cite> or <cite>22_10001_20000_INV</cite>)</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
-</dd>
 </dl>
 </dd></dl>
 
@@ -239,13 +286,7 @@ a certain variant effect.</p>
 <dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a given gene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>symbol</strong> – a <cite>str</cite> with the gene symbol (e.g. <cite>FBN1</cite>).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
+<dd class="field-odd"><p><strong>symbol</strong> – a <cite>str</cite> with the gene symbol (e.g. <code class="docutils literal notranslate"><span class="pre">'FBN1'</span></code>).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -257,12 +298,6 @@ a certain variant effect.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -278,12 +313,6 @@ a certain variant effect.</p>
 <li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
-</dd>
 </dl>
 </dd></dl>
 
@@ -294,12 +323,6 @@ a certain variant effect.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>region</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> that gives the start and end coordinate of the region of interest on a protein strand.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -337,19 +360,13 @@ as the structural type.</p>
 <p>Make a predicate for testing if the variant is a chromosomal deletion (<cite>SO:1000029</cite>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">structural_type</span><span class="p">(</span><span class="s1">&#39;SO:1000029&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span>
-<span class="go">StructuralTypePredicate(query=SO:1000029)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;structural type is SO:1000029&#39;</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>curie</strong> – compact uniform resource identifier (CURIE) with the structural type to test.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -358,15 +375,80 @@ as the structural type.</p>
 <dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_class">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantClass" title="genophenocorr.model._variant.VariantClass"><span class="pre">VariantClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_variant.html#VariantPredicates.variant_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicates.variant_class" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is of a certain <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code>.</p>
+<p><strong>Example</strong></p>
+<p>Make a predicate to test if the variant is a deletion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;variant class is DEL&#39;</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>variant_class</strong> – the variant class to test.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.predicate.genotype.VariantPredicates.ref_length">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ref_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'&lt;'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&lt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'=='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'!='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/predicate/genotype/_variant.html#VariantPredicates.ref_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.predicate.genotype.VariantPredicates.ref_length" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the reference (REF) allele
+of variant is above, below, or (not) equal to certain <cite>length</cite>.</p>
+<p>The length of the REF allele corresponds to the length of the genomic region affected by the variant.
+Let’s show a few examples.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chr1</span> <span class="o">=</span> <span class="n">GRCh38</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="s2">&quot;chr1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The length of the reference allele of a missense variant is 1
+because the variant affects a 1-bp region spanned by the <code class="docutils literal notranslate"><span class="pre">C</span></code> nucleotide:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_literal</span><span class="p">(</span><span class="n">chr1</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">missense</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>The length of a “small” deletion is the same as the length of the ref allele <cite>str</cite>:
+(<code class="docutils literal notranslate"><span class="pre">'CCC'</span></code> in the example below):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">deletion</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_literal</span><span class="p">(</span><span class="n">chr1</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="s1">&#39;CCC&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">deletion</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>This is because the literal notation spells out the alleles.
+However, this simple rule does not apply in symbolic notation.
+Here, the REF length corresponds to the length of the allele region.</p>
+<p>For instance, for the following structural variant</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#CHROM   POS    ID   REF  ALT     QUAL   FILTER   INFO</span>
+<span class="mi">1</span>        <span class="mi">1001</span>   <span class="o">.</span>    <span class="n">C</span>    <span class="o">&lt;</span><span class="n">DEL</span><span class="o">&gt;</span>   <span class="mi">6</span>      <span class="n">PASS</span>     <span class="n">SVTYPE</span><span class="o">=</span><span class="n">DEL</span><span class="p">;</span><span class="n">END</span><span class="o">=</span><span class="mi">1003</span><span class="p">;</span><span class="n">SVLEN</span><span class="o">=-</span><span class="mi">3</span>
+</pre></div>
+</div>
+<p>the length of the REF allele is <cite>3</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sv_deletion</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_symbolic</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">chr1</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">1003</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="s1">&#39;&lt;DEL&gt;&#39;</span><span class="p">,</span> <span class="n">svlen</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">sv_deletion</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>because the deletion removes 3 base pairs at the coordinates <span class="math notranslate nohighlight">\([1001, 1003]\)</span>.</p>
+<p><strong>Example</strong></p>
+<p>Prepare a predicate that tests that the REF allele includes more than 5 base pairs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;ref allele length &gt; 5&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operator</strong> – a <cite>str</cite> with the desired test. Must be one of <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">'&lt;',</span> <span class="pre">'&lt;=',</span> <span class="pre">'==',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&gt;'</span> <span class="pre">}</span></code>.</p></li>
+<li><p><strong>length</strong> – a non-negative <cite>int</cite> with the length threshold.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -385,13 +467,16 @@ is above, below, or (not) equal to certain <cite>threshold</cite>.</p>
 e.g. to test if a variant is a <em>deletion</em> leading to removal of at least 10 base pairs:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span>
-<span class="go">ChangeLengthPredicate(operator=&#39;&lt;=&#39;, threshold=-10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;change length &lt;= -10&#39;</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>operator</strong> – a <cite>str</cite> with the desired test. Must be one of <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">'&lt;',</span> <span class="pre">'&lt;=',</span> <span class="pre">'==',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&gt;'</span> <span class="pre">}</span></code>.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operator</strong> – a <cite>str</cite> with the desired test. Must be one of <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">'&lt;',</span> <span class="pre">'&lt;=',</span> <span class="pre">'==',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&gt;'</span> <span class="pre">}</span></code>.</p></li>
+<li><p><strong>threshold</strong> – an <cite>int</cite> with the threshold. Can be negative, zero, or positive.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -404,21 +489,22 @@ is a <a class="reference external" href="https://purl.obolibrary.org/obo/SO_1000
 that leads to removal of at least <em>n</em> base pairs (50bp by default).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The predicate uses See <a class="reference internal" href="genophenocorr.model.html#id10" title="genophenocorr.model.VariantCoordinates.change_length"><code class="xref py py-meth docutils literal notranslate"><span class="pre">genophenocorr.model.VariantCoordinates.change_length()</span></code></a>
+<p>The predicate uses <a class="reference internal" href="genophenocorr.model.html#id10" title="genophenocorr.model.VariantCoordinates.change_length"><code class="xref py py-meth docutils literal notranslate"><span class="pre">genophenocorr.model.VariantCoordinates.change_length()</span></code></a>
 to determine if the length of the variant is above or below <cite>threshold</cite>.</p>
-<p><strong>IMPORTANT</strong>: the change lengths of deletions are <em>negative</em>, since the alternate allele is shorter than the reference allele.</p>
+<p><strong>IMPORTANT</strong>: the change lengths of deletions are <em>negative</em>, since the alternate allele
+is shorter than the reference allele. See the method’s documentation for more info.</p>
 </div>
 <p><strong>Example</strong></p>
-<p>Prepare a predicate for testing if the variant is a chromosomal destructural deletion with more than</p>
+<p>Prepare a predicate for testing if the variant is a chromosomal deletion that removes at least 20 base pairs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">is_structural_deletion</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -20))&#39;</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>threshold</strong> – an <cite>int</cite> with the change length threshold to determine if a variant is “structural” (-50 bp by default).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -437,13 +523,7 @@ to categorize a <code class="xref py py-class docutils literal notranslate"><spa
 <dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a protein feature type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code> (e.g. <a href="#id1"><span class="problematic" id="id2">``</span></a>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
+<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code> (e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType.DOMAIN</span></code>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -454,13 +534,10 @@ to categorize a <code class="xref py py-class docutils literal notranslate"><spa
 <dd><p>Prepare a <a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a protein feature type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_id</strong> – the id of the target protein feature (e.g. <cite>ANK 1</cite>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a predicate</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype.VariantPredicate">VariantPredicate</a></p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_id</strong> – the id of the target protein feature (e.g. <cite>ANK 1</cite>)</p></li>
+<li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

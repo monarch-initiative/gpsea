@@ -558,6 +558,29 @@
         <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="CohortAnalysis.compare_symptom_count_vs_genotype">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_symptom_count_vs_genotype">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_symptom_count_vs_genotype</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bins the patients according to the count of present phenotypes that are either</span>
+<span class="sd">        an exact match to the `query` terms or their descendants </span>
+<span class="sd">        and test for genotype-phenotype correlation between the counts </span>
+<span class="sd">        and the genotype bins.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            query: an iterable with HPO term CURIEs (e.g. `&#39;HP:0001250&#39;` for seizure) </span>
+<span class="sd">                  or HPO term IDs</span>
+<span class="sd">            variant_predicate: the variant predicate for binning the patients </span>
+<span class="sd">                  along the genotype axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_check_min_perc_patients_w_hpo</span><span class="p">(</span><span class="n">min_perc_patients_w_hpo</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
                                        <span class="n">cohort_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

@@ -83,7 +83,7 @@
   <h1>Source code for genophenocorr.preprocessing._generic</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">VariantClass</span>
 
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span> <span class="n">GeneCoordinateService</span>
 
@@ -130,9 +130,9 @@
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="s1">&#39;DEL&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,)</span>
-        <span class="k">elif</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="s1">&#39;DUP&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DUP</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_AMPLIFICATION</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># This mapping is most likely incomplete.</span>

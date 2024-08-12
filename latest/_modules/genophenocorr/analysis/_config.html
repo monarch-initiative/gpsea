@@ -381,7 +381,10 @@
 
     <span class="n">mtc_filter</span><span class="p">:</span> <span class="n">HpoMtcFilter</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">HEURISTIC_SAMPLER</span><span class="p">:</span>
-        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicMtcFilter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpo_term_frequency_filter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">)</span>
+        <span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HeuristicMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span>
+            <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> 
+            <span class="n">term_frequency_threshold</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">min_perc_patients_w_hpo</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MTC_Strategy</span><span class="o">.</span><span class="n">SPECIFY_TERMS</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;`terms_to_test` must not be none if `SPECIFY_TERMS` strategy is used&#39;</span>
         <span class="n">validated_terms_to_test</span> <span class="o">=</span> <span class="n">_validate_terms_to_test</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span><span class="p">)</span>

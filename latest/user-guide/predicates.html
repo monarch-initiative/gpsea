@@ -61,6 +61,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Predicates</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#simple-predicates">Simple predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compound-predicates">Compound predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inverted-predicate">Inverted predicate</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="stats.html">Statistical tests</a></li>
@@ -197,9 +198,36 @@ such as testing if the variant is a <em>“chromosomal deletion” or a deletion
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chromosomal_deletion</span> <span class="o">=</span> <span class="s2">&quot;SO:1000029&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">structural_type</span><span class="p">(</span><span class="n">chromosomal_deletion</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length is &lt;=-50))&#39;</span>
+<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -50))&#39;</span>
 </pre></div>
 </div>
+</section>
+<section id="inverted-predicate">
+<h2>Inverted predicate<a class="headerlink" href="#inverted-predicate" title="Link to this heading"></a></h2>
+<p>Sometimes we may want to test the variant for a condition that must <em>not</em> be met.
+For instance, we may want to test if the variant is a deletion
+that is <em>not</em> predicted to shift the transcript reading frame.
+One of doing this would be to build a compound predicates
+for all variant effects except of <cite>VariantEffect.FRAMESHIFT_VARIANT</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_effects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>  <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SYNONYMOUS_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INTRON_VARIANT</span><span class="p">,</span>
+<span class="gp">... </span>  <span class="c1"># and many more effects..</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">ankrd11_mane_tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">non_frameshift_effects</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, this is clearly tedious and it would be much better implemented
+by a simple logical not of a predicate for a frameshift variant effect.</p>
+<p>To support this, <cite>VariantPredicate</cite> implements <em>logical inversion</em>
+which corresponds to Python’s <code class="docutils literal notranslate"><span class="pre">~</span></code> operator (tilde), to wrap
+the underlying predicate and to invert its test result.</p>
+<p>This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_del</span> <span class="o">=</span> <span class="o">~</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">ankrd11_mane_tx_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_del</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(NOT FRAMESHIFT_VARIANT on NM_013275.6 AND variant class is DEL)&#39;</span>
+</pre></div>
+</div>
+<p>Note the presence of a tilde <code class="docutils literal notranslate"><span class="pre">~</span></code> before the variant effect predicate and resulting <code class="docutils literal notranslate"><span class="pre">NOT</span></code> in the predicate question.</p>
 <p>That’s it for predicates. Please see <a class="reference internal" href="../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates" title="genophenocorr.analysis.predicate.genotype.VariantPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.analysis.predicate.genotype.VariantPredicates</span></code></a>
 and <a class="reference internal" href="../apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.ProteinPredicates" title="genophenocorr.analysis.predicate.genotype.ProteinPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.analysis.predicate.genotype.ProteinPredicates</span></code></a>
 for a comprehensive list of the predicates available off the shelf.</p>

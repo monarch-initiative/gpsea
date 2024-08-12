@@ -87,7 +87,7 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span><span class="p">,</span> <span class="n">GenomicRegion</span>
+<span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">Strand</span>
 <span class="kn">from</span> <span class="nn">._gt</span> <span class="kn">import</span> <span class="n">Genotyped</span><span class="p">,</span> <span class="n">Genotypes</span>
 <span class="kn">from</span> <span class="nn">._variant_effects</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 
@@ -352,6 +352,142 @@
 <span class="sd">        alt (string): The alternate allele</span>
 <span class="sd">        change_length (integer): The change between the ref and alt alleles due to the variant presence</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VariantCoordinates.from_vcf_literal">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.from_vcf_literal">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_vcf_literal</span><span class="p">(</span>
+        <span class="n">contig</span><span class="p">:</span> <span class="n">Contig</span><span class="p">,</span>
+        <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `VariantCoordinates` from a variant in VCF literal notation.</span>
+
+<span class="sd">        Note, this function must *not* be used to create a VCF symbolic variant </span>
+<span class="sd">        (e.g. `&lt;DEL&gt;` or translocation).</span>
+<span class="sd">        Use :func:`from_vcf_symbolic` instead.</span>
+
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Create a variant from a VCF line:</span>
+<span class="sd">        ```</span>
+<span class="sd">        #CHROM  POS     ID  REF ALT ...</span>
+<span class="sd">        chr1    1001    .   C   T</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        We first must decide on the genome build. Most of the time, we should use GRCh38:</span>
+
+<span class="sd">        &gt;&gt;&gt; from genophenocorr.model.genome import GRCh38</span>
+<span class="sd">        &gt;&gt;&gt; build = GRCh38</span>
+<span class="sd">        </span>
+<span class="sd">        Then, we access the contig for ``&#39;chr1&#39;``:</span>
+
+<span class="sd">        &gt;&gt;&gt; chr1 = build.contig_by_name(&#39;chr1&#39;)</span>
+
+<span class="sd">        Last, we create the variant coordinates:</span>
+
+<span class="sd">        &gt;&gt;&gt; from genophenocorr.model import VariantCoordinates</span>
+<span class="sd">        &gt;&gt;&gt; vc = VariantCoordinates.from_vcf_literal(</span>
+<span class="sd">        ...     contig=chr1, pos=1001, ref=&#39;C&#39;, alt=&#39;T&#39;,</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">        Now can test the properties:</span>
+
+<span class="sd">        &gt;&gt;&gt; vc.start, vc.end, vc.ref, vc.alt, len(vc), vc.change_length</span>
+<span class="sd">        (1000, 1001, &#39;C&#39;, &#39;T&#39;, 1, 0)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            contig: a :class:`Contig` for the chromosome</span>
+<span class="sd">            pos: a 1-based coordinate of the first base of the reference allele, as described in VCF standard</span>
+<span class="sd">            ref: a `str` with the REF allele. Should meet the requirements of the VCF standard.</span>
+<span class="sd">            alt: a `str` with the ALT allele. Should meet the requirements of the VCF standard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: test that we&#39;re getting proper alleles</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">GenomicRegion</span><span class="p">(</span>
+            <span class="n">contig</span><span class="o">=</span><span class="n">contig</span><span class="p">,</span> 
+            <span class="n">start</span><span class="o">=</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">end</span><span class="o">=</span><span class="n">pos</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">strand</span><span class="o">=</span><span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">change_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span>
+            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">alt</span><span class="o">=</span><span class="n">alt</span><span class="p">,</span>
+            <span class="n">change_length</span><span class="o">=</span><span class="n">change_length</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="VariantCoordinates.from_vcf_symbolic">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates.from_vcf_symbolic">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_vcf_symbolic</span><span class="p">(</span>
+        <span class="n">contig</span><span class="p">:</span> <span class="n">Contig</span><span class="p">,</span>
+        <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">svlen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `VariantCoordinates` from a variant in VCF symbolic notation.</span>
+
+<span class="sd">        Note, this function must *not* be used to create a VCF sequence/literal variant.</span>
+<span class="sd">        Use :func:`from_vcf_literal` instead.</span>
+<span class="sd">        </span>
+<span class="sd">        **Example**</span>
+
+<span class="sd">        Let&#39;s create a symbolic variant from the line:</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        #CHROM   POS      ID   REF   ALT     QUAL   FILTER   INFO </span>
+<span class="sd">        2        321682   .    T     &lt;DEL&gt;   6      PASS     SVTYPE=DEL;END=321887;SVLEN=-205</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        We first must decide on the genome build. Most of the time, we should use GRCh38:</span>
+
+<span class="sd">        &gt;&gt;&gt; from genophenocorr.model.genome import GRCh38</span>
+<span class="sd">        &gt;&gt;&gt; contig = GRCh38.contig_by_name(&#39;2&#39;)</span>
+
+<span class="sd">        Now, we create the coordinates as:</span>
+
+<span class="sd">        &gt;&gt;&gt; vc = VariantCoordinates.from_vcf_symbolic(</span>
+<span class="sd">        ...     contig=contig, pos=321682, end=321887, </span>
+<span class="sd">        ...     ref=&#39;T&#39;, alt=&#39;&lt;DEL&gt;&#39;, svlen=-205,</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">        Now can test the properties:</span>
+
+<span class="sd">        &gt;&gt;&gt; vc.start, vc.end, vc.ref, vc.alt, len(vc), vc.change_length</span>
+<span class="sd">        (321681, 321887, &#39;T&#39;, &#39;&lt;DEL&gt;&#39;, 206, -205)</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            contig: a :class:`Contig` for the chromosome</span>
+<span class="sd">            pos: a 1-based coordinate of the first base of the affected reference allele region</span>
+<span class="sd">            end: a 1-based coordinate of the last base of the affected reference allele region</span>
+<span class="sd">            ref: a `str` with the REF allele. Most of the time, it is one of `{&#39;N&#39;, &#39;A&#39;, &#39;C&#39;, &#39;G&#39;, &#39;T&#39;}`</span>
+<span class="sd">            alt: a `str` with the ALT allele, e.g. one of `{&#39;&lt;DEL&gt;&#39;, &#39;&lt;DUP&gt;&#39;, &#39;&lt;INS&gt;&#39;, &#39;&lt;INV&gt;&#39;}`</span>
+<span class="sd">            svlen: an `int` with change length (the difference between ref and alt allele lengths)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: test that we&#39;re getting proper alleles</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">GenomicRegion</span><span class="p">(</span>
+            <span class="n">contig</span><span class="o">=</span><span class="n">contig</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># convert to 0-based coordinates,</span>
+            <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">strand</span><span class="o">=</span><span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span>
+            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">alt</span><span class="o">=</span><span class="n">alt</span><span class="p">,</span>
+            <span class="n">change_length</span><span class="o">=</span><span class="n">svlen</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>

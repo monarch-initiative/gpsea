@@ -22,6 +22,8 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -275,6 +277,25 @@ and test for genotype-phenotype correlations.</p>
 <dd><p>Bin patients according to a presence of at least one allele that matches <cite>first</cite> or <cite>second</cite> predicate
 and test for genotype-phenotype correlations between the groups.</p>
 <p>Note, the patients that pass testing by both predicates are <em>OMITTED</em> from the analysis!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.CohortAnalysis.compare_symptom_count_vs_genotype">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compare_symptom_count_vs_genotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicate" title="genophenocorr.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_api.html#CohortAnalysis.compare_symptom_count_vs_genotype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.CohortAnalysis.compare_symptom_count_vs_genotype" title="Link to this definition"></a></dt>
+<dd><p>Bins the patients according to the count of present phenotypes that are either
+an exact match to the <cite>query</cite> terms or their descendants
+and test for genotype-phenotype correlation between the counts
+and the genotype bins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – an iterable with HPO term CURIEs (e.g. <cite>‘HP:0001250’</cite> for seizure)
+or HPO term IDs</p></li>
+<li><p><strong>variant_predicate</strong> – the variant predicate for binning the patients
+along the genotype axis</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -549,34 +570,26 @@ the number of HPO terms before filtering.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genophenocorr.analysis.HeuristicMtcFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.</span></span><span class="sig-name descname"><span class="pre">HeuristicMtcFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpo_term_frequency_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_gp_analysis.html#HeuristicMtcFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.HeuristicMtcFilter" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.analysis.</span></span><span class="sig-name descname"><span class="pre">HeuristicMtcFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_frequency_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">general_hpo_terms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_gp_analysis.html#HeuristicMtcFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.HeuristicMtcFilter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></p>
 <p><cite>HeuristicMtcFilter</cite> decides which phenotypes should be tested and which phenotypes are not worth testing.</p>
-<p>The class uses a number of heuristics and rules of thumb.
-1. Do not perform a test if there are less than min_annots annotations (default 2). That is, do not perform a</p>
-<blockquote>
-<div><p>test if an HPO term is used only once for annotation</p>
-</div></blockquote>
-<ol class="arabic" start="2">
-<li><dl>
-<dt>Do not perform a test if the counts in the genotype categories do not even have nominal statistical power</dt><dd><dl class="simple">
-<dt>for i in range(2,6):</dt><dd><dl class="simple">
-<dt>for j in range(2,6):</dt><dd><p># create a table with the most extreme possible counts. If this is not significant, then
-# other counts also cannot be
-two_by_two_table = [[i, 0], [0, j]]
-oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative=’two-sided’)</p>
+<p>The class leverages a number of heuristics and domain decisions. See <span class="xref std std-ref">heuristic-sampler-strategy-section</span> for more info.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.analysis.HeuristicMtcFilter.default_filter">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_frequency_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/analysis/_gp_analysis.html#HeuristicMtcFilter.default_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.HeuristicMtcFilter.default_filter" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hpo</strong> – HPO</p></li>
+<li><p><strong>term_frequency_threshold</strong> – a <cite>float</cite> in range <span class="math notranslate nohighlight">\((0, 1]\)</span> with the minimum frequency
+for an HPO term to have in at least one of the genotype groups
+(e.g., 22% in missense and 3% in nonsense genotypes would be OK,
+but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)</p></li>
+</ul>
 </dd>
 </dl>
-</dd>
-</dl>
-<p>This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
-## TODO – similar calculate for 3x2</p>
-</dd>
-</dl>
-</li>
-<li><p>Do not perform a test for the general, relatively top level terms such as <cite>Abnormality of the nervous system HP:0000707`</cite></p></li>
-<li><p>Do not perform a test if the counts are the same as a child (more specific) term‚</p></li>
-</ol>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.analysis.HeuristicMtcFilter.filter_terms_to_test">
 <span class="sig-name descname"><span class="pre">filter_terms_to_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_usable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/analysis/_gp_analysis.html#HeuristicMtcFilter.filter_terms_to_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.analysis.HeuristicMtcFilter.filter_terms_to_test" title="Link to this definition"></a></dt>

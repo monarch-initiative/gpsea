@@ -11,7 +11,7 @@ The HPO is hierarchically arranged from general to specific, and the more specif
 the more interest we deem a significant genotype phenotype correlation to be. 
 Therefore, we decide not to test terms such as 
 `Abnormality of the endocrine system (HP:0000818) <https://hpo.jax.org/browse/term/HP:0000818>`_. 
-The top-level term `Phenotypic abnormality (HP:0000118`)<https://hpo.jax.org/browse/term/HP:0000118>`_ is the 
+The top-level term `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_ is the 
 root of all phenotypic abnormality terms, and we refer to the children of this term as `level 1`.
 
 Most of the HPO is arranged according to morphological abnormalities (a structural abnormality) and physiological abnormalities.

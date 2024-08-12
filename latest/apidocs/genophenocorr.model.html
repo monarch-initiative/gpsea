@@ -736,6 +736,95 @@ The breakend variants are not supported.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.from_vcf_literal">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_vcf_literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Contig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantCoordinates.from_vcf_literal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.from_vcf_literal" title="Link to this definition"></a></dt>
+<dd><p>Create <cite>VariantCoordinates</cite> from a variant in VCF literal notation.</p>
+<p>Note, this function must <em>not</em> be used to create a VCF symbolic variant
+(e.g. <cite>&lt;DEL&gt;</cite> or translocation).
+Use <a class="reference internal" href="#genophenocorr.model.VariantCoordinates.from_vcf_symbolic" title="genophenocorr.model.VariantCoordinates.from_vcf_symbolic"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_vcf_symbolic()</span></code></a> instead.</p>
+<p><strong>Example</strong></p>
+<p>Create a variant from a VCF line:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">#CHROM</span>&#160; <span class="pre">POS</span>&#160;&#160;&#160;&#160; <span class="pre">ID</span>&#160; <span class="pre">REF</span> <span class="pre">ALT</span> <span class="pre">...</span>
+<span class="pre">chr1</span>&#160;&#160;&#160; <span class="pre">1001</span>&#160;&#160;&#160; <span class="pre">.</span>&#160;&#160; <span class="pre">C</span>&#160;&#160; <span class="pre">T</span>
+<span class="pre">`</span></code></p>
+<p>We first must decide on the genome build. Most of the time, we should use GRCh38:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">build</span> <span class="o">=</span> <span class="n">GRCh38</span>
+</pre></div>
+</div>
+<p>Then, we access the contig for <code class="docutils literal notranslate"><span class="pre">'chr1'</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chr1</span> <span class="o">=</span> <span class="n">build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="s1">&#39;chr1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Last, we create the variant coordinates:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vc</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_literal</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">contig</span><span class="o">=</span><span class="n">chr1</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now can test the properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="p">),</span> <span class="n">vc</span><span class="o">.</span><span class="n">change_length</span>
+<span class="go">(1000, 1001, &#39;C&#39;, &#39;T&#39;, 1, 0)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contig</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">Contig</span></code> for the chromosome</p></li>
+<li><p><strong>pos</strong> – a 1-based coordinate of the first base of the reference allele, as described in VCF standard</p></li>
+<li><p><strong>ref</strong> – a <cite>str</cite> with the REF allele. Should meet the requirements of the VCF standard.</p></li>
+<li><p><strong>alt</strong> – a <cite>str</cite> with the ALT allele. Should meet the requirements of the VCF standard.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.from_vcf_symbolic">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_vcf_symbolic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Contig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">svlen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/model/_variant.html#VariantCoordinates.from_vcf_symbolic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.from_vcf_symbolic" title="Link to this definition"></a></dt>
+<dd><p>Create <cite>VariantCoordinates</cite> from a variant in VCF symbolic notation.</p>
+<p>Note, this function must <em>not</em> be used to create a VCF sequence/literal variant.
+Use <a class="reference internal" href="#genophenocorr.model.VariantCoordinates.from_vcf_literal" title="genophenocorr.model.VariantCoordinates.from_vcf_literal"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_vcf_literal()</span></code></a> instead.</p>
+<p><strong>Example</strong></p>
+<p>Let’s create a symbolic variant from the line:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">#CHROM</span>&#160;&#160; <span class="pre">POS</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">ID</span>&#160;&#160; <span class="pre">REF</span>&#160;&#160; <span class="pre">ALT</span>&#160;&#160;&#160;&#160; <span class="pre">QUAL</span>&#160;&#160; <span class="pre">FILTER</span>&#160;&#160; <span class="pre">INFO</span>
+<span class="pre">2</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">321682</span>&#160;&#160; <span class="pre">.</span>&#160;&#160;&#160; <span class="pre">T</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;DEL&gt;</span>&#160;&#160; <span class="pre">6</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">PASS</span>&#160;&#160;&#160;&#160; <span class="pre">SVTYPE=DEL;END=321887;SVLEN=-205</span>
+<span class="pre">`</span></code></p>
+<p>We first must decide on the genome build. Most of the time, we should use GRCh38:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contig</span> <span class="o">=</span> <span class="n">GRCh38</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we create the coordinates as:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vc</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_symbolic</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">contig</span><span class="o">=</span><span class="n">contig</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">321682</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">321887</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="s1">&#39;&lt;DEL&gt;&#39;</span><span class="p">,</span> <span class="n">svlen</span><span class="o">=-</span><span class="mi">205</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now can test the properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vc</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span> <span class="n">vc</span><span class="o">.</span><span class="n">alt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc</span><span class="p">),</span> <span class="n">vc</span><span class="o">.</span><span class="n">change_length</span>
+<span class="go">(321681, 321887, &#39;T&#39;, &#39;&lt;DEL&gt;&#39;, 206, -205)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contig</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">Contig</span></code> for the chromosome</p></li>
+<li><p><strong>pos</strong> – a 1-based coordinate of the first base of the affected reference allele region</p></li>
+<li><p><strong>end</strong> – a 1-based coordinate of the last base of the affected reference allele region</p></li>
+<li><p><strong>ref</strong> – a <cite>str</cite> with the REF allele. Most of the time, it is one of <cite>{‘N’, ‘A’, ‘C’, ‘G’, ‘T’}</cite></p></li>
+<li><p><strong>alt</strong> – a <cite>str</cite> with the ALT allele, e.g. one of <cite>{‘&lt;DEL&gt;’, ‘&lt;DUP&gt;’, ‘&lt;INS&gt;’, ‘&lt;INV&gt;’}</cite></p></li>
+<li><p><strong>svlen</strong> – an <cite>int</cite> with change length (the difference between ref and alt allele lengths)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="genophenocorr.model.VariantCoordinates.chrom">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chrom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#genophenocorr.model.VariantCoordinates.chrom" title="Link to this definition"></a></dt>
