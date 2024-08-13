@@ -109,7 +109,7 @@ class PhenopacketVariantCoordinateFinder(
             ref = variation_descriptor.vcf_record.ref
             alt = variation_descriptor.vcf_record.alt
             end = start + len(ref)
-            change_length = end - start
+            change_length = len(alt) - len(ref)
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
             return VariantCoordinates(region, ref, alt, change_length)
@@ -130,6 +130,7 @@ class PhenopacketVariantCoordinateFinder(
                 alt = "<DUP>"
             else:
                 alt = "<DEL>"
+            # TODO(ielis): this is wrong. Fix!
             change_length = end - start
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
