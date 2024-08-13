@@ -7,7 +7,7 @@ import pandas as pd
 
 from genophenocorr.analysis import configure_cohort_analysis, GenotypePhenotypeAnalysisResult
 from genophenocorr.analysis.predicate import PatientCategories
-from genophenocorr.data import get_toy_cohort
+from genophenocorr.analysis.predicate.genotype import VariantPredicates
 from genophenocorr.model import Cohort, VariantEffect
 
 
@@ -110,3 +110,23 @@ class TestCohortAnalysis:
         total_observed_HPO = counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[PatientCategories.YES, PatientCategories.YES]
         assert 28 == total_observed_HPO
 
+    @pytest.mark.skip('For debugging only')
+    def test_compare_symptom_count_vs_genotype(
+        self,
+        suox_cohort: Cohort,
+        hpo: hpotk.MinimalOntology,
+    ):
+        cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
+
+        phenotype_categories = (
+            'HP:0012638',  # Abnormal nervous system physiology
+            'HP:0001939',  # Abnormality of metabolism/homeostasis
+        )
+        variant_predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+
+        counts_df = cohort_analysis.compare_symptom_count_vs_genotype(
+            query=phenotype_categories, 
+            variant_predicate=variant_predicate,
+        )
+
+        print(counts_df)

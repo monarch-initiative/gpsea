@@ -429,6 +429,26 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         """
         pass
 
+    @abc.abstractmethod
+    def compare_symptom_count_vs_genotype(
+        self,
+        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        variant_predicate: VariantPredicate,
+    ):
+        """
+        Bins the patients according to the count of present phenotypes that are either
+        an exact match to the `query` terms or their descendants 
+        and test for genotype-phenotype correlation between the counts 
+        and the genotype bins.
+        
+        Args:
+            query: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for seizure) 
+                  or HPO term IDs
+            variant_predicate: the variant predicate for binning the patients 
+                  along the genotype axis
+        """
+        pass
+
     @staticmethod
     def _check_min_perc_patients_w_hpo(min_perc_patients_w_hpo: typing.Union[int, float],
                                        cohort_size: int) -> float:

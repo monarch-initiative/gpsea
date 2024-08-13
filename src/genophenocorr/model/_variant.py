@@ -4,7 +4,7 @@ import typing
 
 import hpotk
 
-from .genome import Region, GenomicRegion
+from .genome import Region, GenomicRegion, Contig, Strand
 from ._gt import Genotyped, Genotypes
 from ._variant_effects import VariantEffect
 
@@ -258,6 +258,136 @@ class VariantCoordinates:
         alt (string): The alternate allele
         change_length (integer): The change between the ref and alt alleles due to the variant presence
     """
+
+    @staticmethod
+    def from_vcf_literal(
+        contig: Contig,
+        pos: int,
+        ref: str,
+        alt: str,
+    ):
+        """
+        Create `VariantCoordinates` from a variant in VCF literal notation.
+
+        Note, this function must *not* be used to create a VCF symbolic variant 
+        (e.g. `<DEL>` or translocation).
+        Use :func:`from_vcf_symbolic` instead.
+
+        **Example**
+
+        Create a variant from a VCF line:
+        ```
+        #CHROM  POS     ID  REF ALT ...
+        chr1    1001    .   C   T
+        ```
+
+        We first must decide on the genome build. Most of the time, we should use GRCh38:
+
+        >>> from genophenocorr.model.genome import GRCh38
+        >>> build = GRCh38
+        
+        Then, we access the contig for ``'chr1'``:
+
+        >>> chr1 = build.contig_by_name('chr1')
+
+        Last, we create the variant coordinates:
+
+        >>> from genophenocorr.model import VariantCoordinates
+        >>> vc = VariantCoordinates.from_vcf_literal(
+        ...     contig=chr1, pos=1001, ref='C', alt='T',
+        ... )
+
+        Now can test the properties:
+
+        >>> vc.start, vc.end, vc.ref, vc.alt, len(vc), vc.change_length
+        (1000, 1001, 'C', 'T', 1, 0)
+
+        Args:
+            contig: a :class:`Contig` for the chromosome
+            pos: a 1-based coordinate of the first base of the reference allele, as described in VCF standard
+            ref: a `str` with the REF allele. Should meet the requirements of the VCF standard.
+            alt: a `str` with the ALT allele. Should meet the requirements of the VCF standard.
+        """
+        # TODO: test that we're getting proper alleles
+        region = GenomicRegion(
+            contig=contig, 
+            start=pos - 1,
+            end=pos + len(ref) - 1,
+            strand=Strand.POSITIVE,
+        )
+
+        change_length = len(ref) - len(alt)
+        
+        return VariantCoordinates(
+            region=region,
+            ref=ref,
+            alt=alt,
+            change_length=change_length,
+        )
+    
+    @staticmethod
+    def from_vcf_symbolic(
+        contig: Contig,
+        pos: int,
+        end: int,
+        ref: str,
+        alt: str,
+        svlen: int,
+    ):
+        """
+        Create `VariantCoordinates` from a variant in VCF symbolic notation.
+
+        Note, this function must *not* be used to create a VCF sequence/literal variant.
+        Use :func:`from_vcf_literal` instead.
+        
+        **Example**
+
+        Let's create a symbolic variant from the line:
+
+        ```
+        #CHROM   POS      ID   REF   ALT     QUAL   FILTER   INFO 
+        2        321682   .    T     <DEL>   6      PASS     SVTYPE=DEL;END=321887;SVLEN=-205
+        ```
+
+        We first must decide on the genome build. Most of the time, we should use GRCh38:
+
+        >>> from genophenocorr.model.genome import GRCh38
+        >>> contig = GRCh38.contig_by_name('2')
+
+        Now, we create the coordinates as:
+
+        >>> vc = VariantCoordinates.from_vcf_symbolic(
+        ...     contig=contig, pos=321682, end=321887, 
+        ...     ref='T', alt='<DEL>', svlen=-205,
+        ... )
+
+        Now can test the properties:
+
+        >>> vc.start, vc.end, vc.ref, vc.alt, len(vc), vc.change_length
+        (321681, 321887, 'T', '<DEL>', 206, -205)
+        
+        Args:
+            contig: a :class:`Contig` for the chromosome
+            pos: a 1-based coordinate of the first base of the affected reference allele region
+            end: a 1-based coordinate of the last base of the affected reference allele region
+            ref: a `str` with the REF allele. Most of the time, it is one of `{'N', 'A', 'C', 'G', 'T'}`
+            alt: a `str` with the ALT allele, e.g. one of `{'<DEL>', '<DUP>', '<INS>', '<INV>'}`
+            svlen: an `int` with change length (the difference between ref and alt allele lengths)
+        """
+        # TODO: test that we're getting proper alleles
+        region = GenomicRegion(
+            contig=contig,
+            start=pos - 1,  # convert to 0-based coordinates,
+            end=end,
+            strand=Strand.POSITIVE,
+        )
+
+        return VariantCoordinates(
+            region=region,
+            ref=ref,
+            alt=alt,
+            change_length=svlen,
+        )
 
     def __init__(self, region: GenomicRegion, ref: str, alt: str, change_length: int):
         self._region = hpotk.util.validate_instance(region, GenomicRegion, 'region')
