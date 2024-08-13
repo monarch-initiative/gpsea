@@ -3,6 +3,9 @@ import typing
 
 import hpotk
 
+from collections import defaultdict
+
+
 from genophenocorr.model import Cohort, VariantEffect, FeatureType
 from genophenocorr.model.genome import Region
 from genophenocorr.preprocessing import ProteinMetadataService
@@ -11,7 +14,7 @@ from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPred
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
 from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
-from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
+from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypePredicate
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
 from ._filter import PhenotypeFilter
@@ -47,6 +50,42 @@ class GpCohortAnalysis(CohortAnalysis):
 
         self._hpo_terms_of_interest = self._phenotype_filter.filter_features(self._patient_list)
         self._missing_implies_excluded = missing_implies_excluded
+    
+    # TODO: remove
+    def compare_by_recessive_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = VariantPredicates.variant_effect(effect=effect, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
+
+    # TODO: remove
+    def compare_by_recessive_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = VariantPredicates.variant_key(key=variant_key)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
+
+    # TODO: remove
+    def compare_by_recessive_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = VariantPredicates.exon(exon=exon_number, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
+
+    # TODO: remove
+    def compare_by_recessive_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = self._protein_predicates.protein_feature_type(feature_type=feature_type, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
+
+    # TODO: remove
+    def compare_by_recessive_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
+        predicate = self._protein_predicates.protein_feature(feature_id=feature, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
+    
+    # TODO: remove
+    def compare_by_recessive_protein_region(self, region:Region, tx_id:str) -> GenotypePhenotypeAnalysisResult:
+        predicate = VariantPredicates.region(region=region, tx_id=tx_id)
+        recessive_predicate = wrap_as_recessive_predicate(predicate)
+        return self._apply_poly_predicate_on_hpo_terms(recessive_predicate)
 
     def compare_hpo_vs_genotype(
             self,
@@ -99,6 +138,32 @@ class GpCohortAnalysis(CohortAnalysis):
             pheno_predicates.append(DiseasePresencePredicate(disease))
 
         return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
+
+    def compare_symptom_count_vs_genotype(
+        self,
+        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        variant_predicate: VariantPredicate,
+    ):
+        phenotype_predicate = CountingPhenotypePredicate.from_query_curies(
+            hpo=self._hpo, 
+            query=query,
+        )
+        
+        genotype_predicate = wrap_as_boolean_predicate(variant_predicate)
+        assert genotype_predicate.n_categorizations() == 2, 'Binning to only 2 genotype groups is supported at the moment'
+
+        # Apply the predicates on the patients
+        data = defaultdict(list)       
+
+        for patient in self._patient_list:
+            gt_cat = genotype_predicate.test(patient)
+            ph_cat = phenotype_predicate.test(patient)
+            data[gt_cat.category].append(ph_cat.phenotype)
+        
+        # Now we have a dict of lists for each genotype group.
+        # TODO: finish testing
+        return data
+
 
     def _apply_poly_predicate_on_hpo_terms(
             self,
