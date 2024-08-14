@@ -66,7 +66,7 @@ class TestCohortAnalysis:
         assert isinstance(all_counts, typing.Mapping)
 
         # We tested 69 HPO terms
-        assert len(all_counts) == 69
+        assert results.total_tests == 69
 
         # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
         # Let's test Seizure - we should have one row for each Patient Predicate
