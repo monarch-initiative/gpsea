@@ -20,7 +20,8 @@ class TestCohortAnalysis:
     ):
         pd.set_option('expand_frame_repr', False)
         cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
-        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_001032386.2')
+        results = cohort_analysis.compare_hpo_vs_genotype(is_missense)
         print(results)
         summary = results.summarize(hpo, PatientCategories.YES)
         print(summary)
@@ -50,7 +51,8 @@ class TestCohortAnalysis:
         """
         pd.set_option('expand_frame_repr', False)
         cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
-        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_001032386.2')
+        results = cohort_analysis.compare_hpo_vs_genotype(is_missense)
 
         # Let's make sure we know what class we have
         assert isinstance(results, GenotypePhenotypeAnalysisResult)
@@ -101,14 +103,15 @@ class TestCohortAnalysis:
         """
         pd.set_option('expand_frame_repr', False)
         cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
-        results = cohort_analysis.compare_by_variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_001032386.2')
+        results = cohort_analysis.compare_hpo_vs_genotype(is_missense)
         all_counts = results.all_counts
         # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
         # Let's test Arachnodactyly - we should have one row for each Patient Predicate
         counts = all_counts[hpotk.TermId.from_curie("HP:0001250")]
-        #total_observed_HPO = HeuristicSamplerMtcFilter.get_number_of_positive_observations(arachnodactyly_counts)
+        # total_observed_HPO = HeuristicSamplerMtcFilter.get_number_of_positive_observations(arachnodactyly_counts)
         total_observed_HPO = counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[PatientCategories.YES, PatientCategories.YES]
-        assert 28 == total_observed_HPO
+        assert total_observed_HPO == 28
 
     @pytest.mark.skip('For debugging only')
     def test_compare_symptom_count_vs_genotype(
