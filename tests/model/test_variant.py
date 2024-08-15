@@ -30,25 +30,6 @@ class TestVariant:
         hgvs = some_variant.get_hgvs_cdna_by_tx_id(transcript_id=tx_id)
 
         assert hgvs == expected
-    
-    @pytest.mark.parametrize(
-        "search, expected",
-        [
-            (56002673, "12_56002674_56002674_T_C"),
-            (78386857, "16_78386858_78425054_--38197bp--_A"),
-            ('SO:1000029', 'SO:1000037_HGNC:21316_ANKRD11')
-        ] # Couldn't find an example that produces a variant key similar to this: 22_10001_20000_INV
-          # That is an example in the documentation though, so is it possible? (specifically the "INV"/"DEL"/etc.)
-    )
-    def test_variant_key(self, suox_cohort: Cohort, search, expected: typing.Optional[str]):
-        
-            for var in suox_cohort.all_variants():
-                if var.variant_info.variant_coordinates is not None:
-                    if var.variant_info.variant_coordinates.start == search:
-                        assert var.variant_info.variant_key == expected
-                if var.variant_info.variant_coordinates is None:
-                    if var.variant_info.sv_info.structural_type == search:
-                        assert var.variant_info.variant_key == expected
 
 
 class TestVariantCoordinates:
@@ -57,7 +38,9 @@ class TestVariantCoordinates:
         "contig_name, start, end, ref, alt, change_length, expected",
         [
             ("chrX", 100, 101, "C", "T", 0, "X_101_101_C_T"),
-            # TODO(lnrekerle): add more tests
+            ("chrY", 150, 152, "G", "GG", 1, "Y_151_152_G_GG"),
+            ("chr16", 1000, 1040, "A", "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG", 39, "16_1001_1040_A_--40bp--"),
+            ("chr2", 200, 301, "N", "<DEL>", 100, "2_201_301_DEL")
         ]
     )
     def test_variant_key(
