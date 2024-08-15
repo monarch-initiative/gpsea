@@ -17,6 +17,8 @@ from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
 from ._phenotype import PhenotypeCreator
+from ._protein import ProteinMetadataService, ProtCachingMetadataService, ProteinAnnotationCache
+from ._uniprot import UniprotProteinMetadataService
 from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
 from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService
@@ -47,9 +49,7 @@ def configure_caching_cohort_creator(
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the REST APIs
     """
-    if cache_dir is None:
-        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
-    os.makedirs(cache_dir, exist_ok=True)
+    cache_dir = _configure_cache_dir(cache_dir)
 
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
@@ -92,8 +92,7 @@ def configure_caching_patient_creator(
     """
     warnings.warn('`configure_caching_patient_creator` was deprecated. '
                   'Use `configure_caching_cohort_creator` instead', DeprecationWarning, stacklevel=2)
-    if cache_dir is None:
-        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    cache_dir = _configure_cache_dir(cache_dir)
 
     build = _configure_build(genome_build)
     phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
@@ -171,6 +170,7 @@ def configure_patient_creator(
      In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
+    :param timeout: timeout in seconds for the REST APIs
     """
     warnings.warn('`configure_patient_creator` was deprecated. '
                   'Use `configure_cohort_creator` instead', DeprecationWarning, stacklevel=2)
@@ -188,6 +188,39 @@ def configure_patient_creator(
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )
+
+
+def configure_protein_metadata_service(
+    cache_dir: typing.Optional[str] = None,
+    timeout: float = 30.,
+) -> ProteinMetadataService:
+    """
+    Configure default protein metadata service.
+
+    The service will cache the responses in `cache_dir` and reach out to UNIPROT API for cache misses.
+
+    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
+     if the data should be cached in `.genophenocorr_cache` folder in the current working directory.
+     In any case, the directory will be created if it does not exist (including any non-existing parents).
+    :param timeout: timeout in seconds for the REST APIs.
+    """
+    cache_dir = _configure_cache_dir(cache_dir)
+
+    protein_cache_dir = os.path.join(cache_dir, 'protein_cache')
+    os.makedirs(protein_cache_dir, exist_ok=True)
+    
+    cache = ProteinAnnotationCache(protein_cache_dir)
+    fallback = UniprotProteinMetadataService(timeout=timeout)
+    return ProtCachingMetadataService(cache=cache, fallback=fallback)
+
+
+def _configure_cache_dir(
+    cache_dir: typing.Optional[str] = None,
+) -> str:
+    if cache_dir is None:
+        cache_dir = os.path.join(os.getcwd(), '.genophenocorr_cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    return cache_dir
 
 
 def _configure_build(genome_build: str) -> GenomeBuild:

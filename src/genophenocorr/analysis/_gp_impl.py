@@ -92,26 +92,36 @@ class GpCohortAnalysis(CohortAnalysis):
         return self._apply_poly_predicate_on_hpo_terms(predicate)
 
     def compare_disease_vs_genotype(
-        self, 
-        genotype_predicate: GenotypePolyPredicate, 
+        self,
+        predicate: VariantPredicate,
         disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]] = None,
     ) -> GenotypePhenotypeAnalysisResult:
-        pheno_predicates = []
+        pheno_predicates = self._prepare_disease_predicates(disease_ids)
+
+        # This can be updated to any genotype poly predicate in future, if necessary.
+        genotype_predicate = wrap_as_boolean_predicate(predicate)
+        return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
+
+    def _prepare_disease_predicates(
+        self,
+        disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]],
+    ) -> typing.Sequence[DiseasePresencePredicate]:
         testing_diseases = []
         if disease_ids is None:
             disease_ids = [dis.identifier for dis in self._cohort.all_diseases()]
         if len(disease_ids) < 1:
             raise ValueError("No diseases available for testing.")
-        for dis in disease_ids:
-            if type(dis) == str:
-                testing_diseases.append(hpotk.TermId.from_curie(dis))
+        for disease_id in disease_ids:
+            if isinstance(disease_id, str):
+                testing_diseases.append(hpotk.TermId.from_curie(disease_id))
+            elif isinstance(disease_id, hpotk.TermId):
+                testing_diseases.append(disease_id)
             else:
-                testing_diseases.append(hpotk.util.validate_instance(dis, hpotk.TermId, 'dis'))
-
+                raise ValueError(f'{disease_id} must be a `str` or a `hpotk.TermId`')
+        pheno_predicates = []
         for disease in testing_diseases:
             pheno_predicates.append(DiseasePresencePredicate(disease))
-
-        return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
+        return pheno_predicates
 
     def compare_symptom_count_vs_genotype(
         self,

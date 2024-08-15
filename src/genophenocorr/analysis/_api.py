@@ -280,6 +280,14 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def compare_disease_vs_genotype(
+        self,
+        predicate: VariantPredicate,
+        disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]] = None,
+    ) -> GenotypePhenotypeAnalysisResult:
+        pass
+
+    @abc.abstractmethod
     def compare_symptom_count_vs_genotype(
         self,
         query: typing.Iterable[typing.Union[str, hpotk.TermId]],

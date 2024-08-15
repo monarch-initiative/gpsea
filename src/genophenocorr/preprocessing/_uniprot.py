@@ -16,12 +16,14 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         annotate(protein_id:str): Gets metadata and creates ProteinMetadata for given protein ID
     """
 
-    def __init__(self):
-        """Constructs all necessary attributes for a UniprotProteinMetadataService object
-        """
+    def __init__(
+        self,
+        timeout: float = 30.,
+    ):
         self._logger = logging.getLogger(__name__)
         self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
                     'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq,length'
+        self._timeout = timeout
 
     @staticmethod
     def parse_uniprot_json(
@@ -77,7 +79,9 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         raise ValueError(f'Could not find an entry for {protein_id} in Uniprot response')
 
     def annotate(self, protein_id: str) -> ProteinMetadata:
-        """Get metadata for given protein ID. This class specifically only works with a RefSeq database ID (e.g. NP_037407.4)
+        """
+        Get metadata for given protein ID.
+        This class specifically only works with a RefSeq database ID (e.g. NP_037407.4).
 
         Args:
             protein_id (string): A protein ID
@@ -91,6 +95,5 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         if not protein_id.startswith("NP_"):
             raise ValueError(f"only works with a RefSeq database ID (e.g. NP_037407.4), but we got {protein_id}")
         api_url = self._url % protein_id
-        r = requests.get(api_url).json()
-        return UniprotProteinMetadataService.parse_uniprot_json(r, protein_id)
-
+        response = requests.get(api_url, timeout=self._timeout).json()
+        return UniprotProteinMetadataService.parse_uniprot_json(response, protein_id)
