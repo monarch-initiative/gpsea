@@ -2,7 +2,9 @@ import pytest
 
 import typing
 
-from genophenocorr.model import Variant, Cohort
+from genophenocorr.model import Variant, Cohort, VariantCoordinates
+from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
+
 
 class TestVariant:
 
@@ -28,7 +30,7 @@ class TestVariant:
         hgvs = some_variant.get_hgvs_cdna_by_tx_id(transcript_id=tx_id)
 
         assert hgvs == expected
-        
+    
     @pytest.mark.parametrize(
         "search, expected",
         [
@@ -47,5 +49,35 @@ class TestVariant:
                 if var.variant_info.variant_coordinates is None:
                     if var.variant_info.sv_info.structural_type == search:
                         assert var.variant_info.variant_key == expected
-                
-        
+
+
+class TestVariantCoordinates:
+
+    @pytest.mark.parametrize(
+        "contig_name, start, end, ref, alt, change_length, expected",
+        [
+            ("chrX", 100, 101, "C", "T", 0, "X_101_101_C_T"),
+            # TODO(lnrekerle): add more tests
+        ]
+    )
+    def test_variant_key(
+        self,
+        genome_build: GenomeBuild,
+        contig_name: str,
+        start: int, end: int,
+        ref: str, alt: str,
+        change_length: int,
+        expected: str,
+    ):
+        contig = genome_build.contig_by_name(contig_name)
+        assert contig is not None
+
+        vc = VariantCoordinates(
+            region=GenomicRegion(
+                contig=contig,
+                start=start, end=end, strand=Strand.POSITIVE,
+            ),
+            ref=ref, alt=alt, change_length=change_length,
+        )
+
+        assert vc.variant_key == expected
