@@ -462,7 +462,7 @@ class VariantCoordinates:
 
         For instance, ``X_12345_12345_C_G`` for a sequence variant or ``22_10001_20000_INV`` for a symbolic variant.
         If the key is larger than 50 characters, the 'ref' and/or 'alt' (if over 10 bps) are changed to just show number of bps. 
-        Example: ``XX_123456789_123456816_AAAAAAAAAAAAAAAAAAAAAAAAAAA_T`` -> ``XX_123456789_123456816_--27bp--_T``
+        Example: ``X_1000001_1000027_TAAAAAAAAAAAAAAAAAAAAAAAAAA_T`` -> ``X_1000001_1000027_--27bp--_T``
 
         .. note::
 
