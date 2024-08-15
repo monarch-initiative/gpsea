@@ -35,11 +35,6 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'alt': o.alt,
                 'change_length': o.change_length,
             }
-        elif isinstance(o, VariantClass):
-            return{
-                'name': o.name,
-                'value': o.value
-            }
         elif isinstance(o, ImpreciseSvInfo):
             return {
                 'structural_type': o.structural_type.value,
@@ -92,7 +87,8 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'label': o.label,
                 'meta_label': o.meta_label,
             }
-        elif isinstance(o, (Genotype, VariantEffect, Strand)):
+        elif isinstance(o, (Genotype, VariantEffect, Strand, VariantClass)):
+            # enums
             return o.name
         elif isinstance(o, Phenotype):
             return {
@@ -150,7 +146,6 @@ class GenophenocorrJSONEncoder(JSONEncoder):
 _VARIANT_FIELDS = ('variant_info', 'tx_annotations', 'genotypes')
 _VARIANT_INFO_FIELDS = ('variant_coordinates', 'sv_info')
 _IMPRECISE_SV_INFO_FIELDS = ('structural_type', 'variant_class', 'gene_id', 'gene_symbol')
-_VARIANT_CLASS_FIELDS = ('name', 'value')
 _VARIANT_COORDINATES_FIELDS = ('region', 'ref', 'alt', 'change_length')
 _REGION_FIELDS = ('start', 'end')
 _GENOMIC_REGION_FIELDS = ('contig', 'start', 'end', 'strand')
@@ -223,14 +218,10 @@ class GenophenocorrJSONDecoder(JSONDecoder):
                 alt=obj['alt'],
                 change_length=obj['change_length'],
             )
-        elif GenophenocorrJSONDecoder._has_all_fields(obj, _VARIANT_CLASS_FIELDS):
-            return VariantClass(
-                value=obj['value']
-            )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _IMPRECISE_SV_INFO_FIELDS):
             return ImpreciseSvInfo(
                 structural_type=hpotk.TermId.from_curie(obj['structural_type']),
-                variant_class=obj['variant_class'],
+                variant_class=VariantClass[obj['variant_class']],
                 gene_id=obj['gene_id'],
                 gene_symbol=obj['gene_symbol'],
             )
