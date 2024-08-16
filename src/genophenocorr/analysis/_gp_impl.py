@@ -5,6 +5,7 @@ import hpotk
 
 from collections import defaultdict
 
+from scipy.stats import mannwhitneyu
 
 from genophenocorr.model import Cohort
 from genophenocorr.preprocessing import ProteinMetadataService
@@ -15,7 +16,7 @@ from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypePredicate
 
-from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult
+from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult, PhenotypeGroupAnalysisResult
 from ._filter import PhenotypeFilter
 from ._gp_analysis import GPAnalyzer
 
@@ -125,29 +126,36 @@ class GpCohortAnalysis(CohortAnalysis):
 
     def compare_symptom_count_vs_genotype(
         self,
-        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        variant_predicate: VariantPredicate,
-    ):
+        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        predicate: VariantPredicate,
+    ) -> PhenotypeGroupAnalysisResult:
         phenotype_predicate = CountingPhenotypePredicate.from_query_curies(
-            hpo=self._hpo, 
-            query=query,
+            hpo=self._hpo,
+            query=phenotype_group_terms,
         )
-        
-        genotype_predicate = wrap_as_boolean_predicate(variant_predicate)
-        assert genotype_predicate.n_categorizations() == 2, 'Binning to only 2 genotype groups is supported at the moment'
+
+        genotype_predicate = wrap_as_boolean_predicate(predicate)
+        assert genotype_predicate.n_categorizations() == 2, \
+            'Binning to only 2 genotype groups is supported at the moment'
 
         # Apply the predicates on the patients
-        data = defaultdict(list)       
+        data = defaultdict(list)
 
         for patient in self._patient_list:
             gt_cat = genotype_predicate.test(patient)
             ph_cat = phenotype_predicate.test(patient)
             data[gt_cat.category].append(ph_cat.phenotype)
-        
-        # Now we have a dict of lists for each genotype group.
-        # TODO: finish testing
-        return data
 
+        # Sort by PatientCategory.cat_id and unpack
+        x_key, y_key = sorted(data.keys(), key=lambda pc: pc.cat_id)
+        result = mannwhitneyu(
+            x=data[x_key], y=data[y_key], alternative='two-sided',
+        )
+
+        return PhenotypeGroupAnalysisResult(
+            phenotype_group_counts=data,
+            p_value=float(result.pvalue),
+        )
 
     def _apply_poly_predicate_on_hpo_terms(
             self,
@@ -159,7 +167,7 @@ class GpCohortAnalysis(CohortAnalysis):
         pheno_predicates = self._prepare_phenotype_predicates()
         return self._apply_poly_predicate(pheno_predicates, gt_predicate)
 
-    #Make public, eventually convenience functions written
+    # Make public, eventually convenience functions written
     def _apply_poly_predicate(
             self,
             pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],

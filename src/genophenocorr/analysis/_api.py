@@ -5,11 +5,10 @@ from collections import namedtuple, defaultdict
 import hpotk
 import pandas as pd
 
-from genophenocorr.model import VariantEffect, Patient, FeatureType
-from genophenocorr.model.genome import Region
+from genophenocorr.model import Patient
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPredicates
+from .predicate.genotype import VariantPredicate, ProteinPredicates
 from .predicate.phenotype import P
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
@@ -228,6 +227,45 @@ class GenotypePhenotypeAnalysisResult:
             return term_id.value
 
 
+class PhenotypeGroupAnalysisResult:
+    """
+    `PhenotypeGroupAnalysisResult` includes results of testing genotypes vs. phenotype groups.
+
+    See :ref:`Mann Whitney U Test for phenotype groups <phenotype-group-stats>` for more background.
+    """
+
+    def __init__(
+        self,
+        phenotype_group_counts: typing.Mapping[PatientCategory, typing.Sequence[int]],
+        p_value: float,
+    ):
+        self._phenotype_group_counts = dict(phenotype_group_counts)
+        self._p_value = p_value
+
+    @property
+    def phenotype_group_counts(
+        self,
+    ) -> typing.Mapping[PatientCategory, typing.Sequence[int]]:
+        return self._phenotype_group_counts
+
+    @property
+    def p_value(self) -> float:
+        return self._p_value
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, PhenotypeGroupAnalysisResult) \
+            and self._phenotype_group_counts == value._phenotype_group_counts \
+            and self._p_value == value._p_value
+
+    def __str__(self) -> str:
+        return 'PhenotypeGroupAnalysisResult(' \
+            f'phenotype_group_counts={self._phenotype_group_counts}, ' \
+            f'p_value={self._p_value})'
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
 class CohortAnalysis(metaclass=abc.ABCMeta):
     """
     `CohortAnalysis` is a driver class for running genotype-phenotype correlation analyses.
@@ -267,9 +305,9 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def compare_hpo_vs_genotype_groups(
-            self,
-            first: VariantPredicate,
-            second: VariantPredicate,
+        self,
+        first: VariantPredicate,
+        second: VariantPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
         Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
@@ -290,20 +328,22 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def compare_symptom_count_vs_genotype(
         self,
-        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        variant_predicate: VariantPredicate,
-    ):
+        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        predicate: VariantPredicate,
+    ) -> PhenotypeGroupAnalysisResult:
         """
-        Bins the patients according to the count of present phenotypes that are either
-        an exact match to the `query` terms or their descendants 
-        and test for genotype-phenotype correlation between the counts 
-        and the genotype bins.
-        
+        Bin the patients according to the count of phenotype groups
+        determined by `phenotype_group_terms` and genotype groups based on `predicate`.
+
+        Each patient is assigned with the number of phenotype groups, based on the match between
+        phenotypic terms (incl. descendants) and `phenotype_group_terms`.
+
+        We test for association between the phenotype group count and the variant groups.
+
         Args:
-            query: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for seizure) 
+            phenotype_group_terms: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for Seizure)
                   or HPO term IDs
-            variant_predicate: the variant predicate for binning the patients 
-                  along the genotype axis
+            predicate: a variant predicate for binning the patients along the genotype axis
         """
         pass
 

@@ -113,7 +113,6 @@ class TestCohortAnalysis:
         total_observed_HPO = counts.loc[PatientCategories.YES, PatientCategories.NO] + counts.loc[PatientCategories.YES, PatientCategories.YES]
         assert total_observed_HPO == 28
 
-    @pytest.mark.skip('For debugging only')
     def test_compare_symptom_count_vs_genotype(
         self,
         suox_cohort: Cohort,
@@ -121,15 +120,15 @@ class TestCohortAnalysis:
     ):
         cohort_analysis = configure_cohort_analysis(suox_cohort, hpo)
 
-        phenotype_categories = (
+        phenotype_group_terms = (
             'HP:0012638',  # Abnormal nervous system physiology
             'HP:0001939',  # Abnormality of metabolism/homeostasis
         )
-        variant_predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
 
-        counts_df = cohort_analysis.compare_symptom_count_vs_genotype(
-            query=phenotype_categories, 
-            variant_predicate=variant_predicate,
+        phenotype_group_results = cohort_analysis.compare_symptom_count_vs_genotype(
+            phenotype_group_terms=phenotype_group_terms,
+            predicate=predicate,
         )
 
-        print(counts_df)
+        assert phenotype_group_results.p_value == pytest.approx(0.9345982107594922)

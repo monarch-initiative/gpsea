@@ -57,6 +57,7 @@ Note that by default, the *two-tailed* Fisher exact test is performed, meaning w
 hypothesis as to whether there is a higher or lower frequency in one of the genotype groups. 
 
 
+.. _phenotype-group-stats:
 
 Mann-Whitney U Test 
 ~~~~~~~~~~~~~~~~~~~
