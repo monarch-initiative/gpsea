@@ -499,6 +499,11 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
 
         # 1.5) Filter terms for MTC
         n_usable, all_counts, reason2count = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        if len(n_usable) == 0:
+            raise ValueError(
+                f"No patients could be found to be usable for the analysis. Please verify that there is at least one patient that has a " \
+                    f"{gt_predicate.get_question()}."
+            )
 
         # 2) Statistical tests
         pheno_idx = pd.Index(n_usable.keys(), name='p_val')
