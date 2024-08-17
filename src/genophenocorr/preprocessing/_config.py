@@ -11,8 +11,7 @@ from tqdm import tqdm
 
 from genophenocorr.model import Cohort
 from genophenocorr.model.genome import GRCh37, GRCh38, GenomeBuild
-from ._api import FunctionalAnnotator
-from ._audit import NotepadTree
+from ._api import FunctionalAnnotator, PreprocessingValidationResult
 from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
@@ -299,9 +298,9 @@ def load_phenopacket_folder(
     pp_directory: str,
     cohort_creator: CohortCreator[Phenopacket],
     validation_policy: typing.Literal['none', 'lenient', 'strict'] = 'none',
-) -> Cohort:
+) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
-    Creates a Patient object for each phenopacket formatted JSON file in the given directory `pp_directory`.
+    Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.
 
     :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
       a directory with at least one phenopacket.
@@ -309,7 +308,7 @@ def load_phenopacket_folder(
       into a :class:`genophenocorr.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
       The value must be one of `{'none', 'lenient', 'strict'}`
-    :return: a cohort made of the phenopackets
+    :return: a tuple with the cohort and the preprocessing validation result.
     """
     # Load phenopackets
     phenopackets = _load_phenopacket_dir(pp_directory)
@@ -326,7 +325,18 @@ def load_phenopackets(
     phenopackets: typing.Iterator[Phenopacket],
     cohort_creator: CohortCreator[Phenopacket],
     validation_policy: typing.Literal['none', 'lenient', 'strict'] = 'none',
-) -> Cohort:
+) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
+    """
+    Map phenopacket JSON file into patient, validate the patient data, and assemble the patients into a cohort.
+
+    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
+      a directory with at least one phenopacket.
+    :param cohort_creator: cohort creator for turning a sequence of phenopacket
+      into a :class:`genophenocorr.model.Cohort`.
+    :param validation_policy: a `str` with the validation policy.
+      The value must be one of `{'none', 'lenient', 'strict'}`
+    :return: a tuple with the cohort and the preprocessing validation result.
+    """
     # Check inputs before doing anything
     hpotk.util.validate_instance(cohort_creator, CohortCreator, 'cohort_creator')
     if validation_policy.lower() not in VALIDATION_POLICIES:
@@ -335,60 +345,16 @@ def load_phenopackets(
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
-    cohort_iter = tqdm(phenopackets, desc='Patients Created', file=sys.stdout, colour='green')
-    notepad = cohort_creator.prepare_notepad('Load phenopackets')
+    cohort_iter = tqdm(phenopackets, desc='Patients Created', file=sys.stdout)
+    notepad = cohort_creator.prepare_notepad('Phenopackets')
     cohort = cohort_creator.process(cohort_iter, notepad)
 
-    _summarize_validation(validation_policy, notepad)
+    validation_result = PreprocessingValidationResult(
+        policy=validation_policy,
+        notepad=notepad,
+    )
 
-    if validation_policy == 'none':
-        # No validation
-        return cohort
-    elif validation_policy == 'lenient':
-        if notepad.has_errors(include_subsections=True):
-            raise ValueError('Cannot load cohort due to errors')
-    elif validation_policy == 'strict':
-        if notepad.has_errors_or_warnings(include_subsections=True):
-            raise ValueError('Cannot load cohort due to warnings/errors')
-    else:
-        # Bug, please report to the developers.
-        raise ValueError(f'Unexpected policy {validation_policy}')
-
-    # create cohort from patients
-    return cohort
-
-
-def _summarize_validation(
-    policy: str,
-    notepad: NotepadTree,
-    indent: int = 2,
-):
-    lines = [f'Validated under {policy} policy']
-    n_errors = sum(node.error_count() for node in notepad.iterate_nodes())
-    n_warnings = sum(node.warning_count() for node in notepad.iterate_nodes())
-    if n_errors > 0 or n_warnings > 0:
-        lines.append('Showing errors and warnings')
-        for node in notepad.iterate_nodes():
-            if node.has_errors_or_warnings(include_subsections=True):
-                # We must report the node label even if there are no issues with the node.
-                l_pad = ' ' * (node.level * indent)
-                lines.append(l_pad + node.label)
-                if node.has_errors():
-                    lines.append(l_pad + ' errors:')
-                    for error in node.errors():
-                        lines.append(l_pad + ' ' + error.message
-                                     + (f'. {error.solution}' if error.solution else ''))
-                if node.has_warnings():
-                    lines.append(l_pad + ' warnings:')
-                    for warning in node.warnings():
-                        lines.append(l_pad + ' ·' + warning.message
-                                     + (f'. {warning.solution}' if warning.solution else ''))
-        print(os.linesep.join(lines), file=sys.stderr)
-    else:
-        lines.append('No errors or warnings were found')
-        l_pad = ' ' * (notepad.level * indent)
-        lines.append(l_pad + notepad.label)
-        print(os.linesep.join(lines))
+    return cohort, validation_result
 
 
 def _load_phenopacket_dir(
@@ -401,8 +367,7 @@ def _load_phenopacket_dir(
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith('.json'):
             phenopacket_path = os.path.join(pp_dir, patient_file)
-            pp = _load_phenopacket(phenopacket_path)
-            yield pp
+            yield _load_phenopacket(phenopacket_path)
 
 
 def _load_phenopacket(phenopacket_path: str) -> Phenopacket:
