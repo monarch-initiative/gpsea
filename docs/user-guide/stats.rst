@@ -191,26 +191,34 @@ We have the counts:
 >>> counts.head()  # doctest: +NORMALIZE_WHITESPACE
                                      genotype phenotype
 patient_id                                             
-Subject 10[PMID_27087320_Subject_10]      LoF         0
-Subject 1[PMID_27087320_Subject_1]      Point         4
+Subject 10[PMID_27087320_Subject_10]        1         0
+Subject 1[PMID_27087320_Subject_1]          0         4
 Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]        LoF         1
-Subject 3[PMID_27087320_Subject_3]      Point         4
+Subject 2[PMID_29330883_Subject_2]          1         1
+Subject 3[PMID_27087320_Subject_3]          0         4
 
+The data frame provides a genotype category and a phenotype score for each patient.
+The genotype category should be interpreted in the context of the genotype predicate:
+
+>>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_predicate.get_categorizations()}
+>>> gt_id_to_name
+{0: 'Point', 1: 'LoF'}
 
 Let's plot the data:
 
 >>> import matplotlib.pyplot as plt
->>> import seaborn as sns
 >>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
->>> data = counts.loc[counts['genotype'].notna()]
->>> _ = sns.stripplot(
-...     hue='genotype', y='phenotype',
-...     dodge=True, jitter=.15, palette='dark', alpha=.8,
-...     data=data, ax=ax,
+>>> data = counts.loc[counts['genotype'].notna()]  # skip the patients with unassigned genotype group
+>>> x = [data.loc[data['genotype'] == c.category.cat_id, 'phenotype'].to_list() for c in gt_predicate.get_categorizations()]
+>>> gt_cat_labels = [gt_id_to_name[c.category.cat_id] for c in gt_predicate.get_categorizations()]
+>>> bplot = ax.boxplot(
+...     x=x, 
+...     patch_artist=True, tick_labels=gt_cat_labels,
 ... )
 >>> _ = ax.grid(axis='y')
->>> _ = ax.set(ylim=(-.5, len(structural_defects) + .5))
+>>> _ = ax.set(ylabel='Phenotype group count', ylim=(-.5, len(structural_defects) + .5))
+>>> for patch, color in zip(bplot['boxes'], ['darksalmon', 'honeydew']):
+...     patch.set_facecolor(color)
 >>> fig.savefig('docs/img/phenotype_group_counts.png')  # doctest: +SKIP
 
 

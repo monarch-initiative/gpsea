@@ -141,7 +141,7 @@ class GpCohortAnalysis(CohortAnalysis):
         # Apply the predicates on the patients
         for patient in self._patient_list:
             gt_cat = gt_predicate.test(patient)
-            data.loc[patient.patient_id, 'genotype'] = None if gt_cat is None else gt_cat.category.name
+            data.loc[patient.patient_id, 'genotype'] = None if gt_cat is None else gt_cat.category.cat_id
             data.loc[patient.patient_id, 'phenotype'] = phenotype_scorer(patient)
 
         # To improve the determinism

@@ -268,7 +268,7 @@ class PhenotypeScoreAnalysisResult:
         ==========  ========  =========
 
         The DataFrame index includes the patient IDs, and then there are 2 columns
-        with the `genotype` group and the `phenotype` score.
+        with the `genotype` group id (:attr:`~genophenocorr.analysis.predicate.PatientCategory.cat_id`) and the `phenotype` score.
         """
         return self._genotype_phenotype_scores
 
