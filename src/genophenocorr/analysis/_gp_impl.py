@@ -1,14 +1,12 @@
 import logging
 import typing
 
-from collections import defaultdict
-
 import hpotk
 import pandas as pd
 
 from scipy.stats import mannwhitneyu
 
-from genophenocorr.model import Cohort
+from genophenocorr.model import Cohort, Patient
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate
 from .predicate.genotype import VariantPredicate
@@ -17,7 +15,7 @@ from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypePredicate
 
-from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult, PhenotypeGroupAnalysisResult
+from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult, PhenotypeScoreAnalysisResult
 from ._filter import PhenotypeFilter
 from ._gp_analysis import GPAnalyzer
 
@@ -129,7 +127,7 @@ class GpCohortAnalysis(CohortAnalysis):
         self,
         phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
         gt_predicate: GenotypePolyPredicate,
-    ) -> PhenotypeGroupAnalysisResult:
+    ) -> PhenotypeScoreAnalysisResult:
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         assert gt_predicate.n_categorizations() == 2
 
@@ -138,7 +136,16 @@ class GpCohortAnalysis(CohortAnalysis):
             query=phenotype_group_terms,
         )
 
-        # Apply the predicates on the patients
+        return self.compare_genotype_vs_phenotype_score(
+            gt_predicate=gt_predicate,
+            phenotype_scorer=phenotype_predicate,
+        )
+
+    def compare_genotype_vs_phenotype_score(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        phenotype_scorer: typing.Callable[[Patient,], float],
+    ) -> PhenotypeScoreAnalysisResult:
         idx = pd.Index(tuple(p.patient_id for p in self._patient_list), name='patient_id')
         data = pd.DataFrame(
             None,
@@ -146,11 +153,11 @@ class GpCohortAnalysis(CohortAnalysis):
             columns=['genotype', 'phenotype'],
         )
 
+        # Apply the predicates on the patients
         for patient in self._patient_list:
             gt_cat = gt_predicate.test(patient)
-            ph_cat = phenotype_predicate.test(patient)
             data.loc[patient.patient_id, 'genotype'] = None if gt_cat is None else gt_cat.category.name
-            data.loc[patient.patient_id, 'phenotype'] = ph_cat.phenotype
+            data.loc[patient.patient_id, 'phenotype'] = phenotype_scorer(patient)
 
         # To improve the determinism
         data.sort_index(inplace=True)
@@ -158,16 +165,16 @@ class GpCohortAnalysis(CohortAnalysis):
         # Sort by PatientCategory.cat_id and unpack.
         # For now, we only allow to have up to 2 groups.
         x_key, y_key = sorted(data['genotype'].dropna().unique())
-        x = data.loc[data['genotype'] == x_key, 'phenotype'].to_numpy(dtype=int)
-        y = data.loc[data['genotype'] == y_key, 'phenotype'].to_numpy(dtype=int)
+        x = data.loc[data['genotype'] == x_key, 'phenotype'].to_numpy(dtype=float)
+        y = data.loc[data['genotype'] == y_key, 'phenotype'].to_numpy(dtype=float)
         result = mannwhitneyu(
             x=x,
             y=y,
             alternative='two-sided',
         )
 
-        return PhenotypeGroupAnalysisResult(
-            phenotype_group_counts=data,
+        return PhenotypeScoreAnalysisResult(
+            phenotype_score_counts=data,
             p_value=float(result.pvalue),
         )
 

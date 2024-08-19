@@ -227,19 +227,19 @@ class GenotypePhenotypeAnalysisResult:
             return term_id.value
 
 
-class PhenotypeGroupAnalysisResult:
+class PhenotypeScoreAnalysisResult:
     """
-    `PhenotypeGroupAnalysisResult` includes results of testing genotypes vs. phenotype groups.
+    `PhenotypeScoreAnalysisResult` includes results of testing genotypes vs. phenotype scores.
 
-    See :ref:`Mann Whitney U Test for phenotype groups <phenotype-group-stats>` for more background.
+    See :ref:`Mann Whitney U Test for phenotype score <phenotype-score-stats>` for more background.
     """
 
     def __init__(
         self,
-        phenotype_group_counts: pd.DataFrame,
+        phenotype_score_counts: pd.DataFrame,
         p_value: float,
     ):
-        self._phenotype_group_counts = phenotype_group_counts
+        self._phenotype_score_counts = phenotype_score_counts
         self._p_value = p_value
 
     @property
@@ -260,7 +260,7 @@ class PhenotypeGroupAnalysisResult:
         ...         ...       ...
         ==========  ========  =========
         """
-        return self._phenotype_group_counts
+        return self._phenotype_score_counts
 
     @property
     def p_value(self) -> float:
@@ -268,7 +268,7 @@ class PhenotypeGroupAnalysisResult:
 
     def __str__(self) -> str:
         return 'PhenotypeGroupAnalysisResult(' \
-            f'phenotype_group_counts={self._phenotype_group_counts}, ' \
+            f'phenotype_score_counts={self._phenotype_score_counts}, ' \
             f'p_value={self._p_value})'
 
     def __repr__(self) -> str:
@@ -335,24 +335,18 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def compare_symptom_count_vs_genotype(
+    def compare_genotype_vs_phenotype_score(
         self,
-        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
         gt_predicate: GenotypePolyPredicate,
-    ) -> PhenotypeGroupAnalysisResult:
+        phenotype_scorer: typing.Callable[[Patient,], float],
+    ) -> PhenotypeScoreAnalysisResult:
         """
-        Bin the patients according to the count of phenotype groups
-        determined by `phenotype_group_terms` and genotype groups based on `predicate`.
-
-        Each patient is assigned with the number of phenotype groups, based on the match between
-        phenotypic terms (incl. descendants) and `phenotype_group_terms`.
-
-        We test for association between the phenotype group count and the variant groups.
+        Score the patients with a phenotype scoring method and test for correlation between the genotype group
+        and the phenotype score.
 
         Args:
-            phenotype_group_terms: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for Seizure)
-                or HPO term IDs
-            gt_predicate: a genotype predicate for binning the patients along the genotype axis
+            gt_predicate: a genotype predicate for binning the patients along the genotype axis.
+            phenotype_scorer: a callable that computes a phenotype score for a given `Patient`.
         """
         pass
 

@@ -57,7 +57,7 @@ Note that by default, the *two-tailed* Fisher exact test is performed, meaning w
 hypothesis as to whether there is a higher or lower frequency in one of the genotype groups. 
 
 
-.. _phenotype-group-stats:
+.. _phenotype-score-stats:
 
 Mann-Whitney U Test 
 ~~~~~~~~~~~~~~~~~~~
@@ -191,11 +191,11 @@ We have the counts:
 >>> counts.head()  # doctest: +NORMALIZE_WHITESPACE
                                      genotype phenotype
 patient_id                                             
-Subject 10[PMID_27087320_Subject_10]        1         0
-Subject 1[PMID_27087320_Subject_1]          0         4
+Subject 10[PMID_27087320_Subject_10]   Second         0
+Subject 1[PMID_27087320_Subject_1]      First         4
 Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]          1         1
-Subject 3[PMID_27087320_Subject_3]          0         4
+Subject 2[PMID_29330883_Subject_2]     Second         1
+Subject 3[PMID_27087320_Subject_3]      First         4
 
 
 Let's plot the data:
