@@ -11,7 +11,7 @@ from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import GenotypePolyPredicate
 from .predicate.genotype import VariantPredicate
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
-from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
+from .predicate.genotype import groups_predicate as wrap_as_groups_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
 from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypeScorer
 
@@ -78,18 +78,19 @@ class GpCohortAnalysis(CohortAnalysis):
 
     def compare_hpo_vs_genotype_groups(
             self,
-            first: VariantPredicate,
-            second: VariantPredicate,
+            predicates: typing.Iterable[VariantPredicate],
+            group_names: typing.Iterable[str],
     ) -> GenotypePhenotypeAnalysisResult:
         """
-        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
-        and test for genotype-phenotype correlations between the groups.
+        Bin patients according to a presence of at least one allele that matches
+        any of the provided `predicates` and test for genotype-phenotype correlations
+        between the groups.
 
-        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!
+        Note, the patients that pass testing by >1 genotype predicate are *OMITTED* from the analysis!
         """
-        predicate = wrap_as_grouping_predicate(
-            first=first,
-            second=second,
+        predicate = wrap_as_groups_predicate(
+            predicates=predicates,
+            group_names=group_names,
         )
         return self._apply_poly_predicate_on_hpo_terms(predicate)
 

@@ -50,6 +50,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
     def __repr__(self) -> str:
         return str(self)
 
+
 # TODO: write AD, AR, XLR, XLD
 def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypeBooleanPredicate:
     """
@@ -58,82 +59,6 @@ def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypeBooleanPre
     """
     return AlleleCountingGenotypeBooleanPredicate.for_variant_predicate(
         predicate=variant_predicate,
-    )
-
-
-class AlleleCountingGenotypeGroupingPredicate(GroupingPredicate):
-    # NOT PART OF THE PUBLIC API
-    """
-    The predicate assigns a patient into first or second group based on the provided allele counters.
-
-    The patient is assigned into a group if *at least one allele* of a matching variant is present in the patient.
-    If the patient contains alleles that match both groups, the patient is *NOT* assigned into any group.
-    """
-
-    @staticmethod
-    def for_variant_predicates(first: VariantPredicate, second: VariantPredicate):
-        first_counter = AlleleCounter(predicate=first)
-        second_counter = AlleleCounter(predicate=second)
-        return AlleleCountingGenotypeGroupingPredicate(
-            first_counter=first_counter,
-            second_counter=second_counter,
-        )
-
-    def __init__(
-        self,
-        first_counter: AlleleCounter,
-        second_counter: AlleleCounter,
-    ):
-        self._first = first_counter
-        self._second = second_counter
-
-    def get_question(self) -> str:
-        return f"first: {self._first.get_question()}, second: {self._second.get_question()}"
-
-    def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        self._check_patient(patient)
-
-        first_count = self._first.count(patient)
-        is_first = True if first_count > 0 else False
-
-        second_count = self._second.count(patient)
-        is_second = True if second_count > 0 else False
-
-        if is_first and not is_second:
-            return GroupingPredicate.FIRST
-        elif not is_first and is_second:
-            return GroupingPredicate.SECOND
-        else:
-            return None
-        
-    def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountingGenotypeGroupingPredicate) and self._first == value._first and self._second == value._second
-    
-    def __hash__(self) -> int:
-        return hash((self._first, self._second,))
-    
-    def __str__(self) -> str:
-        return f'AlleleCountingGenotypeGroupingPredicate(first_counter={self._first}, second_counter={self._second})'
-    
-    def __repr__(self) -> str:
-        return str(self)
-
-
-def grouping_predicate(
-    first: VariantPredicate, second: VariantPredicate
-) -> GroupingPredicate:
-    """
-    Create a grouping genotype predicate to assign a patient
-    into `first` or `second` group based on the provided variant predicates.
-
-    The patient is assigned into a group if *at least one allele*
-    of a matching variant is present in the patient. If the patient
-    contains alleles that match both groups, the patient
-    is *NOT* assigned into any group.
-    """
-    return AlleleCountingGenotypeGroupingPredicate.for_variant_predicates(
-        first=first,
-        second=second,
     )
 
 
