@@ -3,7 +3,7 @@ import typing
 from genophenocorr.model import Patient
 
 from .._api import Categorization
-from .._api import GenotypePolyPredicate, GenotypeBooleanPredicate, GroupingPredicate, RecessiveGroupingPredicate
+from .._api import GenotypePolyPredicate, GenotypeBooleanPredicate, RecessiveGroupingPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
 

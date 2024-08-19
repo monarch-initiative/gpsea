@@ -208,28 +208,6 @@ class GenotypeBooleanPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
         return GenotypeBooleanPredicate.YES, GenotypeBooleanPredicate.NO
 
 
-class GroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    """
-    `GroupingPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to one of two groups and returns
-    FIRST or SECOND based on which group Patient belongs in.
-    """
-
-    FIRST = Categorization(PatientCategory(0, 'First', 'The patient belongs in the first group.'))
-    """
-    Category for a patient who belongs in the first given tested group.
-    """
-    SECOND = Categorization(PatientCategory(1, 'Second', 'The patient belongs in the second group.'))
-    """
-    Category for a patient who belongs to the second given tested group.
-    """
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        """
-        The predicate bins a patient into :class:`GroupingPredicate.FIRST` or :class:`GroupingPredicate.SECOND` category.
-        """
-        return GroupingPredicate.FIRST, GroupingPredicate.SECOND
-
-
 class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
     BOTH = Categorization(PatientCategory(0, 'Both', 'The patient belongs in both groups.'))
     ONE = Categorization(PatientCategory(1, 'One', 'The patient belongs in one of the two groups.'))
