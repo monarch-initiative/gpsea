@@ -1,9 +1,10 @@
 import logging
 import typing
 
-import hpotk
-
 from collections import defaultdict
+
+import hpotk
+import pandas as pd
 
 from scipy.stats import mannwhitneyu
 
@@ -127,29 +128,42 @@ class GpCohortAnalysis(CohortAnalysis):
     def compare_symptom_count_vs_genotype(
         self,
         phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        predicate: VariantPredicate,
+        gt_predicate: GenotypePolyPredicate,
     ) -> PhenotypeGroupAnalysisResult:
+        assert isinstance(gt_predicate, GenotypePolyPredicate)
+        assert gt_predicate.n_categorizations() == 2
+
         phenotype_predicate = CountingPhenotypePredicate.from_query_curies(
             hpo=self._hpo,
             query=phenotype_group_terms,
         )
 
-        genotype_predicate = wrap_as_boolean_predicate(predicate)
-        assert genotype_predicate.n_categorizations() == 2, \
-            'Binning to only 2 genotype groups is supported at the moment'
-
         # Apply the predicates on the patients
-        data = defaultdict(list)
+        idx = pd.Index(tuple(p.patient_id for p in self._patient_list), name='patient_id')
+        data = pd.DataFrame(
+            None,
+            index=idx,
+            columns=['genotype', 'phenotype'],
+        )
 
         for patient in self._patient_list:
-            gt_cat = genotype_predicate.test(patient)
+            gt_cat = gt_predicate.test(patient)
             ph_cat = phenotype_predicate.test(patient)
-            data[gt_cat.category].append(ph_cat.phenotype)
+            data.loc[patient.patient_id, 'genotype'] = None if gt_cat is None else gt_cat.category.name
+            data.loc[patient.patient_id, 'phenotype'] = ph_cat.phenotype
 
-        # Sort by PatientCategory.cat_id and unpack
-        x_key, y_key = sorted(data.keys(), key=lambda pc: pc.cat_id)
+        # To improve the determinism
+        data.sort_index(inplace=True)
+
+        # Sort by PatientCategory.cat_id and unpack.
+        # For now, we only allow to have up to 2 groups.
+        x_key, y_key = sorted(data['genotype'].dropna().unique())
+        x = data.loc[data['genotype'] == x_key, 'phenotype'].to_numpy(dtype=int)
+        y = data.loc[data['genotype'] == y_key, 'phenotype'].to_numpy(dtype=int)
         result = mannwhitneyu(
-            x=data[x_key], y=data[y_key], alternative='two-sided',
+            x=x,
+            y=y,
+            alternative='two-sided',
         )
 
         return PhenotypeGroupAnalysisResult(

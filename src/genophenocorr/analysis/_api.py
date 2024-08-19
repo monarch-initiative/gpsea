@@ -7,7 +7,7 @@ import pandas as pd
 
 from genophenocorr.model import Patient
 from genophenocorr.preprocessing import ProteinMetadataService
-from .predicate import PolyPredicate, PatientCategory
+from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
 from .predicate.genotype import VariantPredicate, ProteinPredicates
 from .predicate.phenotype import P
 
@@ -236,26 +236,35 @@ class PhenotypeGroupAnalysisResult:
 
     def __init__(
         self,
-        phenotype_group_counts: typing.Mapping[PatientCategory, typing.Sequence[int]],
+        phenotype_group_counts: pd.DataFrame,
         p_value: float,
     ):
-        self._phenotype_group_counts = dict(phenotype_group_counts)
+        self._phenotype_group_counts = phenotype_group_counts
         self._p_value = p_value
 
     @property
     def phenotype_group_counts(
         self,
-    ) -> typing.Mapping[PatientCategory, typing.Sequence[int]]:
+    ) -> pd.DataFrame:
+        """
+        Get the DataFrame with the patient counts.
+
+        The DataFrame has the following structure:
+
+        ==========  ========  =========
+        patient_id  genotype  phenotype
+        ==========  ========  =========
+        patient_1   0         1
+        patient_2   0         3
+        patient_3   1         2
+        ...         ...       ...
+        ==========  ========  =========
+        """
         return self._phenotype_group_counts
 
     @property
     def p_value(self) -> float:
         return self._p_value
-
-    def __eq__(self, value: object) -> bool:
-        return isinstance(value, PhenotypeGroupAnalysisResult) \
-            and self._phenotype_group_counts == value._phenotype_group_counts \
-            and self._p_value == value._p_value
 
     def __str__(self) -> str:
         return 'PhenotypeGroupAnalysisResult(' \
@@ -329,7 +338,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     def compare_symptom_count_vs_genotype(
         self,
         phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        predicate: VariantPredicate,
+        gt_predicate: GenotypePolyPredicate,
     ) -> PhenotypeGroupAnalysisResult:
         """
         Bin the patients according to the count of phenotype groups
@@ -342,8 +351,8 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
         Args:
             phenotype_group_terms: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for Seizure)
-                  or HPO term IDs
-            predicate: a variant predicate for binning the patients along the genotype axis
+                or HPO term IDs
+            gt_predicate: a genotype predicate for binning the patients along the genotype axis
         """
         pass
 
@@ -447,5 +456,3 @@ class HpoMtcFilter(metaclass=abc.ABCMeta):
         """returns the name of the heuristic used to limit multiple testing
         """
         pass
-
-

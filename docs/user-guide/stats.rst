@@ -80,3 +80,141 @@ This is a non-parametric test that compares the medians of the two groups to det
 6.348081479150902e-06
 
 ``p_value`` evaluates to `6.348081479150901e-06`, meaning there is a significant difference between the groups.
+
+
+Example
+^^^^^^^
+
+Let's now analyze the subjects reported in *Jordan et al*. 
+We start by loading the cohort from Phenopacket Store (version `0.1.18`):
+
+>>> from ppktstore.registry import configure_phenopacket_registry
+>>> registry = configure_phenopacket_registry()
+>>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
+>>> len(phenopackets)
+19
+
+We loaded 19 phenopackets. 
+
+Now, we need to prepare the phenopackets for using with Genophenocorr.
+We will need HPO (version `v2024-07-01`)
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+to create cohort creator
+
+>>> from genophenocorr.preprocessing import configure_caching_cohort_creator
+>>> cohort_creator = configure_caching_cohort_creator(hpo)
+
+which we will use to preprocess the cohort
+
+>>> from genophenocorr.preprocessing import load_phenopackets
+>>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+Patients Created: ...
+>>> len(cohort)
+19
+
+Now we can set up the phenotype and genotype predicates. Jordan et al tests ...
+
+.. todo: improve the text
+
+>>> rere_mane_tx_id = 'NM_001042681.2'
+
+Now let's create a predicate for testing if the variant is a point mutation or a loss of function mutation.
+The point mutation predicate is defined as ... 
+TODO: improve!
+
+>>> from genophenocorr.model import VariantEffect
+>>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+>>> point_mutation_effects = (
+...     VariantEffect.MISSENSE_VARIANT,
+... )
+>>> point_mutation = VariantPredicates.change_length('==', 0) \
+...     & VariantPredicates.ref_length('==', 1) \
+...     & VariantPredicates.any(VariantPredicates.variant_effect(effect, rere_mane_tx_id) for effect in point_mutation_effects)
+>>> point_mutation.get_question()
+'((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)'
+
+For the loss of function predicate, these variant effects are considered loss of function:
+
+>>> lof_effects = (
+...     VariantEffect.TRANSCRIPT_ABLATION,
+...     VariantEffect.FRAMESHIFT_VARIANT,
+...     VariantEffect.START_LOST,
+...     VariantEffect.STOP_GAINED,
+... )
+>>> lof_mutation = VariantPredicates.any(VariantPredicates.variant_effect(eff, rere_mane_tx_id) for eff in lof_effects)
+>>> lof_mutation.get_question()
+'(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
+
+The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:
+
+>>> from genophenocorr.analysis.predicate.genotype import grouping_predicate
+>>> gt_predicate = grouping_predicate(
+...     first=point_mutation,
+...     second=lof_mutation,
+... )
+>>> gt_predicate.get_question()
+'first: ((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2), second: (TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
+
+Now phenotype predicate. The authors divide the patients into groups according to the count of structural defects
+in these groups:
+
+>>> structural_defects = (
+...     'HP:0012443',  # Abnormal brain morphology (Brain anomalies)
+...     'HP:0012372',  # Abnormal eye morphology (Eye anomalies)
+...     'HP:0001627',  # Abnormal heart morphology (Congenital heart defects)
+...     'HP:0012210',  # Abnormal renal morphology (Renal anomalies)
+...     'HP:0000407',  # Sensorineural hearing impairment (Sensorineural hearing loss)
+... )
+
+Let's run the analysis.
+
+>>> from genophenocorr.analysis import configure_cohort_analysis
+>>> analysis = configure_cohort_analysis(
+...     cohort, hpo,
+... )
+>>> result = analysis.compare_symptom_count_vs_genotype(
+...     phenotype_group_terms=structural_defects,
+...     gt_predicate=gt_predicate,   
+... )
+>>> round(result.p_value, 9)
+0.027066902
+
+
+We have the counts:
+
+>>> counts = result.phenotype_group_counts
+>>> counts.head()  # doctest: +NORMALIZE_WHITESPACE
+                                     genotype phenotype
+patient_id                                             
+Subject 10[PMID_27087320_Subject_10]        1         0
+Subject 1[PMID_27087320_Subject_1]          0         4
+Subject 2[PMID_27087320_Subject_2]       None         4
+Subject 2[PMID_29330883_Subject_2]          1         1
+Subject 3[PMID_27087320_Subject_3]          0         4
+
+
+Let's plot the data:
+
+>>> import matplotlib.pyplot as plt
+>>> import seaborn as sns
+>>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
+>>> data = counts.loc[counts['genotype'].notna()]
+>>> _ = sns.stripplot(
+...     hue='genotype', y='phenotype',
+...     dodge=True, jitter=.15, palette='dark', alpha=.8,
+...     data=data, ax=ax,
+... )
+>>> _ = ax.grid(axis='y')
+>>> _ = ax.set(ylim=(-.5, len(structural_defects) + .5))
+>>> fig.savefig('docs/img/phenotype_group_counts.png')  # doctest: +SKIP
+
+
+.. image:: /img/phenotype_group_counts.png
+   :alt: Phenotype group counts
+   :align: center
+   :width: 600px

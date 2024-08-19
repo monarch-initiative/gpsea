@@ -7,7 +7,7 @@ import pandas as pd
 
 from genophenocorr.analysis import configure_cohort_analysis, GenotypePhenotypeAnalysisResult
 from genophenocorr.analysis.predicate import PatientCategories
-from genophenocorr.analysis.predicate.genotype import VariantPredicates
+from genophenocorr.analysis.predicate.genotype import VariantPredicates, boolean_predicate
 from genophenocorr.model import Cohort, VariantEffect
 
 
@@ -124,11 +124,12 @@ class TestCohortAnalysis:
             'HP:0012638',  # Abnormal nervous system physiology
             'HP:0001939',  # Abnormality of metabolism/homeostasis
         )
-        predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        variant_predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
+        gt_predicate = boolean_predicate(variant_predicate)
 
         phenotype_group_results = cohort_analysis.compare_symptom_count_vs_genotype(
             phenotype_group_terms=phenotype_group_terms,
-            predicate=predicate,
+            gt_predicate=gt_predicate,
         )
 
         assert phenotype_group_results.p_value == pytest.approx(0.9345982107594922)
