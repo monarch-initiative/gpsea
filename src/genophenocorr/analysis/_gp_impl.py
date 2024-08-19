@@ -13,7 +13,7 @@ from .predicate.genotype import VariantPredicate
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
 from .predicate.genotype import grouping_predicate as wrap_as_grouping_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
-from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypePredicate
+from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypeScorer
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult, PhenotypeScoreAnalysisResult
 from ._filter import PhenotypeFilter
@@ -31,13 +31,15 @@ class GpCohortAnalysis(CohortAnalysis):
         missing_implies_excluded: bool,
         include_sv: bool = False,
     ):
-        super().__init__(protein_service)
+        super().__init__(
+            hpo,
+            protein_service,
+        )
         if not isinstance(cohort, Cohort):
             raise ValueError(f"cohort must be type Cohort but was type {type(cohort)}")
 
         self._logger = logging.getLogger(__name__)
         self._cohort = cohort
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._phenotype_filter = hpotk.util.validate_instance(phenotype_filter, PhenotypeFilter, 'phenotype_filter')
         self._gp_analyzer = hpotk.util.validate_instance(gp_analyzer, GPAnalyzer, 'gp_analyzer')
 
@@ -123,24 +125,6 @@ class GpCohortAnalysis(CohortAnalysis):
             pheno_predicates.append(DiseasePresencePredicate(disease))
         return pheno_predicates
 
-    def compare_symptom_count_vs_genotype(
-        self,
-        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        gt_predicate: GenotypePolyPredicate,
-    ) -> PhenotypeScoreAnalysisResult:
-        assert isinstance(gt_predicate, GenotypePolyPredicate)
-        assert gt_predicate.n_categorizations() == 2
-
-        phenotype_predicate = CountingPhenotypePredicate.from_query_curies(
-            hpo=self._hpo,
-            query=phenotype_group_terms,
-        )
-
-        return self.compare_genotype_vs_phenotype_score(
-            gt_predicate=gt_predicate,
-            phenotype_scorer=phenotype_predicate,
-        )
-
     def compare_genotype_vs_phenotype_score(
         self,
         gt_predicate: GenotypePolyPredicate,
@@ -174,7 +158,7 @@ class GpCohortAnalysis(CohortAnalysis):
         )
 
         return PhenotypeScoreAnalysisResult(
-            phenotype_score_counts=data,
+            genotype_phenotype_scores=data,
             p_value=float(result.pvalue),
         )
 

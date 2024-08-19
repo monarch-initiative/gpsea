@@ -127,9 +127,9 @@ class TestCohortAnalysis:
         variant_predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, 'NM_001032386.2')
         gt_predicate = boolean_predicate(variant_predicate)
 
-        phenotype_group_results = cohort_analysis.compare_symptom_count_vs_genotype(
-            phenotype_group_terms=phenotype_group_terms,
+        phenotype_group_results = cohort_analysis.compare_genotype_vs_phenotype_group_count(
             gt_predicate=gt_predicate,
+            phenotype_group_terms=phenotype_group_terms,
         )
 
         assert phenotype_group_results.p_value == pytest.approx(0.9345982107594922)

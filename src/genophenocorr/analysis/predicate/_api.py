@@ -81,9 +81,26 @@ class Categorization:
     `Categorization` represents one of discrete group a :class:`genophenocorr.model.Patient` can be assigned into.
     """
 
+    @staticmethod
+    def from_raw_parts(
+        cat_id: int,
+        name: str,
+        description: typing.Optional[str] = None,
+    ):
+        """
+        Create `Categorization` from the `cat_id` identifier, `name`, and an optional `description`.
+        """
+        return Categorization(
+            category=PatientCategory(
+                cat_id=cat_id,
+                name=name,
+                description=description,
+            )
+        )
+
     def __init__(
-            self,
-            category: PatientCategory,
+        self,
+        category: PatientCategory,
     ):
         self._category = hpotk.util.validate_instance(category, PatientCategory, 'category')
 

@@ -137,6 +137,97 @@ def grouping_predicate(
     )
 
 
+class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
+
+    def __init__(
+        self,
+        counters: typing.Iterable[AlleleCounter],
+        categorizations: typing.Iterable[Categorization],
+    ):
+        self._counters = tuple(counters)
+        self._categorizations = tuple(categorizations)
+        group_names = ', '.join(c.category.name for c in self._categorizations)
+        self._question = f'What group does the patient belong to: {group_names}'
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return self._categorizations
+
+    def get_question(self) -> str:
+        return self._question
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        self._check_patient(patient)
+
+        nonzero_counter_idxs = []
+        for i, counter in enumerate(self._counters):
+            allele_count = counter.count(patient)
+            if allele_count > 0:
+                nonzero_counter_idxs.append(i)
+
+        if len(nonzero_counter_idxs) == 1:
+            return self._categorizations[nonzero_counter_idxs[0]]
+        else:
+            # Patient can be assigned either into no group or into multiple groups.
+            return None
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AlleleCountingGroupsPredicate) \
+            and self._counters == value._counters \
+            and self._categorizations == value._categorizations
+
+    def __hash__(self) -> int:
+        return hash((self._counters, self._categorizations,))
+
+    def __str__(self) -> str:
+        return self.get_question()
+
+    def __repr__(self) -> str:
+        return 'AlleleCountingGroupsPredicate(' \
+            + 'counters={self._counters}, ' \
+            + 'categorizations={self._categorizations})'
+
+
+def groups_predicate(
+    predicates: typing.Iterable[VariantPredicate],
+    group_names: typing.Iterable[str],
+) -> GenotypePolyPredicate:
+    """
+    Create a genotype predicate that bins the patient into one of *n* groups.
+
+    The genotype groups *should* not overlap.
+    In case of an overlap, the patient will be assigned into no group (`None`).
+
+    :param predicates: an iterable with at least 2 variant predicates to determine a genotype group.
+    :param group_names: an iterable with group names. The number of group names must match the number of predicates.
+    """
+    # First, collect the iterables and check sanity.
+    predicates = tuple(predicates)
+    group_names = tuple(group_names)
+
+    assert len(predicates) >= 2, f'We need at least 2 predicates: {len(predicates)}'
+    assert len(predicates) == len(group_names), \
+        f'The number of group names must match the number of predicates: {len(group_names)}!={len(predicates)}'
+
+    # Then, prepare the counters and categorizations.
+    counters = [AlleleCounter(predicate=predicate) for predicate in predicates]
+
+    categorizations = []
+    for i, (predicate, name) in enumerate(zip(predicates, group_names)):
+        categorization = Categorization.from_raw_parts(
+            cat_id=i,
+            name=name,
+            description=predicate.get_question(),
+        )
+        categorizations.append(categorization)
+
+    # Last, put the predicate together.
+    return AlleleCountingGroupsPredicate(
+        counters=counters,
+        categorizations=categorizations,
+    )
+
+
 class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
     # NOT PART OF THE PUBLIC API
     # TODO: this predicate is a bit weird and I think it should eventually go away.

@@ -152,13 +152,13 @@ For the loss of function predicate, these variant effects are considered loss of
 
 The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:
 
->>> from genophenocorr.analysis.predicate.genotype import grouping_predicate
->>> gt_predicate = grouping_predicate(
-...     first=point_mutation,
-...     second=lof_mutation,
+>>> from genophenocorr.analysis.predicate.genotype import groups_predicate
+>>> gt_predicate = groups_predicate(
+...     predicates=(point_mutation, lof_mutation),
+...     group_names=('Point', 'LoF'),
 ... )
 >>> gt_predicate.get_question()
-'first: ((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2), second: (TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
+'What group does the patient belong to: Point, LoF'
 
 Now phenotype predicate. The authors divide the patients into groups according to the count of structural defects
 in these groups:
@@ -177,9 +177,9 @@ Let's run the analysis.
 >>> analysis = configure_cohort_analysis(
 ...     cohort, hpo,
 ... )
->>> result = analysis.compare_symptom_count_vs_genotype(
-...     phenotype_group_terms=structural_defects,
+>>> result = analysis.compare_genotype_vs_phenotype_group_count(
 ...     gt_predicate=gt_predicate,   
+...     phenotype_group_terms=structural_defects,
 ... )
 >>> round(result.p_value, 9)
 0.027066902
@@ -187,15 +187,15 @@ Let's run the analysis.
 
 We have the counts:
 
->>> counts = result.phenotype_group_counts
+>>> counts = result.genotype_phenotype_scores
 >>> counts.head()  # doctest: +NORMALIZE_WHITESPACE
                                      genotype phenotype
 patient_id                                             
-Subject 10[PMID_27087320_Subject_10]   Second         0
-Subject 1[PMID_27087320_Subject_1]      First         4
+Subject 10[PMID_27087320_Subject_10]      LoF         0
+Subject 1[PMID_27087320_Subject_1]      Point         4
 Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]     Second         1
-Subject 3[PMID_27087320_Subject_3]      First         4
+Subject 2[PMID_29330883_Subject_2]        LoF         1
+Subject 3[PMID_27087320_Subject_3]      Point         4
 
 
 Let's plot the data:

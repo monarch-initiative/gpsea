@@ -9,7 +9,7 @@ from genophenocorr.model import Patient
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
 from .predicate.genotype import VariantPredicate, ProteinPredicates
-from .predicate.phenotype import P
+from .predicate.phenotype import P, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -236,18 +236,18 @@ class PhenotypeScoreAnalysisResult:
 
     def __init__(
         self,
-        phenotype_score_counts: pd.DataFrame,
+        genotype_phenotype_scores: pd.DataFrame,
         p_value: float,
     ):
-        self._phenotype_score_counts = phenotype_score_counts
+        self._genotype_phenotype_scores = genotype_phenotype_scores
         self._p_value = p_value
 
     @property
-    def phenotype_group_counts(
+    def genotype_phenotype_scores(
         self,
     ) -> pd.DataFrame:
         """
-        Get the DataFrame with the patient counts.
+        Get the DataFrame with the genotype group and the phenotype score for each patient.
 
         The DataFrame has the following structure:
 
@@ -259,8 +259,11 @@ class PhenotypeScoreAnalysisResult:
         patient_3   1         2
         ...         ...       ...
         ==========  ========  =========
+
+        The DataFrame index includes the patient IDs, and then there are 2 columns
+        with the `genotype` group and the `phenotype` score.
         """
-        return self._phenotype_score_counts
+        return self._genotype_phenotype_scores
 
     @property
     def p_value(self) -> float:
@@ -268,7 +271,7 @@ class PhenotypeScoreAnalysisResult:
 
     def __str__(self) -> str:
         return 'PhenotypeGroupAnalysisResult(' \
-            f'phenotype_score_counts={self._phenotype_score_counts}, ' \
+            f'genotype_phenotype_scores={self._genotype_phenotype_scores}, ' \
             f'p_value={self._p_value})'
 
     def __repr__(self) -> str:
@@ -285,8 +288,10 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
     def __init__(
         self,
+        hpo: hpotk.MinimalOntology,
         protein_service: ProteinMetadataService,
     ):
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._protein_service = protein_service
         self._protein_predicates = ProteinPredicates(self._protein_service)
 
@@ -333,6 +338,24 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]] = None,
     ) -> GenotypePhenotypeAnalysisResult:
         pass
+
+    def compare_genotype_vs_phenotype_group_count(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
+    ) -> PhenotypeScoreAnalysisResult:
+        assert isinstance(gt_predicate, GenotypePolyPredicate)
+        assert gt_predicate.n_categorizations() == 2
+
+        counting_scorer = CountingPhenotypeScorer.from_query_curies(
+            hpo=self._hpo,
+            query=phenotype_group_terms,
+        )
+
+        return self.compare_genotype_vs_phenotype_score(
+            gt_predicate=gt_predicate,
+            phenotype_scorer=counting_scorer,
+        )
 
     @abc.abstractmethod
     def compare_genotype_vs_phenotype_score(
