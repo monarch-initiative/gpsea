@@ -143,6 +143,13 @@ class GenotypePhenotypeAnalysisResult:
         Get a sequence of phenotype patient categories that can be investigated.
         """
         return self._phenotype_categories
+    
+    @property
+    def total_tests(self) -> int:
+        """
+        Get total count of tests that were run for this analysis.
+        """
+        return len(self.all_counts)
 
     @property
     def mtc_filter_report(self) -> typing.Optional[HpoMtcReport]:
