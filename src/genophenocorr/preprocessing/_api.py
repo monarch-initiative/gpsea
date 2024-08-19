@@ -224,5 +224,4 @@ class PreprocessingValidationResult:
             file.write("No errors or warnings were found")
             file.write(os.linesep)
             l_pad = " " * (self._notepad.level * indent)
-            file.write(l_pad + self._notepad.label)
             file.write(os.linesep)
