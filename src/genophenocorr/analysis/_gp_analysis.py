@@ -10,15 +10,19 @@ from statsmodels.stats import multitest
 from genophenocorr.model import Patient
 from ._api import GenotypePhenotypeAnalysisResult, HpoMtcFilter, HpoMtcReport
 from ._stats import run_fisher_exact, run_recessive_fisher_exact
-from .predicate import PolyPredicate, PatientCategory, PatientCategories
+from .predicate import GenotypePolyPredicate, PatientCategory, PatientCategories
 from .predicate.phenotype import PhenotypePolyPredicate, P
 
 
 def apply_predicates_on_patients(
         patients: typing.Iterable[Patient],
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-        gt_predicate: PolyPredicate,
-) -> typing.Tuple[typing.Collection[PatientCategory], pd.Series, typing.Mapping[P, pd.DataFrame]]:
+        gt_predicate: GenotypePolyPredicate,
+) -> typing.Tuple[
+    typing.Collection[PatientCategory],
+    pd.Series,
+    typing.Mapping[P, pd.DataFrame],
+]:
     """
     Apply the phenotype predicates `pheno_predicates` and the genotype predicate `gt_predicate`
     to bin the `patients` into categories.
@@ -452,7 +456,7 @@ class GPAnalyzer(typing.Generic[P], metaclass=abc.ABCMeta):
             self,
             patients: typing.Iterable[Patient],
             pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-            gt_predicate: PolyPredicate,
+            gt_predicate: GenotypePolyPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
         Test for association between `phenotypic_features` of interest groups or `patients` determined
@@ -489,8 +493,12 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
             self,
             patients: typing.Iterable[Patient],
             pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-            gt_predicate: PolyPredicate,
+            gt_predicate: GenotypePolyPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
+        pheno_predicates = tuple(pheno_predicates)
+        if len(pheno_predicates) == 0:
+            raise ValueError('No phenotype predicates were provided')
+
         # 1) Count the patients
         categories, n_usable, all_counts = apply_predicates_on_patients(
             patients, pheno_predicates, gt_predicate,
@@ -498,18 +506,15 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         original_phenotype_count = len(n_usable)
 
         # 1.5) Filter terms for MTC
-        n_usable, all_counts, reason2count = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
-        if len(n_usable) == 0:
-            raise ValueError(
-                f"No patients could be found to be usable for the analysis. Please verify that there is at least one patient that has a " \
-                    f"{gt_predicate.get_question()}."
-            )
+        n_usable_filtered, all_counts_filtered, reason2count = self._hpo_mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        if len(n_usable_filtered) == 0:
+            raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
         # 2) Statistical tests
-        pheno_idx = pd.Index(n_usable.keys(), name='p_val')
+        pheno_idx = pd.Index(n_usable_filtered.keys(), name='p_val')
         pvals = pd.Series(float('nan'), index=pheno_idx, name='p value')
         for phenotype in pheno_idx:
-            counts = all_counts[phenotype]
+            counts = all_counts_filtered[phenotype]
             # TODO - this is where we must fail unless we have the contingency table of the right size!
             if counts.shape == (2, 2):
                 pvals[phenotype] = run_fisher_exact(counts)
@@ -524,7 +529,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         # 3) Multiple correction
         if self._correction is not None:
             _, pvals_corrected, _, _ = multitest.multipletests(pvals, alpha=self._mtc_alpha, method=self._correction)
-            corrected_idx = pd.Index(n_usable.keys(), name='p_val_corrected')
+            corrected_idx = pd.Index(n_usable_filtered.keys(), name='p_val_corrected')
             corrected_pvals_series = pd.Series(
                 data=pvals_corrected, index=corrected_idx, name='Corrected p value',
             )
@@ -543,8 +548,8 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
 
         # 4) Wrap up
         return GenotypePhenotypeAnalysisResult(
-            n_usable=n_usable,
-            all_counts=all_counts,
+            n_usable=n_usable_filtered,
+            all_counts=all_counts_filtered,
             pvals=pvals,
             corrected_pvals=corrected_pvals_series,
             phenotype_categories=categories,
