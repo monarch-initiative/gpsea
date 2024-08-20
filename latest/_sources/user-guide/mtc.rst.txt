@@ -7,11 +7,12 @@ Multiple-testing correction
 Background
 ~~~~~~~~~~
 
-A p-value is the probability that a test result, under the null hypothesis, assumes the observed or a more extreme value. It is important to realize that if we
-perform many tests, we are likely to get a "significant" result by chance alone. For instance, if 
-we test a null hypothesis that is true using a significance level of
-:math:`\alpha = 0.05`, then there is a probability of :math:`1-\alpha = 0.95` of
-arriving at a correct conclusion of non-significance. If we now test
+A p-value is the probability that a test result, under the null hypothesis, 
+assumes the observed or a more extreme value. It is important to realize that if we
+perform many tests, we are likely to get a "significant" result by chance alone. 
+For instance, if we test a null hypothesis that is true using a significance level 
+of :math:`\alpha = 0.05`, then there is a probability of :math:`1-\alpha = 0.95` 
+of arriving at a correct conclusion of non-significance. If we now test
 two independent true null hypotheses, the probability that neither
 test is significant is :math:`0.95\times 0.95 = 0.90.` If we test 20
 independent null hypotheses, the probability that none will be
@@ -26,25 +27,24 @@ least one significant result.
 
 Implementation in genophenocorr
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-By default, genephenocorr performs a hypothesis test for each HPO term found at least twice
-in the cohort, meaning that we may
-perform up to hundreds of tests. Therefore, unless we take into
-account the fact that multiple statistical tests are being performed,
-it is likely that we will obtain one or more false-positive
-results.
 
-Genephenocorr offers two approaches to mitigate this problem: multiple-testing correction procedures
-and heuristic methods to reduce the number of terms to be tested. 
+By default, genephenocorr performs a hypothesis test for each HPO term found at least twice
+in the cohort, meaning that we may perform up to hundreds of tests.
+Therefore, unless we take into account the fact that multiple statistical tests are being performed,
+it is likely that we will obtain one or more false-positive results.
+
+Genephenocorr offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
+and MTC filters to choose the terms to be tested.
 
 Here we will show how to configure the MTC approach 
-using :class:`genophenocorr.analysis.CohortAnalysisConfiguration` class.
+using :class:`~genophenocorr.analysis.CohortAnalysisConfiguration` class.
 
 >>> from genophenocorr.analysis import CohortAnalysisConfiguration
 >>> config = CohortAnalysisConfiguration()
 
 
-Multiple-testing correction (MTC) procedures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Multiple-testing correction procedures
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A number of MTC procedures have
 been developed to limit the probability of false-positive results. The
@@ -94,7 +94,8 @@ by the number of tests performed (the result is capped at 1.0). This is the *def
 
 Alternatively, procedures that control the false-discovery rate (FDR),
 limit the proportion of significant results that are type I
-errors (false discoveries). The Benjamini and Hochberg method (``fdr_bh``) is probably the most commonly used one.
+errors (false discoveries). 
+The Benjamini and Hochberg method (``fdr_bh``) is probably the most commonly used one.
 
 This is how we can set an alternative MTC correction procedure:
 
@@ -103,8 +104,8 @@ This is how we can set an alternative MTC correction procedure:
 'fdr_bh'
 
 
-MTC Heuristics: Choosing which terms to test
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+MTC filters: Choosing which terms to test
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We can reduce the overall MTC burden by choosing which terms to test. 
 For example, if we choose to test only ten terms out of 450, 
@@ -112,57 +113,83 @@ then the mutliplication factor of the Bonferroni correction
 is only 10 instead of 450, and more p-values 
 may "survive" the multiple-testing correction.
 
-The genephenocorr package offers two options, 
-each of which can be combined with any of the MTC methods.
+In the context of GPSEA, we represent the concept of phenotype filtering 
+by :class:`~genophenocorr.analysis.PhenotypeMtcFilter`.
+We describe the three filtering strategies in the next sections.
 
 
-specify terms strategy
-~~~~~~~~~~~~~~~~~~~~~~
+.. _use-all-terms-strategy:
 
-If you have a specific hypothesis as to which terms may be different between groups, 
-then you can specify these terms using the ``specify_terms_strategy`` function.
+Test all terms
+--------------
+
+The first MTC filtering strategy is the simplest - do not apply any filtering at all.
+This will result in testing all terms. We do not recommend this strategy, 
+but it can be useful to disable MTC filtering.
+
+The strategy is invoked by default, 
+or explicitly by :func:`~genophenocorr.analysis.CohortAnalysisConfiguration.all_terms_strategy` method:
+
+>>> config.all_terms_strategy()
+>>> config.mtc_strategy
+<MtcStrategy.ALL_PHENOTYPE_TERMS: 0>
+
+
+.. _specify-terms-strategy:
+
+Specify terms strategy
+----------------------
+
+In presence of a specific hypothesis as to which terms may be different between groups, 
+then you can specify these terms using
+the :func:`~genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method.
 
 For example if we want to specifically test
-* `Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
-* `Abnormal caudate nucleus morphology (HP:0002339) <https://hpo.jax.org/browse/term/HP:0002339>`_,,
+`Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
+`Abnormal caudate nucleus morphology (HP:0002339) <https://hpo.jax.org/browse/term/HP:0002339>`_
+we pass an iterable (e.g. a tuple) with these two terms as an argument:
 
-we pass an iterable with these two terms 
-as an argument to :func:`genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method:
-
-
->>> abn_putamen = "HP:0031982"  # Abnormal putamen morphology
->>> abn_caudate_nucleus = "HP:0002339"  # Abnormal caudate nucleus morphology
->>> config.specify_terms_strategy(specified_term_set=(abn_putamen, abn_caudate_nucleus))
-
-Later, when using the `config` object in analysis, 
-this will cause genophenocorr to perform only two hypothesis tests, one for each of the two terms
-
+>>> config.specify_terms_strategy(
+...     terms_to_test=(
+...         "HP:0031982",  # Abnormal putamen morphology
+...         "HP:0002339",  # Abnormal caudate nucleus morphology
+...     )
+... )
 >>> config.mtc_strategy
-<MTC_Strategy.SPECIFY_TERMS: 2>
+<MtcStrategy.SPECIFY_TERMS: 1>
 >>> config.terms_to_test
 ('HP:0031982', 'HP:0002339')
 
+Later, when the `config` is used in analysis, 
+genophenocorr will only perform two hypothesis tests, one for each of the two terms.
 
-heuristic sampler strategy
-~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. _heuristic-sampler-strategy-section:
+.. _hpo-mtc-filter-strategy:
 
-The heuristic sampler strategy is chosen by invoking 
-:func:`genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy` method:
+HPO MTC filter strategy
+-----------------------
+
+Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
+
+The strategy is chosen by invoking 
+:func:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy` method:
 
 >>> config = CohortAnalysisConfiguration()
->>> config.heuristic_strategy(threshold_HPO_observed_frequency=0.5)
+>>> config.hpo_mtc_strategy(min_patients_w_hpo=0.5)
+>>> config.mtc_strategy
+<MtcStrategy.HPO_MTC: 2>
+>>> config.min_patients_w_hpo
+0.5
 
-The method takes a threshold as an argument (e.g. 50% here, more info below) 
+HPO MTC takes a threshold as an argument (e.g. 50% in the example above) 
 and the method's logic is made up of 8 individual heuristics 
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:
 
-#. Skip terms that occurr very rarely
-    The ``threshold_HPO_observed_frequency`` determines the mininum proportion of individuals 
+#. Skip terms that occur very rarely
+    The ``min_patients_w_hpo`` determines the mininum proportion of individuals 
     with direct or indirect annotation by the HPO term to test. 
     We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE), and we only retain a term for testing 
-    if the proportion of individuals in at least one genotype group is at least ``threshold_HPO_observed_frequency``. 
+    if the proportion of individuals in at least one genotype group is at least ``min_patients_w_hpo``. 
     
     This is because of our assumption that even if there is statistical significance, 
     if a term is only seen in (for example) 7% of individuals in the MISSENSE group and 2% in the not-MISSENSE group, 
@@ -213,6 +240,5 @@ designed to skip testing the HPO terms that are unlikely to yield significant or
     it will lead to at least one of the descendents of 
     *Abnormality of the nervous system* being significant.
 
-    See :ref:`general_hpo_terms` for details.
-
+    See :ref:`general-hpo-terms` section for details.
 

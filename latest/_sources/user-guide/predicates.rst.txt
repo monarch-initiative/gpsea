@@ -7,7 +7,7 @@ Predicates
 Genophenocorr uses predicates to test if variant, patient, or any tested item 
 meets a condition. Based on the test results, the items are assigned into groups.
 
-As described in the :class:`genophenocorr.analysis.predicate.PolyPredicate` API, 
+As described in the :class:`~genophenocorr.analysis.predicate.PolyPredicate` API, 
 the groups must be *exclusive* - the item can be assigned with one and only one group,
 and *exhaustive* - the groups must cover all possible scenarios.
 
@@ -17,7 +17,7 @@ the predicate can return `None`, and the item will be omitted from the analysis.
 The predicates can be chained to test for more complex conditions. 
 For instance, "test if a patient has a missense or synonymous variant located in exon 6 of transcript `NM_013275.6`".
 
-Let's demonstrate this on an example with a :class:`genophenocorr.analysis.predicate.genotype.VariantPredicate`.
+Let's demonstrate this on an example with a :class:`~genophenocorr.analysis.predicate.genotype.VariantPredicate`.
 We will load a cohort of 5 subjects with variants in *ANKRD11*, leading to KBG syndrome. 
 The the clinical signs and symptoms of the subjects were encoded into HPO terms 
 along with the pathogenic *ANKRD11* variant.
@@ -85,7 +85,7 @@ and it is predicted to introduce a premature termination codon to the MANE trans
 >>> nonsense.test(variant)
 True
 
-See :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates` 
+See :class:`~genophenocorr.analysis.predicate.genotype.VariantPredicates` 
 for more info on the predicates available off the shelf.
 
 
@@ -125,7 +125,7 @@ Sometimes we may want to test the variant for a condition that must *not* be met
 For instance, we may want to test if the variant is a deletion 
 that is *not* predicted to shift the transcript reading frame.
 One of doing this would be to build a compound predicates 
-for all variant effects except of `VariantEffect.FRAMESHIFT_VARIANT`:
+for all variant effects except of :class:`~genophenocorr.model.VariantEffect.FRAMESHIFT_VARIANT`:
 
 >>> non_frameshift_effects = (
 ...   VariantEffect.SYNONYMOUS_VARIANT, VariantEffect.MISSENSE_VARIANT, VariantEffect.INTRON_VARIANT,
@@ -149,8 +149,8 @@ This is how we can use the predicate inversion to build the predicate for non-fr
 Note the presence of a tilde ``~`` before the variant effect predicate and resulting ``NOT`` in the predicate question.
 
 
-That's it for predicates. Please see :class:`genophenocorr.analysis.predicate.genotype.VariantPredicates` 
-and :class:`genophenocorr.analysis.predicate.genotype.ProteinPredicates` 
+That's it for predicates. Please see :class:`~genophenocorr.analysis.predicate.genotype.VariantPredicates` 
+and :class:`~genophenocorr.analysis.predicate.genotype.ProteinPredicates` 
 for a comprehensive list of the predicates available off the shelf.
 
 Please open an issue on our `GitHub tracker <https://github.com/monarch-initiative/genophenocorr/issues>`_ if a predicate seems to be missing.

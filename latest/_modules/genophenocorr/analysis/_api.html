@@ -549,50 +549,6 @@
 
         <span class="k">return</span> <span class="n">PatientsByHPO</span><span class="p">(</span><span class="n">all_with_hpo</span><span class="p">,</span> <span class="n">all_without_hpo</span><span class="p">)</span></div>
 
-
-
-<span class="k">class</span> <span class="nc">HpoMtcFilter</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes</span>
-<span class="sd">    are not worth testing in order to reduce the multiple testing burden.</span>
-
-<span class="sd">    Note, the filter works only when using the HPO term to represent the phenotype.</span>
-<span class="sd">    Therefore, the expected input asks for :class:`hpotk.TermId` items.</span>
-<span class="sd">    For instance, `n_usable` is a mapping from an *HPO term* to an `int` with the count of the patients</span>
-<span class="sd">    categorized according to the HPO term.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decide which terms to pass through for statistical testing.</span>
-<span class="sd">        The intention of this class is to reduce multiple testing burden by removing terms that are unlikely</span>
-<span class="sd">        to lead to interesting statistical/analytical results.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients</span>
-<span class="sd">              that could be binned according to the used genotype/phenotype predicate.</span>
-<span class="sd">            all_counts: a mapping from the :class:`hpotk.TermId` to</span>
-<span class="sd">        Returns:</span>
-<span class="sd">           a tuple with three items:</span>
-<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
-<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
-<span class="sd">            - a mapping from a `str` with reason why a term was filtered out (e.g. *Skipping top level term*)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns the name of the heuristic used to limit multiple testing</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
 </pre></div>
 
            </div>

@@ -127,9 +127,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_diseases">all_diseases() (genophenocorr.model.Cohort method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MTC_Strategy.ALL_HPO_TERMS">ALL_HPO_TERMS (genophenocorr.analysis.MTC_Strategy attribute)</a>
-</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_patients">all_patients (genophenocorr.model.Cohort property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MtcStrategy.ALL_PHENOTYPE_TERMS">ALL_PHENOTYPE_TERMS (genophenocorr.analysis.MtcStrategy attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.all_phenotypes">all_phenotypes() (genophenocorr.model.Cohort method)</a>
 </li>
@@ -277,7 +277,7 @@
 </li>
       <li><a href="apidocs/genophenocorr.io.html#genophenocorr.io.GenophenocorrJSONEncoder.default">default() (genophenocorr.io.GenophenocorrJSONEncoder method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.default_filter">default_filter() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.default_filter">default_filter() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.DefaultImpreciseSvFunctionalAnnotator">DefaultImpreciseSvFunctionalAnnotator (class in genophenocorr.preprocessing)</a>
 </li>
@@ -299,9 +299,9 @@
       </ul></li>
       <li><a href="apidocs/genophenocorr.view.html#genophenocorr.view.DiseaseViewable">DiseaseViewable (class in genophenocorr.view)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.DOMAIN">DOMAIN (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id30">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.DOMAIN">DOMAIN (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id26">[1]</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.domains">domains() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id22">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.domains">domains() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id18">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.DOWNSTREAM_GENE_VARIANT">DOWNSTREAM_GENE_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
@@ -373,16 +373,24 @@
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.filter_method">filter_method (genophenocorr.analysis.HpoMtcReport property)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.filter_method_name">filter_method_name() (genophenocorr.analysis.HeuristicMtcFilter method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.filter_method_name">filter_method_name() (genophenocorr.analysis.HpoMtcFilter method)</a>
 
       <ul>
+        <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.PhenotypeMtcFilter.filter_method_name">(genophenocorr.analysis.PhenotypeMtcFilter method)</a>
+</li>
         <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter.filter_method_name">(genophenocorr.analysis.SpecifiedTermsMtcFilter method)</a>
 </li>
+        <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.UseAllTermsMtcFilter.filter_method_name">(genophenocorr.analysis.UseAllTermsMtcFilter method)</a>
+</li>
       </ul></li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.filter_terms_to_test">filter_terms_to_test() (genophenocorr.analysis.HeuristicMtcFilter method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.filter_terms_to_test">filter_terms_to_test() (genophenocorr.analysis.HpoMtcFilter method)</a>
 
       <ul>
+        <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.PhenotypeMtcFilter.filter_terms_to_test">(genophenocorr.analysis.PhenotypeMtcFilter method)</a>
+</li>
         <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter.filter_terms_to_test">(genophenocorr.analysis.SpecifiedTermsMtcFilter method)</a>
+</li>
+        <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.UseAllTermsMtcFilter.filter_terms_to_test">(genophenocorr.analysis.UseAllTermsMtcFilter method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -551,7 +559,7 @@
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Variant.genotypes">(genophenocorr.model.Variant property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.genotypes_have_same_hpo_proportions">genotypes_have_same_hpo_proportions() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.genotypes_have_same_hpo_proportions">genotypes_have_same_hpo_proportions() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.ProteinAnnotationCache.get_annotations">get_annotations() (genophenocorr.preprocessing.ProteinAnnotationCache method)</a>
 
@@ -583,9 +591,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.get_five_prime_utrs">get_five_prime_utrs() (genophenocorr.model.TranscriptCoordinates method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.get_maximum_group_observed_HPO_frequency">get_maximum_group_observed_HPO_frequency() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.get_maximum_group_observed_HPO_frequency">get_maximum_group_observed_HPO_frequency() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.get_number_of_observed_hpo_observations">get_number_of_observed_hpo_observations() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.get_number_of_observed_hpo_observations">get_number_of_observed_hpo_observations() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort.get_patient_ids">get_patient_ids() (genophenocorr.model.Cohort method)</a>
 </li>
@@ -635,12 +643,6 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MTC_Strategy.HEURISTIC_SAMPLER">HEURISTIC_SAMPLER (genophenocorr.analysis.MTC_Strategy attribute)</a>
-</li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.heuristic_strategy">heuristic_strategy() (genophenocorr.analysis.CohortAnalysisConfiguration method)</a>
-</li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter">HeuristicMtcFilter (class in genophenocorr.analysis)</a>
-</li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.hgvs_cdna">hgvs_cdna (genophenocorr.model.TranscriptAnnotation property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.hgvsp">hgvsp (genophenocorr.model.TranscriptAnnotation property)</a>
@@ -648,6 +650,12 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HOMOZYGOUS_ALTERNATE">HOMOZYGOUS_ALTERNATE (genophenocorr.model.Genotype attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Genotype.HOMOZYGOUS_REFERENCE">HOMOZYGOUS_REFERENCE (genophenocorr.model.Genotype attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MtcStrategy.HPO_MTC">HPO_MTC (genophenocorr.analysis.MtcStrategy attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy">hpo_mtc_strategy() (genophenocorr.analysis.CohortAnalysisConfiguration method)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter">HpoMtcFilter (class in genophenocorr.analysis)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport">HpoMtcReport (class in genophenocorr.analysis)</a>
 </li>
@@ -736,7 +744,7 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.label">label (genophenocorr.model.ProteinMetadata attribute)</a>
 
       <ul>
-        <li><a href="apidocs/genophenocorr.model.html#id20">(genophenocorr.model.ProteinMetadata property)</a>
+        <li><a href="apidocs/genophenocorr.model.html#id16">(genophenocorr.model.ProteinMetadata property)</a>
 </li>
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.SampleLabels.label">(genophenocorr.model.SampleLabels property)</a>
 </li>
@@ -789,7 +797,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.SampleLabels.meta_label">meta_label (genophenocorr.model.SampleLabels property)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.min_perc_patients_w_hpo">min_perc_patients_w_hpo (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.min_n_patients_with_term">min_n_patients_with_term (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.min_patients_w_hpo">min_patients_w_hpo (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.MISSENSE_VARIANT">MISSENSE_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
@@ -828,9 +838,9 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.MOTIF">MOTIF (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id29">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.MOTIF">MOTIF (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id25">[1]</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.motifs">motifs() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id25">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.motifs">motifs() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id21">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_alpha">mtc_alpha (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
 </li>
@@ -838,9 +848,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcReport.mtc_method">mtc_method (genophenocorr.analysis.HpoMtcReport property)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MTC_Strategy">MTC_Strategy (class in genophenocorr.analysis)</a>
-</li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.mtc_strategy">mtc_strategy (genophenocorr.analysis.CohortAnalysisConfiguration property)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MtcStrategy">MtcStrategy (class in genophenocorr.analysis)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -863,7 +873,7 @@
 </li>
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureInfo.name">(genophenocorr.model.FeatureInfo attribute)</a>
 </li>
-        <li><a href="apidocs/genophenocorr.model.html#id26">(genophenocorr.model.FeatureInfo property)</a>
+        <li><a href="apidocs/genophenocorr.model.html#id22">(genophenocorr.model.FeatureInfo property)</a>
 </li>
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.Phenotype.name">(genophenocorr.model.Phenotype attribute)</a>
 </li>
@@ -904,7 +914,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.one_genotype_has_zero_hpo_observations">one_genotype_has_zero_hpo_observations() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.one_genotype_has_zero_hpo_observations">one_genotype_has_zero_hpo_observations() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.overlapping_exons">overlapping_exons (genophenocorr.model.TranscriptAnnotation property)</a>
 </li>
@@ -943,6 +953,8 @@
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypeCategorization">PhenotypeCategorization (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.PhenotypeCreator">PhenotypeCreator (class in genophenocorr.preprocessing)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.PhenotypeMtcFilter">PhenotypeMtcFilter (class in genophenocorr.analysis)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.predicate.phenotype.html#genophenocorr.analysis.predicate.phenotype.PhenotypePolyPredicate">PhenotypePolyPredicate (class in genophenocorr.analysis.predicate.phenotype)</a>
 </li>
@@ -1011,13 +1023,13 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.protein_features">protein_features (genophenocorr.model.ProteinMetadata attribute)</a>
 
       <ul>
-        <li><a href="apidocs/genophenocorr.model.html#id21">(genophenocorr.model.ProteinMetadata property)</a>
+        <li><a href="apidocs/genophenocorr.model.html#id17">(genophenocorr.model.ProteinMetadata property)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.protein_id">protein_id (genophenocorr.model.ProteinMetadata attribute)</a>
 
       <ul>
-        <li><a href="apidocs/genophenocorr.model.html#id19">(genophenocorr.model.ProteinMetadata property)</a>
+        <li><a href="apidocs/genophenocorr.model.html#id15">(genophenocorr.model.ProteinMetadata property)</a>
 </li>
         <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation.protein_id">(genophenocorr.model.TranscriptAnnotation property)</a>
 </li>
@@ -1071,10 +1083,10 @@
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureInfo.region">region (genophenocorr.model.FeatureInfo attribute)</a>
 
       <ul>
-        <li><a href="apidocs/genophenocorr.model.html#id27">(genophenocorr.model.FeatureInfo property)</a>
+        <li><a href="apidocs/genophenocorr.model.html#id23">(genophenocorr.model.FeatureInfo property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.REGION">REGION (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id31">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.REGION">REGION (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id27">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates.region">region (genophenocorr.model.TranscriptCoordinates property)</a>
 
@@ -1088,7 +1100,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.analysis.predicate.genotype.html#genophenocorr.analysis.predicate.genotype.VariantPredicates.region">region() (genophenocorr.analysis.predicate.genotype.VariantPredicates static method)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.regions">regions() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id24">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.regions">regions() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id20">[1]</a>
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.REGULATORY_REGION_ABLATION">REGULATORY_REGION_ABLATION (genophenocorr.model.VariantEffect attribute)</a>
 </li>
@@ -1096,9 +1108,9 @@
 </li>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.REGULATORY_REGION_VARIANT">REGULATORY_REGION_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.REPEAT">REPEAT (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id28">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType.REPEAT">REPEAT (genophenocorr.model.FeatureType attribute)</a>, <a href="apidocs/genophenocorr.model.html#id24">[1]</a>
 </li>
-      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.repeats">repeats() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id23">[1]</a>
+      <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata.repeats">repeats() (genophenocorr.model.ProteinMetadata method)</a>, <a href="apidocs/genophenocorr.model.html#id19">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1120,11 +1132,11 @@
 </li>
       <li><a href="apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.DataSanityIssue.solution">solution (genophenocorr.preprocessing.DataSanityIssue property)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HeuristicMtcFilter.some_cell_has_greater_than_one_count">some_cell_has_greater_than_one_count() (genophenocorr.analysis.HeuristicMtcFilter static method)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.HpoMtcFilter.some_cell_has_greater_than_one_count">some_cell_has_greater_than_one_count() (genophenocorr.analysis.HpoMtcFilter static method)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.SpecifiedTermsMtcFilter">SpecifiedTermsMtcFilter (class in genophenocorr.analysis)</a>
 </li>
-      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MTC_Strategy.SPECIFY_TERMS">SPECIFY_TERMS (genophenocorr.analysis.MTC_Strategy attribute)</a>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.MtcStrategy.SPECIFY_TERMS">SPECIFY_TERMS (genophenocorr.analysis.MtcStrategy attribute)</a>
 </li>
       <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy">specify_terms_strategy() (genophenocorr.analysis.CohortAnalysisConfiguration method)</a>
 </li>
@@ -1253,6 +1265,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/genophenocorr.model.html#genophenocorr.model.VariantEffect.UPSTREAM_GENE_VARIANT">UPSTREAM_GENE_VARIANT (genophenocorr.model.VariantEffect attribute)</a>
+</li>
+      <li><a href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.UseAllTermsMtcFilter">UseAllTermsMtcFilter (class in genophenocorr.analysis)</a>
 </li>
   </ul></td>
 </tr></table>
