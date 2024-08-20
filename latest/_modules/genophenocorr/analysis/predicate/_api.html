@@ -172,9 +172,29 @@
 <span class="sd">    `Categorization` represents one of discrete group a :class:`genophenocorr.model.Patient` can be assigned into.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Categorization.from_raw_parts">
+<a class="viewcode-back" href="../../../../apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.Categorization.from_raw_parts">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
+        <span class="n">cat_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `Categorization` from the `cat_id` identifier, `name`, and an optional `description`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Categorization</span><span class="p">(</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">PatientCategory</span><span class="p">(</span>
+                <span class="n">cat_id</span><span class="o">=</span><span class="n">cat_id</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">category</span><span class="p">:</span> <span class="n">PatientCategory</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">category</span><span class="p">:</span> <span class="n">PatientCategory</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">)</span>
 
@@ -306,34 +326,6 @@
 <span class="sd">        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span> <span class="n">GenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="GroupingPredicate">
-<a class="viewcode-back" href="../../../../apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">GroupingPredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `GroupingPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to one of two groups and returns</span>
-<span class="sd">    FIRST or SECOND based on which group Patient belongs in.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">FIRST</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span><span class="n">PatientCategory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;First&#39;</span><span class="p">,</span> <span class="s1">&#39;The patient belongs in the first group.&#39;</span><span class="p">))</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Category for a patient who belongs in the first given tested group.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">SECOND</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span><span class="n">PatientCategory</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Second&#39;</span><span class="p">,</span> <span class="s1">&#39;The patient belongs in the second group.&#39;</span><span class="p">))</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Category for a patient who belongs to the second given tested group.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="GroupingPredicate.get_categorizations">
-<a class="viewcode-back" href="../../../../apidocs/genophenocorr.analysis.predicate.html#genophenocorr.analysis.predicate.GroupingPredicate.get_categorizations">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The predicate bins a patient into :class:`GroupingPredicate.FIRST` or :class:`GroupingPredicate.SECOND` category.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">FIRST</span><span class="p">,</span> <span class="n">GroupingPredicate</span><span class="o">.</span><span class="n">SECOND</span></div>
 </div>
 
 

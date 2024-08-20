@@ -226,8 +226,7 @@
             <span class="c1"># We have some expressions. Let&#39;s try to find the 1st expression with `hgvs.c` syntax.</span>
             <span class="k">for</span> <span class="n">expression</span> <span class="ow">in</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">expressions</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">expression</span><span class="o">.</span><span class="n">syntax</span> <span class="o">==</span> <span class="s2">&quot;hgvs.c&quot;</span><span class="p">:</span>
-                    <span class="n">vc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">expression</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-                    <span class="k">break</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">expression</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_looks_like_large_sv</span><span class="p">(</span><span class="n">variation_descriptor</span><span class="p">):</span>
             <span class="c1"># We cannot extract exact variant coordinates from a variation descriptor in this format.</span>
             <span class="k">return</span> <span class="kc">None</span>

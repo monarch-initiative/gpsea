@@ -63,7 +63,10 @@
 <li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Statistical tests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#fisher-exact-test-fet">Fisher exact test (FET)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mann-whitney-u-test">Mann-Whitney U Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mann-whitney-u-test">Mann-Whitney U Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
@@ -142,7 +145,7 @@ Note that by default, the <em>two-tailed</em> Fisher exact test is performed, me
 hypothesis as to whether there is a higher or lower frequency in one of the genotype groups.</p>
 </section>
 <section id="mann-whitney-u-test">
-<h2>Mann-Whitney U Test<a class="headerlink" href="#mann-whitney-u-test" title="Link to this heading"></a></h2>
+<span id="phenotype-score-stats"></span><h2>Mann-Whitney U Test<a class="headerlink" href="#mann-whitney-u-test" title="Link to this heading"></a></h2>
 <p>We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype groups.
 For instance, <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/29330883/">Jordan et al (2018)</a> found that the total number of structural defects
 of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of the RERE gene
@@ -160,6 +163,142 @@ This is a non-parametric test that compares the medians of the two groups to det
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">p_value</span></code> evaluates to <cite>6.348081479150901e-06</cite>, meaning there is a significant difference between the groups.</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<p>Let’s now analyze the subjects reported in <em>Jordan et al</em>.
+We start by loading the cohort from Phenopacket Store (version <cite>0.1.18</cite>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="s1">&#39;RERE&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
+<span class="go">19</span>
+</pre></div>
+</div>
+<p>We loaded 19 phenopackets.</p>
+<p>Now, we need to prepare the phenopackets for using with Genophenocorr.
+We will need HPO (version <cite>v2024-07-01</cite>)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to create cohort creator</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which we will use to preprocess the cohort</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopackets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
+<span class="go">Patients Created: ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="go">19</span>
+</pre></div>
+</div>
+<p>Now we can set up the phenotype and genotype predicates. Jordan et al tests …</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rere_mane_tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_001042681.2&#39;</span>
+</pre></div>
+</div>
+<p>Now let’s create a predicate for testing if the variant is a point mutation or a loss of function mutation.
+The point mutation predicate is defined as …
+TODO: improve!</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation_effects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> \
+<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> \
+<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">rere_mane_tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">effect</span> <span class="ow">in</span> <span class="n">point_mutation_effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)&#39;</span>
+</pre></div>
+</div>
+<p>For the loss of function predicate, these variant effects are considered loss of function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lof_effects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_LOST</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">rere_mane_tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">lof_effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)&#39;</span>
+</pre></div>
+</div>
+<p>The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">groups_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">groups_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">predicates</span><span class="o">=</span><span class="p">(</span><span class="n">point_mutation</span><span class="p">,</span> <span class="n">lof_mutation</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">group_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="s1">&#39;LoF&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;What group does the patient belong to: Point, LoF&#39;</span>
+</pre></div>
+</div>
+<p>Now phenotype predicate. The authors divide the patients into groups according to the count of structural defects
+in these groups:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">structural_defects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012443&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal brain morphology (Brain anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012372&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal eye morphology (Eye anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0001627&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal heart morphology (Congenital heart defects)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012210&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal renal morphology (Renal anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0000407&#39;</span><span class="p">,</span>  <span class="c1"># Sensorineural hearing impairment (Sensorineural hearing loss)</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s run the analysis.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">configure_cohort_analysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_cohort_analysis</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_phenotype_group_count</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">phenotype_group_terms</span><span class="o">=</span><span class="n">structural_defects</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">p_value</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="go">0.027066902</span>
+</pre></div>
+</div>
+<p>We have the counts:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">counts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">genotype_phenotype_scores</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
+<span class="go">                                     genotype phenotype</span>
+<span class="go">patient_id</span>
+<span class="go">Subject 10[PMID_27087320_Subject_10]        1         0</span>
+<span class="go">Subject 1[PMID_27087320_Subject_1]          0         4</span>
+<span class="go">Subject 2[PMID_27087320_Subject_2]       None         4</span>
+<span class="go">Subject 2[PMID_29330883_Subject_2]          1         1</span>
+<span class="go">Subject 3[PMID_27087320_Subject_3]          0         4</span>
+</pre></div>
+</div>
+<p>The data frame provides a genotype category and a phenotype score for each patient.
+The genotype category should be interpreted in the context of the genotype predicate:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span>
+<span class="go">{0: &#39;Point&#39;, 1: &#39;LoF&#39;}</span>
+</pre></div>
+</div>
+<p>Let’s plot the data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">counts</span><span class="p">[</span><span class="s1">&#39;genotype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>  <span class="c1"># skip the patients with unassigned genotype group</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;genotype&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="s1">&#39;phenotype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_cat_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">gt_id_to_name</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bplot</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tick_labels</span><span class="o">=</span><span class="n">gt_cat_labels</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Phenotype group count&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">structural_defects</span><span class="p">)</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bplot</span><span class="p">[</span><span class="s1">&#39;boxes&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;darksalmon&#39;</span><span class="p">,</span> <span class="s1">&#39;honeydew&#39;</span><span class="p">]):</span>
+<span class="gp">... </span>    <span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/img/phenotype_group_counts.png&#39;</span><span class="p">)</span>  
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/phenotype_group_counts.png"><img alt="Phenotype group counts" class="align-center" src="../_images/phenotype_group_counts.png" style="width: 600px;" /></a>
+</section>
 </section>
 </section>
 

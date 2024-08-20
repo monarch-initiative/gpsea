@@ -101,12 +101,14 @@
 <span class="sd">        annotate(protein_id:str): Gets metadata and creates ProteinMetadata for given protein ID</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a UniprotProteinMetadataService object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="s1">&#39;https://rest.uniprot.org/uniprotkb/search?query=(</span><span class="si">%s</span><span class="s1">)AND(reviewed:true)&amp;fields=accession,id,&#39;</span> \
                     <span class="s1">&#39;gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq,length&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
 <div class="viewcode-block" id="UniprotProteinMetadataService.parse_uniprot_json">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.UniprotProteinMetadataService.parse_uniprot_json">[docs]</a>
@@ -167,7 +169,9 @@
 <div class="viewcode-block" id="UniprotProteinMetadataService.annotate">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.preprocessing.html#genophenocorr.preprocessing.UniprotProteinMetadataService.annotate">[docs]</a>
     <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata for given protein ID. This class specifically only works with a RefSeq database ID (e.g. NP_037407.4)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get metadata for given protein ID.</span>
+<span class="sd">        This class specifically only works with a RefSeq database ID (e.g. NP_037407.4).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            protein_id (string): A protein ID</span>
@@ -181,10 +185,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">protein_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;NP_&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only works with a RefSeq database ID (e.g. NP_037407.4), but we got </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="n">protein_id</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">parse_uniprot_json</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">)</span></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">parse_uniprot_json</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">)</span></div>
 </div>
-
 
 </pre></div>
 
