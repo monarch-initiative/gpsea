@@ -32,6 +32,7 @@ class DefaultImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
                 variant_effects=variant_effects,
                 affected_exons=affected_exons,
                 protein_id=None,
+                hgvsp=None,
                 protein_effect_coordinates=None,
             )
             tx_annotations.append(annotation)

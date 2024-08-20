@@ -461,6 +461,8 @@ class VariantCoordinates:
         Get a readable representation of the variant's coordinates.
 
         For instance, ``X_12345_12345_C_G`` for a sequence variant or ``22_10001_20000_INV`` for a symbolic variant.
+        If the key is larger than 50 characters, the 'ref' and/or 'alt' (if over 10 bps) are changed to just show number of bps. 
+        Example: ``X_1000001_1000027_TAAAAAAAAAAAAAAAAAAAAAAAAAA_T`` -> ``X_1000001_1000027_--27bp--_T``
 
         .. note::
 
@@ -471,13 +473,15 @@ class VariantCoordinates:
         else:
             key = f'{self.chrom}_{self.start + 1}_{self.end}_{self.ref}_{self.alt}'
             if len(key) > 50:
-                ref = None
-                alt = None
                 if len(self.ref) > 10:
                     ref = f"--{len(self.ref)}bp--"
+                else:
+                    ref = self.ref
                 if len(self.alt) > 10:
                     alt = f"--{len(self.alt)}bp--"
-                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref if not None else self.ref}_{alt if not None else self.alt}"
+                else:
+                    alt = self.alt
+                return f"{self.chrom}_{self.start + 1}_{self.end}_{ref}_{alt}"
             else:
                 return key
 
