@@ -1,4 +1,4 @@
-.. _general_hpo_terms:
+.. _general-hpo-terms:
 
 =================
 General HPO terms

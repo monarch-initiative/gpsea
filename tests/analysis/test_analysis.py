@@ -78,7 +78,7 @@ class TestCohortAnalysis:
         always_false_variant_predicate: VariantPredicate,
     ):
         config = CohortAnalysisConfiguration()
-        config.heuristic_strategy()
+        config.hpo_mtc_strategy()
         cohort_analysis = configure_cohort_analysis(
             hpo=hpo,
             cohort=degenerated_cohort,
