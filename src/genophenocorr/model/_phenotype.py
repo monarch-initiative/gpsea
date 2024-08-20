@@ -4,24 +4,27 @@ import warnings
 import hpotk
 
 
-class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model.Named):
-    """A class that represents an HPO verified phenotype
+class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
+    """
+    `Phenotype` represents a clinical sign or symptom represented as an HPO term.
+    
+    The phenotype can be either present in the patient or excluded.
 
     Attributes:
-        term_id (hpotk.model.Named): The HPO ID associated with this phenotype
-        name (str): The official HPO name for this phenotype
+        term_id (hpotk.TermId): The HPO ID associated with this phenotype
         is_observed (bool): Is True if this phenotype was observed in the respective patient
     """
 
     @staticmethod
     def from_term(term: hpotk.model.MinimalTerm, is_observed: bool):
-        return Phenotype(term.identifier, term.name, is_observed)
+        return Phenotype(term.identifier, is_observed)
 
-    def __init__(self, term_id: hpotk.TermId,
-                 name: str,
-                 is_observed: bool) -> None:
+    def __init__(
+        self,
+        term_id: hpotk.TermId,
+        is_observed: bool
+    ):
         self._term_id = hpotk.util.validate_instance(term_id, hpotk.TermId, 'term_id')
-        self._name = hpotk.util.validate_instance(name, str, 'name')
         self._observed = hpotk.util.validate_instance(is_observed, bool, 'is_observed')
 
     @property
@@ -33,15 +36,6 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.mod
             hpotk.model.Named: HPO ID
         """
         return self._term_id
-
-    @property
-    def name(self):
-        """Returns a string that describes this Phenotype object.
-
-        Returns:
-            string: phenotype name
-        """
-        return self._name
 
     @property
     def is_present(self) -> bool:
@@ -75,16 +69,14 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.mod
     def __eq__(self, other):
         return isinstance(other, Phenotype) \
             and self._term_id == other._term_id \
-            and self._name == other._name \
             and self._observed == other._observed
 
     def __hash__(self):
-        return hash((self._term_id, self._name, self._observed))
+        return hash((self._term_id, self._observed))
 
     def __str__(self):
         return f"Phenotype(" \
                f"identifier={self._term_id}, " \
-               f"name={self._name}, " \
                f"is_present={self._observed})"
 
     def __repr__(self):
