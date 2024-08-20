@@ -49,7 +49,7 @@ class MtcStrategy(enum.Enum):
 
 class CohortAnalysisConfiguration:
     """
-    `CohortAnalysisConfiguration` is a value class for storing :class:`genophenocorr.analysis.CohortAnalysis`
+    `CohortAnalysisConfiguration` is a value class for storing :class:`~genophenocorr.analysis.CohortAnalysis`
     configuration options.
 
     The class contains the default values upon creation and the configuration option values can be set as properties.
@@ -60,16 +60,16 @@ class CohortAnalysisConfiguration:
     Default values
     ^^^^^^^^^^^^^^
 
-    ==============================  =======================  =====================================
+    ==============================  =======================  =========================================
         Option                        Type                    Default value
-    ==============================  =======================  =====================================
+    ==============================  =======================  =========================================
      ``missing_implies_excluded``    `bool`                   `False`
      ``pval_correction``             `str`                    `bonferroni`
-     ``min_perc_patients_w_hpo``     `float`                  `0.1`
+     ``min_n_patients_with_term``    `int`                    `2`
      ``mtc_alpha``                   `float`                  `0.05`
      ``include_sv``                  `bool`                   `False`
      ``mtc_strategy``                :class:`MtcStrategy`    :class:`MtcStrategy.ALL_PHENOTYPE_TERMS`
-    ==============================  =======================  =====================================
+    ==============================  =======================  =========================================
 
     """
 
@@ -106,6 +106,10 @@ class CohortAnalysisConfiguration:
 
     @property
     def min_n_patients_with_term(self) -> int:
+        """
+        Get the minimum number of patients that must be annotated with an HPO term
+        for including the term in the analysis.
+        """
         return self._min_n_patients_with_term
 
     @min_n_patients_with_term.setter
