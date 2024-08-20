@@ -93,7 +93,7 @@
 <span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Patient</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">HpoMtcFilter</span><span class="p">,</span> <span class="n">HpoMtcReport</span>
 <span class="kn">from</span> <span class="nn">._stats</span> <span class="kn">import</span> <span class="n">run_fisher_exact</span><span class="p">,</span> <span class="n">run_recessive_fisher_exact</span>
-<span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span>
+<span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span>
 <span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">PhenotypePolyPredicate</span><span class="p">,</span> <span class="n">P</span>
 
 
@@ -102,8 +102,12 @@
 <span class="k">def</span> <span class="nf">apply_predicates_on_patients</span><span class="p">(</span>
         <span class="n">patients</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
         <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">PolyPredicate</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
+    <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+    <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+<span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply the phenotype predicates `pheno_predicates` and the genotype predicate `gt_predicate`</span>
 <span class="sd">    to bin the `patients` into categories.</span>
@@ -574,7 +578,7 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">patients</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
             <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
-            <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">PolyPredicate</span><span class="p">,</span>
+            <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test for association between `phenotypic_features` of interest groups or `patients` determined</span>
@@ -611,8 +615,12 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">patients</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
             <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
-            <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">PolyPredicate</span><span class="p">,</span>
+            <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="n">pheno_predicates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No phenotype predicates were provided&#39;</span><span class="p">)</span>
+
         <span class="c1"># 1) Count the patients</span>
         <span class="n">categories</span><span class="p">,</span> <span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span> <span class="o">=</span> <span class="n">apply_predicates_on_patients</span><span class="p">(</span>
             <span class="n">patients</span><span class="p">,</span> <span class="n">pheno_predicates</span><span class="p">,</span> <span class="n">gt_predicate</span><span class="p">,</span>
@@ -620,13 +628,15 @@
         <span class="n">original_phenotype_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_usable</span><span class="p">)</span>
 
         <span class="c1"># 1.5) Filter terms for MTC</span>
-        <span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">,</span> <span class="n">reason2count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter</span><span class="o">.</span><span class="n">filter_terms_to_test</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">)</span>
+        <span class="n">n_usable_filtered</span><span class="p">,</span> <span class="n">all_counts_filtered</span><span class="p">,</span> <span class="n">reason2count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_mtc_filter</span><span class="o">.</span><span class="n">filter_terms_to_test</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_usable_filtered</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No phenotypes are left for the analysis after MTC filtering step&quot;</span><span class="p">)</span>
 
         <span class="c1"># 2) Statistical tests</span>
-        <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">n_usable</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;p_val&#39;</span><span class="p">)</span>
+        <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">n_usable_filtered</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;p_val&#39;</span><span class="p">)</span>
         <span class="n">pvals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">pheno_idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;p value&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="n">pheno_idx</span><span class="p">:</span>
-            <span class="n">counts</span> <span class="o">=</span> <span class="n">all_counts</span><span class="p">[</span><span class="n">phenotype</span><span class="p">]</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">all_counts_filtered</span><span class="p">[</span><span class="n">phenotype</span><span class="p">]</span>
             <span class="c1"># TODO - this is where we must fail unless we have the contingency table of the right size!</span>
             <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
                 <span class="n">pvals</span><span class="p">[</span><span class="n">phenotype</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_fisher_exact</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
@@ -641,7 +651,7 @@
         <span class="c1"># 3) Multiple correction</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_correction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">pvals_corrected</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">multitest</span><span class="o">.</span><span class="n">multipletests</span><span class="p">(</span><span class="n">pvals</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_correction</span><span class="p">)</span>
-            <span class="n">corrected_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">n_usable</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;p_val_corrected&#39;</span><span class="p">)</span>
+            <span class="n">corrected_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">n_usable_filtered</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;p_val_corrected&#39;</span><span class="p">)</span>
             <span class="n">corrected_pvals_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">pvals_corrected</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">corrected_idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Corrected p value&#39;</span><span class="p">,</span>
             <span class="p">)</span>
@@ -660,8 +670,8 @@
 
         <span class="c1"># 4) Wrap up</span>
         <span class="k">return</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">(</span>
-            <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span>
-            <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
+            <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable_filtered</span><span class="p">,</span>
+            <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts_filtered</span><span class="p">,</span>
             <span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span>
             <span class="n">corrected_pvals</span><span class="o">=</span><span class="n">corrected_pvals_series</span><span class="p">,</span>
             <span class="n">phenotype_categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span>
