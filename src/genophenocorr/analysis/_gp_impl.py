@@ -1,6 +1,8 @@
 import logging
 import typing
 
+from collections import Counter
+
 import hpotk
 import pandas as pd
 
@@ -13,10 +15,9 @@ from .predicate.genotype import VariantPredicate
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
 from .predicate.genotype import groups_predicate as wrap_as_groups_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
-from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate, CountingPhenotypeScorer
+from .predicate.phenotype import PhenotypePolyPredicate, P, PropagatingPhenotypePredicate, DiseasePresencePredicate
 
 from ._api import CohortAnalysis, GenotypePhenotypeAnalysisResult, PhenotypeScoreAnalysisResult
-from ._filter import PhenotypeFilter
 from ._gp_analysis import GPAnalyzer
 
 
@@ -26,9 +27,9 @@ class GpCohortAnalysis(CohortAnalysis):
         self, cohort: Cohort,
         hpo: hpotk.MinimalOntology,
         protein_service: ProteinMetadataService,
-        phenotype_filter: PhenotypeFilter,
         gp_analyzer: GPAnalyzer,
         missing_implies_excluded: bool,
+        min_n_of_patients_with_term: int,
         include_sv: bool = False,
     ):
         super().__init__(
@@ -40,7 +41,7 @@ class GpCohortAnalysis(CohortAnalysis):
 
         self._logger = logging.getLogger(__name__)
         self._cohort = cohort
-        self._phenotype_filter = hpotk.util.validate_instance(phenotype_filter, PhenotypeFilter, 'phenotype_filter')
+        # self._phenotype_filter = hpotk.util.validate_instance(phenotype_filter, PhenotypeFilter, 'phenotype_filter')
         self._gp_analyzer = hpotk.util.validate_instance(gp_analyzer, GPAnalyzer, 'gp_analyzer')
 
         self._patient_list = list(cohort.all_patients) \
@@ -49,7 +50,12 @@ class GpCohortAnalysis(CohortAnalysis):
         if len(self._patient_list) == 0:
             raise ValueError('No patients left for analysis!')
 
-        self._hpo_terms_of_interest = self._phenotype_filter.filter_features(self._patient_list)
+        self._hpo_terms_of_interest = prepare_hpo_terms_of_interest(
+            hpo=self._hpo,
+            patients=self._patient_list,
+            missing_implies_excluded=missing_implies_excluded,
+            min_n_of_patients_with_term=min_n_of_patients_with_term,
+        )
         self._missing_implies_excluded = missing_implies_excluded
 
     def compare_hpo_vs_genotype(
@@ -57,7 +63,7 @@ class GpCohortAnalysis(CohortAnalysis):
             predicate: VariantPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
-        Bin patients according to a presence of at least one allele that matches `predicate` 
+        Bin patients according to a presence of at least one allele that matches `predicate`
         and test for genotype-phenotype correlations.
         """
         assert isinstance(predicate, VariantPredicate), \
@@ -192,3 +198,75 @@ class GpCohortAnalysis(CohortAnalysis):
                 query=query,
             )
             for query in self._hpo_terms_of_interest)
+
+
+def prepare_hpo_terms_of_interest(
+    hpo: hpotk.MinimalOntology,
+    patients: typing.Iterable[Patient],
+    missing_implies_excluded: bool,
+    min_n_of_patients_with_term: int,
+) -> typing.Iterable[hpotk.TermId]:
+    present_count = Counter()
+    excluded_count = Counter()
+
+    for patient in patients:
+        for pf in patient.phenotypes:
+            if pf.is_present:
+                # A present phenotypic feature must be counted in.
+                present_count[pf.identifier] += 1
+                # and it also implies presence of its ancestors.
+                for anc in hpo.graph.get_ancestors(pf):
+                    present_count[anc] += 1
+            else:
+                # An excluded phenotypic feature
+                excluded_count[pf.identifier] += 1
+                for desc in hpo.graph.get_descendants(pf):
+                    # implies exclusion of its descendants.
+                    excluded_count[desc] += 1
+
+    if missing_implies_excluded:
+        # We must do another pass to ensure that we account the missing features as excluded.
+        # `present_count` has all phenotypic features that were observed as present among the cohort members.
+        for pf in present_count:
+            for patient in patients:
+                pf_can_be_inferred_as_excluded_for_patient = False
+                for phenotype in patient.phenotypes:
+                    if pf == phenotype.identifier:
+                        # Patient is explicitly annotated with `pf`. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+
+                    if phenotype.is_present and hpo.graph.is_ancestor_of(pf, phenotype):
+                        # The `pf` is implicitly observed in the patient. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+                    elif phenotype.is_excluded and hpo.graph.is_descendant_of(pf, phenotype):
+                        # The `pf` is implicitly excluded in the patient. No inference for this patient!
+                        pf_can_be_inferred_as_excluded_for_patient = False
+                        break
+                    else:
+                        # There is no implicit or explicit observation of `pf` for this patient.
+                        # Therefore, we infer that it is excluded!
+                        pf_can_be_inferred_as_excluded_for_patient = True
+
+                if pf_can_be_inferred_as_excluded_for_patient:
+                    excluded_count[pf] += 1
+                    for desc in hpo.graph.get_descendants(pf):
+                        excluded_count[desc] += 1
+
+    total_count = Counter()
+    for term_id, count in present_count.items():
+        total_count[term_id] += count
+
+    for term_id, count in excluded_count.items():
+        total_count[term_id] += count
+
+    final_hpo = []
+    for term_id in present_count:
+        # Keep the term if it is mentioned at least *n* times (incl. being excluded)
+        # in the cohort
+        n_all = total_count[term_id]
+        if n_all >= min_n_of_patients_with_term:
+            final_hpo.append(term_id)
+
+    return tuple(final_hpo)

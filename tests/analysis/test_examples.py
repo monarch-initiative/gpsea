@@ -27,9 +27,9 @@ class TestCohortAnalysis:
         print(summary)
 
     def test_get_count(
-            self,
-            suox_cohort: Cohort,
-            hpo: hpotk.MinimalOntology,
+        self,
+        suox_cohort: Cohort,
+        hpo: hpotk.MinimalOntology,
     ):
         """
         This test shows how to manipulate the results object to get the counts we need
@@ -67,8 +67,8 @@ class TestCohortAnalysis:
         all_counts = results.all_counts
         assert isinstance(all_counts, typing.Mapping)
 
-        # We tested 74 HPO terms
-        assert len(all_counts) == 74
+        # We tested 66 HPO terms
+        assert len(all_counts) == 66
 
         # The index of all_counts is a Tuple with (HPO TermId, BooleanPredicate
         # Let's test Seizure - we should have one row for each Patient Predicate
