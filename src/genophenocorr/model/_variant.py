@@ -807,12 +807,15 @@ class Variant(VariantInfoAware, FunctionalAnnotationAware, Genotyped):
         exons_effected: typing.Sequence[int],
         protein_id: typing.Optional[str],
         hgvsp: typing.Optional[str],
-        protein_effect_start: int,
-        protein_effect_end: int,
+        protein_effect_start: typing.Optional[int],
+        protein_effect_end: typing.Optional[int],
         genotypes: Genotypes,
     ):
         variant_info = VariantInfo(variant_coordinates=variant_coordinates)
-        protein_effect = Region(protein_effect_start, protein_effect_end)
+        if protein_effect_start is not None and protein_effect_end is not None:
+            protein_effect = Region(protein_effect_start, protein_effect_end)
+        else:
+            protein_effect = None
         transcript = TranscriptAnnotation(gene_name, trans_id, hgvs_cdna, is_preferred, consequences, exons_effected,
                                           protein_id, hgvsp, protein_effect)
         return Variant(variant_info, (transcript,), genotypes)
