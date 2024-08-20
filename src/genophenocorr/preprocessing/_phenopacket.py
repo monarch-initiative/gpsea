@@ -126,12 +126,14 @@ class PhenopacketVariantCoordinateFinder(
             end = int(seq_location.sequence_interval.end_number.value)
             ref = "N"
             number = int(variation.copy_number.number.value)
-            if number > 2:
-                alt = "<DUP>"
-            else:
+            if number == 1:
                 alt = "<DEL>"
-            # TODO(ielis): this is wrong. Fix!
-            change_length = end - start
+                change_length = -(end - start)
+            elif number == 3:
+                alt = "<DUP>"
+                change_length = end - start
+            else:
+                raise ValueError(f"The copy number of {number} is not supported. Supported values: {{1, 3}}")
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
             return VariantCoordinates(region, ref, alt, change_length)
