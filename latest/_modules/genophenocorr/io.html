@@ -174,7 +174,8 @@
                 <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                 <span class="s1">&#39;meta_label&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">meta_label</span><span class="p">,</span>
             <span class="p">}</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">)):</span>
+            <span class="c1"># enums</span>
             <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Phenotype</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -313,7 +314,7 @@
         <span class="k">elif</span> <span class="n">GenophenocorrJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_IMPRECISE_SV_INFO_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ImpreciseSvInfo</span><span class="p">(</span>
                 <span class="n">structural_type</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;structural_type&#39;</span><span class="p">]),</span>
-                <span class="n">variant_class</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_class&#39;</span><span class="p">],</span>
+                <span class="n">variant_class</span><span class="o">=</span><span class="n">VariantClass</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variant_class&#39;</span><span class="p">]],</span>
                 <span class="n">gene_id</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;gene_id&#39;</span><span class="p">],</span>
                 <span class="n">gene_symbol</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;gene_symbol&#39;</span><span class="p">],</span>
             <span class="p">)</span>
