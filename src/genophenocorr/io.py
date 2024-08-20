@@ -87,7 +87,8 @@ class GenophenocorrJSONEncoder(JSONEncoder):
                 'label': o.label,
                 'meta_label': o.meta_label,
             }
-        elif isinstance(o, (Genotype, VariantEffect, Strand)):
+        elif isinstance(o, (Genotype, VariantEffect, Strand, VariantClass)):
+            # enums
             return o.name
         elif isinstance(o, Phenotype):
             return {
@@ -220,7 +221,7 @@ class GenophenocorrJSONDecoder(JSONDecoder):
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _IMPRECISE_SV_INFO_FIELDS):
             return ImpreciseSvInfo(
                 structural_type=hpotk.TermId.from_curie(obj['structural_type']),
-                variant_class=obj['variant_class'],
+                variant_class=VariantClass[obj['variant_class']],
                 gene_id=obj['gene_id'],
                 gene_symbol=obj['gene_symbol'],
             )
