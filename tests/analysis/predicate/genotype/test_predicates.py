@@ -18,13 +18,13 @@ class TestVariantPredicates:
     )
     def test_variant_effect_predicate(
             self,
-            variant: Variant,
+            missense_variant: Variant,
             effect: VariantEffect,
             expected: bool,
     ):
         predicate = VariantPredicates.variant_effect(effect, tx_id='tx:xyz')
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'variant_key, expected',
@@ -35,13 +35,13 @@ class TestVariantPredicates:
     )
     def test_variant_key_predicate(
             self,
-            variant: Variant,
+            missense_variant: Variant,
             variant_key: str,
             expected: bool,
     ):
         predicate = VariantPredicates.variant_key(variant_key)
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'exon, expected',
@@ -53,13 +53,13 @@ class TestVariantPredicates:
     )
     def test_exon_predicate(
             self,
-            variant: Variant,
+            missense_variant: Variant,
             exon: int,
             expected: bool,
     ):
         predicate = VariantPredicates.exon(exon, tx_id='tx:xyz')
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'tx_id, expected',
@@ -70,13 +70,13 @@ class TestVariantPredicates:
     )
     def test_transcript_predicate(
             self,
-            variant: Variant,
+            missense_variant: Variant,
             tx_id: str,
             expected: bool,
     ):
         predicate = VariantPredicates.transcript(tx_id)
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'symbol, expected',
@@ -87,61 +87,61 @@ class TestVariantPredicates:
     )
     def test_gene_predicate(
             self,
-            variant: Variant,
+            missense_variant: Variant,
             symbol: str,
             expected: bool,
     ):
         predicate = VariantPredicates.gene(symbol)
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     def test_is_large_imprecise_sv(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         structural_variant: Variant,
     ):
         predicate = VariantPredicates.is_large_imprecise_sv()
 
-        assert predicate.test(variant) == False
+        assert predicate.test(missense_variant) == False
         assert predicate.test(structural_variant) == True
 
     def test_is_structural_predicate(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         structural_variant: Variant,
     ):
         predicate = VariantPredicates.is_structural_variant()
 
-        assert predicate.test(variant) == False
+        assert predicate.test(missense_variant) == False
         assert predicate.test(structural_variant) == True
 
     def test_structural_type(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         structural_variant: Variant,
     ):
         predicate = VariantPredicates.structural_type('SO:1000029')
 
-        assert predicate.test(variant) == False
+        assert predicate.test(missense_variant) == False
         assert predicate.test(structural_variant) == True
 
     def test_variant_class(
         self,
-        variant: Variant,
+        missense_variant: Variant,
     ):
         predicate = VariantPredicates.variant_class(VariantClass.SNV)
 
-        assert predicate.test(variant) == True
+        assert predicate.test(missense_variant) == True
 
     def test_change_length(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         structural_variant: Variant,
     ):
         predicate = VariantPredicates.change_length('==', 0)
         
         # variant is an SNP
-        assert predicate.test(variant) == True
+        assert predicate.test(missense_variant) == True
 
         # structural_variant is an imprecise DEL, hence False
         assert predicate.test(structural_variant) == False
@@ -175,13 +175,13 @@ class TestProteinPredicates:
     def test_protein_feature_type(
             self,
             protein_predicates: ProteinPredicates,
-            variant: Variant,
+            missense_variant: Variant,
             feature_type: FeatureType,
             expected: bool,
     ):
         predicate = protein_predicates.protein_feature_type(feature_type, tx_id='tx:xyz')
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'feature_id, expected',
@@ -194,13 +194,13 @@ class TestProteinPredicates:
     def test_protein_feature_id(
             self,
             protein_predicates: ProteinPredicates,
-            variant: Variant,
+            missense_variant: Variant,
             feature_id: str,
             expected: bool,
     ):
         predicate = protein_predicates.protein_feature(feature_id, tx_id='tx:xyz')
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
 class TestLogicalVariantPredicate:
     """
@@ -228,14 +228,14 @@ class TestLogicalVariantPredicate:
     )
     def test_und_predicate(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         left: str,
         right: str,
         expected: bool,
     ):
         predicate = VariantPredicates.transcript(tx_id=left) & VariantPredicates.transcript(tx_id=right)
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'left,right,expected',
@@ -248,14 +248,14 @@ class TestLogicalVariantPredicate:
     )
     def test_or_predicate(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         left: str,
         right: str,
         expected: bool,
     ):
         predicate = VariantPredicates.transcript(tx_id=left) | VariantPredicates.transcript(tx_id=right)
         
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
 
     @pytest.mark.parametrize(
         'tx_id,expected',
@@ -266,13 +266,13 @@ class TestLogicalVariantPredicate:
     )
     def test_inv_predicate(
         self,
-        variant: Variant,
+        missense_variant: Variant,
         tx_id: str,
         expected: bool,
     ):
         predicate = ~VariantPredicates.transcript(tx_id)
 
-        assert predicate.test(variant) == expected
+        assert predicate.test(missense_variant) == expected
     
     def test_no_double_inv_happens(
         self,

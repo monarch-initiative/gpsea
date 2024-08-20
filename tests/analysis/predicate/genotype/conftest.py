@@ -45,7 +45,15 @@ class MockProteinMetadataService(ProteinMetadataService):
 
 
 @pytest.fixture(scope="package")
-def variant(genome_build: GenomeBuild) -> Variant:
+def sample_labels() -> SampleLabels:
+    return SampleLabels("jim")
+
+
+@pytest.fixture(scope="package")
+def missense_variant(
+    genome_build: GenomeBuild,
+    sample_labels: SampleLabels,
+) -> Variant:
     chr22 = genome_build.contig_by_name("chr22")
     assert chr22 is not None
     return Variant(
@@ -89,19 +97,72 @@ def variant(genome_build: GenomeBuild) -> Variant:
                 protein_effect_coordinates=None,
             ),
         ),
-        genotypes=Genotypes.single(SampleLabels("jim"), Genotype.HETEROZYGOUS),
+        genotypes=Genotypes.single(sample_labels, Genotype.HETEROZYGOUS),
     )
 
 
 @pytest.fixture(scope="package")
-def structural_variant() -> Variant:
+def frameshift_variant(
+    genome_build: GenomeBuild,
+    sample_labels: SampleLabels,
+) -> Variant:
+    chr22 = genome_build.contig_by_name("chr22")
+    assert chr22 is not None
+    return Variant(
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chr22,
+                    start=110,
+                    end=113,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="CCC",
+                alt="C",
+                change_length=-2,
+            )
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:xyz",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(VariantEffect.FRAMESHIFT_VARIANT,),
+                affected_exons=(5,),
+                protein_id="pt:xyz",
+                hgvsp=None,
+                protein_effect_coordinates=Region(43, 44),
+            ),
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:abc",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(VariantEffect.INTRON_VARIANT,),
+                affected_exons=None,
+                protein_id=None,
+                hgvsp=None,
+                protein_effect_coordinates=None,
+            ),
+        ),
+        genotypes=Genotypes.single(sample_labels, Genotype.HETEROZYGOUS),
+    )
+
+
+@pytest.fixture(scope="package")
+def structural_variant(
+    sample_labels: SampleLabels,
+) -> Variant:
     return Variant(
         variant_info=VariantInfo(
             sv_info=ImpreciseSvInfo(
-                structural_type=hpotk.TermId.from_curie('SO:1000029'),  # chromosomal_deletion
+                structural_type=hpotk.TermId.from_curie(
+                    "SO:1000029"
+                ),  # chromosomal_deletion
                 variant_class=VariantClass.DEL,
-                gene_id='HGNC:21316',
-                gene_symbol='ANKRD11',
+                gene_id="HGNC:21316",
+                gene_symbol="ANKRD11",
             ),
         ),
         tx_annotations=(
@@ -117,5 +178,35 @@ def structural_variant() -> Variant:
                 protein_effect_coordinates=None,
             ),
         ),
-        genotypes=Genotypes.single(SampleLabels("jim"), Genotype.HETEROZYGOUS),
+        genotypes=Genotypes.single(sample_labels, Genotype.HETEROZYGOUS),
+    )
+
+
+@pytest.fixture(scope="package")
+def patient_w_missense(
+    sample_labels: SampleLabels,
+    missense_variant: Variant,
+) -> Patient:
+    return Patient(
+        labels=sample_labels,
+        phenotypes=(),
+        diseases=(),
+        variants=(
+            missense_variant,
+        ),
+    )
+
+
+@pytest.fixture(scope="package")
+def patient_w_frameshift(
+    sample_labels: SampleLabels,
+    frameshift_variant: Variant,
+) -> Patient:
+    return Patient(
+        labels=sample_labels,
+        phenotypes=(),
+        diseases=(),
+        variants=(
+            frameshift_variant,
+        ),
     )

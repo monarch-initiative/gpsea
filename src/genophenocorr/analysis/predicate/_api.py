@@ -81,9 +81,26 @@ class Categorization:
     `Categorization` represents one of discrete group a :class:`genophenocorr.model.Patient` can be assigned into.
     """
 
+    @staticmethod
+    def from_raw_parts(
+        cat_id: int,
+        name: str,
+        description: typing.Optional[str] = None,
+    ):
+        """
+        Create `Categorization` from the `cat_id` identifier, `name`, and an optional `description`.
+        """
+        return Categorization(
+            category=PatientCategory(
+                cat_id=cat_id,
+                name=name,
+                description=description,
+            )
+        )
+
     def __init__(
-            self,
-            category: PatientCategory,
+        self,
+        category: PatientCategory,
     ):
         self._category = hpotk.util.validate_instance(category, PatientCategory, 'category')
 
@@ -189,28 +206,6 @@ class GenotypeBooleanPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
         The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
         """
         return GenotypeBooleanPredicate.YES, GenotypeBooleanPredicate.NO
-
-
-class GroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    """
-    `GroupingPredicate` tests if a :class:`genophenocorr.model.Patient` belongs to one of two groups and returns
-    FIRST or SECOND based on which group Patient belongs in.
-    """
-
-    FIRST = Categorization(PatientCategory(0, 'First', 'The patient belongs in the first group.'))
-    """
-    Category for a patient who belongs in the first given tested group.
-    """
-    SECOND = Categorization(PatientCategory(1, 'Second', 'The patient belongs in the second group.'))
-    """
-    Category for a patient who belongs to the second given tested group.
-    """
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        """
-        The predicate bins a patient into :class:`GroupingPredicate.FIRST` or :class:`GroupingPredicate.SECOND` category.
-        """
-        return GroupingPredicate.FIRST, GroupingPredicate.SECOND
 
 
 class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):

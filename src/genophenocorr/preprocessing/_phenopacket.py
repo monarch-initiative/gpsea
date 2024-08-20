@@ -139,8 +139,7 @@ class PhenopacketVariantCoordinateFinder(
             # We have some expressions. Let's try to find the 1st expression with `hgvs.c` syntax.
             for expression in variation_descriptor.expressions:
                 if expression.syntax == "hgvs.c":
-                    vc = self._hgvs_finder.find_coordinates(expression.value)
-                    break
+                    return self._hgvs_finder.find_coordinates(expression.value)
         elif self._looks_like_large_sv(variation_descriptor):
             # We cannot extract exact variant coordinates from a variation descriptor in this format.
             return None

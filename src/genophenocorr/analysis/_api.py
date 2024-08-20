@@ -5,12 +5,11 @@ from collections import namedtuple, defaultdict
 import hpotk
 import pandas as pd
 
-from genophenocorr.model import VariantEffect, Patient, FeatureType
-from genophenocorr.model.genome import Region
+from genophenocorr.model import Patient
 from genophenocorr.preprocessing import ProteinMetadataService
-from .predicate import PolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate, VariantPredicates, ProteinPredicates
-from .predicate.phenotype import P
+from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
+from .predicate.genotype import VariantPredicate, ProteinPredicates
+from .predicate.phenotype import P, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -235,6 +234,57 @@ class GenotypePhenotypeAnalysisResult:
             return term_id.value
 
 
+class PhenotypeScoreAnalysisResult:
+    """
+    `PhenotypeScoreAnalysisResult` includes results of testing genotypes vs. phenotype scores.
+
+    See :ref:`Mann Whitney U Test for phenotype score <phenotype-score-stats>` for more background.
+    """
+
+    def __init__(
+        self,
+        genotype_phenotype_scores: pd.DataFrame,
+        p_value: float,
+    ):
+        self._genotype_phenotype_scores = genotype_phenotype_scores
+        self._p_value = p_value
+
+    @property
+    def genotype_phenotype_scores(
+        self,
+    ) -> pd.DataFrame:
+        """
+        Get the DataFrame with the genotype group and the phenotype score for each patient.
+
+        The DataFrame has the following structure:
+
+        ==========  ========  =========
+        patient_id  genotype  phenotype
+        ==========  ========  =========
+        patient_1   0         1
+        patient_2   0         3
+        patient_3   1         2
+        ...         ...       ...
+        ==========  ========  =========
+
+        The DataFrame index includes the patient IDs, and then there are 2 columns
+        with the `genotype` group id (:attr:`~genophenocorr.analysis.predicate.PatientCategory.cat_id`) and the `phenotype` score.
+        """
+        return self._genotype_phenotype_scores
+
+    @property
+    def p_value(self) -> float:
+        return self._p_value
+
+    def __str__(self) -> str:
+        return 'PhenotypeGroupAnalysisResult(' \
+            f'genotype_phenotype_scores={self._genotype_phenotype_scores}, ' \
+            f'p_value={self._p_value})'
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
 class CohortAnalysis(metaclass=abc.ABCMeta):
     """
     `CohortAnalysis` is a driver class for running genotype-phenotype correlation analyses.
@@ -245,164 +295,12 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
 
     def __init__(
         self,
+        hpo: hpotk.MinimalOntology,
         protein_service: ProteinMetadataService,
     ):
+        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._protein_service = protein_service
         self._protein_predicates = ProteinPredicates(self._protein_service)
-
-    def compare_by_variant_effect(self, effect: VariantEffect, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compares variants with `effect` vs. variants with all other variant effects.
-
-        :param effect: variant effect
-        :param tx_id: the accession of the transcript of interest
-        """
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = VariantPredicates.variant_effect(effect, tx_id)
-        return self.compare_hpo_vs_genotype(predicate)
-
-    def compare_by_variant_key(self, variant_key: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compares variant with `variant_key` vs all the other variants.
-
-        .. seealso::
-
-          :attr:`genophenocorr.model.VariantCoordinates.variant_key`
-
-        :param variant_key: a `str` with the variant key, e.g. ``X_12345_12345_C_G``
-        """
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = VariantPredicates.variant_key(variant_key)
-        return self.compare_hpo_vs_genotype(predicate)
-
-    def compare_by_exon(self, exon_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compares variants with `effect` vs. variants with all other variant effects.
-
-        .. note::
-
-          We use 1-based numbering to number the exons, not the usual 0-based numbering of the computer science.
-          Therefore, the first exon of the transcript has ``exon_number==1``, the second exon is ``2``, and so on ...
-
-        .. note::
-
-          We do not check if the `exon_number` spans beyond the number of exons of the given `transcript_id`!
-          Therefore, ``exon_number==10,000`` will effectively return :attr:`BooleanPredicate.FALSE` for *all* patients!!! 😱
-          Well, at least the patients of the *Homo sapiens sapiens* taxon...
-
-        :param exon_number: a positive `int` with exon number
-        :param tx_id: the accession of the transcript of interest
-        """
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = VariantPredicates.exon(exon_number, tx_id)
-        return self.compare_hpo_vs_genotype(predicate)
-
-    def compare_by_protein_feature_type(self, feature_type: FeatureType, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compare genotype-phenotype correlation between variants that affect a given `feature_type` and the variants
-        affecting the rest of the protein.
-
-        Args:
-            feature_type (FeatureType): the protein feature type of interest
-            tx_id: the accession of the transcript of interest
-        """
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = self._protein_predicates.protein_feature_type(feature_type, tx_id)
-        return self.compare_hpo_vs_genotype(predicate)
-
-    def compare_by_protein_feature(self, feature: str, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compare genotype-phenotype correlation between variants that affect a given `feature` and the variants
-        affecting the rest of the protein.
-
-        .. seealso::
-
-          The protein feature names can be accessed at :attr:`genophenocorr.model.ProteinFeature.name`.
-
-        Args:
-            feature (string): feature identifier, e.g. ``DNA-binding``.
-            tx_id (string): the accession of the transcript of interest
-        """
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = self._protein_predicates.protein_feature(feature, tx_id)
-        return self.compare_hpo_vs_genotype(predicate)
-    
-    def compare_by_protein_region(self, protein_region: Region, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        # TODO: build `VariantPredicate` and use `compare_hpo_vs_genotype`
-        predicate = VariantPredicates.region(protein_region, tx_id)
-        return self.compare_hpo_vs_genotype(predicate)
-
-    def compare_by_variant_effects(
-            self,
-            effect1: VariantEffect,
-            effect2: VariantEffect,
-            tx_id: str,
-    ) -> GenotypePhenotypeAnalysisResult:
-        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=VariantPredicates.variant_effect(effect=effect1, tx_id=tx_id),
-            second=VariantPredicates.variant_effect(effect=effect2, tx_id=tx_id),
-        )
-
-    def compare_by_variant_keys(self, variant_key1: str, variant_key2: str) -> GenotypePhenotypeAnalysisResult:
-        """
-        Compare genotype-phenotype correlation between groups with variant `a` vs. variant `b`.
-
-        .. seealso::
-
-          :attr:`genophenocorr.model.VariantCoordinates.variant_key`
-
-        :param a: a `str` with variant key of variant `a`, e.g. ``X_12345_12345_C_G``
-        :param b: a `str` with variant key of variant `b`
-        """
-        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=VariantPredicates.variant_key(variant_key1),
-            second=VariantPredicates.variant_key(variant_key2),
-        )
-
-    def compare_by_exons(self, exon1_number: int, exon2_number: int, tx_id: str) -> GenotypePhenotypeAnalysisResult:
-        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=VariantPredicates.exon(exon=exon1_number, tx_id=tx_id),
-            second=VariantPredicates.exon(exon=exon2_number, tx_id=tx_id),
-        )
-
-    def compare_by_protein_feature_types(
-            self,
-            feature_type1: FeatureType,
-            feature_type2: FeatureType,
-            tx_id: str,
-    ) -> GenotypePhenotypeAnalysisResult:
-    # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=self._protein_predicates.protein_feature_type(feature_type=feature_type1, tx_id=tx_id),
-            second=self._protein_predicates.protein_feature_type(feature_type=feature_type2, tx_id=tx_id),
-        )
-
-    def compare_by_protein_features(
-            self,
-            feature1: str,
-            feature2: str,
-            tx_id: str,
-    ) -> GenotypePhenotypeAnalysisResult:
-        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=self._protein_predicates.protein_feature(feature_id=feature1, tx_id=tx_id),
-            second=self._protein_predicates.protein_feature(feature_id=feature2, tx_id=tx_id),
-        )
-    
-    def compare_by_protein_regions(
-        self,
-        region1: Region,
-        region2: Region, 
-        tx_id: str,
-    ) -> GenotypePhenotypeAnalysisResult:
-        # TODO: build `VariantPredicate`s and use `compare_hpo_vs_genotype_groups`
-        return self.compare_hpo_vs_genotype_groups(
-            first=VariantPredicates.region(region=region1, tx_id=tx_id),
-            second=VariantPredicates.region(region=region2, tx_id=tx_id),
-        )
 
     @abc.abstractmethod
     def compare_hpo_vs_genotype(
@@ -416,10 +314,21 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def compare_hpo_vs_recessive_genotype(
+        self,
+        predicate: VariantPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        """
+        Bin patients according to a presence of zero, one, or two alleles that matche the `predicate`
+        and test for genotype-phenotype correlations.
+        """
+        pass
+
+    @abc.abstractmethod
     def compare_hpo_vs_genotype_groups(
-            self,
-            first: VariantPredicate,
-            second: VariantPredicate,
+        self,
+        first: VariantPredicate,
+        second: VariantPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
         Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
@@ -430,22 +339,44 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def compare_symptom_count_vs_genotype(
+    def compare_disease_vs_genotype(
         self,
-        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
-        variant_predicate: VariantPredicate,
-    ):
+        predicate: VariantPredicate,
+        disease_ids: typing.Optional[typing.Sequence[typing.Union[str, hpotk.TermId]]] = None,
+    ) -> GenotypePhenotypeAnalysisResult:
+        pass
+
+    def compare_genotype_vs_phenotype_group_count(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
+    ) -> PhenotypeScoreAnalysisResult:
+        assert isinstance(gt_predicate, GenotypePolyPredicate)
+        assert gt_predicate.n_categorizations() == 2
+
+        counting_scorer = CountingPhenotypeScorer.from_query_curies(
+            hpo=self._hpo,
+            query=phenotype_group_terms,
+        )
+
+        return self.compare_genotype_vs_phenotype_score(
+            gt_predicate=gt_predicate,
+            phenotype_scorer=counting_scorer,
+        )
+
+    @abc.abstractmethod
+    def compare_genotype_vs_phenotype_score(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        phenotype_scorer: typing.Callable[[Patient,], float],
+    ) -> PhenotypeScoreAnalysisResult:
         """
-        Bins the patients according to the count of present phenotypes that are either
-        an exact match to the `query` terms or their descendants 
-        and test for genotype-phenotype correlation between the counts 
-        and the genotype bins.
-        
+        Score the patients with a phenotype scoring method and test for correlation between the genotype group
+        and the phenotype score.
+
         Args:
-            query: an iterable with HPO term CURIEs (e.g. `'HP:0001250'` for seizure) 
-                  or HPO term IDs
-            variant_predicate: the variant predicate for binning the patients 
-                  along the genotype axis
+            gt_predicate: a genotype predicate for binning the patients along the genotype axis.
+            phenotype_scorer: a callable that computes a phenotype score for a given `Patient`.
         """
         pass
 
@@ -549,5 +480,3 @@ class HpoMtcFilter(metaclass=abc.ABCMeta):
         """returns the name of the heuristic used to limit multiple testing
         """
         pass
-
-
