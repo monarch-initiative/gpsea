@@ -12,7 +12,7 @@ class VariantEffect(Enum):
       >>> print(missense)
       missense_variant
 
-    The `VariantEffect` has a :prop:`curie` attribute that represents the ontology class from
+    The `VariantEffect` has a :attr:`curie` attribute that represents the ontology class from
     `Sequence Ontology <http://www.sequenceontology.org/>`_.
 
     .. doctest::
@@ -68,7 +68,8 @@ class VariantEffect(Enum):
     @property
     def curie(self) -> str:
         """
-        Get a compact URI (CURIE) of the variant effect (e.g. `SO:0001583` for a missense variant).
+        Get a compact URI (CURIE) of the variant effect
+        (e.g. `SO:0001583` for a missense variant).
         """
         return self._curie
 

@@ -105,24 +105,6 @@ class CohortAnalysisConfiguration:
                                  missing_implies_excluded, self._missing_implies_excluded)
 
     @property
-    def min_n_patients_with_term(self) -> int:
-        """
-        Get the minimum number of patients that must be annotated with an HPO term
-        for including the term in the analysis.
-        """
-        return self._min_n_patients_with_term
-
-    @min_n_patients_with_term.setter
-    def min_n_patients_with_term(self, value: int):
-        if isinstance(value, int) and value >= 0:
-            self._min_n_patients_with_term = value
-        else:
-            self._logger.warning(
-                'Ignoring invalid `min_n_patients_with_term` value %s. Using %s', 
-                value, self._min_n_patients_with_term,
-            )
-
-    @property
     def pval_correction(self) -> typing.Optional[str]:
         """
         Get method for multiple testing p value correction. Default: `bonferroni`.
@@ -144,6 +126,24 @@ class CohortAnalysisConfiguration:
         else:
             self._logger.warning('Ignoring invalid `pval_correction` value %s. Using %s correction.', pval_correction,
                                  self._pval_correction)
+
+    @property
+    def min_n_patients_with_term(self) -> int:
+        """
+        Get the minimum number of patients that must be annotated with an HPO term
+        for including the term in the analysis.
+        """
+        return self._min_n_patients_with_term
+
+    @min_n_patients_with_term.setter
+    def min_n_patients_with_term(self, value: int):
+        if isinstance(value, int) and value >= 0:
+            self._min_n_patients_with_term = value
+        else:
+            self._logger.warning(
+                'Ignoring invalid `min_n_patients_with_term` value %s. Using %s', 
+                value, self._min_n_patients_with_term,
+            )
 
     @property
     def mtc_alpha(self) -> float:
@@ -195,6 +195,8 @@ class CohortAnalysisConfiguration:
     def all_terms_strategy(self):
         """
         Test all phenotype terms.
+
+        See :ref:`use-all-terms-strategy` for more info.
         """
         self._mtc_strategy = MtcStrategy.ALL_PHENOTYPE_TERMS
         self._min_patients_w_hpo = None
@@ -207,7 +209,7 @@ class CohortAnalysisConfiguration:
         """
         Only test the HPO terms that pass all rules of the HPO filter strategy.
 
-        See :ref:`<hpo-mtc-filter-strategy>` section for more info on the rules.
+        See :ref:`hpo-mtc-filter-strategy` section for more info on the rules.
 
         :param threshold_HPO_observed_frequency: a float in range :math:`(0, 1]` to represent
           the minimum fraction of patients for an HPO term to be included.
@@ -234,6 +236,8 @@ class CohortAnalysisConfiguration:
 
         Calling this method will clear any previously specified terms.
 
+        See :ref:`specify-terms-strategy` for more info.
+
         :param terms_to_test: an iterable with CURIEs (e.g. `HP:0001250`)
           or :class:`hpotk.TermId` instances representing the terms to test.
         """
@@ -243,10 +247,18 @@ class CohortAnalysisConfiguration:
 
     @property
     def terms_to_test(self) -> typing.Optional[typing.Iterable[typing.Union[str, hpotk.TermId]]]:
+        """
+        Get the ids of the terms to be tested in `specify_terms_strategy`
+        or `None` if :class:`MtcStrategy.SPECIFY_TERMS` will *not* be used.
+        """
         return self._terms_to_test
     
     @property
     def min_patients_w_hpo(self) -> typing.Optional[float]:
+        """
+        Get the minimum fraction of patients needed to be annotated with an HPO term
+        to justify being tested or `None` if :class:`MtcStrategy.HPO_MTC` will *not* be used.
+        """
         return self._min_patients_w_hpo
 
 

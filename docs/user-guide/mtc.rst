@@ -145,15 +145,16 @@ then you can specify these terms using
 the :func:`~genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method.
 
 For example if we want to specifically test
-* `Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
-* `Abnormal caudate nucleus morphology (HP:0002339) <https://hpo.jax.org/browse/term/HP:0002339>`_,,
-
+`Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
+`Abnormal caudate nucleus morphology (HP:0002339) <https://hpo.jax.org/browse/term/HP:0002339>`_
 we pass an iterable (e.g. a tuple) with these two terms as an argument:
 
-
->>> abn_putamen = "HP:0031982"  # Abnormal putamen morphology
->>> abn_caudate_nucleus = "HP:0002339"  # Abnormal caudate nucleus morphology
->>> config.specify_terms_strategy(terms_to_test=(abn_putamen, abn_caudate_nucleus))
+>>> config.specify_terms_strategy(
+...     terms_to_test=(
+...         "HP:0031982",  # Abnormal putamen morphology
+...         "HP:0002339",  # Abnormal caudate nucleus morphology
+...     )
+... )
 >>> config.mtc_strategy
 <MtcStrategy.SPECIFY_TERMS: 1>
 >>> config.terms_to_test

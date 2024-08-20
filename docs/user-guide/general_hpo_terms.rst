@@ -25,15 +25,15 @@ We call these terms `level 2`.
 
 Many but not all terms on `level 3` are also "general" in this sense,
 e.g., `Abnormality of the parathyroid gland  (HP:0000828) <https://hpo.jax.org/browse/term/HP:0000828>`_.
-We also skip such `level 3` terms. Our heursitic for identifying these terms is to search the primary label for the word
+We also skip such `level 3` terms. Our HPO MTC filter for identifying these terms is to search the primary label for the word
 ``'Abnormal'``, and remove all terms that start with this string.
 
-According to our heuristic sampler strategy (see :ref:`mtc`), we stop at `level 3`, 
+According to the HPO MTC filter strategy (see :ref:`mtc`), we stop at `level 3`, 
 because the terms at lower levels are more likely to be specific, 
 even if they contain the word "Abnormal" or "Abnormality" in their label. 
 Users can adapt the procedure if desired.
 
-The following table shows a list of HPO terms that are removed from consideration by the heuristic sampler strategy.
+The following table shows a list of HPO terms that are removed from consideration by the HPO MTC filter strategy.
 
 
 
