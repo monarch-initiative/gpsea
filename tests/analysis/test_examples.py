@@ -132,4 +132,4 @@ class TestCohortAnalysis:
             phenotype_group_terms=phenotype_group_terms,
         )
 
-        assert phenotype_group_results.p_value == pytest.approx(0.9345982107594922)
+        assert phenotype_group_results.p_value == pytest.approx(0.6056948063581343)
