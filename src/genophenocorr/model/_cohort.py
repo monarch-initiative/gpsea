@@ -78,7 +78,7 @@ class Patient:
         """
         Get an iterator over *present* phenotypes of the patient.
         """
-        return filter(lambda p: p.is_observed, self._phenotypes)
+        return filter(lambda p: p.is_present, self._phenotypes)
 
     def excluded_phenotypes(self) -> typing.Iterator[Phenotype]:
         """
