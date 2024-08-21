@@ -93,7 +93,6 @@ class GenophenocorrJSONEncoder(JSONEncoder):
         elif isinstance(o, Phenotype):
             return {
                 'term_id': o.identifier.value,
-                'name': o.name,
                 'is_present': o.is_present,
             }
         elif isinstance(o, Disease):
@@ -160,7 +159,7 @@ _TX_COORDINATES = ('identifier', 'region', 'exons', 'cds_start', 'cds_end')
 _PROTEIN_METADATA = ('protein_id', 'label', 'protein_features', 'protein_length')
 _PROTEIN_FEATURE = ('info', 'feature_type')
 _FEATURE_INFO = ('name', 'region')
-_PHENOTYPE_FIELDS = ('term_id', 'name', 'is_present')
+_PHENOTYPE_FIELDS = ('term_id', 'is_present')
 _DISEASE_FIELDS = ('term_id', 'name', 'is_observed')
 _PATIENT_FIELDS = ('labels', 'phenotypes', 'diseases', 'variants')
 _COHORT_FIELDS = ('members', 'excluded_patient_count')
@@ -271,7 +270,6 @@ class GenophenocorrJSONDecoder(JSONDecoder):
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _PHENOTYPE_FIELDS):
             return Phenotype(
                 term_id=hpotk.TermId.from_curie(obj['term_id']),
-                name=obj['name'],
                 is_observed=obj['is_present'],
             )
         elif GenophenocorrJSONDecoder._has_all_fields(obj, _DISEASE_FIELDS):

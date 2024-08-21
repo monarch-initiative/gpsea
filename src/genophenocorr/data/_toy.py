@@ -22,16 +22,17 @@ def get_toy_cohort() -> Cohort:
     # - Spasticity HP:0001257
     # - Chronic pancreatitis HP:0006280
 
-    arachnodactyly_T = Phenotype(TermId.from_curie('HP:0001166'), 'Arachnodactyly', True)
-    focal_clonic_seizure_T = Phenotype(TermId.from_curie('HP:0002266'), 'Focal clonic seizure', True)
-    seizure_T = Phenotype(TermId.from_curie('HP:0001250'), 'Seizure', True)
-    spasticity_T = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', True)
-    Disease_T = Disease(TermId.from_curie('OMIM:001234'), 'Test Disease', True)
-    arachnodactyly_F = Phenotype(TermId.from_curie('HP:0001166'), 'Arachnodactyly', False)
-    focal_clonic_seizure_F = Phenotype(TermId.from_curie('HP:0002266'), 'Focal clonic seizure', False)
-    seizure_F = Phenotype(TermId.from_curie('HP:0001250'), 'Seizure', False)
-    spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), 'Spasticity', False)
-    Disease_F = Disease(TermId.from_curie('OMIM:001234'), 'Test Disease', False)
+    arachnodactyly_T = Phenotype(TermId.from_curie('HP:0001166'), True)
+    focal_clonic_seizure_T = Phenotype(TermId.from_curie('HP:0002266'), True)
+    seizure_T = Phenotype(TermId.from_curie('HP:0001250'), True)
+    spasticity_T = Phenotype(TermId.from_curie('HP:0001257'), True)
+    arachnodactyly_F = Phenotype(TermId.from_curie('HP:0001166'), False)
+    focal_clonic_seizure_F = Phenotype(TermId.from_curie('HP:0002266'), False)
+    seizure_F = Phenotype(TermId.from_curie('HP:0001250'), False)
+    spasticity_F = Phenotype(TermId.from_curie('HP:0001257'), False)
+    
+    Disease_T = Disease(TermId.from_curie('OMIM:001234'), "Test present disease", True)
+    Disease_F = Disease(TermId.from_curie('OMIM:001234'), "Test absent disease", False)
 
     snv = Variant.create_variant_from_scratch(VariantCoordinates(make_region(280, 281), 'A', 'G', 0), 'FakeGene',
                                                   'NM_1234.5', 'NM_1234.5:c.180A>G', False, [VariantEffect.MISSENSE_VARIANT], [1],

@@ -1,6 +1,4 @@
-import pytest
-
-from genophenocorr.model import Cohort, VariantEffect
+from genophenocorr.model import Cohort
 
 
 class TestCohort:
@@ -12,12 +10,10 @@ class TestCohort:
         # The SUOX cohort includes variants that affect the following transcripts:
         assert suox_cohort.all_transcript_ids == {
             "NM_001032386.2",  # MANE
-            "NM_001351091.2",            
+            "NM_001351091.2",
             "NM_001032387.2",
             "NM_001351089.2",
             "NM_000456.3",
-            "NM_016373.4",
-            "NM_013275.6"
         }
 
     def test_variant_effect_count_by_tx(

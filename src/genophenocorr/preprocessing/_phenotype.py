@@ -20,20 +20,29 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
     with HPO toolkit's validator.
     """
 
-    def __init__(self, hpo: hpotk.MinimalOntology,
-                 validator: hpotk.validate.ValidationRunner):
+    def __init__(
+        self,
+        hpo: hpotk.MinimalOntology,
+        validator: hpotk.validate.ValidationRunner,
+    ):
         self._logger = logging.getLogger(__name__)
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
 
-    def process(self, inputs: typing.Iterable[typing.Tuple[str, bool]], notepad: Notepad) -> typing.Sequence[Phenotype]:
-        """Creates a list of Phenotype objects from term IDs and checks if the term IDs satisfy the validation requirements.
+    def process(
+        self,
+        inputs: typing.Iterable[typing.Tuple[str, bool]],
+        notepad: Notepad,
+    ) -> typing.Sequence[Phenotype]:
+        """
+        Map CURIEs and observation states into phenotypes and validate the requirements.
 
         Args:
-            inputs (Iterable[Tuple[str, bool]]): A list of Tuples, structured (HPO IDs, boolean- True if observed)
-            notepad: Node
+            inputs (Iterable[Tuple[str, bool]]): 2-element tuples with a CURIE `str` and observation state as `bool` 
+              (`True` if phenotype was observed).
+            notepad: Notepad
         Returns:
-            A sequence of Phenotype objects
+            A sequence of phenotypes
         """
         phenotypes = []
 
@@ -42,41 +51,51 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
             try:
                 term_id = hpotk.TermId.from_curie(curie)
             except ValueError as ve:
-                notepad.add_warning(f'#{i} {ve.args[0]}',
-                                 'Ensure the term ID consists of a prefix (e.g. `HP`) '
-                                 'and id (e.g. `0001250`) joined by colon `:` or underscore `_`')
+                notepad.add_warning(
+                    f'#{i} {ve.args[0]}',
+                    'Ensure the term ID consists of a prefix (e.g. `HP`) '
+                    'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
+                )
                 continue
 
             # Check the term is an HPO concept
             if term_id.prefix != 'HP':
-                notepad.add_warning(f'#{i} {term_id} is not an HPO term',
-                                 'Remove non-HPO concepts from the analysis input')
+                notepad.add_warning(
+                    f'#{i} {term_id} is not an HPO term',
+                    'Remove non-HPO concepts from the analysis input',
+                )
                 continue
 
             # Term must be present in HPO
             term = self._hpo.get_term(term_id)
             if term is None:
-                notepad.add_warning(f'#{i} {term_id} is not in HPO version `{self._hpo.version}`',
-                                 'Correct the HPO term or use the latest HPO for the analysis')
+                notepad.add_warning(
+                    f'#{i} {term_id} is not in HPO version `{self._hpo.version}`',
+                    'Correct the HPO term or use the latest HPO for the analysis',
+                )
                 continue
-
+            
+            assert term is not None
             if term.identifier != term_id:
                 # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
                 # since `term.identifier` always returns the primary term ID.
-                notepad.add_warning(f'#{i} {term_id} is an obsolete identifier for {term.name}',
-                                 f'Replace {term_id} with the primary term ID {term.identifier}')
+                notepad.add_warning(
+                    f'#{i} {term_id} is an obsolete identifier for {term.name}',
+                    f'Replace {term_id} with the primary term ID {term.identifier}',
+                )
 
             phenotypes.append(Phenotype.from_term(term, is_observed))
 
         # Check we have some phenotype terms to work with.
         if len(phenotypes) == 0:
             notepad.add_warning(
-                    f'No phenotype terms were left after the validation',
-                    'Revise the phenotype terms and try again')
+                'No phenotype terms were left after the validation',
+                'Revise the phenotype terms and try again',
+            )
         else:
             vr = self._validator.validate_all(phenotypes)
             for result in vr.results:
-                level = self._translate_level(result.level)
+                level = PhenotypeCreator._translate_level(result.level)
                 if level is None:
                     # Should not happen. Please let the developers know about this issue!
                     raise ValueError(f'Unknown result validation level {result.level}')

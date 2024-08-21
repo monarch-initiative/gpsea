@@ -55,7 +55,6 @@ class TestCountingPhenotypeScorer:
             phenotypes=(
                 Phenotype(
                     hpotk.TermId.from_curie(curie),
-                    name="Doesn't matter",
                     is_observed=True,
                 )
                 for curie in curies
