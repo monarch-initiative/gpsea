@@ -6,7 +6,7 @@ from collections import defaultdict, deque
 import hpotk
 import pandas as pd
 
-from .predicate import PatientCategories
+from .predicate import PatientCategories, PatientCategory, GenotypePolyPredicate
 
 
 class PhenotypeMtcFilter(metaclass=abc.ABCMeta):
@@ -23,6 +23,7 @@ class PhenotypeMtcFilter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def filter_terms_to_test(
         self,
+        gt_predicate: GenotypePolyPredicate,
         n_usable: typing.Mapping[hpotk.TermId, int],
         all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
     ) -> typing.Tuple[
@@ -36,9 +37,11 @@ class PhenotypeMtcFilter(metaclass=abc.ABCMeta):
         to lead to interesting statistical/analytical results.
 
         Args:
+            gt_predicate: the predicate used to bin patients into groups along the genotype axis
             n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients
               that could be binned according to the used genotype/phenotype predicate.
-            all_counts: a mapping from the :class:`hpotk.TermId` to
+            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients
+              in the i-th phenotype (rows) and j-th genotype (column) group
         Returns:
            a tuple with three items:
             - a mapping from :class:`hpotk.TermId` ->
@@ -62,6 +65,7 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter):
 
     def filter_terms_to_test(
         self,
+        gt_predicate: GenotypePolyPredicate,
         n_usable: typing.Mapping[hpotk.TermId, int],
         all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
     ) -> typing.Tuple[
@@ -107,6 +111,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter):
 
     def filter_terms_to_test(
         self,
+        gt_predicate: GenotypePolyPredicate,
         n_usable: typing.Mapping[hpotk.TermId, int],
         all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
     ) -> typing.Tuple[
@@ -117,8 +122,11 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter):
         """
         Remove terms that are not members of the specific set of HPO terms to be tested.
         Args:
-            n_usable: dictionary with HPO term ids seen in our cohort and their counts
-            all_counts: Dictionary with HPO term ids from cohort and DataFrames with detailed GPC counts
+            gt_predicate: the predicate used to bin patients into groups along the genotype axis
+            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients
+              that could be binned according to the used genotype/phenotype predicate.
+            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients
+              in the i-th phenotype (rows) and j-th genotype (column) group
 
         Returns:
             filtered versions of the two dictionaries above and dataframe with reasons for skipping
@@ -239,6 +247,7 @@ class HpoMtcFilter(PhenotypeMtcFilter):
 
     def filter_terms_to_test(
         self,
+        gt_predicate: GenotypePolyPredicate,
         n_usable: typing.Mapping[hpotk.TermId, int],
         all_counts: typing.Mapping[hpotk.TermId, pd.DataFrame],
     ) -> typing.Tuple[
@@ -246,6 +255,14 @@ class HpoMtcFilter(PhenotypeMtcFilter):
         typing.Mapping[hpotk.TermId, pd.DataFrame],
         typing.Mapping[str, int],
     ]:
+        """
+        Args:
+            gt_predicate: the predicate used to bin patients into groups along the genotype axis
+            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients
+              that could be binned according to the used genotype/phenotype predicate.
+            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients
+              in the i-th phenotype (rows) and j-th genotype (column) group
+        """
         filtered_n_usable = {}
         filtered_all_counts = pd.Series()
         reason_for_filtering_out = defaultdict(int)
@@ -289,11 +306,17 @@ class HpoMtcFilter(PhenotypeMtcFilter):
                 reason = "Skipping term because no genotype has more than one observed HPO count"
                 reason_for_filtering_out[reason] += 1
                 continue
-            elif HpoMtcFilter.genotypes_have_same_hpo_proportions(counts_frame):
+            elif HpoMtcFilter.genotypes_have_same_hpo_proportions(
+                counts_frame,
+                gt_predicate.get_categories(),
+            ):
                 reason = "Skipping term because all genotypes have same HPO observed proportions"
                 reason_for_filtering_out[reason] += 1
                 continue
-            elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(counts_frame):
+            elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
+                counts_frame,
+                gt_predicate.get_categories(),
+            ):
                 reason = "Skipping term because one genotype had zero observations"
                 reason_for_filtering_out[reason] += 1
                 continue
@@ -331,16 +354,21 @@ class HpoMtcFilter(PhenotypeMtcFilter):
         return df.max()
 
     @staticmethod
-    def one_genotype_has_zero_hpo_observations(counts: pd.DataFrame):
+    def one_genotype_has_zero_hpo_observations(
+        counts: pd.DataFrame,
+        gt_categories: typing.Sequence[PatientCategory],
+    ):
         if not isinstance(counts, pd.DataFrame):
             raise ValueError(
                 f"argument 'counts' must be pandas DataFrame but was {type(counts)}"
             )
 
         if counts.shape == (2, 2):
+            assert len(gt_categories) == 2, \
+                f"The counts frame is 2x2 but we found {len(gt_categories)} patient categories!"
+            a, b = gt_categories
             return (
-                counts.loc[:, PatientCategories.YES].sum() == 0
-                or counts.loc[:, PatientCategories.NO].sum() == 0
+                counts.loc[:, a].sum() == 0 or counts.loc[:, b].sum() == 0
             )
         elif counts.shape == (2, 3):
             raise ValueError("(2,3) not yet implemented")
@@ -370,6 +398,7 @@ class HpoMtcFilter(PhenotypeMtcFilter):
     @staticmethod
     def genotypes_have_same_hpo_proportions(
         counts: pd.DataFrame,
+        gt_categories: typing.Sequence[PatientCategory],
         delta: float = 0.01,
     ) -> bool:
         """
@@ -388,10 +417,13 @@ class HpoMtcFilter(PhenotypeMtcFilter):
             )
 
         if counts.shape == (2, 2):
-            num1 = counts.loc[PatientCategories.YES, PatientCategories.NO]
-            denom1 = counts.loc[:, PatientCategories.NO].sum()
-            num2 = counts.loc[PatientCategories.YES, PatientCategories.YES]
-            denom2 = counts.loc[:, PatientCategories.YES].sum()
+            assert len(gt_categories) == 2, \
+                f"The counts frame is 2x2 but we found {len(gt_categories)} patient categories!"
+            a, b = gt_categories
+            num1 = counts.loc[PatientCategories.YES, a]
+            denom1 = counts.loc[:, a].sum()
+            num2 = counts.loc[PatientCategories.YES, b]
+            denom2 = counts.loc[:, b].sum()
             if denom1 == 0 or denom2 == 0:
                 return False
             return abs(num1 / denom1 - num2 / denom2) < delta

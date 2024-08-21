@@ -246,10 +246,10 @@ def _setup_phenotype_creator(hpo: hpotk.MinimalOntology,
 
 
 def _configure_functional_annotator(
-        cache_dir: str,
-        variant_fallback: str,
-        timeout: float,
-        ) -> FunctionalAnnotator:
+    cache_dir: str,
+    variant_fallback: str,
+    timeout: float,
+) -> FunctionalAnnotator:
 
     # (2) FunctionalAnnotator
     # Setup fallback
@@ -265,9 +265,9 @@ def _configure_functional_annotator(
 
 
 def _configure_fallback_functional(
-        variant_fallback: str,
-        timeout: float,
-        ) -> FunctionalAnnotator:
+    variant_fallback: str,
+    timeout: float,
+) -> FunctionalAnnotator:
     if variant_fallback == 'VEP':
         fallback = VepFunctionalAnnotator(timeout=timeout)
     else:

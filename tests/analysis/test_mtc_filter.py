@@ -40,6 +40,23 @@ class TestHeuristicSamplerMtcFilter:
         )
         return n_usable, all_counts
 
+    @pytest.fixture(scope='class')
+    def gt_categories(self) -> pd.Index:
+        return pd.Index([PatientCategories.YES, PatientCategories.NO])
+
+    @pytest.fixture(scope='class')
+    def pheno_categories(self) -> pd.Index:
+        return pd.Index([PatientCategories.YES, PatientCategories.NO])
+
+    @staticmethod
+    def prepare_counts_df(
+        counts,
+        index: pd.Index,
+        columns: pd.Index,
+    ):
+        values = np.array(counts).reshape((2, 2))
+        return pd.DataFrame(data=values, index=index, columns=columns)
+
     @pytest.mark.parametrize(
         "counts, expected",
         [
@@ -53,10 +70,15 @@ class TestHeuristicSamplerMtcFilter:
             self,
             counts: typing.Tuple[int],
             expected: bool,
+            gt_categories: pd.Index,
+            pheno_categories: pd.Index,
     ):
-        counts_df = self.prepare_counts_df(counts)
+        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
-        actual = HpoMtcFilter.one_genotype_has_zero_hpo_observations(counts=counts_df)
+        actual = HpoMtcFilter.one_genotype_has_zero_hpo_observations(
+            counts=counts_df,
+            gt_categories=gt_categories,
+        )
 
         assert actual == expected
 
@@ -77,8 +99,10 @@ class TestHeuristicSamplerMtcFilter:
             self,
             counts: typing.Tuple[int],
             expected: bool,
+            gt_categories: pd.Index,
+            pheno_categories: pd.Index,
     ):
-        counts_df = self.prepare_counts_df(counts)
+        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
         actual = HpoMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
 
@@ -96,23 +120,33 @@ class TestHeuristicSamplerMtcFilter:
             self,
             counts: typing.Tuple[int],
             expected: bool,
+            gt_categories: pd.Index,
+            pheno_categories: pd.Index,
     ):
-        counts_df = self.prepare_counts_df(counts)
+        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
-        actual = HpoMtcFilter.genotypes_have_same_hpo_proportions(counts=counts_df)
+        actual = HpoMtcFilter.genotypes_have_same_hpo_proportions(
+            counts=counts_df,
+            gt_categories=gt_categories,
+        )
 
         assert actual == expected
 
     def test_filter_terms_to_test(
             self,
             mtc_filter: HpoMtcFilter,
+            suox_gt_predicate: GenotypePolyPredicate,
             patient_counts: typing.Tuple[
                 typing.Mapping[hpotk.TermId, int],
                 typing.Mapping[hpotk.TermId, pd.DataFrame],
             ],
     ):
         n_usable, all_counts = patient_counts
-        mtc_report = mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        mtc_report = mtc_filter.filter_terms_to_test(
+            suox_gt_predicate,
+            n_usable,
+            all_counts,
+        )
 
         assert isinstance(mtc_report, tuple)
         assert len(mtc_report) == 3
@@ -130,6 +164,7 @@ class TestHeuristicSamplerMtcFilter:
     def test_specified_term_mtc_filter(
             self,
             hpo: hpotk.MinimalOntology,
+            suox_gt_predicate: GenotypePolyPredicate,
             patient_counts: typing.Tuple[
                 typing.Mapping[hpotk.TermId, int],
                 typing.Mapping[hpotk.TermId, pd.DataFrame],
@@ -143,7 +178,11 @@ class TestHeuristicSamplerMtcFilter:
         """
         specified_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test={hpotk.TermId.from_curie("HP:0032350")})
         n_usable, all_counts = patient_counts
-        mtc_report = specified_filter.filter_terms_to_test(n_usable, all_counts)
+        mtc_report = specified_filter.filter_terms_to_test(
+            suox_gt_predicate,
+            n_usable,
+            all_counts,
+        )
         assert isinstance(mtc_report, tuple)
         assert len(mtc_report) == 3  # # Skipping non-specified term (n=5)
 
@@ -151,14 +190,6 @@ class TestHeuristicSamplerMtcFilter:
         assert len(n_usable) == 5
         assert len(filtered_n_usable) == 1
         assert reason_for_filtering_out['Skipping non-specified term'] == 4
-
-    @staticmethod
-    def prepare_counts_df(counts):
-        index = pd.Index([PatientCategories.YES, PatientCategories.NO])
-        columns = pd.Index([PatientCategories.YES, PatientCategories.NO])
-        values = np.array(counts).reshape((2, 2))
-
-        return pd.DataFrame(data=values, index=index, columns=columns)
 
     def test_min_observed_HPO_threshold(
         self,

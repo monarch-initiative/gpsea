@@ -143,7 +143,11 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         original_phenotype_count = len(n_usable)
 
         # 1.5) Filter terms for MTC
-        n_usable_filtered, all_counts_filtered, reason2count = self._mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        n_usable_filtered, all_counts_filtered, reason2count = self._mtc_filter.filter_terms_to_test(
+            gt_predicate=gt_predicate,
+            n_usable=n_usable,
+            all_counts=all_counts,
+        )
         if len(n_usable_filtered) == 0:
             raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 

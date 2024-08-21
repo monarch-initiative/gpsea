@@ -69,7 +69,7 @@ class GpCohortAnalysis(CohortAnalysis):
         assert isinstance(predicate, VariantPredicate), \
             f'{type(predicate)} is not an instance of `VariantPredicate`'
         bool_predicate = wrap_as_boolean_predicate(predicate) 
-        return self._apply_poly_predicate_on_hpo_terms(bool_predicate)
+        return self.compare_genotype_vs_cohort_phenotypes(bool_predicate)
 
     def compare_hpo_vs_recessive_genotype(
         self,
@@ -80,12 +80,12 @@ class GpCohortAnalysis(CohortAnalysis):
         and test for genotype-phenotype correlations.
         """
         rec_predicate = wrap_as_recessive_predicate(predicate)
-        return self._apply_poly_predicate_on_hpo_terms(rec_predicate)
+        return self.compare_genotype_vs_cohort_phenotypes(rec_predicate)
 
     def compare_hpo_vs_genotype_groups(
-            self,
-            predicates: typing.Iterable[VariantPredicate],
-            group_names: typing.Iterable[str],
+        self,
+        predicates: typing.Iterable[VariantPredicate],
+        group_names: typing.Iterable[str],
     ) -> GenotypePhenotypeAnalysisResult:
         """
         Bin patients according to a presence of at least one allele that matches
@@ -98,7 +98,7 @@ class GpCohortAnalysis(CohortAnalysis):
             predicates=predicates,
             group_names=group_names,
         )
-        return self._apply_poly_predicate_on_hpo_terms(predicate)
+        return self.compare_genotype_vs_cohort_phenotypes(predicate)
 
     def compare_disease_vs_genotype(
         self,
@@ -109,7 +109,7 @@ class GpCohortAnalysis(CohortAnalysis):
 
         # This can be updated to any genotype poly predicate in future, if necessary.
         genotype_predicate = wrap_as_boolean_predicate(predicate)
-        return self._apply_poly_predicate(pheno_predicates, genotype_predicate)
+        return self.compare_genotype_vs_phenotypes(pheno_predicates, genotype_predicate)
 
     def _prepare_disease_predicates(
         self,
@@ -169,27 +169,15 @@ class GpCohortAnalysis(CohortAnalysis):
             p_value=float(result.pvalue),
         )
 
-    def _apply_poly_predicate_on_hpo_terms(
-            self,
-            gt_predicate: GenotypePolyPredicate,
+    def compare_genotype_vs_cohort_phenotypes(
+        self,
+        gt_predicate: GenotypePolyPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         assert isinstance(gt_predicate, GenotypePolyPredicate), \
             f'{type(gt_predicate)} is not an instance of `GenotypePolyPredicate`'
 
         pheno_predicates = self._prepare_phenotype_predicates()
-        return self._apply_poly_predicate(pheno_predicates, gt_predicate)
-
-    # Make public, eventually convenience functions written
-    def _apply_poly_predicate(
-            self,
-            pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-            gt_predicate: GenotypePolyPredicate,
-    ):
-        return self._gp_analyzer.analyze(
-            patients=self._patient_list,
-            pheno_predicates=pheno_predicates,
-            gt_predicate=gt_predicate,
-        )
+        return self.compare_genotype_vs_phenotypes(gt_predicate, pheno_predicates)
 
     def _prepare_phenotype_predicates(self) -> typing.Sequence[PhenotypePolyPredicate[P]]:
         return tuple(
@@ -198,6 +186,17 @@ class GpCohortAnalysis(CohortAnalysis):
                 query=query,
             )
             for query in self._hpo_terms_of_interest)
+
+    def compare_genotype_vs_phenotypes(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ) -> GenotypePhenotypeAnalysisResult:
+        return self._gp_analyzer.analyze(
+            patients=self._patient_list,
+            pheno_predicates=pheno_predicates,
+            gt_predicate=gt_predicate,
+        )
 
 
 def prepare_hpo_terms_of_interest(

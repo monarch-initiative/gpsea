@@ -64,7 +64,7 @@
 
 <body>
   <h1>genophenocorr cohort analysis</h1>
-  <p>Successfully ingested {{ n_individuals }} phenopackets.</p>
+  <p>Successfully ingested {{ n_individuals }} individuals.</p>
   {% if n_excluded > 0 %}
   <p>Not able to ingest {{ n_excluded }} individuals.</p>
   {% else %}
@@ -80,7 +80,7 @@
             <tr class="strng">
                 <th class="lft">HPO Term</th>
                 <th>ID</th>
-                <th>Annotation Count</th>
+                <th>Seen in <em>n</em> individuals</th>
             </tr>
             {% for hpo_count in hpo_counts %}
             <tr>
@@ -99,20 +99,20 @@
     </caption>
             <tbody>
                 <tr class="strng">
-                    <th class="lft">Variant</th>
+                    <th>Count</th>
+                    <th class="lft">Variant key</th>
                     <th>Variant Name</th>
                     <th>Protein Variant</th>
                     <th>Variant Class</th>
-                    <th>Variant Count</th>
                 </tr>
                 {% for var_count in var_counts %}
                 <tr>
+                    <td>{{ var_count.Count }}</td>
                     <td class="lft">{{ var_count.variant }}</td>
                     <td>{{ var_count.variant_name }}</td>
                     <td>{{ var_count.protein_name }}</td>
                     <td>{{ var_count.variant_effects }}</td>
-                    <td>{{ var_count.Count }}</td>
-                    </tr>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

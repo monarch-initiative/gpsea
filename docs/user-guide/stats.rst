@@ -158,7 +158,7 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 ...     group_names=('Point', 'LoF'),
 ... )
 >>> gt_predicate.get_question()
-'What group does the patient belong to: Point, LoF'
+'Genotype group: Point, LoF'
 
 Now phenotype predicate. The authors divide the patients into groups according to the count of structural defects
 in these groups:

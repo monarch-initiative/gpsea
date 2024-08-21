@@ -9,7 +9,7 @@ from genophenocorr.model import Patient
 from genophenocorr.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
 from .predicate.genotype import VariantPredicate, ProteinPredicates
-from .predicate.phenotype import P, CountingPhenotypeScorer
+from .predicate.phenotype import P, PhenotypePolyPredicate, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -327,14 +327,15 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def compare_hpo_vs_genotype_groups(
         self,
-        first: VariantPredicate,
-        second: VariantPredicate,
+        predicates: typing.Iterable[VariantPredicate],
+        group_names: typing.Iterable[str],
     ) -> GenotypePhenotypeAnalysisResult:
         """
-        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate 
-        and test for genotype-phenotype correlations between the groups.
+        Bin patients according to a presence of at least one allele that matches
+        any of the provided `predicates` and test for genotype-phenotype correlations
+        between the groups.
 
-        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!
+        Note, the patients that pass testing by >1 genotype predicate are *OMITTED* from the analysis!
         """
         pass
 
@@ -377,6 +378,35 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         Args:
             gt_predicate: a genotype predicate for binning the patients along the genotype axis.
             phenotype_scorer: a callable that computes a phenotype score for a given `Patient`.
+        """
+        pass
+
+    @abc.abstractmethod
+    def compare_genotype_vs_cohort_phenotypes(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+    ) -> GenotypePhenotypeAnalysisResult:
+        # TODO: if we had access to the cohort, it would be trivial to prepare
+        # all phenotype predicates and to call `self.compare_genotype_vs_phenotypes`.
+        pass
+
+    @abc.abstractmethod
+    def compare_genotype_vs_phenotypes(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ):
+        """
+        All analysis functions go through this function.
+
+        The genotype predicate will partition the individuals into non-overlapping groups
+        along the genotype axis.
+        The phenotype predicates represent the phenotypes we want to test.
+        Less phenotypes may actually be tested due to :class:`genophenocorr.analysis.PhenotypeMtcFilter`.
+
+        Args:
+            gt_predicate: a predicate for binning the individuals along the genotype axis
+            pheno_predicates: phenotype predicates for test the individuals along the phenotype axis
         """
         pass
 

@@ -4,115 +4,205 @@
 Tutorial
 ========
 
-The tutorial demonstrates how to load an example Phenopacket cohort and perform genotype-phenotype analysis.
+Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
+We do not explain all the details. We do, however, provide links to the relevant documentation.
 
-Set up analysis
-^^^^^^^^^^^^^^^
+We will work with individuals with mutations in *TBX5* leading to 
+`Holt-Oram syndrome MIM:142900 <https://omim.org/entry/142900>`_
+and we will show that ... TODO - write.
 
-`genophenocorr` needs HPO to do the analysis. Let's load the ontology:
 
-.. doctest:: tutorial
+The analysis
+~~~~~~~~~~~~
 
-  >>> import os
-  >>> import hpotk
-  >>> hpo = hpotk.load_minimal_ontology(os.path.join('docs', 'data', 'hp.toy.json'))
+We will be analyzing the cohort of subjects with mutations in *TBX5*. 
+We will use the transcript `NM_181486.4` which was chosen by the MANE consortium
+and encodes a protein with accession `NP_852259.1`.
+
+>>> cohort_name = 'TBX5'
+>>> tx_id = 'NM_181486.4'
+>>> px_id = 'NP_852259.1'
+
+
+Load HPO
+^^^^^^^^
+
+GPSEA needs HPO to do the analysis. 
+We use HPO toolkit to load HPO version `v2023-10-09`:
+
+>>> import hpotk
+>>> ontology_store = hpotk.configure_ontology_store()
+>>> hpo = ontology_store.load_minimal_hpo(release='v2023-10-09')
 
 .. tip::
 
-  Use the latest HPO which you can get at `http://purl.obolibrary.org/obo/hp.json`
+  Use the latest HPO by omitting the `release` option.
 
-TODO - move the code from `workflow` and the notebook here.
+Prepare cohort
+^^^^^^^^^^^^^^
 
-Prepare samples
-^^^^^^^^^^^^^^^
+Now we will load the samples to analyze. We will use the cohort of 156 individuals with mutations in *TBX5*
+whose clinical signs and symptoms were encoded into HPO terms
+and stored in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
 
-Now we need some samples. To keep things simple in this tutorial, we will use a toy cohort that is shipped
-with the package:
+>>> from ppktstore.registry import configure_phenopacket_registry
+>>> phenopacket_registry = configure_phenopacket_registry()
+>>> with phenopacket_registry.open_phenopacket_store('0.1.18') as ps:
+...     phenopackets = tuple(ps.iter_cohort_phenopackets(cohort_name))
+>>> len(phenopackets)
+156
 
-.. doctest:: tutorial
+We loaded 156 phenopackets which need further preprocessing to prepare for the analysis.
+We will compute functional annotations for the mutations and pack the patients into 
+a :class:`~genophenocorr.model.Cohort`:
 
-  >>> from genophenocorr.data import get_toy_cohort
-  >>> cohort = get_toy_cohort()
+>>> from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopackets
+>>> cohort_creator = configure_caching_cohort_creator(hpo)
+>>> cohort, validation = load_phenopackets(  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+...     phenopackets=phenopackets, 
+...     cohort_creator=cohort_creator,
+... )
+Patients Created: ...
+
+and we will check that there are no Q/C issues:
+
+>>> validation.summarize()
+
+
+We loaded the patient data into a `cohort` which is ready for the next steps.
 
 .. seealso::
 
-  See :ref:`input-data` section to learn about preparing your data for the analysis.
+  Here we show how to create a :class:`~genophenocorr.model.Cohort` from phenopackets. 
+  See :ref:`input-data` section to learn how to create a cohort from another inputs.
 
-We can then view the data using the list commands.
 
-.. doctest:: tutorial
+Explore cohort
+^^^^^^^^^^^^^^
 
-  >>> sorted(cohort.get_patient_ids())
-  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-  >>> sorted(cohort.list_present_phenotypes())
-  [('HP:0001166', 14), ('HP:0001250', 20), ('HP:0001257', 17)]
-  >>> sorted(cohort.list_all_variants())
-  [('1_281_281_A_G', 16), ('1_361_363_TTC_T', 13)]
-  >>> sorted(cohort.list_all_proteins())
-  [('NP_09876.5', 29)]
-  >>> tx_dict = cohort.variant_effect_count_by_tx(tx_id='NM_1234.5')
-  >>> sorted(tx_dict['NM_1234.5'].items())
-  [('FRAMESHIFT_VARIANT', 1), ('MISSENSE_VARIANT', 1)]
+We can now explore the cohort to see how many patients are included.
 
-Using the counts, we can choose and run what analyses we want.
+>>> from genophenocorr.view import CohortViewable
+>>> viewer = CohortViewable(hpo)
+>>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
+>>> with open('docs/report/tbx5_cohort_info.html', 'w') as fh:  # doctest: +SKIP
+...     _ = fh.write(report)
 
-For instance, we can partition the patients into two groups based on presence/absence of a *missense* variant:
+.. raw:: html
+  :file: report/tbx5_cohort_info.html
+  
+.. note::
 
-.. doctest:: tutorial
+  The report can also be displayed directly in a Jupyter notebook by running::
 
-  >>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
-  >>> from genophenocorr.model import VariantEffect
+    from IPython.display import HTML, display
+    display(HTML(report))
 
-  >>> missense_in_tx = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_1234.5')
+Now we can show the distribution of variants with respect to the encoded protein.
+We first obtain `tx_coordinates` (:class:`~genophenocorr.model.TranscriptCoordinates`)
+and `protein_meta` (:class:`~genophenocorr.model.ProteinMetadata`) 
+with information about the transcript and protein "anatomy":
 
-We created a predicate `missense_in_tx` that tests 
-if a variant leads to an aminoacid change in a transcript `NM_1234.5`.
-We will use the predicate in the downstream analysis to assign the patients 
-into a group and test for genotype-phenotype correlation between the groups.
+>>> from genophenocorr.model.genome import GRCh38
+>>> from genophenocorr.preprocessing import configure_protein_metadata_service, VVMultiCoordinateService
+>>> txc_service = VVMultiCoordinateService(genome_build=GRCh38)
+>>> pms = configure_protein_metadata_service()
+>>> tx_coordinates = txc_service.fetch(tx_id) 
+>>> protein_meta = pms.annotate(px_id)
+
+and we follow with plotting the diagram of the mutations on the protein:
+
+>>> from genophenocorr.view import ProteinVisualizer
+>>> import matplotlib.pyplot as plt
+>>> fig, ax = plt.subplots(figsize=(15, 8))
+>>> visualizer = ProteinVisualizer()
+>>> visualizer.draw_protein_diagram(
+...     tx_coordinates,
+...     protein_meta,
+...     cohort,
+...     ax=ax,
+... )
+>>> fig.tight_layout()
+>>> fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')  # doctest: +SKIP
+
+.. image:: /img/tutorial/tbx5_protein_diagram.png
+   :alt: TBX5 protein diagram
+   :align: center
+   :width: 600px
+
+
+Prepare genotype and phenotype predicates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We will create a predicate to bin patients into group
+depending on presence of a missense and frameshift variant to test 
+if there is a difference between frameshift and non-frameshift variants
+in the individuals of the *TBX5* cohort.
+
+>>> from genophenocorr.model import VariantEffect
+>>> from genophenocorr.analysis.predicate.genotype import VariantPredicates, groups_predicate
+>>> gt_predicate = groups_predicate(
+...     predicates=(
+...         VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
+...         VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
+...     ),
+...     group_names=('Missense', 'Frameshift'),
+... )
+>>> gt_predicate.get_question()
+'Genotype group: Missense, Frameshift'
 
 .. note::
 
   There are many other ways to set up a predicate for testing 
-  for genotype-phenotype correlation.
+  for a GP correlation.
   See the :ref:`predicates` section to learn more about building
-  a predicate for the analysis of interest.
+  a predicate of interest.
 
-Next, we will prepare and run the genotype-phenotype analysis 
-to test the correlation between phenotypes and presence of a missense variant.
+We will reduce the number of tested HPO by applying several
+:ref:`domain judgments <hpo-mtc-filter-strategy>`
+(:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`) 
+and we will use Benjamini-Hochberg procedure to control the false discovery rate
+in the tested HPO terms (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
 
-.. doctest:: tutorial
+>>> from genophenocorr.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
+>>> config = CohortAnalysisConfiguration()
+>>> config.hpo_mtc_strategy()
+>>> config.pval_correction = 'fdr_bh'
+>>> analysis = configure_cohort_analysis(
+...     cohort=cohort,
+...     hpo=hpo,
+...     config=config,
+... )
 
-  >>> from genophenocorr.analysis import configure_cohort_analysis
-  >>> from genophenocorr.analysis.predicate import PatientCategories  # TODO - explain the predicate or update the API
-  
-  >>> cohort_analysis = configure_cohort_analysis(cohort, hpo)  
-  >>> missense = cohort_analysis.compare_hpo_vs_genotype(missense_in_tx)
-  
-We prepared the `cohort_analysis` and we ran the analysis to test for correlation 
-between the clinical signs and symptoms of patients encoded into HPO terms 
-and presence of a missense variant in the patient.
+Now we can perform the analysis and investigate the results.
 
-We stored the results into `missense` variable. We can summarize the results
-by showing a data frame with results for each tested HPO term. 
-We show the first two terms here:
+>>> result = analysis.compare_genotype_vs_cohort_phenotypes(gt_predicate)
 
-  >>> import pandas as pd
-  >>> pd.set_option('expand_frame_repr', False)
-  >>> summary_df = missense.summarize(hpo, PatientCategories.YES)
-  >>> summary_df.head(2)  # doctest: +NORMALIZE_WHITESPACE
-    MISSENSE_VARIANT on NM_1234.5    Yes             No
-                                    Count   Percent Count Percent   p value    Corrected p value
-    Arachnodactyly [HP:0001166]     13/16   81%     1/10  10%       0.000781   0.020299
-    Spasticity [HP:0001257]         11/16   69%     6/10  60%       0.692449   1.000000
+We did a total of 20 tests
+
+>>> result.total_tests
+20
 
 ..
+  
+  TODO: 
+  Show how to write out the tested HPO terms.
 
-  We're showing just 1 row above. This is due to 2-.. rows all having corrected p value of `1.000` resulting
-  in unstable sort order. We can show more rows with a better cohort, as soon as we have it!
+and these are top 10 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
-..
+>>> from genophenocorr.analysis.predicate import PatientCategories
+>>> summary_df = result.summarize(hpo, PatientCategories.YES)
+>>> summary_df.head(10).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
-  We can show analysis for `VariantEffect.FRAMESHIFT_VARIANT` as well..
+.. csv-table:: *TBX5* frameshift vs missense
+   :file: report/tbx5_frameshift_vs_missense.csv
+   :header-rows: 2
 
-The table presents the HPO terms that annotate the cohort members and report their counts and p values
-for each genotype group. The rows are sorted by the corrected p value in ascending order.
+We see that several HPO terms are significantly associated
+with presence of a frameshift variant in *TBX5*.
+For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
+was observed in 31/60 (52%) patients with a missense variant 
+but it was observed in 19/19 (100%) patients with a frameshift variant.
+Fisher exact test computed a p value of `~0.0000562` 
+and the p value corrected by Benjamini-Hochberg procedure 
+is `~0.00112`.
