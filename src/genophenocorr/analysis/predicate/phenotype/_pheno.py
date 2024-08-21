@@ -152,7 +152,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
             return None
 
         for phenotype in patient.phenotypes:
-            if phenotype.is_observed:
+            if phenotype.is_present:
                 if any(
                     self._query == anc
                     for anc in self._hpo.graph.get_ancestors(

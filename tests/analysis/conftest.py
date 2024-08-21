@@ -40,7 +40,6 @@ def degenerated_cohort(
                 phenotypes=(
                     Phenotype(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),
-                        name="Phenotypic abnormality",
                         is_observed=True,
                     ),
                 ),
@@ -75,7 +74,6 @@ def degenerated_cohort(
                 phenotypes=(
                     Phenotype(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),
-                        name="Phenotypic abnormality",
                         is_observed=True,
                     ),
                 ),
