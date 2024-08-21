@@ -462,16 +462,17 @@ with HPO toolkit’s validator.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genophenocorr.preprocessing.PhenotypeCreator.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#genophenocorr.preprocessing.Notepad" title="genophenocorr.preprocessing._audit.Notepad"><span class="pre">Notepad</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Phenotype" title="genophenocorr.model._phenotype.Phenotype"><span class="pre">Phenotype</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_phenotype.html#PhenotypeCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.PhenotypeCreator.process" title="Link to this definition"></a></dt>
-<dd><p>Creates a list of Phenotype objects from term IDs and checks if the term IDs satisfy the validation requirements.</p>
+<dd><p>Map CURIEs and observation states into phenotypes and validate the requirements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> (<em>Iterable</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>]</em><em>]</em>) – A list of Tuples, structured (HPO IDs, boolean- True if observed)</p></li>
-<li><p><strong>notepad</strong> – Node</p></li>
+<li><p><strong>inputs</strong> (<em>Iterable</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>]</em><em>]</em>) – 2-element tuples with a CURIE <cite>str</cite> and observation state as <cite>bool</cite>
+(<cite>True</cite> if phenotype was observed).</p></li>
+<li><p><strong>notepad</strong> – Notepad</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A sequence of Phenotype objects</p>
+<dd class="field-even"><p>A sequence of phenotypes</p>
 </dd>
 </dl>
 </dd></dl>
