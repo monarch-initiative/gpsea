@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -151,7 +151,6 @@
 <span class="sd">    ==============================  =======================  =========================================</span>
 <span class="sd">        Option                        Type                    Default value</span>
 <span class="sd">    ==============================  =======================  =========================================</span>
-<span class="sd">     ``missing_implies_excluded``    `bool`                   `False`</span>
 <span class="sd">     ``pval_correction``             `str`                    `bonferroni`</span>
 <span class="sd">     ``min_n_patients_with_term``    `int`                    `2`</span>
 <span class="sd">     ``mtc_alpha``                   `float`                  `0.05`</span>
@@ -163,7 +162,6 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pval_correction</span> <span class="o">=</span> <span class="s1">&#39;bonferroni&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span> <span class="o">=</span> <span class="mf">.05</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_n_patients_with_term</span> <span class="o">=</span> <span class="mi">2</span>
@@ -171,26 +169,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_strategy</span> <span class="o">=</span> <span class="n">MtcStrategy</span><span class="o">.</span><span class="n">ALL_PHENOTYPE_TERMS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># # only relevant for SPECIFIED_TERMS strategy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_patients_w_hpo</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># # only relevant for HPO_MTC strategy</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        `True` if we assume that a patient without a specific phenotype listed *does not* have the phenotype.</span>
-<span class="sd">        Otherwise, the only excluded phenotypes are those that are excluded explicitly.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span>
-
-    <span class="nd">@missing_implies_excluded</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">missing_implies_excluded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param missing_implies_excluded: a `bool` to dictate is the missing phenotypic features should be considered</span>
-<span class="sd">          as excluded.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span> <span class="o">=</span> <span class="n">missing_implies_excluded</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Ignoring invalid `missing_implies_excluded` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span>
-                                 <span class="n">missing_implies_excluded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_excluded</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -202,8 +180,10 @@
     <span class="nd">@pval_correction</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">pval_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the method for p value correction. </span>
-<span class="sd">        See Statsmodels&#39; `documentation &lt;https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html&gt;`_ </span>
+<span class="sd">        Set the method for p value correction.</span>
+
+<span class="sd">        See Statsmodels&#39;</span>
+<span class="sd">        `documentation &lt;https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html&gt;`_</span>
 <span class="sd">        for the acceptable values.</span>
 
 <span class="sd">        :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`</span>
@@ -229,7 +209,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_min_n_patients_with_term</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39;Ignoring invalid `min_n_patients_with_term` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;Ignoring invalid `min_n_patients_with_term` value </span><span class="si">%s</span><span class="s1">. Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
                 <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_n_patients_with_term</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -250,8 +230,10 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtc_alpha</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">mtc_alpha</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span> <span class="o">=</span> <span class="n">mtc_alpha</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;`mtc_alpha` should be a `float` in range `(0, 1]` but was </span><span class="si">%s</span><span class="s1">. Keeping the previous value </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                                 <span class="n">mtc_alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;`mtc_alpha` should be a `float` in range `(0, 1]` but was </span><span class="si">%s</span><span class="s1">. Keeping the previous value </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">mtc_alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">include_sv</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -412,7 +394,6 @@
         <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
         <span class="n">protein_service</span><span class="o">=</span><span class="n">protein_metadata_service</span><span class="p">,</span>
         <span class="n">gp_analyzer</span><span class="o">=</span><span class="n">gp_analyzer</span><span class="p">,</span>
-        <span class="n">missing_implies_excluded</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">missing_implies_excluded</span><span class="p">,</span>
         <span class="n">min_n_of_patients_with_term</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">min_n_patients_with_term</span><span class="p">,</span>
         <span class="n">include_sv</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">include_sv</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -455,8 +436,8 @@
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create default protein metadata service that will cache the protein metadata </span>
-<span class="sd">    in current working directory under `.genophenocorr_cache/protein_cache` </span>
+<span class="sd">    Create default protein metadata service that will cache the protein metadata</span>
+<span class="sd">    in current working directory under `.genophenocorr_cache/protein_cache`</span>
 <span class="sd">    and reach out to UNIPROT REST API if a cache entry is missing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>

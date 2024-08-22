@@ -8,7 +8,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -55,8 +55,13 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#set-up-analysis">Set up analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#prepare-samples">Prepare samples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-analysis">The analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#load-hpo">Load HPO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-cohort">Prepare cohort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#explore-cohort">Explore cohort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-genotype-and-phenotype-predicates">Prepare genotype and phenotype predicates</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide/index.html">User guide</a></li>
@@ -89,100 +94,874 @@
              
   <section id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
-<p>The tutorial demonstrates how to load an example Phenopacket cohort and perform genotype-phenotype analysis.</p>
-<section id="set-up-analysis">
-<h2>Set up analysis<a class="headerlink" href="#set-up-analysis" title="Link to this heading"></a></h2>
-<p><cite>genophenocorr</cite> needs HPO to do the analysis. Let’s load the ontology:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">load_minimal_ontology</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;hp.toy.json&#39;</span><span class="p">))</span>
+<p>Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
+The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
+The <a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/user-guide/index.html#user-guide" title="(in hpo-toolkit)"><span>User guide</span></a> contains details about additional methods and functionalities.</p>
+<p>The tutorial presents an analysis of a cohort of individuals with pathogenic variants in <em>TBX5</em> leading to
+<a class="reference external" href="https://omim.org/entry/142900">Holt-Oram syndrome MIM:142900</a>.</p>
+<p>Holt-Oram syndrome is an autosomal dominant disorder characterized by
+upper limb defects, congenital heart defects, and arrhythmias (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/38336121/">PMID:38336121</a>).
+It has been observed in the literature that congenital defects of the ventricular and atrial septum are more
+common in the truncating than in the missense variants (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/30552424/">PMID:30552424</a>).
+Additionally, upper limb defects are more frequent in patients with protein-truncating variants (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/38336121/">PMID:38336121</a>).</p>
+<p>To perform the analysis, we curated the literature and created on <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35705716/">GA4GH phenopacket</a> for each
+affected individual. The phenopackets are made available in <a class="reference external" href="https://github.com/monarch-initiative/phenopacket-store">Phenopacket Store</a>.</p>
+<section id="the-analysis">
+<h2>The analysis<a class="headerlink" href="#the-analysis" title="Link to this heading"></a></h2>
+<p>For the analysis, the <a class="reference external" href="https://www.ncbi.nlm.nih.gov/refseq/MANE/">MANE</a> transcript
+(i.e., the “main” biomedically relevant transcript of a gene) should be chosen unless
+there is a specific reason not to (which should occur rarely if at all).</p>
+<p>In the case of <em>TBX5</em> the MANE transcript is <cite>NM_181486.4</cite>. Note that the trascript identifier (<cite>NM_181486</cite>) and the version (<cite>4</cite>) are both required.
+A good way to find the MANE transcript is to search on the gene symbol (e.g., <em>TBX5</em>) in <a class="reference external" href="https://www.ncbi.nlm.nih.gov/clinvar/">ClinVar</a> and to
+choose a variant that is specifically located in the gene. The MANE transcript will be displayed here (e.g., <a class="reference external" href="https://www.ncbi.nlm.nih.gov/clinvar/variation/495227/">NM_181486.4(TBX5):c.1221C&gt;G (p.Tyr407Ter)</a>).</p>
+<p>We additionally need the corresponding protein identifier.
+A good way to find this is to search on the transcript id in <a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/">NCBI Nucleotide</a>.
+In our case, search on <cite>NM_181486.4</cite> will bring us to <a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NM_181486.4">this page</a>.
+If we search within this page for <cite>“NP_”</cite>, this will bring us to the
+corresponding protein accession <cite>NP_852259.1</cite>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_name</span> <span class="o">=</span> <span class="s1">&#39;TBX5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_181486.4&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">px_id</span> <span class="o">=</span> <span class="s1">&#39;NP_852259.1&#39;</span>
+</pre></div>
+</div>
+<section id="load-hpo">
+<h3>Load HPO<a class="headerlink" href="#load-hpo" title="Link to this heading"></a></h3>
+<p>GPSEA needs HPO to do the analysis.
+We use HPO toolkit to load HPO version <cite>v2023-10-09</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ontology_store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">ontology_store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2023-10-09&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use the latest HPO which you can get at <cite>http://purl.obolibrary.org/obo/hp.json</cite></p>
+<p>Use the latest HPO release by omitting the <cite>release</cite> option.</p>
 </div>
-<p>TODO - move the code from <cite>workflow</cite> and the notebook here.</p>
 </section>
-<section id="prepare-samples">
-<h2>Prepare samples<a class="headerlink" href="#prepare-samples" title="Link to this heading"></a></h2>
-<p>Now we need some samples. To keep things simple in this tutorial, we will use a toy cohort that is shipped
-with the package:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.data</span> <span class="kn">import</span> <span class="n">get_toy_cohort</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">=</span> <span class="n">get_toy_cohort</span><span class="p">()</span>
+<section id="prepare-cohort">
+<h3>Prepare cohort<a class="headerlink" href="#prepare-cohort" title="Link to this heading"></a></h3>
+<p>Now we will load the samples to analyze. We will use the cohort of 156 individuals with mutations in <em>TBX5</em>
+whose clinical signs and symptoms were encoded into HPO terms
+and stored in <a class="reference external" href="https://github.com/monarch-initiative/phenopacket-store">Phenopacket Store</a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phenopacket_registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">phenopacket_registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="n">cohort_name</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
+<span class="go">156</span>
 </pre></div>
 </div>
+<p>We loaded 156 phenopackets which need further preprocessing to prepare for the analysis.
+We will compute functional annotations for the mutations and then include the individuals into
+a <a class="reference internal" href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span><span class="p">,</span> <span class="n">load_phenopackets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">validation</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span>  
+<span class="gp">... </span>    <span class="n">phenopackets</span><span class="o">=</span><span class="n">phenopackets</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Patients Created: ...</span>
+</pre></div>
+</div>
+<p>and we will check that there are no Q/C issues:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">validation</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<span class="go">Validated under none policy</span>
+<span class="go">No errors or warnings were found</span>
+</pre></div>
+</div>
+<p>We loaded the patient data into a <cite>cohort</cite> which is ready for the next steps.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>See <a class="reference internal" href="user-guide/input-data.html#input-data"><span class="std std-ref">Input data</span></a> section to learn about preparing your data for the analysis.</p>
+<p>Here we show how to create a <a class="reference internal" href="apidocs/genophenocorr.model.html#genophenocorr.model.Cohort" title="genophenocorr.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> from phenopackets.
+See <a class="reference internal" href="user-guide/input-data.html#input-data"><span class="std std-ref">Input data</span></a> section to learn how to create a cohort from another inputs.</p>
 </div>
-<p>We can then view the data using the list commands.</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">get_patient_ids</span><span class="p">())</span>
-<span class="go">[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;, &#39;G&#39;, &#39;H&#39;, &#39;I&#39;, &#39;J&#39;, &#39;K&#39;, &#39;L&#39;, &#39;M&#39;, &#39;N&#39;, &#39;O&#39;, &#39;P&#39;, &#39;Q&#39;, &#39;R&#39;, &#39;S&#39;, &#39;T&#39;, &#39;U&#39;, &#39;V&#39;, &#39;W&#39;, &#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_present_phenotypes</span><span class="p">())</span>
-<span class="go">[(&#39;HP:0001166&#39;, 14), (&#39;HP:0001250&#39;, 20), (&#39;HP:0001257&#39;, 17)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_variants</span><span class="p">())</span>
-<span class="go">[(&#39;1_281_281_A_G&#39;, 16), (&#39;1_361_363_TTC_T&#39;, 13)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">list_all_proteins</span><span class="p">())</span>
-<span class="go">[(&#39;NP_09876.5&#39;, 29)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_dict</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">variant_effect_count_by_tx</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">tx_dict</span><span class="p">[</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-<span class="go">[(&#39;FRAMESHIFT_VARIANT&#39;, 1), (&#39;MISSENSE_VARIANT&#39;, 1)]</span>
+</section>
+<section id="explore-cohort">
+<h3>Explore cohort<a class="headerlink" href="#explore-cohort" title="Link to this heading"></a></h3>
+<p>We can now explore the cohort to see how many patients are included.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.view</span> <span class="kn">import</span> <span class="n">CohortViewable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_cohort_info.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Using the counts, we can choose and run what analyses we want.</p>
-<p>For instance, we can partition the patients into two groups based on presence/absence of a <em>missense</em> variant:</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense_in_tx</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_1234.5&#39;</span><span class="p">)</span>
+    .table .column-1 {
+      text-align: left;
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
+
+    tr {
+      border: 1px solid #dddddd;
+    }
+
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .table td, tr {
+      text-align: right;
+    }
+
+    .lft {
+      text-align: left;
+    }
+
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>genophenocorr cohort analysis</h1>
+  <p>Successfully ingested 156 individuals.</p>
+  
+  <p>No errors encountered.</p>
+  
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top 10 HPO Terms</h3>
+        A total of 116 HPO terms were used to annotated the cohort.
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">HPO Term</th>
+                <th>ID</th>
+                <th>Seen in <em>n</em> individuals</th>
+            </tr>
+            
+            <tr>
+                <td class="lft">Atrial septal defect</td>
+                <td>HP:0001631</td>
+                <td>50</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Ventricular septal defect</td>
+                <td>HP:0001629</td>
+                <td>41</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Hypoplasia of the radius</td>
+                <td>HP:0002984</td>
+                <td>40</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Triphalangeal thumb</td>
+                <td>HP:0001199</td>
+                <td>36</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Absent thumb</td>
+                <td>HP:0009777</td>
+                <td>32</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Short thumb</td>
+                <td>HP:0009778</td>
+                <td>32</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Abnormal carpal morphology</td>
+                <td>HP:0001191</td>
+                <td>30</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Secundum atrial septal defect</td>
+                <td>HP:0001684</td>
+                <td>27</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Absent radius</td>
+                <td>HP:0003974</td>
+                <td>15</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Cardiac conduction abnormality</td>
+                <td>HP:0031546</td>
+                <td>14</td>
+                </tr>
+            
+                </tbody>
+    </table>
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top 10 Variants</h3>
+        Variants are shown according to NM_181486.4. A total of 156 unique variants were identified in the cohort.
+    </caption>
+            <tbody>
+                <tr class="strng">
+                    <th>Count</th>
+                    <th class="lft">Variant key</th>
+                    <th>Variant Name</th>
+                    <th>Protein Variant</th>
+                    <th>Variant Class</th>
+                </tr>
+                
+                <tr>
+                    <td>22</td>
+                    <td class="lft">12_114385521_114385521_C_T</td>
+                    <td>c.710G>A</td>
+                    <td>p.Arg237Gln</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>20</td>
+                    <td class="lft">12_114401830_114401830_C_T</td>
+                    <td>c.238G>A</td>
+                    <td>p.Gly80Arg</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>8</td>
+                    <td class="lft">12_114385563_114385563_G_A</td>
+                    <td>c.668C>T</td>
+                    <td>p.Thr223Met</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>6</td>
+                    <td class="lft">12_114398675_114398675_G_T</td>
+                    <td>c.408C>A</td>
+                    <td>p.Tyr136Ter</td>
+                    <td>STOP_GAINED</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114398682_114398682_C_CG</td>
+                    <td>c.400dup</td>
+                    <td>p.Arg134ProfsTer49</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114403792_114403792_C_CG</td>
+                    <td>c.106_107insC</td>
+                    <td>p.Ser36ThrfsTer25</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114399514_114399514_A_C</td>
+                    <td>c.361T>G</td>
+                    <td>p.Trp121Gly</td>
+                    <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114385474_114385474_A_G</td>
+                    <td>c.755+2T>C</td>
+                    <td>None</td>
+                    <td>SPLICE_DONOR_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114398656_114398656_C_CG</td>
+                    <td>c.426dup</td>
+                    <td>p.Ala143ArgfsTer40</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114366360_114366360_C_T</td>
+                    <td>c.787G>A</td>
+                    <td>p.Val263Met</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    <table>
+    <caption style="color: black;">
+        <h3>Diseases</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Disease Name</th>
+                <th >Disease ID</th>
+                <th>Annotation Count</th>
+              </tr>
+              
+              <tr>
+                <td class="lft">Holt-Oram syndrome</td>
+                <td>OMIM:142900</td>
+                <td>156</td>
+                </tr>
+            
+           </tbody>
+    </table>
+    
+    <table>
+    <caption style="color: black;">
+        <h3>Variant categories for NM_181486.4</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
+                <th>Annotation Count</th>
+              </tr>
+              
+              <tr>
+                <td class="lft">FRAMESHIFT_VARIANT</td>
+                <td>38</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">MISSENSE_VARIANT</td>
+                <td>85</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">STOP_GAINED</td>
+                <td>19</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_REGION_VARIANT</td>
+                <td>10</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_DONOR_VARIANT</td>
+                <td>7</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INTRON_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INFRAME_INSERTION</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">STOP_RETAINED_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INFRAME_DELETION</td>
+                <td>1</td>
+                </tr>
+            
+           </tbody>
+    </table>
+  
+
+
+</body>
+</html>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The report can also be displayed directly in a Jupyter notebook by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
+<span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">report</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>We created a predicate <cite>missense_in_tx</cite> that tests
-if a variant leads to an aminoacid change in a transcript <cite>NM_1234.5</cite>.
-We will use the predicate in the downstream analysis to assign the patients
-into a group and test for genotype-phenotype correlation between the groups.</p>
+</div>
+<p>Now we can show the distribution of variants with respect to the encoded protein.
+We first obtain <cite>tx_coordinates</cite> (<a class="reference internal" href="apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates" title="genophenocorr.model.TranscriptCoordinates"><code class="xref py py-class docutils literal notranslate"><span class="pre">TranscriptCoordinates</span></code></a>)
+and <cite>protein_meta</cite> (<a class="reference internal" href="apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata" title="genophenocorr.model.ProteinMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadata</span></code></a>)
+with information about the transcript and protein “anatomy”:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">configure_protein_metadata_service</span><span class="p">,</span> <span class="n">VVMultiCoordinateService</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">txc_service</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="n">GRCh38</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pms</span> <span class="o">=</span> <span class="n">configure_protein_metadata_service</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">txc_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pms</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">px_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and we follow with plotting the diagram of the mutations on the protein:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.view</span> <span class="kn">import</span> <span class="n">ProteinVisualizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein_diagram</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">tx_coordinates</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_meta</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/img/tutorial/tbx5_protein_diagram.png&#39;</span><span class="p">)</span>  
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tbx5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="_images/tbx5_protein_diagram.png" style="width: 600px;" /></a>
+</section>
+<section id="prepare-genotype-and-phenotype-predicates">
+<h3>Prepare genotype and phenotype predicates<a class="headerlink" href="#prepare-genotype-and-phenotype-predicates" title="Link to this heading"></a></h3>
+<p>We will create a predicate to bin patients into group
+depending on presence of a missense and frameshift variant to test
+if there is a difference between frameshift and non-frameshift variants
+in the individuals of the <em>TBX5</em> cohort.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">groups_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">groups_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">predicates</span><span class="o">=</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">group_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Missense&#39;</span><span class="p">,</span> <span class="s1">&#39;Frameshift&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;Genotype group: Missense, Frameshift&#39;</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There are many other ways to set up a predicate for testing
-for genotype-phenotype correlation.
+for a GP correlation.
 See the <a class="reference internal" href="user-guide/predicates.html#predicates"><span class="std std-ref">Predicates</span></a> section to learn more about building
-a predicate for the analysis of interest.</p>
+a predicate of interest.</p>
 </div>
-<p>Next, we will prepare and run the genotype-phenotype analysis
-to test the correlation between phenotypes and presence of a missense variant.</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">configure_cohort_analysis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span>  <span class="c1"># TODO - explain the predicate or update the API</span>
+<p>By default, GPSEA will perform one hypothesis test for each HPO term used to annotate more than one individual in the cohort.
+This also includes the terms implied by the ontology “true path rule”,
+which states that presence of a term
+(e.g., <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001629">Ventricular septal defect</a>)
+implies presence of all its ancestor terms
+(e.g., <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0010438">Abnormal ventricular septum morphology</a>,
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001671">Abnormal cardiac septum morphology</a>,
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001713">Abnormal cardiac ventricle morphology</a>, …).
+However, testing multiple hypothesis increases the chance of receiving false positive result,
+and multiple testing correction must be applied.
+See <a class="reference internal" href="user-guide/mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a> for information about how to perform multiple testing correction with GPSEA.</p>
+<p>For general use, we recommend using a combination
+of a <em>Phenotype MTC filter</em> (<a class="reference internal" href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.PhenotypeMtcFilter" title="genophenocorr.analysis.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>) with a <em>multiple testing correction</em>.
+Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which
+reduce the multiple testing burden and focus the analysis
+on the most interesting terms (see <a class="reference internal" href="user-guide/mtc.html#hpo-mtc-filter-strategy"><span class="std std-ref">HPO MTC filter</span></a> for more info).
+Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
+is used to control the family-wise error rate or the false discovery rate.</p>
+<p>Here we use HPO MTC filter (<a class="reference internal" href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy" title="genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hpo_mtc_strategy()</span></code></a>)
+along with Benjamini-Hochberg procedure (<a class="reference internal" href="apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction" title="genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pval_correction()</span></code></a>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">configure_cohort_analysis</span><span class="p">,</span> <span class="n">CohortAnalysisConfiguration</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">hpo_mtc_strategy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span> <span class="o">=</span> <span class="s1">&#39;fdr_bh&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_cohort_analysis</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can perform the analysis and investigate the results.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_cohort_phenotypes</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
+<span class="go">16</span>
+</pre></div>
+</div>
+<p>We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+259 direct and indirect HPO terms</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">prepare_hpo_terms_of_interest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">terms</span> <span class="o">=</span> <span class="n">prepare_hpo_terms_of_interest</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">,</span> <span class="n">min_n_of_patients_with_term</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+<span class="go">259</span>
+</pre></div>
+</div>
+<p>We can show the reasoning behind <em>not</em> testing 243 (<cite>259 - 16</cite>) HPO terms
+by exploring the phenotype MTC filtering report.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">mtc_filter_report</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_mtc_report.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mtc_report</span><span class="p">)</span>
+</pre></div>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+  <style>table {
+    border-collapse: collapse;
+    margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_analysis</span> <span class="o">=</span> <span class="n">configure_cohort_analysis</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">cohort_analysis</span><span class="o">.</span><span class="n">compare_hpo_vs_genotype</span><span class="p">(</span><span class="n">missense_in_tx</span><span class="p">)</span>
+
+  th {
+    background-color: #f2f2f2;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 2px;
+  }
+
+  tr {
+    border: 1px solid #dddddd;
+  }
+
+  td {
+    padding: 2px;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table td,tr {
+    text-align: left;
+}
+
+.table td:first-child, tr:first-child {
+    text-align: left;
+}
+
+  </style>
+</head>
+
+<body>
+  <h1>Phenotype testing report</h1>
+  <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
+  <p>Multiple testing correction: <em>fdr_bh</em></p>
+  <p>Performed statistical tests for 15 out of the total of 259 HPO terms.</p>
+    <table>
+      <caption>Using <em>HPO MTC filter</em>, 244 term(s) were omitted from statistical analysis.</caption>
+        <tbody>
+          <tr>
+            <th>Code</th>
+            <th>Reason</th>
+            <th>Count</th>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term because all genotypes have same HPO observed proportions</td>
+            <td>42</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping general term</td>
+            <td>41</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 0 observations (not powered for 2x2)</td>
+            <td>41</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 2 observations (not powered for 2x2)</td>
+            <td>25</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 1 observations (not powered for 2x2)</td>
+            <td>24</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 3 observations (not powered for 2x2)</td>
+            <td>22</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 4 observations (not powered for 2x2)</td>
+            <td>14</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 6 observations (not powered for 2x2)</td>
+            <td>13</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with maximum frequency that was less than threshold 0.2</td>
+            <td>10</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with only 5 observations (not powered for 2x2)</td>
+            <td>4</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term because no genotype has more than one observed HPO count</td>
+            <td>3</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping non-target term</td>
+            <td>3</td>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term because one genotype had zero observations</td>
+            <td>2</td>
+          </tr>
+          
+        </tbody>
+    </table>
+</body>
+</html>
+<blockquote>
+<div><p>TODO:
+Show how to write out the tested HPO terms.</p>
+</div></blockquote>
+<p>and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genophenocorr.analysis.predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_frameshift_vs_missense.csv&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<p>We prepared the <cite>cohort_analysis</cite> and we ran the analysis to test for correlation
-between the clinical signs and symptoms of patients encoded into HPO terms
-and presence of a missense variant in the patient.</p>
-<p>We stored the results into <cite>missense</cite> variable. We can summarize the results
-by showing a data frame with results for each tested HPO term.
-We show the first two terms here:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;expand_frame_repr&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">missense</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  
-<span class="go">  MISSENSE_VARIANT on NM_1234.5    Yes             No</span>
-<span class="go">                                  Count   Percent Count Percent   p value    Corrected p value</span>
-<span class="go">  Arachnodactyly [HP:0001166]     13/16   81%     1/10  10%       0.000781   0.020299</span>
-<span class="go">  Spasticity [HP:0001257]         11/16   69%     6/10  60%       0.692449   1.000000</span>
-</pre></div>
-</div>
-<blockquote>
-<div><p>We’re showing just 1 row above. This is due to 2-.. rows all having corrected p value of <cite>1.000</cite> resulting
-in unstable sort order. We can show more rows with a better cohort, as soon as we have it!</p>
-</div></blockquote>
-<blockquote>
-<div><p>We can show analysis for <cite>VariantEffect.FRAMESHIFT_VARIANT</cite> as well..</p>
-</div></blockquote>
-<p>The table presents the HPO terms that annotate the cohort members and report their counts and p values
-for each genotype group. The rows are sorted by the corrected p value in ascending order.</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text"><em>TBX5</em> frameshift vs missense</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Genotype group: Missense, Frameshift</p></th>
+<th class="head"><p>Missense</p></th>
+<th class="head"><p>Missense</p></th>
+<th class="head"><p>Frameshift</p></th>
+<th class="head"><p>Frameshift</p></th>
+<th class="head"></th>
+<th class="head"></th>
+</tr>
+<tr class="row-even"><th class="head"></th>
+<th class="head"><p>Count</p></th>
+<th class="head"><p>Percent</p></th>
+<th class="head"><p>Count</p></th>
+<th class="head"><p>Percent</p></th>
+<th class="head"><p>p value</p></th>
+<th class="head"><p>Corrected p value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>Ventricular septal defect [HP:0001629]</p></td>
+<td><p>31/60</p></td>
+<td><p>52%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>5.6190936213143254e-05</p></td>
+<td><p>0.0008990549794102921</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal atrioventricular conduction [HP:0005150]</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td><p>3/3</p></td>
+<td><p>100%</p></td>
+<td><p>0.00043478260869565214</p></td>
+<td><p>0.003478260869565217</p></td>
+</tr>
+<tr class="row-odd"><td><p>Atrioventricular block [HP:0001678]</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0.0036231884057971015</p></td>
+<td><p>0.014492753623188406</p></td>
+</tr>
+<tr class="row-even"><td><p>Heart block [HP:0012722]</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0.0036231884057971015</p></td>
+<td><p>0.014492753623188406</p></td>
+</tr>
+<tr class="row-odd"><td><p>Absent thumb [HP:0009777]</p></td>
+<td><p>12/71</p></td>
+<td><p>17%</p></td>
+<td><p>14/31</p></td>
+<td><p>45%</p></td>
+<td><p>0.005628510156750059</p></td>
+<td><p>0.018011232501600187</p></td>
+</tr>
+<tr class="row-even"><td><p>Patent ductus arteriosus [HP:0001643]</p></td>
+<td><p>3/37</p></td>
+<td><p>8%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0.01349527665317139</p></td>
+<td><p>0.03598740440845704</p></td>
+</tr>
+<tr class="row-odd"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
+<td><p>13/72</p></td>
+<td><p>18%</p></td>
+<td><p>13/32</p></td>
+<td><p>41%</p></td>
+<td><p>0.02560162393963452</p></td>
+<td><p>0.058517997576307476</p></td>
+</tr>
+<tr class="row-even"><td><p>Cardiac conduction abnormality [HP:0031546]</p></td>
+<td><p>14/36</p></td>
+<td><p>39%</p></td>
+<td><p>3/3</p></td>
+<td><p>100%</p></td>
+<td><p>0.07440639019586388</p></td>
+<td><p>0.14881278039172777</p></td>
+</tr>
+<tr class="row-odd"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
+<td><p>14/35</p></td>
+<td><p>40%</p></td>
+<td><p>4/22</p></td>
+<td><p>18%</p></td>
+<td><p>0.1424522583078588</p></td>
+<td><p>0.2532484592139712</p></td>
+</tr>
+<tr class="row-even"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
+<td><p>6/59</p></td>
+<td><p>10%</p></td>
+<td><p>6/25</p></td>
+<td><p>24%</p></td>
+<td><p>0.1687456462342971</p></td>
+<td><p>0.2699930339748754</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pulmonary arterial hypertension [HP:0002092]</p></td>
+<td><p>4/6</p></td>
+<td><p>67%</p></td>
+<td><p>0/2</p></td>
+<td><p>0%</p></td>
+<td><p>0.42857142857142855</p></td>
+<td><p>0.6233766233766234</p></td>
+</tr>
+<tr class="row-even"><td><p>Hypoplasia of the ulna [HP:0003022]</p></td>
+<td><p>1/12</p></td>
+<td><p>8%</p></td>
+<td><p>2/10</p></td>
+<td><p>20%</p></td>
+<td><p>0.5714285714285713</p></td>
+<td><p>0.7619047619047618</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
+<td><p>30/62</p></td>
+<td><p>48%</p></td>
+<td><p>6/14</p></td>
+<td><p>43%</p></td>
+<td><p>0.7735491022101784</p></td>
+<td><p>0.9520604334894502</p></td>
+</tr>
+<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
+<td><p>7/32</p></td>
+<td><p>22%</p></td>
+<td><p>6/25</p></td>
+<td><p>24%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Short humerus [HP:0005792]</p></td>
+<td><p>7/17</p></td>
+<td><p>41%</p></td>
+<td><p>4/9</p></td>
+<td><p>44%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>42/44</p></td>
+<td><p>95%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+</tbody>
+</table>
+<p>We see that several HPO terms are significantly associated
+with presence of a frameshift variant in <em>TBX5</em>.
+For example, <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001629">Ventricular septal defect</a>
+was observed in 31/60 (52%) patients with a missense variant
+but it was observed in 19/19 (100%) patients with a frameshift variant.
+Fisher exact test computed a p value of <cite>~0.0000562</cite>
+and the p value corrected by Benjamini-Hochberg procedure
+is <cite>~0.00112</cite>.</p>
+</section>
 </section>
 </section>
 

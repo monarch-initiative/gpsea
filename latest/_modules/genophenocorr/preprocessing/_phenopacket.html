@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -141,10 +141,10 @@
     <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="n">GenomicInterpretation</span><span class="p">]</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `PhenopacketVariantCoordinateFinder` figures out :class:`genophenocorr.model.VariantCoordinates`</span>
-<span class="sd">    and :class:`genophenocorr.model.Genotype` from `GenomicInterpretation` element of Phenopacket Schema.</span>
+<span class="sd">    `PhenopacketVariantCoordinateFinder` figures out :class:`~genophenocorr.model.VariantCoordinates`</span>
+<span class="sd">    and :class:`~genophenocorr.model.Genotype` from `GenomicInterpretation` element of Phenopacket Schema.</span>
 
-<span class="sd">    :param build: genome build to use in `VariantCoordinates</span>
+<span class="sd">    :param build: genome build to use in `VariantCoordinates`</span>
 <span class="sd">    :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -172,8 +172,9 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema</span>
+<span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            VariantCoordinates: variant coordinates</span>
+<span class="sd">            typing.Optional[VariantCoordinates]: variant coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">GenomicInterpretation</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -324,12 +325,12 @@
         <span class="c1"># Set of sequence ontology IDs that we will treat as a deletion (`DEL`)</span>
         <span class="c1"># for the purpose of assigning imprecise SV info with a variant class.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_so_deletions</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;1000029&#39;</span><span class="p">,</span> <span class="c1"># chromosomal deletion: An incomplete chromosome.</span>
-            <span class="s1">&#39;0001893&#39;</span><span class="p">,</span> <span class="c1"># transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.</span>
-            <span class="s1">&#39;0001879&#39;</span><span class="p">,</span> <span class="c1"># feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.</span>
+            <span class="s1">&#39;1000029&#39;</span><span class="p">,</span>  <span class="c1"># chromosomal deletion: An incomplete chromosome.</span>
+            <span class="s1">&#39;0001893&#39;</span><span class="p">,</span>  <span class="c1"># transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.</span>
+            <span class="s1">&#39;0001879&#39;</span><span class="p">,</span>  <span class="c1"># feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_so_duplications</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;1000037&#39;</span><span class="p">,</span> <span class="c1"># chromosomal_duplication</span>
+            <span class="s1">&#39;1000037&#39;</span><span class="p">,</span>  <span class="c1"># chromosomal_duplication</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="PhenopacketPatientCreator.process">

@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -90,17 +90,13 @@
 <span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 
 
-
 <div class="viewcode-block" id="FeatureInfo">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.FeatureInfo">[docs]</a>
 <span class="k">class</span> <span class="nc">FeatureInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that represents a protein feature</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `FeatureInfo` represents a protein feature</span>
 <span class="sd">    (e.g. a repeated sequence given the name &quot;ANK 1&quot; in protein &quot;Ankyrin repeat domain-containing protein 11&quot;)</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        name (string): The given name or description of the protein feature</span>
-<span class="sd">        region (Region): The protein feature region coordinates</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
@@ -160,18 +156,29 @@
 <div class="viewcode-block" id="FeatureType">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.FeatureType">[docs]</a>
 <span class="k">class</span> <span class="nc">FeatureType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;An enum class defining available feature types that can be found in the protein sequence.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        REPEAT: a repeated sequence motif or repeated domain within the protein</span>
-<span class="sd">        MOTIF: a short (usually not more than 20 amino acids) conserved sequence motif of biological significance</span>
-<span class="sd">        DOMAIN: a specific combination of secondary structures organized into a characteristic three-dimensional structure or fold</span>
-<span class="sd">        REGION: a region of interest that cannot be described in other subsections</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An enum representing the protein feature types supported in GPSEA.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">REPEAT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A repeated sequence motif or repeated domain within the protein.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">MOTIF</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A short (usually not more than 20 amino acids) conserved sequence motif of biological significance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">DOMAIN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-    <span class="n">REGION</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">REGION</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A region of interest that cannot be described in other subsections.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
@@ -205,11 +212,8 @@
 
 
 <span class="k">class</span> <span class="nc">SimpleProteinFeature</span><span class="p">(</span><span class="n">ProteinFeature</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that represents a protein feature</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        info (FeatureInfo): A FeatureInfo object, describing name and location of the feature</span>
-<span class="sd">        feature_type (FeatureType): A FeatureType object, limited to specific feature types</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An implementation of a `ProteinFeature`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Not part of the public API.</span>
 
@@ -244,48 +248,36 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;SimpleProteinFeature(type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;info=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;SimpleProteinFeature(type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">feature_type</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">info</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SimpleProteinFeature</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_type</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_info</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="ProteinMetadata">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.ProteinMetadata">[docs]</a>
 <span class="k">class</span> <span class="nc">ProteinMetadata</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that represents a specific protein</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        protein_id (string): A string unique to this protein</span>
-<span class="sd">        label (string): Full name of the protein</span>
-<span class="sd">        protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects</span>
-<span class="sd">        length(int): The length of the Protein (chain) in amino-acid residues</span>
-<span class="sd">        # TODO -- provided with default argument of zero to not break tests. Refactor tests.</span>
-<span class="sd">    Methods:</span>
-<span class="sd">        domains (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;DOMAIN&quot;</span>
-<span class="sd">        repeats (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;REPEAT&quot;</span>
-<span class="sd">        regions (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;REGION&quot;</span>
-<span class="sd">        motifs (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;MOTIF&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An info regarding a protein sequence, including an ID, a label,</span>
+<span class="sd">    and location of protein features, such as motifs, domains, or other regions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">],</span> <span class="n">protein_length</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a ProteinMetadata object</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): A string unique to this protein</span>
-<span class="sd">            label (string): Full name of the protein</span>
-<span class="sd">            protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects</span>
-<span class="sd">            protein_length (int): The length of the Protein (chain) in amino-acid residues</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">],</span>
+        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Protein ID must be type string but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">protein_id</span>

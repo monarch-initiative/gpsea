@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -92,7 +92,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">VariantEffect</span>
 
 <span class="kn">from</span> <span class="nn">._protein_visualizable</span> <span class="kn">import</span> <span class="n">ProteinVisualizable</span>
 
@@ -138,13 +138,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_x</span> <span class="o">=</span> <span class="mf">0.3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_y</span> <span class="o">=</span> <span class="mf">0.75</span>
 
+<div class="viewcode-block" id="ProteinVisualizer.draw_protein_diagram">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.ProteinVisualizer.draw_protein_diagram">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw_protein_diagram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tx_coordinates</span><span class="p">:</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+        <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">labeling_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;abbreviate&#39;</span><span class="p">,</span> <span class="s1">&#39;enumerate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;abbreviate&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
+        <span class="n">pvis</span> <span class="o">=</span> <span class="n">ProteinVisualizable</span><span class="p">(</span><span class="n">tx_coordinates</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="p">,</span> <span class="n">cohort</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw_fig</span><span class="p">(</span><span class="n">pvis</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">labeling_method</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ProteinVisualizer.draw_fig">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.ProteinVisualizer.draw_fig">[docs]</a>
     <span class="k">def</span> <span class="nf">draw_fig</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">,</span>
-            <span class="n">ax</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">labeling_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;abbreviate&#39;</span><span class="p">,</span> <span class="s1">&#39;enumerate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;abbreviate&#39;</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">labeling_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;abbreviate&#39;</span><span class="p">,</span> <span class="s1">&#39;enumerate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;abbreviate&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualize the cohort variants on a protein diagram.</span>

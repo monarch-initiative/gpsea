@@ -8,7 +8,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -126,13 +126,7 @@ Choose from <code class="docutils literal notranslate"><span class="pre">{'VEP'}
 <dl class="py function">
 <dt class="sig sig-object py" id="genophenocorr.preprocessing.configure_patient_creator">
 <span class="sig-prename descclassname"><span class="pre">genophenocorr.preprocessing.</span></span><span class="sig-name descname"><span class="pre">configure_patient_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'GRCh38.p13'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/latest/apidocs/hpotk.validate.html#hpotk.validate.ValidationRunner" title="(in hpo-toolkit)"><span class="pre">ValidationRunner</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_fallback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'VEP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lenient'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#genophenocorr.preprocessing.PhenopacketPatientCreator" title="genophenocorr.preprocessing._phenopacket.PhenopacketPatientCreator"><span class="pre">PhenopacketPatientCreator</span></a></span></span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_config.html#configure_patient_creator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.configure_patient_creator" title="Link to this definition"></a></dt>
-<dd><blockquote>
-<div><p>^^^ none, lenient, strict -
-none = run unless unrunnable
-lenient = fix what we can, abort unfixable
-strict = abort at any issue</p>
-</div></blockquote>
-<p>A convenience function for configuring a non-caching <a class="reference internal" href="#genophenocorr.preprocessing.PhenopacketPatientCreator" title="genophenocorr.preprocessing.PhenopacketPatientCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.PhenopacketPatientCreator</span></code></a>.</p>
+<dd><p>A convenience function for configuring a non-caching <a class="reference internal" href="#genophenocorr.preprocessing.PhenopacketPatientCreator" title="genophenocorr.preprocessing.PhenopacketPatientCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.preprocessing.PhenopacketPatientCreator</span></code></a>.</p>
 <p>To create the patient creator, we need hpo-toolkit’s representation of HPO. Other options are optional</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -311,12 +305,12 @@ and <cite>None</cite> may be returned.</p>
 <dt class="sig sig-object py" id="genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genophenocorr.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PhenopacketVariantCoordinateFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenomeBuild</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hgvs_coordinate_finder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#genophenocorr.preprocessing.VariantCoordinateFinder" title="genophenocorr.preprocessing._api.VariantCoordinateFinder"><span class="pre">VariantCoordinateFinder</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genophenocorr/preprocessing/_phenopacket.html#PhenopacketVariantCoordinateFinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genophenocorr.preprocessing.PhenopacketVariantCoordinateFinder" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#genophenocorr.preprocessing.VariantCoordinateFinder" title="genophenocorr.preprocessing._api.VariantCoordinateFinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantCoordinateFinder</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicInterpretation</span></code>]</p>
-<p><cite>PhenopacketVariantCoordinateFinder</cite> figures out <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.VariantCoordinates</span></code></a>
-and <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Genotype" title="genophenocorr.model.Genotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.Genotype</span></code></a> from <cite>GenomicInterpretation</cite> element of Phenopacket Schema.</p>
+<p><cite>PhenopacketVariantCoordinateFinder</cite> figures out <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantCoordinates</span></code></a>
+and <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.Genotype" title="genophenocorr.model.Genotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genotype</span></code></a> from <cite>GenomicInterpretation</cite> element of Phenopacket Schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>build</strong> – genome build to use in <a href="#id1"><span class="problematic" id="id2">`</span></a>VariantCoordinates</p></li>
+<li><p><strong>build</strong> – genome build to use in <cite>VariantCoordinates</cite></p></li>
 <li><p><strong>hgvs_coordinate_finder</strong> – the coordinate finder to use for parsing HGVS expressions</p></li>
 </ul>
 </dd>
@@ -333,7 +327,7 @@ and <a class="reference internal" href="genophenocorr.model.html#genophenocorr.m
 <dd class="field-even"><p>variant coordinates</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates">VariantCoordinates</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a>[<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.VariantCoordinates" title="genophenocorr.model.VariantCoordinates">VariantCoordinates</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,10 +415,10 @@ The value must be one of <cite>{‘none’, ‘lenient’, ‘strict’}</cite><
 <p>The method will raise an exception in case of an issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tx</strong> – a <cite>str</cite> with tx ID (e.g. <cite>NM_002834.5</cite>) or an entity that knows about the transcript ID</p>
+<dd class="field-odd"><p><strong>tx</strong> – a <cite>str</cite> with tx ID (e.g. <cite>NM_002834.5</cite>) or an entity that knows about the transcript ID
+(e.g. <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model.TranscriptAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.TranscriptAnnotation</span></code></a>).</p>
 </dd>
 </dl>
-<p>:param (e.g. <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model.TranscriptAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.TranscriptAnnotation</span></code></a>).:</p>
 <p>Returns: the transcript coordinates.</p>
 </dd></dl>
 
@@ -444,8 +438,13 @@ The value must be one of <cite>{‘none’, ‘lenient’, ‘strict’}</cite><
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>gene</strong> – a <cite>str</cite> with tx ID (e.g. <cite>HGNC:3603</cite>)</p>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a sequence of transcript coordinates for the gene.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><em>Sequence</em></a>[<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates" title="genophenocorr.model.TranscriptCoordinates">TranscriptCoordinates</a>]</p>
+</dd>
 </dl>
-<p>Returns: a sequence of transcript coordinates for the gene.</p>
 </dd></dl>
 
 </dd></dl>
@@ -816,10 +815,10 @@ both a <em>gene</em> ID and a specific <em>transcript</em> ID.</p>
 <p>The method will raise an exception in case of an issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tx</strong> – a <cite>str</cite> with tx ID (e.g. <cite>NM_002834.5</cite>) or an entity that knows about the transcript ID</p>
+<dd class="field-odd"><p><strong>tx</strong> – a <cite>str</cite> with tx ID (e.g. <cite>NM_002834.5</cite>) or an entity that knows about the transcript ID
+(e.g. <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model.TranscriptAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.TranscriptAnnotation</span></code></a>).</p>
 </dd>
 </dl>
-<p>:param (e.g. <a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation" title="genophenocorr.model.TranscriptAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">genophenocorr.model.TranscriptAnnotation</span></code></a>).:</p>
 <p>Returns: the transcript coordinates.</p>
 </dd></dl>
 
@@ -832,8 +831,13 @@ both a <em>gene</em> ID and a specific <em>transcript</em> ID.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>gene</strong> – a <cite>str</cite> with tx ID (e.g. <cite>HGNC:3603</cite>)</p>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a sequence of transcript coordinates for the gene.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><em>Sequence</em></a>[<a class="reference internal" href="genophenocorr.model.html#genophenocorr.model.TranscriptCoordinates" title="genophenocorr.model.TranscriptCoordinates">TranscriptCoordinates</a>]</p>
+</dd>
 </dl>
-<p>Returns: a sequence of transcript coordinates for the gene.</p>
 </dd></dl>
 
 <dl class="py method">

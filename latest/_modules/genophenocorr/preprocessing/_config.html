@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -248,10 +248,6 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>  <span class="c1"># Rename to something more understandable by user</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                                ^^^ none, lenient, strict -</span>
-<span class="sd">                                none = run unless unrunnable</span>
-<span class="sd">                                lenient = fix what we can, abort unfixable</span>
-<span class="sd">                                strict = abort at any issue</span>
 <span class="sd">    A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.</span>
 
 <span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional</span>
@@ -344,10 +340,10 @@
 
 
 <span class="k">def</span> <span class="nf">_configure_functional_annotator</span><span class="p">(</span>
-        <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
 
     <span class="c1"># (2) FunctionalAnnotator</span>
     <span class="c1"># Setup fallback</span>
@@ -363,9 +359,9 @@
 
 
 <span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span>
-        <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">variant_fallback</span> <span class="o">==</span> <span class="s1">&#39;VEP&#39;</span><span class="p">:</span>
         <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

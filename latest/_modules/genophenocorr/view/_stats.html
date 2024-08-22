@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -83,18 +83,15 @@
   <h1>Source code for genophenocorr.view._stats</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 <span class="kn">from</span> <span class="nn">genophenocorr.analysis</span> <span class="kn">import</span> <span class="n">HpoMtcReport</span>
 
-<span class="kn">from</span> <span class="nn">genophenocorr.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
 
-
-<div class="viewcode-block" id="StatsViewer">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">StatsViewer</span><span class="p">:</span>
+<div class="viewcode-block" id="MtcStatsViewer">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.MtcStatsViewer">[docs]</a>
+<span class="k">class</span> <span class="nc">MtcStatsViewer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `StatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook</span>
+<span class="sd">    `MtcStatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook</span>
 <span class="sd">    or for writing into a standalone HTML file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -102,17 +99,17 @@
         <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;genophenocorr.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;stats.html&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="StatsViewer.process">
-<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.StatsViewer.process">[docs]</a>
+<div class="viewcode-block" id="MtcStatsViewer.process">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.view.html#genophenocorr.view.MtcStatsViewer.process">[docs]</a>
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create an HTML that should be shown with `display(HTML(..))` of the ipython package.</span>
+<span class="sd">        Create an HTML that should be shown with `display(HTML(..))` of the IPython package.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            hpo_mtc_report(HpoMtcReport): summary of heuristic term filtering procedure</span>
+<span class="sd">            hpo_mtc_report (HpoMtcReport): summary of heuristic term filtering procedure</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: an HTML string with parameterized template for rendering or writing into a standalone HTML file.</span>
@@ -123,7 +120,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
-            <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
+        <span class="n">hpo_mtc_report</span><span class="p">:</span> <span class="n">HpoMtcReport</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="n">results_map</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">skipped_terms_dict</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results_map</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -138,7 +135,7 @@
             <span class="n">reason_to_count</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span>
             <span class="n">n_skipped</span> <span class="o">+=</span> <span class="n">count</span>
 
-        <span class="n">n_tested</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span> <span class="o">-</span> <span class="n">n_skipped</span>
+        <span class="n">n_tested</span> <span class="o">=</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_before_filtering</span> <span class="o">-</span> <span class="n">n_skipped</span>
 
         <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -146,7 +143,7 @@
             <span class="s2">&quot;hpo_mtc_filter_name&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">filter_method</span><span class="p">,</span>
             <span class="s2">&quot;skipped_hpo_count&quot;</span><span class="p">:</span> <span class="n">n_skipped</span><span class="p">,</span>
             <span class="s2">&quot;tested_hpo_count&quot;</span><span class="p">:</span> <span class="n">n_tested</span><span class="p">,</span>
-            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_tested</span><span class="p">,</span>
+            <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="n">hpo_mtc_report</span><span class="o">.</span><span class="n">n_terms_before_filtering</span><span class="p">,</span>
             <span class="s2">&quot;reason_to_count&quot;</span><span class="p">:</span> <span class="n">reason_to_count</span><span class="p">,</span>
         <span class="p">}</span></div>
 

@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -92,7 +92,7 @@
 <span class="kn">from</span> <span class="nn">genophenocorr.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 <span class="kn">from</span> <span class="nn">.predicate</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span>
 <span class="kn">from</span> <span class="nn">.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">ProteinPredicates</span>
-<span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">P</span><span class="p">,</span> <span class="n">CountingPhenotypeScorer</span>
+<span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">P</span><span class="p">,</span> <span class="n">PhenotypePolyPredicate</span><span class="p">,</span> <span class="n">CountingPhenotypeScorer</span>
 
 <span class="n">PatientsByHPO</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PatientsByHPO&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all_with_hpo&#39;</span><span class="p">,</span> <span class="s1">&#39;all_without_hpo&#39;</span><span class="p">])</span>
 
@@ -109,19 +109,19 @@
             <span class="n">filter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">mtc_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">filter_results_map</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-            <span class="n">term_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">n_terms_before_filtering</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)</span>
 <span class="sd">            mtc_name:  name of the MTC function (e.g. `bonferroni`)</span>
 <span class="sd">            filter_results_map: mapping with reasons for filtering out a term as keys, and counts of filtered terms as values</span>
-<span class="sd">            term_count: the number of HPO terms before filtering</span>
+<span class="sd">            n_terms_before_filtering: the number of HPO terms before filtering</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filter_name</span> <span class="o">=</span> <span class="n">filter_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">mtc_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_results_map</span> <span class="o">=</span> <span class="n">filter_results_map</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span> <span class="o">=</span> <span class="n">term_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_terms_before_filtering</span> <span class="o">=</span> <span class="n">n_terms_before_filtering</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filter_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -148,12 +148,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_terms_tested</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">n_terms_before_filtering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            the number of HPO terms before filtering.</span>
+<span class="sd">        Get the number of terms before filtering.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_count</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_terms_before_filtering</span></div>
 
 
 
@@ -237,7 +236,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get total count of tests that were run for this analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_counts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_filter_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">HpoMtcReport</span><span class="p">]:</span>
@@ -429,14 +428,15 @@
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">compare_hpo_vs_genotype_groups</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">first</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-        <span class="n">second</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+        <span class="n">predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">],</span>
+        <span class="n">group_names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Bin patients according to a presence of at least one allele that matches `first` or `second` predicate </span>
-<span class="sd">        and test for genotype-phenotype correlations between the groups.</span>
+<span class="sd">        Bin patients according to a presence of at least one allele that matches</span>
+<span class="sd">        any of the provided `predicates` and test for genotype-phenotype correlations</span>
+<span class="sd">        between the groups.</span>
 
-<span class="sd">        Note, the patients that pass testing by both predicates are *OMITTED* from the analysis!</span>
+<span class="sd">        Note, the patients that pass testing by &gt;1 genotype predicate are *OMITTED* from the analysis!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -488,6 +488,41 @@
 <span class="sd">        Args:</span>
 <span class="sd">            gt_predicate: a genotype predicate for binning the patients along the genotype axis.</span>
 <span class="sd">            phenotype_scorer: a callable that computes a phenotype score for a given `Patient`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_genotype_vs_cohort_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_genotype_vs_cohort_phenotypes">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_genotype_vs_cohort_phenotypes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePhenotypeAnalysisResult</span><span class="p">:</span>
+        <span class="c1"># TODO: if we had access to the cohort, it would be trivial to prepare</span>
+        <span class="c1"># all phenotype predicates and to call `self.compare_genotype_vs_phenotypes`.</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CohortAnalysis.compare_genotype_vs_phenotypes">
+<a class="viewcode-back" href="../../../apidocs/genophenocorr.analysis.html#genophenocorr.analysis.CohortAnalysis.compare_genotype_vs_phenotypes">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compare_genotype_vs_phenotypes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All analysis functions go through this function.</span>
+
+<span class="sd">        The genotype predicate will partition the individuals into non-overlapping groups</span>
+<span class="sd">        along the genotype axis.</span>
+<span class="sd">        The phenotype predicates represent the phenotypes we want to test.</span>
+<span class="sd">        Less phenotypes may actually be tested due to :class:`genophenocorr.analysis.PhenotypeMtcFilter`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gt_predicate: a predicate for binning the individuals along the genotype axis</span>
+<span class="sd">            pheno_predicates: phenotype predicates for test the individuals along the phenotype axis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 

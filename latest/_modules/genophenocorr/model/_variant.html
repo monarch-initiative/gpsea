@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=a9fa5eb9" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/genophenocorr.css?v=547657ed" />
 
   
   <!--[if lt IE 9]>
@@ -99,7 +99,6 @@
 <span class="sd">    The implementors know about basic gene/transcript identifiers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -123,19 +122,9 @@
 <div class="viewcode-block" id="TranscriptAnnotation">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.TranscriptAnnotation">[docs]</a>
 <span class="k">class</span> <span class="nc">TranscriptAnnotation</span><span class="p">(</span><span class="n">TranscriptInfoAware</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        gene_id (string): The gene symbol associated with the transcript</span>
-<span class="sd">        tx_id (string): The transcript ID</span>
-<span class="sd">        hgvsc (string): The HGVS &quot;coding-DNA&quot; ID if available, else None</span>
-<span class="sd">        is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.</span>
-<span class="sd">        variant_effects (Iterable[string]): An iterable of predicted effects given by VEP</span>
-<span class="sd">        affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.</span>
-<span class="sd">        protein_id (string): The protein ID for the protein encoded by the transcript.</span>
-<span class="sd">        hgvsp (Optional[str]): Predicted effect on the encoded protein or `None` if not available`.</span>
-<span class="sd">        protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates</span>
-<span class="sd">         of the effect on the protein sequence.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `TranscriptAnnotation` represent a result of the functional annotation of a variant</span>
+<span class="sd">    with respect to single transcript of a gene.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -167,22 +156,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">hgvsp</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;hgvsp&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_optional_instance</span><span class="p">(</span><span class="n">protein_effect_coordinates</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span>
-                                                                             <span class="s1">&#39;protein_effect_coordinates&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_optional_instance</span><span class="p">(</span>
+            <span class="n">protein_effect_coordinates</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span> <span class="s1">&#39;protein_effect_coordinates&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The gene symbol (e.g. SURF1)</span>
+<span class="sd">        Get the HGVS symbol of the affected gene (e.g. *SURF1*).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">transcript_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The transcript RefSeq identifier (e.g. NM_123456.7)</span>
+<span class="sd">        Get the RefSeq identifier of the transcript (e.g. `NM_123456.7`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span>
 
@@ -197,52 +185,47 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hgvs_cdna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The HGVS &quot;coding-DNA&quot; representation of the variant (e.g. NM_123456.7:c.9876G&gt;T)</span>
-<span class="sd">            or `None` if not available.</span>
+<span class="sd">        Get the HGVS description of the sequence variant (e.g. ``NM_123456.7:c.9876G&gt;T``)</span>
+<span class="sd">        or `None` if not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_cdna</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variant_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Sequence[string]: A sequence of variant effects.</span>
-<span class="sd">                    Definitions of these can be found at: http://www.sequenceontology.org/</span>
+<span class="sd">        Get a sequence of the predicted functional variant effects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effects</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">overlapping_exons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Sequence[integer]: A sequence of 1-based exon indices (the index of the 1st exon is `1`)</span>
-<span class="sd">            that overlap with the variant.</span>
+<span class="sd">        Get a sequence of 1-based exon indices (the index of the 1st exon is `1`)</span>
+<span class="sd">        that overlap with the variant.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_exons</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Optional[str]: The protein accession ID for the protein relevant to the variant</span>
+<span class="sd">        Get the ID of the protein encoded by the :attr:`transcript_id`</span>
+<span class="sd">        or `None` if the transcript is not protein-coding.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_id</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hgvsp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Optional[str]: The HGVS protein sequence name</span>
+<span class="sd">        Get the HGVS description of the protein sequence variant (e.g. ``NP_001027559.1:p.Gln421Ter``)</span>
+<span class="sd">        or `None` if not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvsp</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_effect_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Region: a :class:`genophenocorr.model.genome.Region` with start and end position on the protein sequence</span>
-<span class="sd">            that the variant affects.</span>
+<span class="sd">        Get the :class:`~genophenocorr.model.genome.Region` with start and end amino-acid coordinates</span>
+<span class="sd">        affected by the variant.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_effect_location</span>
 
@@ -293,9 +276,9 @@
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantClass">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantClass</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `VariantClass` represents a high-level variant category </span>
+<span class="sd">    `VariantClass` represents a high-level variant category</span>
 <span class="sd">    which mostly corresponds to the structural variant categories</span>
-<span class="sd">    of the Variant Call Format specification, </span>
+<span class="sd">    of the Variant Call Format specification,</span>
 <span class="sd">    but includes type for single nucleotide variants (SNV) and multi-nucleotide variant (MNV).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -343,14 +326,10 @@
 <div class="viewcode-block" id="VariantCoordinates">
 <a class="viewcode-back" href="../../../apidocs/genophenocorr.model.html#genophenocorr.model.VariantCoordinates">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantCoordinates</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A representation of coordinates of sequence and symbolic variants.</span>
-<span class="sd">    The breakend variants are not supported.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        region (GenomicRegion): The region spanned by the variant reference allele</span>
-<span class="sd">        ref (string): The reference allele</span>
-<span class="sd">        alt (string): The alternate allele</span>
-<span class="sd">        change_length (integer): The change between the ref and alt alleles due to the variant presence</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A representation of coordinates of sequence and symbolic variants.</span>
+<span class="sd">    </span>
+<span class="sd">    Note, the breakend variants are not currently supported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="VariantCoordinates.from_vcf_literal">
@@ -498,50 +477,46 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chrom</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The label of the chromosome/contig where the variant is located.</span>
+<span class="sd">        Get the label of the chromosome/contig where the variant is located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">contig</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            integer: The 0-based start coordinate (excluded) of the ref allele.</span>
+<span class="sd">        Get the 0-based start coordinate (excluded) of the first base of the :attr:`ref` allele.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">start</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            integer: The 0-based end coordinate (included) of the ref allele.</span>
+<span class="sd">        Get the 0-based end coordinate (included) of the last base of the :attr:`ref` allele.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="o">.</span><span class="n">end</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            GenomicRegion: The genomic region spanned by the ref allele.</span>
+<span class="sd">        Get the genomic region spanned by the :attr:`ref` allele.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The reference allele (e.g. &quot;A&quot;, &quot;N&quot;). The allele may be an empty string.</span>
+<span class="sd">        Get the reference allele (e.g. &quot;A&quot;, &quot;CCT&quot;, &quot;N&quot;). The allele may be an empty string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">alt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The alternate allele (e.g. &quot;A&quot;, &quot;GG&quot;, &quot;&lt;DEL&gt;&quot;). The allele may be an empty string for sequence variants.</span>
-<span class="sd">            The symbolic alternate allele follow the VCF notation and use the `&lt;` and `&gt;` characters</span>
-<span class="sd">            (e.g. &quot;&lt;DEL&gt;&quot;, &quot;&lt;INS:ME:SINE&gt;&quot;).</span>
+<span class="sd">        Get the alternate allele (e.g. &quot;A&quot;, &quot;GG&quot;, &quot;&lt;DEL&gt;&quot;).</span>
+<span class="sd">        </span>
+<span class="sd">        The allele may be an empty string for sequence variants.</span>
+<span class="sd">        The symbolic alternate allele follow the VCF notation and use the `&lt;` and `&gt;` characters</span>
+<span class="sd">        (e.g. &quot;&lt;DEL&gt;&quot;, &quot;&lt;INS:ME:SINE&gt;&quot;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alt</span>
 
@@ -674,7 +649,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">structural_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get term ID of the structural type (e.g. `SO:1000029` for chromosomal deletion).</span>
+<span class="sd">        Get term ID of the structural type (e.g. ``SO:1000029`` for chromosomal deletion).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structural_type</span>
 
@@ -688,7 +663,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gene_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a `str` with gene identifier CURIE (e.g. `HGNC:3603`) or `None` if the identifier is not available.</span>
+<span class="sd">        Get a `str` with gene identifier CURIE (e.g. ``HGNC:3603``) or `None` if the identifier is not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gene_id</span>
 
