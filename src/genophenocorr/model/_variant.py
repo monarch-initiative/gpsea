@@ -14,7 +14,6 @@ class TranscriptInfoAware(metaclass=abc.ABCMeta):
     The implementors know about basic gene/transcript identifiers.
     """
 
-
     @property
     @abc.abstractmethod
     def gene_id(self) -> str:
@@ -35,19 +34,9 @@ class TranscriptInfoAware(metaclass=abc.ABCMeta):
 
 
 class TranscriptAnnotation(TranscriptInfoAware):
-    """Class that represents results of the functional annotation of a variant with respect to single transcript of a gene.
-
-    Args:
-        gene_id (string): The gene symbol associated with the transcript
-        tx_id (string): The transcript ID
-        hgvsc (string): The HGVS "coding-DNA" ID if available, else None
-        is_preferred (bool): The transcript is a MANE transcript, canonical Ensembl transcript, etc.
-        variant_effects (Iterable[string]): An iterable of predicted effects given by VEP
-        affected_exons (Iterable[integer]): An iterable of exons affected by the variant. Returns None if none are affected.
-        protein_id (string): The protein ID for the protein encoded by the transcript.
-        hgvsp (Optional[str]): Predicted effect on the encoded protein or `None` if not available`.
-        protein_effect_coordinates (Region, optional): An optional :class:`Region` with start and end coordinates
-         of the effect on the protein sequence.
+    """
+    `TranscriptAnnotation` represent a result of the functional annotation of a variant
+    with respect to single transcript of a gene.
     """
 
     def __init__(
@@ -79,22 +68,21 @@ class TranscriptAnnotation(TranscriptInfoAware):
             self._hgvsp = hpotk.util.validate_instance(hgvsp, str, 'hgvsp')
         else:
             self._hgvsp = None
-        self._protein_effect_location = hpotk.util.validate_optional_instance(protein_effect_coordinates, Region,
-                                                                             'protein_effect_coordinates')
+        self._protein_effect_location = hpotk.util.validate_optional_instance(
+            protein_effect_coordinates, Region, 'protein_effect_coordinates',
+        )
 
     @property
     def gene_id(self) -> str:
         """
-        Returns:
-            string: The gene symbol (e.g. SURF1)
+        Get the HGVS symbol of the affected gene (e.g. *SURF1*).
         """
         return self._gene_id
 
     @property
     def transcript_id(self) -> str:
         """
-        Returns:
-            string: The transcript RefSeq identifier (e.g. NM_123456.7)
+        Get the RefSeq identifier of the transcript (e.g. `NM_123456.7`).
         """
         return self._tx_id
 
@@ -109,52 +97,47 @@ class TranscriptAnnotation(TranscriptInfoAware):
     @property
     def hgvs_cdna(self) -> typing.Optional[str]:
         """
-        Returns:
-            string: The HGVS "coding-DNA" representation of the variant (e.g. NM_123456.7:c.9876G>T)
-            or `None` if not available.
+        Get the HGVS description of the sequence variant (e.g. ``NM_123456.7:c.9876G>T``)
+        or `None` if not available.
         """
         return self._hgvs_cdna
 
     @property
     def variant_effects(self) -> typing.Sequence[VariantEffect]:
         """
-        Returns:
-            Sequence[string]: A sequence of variant effects.
-                    Definitions of these can be found at: http://www.sequenceontology.org/
+        Get a sequence of the predicted functional variant effects.
         """
         return self._variant_effects
 
     @property
     def overlapping_exons(self) -> typing.Optional[typing.Sequence[int]]:
         """
-        Returns:
-            Sequence[integer]: A sequence of 1-based exon indices (the index of the 1st exon is `1`)
-            that overlap with the variant.
+        Get a sequence of 1-based exon indices (the index of the 1st exon is `1`)
+        that overlap with the variant.
         """
         return self._affected_exons
 
     @property
     def protein_id(self) -> typing.Optional[str]:
         """
-        Returns:
-            Optional[str]: The protein accession ID for the protein relevant to the variant
+        Get the ID of the protein encoded by the :attr:`transcript_id`
+        or `None` if the transcript is not protein-coding.
         """
         return self._protein_id
     
     @property
     def hgvsp(self) -> typing.Optional[str]:
         """
-        Returns:
-            Optional[str]: The HGVS protein sequence name
+        Get the HGVS description of the protein sequence variant (e.g. ``NP_001027559.1:p.Gln421Ter``)
+        or `None` if not available.
         """
         return self._hgvsp
 
     @property
     def protein_effect_location(self) -> typing.Optional[Region]:
         """
-        Returns:
-            Region: a :class:`genophenocorr.model.genome.Region` with start and end position on the protein sequence
-            that the variant affects.
+        Get the :class:`~genophenocorr.model.genome.Region` with start and end amino-acid coordinates
+        affected by the variant.
         """
         return self._protein_effect_location
 
@@ -202,9 +185,9 @@ class TranscriptAnnotation(TranscriptInfoAware):
 
 class VariantClass(enum.Enum):
     """
-    `VariantClass` represents a high-level variant category 
+    `VariantClass` represents a high-level variant category
     which mostly corresponds to the structural variant categories
-    of the Variant Call Format specification, 
+    of the Variant Call Format specification,
     but includes type for single nucleotide variants (SNV) and multi-nucleotide variant (MNV).
     """
 
@@ -249,14 +232,10 @@ class VariantClass(enum.Enum):
 
 
 class VariantCoordinates:
-    """A representation of coordinates of sequence and symbolic variants.
-    The breakend variants are not supported.
-
-    Attributes:
-        region (GenomicRegion): The region spanned by the variant reference allele
-        ref (string): The reference allele
-        alt (string): The alternate allele
-        change_length (integer): The change between the ref and alt alleles due to the variant presence
+    """
+    A representation of coordinates of sequence and symbolic variants.
+    
+    Note, the breakend variants are not currently supported.
     """
 
     @staticmethod
@@ -398,50 +377,46 @@ class VariantCoordinates:
     @property
     def chrom(self) -> str:
         """
-        Returns:
-            string: The label of the chromosome/contig where the variant is located.
+        Get the label of the chromosome/contig where the variant is located.
         """
         return self._region.contig.name
 
     @property
     def start(self) -> int:
         """
-        Returns:
-            integer: The 0-based start coordinate (excluded) of the ref allele.
+        Get the 0-based start coordinate (excluded) of the first base of the :attr:`ref` allele.
         """
         return self._region.start
 
     @property
     def end(self) -> int:
         """
-        Returns:
-            integer: The 0-based end coordinate (included) of the ref allele.
+        Get the 0-based end coordinate (included) of the last base of the :attr:`ref` allele.
         """
         return self._region.end
 
     @property
     def region(self) -> GenomicRegion:
         """
-        Returns:
-            GenomicRegion: The genomic region spanned by the ref allele.
+        Get the genomic region spanned by the :attr:`ref` allele.
         """
         return self._region
 
     @property
     def ref(self) -> str:
         """
-        Returns:
-            string: The reference allele (e.g. "A", "N"). The allele may be an empty string.
+        Get the reference allele (e.g. "A", "CCT", "N"). The allele may be an empty string.
         """
         return self._ref
 
     @property
     def alt(self) -> str:
         """
-        Returns:
-            string: The alternate allele (e.g. "A", "GG", "<DEL>"). The allele may be an empty string for sequence variants.
-            The symbolic alternate allele follow the VCF notation and use the `<` and `>` characters
-            (e.g. "<DEL>", "<INS:ME:SINE>").
+        Get the alternate allele (e.g. "A", "GG", "<DEL>").
+        
+        The allele may be an empty string for sequence variants.
+        The symbolic alternate allele follow the VCF notation and use the `<` and `>` characters
+        (e.g. "<DEL>", "<INS:ME:SINE>").
         """
         return self._alt
 
@@ -568,7 +543,7 @@ class ImpreciseSvInfo:
     @property
     def structural_type(self) -> hpotk.TermId:
         """
-        Get term ID of the structural type (e.g. `SO:1000029` for chromosomal deletion).
+        Get term ID of the structural type (e.g. ``SO:1000029`` for chromosomal deletion).
         """
         return self._structural_type
 
@@ -582,7 +557,7 @@ class ImpreciseSvInfo:
     @property
     def gene_id(self) -> str:
         """
-        Get a `str` with gene identifier CURIE (e.g. `HGNC:3603`) or `None` if the identifier is not available.
+        Get a `str` with gene identifier CURIE (e.g. ``HGNC:3603``) or `None` if the identifier is not available.
         """
         return self._gene_id
 

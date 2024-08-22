@@ -74,7 +74,8 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def fetch(
-        self, tx: typing.Union[str, TranscriptInfoAware]
+        self,
+        tx: typing.Union[str, TranscriptInfoAware],
     ) -> TranscriptCoordinates:
         """
         Get tx coordinates for a tx ID or an entity that knows about the tx ID.
@@ -83,7 +84,7 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
 
         Args:
             tx: a `str` with tx ID (e.g. `NM_002834.5`) or an entity that knows about the transcript ID
-            (e.g. :class:`genophenocorr.model.TranscriptAnnotation`).
+              (e.g. :class:`genophenocorr.model.TranscriptAnnotation`).
 
         Returns: the transcript coordinates.
         """
@@ -105,7 +106,8 @@ class GeneCoordinateService(metaclass=abc.ABCMeta):
         Args:
             gene: a `str` with tx ID (e.g. `HGNC:3603`)
 
-        Returns: a sequence of transcript coordinates for the gene.
+        Returns:
+            typing.Sequence[TranscriptCoordinates]: a sequence of transcript coordinates for the gene.
         """
         pass
 

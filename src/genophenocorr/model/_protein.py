@@ -7,15 +7,11 @@ import hpotk
 from .genome import Region
 
 
-
 class FeatureInfo:
-    """A class that represents a protein feature
-    (e.g. a repeated sequence given the name "ANK 1" in protein "Ankyrin repeat domain-containing protein 11")
-
-    Attributes:
-        name (string): The given name or description of the protein feature
-        region (Region): The protein feature region coordinates
     """
+    `FeatureInfo` represents a protein feature
+    (e.g. a repeated sequence given the name "ANK 1" in protein "Ankyrin repeat domain-containing protein 11")
+"""
 
     def __init__(self, name: str, region: Region):
         self._name = hpotk.util.validate_instance(name, str, 'name')
@@ -72,18 +68,29 @@ class FeatureInfo:
 
 
 class FeatureType(enum.Enum):
-    """An enum class defining available feature types that can be found in the protein sequence.
-
-    Attributes:
-        REPEAT: a repeated sequence motif or repeated domain within the protein
-        MOTIF: a short (usually not more than 20 amino acids) conserved sequence motif of biological significance
-        DOMAIN: a specific combination of secondary structures organized into a characteristic three-dimensional structure or fold
-        REGION: a region of interest that cannot be described in other subsections
     """
+    An enum representing the protein feature types supported in GPSEA.
+    """
+    
     REPEAT = enum.auto()
+    """
+    A repeated sequence motif or repeated domain within the protein.
+    """
+    
     MOTIF = enum.auto()
+    """
+    A short (usually not more than 20 amino acids) conserved sequence motif of biological significance.
+    """
+
     DOMAIN = enum.auto()
+    """
+    A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.
+    """
+
     REGION = enum.auto()
+    """
+    A region of interest that cannot be described in other subsections.
+    """
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
@@ -107,11 +114,8 @@ class ProteinFeature(metaclass=abc.ABCMeta):
 
 
 class SimpleProteinFeature(ProteinFeature):
-    """A class that represents a protein feature
-
-    Attributes:
-        info (FeatureInfo): A FeatureInfo object, describing name and location of the feature
-        feature_type (FeatureType): A FeatureType object, limited to specific feature types
+    """
+    An implementation of a `ProteinFeature`.
     """
     # Not part of the public API.
 
@@ -146,46 +150,34 @@ class SimpleProteinFeature(ProteinFeature):
         return self._type
 
     def __str__(self) -> str:
-        return f"SimpleProteinFeature(type={self.feature_type}, " \
-               f"info={str(self.info)})"
+        return f"SimpleProteinFeature(type={self._type}, " \
+               f"info={self._info})"
 
     def __repr__(self) -> str:
         return str(self)
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, ProteinFeature) \
-            and self.feature_type == other.feature_type \
-            and self.info == other.info
+        return isinstance(other, SimpleProteinFeature) \
+            and self._type == other._type \
+            and self._info == other._info
 
     def __hash__(self) -> int:
-        return hash((self.feature_type, self.info))
+        return hash((self._type, self._info))
 
 
 class ProteinMetadata:
-    """A class that represents a specific protein
-
-    Attributes:
-        protein_id (string): A string unique to this protein
-        label (string): Full name of the protein
-        protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
-        length(int): The length of the Protein (chain) in amino-acid residues
-        # TODO -- provided with default argument of zero to not break tests. Refactor tests.
-    Methods:
-        domains (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "DOMAIN"
-        repeats (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "REPEAT"
-        regions (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "REGION"
-        motifs (Iterable[ProteinFeature]): A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "MOTIF"
+    """
+    An info regarding a protein sequence, including an ID, a label,
+    and location of protein features, such as motifs, domains, or other regions.
     """
 
-    def __init__(self, protein_id: str, label: str, protein_features: typing.Sequence[ProteinFeature], protein_length:int=0):
-        """Constructs all necessary attributes for a ProteinMetadata object
-
-        Args:
-            protein_id (string): A string unique to this protein
-            label (string): Full name of the protein
-            protein_features (Sequence[ProteinFeature]): A sequence of ProteinFeature objects
-            protein_length (int): The length of the Protein (chain) in amino-acid residues
-        """
+    def __init__(
+        self,
+        protein_id: str,
+        label: str,
+        protein_features: typing.Sequence[ProteinFeature],
+        protein_length: int = 0,
+    ):
         if not isinstance(protein_id, str):
             raise ValueError(f"Protein ID must be type string but is type {type(protein_id)}")
         self._id = protein_id

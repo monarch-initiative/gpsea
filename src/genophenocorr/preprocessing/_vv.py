@@ -136,7 +136,7 @@ class VariantValidatorDecodeException(BaseException):
 
 class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateService):
     """
-    `VVMultiCoordinateService` uses the Variant Validator REST API to fetch transcript coordinates for 
+    `VVMultiCoordinateService` uses the Variant Validator REST API to fetch transcript coordinates for
     both a *gene* ID and a specific *transcript* ID.
 
     :param genome_build: the genome build for constructing the transcript coordinates.
@@ -370,7 +370,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
 
             processed += exon_len
 
-        raise ValueError(f'Could not parse CDS start and end from given coordinates')
+        raise ValueError('Could not parse CDS start and end from given coordinates')
 
     @staticmethod
     def _parse_is_preferred(
@@ -379,7 +379,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         if 'annotations' in tx_data:
             annotations = tx_data['annotations']
             if 'mane_select' in annotations:
-                assert type(annotations['mane_select']) == bool, '\'mane_select\' field must be `bool`'
+                assert isinstance(annotations['mane_select'], bool), '\'mane_select\' field must be `bool`'
                 return annotations['mane_select']
         
         return None

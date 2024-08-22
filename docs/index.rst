@@ -39,7 +39,7 @@ The best place to leave feedback, ask questions, and report bugs is the `GPSEA I
 
 .. toctree::
     :caption: Installation & Tutorial
-    :name: tutorial
+    :name: index-toc
     :maxdepth: 1
     :hidden:
 

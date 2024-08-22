@@ -121,6 +121,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter):
     ]:
         """
         Remove terms that are not members of the specific set of HPO terms to be tested.
+        
         Args:
             gt_predicate: the predicate used to bin patients into groups along the genotype axis
             n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients
