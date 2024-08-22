@@ -12,7 +12,7 @@ manifestations of the disease.
 
 `GPSEA`  (genotypes and phenotypes - study and evaluation of associations) is a Python package designed to support genotype-phenotype correlation analysis.
 We pronounce GPSEA as "G"-"P"-"C". The input to `GPSEA` is a collection of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_.
-`genophenocorr` ingests data from these phenopackets and performs analysis of the correlation of specific variants,
+`gpsea` ingests data from these phenopackets and performs analysis of the correlation of specific variants,
 variant types (e.g., missense vs. premature termination codon), or variant location in protein motifs or other features.
 The phenotypic abnormalities are represented by `Human Phenotype Ontology (HPO) <https://hpo.jax.org/app/>`_ terms.
 Statistical analysis is performed using a `Fisher Exact Test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_,

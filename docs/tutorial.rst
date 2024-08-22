@@ -15,7 +15,7 @@ The tutorial presents an analysis of a cohort of individuals with pathogenic var
 Holt-Oram syndrome is an autosomal dominant disorder characterized by 
 upper limb defects, congenital heart defects, and arrhythmias (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
 It has been observed in the literature that congenital defects of the ventricular and atrial septum are more
-common in more common in the truncating than in the missense variants (`PMID:30552424 <https://pubmed.ncbi.nlm.nih.gov/30552424/>`_).
+common in the truncating than in the missense variants (`PMID:30552424 <https://pubmed.ncbi.nlm.nih.gov/30552424/>`_).
 Additionally, upper limb defects are more frequent in patients with protein-truncating variants (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
 
 To perform the analysis, we curated the literature and created on `GA4GH phenopacket <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_ for each 
@@ -178,13 +178,28 @@ in the individuals of the *TBX5* cohort.
   a predicate of interest.
 
 
-By default, GPSEA will perform one hypothesis test for each HPO term used to annotate more than one individual in the cohort. 
+By default, GPSEA will perform one hypothesis test for each HPO term used to annotate more than one individual in the cohort.
+This also includes the terms implied by the ontology "true path rule", 
+which states that presence of a term 
+(e.g., `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_)
+implies presence of all its ancestor terms 
+(e.g., `Abnormal ventricular septum morphology <https://hpo.jax.org/browse/term/HP:0010438>`_, 
+`Abnormal cardiac septum morphology <https://hpo.jax.org/browse/term/HP:0001671>`_,
+`Abnormal cardiac ventricle morphology <https://hpo.jax.org/browse/term/HP:0001713>`_, ...).
+However, testing multiple hypothesis increases the chance of receiving false positive result,
+and multiple testing correction must be applied.
 See :ref:`mtc` for information about how to perform multiple testing correction with GPSEA. 
-For general use, we recommend using the heuristic `Phenotype Filter` to choose the HPO terms to test according to several heuristics, which 
-reduces the multiple testing burden and focuses the analysis on the most interesting terms (:ref:`domain judgments <hpo-mtc-filter-strategy>`).
-The filter is implemented in :meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`. We additionally use
-the Benjamini-Hochberg procedure to control the false discovery rate
-in the tested HPO terms (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
+
+For general use, we recommend using a combination
+of a :class:`~genophenocorr.analysis.PhenotypeMtcFilter` with a multiple testing correction.
+`PhenotypeMtcFilter` chooses the HPO terms to test according to several heuristics, which 
+reduce the multiple testing burden and focus the analysis
+on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
+Then a multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
+is used to control the false discovery rate.
+
+Here we use HPO MTC filter (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
+along with Benjamini-Hochberg procedure (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
 
 >>> from genophenocorr.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
 >>> config = CohortAnalysisConfiguration()
