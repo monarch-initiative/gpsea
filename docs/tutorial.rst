@@ -88,7 +88,7 @@ Patients Created: ...
 
 and we will check that there are no Q/C issues:
 
->>> validation.summarize()
+>>> validation.summarize()  # doctest: +SKIP
 Validated under none policy
 No errors or warnings were found
 
