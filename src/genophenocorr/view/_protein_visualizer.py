@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 
-from genophenocorr.model import VariantEffect
+from genophenocorr.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect
 
 from ._protein_visualizable import ProteinVisualizable
 
@@ -53,11 +53,22 @@ class ProteinVisualizer:
         self.legend2_max_x = 0.3
         self.legend2_max_y = 0.75
 
+    def draw_protein_diagram(
+        self,
+        tx_coordinates: TranscriptCoordinates,
+        protein_metadata: ProteinMetadata,
+        cohort: Cohort,
+        ax: typing.Optional[plt.Axes] = None,
+        labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate'
+    ) -> typing.Optional[plt.Axes]:
+        pvis = ProteinVisualizable(tx_coordinates, protein_metadata, cohort)
+        return self.draw_fig(pvis, ax, labeling_method)
+
     def draw_fig(
-            self,
-            pvis: ProteinVisualizable,
-            ax: typing.Optional[plt.Axes] = None,
-            labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate'
+        self,
+        pvis: ProteinVisualizable,
+        ax: typing.Optional[plt.Axes] = None,
+        labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate'
     ) -> typing.Optional[plt.Axes]:
         """
         Visualize the cohort variants on a protein diagram.

@@ -19,7 +19,7 @@ def apply_predicates_on_patients(
         gt_predicate: GenotypePolyPredicate,
 ) -> typing.Tuple[
     typing.Collection[PatientCategory],
-    pd.Series,
+    typing.Mapping[P, int],
     typing.Mapping[P, pd.DataFrame],
 ]:
     """
@@ -39,7 +39,7 @@ def apply_predicates_on_patients(
     Returns:
         a tuple with 3 items:
         - a collection of unique :class:`PatientCategory` items that the patients were binned into
-        - a :class:`pd.Series` with mapping from a phenotype :class:`P` (e.g. an HPO term or a disease)
+        - a mapping from a phenotype :class:`P` (e.g. an HPO term or a disease)
           to an `int` with count of patients that could be binned according to the phenotype `P`
         - a mapping from phenotype :class:`P` to a data frame with counts of patients
           in i-th phenotype category and j-th genotype category where i and j are rows and columns of the data frame
@@ -140,15 +140,21 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         categories, n_usable, all_counts = apply_predicates_on_patients(
             patients, pheno_predicates, gt_predicate,
         )
-        original_phenotype_count = len(n_usable)
+        n_terms_before_filtering = len(n_usable)
 
         # 1.5) Filter terms for MTC
-        n_usable_filtered, all_counts_filtered, reason2count = self._mtc_filter.filter_terms_to_test(n_usable, all_counts)
+        n_usable_filtered, all_counts_filtered, reason2count = self._mtc_filter.filter_terms_to_test(
+            gt_predicate=gt_predicate,
+            n_usable=n_usable,
+            all_counts=all_counts,
+        )
         if len(n_usable_filtered) == 0:
             raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
+        assert len(n_usable_filtered) == len(all_counts_filtered)
+
         # 2) Statistical tests
-        pheno_idx = pd.Index(n_usable_filtered.keys(), name='p_val')
+        pheno_idx = pd.Index(all_counts_filtered.keys(), name='p_val')
         pvals = pd.Series(float('nan'), index=pheno_idx, name='p value')
         for phenotype in pheno_idx:
             counts = all_counts_filtered[phenotype]
@@ -166,7 +172,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
         # 3) Multiple correction
         if self._correction is not None:
             _, pvals_corrected, _, _ = multitest.multipletests(pvals, alpha=self._mtc_alpha, method=self._correction)
-            corrected_idx = pd.Index(n_usable_filtered.keys(), name='p_val_corrected')
+            corrected_idx = pd.Index(all_counts_filtered.keys(), name='p_val_corrected')
             corrected_pvals_series = pd.Series(
                 data=pvals_corrected, index=corrected_idx, name='Corrected p value',
             )
@@ -180,7 +186,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
             filter_name=self._mtc_filter.filter_method_name(),
             mtc_name=mtc_method,
             filter_results_map=reason2count,
-            term_count=original_phenotype_count,
+            n_terms_before_filtering=n_terms_before_filtering,
         )
 
         # 4) Wrap up

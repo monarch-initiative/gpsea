@@ -56,10 +56,10 @@ class PhenopacketVariantCoordinateFinder(
     VariantCoordinateFinder[GenomicInterpretation]
 ):
     """
-    `PhenopacketVariantCoordinateFinder` figures out :class:`genophenocorr.model.VariantCoordinates`
-    and :class:`genophenocorr.model.Genotype` from `GenomicInterpretation` element of Phenopacket Schema.
+    `PhenopacketVariantCoordinateFinder` figures out :class:`~genophenocorr.model.VariantCoordinates`
+    and :class:`~genophenocorr.model.Genotype` from `GenomicInterpretation` element of Phenopacket Schema.
 
-    :param build: genome build to use in `VariantCoordinates
+    :param build: genome build to use in `VariantCoordinates`
     :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions
     """
 
@@ -85,8 +85,9 @@ class PhenopacketVariantCoordinateFinder(
 
         Args:
             item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema
+        
         Returns:
-            VariantCoordinates: variant coordinates
+            typing.Optional[VariantCoordinates]: variant coordinates
         """
         if not isinstance(item, GenomicInterpretation):
             raise ValueError(
@@ -233,12 +234,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         # Set of sequence ontology IDs that we will treat as a deletion (`DEL`)
         # for the purpose of assigning imprecise SV info with a variant class.
         self._so_deletions = {
-            '1000029', # chromosomal deletion: An incomplete chromosome.
-            '0001893', # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
-            '0001879', # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.
+            '1000029',  # chromosomal deletion: An incomplete chromosome.
+            '0001893',  # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
+            '0001879',  # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.
         }
         self._so_duplications = {
-            '1000037', # chromosomal_duplication
+            '1000037',  # chromosomal_duplication
         }
 
     def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:

@@ -73,7 +73,7 @@ class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
         self._counters = tuple(counters)
         self._categorizations = tuple(categorizations)
         group_names = ', '.join(c.category.name for c in self._categorizations)
-        self._question = f'What group does the patient belong to: {group_names}'
+        self._question = f'Genotype group: {group_names}'
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations

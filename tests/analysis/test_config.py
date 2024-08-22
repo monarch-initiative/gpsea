@@ -8,7 +8,6 @@ class TestCohortAnalysisConfiguration:
     def test_default_values(self):
         config = CohortAnalysisConfiguration()
 
-        assert config.missing_implies_excluded is False
         assert config.pval_correction == 'bonferroni'
         assert config.min_patients_w_hpo is None
         assert config.include_sv is False

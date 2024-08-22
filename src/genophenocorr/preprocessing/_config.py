@@ -154,10 +154,6 @@ def configure_patient_creator(
         timeout: float = 30.,
 ) -> PhenopacketPatientCreator:  # Rename to something more understandable by user
     """
-                                ^^^ none, lenient, strict -
-                                none = run unless unrunnable
-                                lenient = fix what we can, abort unfixable
-                                strict = abort at any issue
     A convenience function for configuring a non-caching :class:`genophenocorr.preprocessing.PhenopacketPatientCreator`.
 
     To create the patient creator, we need hpo-toolkit's representation of HPO. Other options are optional
@@ -246,10 +242,10 @@ def _setup_phenotype_creator(hpo: hpotk.MinimalOntology,
 
 
 def _configure_functional_annotator(
-        cache_dir: str,
-        variant_fallback: str,
-        timeout: float,
-        ) -> FunctionalAnnotator:
+    cache_dir: str,
+    variant_fallback: str,
+    timeout: float,
+) -> FunctionalAnnotator:
 
     # (2) FunctionalAnnotator
     # Setup fallback
@@ -265,9 +261,9 @@ def _configure_functional_annotator(
 
 
 def _configure_fallback_functional(
-        variant_fallback: str,
-        timeout: float,
-        ) -> FunctionalAnnotator:
+    variant_fallback: str,
+    timeout: float,
+) -> FunctionalAnnotator:
     if variant_fallback == 'VEP':
         fallback = VepFunctionalAnnotator(timeout=timeout)
     else:

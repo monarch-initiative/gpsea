@@ -11,29 +11,17 @@ from ._variant import Variant
 
 
 class Patient:
-    """A class that represents an individual patient
-
-    Attributes:
-        labels (SampleLabels): The patient identifiers
-        phenotypes (Sequence[Phenotype]): A list of Phenotype objects
-        diseases (Sequence[Disease]): A list of Disease objects
-        variants (Sequence[Variant]): A list of Variant objects
+    """
+    `Patient` represents a single investigated individual.
     """
 
     def __init__(
-            self,
-            labels: SampleLabels,
-            phenotypes: typing.Iterable[Phenotype],
-            diseases: typing.Iterable[Disease],
-            variants: typing.Iterable[Variant]
-            ):
-        """Constructs all necessary attributes for a Patient object
-
-        Args:
-            labels (string): A string unique to this Patient object
-            phenotypes (Iterable[Phenotype]): A list of Phenotype objects
-            variants (Iterable[Variant]): A list of Variant objects
-        """
+        self,
+        labels: SampleLabels,
+        phenotypes: typing.Iterable[Phenotype],
+        diseases: typing.Iterable[Disease],
+        variants: typing.Iterable[Variant]
+    ):
         self._labels = labels
         self._phenotypes = tuple(phenotypes)
         self._diseases = tuple(diseases)
@@ -42,8 +30,7 @@ class Patient:
     @property
     def patient_id(self) -> str:
         """
-        Returns:
-            string: Patient ID unique to this Patient object
+        Get a unique patient ID.
         """
         return self._labels.label_summary()
 
@@ -57,39 +44,46 @@ class Patient:
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
         """
-        Returns:
-            Sequence[Phenotype]: A list of Phenotype objects associated with this Patient object
+        Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:
+        """
+        Get the diseases the patient has (not) been diagnosed with.
+        """
         return self._diseases
 
     @property
     def variants(self) -> typing.Sequence[Variant]:
         """
-        Returns:
-            Sequence[Variant]: A list of Variant objects associated with this Patient object
+        Get a list of variants observed in the patient.
         """
         return self._variants
 
     def present_phenotypes(self) -> typing.Iterator[Phenotype]:
         """
-        Get an iterator over *present* phenotypes of the patient.
+        Get an iterator over the *present* phenotypes of the patient.
         """
         return filter(lambda p: p.is_present, self._phenotypes)
 
     def excluded_phenotypes(self) -> typing.Iterator[Phenotype]:
         """
-        Get an iterator over *excluded* phenotypes of the patient.
+        Get an iterator over the *excluded* phenotypes of the patient.
         """
         return filter(lambda p: p.is_excluded, self._phenotypes)
 
     def present_diseases(self) -> typing.Iterator[Disease]:
+        """
+        Get an iterator with diseases the patient was diagnosed with.
+        """
         return filter(lambda d: d.is_present, self._diseases)
 
     def excluded_diseases(self) -> typing.Iterator[Disease]:
+        """
+        Get an iterator with diseases whose presence was excluded in the patient.
+        """
         return filter(lambda d: not d.is_present, self._diseases)
 
     def __str__(self) -> str:
@@ -123,11 +117,6 @@ class Cohort(typing.Sized):
     ):
         """
         Create a cohort from a sequence of patients.
-
-        Args:
-            members: an iterable with patients
-            include_patients_with_no_variants:
-            include_patients_with_no_HPO:
         """
         # TODO: move this logic into `CohortCreator` and remove `excluded_member_count` from `Cohort`.
         filtered = set()
@@ -148,9 +137,9 @@ class Cohort(typing.Sized):
         )
 
     def __init__(
-            self,
-            members: typing.Iterable[Patient],
-            excluded_member_count: int,
+        self,
+        members: typing.Iterable[Patient],
+        excluded_member_count: int,
     ):
         self._patient_set = frozenset(members)
         self._excluded_count = excluded_member_count
@@ -158,62 +147,62 @@ class Cohort(typing.Sized):
     @property
     def all_patients(self) -> typing.Collection[Patient]:
         """
-        Returns:
-            set: A collection of all the Patient objects in the Cohort
+        Get a collection of all patients in the cohort.
         """
         return self._patient_set
 
     def all_phenotypes(self) -> typing.Set[Phenotype]:
         """
-        Returns:
-            set: A set of all the Phenotype objects in the Cohort
+        Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
         return set(itertools.chain(phenotype for patient in self._patient_set for phenotype in patient.phenotypes))
 
     def all_diseases(self) -> typing.Set[Disease]:
+        """
+        Get a set of all diseases (observed or excluded) in the cohort members.
+        """
         return set(itertools.chain(disease for patient in self._patient_set for disease in patient.diseases))
 
     def all_variants(self) -> typing.Set[Variant]:
         """
-        Returns:
-            set: A set of all the Variant objects in the Cohort
+        Get a set of all variants observed in the cohort members.
         """
         return set(itertools.chain(variant for patient in self._patient_set for variant in patient.variants))
 
     @property
     def all_transcript_ids(self) -> typing.Set[str]:
         """
-        Returns:
-            set: A set of all the transcript IDs in the Cohort
+        Get a set of all transcript IDs affected by the cohort variants.
         """
         return set(tx.transcript_id for v in self.all_variants() for tx in v.tx_annotations)
 
     @property
     def total_patient_count(self):
         """
-        Returns:
-            integer: The count of all the Patient objects
+        Get the total number of cohort members.
         """
         return len(self._patient_set)
 
     def get_patient_ids(self) -> typing.Set[str]:
         """
-        Returns:
-            list: A list of all the patient IDs in the Cohort
+        Get a set of the patient IDs.
         """
         return set(pat.patient_id for pat in self._patient_set)
 
     def list_present_phenotypes(
-            self,
-            top=None,
+        self,
+        top: typing.Optional[int] = None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
+        
         Args:
-            top (integer, Optional): If not given, lists all present phenotypes.
-              Otherwise, lists only the `top` highest counts
+            top typing.Optional[int]: If not given, lists all present phenotypes.
+                Otherwise, lists only the `top` highest counts
+        
         Returns:
-            list: A list of tuples, formatted (phenotype CURIE, number of patients with that phenotype)
+            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE, 
+                number of patients with that phenotype)
         """
         counter = Counter()
         for patient in self._patient_set:
@@ -235,7 +224,8 @@ class Cohort(typing.Sized):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top (integer, Optional): If not given, lists all variants. Otherwise, lists only the `top` highest counts
+            top typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
+        
         Returns:
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
         """
@@ -250,7 +240,8 @@ class Cohort(typing.Sized):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top (integer, Optional): If not given, lists all proteins. Otherwise, lists only the `top` highest counts
+            top typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
+        
         Returns:
             list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)
         """
@@ -260,15 +251,16 @@ class Cohort(typing.Sized):
         return counter.most_common(top)
 
     def variant_effect_count_by_tx(
-            self,
-            tx_id: typing.Optional[str] = None,
+        self,
+        tx_id: typing.Optional[str] = None,
     ) -> typing.Mapping[str, typing.Mapping[str, int]]:
         """
         Count variant effects for all transcripts or for a transcript `tx_id` of choice.
 
         Args:
-            tx_id (string, Optional): a `str` with transcript accession (e.g. `NM_123456.5`)
+            tx_id: a `str` with transcript accession (e.g. `NM_123456.5`)
               or `None` if all transcripts should be listed.
+        
         Returns:
             mapping: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.

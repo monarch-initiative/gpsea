@@ -1,19 +1,19 @@
 import pytest
 
 from genophenocorr.analysis import HpoMtcReport
-from genophenocorr.view import StatsViewer
+from genophenocorr.view import MtcStatsViewer
 
 
 class TestStatsViewable:
 
     @pytest.fixture
-    def stats_viewer(self) -> StatsViewer:
-        return StatsViewer()
+    def stats_viewer(self) -> MtcStatsViewer:
+        return MtcStatsViewer()
 
     @pytest.mark.skip('Until we design a more reasonable test')
     def test_process(
-            self,
-            stats_viewer: StatsViewer,
+        self,
+        stats_viewer: MtcStatsViewer,
     ):
         mtc_report = HpoMtcReport(
             filter_name='identity filter',
@@ -25,7 +25,7 @@ class TestStatsViewable:
                 'Life is a conspiracy': 80,
                 'I need coffee': 7,
             },
-            term_count=100,  # The filtered out (80 + 7 + 5) + the unfiltered
+            n_terms_before_filtering=100,  # The filtered out (80 + 7 + 5) + the unfiltered
         )
 
         report = stats_viewer.process(hpo_mtc_report=mtc_report)
