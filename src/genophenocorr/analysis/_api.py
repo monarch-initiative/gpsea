@@ -24,19 +24,19 @@ class HpoMtcReport:
             filter_name: str,
             mtc_name: str,
             filter_results_map: typing.Mapping[str, int],
-            term_count: int,
+            n_terms_before_filtering: int,
     ):
         """
         Args:
             filter_name: name of the MTC filter strategy (e.g. `heuristic sampler`)
             mtc_name:  name of the MTC function (e.g. `bonferroni`)
             filter_results_map: mapping with reasons for filtering out a term as keys, and counts of filtered terms as values
-            term_count: the number of HPO terms before filtering
+            n_terms_before_filtering: the number of HPO terms before filtering
         """
         self._filter_name = filter_name
         self._mtc_name = mtc_name
         self._results_map = filter_results_map
-        self._term_count = term_count
+        self._n_terms_before_filtering = n_terms_before_filtering
 
     @property
     def filter_method(self) -> str:
@@ -63,12 +63,11 @@ class HpoMtcReport:
         return self._mtc_name
 
     @property
-    def n_terms_tested(self) -> int:
+    def n_terms_before_filtering(self) -> int:
         """
-        Returns:
-            the number of HPO terms before filtering.
+        Get the number of terms before filtering.
         """
-        return self._term_count
+        return self._n_terms_before_filtering
 
 
 class GenotypePhenotypeAnalysisResult:
@@ -149,7 +148,7 @@ class GenotypePhenotypeAnalysisResult:
         """
         Get total count of tests that were run for this analysis.
         """
-        return len(self.all_counts)
+        return len(self._all_counts)
 
     @property
     def mtc_filter_report(self) -> typing.Optional[HpoMtcReport]:

@@ -63,7 +63,6 @@ class CohortAnalysisConfiguration:
     ==============================  =======================  =========================================
         Option                        Type                    Default value
     ==============================  =======================  =========================================
-     ``missing_implies_excluded``    `bool`                   `False`
      ``pval_correction``             `str`                    `bonferroni`
      ``min_n_patients_with_term``    `int`                    `2`
      ``mtc_alpha``                   `float`                  `0.05`
@@ -75,7 +74,6 @@ class CohortAnalysisConfiguration:
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._missing_implies_excluded = False
         self._pval_correction = 'bonferroni'
         self._mtc_alpha = .05
         self._min_n_patients_with_term = 2
@@ -83,26 +81,6 @@ class CohortAnalysisConfiguration:
         self._mtc_strategy = MtcStrategy.ALL_PHENOTYPE_TERMS
         self._terms_to_test = None  # # only relevant for SPECIFIED_TERMS strategy
         self._min_patients_w_hpo = None  # # only relevant for HPO_MTC strategy
-
-    @property
-    def missing_implies_excluded(self) -> bool:
-        """
-        `True` if we assume that a patient without a specific phenotype listed *does not* have the phenotype.
-        Otherwise, the only excluded phenotypes are those that are excluded explicitly.
-        """
-        return self._missing_implies_excluded
-
-    @missing_implies_excluded.setter
-    def missing_implies_excluded(self, missing_implies_excluded: bool):
-        """
-        :param missing_implies_excluded: a `bool` to dictate is the missing phenotypic features should be considered
-          as excluded.
-        """
-        if isinstance(missing_implies_excluded, bool):
-            self._missing_implies_excluded = missing_implies_excluded
-        else:
-            self._logger.warning('Ignoring invalid `missing_implies_excluded` value %s. Using %s.',
-                                 missing_implies_excluded, self._missing_implies_excluded)
 
     @property
     def pval_correction(self) -> typing.Optional[str]:
@@ -114,8 +92,10 @@ class CohortAnalysisConfiguration:
     @pval_correction.setter
     def pval_correction(self, pval_correction: typing.Optional[str]):
         """
-        Set the method for p value correction. 
-        See Statsmodels' `documentation <https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html>`_ 
+        Set the method for p value correction.
+
+        See Statsmodels'
+        `documentation <https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html>`_
         for the acceptable values.
 
         :param pval_correction: a `str` with the name of the desired multiple testing correction method or `None`
@@ -141,7 +121,7 @@ class CohortAnalysisConfiguration:
             self._min_n_patients_with_term = value
         else:
             self._logger.warning(
-                'Ignoring invalid `min_n_patients_with_term` value %s. Using %s', 
+                'Ignoring invalid `min_n_patients_with_term` value %s. Using %s',
                 value, self._min_n_patients_with_term,
             )
 
@@ -162,8 +142,10 @@ class CohortAnalysisConfiguration:
         if isinstance(mtc_alpha, float) and 0. < mtc_alpha <= 1.:
             self._mtc_alpha = mtc_alpha
         else:
-            self._logger.warning('`mtc_alpha` should be a `float` in range `(0, 1]` but was %s. Keeping the previous value %s',
-                                 mtc_alpha, self._mtc_alpha)
+            self._logger.warning(
+                '`mtc_alpha` should be a `float` in range `(0, 1]` but was %s. Keeping the previous value %s',
+                mtc_alpha, self._mtc_alpha,
+            )
 
     @property
     def include_sv(self) -> bool:
@@ -312,7 +294,6 @@ def configure_cohort_analysis(
         hpo=hpo,
         protein_service=protein_metadata_service,
         gp_analyzer=gp_analyzer,
-        missing_implies_excluded=config.missing_implies_excluded,
         min_n_of_patients_with_term=config.min_n_patients_with_term,
         include_sv=config.include_sv,
     )
@@ -352,8 +333,8 @@ def configure_default_protein_metadata_service(
     cache_dir: typing.Optional[str] = None,
 ) -> ProteinMetadataService:
     """
-    Create default protein metadata service that will cache the protein metadata 
-    in current working directory under `.genophenocorr_cache/protein_cache` 
+    Create default protein metadata service that will cache the protein metadata
+    in current working directory under `.genophenocorr_cache/protein_cache`
     and reach out to UNIPROT REST API if a cache entry is missing.
     """
     cache_dir = _configure_cache_dir(cache_dir)

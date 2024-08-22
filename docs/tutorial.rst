@@ -89,7 +89,8 @@ Patients Created: ...
 and we will check that there are no Q/C issues:
 
 >>> validation.summarize()
-
+Validated under none policy
+No errors or warnings were found
 
 We loaded the patient data into a `cohort` which is ready for the next steps.
 
@@ -217,22 +218,39 @@ along with Benjamini-Hochberg procedure (:meth:`~genophenocorr.analysis.CohortAn
 Now we can perform the analysis and investigate the results.
 
 >>> result = analysis.compare_genotype_vs_cohort_phenotypes(gt_predicate)
-
-We did a total of 20 tests
-
 >>> result.total_tests
-20
+16
+
+We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+259 direct and indirect HPO terms
+
+>>> from genophenocorr.analysis import prepare_hpo_terms_of_interest
+>>> terms = prepare_hpo_terms_of_interest(hpo, cohort.all_patients, min_n_of_patients_with_term=2)
+>>> len(terms)
+259
+
+We can show the reasoning behind *not* testing 243 (`259 - 16`) HPO terms
+by exploring the phenotype MTC filtering report.
+
+>>> from genophenocorr.view import MtcStatsViewer
+>>> mtc_viewer = MtcStatsViewer() 
+>>> mtc_report = mtc_viewer.process(result.mtc_filter_report)
+>>> with open('docs/report/tbx5_mtc_report.html', 'w') as fh:  # doctest: +SKIP
+...     _ = fh.write(mtc_report)
+
+.. raw:: html
+  :file: report/tbx5_mtc_report.html
 
 ..
   
   TODO: 
   Show how to write out the tested HPO terms.
 
-and these are top 10 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
+and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
 >>> from genophenocorr.analysis.predicate import PatientCategories
 >>> summary_df = result.summarize(hpo, PatientCategories.YES)
->>> summary_df.head(10).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+>>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
    :file: report/tbx5_frameshift_vs_missense.csv
