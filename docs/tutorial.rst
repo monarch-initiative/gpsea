@@ -5,19 +5,38 @@ Tutorial
 ========
 
 Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
-We do not explain all the details. We do, however, provide links to the relevant documentation.
+The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
+The :ref:`user-guide` contains details about additional methods and functionalities.
 
-We will work with individuals with mutations in *TBX5* leading to 
-`Holt-Oram syndrome MIM:142900 <https://omim.org/entry/142900>`_
-and we will show that ... TODO - write.
+
+The tutorial presents an analysis of a cohort of individuals with pathogenic variants in *TBX5* leading to 
+`Holt-Oram syndrome MIM:142900 <https://omim.org/entry/142900>`_. 
+
+Holt-Oram syndrome is an autosomal dominant disorder characterized by 
+upper limb defects, congenital heart defects, and arrhythmias (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
+It has been observed in the literature that congenital defects of the ventricular and atrial septum are more
+common in the truncating than in the missense variants (`PMID:30552424 <https://pubmed.ncbi.nlm.nih.gov/30552424/>`_).
+Additionally, upper limb defects are more frequent in patients with protein-truncating variants (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
+
+To perform the analysis, we curated the literature and created on `GA4GH phenopacket <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_ for each 
+affected individual. The phenopackets are made available in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
+
 
 
 The analysis
 ~~~~~~~~~~~~
 
-We will be analyzing the cohort of subjects with mutations in *TBX5*. 
-We will use the transcript `NM_181486.4` which was chosen by the MANE consortium
-and encodes a protein with accession `NP_852259.1`.
+For the analysis, the `MANE <https://www.ncbi.nlm.nih.gov/refseq/MANE/>`_ transcript (i.e., the "main" biomedically relevant transcript of a gene) should be chosen unless
+there is a specific reason not to (which should occur rarely if at all). 
+
+In the case of *TBX5* the MANE transcript is `NM_181486.4`. Note that the trascript identifier (`NM_181486`) and the version (`4`) are both required.
+A good way to find the MANE transcript is to search on the gene symbol (e.g., *TBX5*) in `ClinVar <https://www.ncbi.nlm.nih.gov/clinvar/>`_ and to
+choose a variant that is specifically located in the gene. The MANE transcript will be displayed here (e.g., `NM_181486.4(TBX5):c.1221C>G (p.Tyr407Ter)
+<https://www.ncbi.nlm.nih.gov/clinvar/variation/495227/>`_).
+
+We additionally need the corresponding protein identifier. A good way to find this is to search on the transcript id in `NCBI Nucleotide <https://www.ncbi.nlm.nih.gov/nuccore/>`_.
+In our case, search on `NM_181486.4` will bring us to `this page <https://www.ncbi.nlm.nih.gov/nuccore/NM_181486.4>`_. If we search within this page for "NP_", this will bring us to the
+corresponding protein accession `NP_852259.1`.
 
 >>> cohort_name = 'TBX5'
 >>> tx_id = 'NM_181486.4'
@@ -36,7 +55,7 @@ We use HPO toolkit to load HPO version `v2023-10-09`:
 
 .. tip::
 
-  Use the latest HPO by omitting the `release` option.
+  Use the latest HPO release by omitting the `release` option.
 
 Prepare cohort
 ^^^^^^^^^^^^^^
@@ -53,7 +72,7 @@ and stored in `Phenopacket Store <https://github.com/monarch-initiative/phenopac
 156
 
 We loaded 156 phenopackets which need further preprocessing to prepare for the analysis.
-We will compute functional annotations for the mutations and pack the patients into 
+We will compute functional annotations for the mutations and then include the individuals into 
 a :class:`~genophenocorr.model.Cohort`:
 
 >>> from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopackets
@@ -158,11 +177,29 @@ in the individuals of the *TBX5* cohort.
   See the :ref:`predicates` section to learn more about building
   a predicate of interest.
 
-We will reduce the number of tested HPO by applying several
-:ref:`domain judgments <hpo-mtc-filter-strategy>`
-(:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`) 
-and we will use Benjamini-Hochberg procedure to control the false discovery rate
-in the tested HPO terms (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
+
+By default, GPSEA will perform one hypothesis test for each HPO term used to annotate more than one individual in the cohort.
+This also includes the terms implied by the ontology "true path rule", 
+which states that presence of a term 
+(e.g., `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_)
+implies presence of all its ancestor terms 
+(e.g., `Abnormal ventricular septum morphology <https://hpo.jax.org/browse/term/HP:0010438>`_, 
+`Abnormal cardiac septum morphology <https://hpo.jax.org/browse/term/HP:0001671>`_,
+`Abnormal cardiac ventricle morphology <https://hpo.jax.org/browse/term/HP:0001713>`_, ...).
+However, testing multiple hypothesis increases the chance of receiving false positive result,
+and multiple testing correction must be applied.
+See :ref:`mtc` for information about how to perform multiple testing correction with GPSEA. 
+
+For general use, we recommend using a combination
+of a :class:`~genophenocorr.analysis.PhenotypeMtcFilter` with a multiple testing correction.
+`PhenotypeMtcFilter` chooses the HPO terms to test according to several heuristics, which 
+reduce the multiple testing burden and focus the analysis
+on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
+Then a multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
+is used to control the false discovery rate.
+
+Here we use HPO MTC filter (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
+along with Benjamini-Hochberg procedure (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
 
 >>> from genophenocorr.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
 >>> config = CohortAnalysisConfiguration()
