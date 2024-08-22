@@ -26,7 +26,8 @@ affected individual. The phenopackets are made available in `Phenopacket Store <
 The analysis
 ~~~~~~~~~~~~
 
-For the analysis, the `MANE <https://www.ncbi.nlm.nih.gov/refseq/MANE/>`_ transcript (i.e., the "main" biomedically relevant transcript of a gene) should be chosen unless
+For the analysis, the `MANE <https://www.ncbi.nlm.nih.gov/refseq/MANE/>`_ transcript 
+(i.e., the "main" biomedically relevant transcript of a gene) should be chosen unless
 there is a specific reason not to (which should occur rarely if at all). 
 
 In the case of *TBX5* the MANE transcript is `NM_181486.4`. Note that the trascript identifier (`NM_181486`) and the version (`4`) are both required.
@@ -34,8 +35,10 @@ A good way to find the MANE transcript is to search on the gene symbol (e.g., *T
 choose a variant that is specifically located in the gene. The MANE transcript will be displayed here (e.g., `NM_181486.4(TBX5):c.1221C>G (p.Tyr407Ter)
 <https://www.ncbi.nlm.nih.gov/clinvar/variation/495227/>`_).
 
-We additionally need the corresponding protein identifier. A good way to find this is to search on the transcript id in `NCBI Nucleotide <https://www.ncbi.nlm.nih.gov/nuccore/>`_.
-In our case, search on `NM_181486.4` will bring us to `this page <https://www.ncbi.nlm.nih.gov/nuccore/NM_181486.4>`_. If we search within this page for "NP_", this will bring us to the
+We additionally need the corresponding protein identifier.
+A good way to find this is to search on the transcript id in `NCBI Nucleotide <https://www.ncbi.nlm.nih.gov/nuccore/>`_.
+In our case, search on `NM_181486.4` will bring us to `this page <https://www.ncbi.nlm.nih.gov/nuccore/NM_181486.4>`_.
+If we search within this page for `"NP_"`, this will bring us to the
 corresponding protein accession `NP_852259.1`.
 
 >>> cohort_name = 'TBX5'
@@ -191,12 +194,12 @@ and multiple testing correction must be applied.
 See :ref:`mtc` for information about how to perform multiple testing correction with GPSEA. 
 
 For general use, we recommend using a combination
-of a :class:`~genophenocorr.analysis.PhenotypeMtcFilter` with a multiple testing correction.
-`PhenotypeMtcFilter` chooses the HPO terms to test according to several heuristics, which 
+of a *Phenotype MTC filter* (:class:`~genophenocorr.analysis.PhenotypeMtcFilter`) with a *multiple testing correction*.
+Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which 
 reduce the multiple testing burden and focus the analysis
 on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
-Then a multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
-is used to control the false discovery rate.
+Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
+is used to control the family-wise error rate or the false discovery rate.
 
 Here we use HPO MTC filter (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
 along with Benjamini-Hochberg procedure (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
