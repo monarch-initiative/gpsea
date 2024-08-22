@@ -1,6 +1,6 @@
 # How to release
 
-The document describes how to release `genophenocorr` to *PyPi*.
+The document describes how to release `gpsea` to *PyPi*.
 
 ## Release checklist
 
@@ -9,7 +9,7 @@ The document describes how to release `genophenocorr` to *PyPi*.
 - remove deprecated methods targeted for removal in this version. The `TODO` markers are labeled using 
   the target version (e.g. `TODO[v0.3.0]`)
 - bump versions to a release:
-  - `src/genophenocorr/__init__.py`
+  - `src/gpsea/__init__.py`
   - `docs/conf.py`
 - ensure the CI passes
 - deploy to PyPi (described below)
@@ -52,11 +52,11 @@ Store the token into `$HOME/.pypirc` file with `-rw-------` permissions. The fil
 Now we're ready to publish packages!
 
 ### Deploy
-Run the following to deploy `genophenocorr` to PyPi:  
+Run the following to deploy `gpsea` to PyPi:  
 
 ```bash
 # Ensure you're on the release branch
-cd genophenocorr
+cd gpsea
 
 # Build the package
 python3 -m build

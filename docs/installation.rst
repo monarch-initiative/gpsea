@@ -4,16 +4,16 @@
 Installation
 ============
 
-The document describes how to install `genophenocorr` into your environment.
+The document describes how to install `gpsea` package into your environment.
 
 Stable release
 **************
 
-Installing `genophenocorr` is easy - we publish releases on `Python Package Index (PyPi) <https://pypi.org/project/genophenocorr>`_.
+Installing `gpsea` is easy - we publish releases on `Python Package Index (PyPi) <https://pypi.org/project/gpsea>`_.
 
 Run the following to install the latest *stable* release::
 
-  python3 -m pip install genophenocorr
+  python3 -m pip install gpsea
 
 
 Latest release
@@ -21,8 +21,8 @@ Latest release
 
 The *latest* release can be installed by cloning the GitHub repository::
 
-  git clone https://github.com/monarch-initiative/genophenocorr.git
-  cd genophenocorr
+  git clone https://github.com/monarch-initiative/gpsea.git
+  cd gpsea
 
   # Switch to `develop` branch to access the latest features
   git checkout develop

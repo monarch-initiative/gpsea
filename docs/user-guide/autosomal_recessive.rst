@@ -15,8 +15,8 @@ For instance, one might compare the three groups missense/missense (homozygotes)
 
 
 
-genophenocorr implements a 6-field Fischer Exact Test to support this kind of analysis.
+GPSEA implements a 6-field Fisher Exact Test to support this kind of analysis.
 
 Tutorial
 ^^^^^^^^
-
+TODO

@@ -6,7 +6,7 @@ Statistical tests
 
 There are many different ways of statistically testing for genotype-phenotype correlations, 
 and the appropriate statistical test depends on the question. 
-This document provides an overview of the tests offered by the genophenocorr library 
+This document provides an overview of the tests offered by the GPSEA library 
 and explanations of how they are implemented by our software.
 
 
@@ -97,7 +97,7 @@ We start by loading the cohort from Phenopacket Store (version `0.1.18`):
 
 We loaded 19 phenopackets. 
 
-Now, we need to prepare the phenopackets for using with Genophenocorr.
+Now, we need to prepare the phenopackets for using with GPSEA.
 We will need HPO (version `v2024-07-01`)
 
 >>> import hpotk
@@ -106,12 +106,12 @@ We will need HPO (version `v2024-07-01`)
 
 to create cohort creator
 
->>> from genophenocorr.preprocessing import configure_caching_cohort_creator
+>>> from gpsea.preprocessing import configure_caching_cohort_creator
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
 which we will use to preprocess the cohort
 
->>> from genophenocorr.preprocessing import load_phenopackets
+>>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 Patients Created: ...
 >>> len(cohort)
@@ -127,8 +127,8 @@ Now let's create a predicate for testing if the variant is a point mutation or a
 The point mutation predicate is defined as ... 
 TODO: improve!
 
->>> from genophenocorr.model import VariantEffect
->>> from genophenocorr.analysis.predicate.genotype import VariantPredicates
+>>> from gpsea.model import VariantEffect
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> point_mutation_effects = (
 ...     VariantEffect.MISSENSE_VARIANT,
 ... )
@@ -152,7 +152,7 @@ For the loss of function predicate, these variant effects are considered loss of
 
 The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:
 
->>> from genophenocorr.analysis.predicate.genotype import groups_predicate
+>>> from gpsea.analysis.predicate.genotype import groups_predicate
 >>> gt_predicate = groups_predicate(
 ...     predicates=(point_mutation, lof_mutation),
 ...     group_names=('Point', 'LoF'),
@@ -173,7 +173,7 @@ in these groups:
 
 Let's run the analysis.
 
->>> from genophenocorr.analysis import configure_cohort_analysis
+>>> from gpsea.analysis import configure_cohort_analysis
 >>> analysis = configure_cohort_analysis(
 ...     cohort, hpo,
 ... )

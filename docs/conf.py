@@ -15,8 +15,8 @@ import sys
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-genophenocorr_src = os.path.abspath(os.path.join('..', 'src'))
-sys.path.insert(0, genophenocorr_src)
+src_dir = os.path.abspath(os.path.join('..', 'src'))
+sys.path.insert(0, src_dir)
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'genophenocorr'
+project = u'GPSEA'
 copyright = u'2024'
 author = u'Lauren Rekerle, Daniel Danis, Peter N Robinson'
 
@@ -103,7 +103,7 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-html_css_files = ['genophenocorr.css']
+html_css_files = ['gpsea.css']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -124,7 +124,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'genophenocorr'
+htmlhelp_basename = 'GPSEA'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -151,7 +151,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'genophenocorr.tex', u'genophenocorr Documentation',
+    (master_doc, 'gpsea.tex', u'GPSEA Documentation',
      u'Lauren Rekerle, Peter Robinson', 'manual'),
 ]
 
@@ -161,7 +161,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'genophenocorr', u'genophenocorr Documentation',
+    (master_doc, 'gpsea', u'GPSEA Documentation',
      [author], 1)
 ]
 
@@ -172,8 +172,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'genophenocorr', u'genophenocorr Documentation',
-     author, 'genophenocorr', 'genotype phenotype correlations with GA4GH Phenopackets',
+    (master_doc, 'gpsea', u'GPSEA Documentation',
+     author, 'gpsea', 'Genotype phenotype correlations with GA4GH Phenopackets',
      'Miscellaneous'),
 ]
 
@@ -183,7 +183,7 @@ autodoc_member_order = 'bysource'
 
 # -- Doctest setup ------------------------------------------------------------
 
-doctest_path = [genophenocorr_src]
+doctest_path = [src_dir]
 doctest_test_doctest_blocks = ""
 
 doctest_global_setup = """
@@ -200,8 +200,7 @@ doctest_default_flags = (doctest.REPORT_ONLY_FIRST_FAILURE
 # -- Intersphinx setup --------------------------------------------------------
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    # TODO - change to stable when we arrive there
-    "hpotk": ("https://ielis.github.io/hpo-toolkit/latest/", None),
+    "hpotk": ("https://ielis.github.io/hpo-toolkit/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/version/2.0.0/", None),
     "requests": ("https://docs.python-requests.org/en/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy-1.11.0/", None),
