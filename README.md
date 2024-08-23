@@ -1,4 +1,4 @@
-[![Build status](https://github.com/monarch-initiative/gpsea/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genogpseaphenocorr/actions/workflows/python_ci.yml)
+[![Build status](https://github.com/monarch-initiative/gpsea/workflows/CI/badge.svg)](https://github.com/monarch-initiative/gpsea/actions/workflows/python_ci.yml)
 [![GitHub release](https://img.shields.io/github/release/monarch-initiative/gpsea.svg)](https://github.com/monarch-initiative/gpsea/releases)
 ![PyPi downloads](https://img.shields.io/pypi/dm/gpsea.svg?label=Pypi%20downloads)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gpsea)
