@@ -17,6 +17,7 @@ The first step of the `gpsea` analysis involves standardization of the genotype 
 and performing functional annotation of the variants. Here we describe how to prepare a `Cohort`
 for the exploratory and downstream analysis.
 
+
 Create a cohort from GA4GH phenopackets
 ---------------------------------------
 
@@ -29,14 +30,15 @@ Let's start with loading Human Phenotype Ontology, a requisite for the input Q/C
 `hpo-toolkit <https://github.com/TheJacksonLaboratory/hpo-toolkit>`_ library which is installed along with
 the standard `gpsea` installation:
 
-.. doctest:: input-data
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-03-06')
 
-  >>> import hpotk
-  >>> store = hpotk.configure_ontology_store()
-  >>> hpo = store.load_minimal_hpo(release='v2024-03-06')
+Next, let's prepare a :class:`~gpsea.preprocessing.CohortCreator` that will turn a collection of phenopacket
+into a :class:`~gpsea.model.Cohort`, required in the downstream steps.
 
-Next, let's get a `CohortCreator` for loading the phenopackets. We use the
-:func:`gpsea.preprocessing.configure_caching_cohort_creator` convenience method:
+The easiest way to get the `CohortCreator` is to use the
+:func:`~gpsea.preprocessing.configure_caching_cohort_creator` convenience method:
 
 .. doctest:: input-data 
 
@@ -46,35 +48,42 @@ Next, let's get a `CohortCreator` for loading the phenopackets. We use the
 
 .. note::
 
-  The default `cohort_creator` will call Variant Effect Predictor
-  and Uniprot APIs to perform the functional annotation and protein annotation, and the responses will be cached
-  in the current working directory to save the bandwidth.
-  See the :func:`gpsea.preprocessing.configure_caching_cohort_creator` for more configuration options.
+  The default `CohortCreator` will call Variant Effect Predictor and Uniprot APIs
+  to perform the functional annotation and protein annotation, 
+  and the responses will be cached in the current working directory to reduce the network bandwidth.
+  See the :func:`~gpsea.preprocessing.configure_caching_cohort_creator` pydoc for more options.
 
-We can create a cohort starting from a folder with phenopackets stored as JSON files.
-For the purpose of this example, we will use a folder `simple_cohort` with 5 example phenopackets located in
-`docs/data/simple_cohort <https://github.com/monarch-initiative/gpsea/tree/main/docs/data/simple_cohort>`_ 
-folder of the `gpsea` repository:
+We can create a cohort starting from a `Phenopacket` collection.
+For the purpose of this example, we will load a cohort of patients with pathogenic mutations in *RERE* gene
+included in the release `0.1.18` of `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
+We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopacket-store-toolkit>`_
+(``ppktstore`` in the code) to reduce the boilerplate code needed to load the phenopackets:
 
-.. doctest:: input-data
+>>> from ppktstore.registry import configure_phenopacket_registry
+>>> registry = configure_phenopacket_registry()
+>>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
+>>> len(phenopackets)
+19
 
-  >>> import os
-  >>> simple_cohort_path = os.path.join('docs', 'data', 'simple_cohort')
+We loaded 19 phenopackets. Now we can turn the phenopackets into a `Cohort`
+using the `cohort_creator` and the :func:`~gpsea.preprocessing.load_phenopackets`
+loader function:
 
-We load the phenopackets using `cohort_creator` defined above together with another convenience function
-:class:`gpsea.preprocessing.load_phenopacket_folder`:
+>>> from gpsea.preprocessing import load_phenopackets
+>>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+Patients Created: ...
+>>> len(cohort)
+19
 
-.. doctest:: input-data
+The cohort includes all 19 individuals. 
+On top of the ``cohort``, the loader function also provides Q/C results  ``qc_results``.
+We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
+to display the Q/C summary:
 
-  >>> from gpsea.preprocessing import load_phenopacket_folder
-
-  >>> cohort, _  = load_phenopacket_folder(simple_cohort_path, cohort_creator) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-  Patients Created...
-
-  >>> len(cohort)
-  5
-
-We loaded phenopackets into a `Cohort` consisting of 5 members.
+>>> qc_results.summarize()  # doctest: +NORMALIZE_WHITESPACE
+Validated under none policy
+No errors or warnings were found
 
 
 Create a cohort from other data
