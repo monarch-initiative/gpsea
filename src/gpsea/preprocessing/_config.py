@@ -10,6 +10,7 @@ from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket
 from tqdm import tqdm
 
+from gpsea.config import get_cache_dir_path
 from gpsea.model import Cohort
 from gpsea.model.genome import GRCh37, GRCh38, GenomeBuild
 from ._api import FunctionalAnnotator, PreprocessingValidationResult
@@ -47,8 +48,8 @@ def configure_caching_cohort_creator(
     :param genome_build: name of the genome build to use, choose from `{'GRCh37.p13', 'GRCh38.p13'}`.
     :param validation_runner: an instance of the validation runner.
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
-     if the data should be cached in `.gpsea_cache` folder in the current working directory.
-     In any case, the directory will be created if it does not exist (including non-existing parents).
+        if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.
+        In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the REST APIs
@@ -92,8 +93,8 @@ def configure_caching_patient_creator(
     :param genome_build: name of the genome build to use, choose from `{'GRCh37.p13', 'GRCh38.p13'}`.
     :param validation_runner: an instance of the validation runner.
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
-     if the data should be cached in `.cache` folder in the current working directory.
-     In any case, the directory will be created if it does not exist (including non-existing parents).
+        if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.
+        In any case, the directory will be created if it does not exist (including non-existing parents).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the REST APIs
@@ -237,12 +238,10 @@ def configure_protein_metadata_service(
 def _configure_cache_dir(
     cache_dir: typing.Optional[str] = None,
 ) -> str:
-    if cache_dir is None:
-        # TODO: use environment variable
-        cache_dir = os.path.join(os.getcwd(), ".gpsea_cache")
-
+    cache_dir = get_cache_dir_path(cache_dir)
     os.makedirs(cache_dir, exist_ok=True)
-    return cache_dir
+
+    return str(cache_dir)
 
 
 def _configure_build(genome_build: str) -> GenomeBuild:

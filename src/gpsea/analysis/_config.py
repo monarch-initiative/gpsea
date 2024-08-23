@@ -4,6 +4,7 @@ import typing
 import enum
 import hpotk
 
+from gpsea.config import get_cache_dir_path
 from gpsea.model import Cohort
 from gpsea.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, \
     ProtCachingMetadataService
@@ -342,8 +343,8 @@ def configure_default_protein_metadata_service(
 
 
 def _configure_protein_service(
-        protein_fallback: str,
-        cache_dir: str,
+    protein_fallback: str,
+    cache_dir: str,
 ) -> ProteinMetadataService:
     # (1) ProteinMetadataService
     # Setup fallback
@@ -366,9 +367,7 @@ def _configure_fallback_protein_service(protein_fallback: str) -> ProteinMetadat
 
 
 def _configure_cache_dir(cache_dir: typing.Optional[str]) -> str:
-    if cache_dir is None:
-        cache_dir = os.path.join(os.getcwd(), '.gpsea_cache')
-    
-    # TODO: Use environment variable
+    cache_path = get_cache_dir_path(cache_dir)
+    os.makedirs(cache_path, exist_ok=True)
 
-    return cache_dir
+    return str(cache_path)
