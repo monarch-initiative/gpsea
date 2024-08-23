@@ -23,66 +23,69 @@ The the clinical signs and symptoms of the subjects were encoded into HPO terms
 along with the pathogenic *ANKRD11* variant.
 
 Let's load the phenopackets, as previously described in greater detail the :ref:`input-data` section.
-
-First, we load HPO using HPO toolkit:
+Briefly, we first load HPO:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-03-06')
 
-then, we will configure the cohort creator:
+then, we configure the cohort creator:
 
->>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopacket_folder
+>>> from gpsea.preprocessing import configure_caching_cohort_creator
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
-last, we will load the cohort from a directory with phenopackets:
+which we use to create a :class:`~gpsea.model.Cohort` from a bunch of phenopackets
+from the release `0.1.18` of `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
+This time, however, we will load 19 individuals with mutations in *RERE* gene:
 
->>> import os
->>> cohort_dir = os.path.join('docs', 'data', 'simple_cohort')
->>> cohort, _ = load_phenopacket_folder(cohort_dir, cohort_creator) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created...
->>> len(cohort)
-5
+>>> from ppktstore.registry import configure_phenopacket_registry
+>>> registry = configure_phenopacket_registry()
+>>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
+>>> len(phenopackets)
+19
 
-We loaded a cohort of 5 patients.
+and we will convert the phenopacket into a :class:`~gpsea.model.Cohort`:
 
-Let's use the variant ``16_89281397_89281397_G_C`` that corresponds 
-to a pathogenic variant `VCV001029215.1 <https://www.ncbi.nlm.nih.gov/clinvar/variation/1029215/>`_ 
-that replaces the tyrosine encoded by the 1715th codon of `NM_013275.6` with a premature stop codon: ``NM_013275.6(ANKRD11):c.5145C>G (p.Tyr1715Ter)``.
+>>> from gpsea.preprocessing import load_phenopackets
+>>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+Patients Created: ...
 
->>> variant_key_of_interest = '16_89281397_89281397_G_C'
+To demonstrate the predicate API, we will use the variant ``1_8358231_8358231_T_C`` that corresponds 
+to a pathogenic variant `VCV000522858.5 <https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/>`_ 
+that replaces the histidine encoded by the 1435th codon of `NM_001042681.2` with arginine: ``NM_001042681.2(RERE):c.4304A>G (p.His1435Arg)``.
+
+>>> variant_key_of_interest = '1_8358231_8358231_T_C'
 >>> variant = cohort.get_variant_by_key(variant_key_of_interest)
-
-We will use the variant to exemplify the predicate API.
 
 Simple predicates
 *****************
 
-We can check that the variant overlaps with *ANKRD11*:
+We can check that the variant overlaps with *RERE*:
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> gene = VariantPredicates.gene('ANKRD11')
+>>> gene = VariantPredicates.gene('RERE')
 >>> gene.test(variant)
 True
 
 it overlaps with the *MANE* transcript:
 
->>> ankrd11_mane_tx_id = 'NM_013275.6'
->>> tx = VariantPredicates.transcript(ankrd11_mane_tx_id)
+>>> rere_mane_tx_id = 'NM_001042681.2'
+>>> tx = VariantPredicates.transcript(rere_mane_tx_id)
 >>> tx.test(variant)
 True
 
-it in fact overlaps with the exon 9:
+it in fact overlaps with the exon 20:
 
->>> exon9 = VariantPredicates.exon(exon=9, tx_id=ankrd11_mane_tx_id)
->>> exon9.test(variant)
+>>> exon20 = VariantPredicates.exon(exon=20, tx_id=rere_mane_tx_id)
+>>> exon20.test(variant)
 True
 
-and it is predicted to introduce a premature termination codon to the MANE transcript:
+and leads to a missense mutation with respect to the MANE transcript:
 
 >>> from gpsea.model import VariantEffect
->>> nonsense = VariantPredicates.variant_effect(VariantEffect.STOP_GAINED, tx_id=ankrd11_mane_tx_id)
->>> nonsense.test(variant)
+>>> missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=rere_mane_tx_id)
+>>> missense.test(variant)
 True
 
 See :class:`~gpsea.analysis.predicate.genotype.VariantPredicates` 
@@ -95,15 +98,15 @@ Compound predicates
 The simple predicates can be combined to test for more elaborate conditions.
 For instance, we can test if the variant meets *any* or several conditions:
 
->>> missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=ankrd11_mane_tx_id)
+>>> nonsense = VariantPredicates.variant_effect(VariantEffect.STOP_GAINED, tx_id=rere_mane_tx_id)
 >>> missense_or_nonsense = missense | nonsense
 >>> missense_or_nonsense.test(variant)
 True
 
 or *all* conditions:
 
->>> nonsense_and_exon9 = nonsense & exon9
->>> nonsense_and_exon9.test(variant)
+>>> missense_and_exon20 = missense & exon20
+>>> missense_and_exon20.test(variant)
 True
 
 The `VariantPredicate` overloads Python ``&`` (AND) and ``|`` (OR) operators to build a compound predicate from lower level building blocks.
@@ -131,7 +134,7 @@ for all variant effects except of :class:`~gpsea.model.VariantEffect.FRAMESHIFT_
 ...   VariantEffect.SYNONYMOUS_VARIANT, VariantEffect.MISSENSE_VARIANT, VariantEffect.INTRON_VARIANT,
 ...   # and many more effects..
 ... )
->>> non_frameshift_predicate = VariantPredicates.all(VariantPredicates.variant_effect(eff, tx_id=ankrd11_mane_tx_id) for eff in non_frameshift_effects)
+>>> non_frameshift_predicate = VariantPredicates.all(VariantPredicates.variant_effect(eff, tx_id=rere_mane_tx_id) for eff in non_frameshift_effects)
 
 However, this is clearly tedious and it would be much better implemented 
 by a simple logical not of a predicate for a frameshift variant effect.
@@ -142,9 +145,9 @@ the underlying predicate and to invert its test result.
 
 This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:
 
->>> non_frameshift_del = ~VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id=ankrd11_mane_tx_id) & VariantPredicates.variant_class(VariantClass.DEL)
+>>> non_frameshift_del = ~VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id=rere_mane_tx_id) & VariantPredicates.variant_class(VariantClass.DEL)
 >>> non_frameshift_del.get_question()
-'(NOT FRAMESHIFT_VARIANT on NM_013275.6 AND variant class is DEL)'
+'(NOT FRAMESHIFT_VARIANT on NM_001042681.2 AND variant class is DEL)'
 
 Note the presence of a tilde ``~`` before the variant effect predicate and resulting ``NOT`` in the predicate question.
 
