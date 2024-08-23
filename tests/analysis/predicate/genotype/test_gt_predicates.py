@@ -1,8 +1,8 @@
 import pytest
 
-from genophenocorr.model import *
-from genophenocorr.analysis.predicate import GenotypePolyPredicate
-from genophenocorr.analysis.predicate.genotype import (
+from gpsea.model import *
+from gpsea.analysis.predicate import GenotypePolyPredicate
+from gpsea.analysis.predicate.genotype import (
     groups_predicate,
     VariantPredicates,
 )

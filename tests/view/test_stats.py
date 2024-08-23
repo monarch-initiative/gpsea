@@ -1,7 +1,7 @@
 import pytest
 
-from genophenocorr.analysis import HpoMtcReport
-from genophenocorr.view import MtcStatsViewer
+from gpsea.analysis import HpoMtcReport
+from gpsea.view import MtcStatsViewer
 
 
 class TestStatsViewable:

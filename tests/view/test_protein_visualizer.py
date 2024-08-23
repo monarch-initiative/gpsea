@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import pytest
 
-from genophenocorr.model import TranscriptCoordinates, ProteinMetadata, Cohort
-from genophenocorr.view import ProteinVisualizer, ProteinVisualizable, ProteinViewable
+from gpsea.model import TranscriptCoordinates, ProteinMetadata, Cohort
+from gpsea.view import ProteinVisualizer, ProteinVisualizable, ProteinViewable
 
 
 class TestProteinVisualizer:

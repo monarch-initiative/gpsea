@@ -25,10 +25,10 @@ tests, the probability that none will be significant is
 least one significant result.
 
 
-Implementation in genophenocorr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Implementation in GPSEA
+~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, genephenocorr performs a hypothesis test for each HPO term found at least twice
+By default, GPSEA performs a hypothesis test for each HPO term found at least twice
 in the cohort, meaning that we may perform up to hundreds of tests.
 Therefore, unless we take into account the fact that multiple statistical tests are being performed,
 it is likely that we will obtain one or more false-positive results.
@@ -37,9 +37,9 @@ Genephenocorr offers two approaches to mitigate this problem: multiple-testing c
 and MTC filters to choose the terms to be tested.
 
 Here we will show how to configure the MTC approach 
-using :class:`~genophenocorr.analysis.CohortAnalysisConfiguration` class.
+using :class:`~gpsea.analysis.CohortAnalysisConfiguration` class.
 
->>> from genophenocorr.analysis import CohortAnalysisConfiguration
+>>> from gpsea.analysis import CohortAnalysisConfiguration
 >>> config = CohortAnalysisConfiguration()
 
 
@@ -114,7 +114,7 @@ is only 10 instead of 450, and more p-values
 may "survive" the multiple-testing correction.
 
 In the context of GPSEA, we represent the concept of phenotype filtering 
-by :class:`~genophenocorr.analysis.PhenotypeMtcFilter`.
+by :class:`~gpsea.analysis.PhenotypeMtcFilter`.
 We describe the three filtering strategies in the next sections.
 
 
@@ -128,7 +128,7 @@ This will result in testing all terms. We do not recommend this strategy,
 but it can be useful to disable MTC filtering.
 
 The strategy is invoked by default, 
-or explicitly by :func:`~genophenocorr.analysis.CohortAnalysisConfiguration.all_terms_strategy` method:
+or explicitly by :func:`~gpsea.analysis.CohortAnalysisConfiguration.all_terms_strategy` method:
 
 >>> config.all_terms_strategy()
 >>> config.mtc_strategy
@@ -142,7 +142,7 @@ Specify terms strategy
 
 In presence of a specific hypothesis as to which terms may be different between groups, 
 then you can specify these terms using
-the :func:`~genophenocorr.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method.
+the :func:`~gpsea.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method.
 
 For example if we want to specifically test
 `Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
@@ -161,7 +161,7 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:
 ('HP:0031982', 'HP:0002339')
 
 Later, when the `config` is used in analysis, 
-genophenocorr will only perform two hypothesis tests, one for each of the two terms.
+GPSEA will only perform two hypothesis tests, one for each of the two terms.
 
 
 .. _hpo-mtc-filter-strategy:
@@ -172,7 +172,7 @@ HPO MTC filter strategy
 Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
 
 The strategy is chosen by invoking 
-:func:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy` method:
+:func:`~gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy` method:
 
 >>> config = CohortAnalysisConfiguration()
 >>> config.hpo_mtc_strategy(min_patients_w_hpo=0.5)

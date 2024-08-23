@@ -2,11 +2,11 @@ import pytest
 
 import hpotk
 
-from genophenocorr.model import *
-from genophenocorr.model.genome import *
-from genophenocorr.preprocessing import ProteinMetadataService
+from gpsea.model import *
+from gpsea.model.genome import *
+from gpsea.preprocessing import ProteinMetadataService
 
-from genophenocorr.analysis.predicate.genotype import ProteinPredicates
+from gpsea.analysis.predicate.genotype import ProteinPredicates
 
 
 @pytest.fixture(scope="package")

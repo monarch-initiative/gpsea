@@ -4,8 +4,8 @@ import typing
 
 import pytest
 
-from genophenocorr.io import GenophenocorrJSONEncoder
-from genophenocorr.preprocessing import UniprotProteinMetadataService
+from gpsea.io import GpseaJSONEncoder
+from gpsea.preprocessing import UniprotProteinMetadataService
 
 
 @pytest.fixture
@@ -58,6 +58,6 @@ class TestUniprotProteinMetadataService:
             json.dump(
                 metadata,
                 fh,
-                cls=GenophenocorrJSONEncoder,
+                cls=GpseaJSONEncoder,
                 indent=2,
             )

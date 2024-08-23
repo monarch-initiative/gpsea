@@ -2,8 +2,8 @@ import pytest
 
 import typing
 
-from genophenocorr.model import Variant, Cohort, VariantCoordinates
-from genophenocorr.model.genome import GenomeBuild, GenomicRegion, Strand
+from gpsea.model import Variant, Cohort, VariantCoordinates
+from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
 
 
 class TestVariant:

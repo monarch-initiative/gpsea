@@ -5,10 +5,10 @@ import pytest
 
 import pandas as pd
 
-from genophenocorr.analysis import configure_cohort_analysis, GenotypePhenotypeAnalysisResult
-from genophenocorr.analysis.predicate import PatientCategories
-from genophenocorr.analysis.predicate.genotype import VariantPredicates, boolean_predicate
-from genophenocorr.model import Cohort, VariantEffect
+from gpsea.analysis import configure_cohort_analysis, GenotypePhenotypeAnalysisResult
+from gpsea.analysis.predicate import PatientCategories
+from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
+from gpsea.model import Cohort, VariantEffect
 
 
 class TestCohortAnalysis:

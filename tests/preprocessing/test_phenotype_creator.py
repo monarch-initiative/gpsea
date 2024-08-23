@@ -1,7 +1,7 @@
 import hpotk
 import pytest
 
-from genophenocorr.preprocessing import PhenotypeCreator, Level
+from gpsea.preprocessing import PhenotypeCreator, Level
 
 
 class TestPhenotypeCreator:

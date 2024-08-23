@@ -1,9 +1,9 @@
 import typing
 from typing import Sequence
 
-from genophenocorr.model import ProteinMetadata, ProteinFeature, FeatureInfo, FeatureType
-from genophenocorr.model.genome import Region
-from genophenocorr.preprocessing import ProteinMetadataService
+from gpsea.model import ProteinMetadata, ProteinFeature, FeatureInfo, FeatureType
+from gpsea.model.genome import Region
+from gpsea.preprocessing import ProteinMetadataService
 
 
 def create_protein_test_data() -> Sequence[ProteinMetadata]:

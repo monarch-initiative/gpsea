@@ -1,4 +1,4 @@
-from genophenocorr.model import Cohort
+from gpsea.model import Cohort
 
 
 class TestCohort:

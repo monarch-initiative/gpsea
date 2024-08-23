@@ -76,9 +76,9 @@ and stored in `Phenopacket Store <https://github.com/monarch-initiative/phenopac
 
 We loaded 156 phenopackets which need further preprocessing to prepare for the analysis.
 We will compute functional annotations for the mutations and then include the individuals into 
-a :class:`~genophenocorr.model.Cohort`:
+a :class:`~gpsea.model.Cohort`:
 
->>> from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopackets
+>>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 >>> cohort, validation = load_phenopackets(  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 ...     phenopackets=phenopackets, 
@@ -96,7 +96,7 @@ We loaded the patient data into a `cohort` which is ready for the next steps.
 
 .. seealso::
 
-  Here we show how to create a :class:`~genophenocorr.model.Cohort` from phenopackets. 
+  Here we show how to create a :class:`~gpsea.model.Cohort` from phenopackets. 
   See :ref:`input-data` section to learn how to create a cohort from another inputs.
 
 
@@ -105,7 +105,7 @@ Explore cohort
 
 We can now explore the cohort to see how many patients are included.
 
->>> from genophenocorr.view import CohortViewable
+>>> from gpsea.view import CohortViewable
 >>> viewer = CohortViewable(hpo)
 >>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
 >>> with open('docs/report/tbx5_cohort_info.html', 'w') as fh:  # doctest: +SKIP
@@ -122,12 +122,12 @@ We can now explore the cohort to see how many patients are included.
     display(HTML(report))
 
 Now we can show the distribution of variants with respect to the encoded protein.
-We first obtain `tx_coordinates` (:class:`~genophenocorr.model.TranscriptCoordinates`)
-and `protein_meta` (:class:`~genophenocorr.model.ProteinMetadata`) 
+We first obtain `tx_coordinates` (:class:`~gpsea.model.TranscriptCoordinates`)
+and `protein_meta` (:class:`~gpsea.model.ProteinMetadata`) 
 with information about the transcript and protein "anatomy":
 
->>> from genophenocorr.model.genome import GRCh38
->>> from genophenocorr.preprocessing import configure_protein_metadata_service, VVMultiCoordinateService
+>>> from gpsea.model.genome import GRCh38
+>>> from gpsea.preprocessing import configure_protein_metadata_service, VVMultiCoordinateService
 >>> txc_service = VVMultiCoordinateService(genome_build=GRCh38)
 >>> pms = configure_protein_metadata_service()
 >>> tx_coordinates = txc_service.fetch(tx_id) 
@@ -135,7 +135,7 @@ with information about the transcript and protein "anatomy":
 
 and we follow with plotting the diagram of the mutations on the protein:
 
->>> from genophenocorr.view import ProteinVisualizer
+>>> from gpsea.view import ProteinVisualizer
 >>> import matplotlib.pyplot as plt
 >>> fig, ax = plt.subplots(figsize=(15, 8))
 >>> visualizer = ProteinVisualizer()
@@ -162,8 +162,8 @@ depending on presence of a missense and frameshift variant to test
 if there is a difference between frameshift and non-frameshift variants
 in the individuals of the *TBX5* cohort.
 
->>> from genophenocorr.model import VariantEffect
->>> from genophenocorr.analysis.predicate.genotype import VariantPredicates, groups_predicate
+>>> from gpsea.model import VariantEffect
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates, groups_predicate
 >>> gt_predicate = groups_predicate(
 ...     predicates=(
 ...         VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
@@ -195,17 +195,17 @@ and multiple testing correction must be applied.
 See :ref:`mtc` for information about how to perform multiple testing correction with GPSEA. 
 
 For general use, we recommend using a combination
-of a *Phenotype MTC filter* (:class:`~genophenocorr.analysis.PhenotypeMtcFilter`) with a *multiple testing correction*.
+of a *Phenotype MTC filter* (:class:`~gpsea.analysis.PhenotypeMtcFilter`) with a *multiple testing correction*.
 Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which 
 reduce the multiple testing burden and focus the analysis
 on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 
-Here we use HPO MTC filter (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
-along with Benjamini-Hochberg procedure (:meth:`~genophenocorr.analysis.CohortAnalysisConfiguration.pval_correction`):
+Here we use HPO MTC filter (:meth:`~gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
+along with Benjamini-Hochberg procedure (:meth:`~gpsea.analysis.CohortAnalysisConfiguration.pval_correction`):
 
->>> from genophenocorr.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
+>>> from gpsea.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
 >>> config = CohortAnalysisConfiguration()
 >>> config.hpo_mtc_strategy()
 >>> config.pval_correction = 'fdr_bh'
@@ -224,7 +224,7 @@ Now we can perform the analysis and investigate the results.
 We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
 259 direct and indirect HPO terms
 
->>> from genophenocorr.analysis import prepare_hpo_terms_of_interest
+>>> from gpsea.analysis import prepare_hpo_terms_of_interest
 >>> terms = prepare_hpo_terms_of_interest(hpo, cohort.all_patients, min_n_of_patients_with_term=2)
 >>> len(terms)
 259
@@ -232,7 +232,7 @@ We only tested 16 HPO terms. This is despite the individuals being collectively 
 We can show the reasoning behind *not* testing 243 (`259 - 16`) HPO terms
 by exploring the phenotype MTC filtering report.
 
->>> from genophenocorr.view import MtcStatsViewer
+>>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer() 
 >>> mtc_report = mtc_viewer.process(result.mtc_filter_report)
 >>> with open('docs/report/tbx5_mtc_report.html', 'w') as fh:  # doctest: +SKIP
@@ -248,7 +248,7 @@ by exploring the phenotype MTC filtering report.
 
 and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
->>> from genophenocorr.analysis.predicate import PatientCategories
+>>> from gpsea.analysis.predicate import PatientCategories
 >>> summary_df = result.summarize(hpo, PatientCategories.YES)
 >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 

@@ -4,11 +4,11 @@ import typing
 
 import pytest
 
-from genophenocorr.io import GenophenocorrJSONEncoder
-from genophenocorr.model.genome import GenomeBuild, Strand
-from genophenocorr.preprocessing import VVMultiCoordinateService
+from gpsea.io import GpseaJSONEncoder
+from gpsea.model.genome import GenomeBuild, Strand
+from gpsea.preprocessing import VVMultiCoordinateService
 
-from genophenocorr.model.genome import transpose_coordinate
+from gpsea.model.genome import transpose_coordinate
 
 
 @pytest.fixture(scope='module')
@@ -331,7 +331,7 @@ class TestVVTranscriptCoordinateServiceOffline:
         tx_id = 'NM_001032386.2'
         response = vv_multi_coordinate_service.fetch(tx_id)
         with open(fpath_suox_tx_coordinates, 'w') as fh:
-            json.dump(response, fh, cls=GenophenocorrJSONEncoder, indent=2)
+            json.dump(response, fh, cls=GpseaJSONEncoder, indent=2)
 
 
 class TestVVMultiCoordinateService_as_GeneCoordinateService:

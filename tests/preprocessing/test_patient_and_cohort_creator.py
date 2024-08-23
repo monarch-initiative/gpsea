@@ -3,12 +3,12 @@ import os
 import hpotk
 import pytest
 
-from genophenocorr.model.genome import GenomeBuild
-from genophenocorr.preprocessing import PhenotypeCreator, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, VariantCoordinateFinder
-from genophenocorr.preprocessing import VepFunctionalAnnotator, VarCachingFunctionalAnnotator, VVHgvsVariantCoordinateFinder, DefaultImpreciseSvFunctionalAnnotator
-from genophenocorr.preprocessing import PhenopacketPatientCreator
-from genophenocorr.preprocessing import VVMultiCoordinateService
-from genophenocorr.preprocessing import CohortCreator, load_phenopacket_folder
+from gpsea.model.genome import GenomeBuild
+from gpsea.preprocessing import PhenotypeCreator, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, VariantCoordinateFinder
+from gpsea.preprocessing import VepFunctionalAnnotator, VarCachingFunctionalAnnotator, VVHgvsVariantCoordinateFinder, DefaultImpreciseSvFunctionalAnnotator
+from gpsea.preprocessing import PhenopacketPatientCreator
+from gpsea.preprocessing import VVMultiCoordinateService
+from gpsea.preprocessing import CohortCreator, load_phenopacket_folder
 
 
 class TestPhenopacketCohortCreator:
@@ -29,7 +29,7 @@ class TestPhenopacketCohortCreator:
         self,
         fpath_project_dir: str,
     ) -> FunctionalAnnotator:
-        fpath_cache_dir = os.path.join(fpath_project_dir, '.genophenocorr_cache')
+        fpath_cache_dir = os.path.join(fpath_project_dir, '.gpsea_cache')
         fpath_variant_cache_dir = os.path.join(fpath_cache_dir, 'variant_cache')
         os.makedirs(fpath_variant_cache_dir, exist_ok=True)
         

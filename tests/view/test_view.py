@@ -1,8 +1,8 @@
 import hpotk
 import pytest
 
-from genophenocorr.model import Cohort
-from genophenocorr.view import CohortViewable
+from gpsea.model import Cohort
+from gpsea.view import CohortViewable
 
 
 class TestCohortViewable:
