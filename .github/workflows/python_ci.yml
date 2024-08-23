@@ -25,4 +25,5 @@ jobs:
         - name: Run pytest tests
           run: |
             export MPLBACKEND=Agg
+            export GPSEA_CACHEDIR=.gpsea_ci_cachedir
             pytest
