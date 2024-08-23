@@ -5,10 +5,10 @@ import pytest
 from google.protobuf.json_format import Parse
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 
-from genophenocorr.model.genome import GenomeBuild, Strand
+from gpsea.model.genome import GenomeBuild, Strand
 
-from genophenocorr.preprocessing import VVHgvsVariantCoordinateFinder
-from genophenocorr.preprocessing import (
+from gpsea.preprocessing import VVHgvsVariantCoordinateFinder
+from gpsea.preprocessing import (
     VariantCoordinateFinder,
     PhenopacketVariantCoordinateFinder,
 )

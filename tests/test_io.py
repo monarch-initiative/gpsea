@@ -4,14 +4,14 @@ import pathlib
 import hpotk
 import pytest
 
-from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
-from genophenocorr.model import Cohort
-from genophenocorr.preprocessing import configure_caching_cohort_creator, load_phenopackets
+from gpsea.io import GpseaJSONEncoder, GpseaJSONDecoder
+from gpsea.model import Cohort
+from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
 
 
 def test_round_trip(suox_cohort: Cohort):
-    dumped = json.dumps(suox_cohort, cls=GenophenocorrJSONEncoder, indent=2)
-    decoded = json.loads(dumped, cls=GenophenocorrJSONDecoder)
+    dumped = json.dumps(suox_cohort, cls=GpseaJSONEncoder, indent=2)
+    decoded = json.loads(dumped, cls=GpseaJSONDecoder)
 
     assert suox_cohort == decoded
 
@@ -45,4 +45,4 @@ def test_regenerate_cohort(
         raise ValueError('The cohort MUST be OK!')
 
     with open(fpath_suox_cohort, "w") as fh:
-        json.dump(cohort, fh, cls=GenophenocorrJSONEncoder, indent=2)
+        json.dump(cohort, fh, cls=GpseaJSONEncoder, indent=2)

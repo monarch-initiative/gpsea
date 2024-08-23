@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+  <style>table {
+    border-collapse: collapse;
+    margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+
+  .table .column-1 {
+      text-align: left;
+  }
+  th {
+    background-color: LightSkyBlue;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 5px;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+
+  tr {
+    border: 1px solid #dddddd;
+  }
+
+  td {
+    padding: 5px;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table td,tr {
+    text-align: left;
+}
+
+.table td:first-child, tr:first-child {
+    text-align: left;
+}​
+
+caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 10px;
+  font-weight: bold;
+}
+
+</style>
+</head>
+
+<body>
+  <h1>GPSEA protein analysis</h1>
+    <p>The UniProt API successfully returned protein information for ID: {{ protein_id }}</p>
+    <p>Protein Name: {{ protein_label }}</p>
+    <table>
+        <caption style="color:black;">
+            <h3>Protein Features</h3>
+        </caption>
+        <tbody>
+            <tr class="strng">
+                <th>Feature Name</th>
+                <th>Feature Type</th>
+                <th>Feature Coordinates</th>
+                <th>Variants in Feature</th>
+            </tr> 
+            {% for feat in protein_features %}
+            <tr>
+                <td>{{ feat.name }}</td>
+                <td>{{ feat.type }}</td>
+                <td>{{ feat.region.start }} - {{ feat.region.end }}</td>
+                <td>{{ feat.variant_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

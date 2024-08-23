@@ -1,8 +1,8 @@
 import pytest
 
-from genophenocorr.analysis.predicate.genotype import AlleleCounter, VariantPredicate
-from genophenocorr.model import *
-from genophenocorr.model.genome import *
+from gpsea.analysis.predicate.genotype import AlleleCounter, VariantPredicate
+from gpsea.model import *
+from gpsea.model.genome import *
 
 
 @pytest.fixture(scope="module")

@@ -3,8 +3,8 @@ import typing
 import hpotk
 import pytest
 
-from genophenocorr.model import Patient, Phenotype, SampleLabels
-from genophenocorr.analysis.predicate.phenotype import CountingPhenotypeScorer
+from gpsea.model import Patient, Phenotype, SampleLabels
+from gpsea.analysis.predicate.phenotype import CountingPhenotypeScorer
 
 
 class TestCountingPhenotypeScorer:

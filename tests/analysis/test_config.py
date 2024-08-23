@@ -1,6 +1,6 @@
 import pytest
 
-from genophenocorr.analysis import CohortAnalysisConfiguration, MtcStrategy
+from gpsea.analysis import CohortAnalysisConfiguration, MtcStrategy
 
 
 class TestCohortAnalysisConfiguration:

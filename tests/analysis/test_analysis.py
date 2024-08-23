@@ -6,17 +6,17 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from genophenocorr.analysis import (
+from gpsea.analysis import (
     apply_predicates_on_patients,
     CohortAnalysis, CohortAnalysisConfiguration,
     configure_cohort_analysis,
 )
 
-from genophenocorr.model import *
-from genophenocorr.model.genome import *
-from genophenocorr.analysis.predicate import GenotypePolyPredicate, PatientCategories
-from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate
-from genophenocorr.analysis.predicate.genotype import VariantPredicate
+from gpsea.model import *
+from gpsea.model.genome import *
+from gpsea.analysis.predicate import GenotypePolyPredicate, PatientCategories
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
+from gpsea.analysis.predicate.genotype import VariantPredicate
 
 
 def test_apply_predicates_on_patients(

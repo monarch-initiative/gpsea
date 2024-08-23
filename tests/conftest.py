@@ -5,12 +5,12 @@ import typing
 import hpotk
 import pytest
 
-from genophenocorr.analysis.predicate import GenotypePolyPredicate
-from genophenocorr.analysis.predicate.genotype import VariantPredicates, VariantPredicate, boolean_predicate
-from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
-from genophenocorr.io import GenophenocorrJSONEncoder, GenophenocorrJSONDecoder
-from genophenocorr.model import *
-from genophenocorr.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
+from gpsea.analysis.predicate import GenotypePolyPredicate
+from gpsea.analysis.predicate.genotype import VariantPredicates, VariantPredicate, boolean_predicate
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from gpsea.io import GpseaJSONEncoder, GpseaJSONDecoder
+from gpsea.model import *
+from gpsea.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
 from ._protein_test_service import ProteinTestMetadataService
 
 
@@ -103,7 +103,7 @@ def suox_cohort(
         fpath_suox_cohort: str,
 ) -> Cohort:
     with open(fpath_suox_cohort) as fh:
-        return json.load(fh, cls=GenophenocorrJSONDecoder)
+        return json.load(fh, cls=GpseaJSONDecoder)
 
 
 @pytest.fixture(scope='session')
@@ -163,7 +163,7 @@ def suox_mane_tx_coordinates(
         fpath_suox_tx_coordinates: str,
 ) -> TranscriptCoordinates:
     with open(fpath_suox_tx_coordinates) as fh:
-        return json.load(fh, cls=GenophenocorrJSONDecoder)
+        return json.load(fh, cls=GpseaJSONDecoder)
 
 
 @pytest.fixture(scope='session')
@@ -177,7 +177,7 @@ def suox_protein_metadata(
         fpath_suox_protein_metadata: str,
 ) -> ProteinMetadata:
     with open(fpath_suox_protein_metadata) as fh:
-        return json.load(fh, cls=GenophenocorrJSONDecoder)
+        return json.load(fh, cls=GpseaJSONDecoder)
 
 
 @pytest.fixture(scope='session')

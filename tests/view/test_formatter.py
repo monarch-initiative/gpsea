@@ -1,7 +1,7 @@
 import pytest
 
-from genophenocorr.model import Cohort
-from genophenocorr.view import VariantFormatter
+from gpsea.model import Cohort
+from gpsea.view import VariantFormatter
 
 
 class TestVariantFormatter:

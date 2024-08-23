@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from genophenocorr.analysis import HpoMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
-from genophenocorr.analysis.predicate import PatientCategories, GenotypePolyPredicate
-from genophenocorr.analysis.predicate.phenotype import PhenotypePolyPredicate
-from genophenocorr.model import Cohort
+from gpsea.analysis import HpoMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
+from gpsea.analysis.predicate import PatientCategories, GenotypePolyPredicate
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
+from gpsea.model import Cohort
 
 
 class TestHeuristicSamplerMtcFilter:

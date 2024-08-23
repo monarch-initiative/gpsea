@@ -4,10 +4,10 @@ import typing
 
 import pytest
 
-from genophenocorr.model import VariantCoordinates, VariantEffect
-from genophenocorr.model.genome import GenomicRegion, Strand, GenomeBuild
+from gpsea.model import VariantCoordinates, VariantEffect
+from gpsea.model.genome import GenomicRegion, Strand, GenomeBuild
 
-from genophenocorr.preprocessing import VepFunctionalAnnotator
+from gpsea.preprocessing import VepFunctionalAnnotator
 
 
 LMNA_MANE_TX_ID = 'NM_170707.4'

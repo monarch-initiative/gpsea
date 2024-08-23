@@ -1,14 +1,12 @@
-import typing
-
 import hpotk
 import pytest
 
-from genophenocorr.analysis.predicate import PatientCategory, PatientCategories
-from genophenocorr.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
-from genophenocorr.analysis.predicate.genotype import *
-from genophenocorr.model import Cohort, Patient, FeatureType, VariantEffect
-from genophenocorr.model.genome import Region
-from genophenocorr.preprocessing import ProteinMetadataService
+from gpsea.analysis.predicate import PatientCategory, PatientCategories
+from gpsea.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
+from gpsea.analysis.predicate.genotype import *
+from gpsea.model import Cohort, Patient, FeatureType, VariantEffect
+from gpsea.model.genome import Region
+from gpsea.preprocessing import ProteinMetadataService
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> Patient:
