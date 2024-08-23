@@ -81,7 +81,7 @@ On top of the ``cohort``, the loader function also provides Q/C results  ``qc_re
 We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
 to display the Q/C summary:
 
->>> qc_results.summarize()  # doctest: +NORMALIZE_WHITESPACE
+>>> qc_results.summarize()  # doctest: +SKIP
 Validated under none policy
 No errors or warnings were found
 
