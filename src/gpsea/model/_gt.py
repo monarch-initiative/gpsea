@@ -41,9 +41,11 @@ class Genotypes(typing.Sized, typing.Iterable):
     >>> b = SampleLabels('B')
 
     We can use one of the static methods to create an instance. Either a single genotype:
+    
     >>> gt = Genotypes.single(a, Genotype.HETEROZYGOUS)
 
-    Or genotypes of several samples:
+    or genotypes of several samples:
+
     >>> gts = Genotypes.from_mapping({a: Genotype.HETEROZYGOUS, b: Genotype.HOMOZYGOUS_ALTERNATE})
 
     There are 2 genotypes in the container:
