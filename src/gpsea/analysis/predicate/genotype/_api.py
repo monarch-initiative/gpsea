@@ -2,6 +2,39 @@ import abc
 import typing
 
 from gpsea.model import Variant
+from .._api import PolyPredicate, Categorization, PatientCategory, PatientCategories
+
+
+class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
+    """
+    `GenotypePolyPredicate` constrains `PolyPredicate` to investigate the genotype aspects
+    of patients.
+    """
+    pass
+
+
+class GenotypeBooleanPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
+    """
+    `GenotypeBooleanPredicate` tests if a :class:`~gpsea.model.Patient` belongs to a genotype group
+     and returns a boolean binning.
+    """
+    YES = Categorization(PatientCategories.YES)
+    NO = Categorization(PatientCategories.NO)
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        """
+        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
+        """
+        return GenotypeBooleanPredicate.YES, GenotypeBooleanPredicate.NO
+
+
+class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
+    BOTH = Categorization(PatientCategory(0, 'Both', 'The patient belongs in both groups.'))
+    ONE = Categorization(PatientCategory(1, 'One', 'The patient belongs in one of the two groups.'))
+    NEITHER = Categorization(PatientCategory(2, 'Neither', 'The patient does not belong in either group.'))
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return RecessiveGroupingPredicate.BOTH, RecessiveGroupingPredicate.ONE, RecessiveGroupingPredicate.NEITHER
 
 
 class VariantPredicate(metaclass=abc.ABCMeta):

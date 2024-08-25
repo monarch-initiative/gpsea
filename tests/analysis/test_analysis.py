@@ -14,9 +14,9 @@ from gpsea.analysis import (
 
 from gpsea.model import *
 from gpsea.model.genome import *
-from gpsea.analysis.predicate import GenotypePolyPredicate, PatientCategories
+from gpsea.analysis.predicate import PatientCategories
+from gpsea.analysis.predicate.genotype import GenotypePolyPredicate, VariantPredicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
-from gpsea.analysis.predicate.genotype import VariantPredicate
 
 
 def test_apply_predicates_on_patients(

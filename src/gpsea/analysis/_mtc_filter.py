@@ -6,7 +6,8 @@ from collections import defaultdict, deque
 import hpotk
 import pandas as pd
 
-from .predicate import PatientCategories, PatientCategory, GenotypePolyPredicate
+from ._api import GenotypePolyPredicate
+from .predicate import PatientCategories, PatientCategory
 
 
 class PhenotypeMtcFilter(metaclass=abc.ABCMeta):

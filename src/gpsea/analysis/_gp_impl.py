@@ -8,8 +8,7 @@ from scipy.stats import mannwhitneyu
 
 from gpsea.model import Cohort, Patient
 from gpsea.preprocessing import ProteinMetadataService
-from .predicate import GenotypePolyPredicate
-from .predicate.genotype import VariantPredicate
+from .predicate.genotype import GenotypePolyPredicate, VariantPredicate
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
 from .predicate.genotype import groups_predicate as wrap_as_groups_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate

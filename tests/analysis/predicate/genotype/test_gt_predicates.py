@@ -1,8 +1,8 @@
 import pytest
 
 from gpsea.model import *
-from gpsea.analysis.predicate import GenotypePolyPredicate
 from gpsea.analysis.predicate.genotype import (
+    GenotypePolyPredicate,
     groups_predicate,
     VariantPredicates,
 )

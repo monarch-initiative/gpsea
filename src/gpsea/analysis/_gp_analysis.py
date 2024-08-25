@@ -9,7 +9,8 @@ from gpsea.model import Patient
 from ._api import GenotypePhenotypeAnalysisResult, HpoMtcReport
 from ._mtc_filter import PhenotypeMtcFilter
 from ._stats import run_fisher_exact, run_recessive_fisher_exact
-from .predicate import GenotypePolyPredicate, PatientCategory
+from .predicate import PatientCategory
+from .predicate.genotype import GenotypePolyPredicate
 from .predicate.phenotype import PhenotypePolyPredicate, P
 
 

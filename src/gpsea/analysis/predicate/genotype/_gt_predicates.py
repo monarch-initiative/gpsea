@@ -3,7 +3,7 @@ import typing
 from gpsea.model import Patient
 
 from .._api import Categorization
-from .._api import GenotypePolyPredicate, GenotypeBooleanPredicate, RecessiveGroupingPredicate
+from ._api import GenotypePolyPredicate, GenotypeBooleanPredicate, RecessiveGroupingPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
 
@@ -39,7 +39,8 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypeBooleanPredicate):
             )
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountingGenotypeBooleanPredicate) and self._allele_counter == value._allele_counter
+        return isinstance(value, AlleleCountingGenotypeBooleanPredicate) \
+            and self._allele_counter == value._allele_counter
     
     def __hash__(self) -> int:
         return hash((self._allele_counter,))

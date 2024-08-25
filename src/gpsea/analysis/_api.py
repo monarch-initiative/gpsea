@@ -7,8 +7,8 @@ import pandas as pd
 
 from gpsea.model import Patient
 from gpsea.preprocessing import ProteinMetadataService
-from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate, ProteinPredicates
+from .predicate import PolyPredicate, PatientCategory
+from .predicate.genotype import GenotypePolyPredicate, VariantPredicate, ProteinPredicates
 from .predicate.phenotype import P, PhenotypePolyPredicate, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
