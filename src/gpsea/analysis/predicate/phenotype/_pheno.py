@@ -91,13 +91,13 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
         self,
         hpo: hpotk.MinimalOntology,
         query: hpotk.TermId,
-        missing_implies_phenotype_excluded: bool,
+        missing_implies_phenotype_excluded: bool = False,
     ):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, "hpo")
         self._query = hpotk.util.validate_instance(
             query, hpotk.TermId, "phenotypic_feature"
         )
-        self._query_label = self._hpo.get_term(query)
+        self._query_label = self._hpo.get_term_name(query)
         assert self._query_label is not None, f"Query {query} is in HPO"
         self._missing_implies_phenotype_excluded = hpotk.util.validate_instance(
             missing_implies_phenotype_excluded,
@@ -273,6 +273,7 @@ class CountingPhenotypeScorer:
         ... )
 
     """
+    # TODO: this class belongs elsewhere.
 
     @staticmethod
     def from_query_curies(
