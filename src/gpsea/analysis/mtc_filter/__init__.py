@@ -5,10 +5,10 @@ by pre-filtering the phenotype terms to test in advance.
 See :ref:`MTC filters <mtc-filters>` section for more info.
 """
 
-from ._impl import PhenotypeMtcFilter
+from ._impl import PhenotypeMtcFilter, PhenotypeMtcResult
 from ._impl import UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, HpoMtcFilter
 
 __all__ = [
-    'PhenotypeMtcFilter',
+    'PhenotypeMtcFilter', 'PhenotypeMtcResult',
     'UseAllTermsMtcFilter', 'SpecifiedTermsMtcFilter', 'HpoMtcFilter',
 ]

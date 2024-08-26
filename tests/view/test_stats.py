@@ -1,10 +1,51 @@
+import hpotk
+import math
 import pytest
 
-from gpsea.analysis import HpoMtcReport
+import pandas as pd
+
+from gpsea.analysis.multip import HpoTermAnalysisResult
+from gpsea.analysis.predicate import PatientCategories
+from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
+from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.view import MtcStatsViewer
 
 
 class TestStatsViewable:
+
+    @pytest.fixture(scope='class')
+    def hpo_term_analysis_result(
+        self,
+        suox_gt_predicate: GenotypePolyPredicate,
+    ) -> HpoTermAnalysisResult:
+        return HpoTermAnalysisResult(
+            phenotypes=(
+                hpotk.TermId.from_curie('HP:0001166'),  # Arachnodactyly
+                hpotk.TermId.from_curie('HP:0001250'),  # Seizure
+            ),
+            n_usable=(40, 20),
+            all_counts=(
+                pd.DataFrame(
+                    data=[[10, 5], [10, 15]],
+                    index=pd.Index((PatientCategories.YES, PatientCategories.NO,)),
+                    columns=pd.Index(suox_gt_predicate.get_categories())
+                ),
+                pd.DataFrame(
+                    data=[[5, 0], [5, 10]],
+                    index=pd.Index((PatientCategories.YES, PatientCategories.NO,)),
+                    columns=pd.Index(suox_gt_predicate.get_categories())
+                ),
+            ),
+            pvals=(math.nan, .005,),
+            corrected_pvals=(math.nan, .01),
+            gt_predicate=suox_gt_predicate,
+            mtc_filter_name='Random MTC filter',
+            mtc_filter_results=(
+                PhenotypeMtcResult.fail("Not too interesting"),
+                PhenotypeMtcResult.ok(),
+            ),
+            mtc_name='fdr_bh',
+        )
 
     @pytest.fixture
     def stats_viewer(self) -> MtcStatsViewer:
@@ -14,21 +55,8 @@ class TestStatsViewable:
     def test_process(
         self,
         stats_viewer: MtcStatsViewer,
+        hpo_term_analysis_result: HpoTermAnalysisResult
     ):
-        mtc_report = HpoMtcReport(
-            filter_name='identity filter',
-            mtc_name='bonferroni',
-            filter_results_map={
-                # The reason for skipping a phenotype -> the number of phenotypes skipped for the reason
-                'I slept bad tonight': 0,
-                'The sun is too bright today': 5,
-                'Life is a conspiracy': 80,
-                'I need coffee': 7,
-            },
-            n_terms_before_filtering=100,  # The filtered out (80 + 7 + 5) + the unfiltered
-        )
-
-        # TODO: the input format for `stats_viewer` changed. FIX!
-        report = stats_viewer.process(result=mtc_report)
+        report = stats_viewer.process(result=hpo_term_analysis_result)
         with open('mtc_stats.html', 'w') as fh:
             fh.write(report)
