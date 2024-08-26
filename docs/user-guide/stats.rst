@@ -56,7 +56,179 @@ one genotype group compared to what would be expected if there were no associati
 Note that by default, the *two-tailed* Fisher exact test is performed, meaning we have no 
 hypothesis as to whether there is a higher or lower frequency in one of the genotype groups. 
 
-See :ref:``
+However, we are typically interested in testing the associations between the genotype and multiple phenotypic features at once.
+GPSEA takes advantage of the HPO structure and simplifies the testing for all HPO terms encoded in the cohort. 
+
+Example
+^^^^^^^
+
+Let's illustrate this in a real-life example of the analysis of the association between frameshift variants in *TBX5* gene
+and congenital heart defects in the dataset of 156 individuals with mutations in *TBX5* whose signs and symptoms were
+encoded into HPO terms, stored as phenopackets of the `GA4GH Phenopacket Schema <https://pubmed.ncbi.nlm.nih.gov/35705716>`_, 
+and deposited in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_ (version `0.1.18`).
+
+.. note::
+
+   The shorter version of the same analysis has been presented in the :ref:`tutorial`.
+
+
+Create cohort
+*************
+
+We will load and transform the phenopackets into a :class:`~gpsea.model.Cohort`,
+as described in :ref:`input-data` section. Briefly, we will load the phenopackets:
+
+>>> from ppktstore.registry import configure_phenopacket_registry
+>>> registry = configure_phenopacket_registry()
+>>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+...     phenopackets = tuple(ps.iter_cohort_phenopackets('TBX5'))
+>>> len(phenopackets)
+156
+
+followed by loading HPO release `v2024-07-01`:
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+and we will perform Q/C and functional annotations for the mutations
+with the default cohort creator:
+
+>>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
+>>> cohort_creator = configure_caching_cohort_creator(hpo)
+>>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+Patients Created: ...
+>>> qc_results.summarize()  # doctest: +SKIP
+Validated under none policy
+No errors or warnings were found
+
+Configure analysis
+******************
+
+We want to test the association between frameshift *TBX5* variants and phenotypic abnormalities.
+GPSEA exposes a flexible predicate API that lets us create genotype and phenotype predicates
+to assign the cohort members into genotype and phenotype categories based on the variants
+and the HPO terms. We need to create one genotype predicate and one or more phenotype predicates.
+
+
+Genotype predicate
+------------------
+
+We want to separate the patients into two groups: a group *with* a frameshift variant
+and a group *without* a frameshift variant, based on the functional annotation.
+We will use the *MANE* transcript for the analysis:
+
+>>> from gpsea.model import VariantEffect
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
+>>> tx_id = 'NM_181486.4'
+>>> gt_predicate = boolean_predicate(VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id))
+>>> gt_predicate.get_question()
+'FRAMESHIFT_VARIANT on NM_181486.4'
+
+
+Phenotype predicates
+--------------------
+
+We recommend testing the genotype phenotype association for all HPO terms that are present in 2 or more cohort members,
+while taking advantage of the HPO graph structure and of the :ref:`true-path-rule`. 
+We will use the :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
+utility function to generate phenotype predicates for all HPO terms:
+
+>>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
+>>> pheno_predicates = prepare_predicates_for_terms_of_interest(
+...     cohort=cohort,
+...     hpo=hpo,
+...     min_n_of_patients_with_term=2,
+... )
+>>> len(pheno_predicates)
+260
+
+The function finds all HPO terms that annotate at least *n* (``min_n_of_patients_with_term=2`` above) individuals,
+including the *indirect* annotations whose presence is implied by the true path rule.
+
+
+Multiple testing correction
+---------------------------
+
+In the case of this cohort, we could test association between having a frameshift variant and one of 260 HPO terms.
+However, testing multiple hypotheses on the same dataset increases the risk of finding a significant association
+by chance.
+GPSEA uses a two-pronged strategy to mitigate this risk - use Phenotype MTC filter and multiple testing correction.
+
+.. note::
+
+   See the :ref:`mtc` section for more info on multiple testing procedures.
+
+Here we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
+with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
+with a false discovery control level set to `0.05` (``mtc_alpha=0.05``):
+
+>>> from gpsea.analysis.mtc_filter import HpoMtcFilter
+>>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=0.2)
+>>> mtc_correction = 'fdr_bh'
+>>> mtc_alpha = 0.05
+
+and we will use Fisher Exact Test to test the association
+between genotype and phenotype groups:
+
+>>> from gpsea.analysis.stats import ScipyFisherExact
+>>> count_statistic = ScipyFisherExact()
+
+We finalize the analysis setup by putting all components together
+into :class:`~gpsea.analysis.multip.HpoTermAnalysis`:
+
+>>> from gpsea.analysis.multip import HpoTermAnalysis
+>>> analysis = HpoTermAnalysis(
+...     count_statistic=count_statistic,
+...     mtc_filter=mtc_filter,
+...     mtc_correction=mtc_correction,
+...     mtc_alpha=mtc_alpha,
+... )
+
+
+Analysis
+********
+
+We can now execute the analysis:
+
+>>> result = analysis.compare_genotype_vs_phenotypes(
+...     cohort=cohort,
+...     gt_predicate=gt_predicate,
+...     pheno_predicates=pheno_predicates,
+... )
+>>> len(result.phenotypes)
+260
+>>> result.total_tests
+17
+
+Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
+We can learn more by showing the MTC filter report:
+
+>>> from gpsea.view import MtcStatsViewer
+>>> mtc_viewer = MtcStatsViewer() 
+>>> mtc_report = mtc_viewer.process(result)
+>>> with open('docs/user-guide/report/tbx5_frameshift.mtc_report.html', 'w') as fh:
+...     _ = fh.write(mtc_report)
+
+
+.. raw:: html
+  :file: report/tbx5_frameshift.mtc_report.html
+
+
+Genotype phenotype associations
+*******************************
+
+Last, let's explore the associations. This is a table of the tested HPO terms
+ordered by the corrected p value (Benjamini-Hochberg FDR):
+
+>>> from gpsea.analysis.predicate import PatientCategories
+>>> summary_df = result.summarize(hpo, PatientCategories.YES)
+>>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv') 
+
+.. csv-table:: *TBX5* frameshift vs rest
+   :file: report/tbx5_frameshift.csv
+   :header-rows: 2
+
 
 .. _phenotype-score-stats:
 

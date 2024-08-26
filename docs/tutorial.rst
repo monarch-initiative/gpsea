@@ -214,7 +214,7 @@ See :ref:`mtc` for more information.
 
 In this example, we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
 with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
-with a false discovery control level at (``mtc_alpha=0.05``) discovery rate at the FDR :
+with a false discovery control level at (``mtc_alpha=0.05``):
 
 >>> from gpsea.analysis.mtc_filter import HpoMtcFilter
 >>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=0.2)
@@ -260,11 +260,11 @@ by exploring the phenotype MTC filtering report.
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer() 
 >>> mtc_report = mtc_viewer.process(result)
->>> with open('docs/report/tbx5_mtc_report.html', 'w') as fh:  # doctest: +SKIP
+>>> with open('docs/report/tbx5_frameshift_vs_missense.mtc_report.html', 'w') as fh:  # doctest: +SKIP
 ...     _ = fh.write(mtc_report)
 
 .. raw:: html
-  :file: report/tbx5_mtc_report.html
+  :file: report/tbx5_frameshift_vs_missense.mtc_report.html
 
 ..
   
