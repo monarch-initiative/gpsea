@@ -69,9 +69,9 @@ class PhenotypePolyPredicate(
 
     @property
     @abc.abstractmethod
-    def phenotypes(self) -> typing.Sequence[P]:
+    def phenotype(self) -> P:
         """
-        Get the phenotype entities of interest.
+        Get the phenotype entity of interest.
         """
         pass
 
@@ -91,7 +91,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
         self,
         hpo: hpotk.MinimalOntology,
         query: hpotk.TermId,
-        missing_implies_phenotype_excluded: bool = False,
+        missing_implies_phenotype_excluded: bool,
     ):
         self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, "hpo")
         self._query = hpotk.util.validate_instance(
@@ -117,9 +117,8 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
         return f"Is {self._query_label} present in the patient?"
 
     @property
-    def phenotypes(self) -> typing.Sequence[hpotk.TermId]:
-        # We usually test just a single HPO term, so we return a tuple with a single member.
-        return (self._query,)
+    def phenotype(self) -> hpotk.TermId:
+        return self._query
 
     def get_categorizations(
         self,
@@ -205,9 +204,8 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
         return f"Was {self._query} diagnosed in the patient"
 
     @property
-    def phenotypes(self) -> typing.Sequence[hpotk.TermId]:
-        # We usually test just a single Disease, so we return a tuple with a single member.
-        return (self._query,)
+    def phenotype(self) -> hpotk.TermId:
+        return self._query
 
     def get_categorizations(
         self,

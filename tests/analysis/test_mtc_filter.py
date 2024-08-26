@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from gpsea.analysis import HpoMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
+from gpsea.analysis import apply_predicates_on_patients
+from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
 from gpsea.analysis.predicate import PatientCategories
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate

@@ -28,6 +28,7 @@ class TestStatsViewable:
             n_terms_before_filtering=100,  # The filtered out (80 + 7 + 5) + the unfiltered
         )
 
-        report = stats_viewer.process(hpo_mtc_report=mtc_report)
+        # TODO: the input format for `stats_viewer` changed. FIX!
+        report = stats_viewer.process(result=mtc_report)
         with open('mtc_stats.html', 'w') as fh:
             fh.write(report)

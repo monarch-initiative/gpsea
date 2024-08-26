@@ -181,18 +181,27 @@ in the individuals of the *TBX5* cohort.
   See the :ref:`predicates` section to learn more about building
   a predicate of interest.
 
+The phenotype grouping is based on presence or absence of an HPO term.
+We take advantage of the ontology "true path rule" to infer presence
+of the ancestor terms for all present HPO terms
+(e.g. presence of `Abnormal ventricular septum morphology <https://hpo.jax.org/browse/term/HP:0010438>`_ 
+in an individual annotated with `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_)
+and exclusion of the descendant terms for all excluded terms (e.g. exclusion of
+`Motor seizure <https://hpo.jax.org/browse/term/HP:0020219>`_ 
+in an individual where `Seizure <https://hpo.jax.org/browse/term/HP:0001250>`_
+was excluded):
 
-By default, GPSEA will perform one hypothesis test for each HPO term used to annotate more than one individual in the cohort.
-This also includes the terms implied by the ontology "true path rule", 
-which states that presence of a term 
-(e.g., `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_)
-implies presence of all its ancestor terms 
-(e.g., `Abnormal ventricular septum morphology <https://hpo.jax.org/browse/term/HP:0010438>`_, 
-`Abnormal cardiac septum morphology <https://hpo.jax.org/browse/term/HP:0001671>`_,
-`Abnormal cardiac ventricle morphology <https://hpo.jax.org/browse/term/HP:0001713>`_, ...).
-However, testing multiple hypothesis increases the chance of receiving false positive result,
-and multiple testing correction must be applied.
-See :ref:`mtc` for information about how to perform multiple testing correction with GPSEA. 
+>>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
+>>> pheno_predicates = prepare_predicates_for_terms_of_interest(
+...     cohort=cohort,
+...     hpo=hpo,
+...     min_n_of_patients_with_term=2,
+... )
+
+By default, GPSEA will perform one hypothesis test for each HPO term used to annotate two or more individuals in the cohort
+(see ``min_n_of_patients_with_term=2`` above).
+Testing multiple hypothesis on the same dataset increases the chance of receiving false positive result.
+However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
 For general use, we recommend using a combination
 of a *Phenotype MTC filter* (:class:`~gpsea.analysis.PhenotypeMtcFilter`) with a *multiple testing correction*.
@@ -201,32 +210,48 @@ reduce the multiple testing burden and focus the analysis
 on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
+See :ref:`mtc` for more information. 
 
-Here we use HPO MTC filter (:meth:`~gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy`)
-along with Benjamini-Hochberg procedure (:meth:`~gpsea.analysis.CohortAnalysisConfiguration.pval_correction`):
+In this example, we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
+with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
+with a false discovery control level at (``mtc_alpha=0.05``) discovery rate at the FDR :
 
->>> from gpsea.analysis import configure_cohort_analysis, CohortAnalysisConfiguration
->>> config = CohortAnalysisConfiguration()
->>> config.hpo_mtc_strategy()
->>> config.pval_correction = 'fdr_bh'
->>> analysis = configure_cohort_analysis(
-...     cohort=cohort,
-...     hpo=hpo,
-...     config=config,
+>>> from gpsea.analysis.mtc_filter import HpoMtcFilter
+>>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=0.2)
+>>> mtc_correction = 'fdr_bh'
+>>> mtc_alpha = 0.05
+
+Choosing the statistical procedure for assessment of association between genotype and phenotype
+groups is the last missing piece of the analysis. We will use Fisher Exact Test:
+
+>>> from gpsea.analysis.stats import ScipyFisherExact
+>>> count_statistic = ScipyFisherExact()
+
+and we finalize the analysis setup by putting all components together
+into :class:`~gpsea.analysis.multip.HpoTermAnalysis`:
+
+>>> from gpsea.analysis.multip import HpoTermAnalysis
+>>> analysis = HpoTermAnalysis(
+...     count_statistic=count_statistic,
+...     mtc_filter=mtc_filter,
+...     mtc_correction=mtc_correction,
+...     mtc_alpha=mtc_alpha,
 ... )
 
 Now we can perform the analysis and investigate the results.
 
->>> result = analysis.compare_genotype_vs_cohort_phenotypes(gt_predicate)
+>>> result = analysis.compare_genotype_vs_phenotypes(
+...     cohort=cohort,
+...     gt_predicate=gt_predicate,
+...     pheno_predicates=pheno_predicates,
+... )
 >>> result.total_tests
 16
 
 We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
 259 direct and indirect HPO terms
 
->>> from gpsea.analysis import prepare_hpo_terms_of_interest
->>> terms = prepare_hpo_terms_of_interest(hpo, cohort.all_patients, min_n_of_patients_with_term=2)
->>> len(terms)
+>>> len(result.phenotypes)
 259
 
 We can show the reasoning behind *not* testing 243 (`259 - 16`) HPO terms
@@ -234,7 +259,7 @@ by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer() 
->>> mtc_report = mtc_viewer.process(result.mtc_filter_report)
+>>> mtc_report = mtc_viewer.process(result)
 >>> with open('docs/report/tbx5_mtc_report.html', 'w') as fh:  # doctest: +SKIP
 ...     _ = fh.write(mtc_report)
 

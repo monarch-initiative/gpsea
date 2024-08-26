@@ -8,8 +8,8 @@ from gpsea.config import get_cache_dir_path
 from gpsea.model import Cohort
 from gpsea.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, \
     ProtCachingMetadataService
+from .mtc_filter import PhenotypeMtcFilter, UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, HpoMtcFilter
 from ._api import CohortAnalysis
-from ._mtc_filter import PhenotypeMtcFilter, UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, HpoMtcFilter
 from ._gp_analysis import FisherExactAnalyzer
 from ._gp_impl import GpCohortAnalysis
 

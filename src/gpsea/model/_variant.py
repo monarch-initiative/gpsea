@@ -869,9 +869,8 @@ class Variant(VariantInfoAware, FunctionalAnnotationAware, Genotyped):
     @property
     def variant_info(self) -> VariantInfo:
         """
-        Returns:
-            VariantInfo: A representation of the variant data for sequence and symbolic variants,
-                as well as for large imprecise SVs.
+        Get the representation of the variant data for sequence and symbolic variants, 
+        as well as for large imprecise SVs.
         """
         return self._variant_info
 

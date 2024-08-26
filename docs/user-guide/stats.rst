@@ -56,6 +56,7 @@ one genotype group compared to what would be expected if there were no associati
 Note that by default, the *two-tailed* Fisher exact test is performed, meaning we have no 
 hypothesis as to whether there is a higher or lower frequency in one of the genotype groups. 
 
+See :ref:``
 
 .. _phenotype-score-stats:
 
