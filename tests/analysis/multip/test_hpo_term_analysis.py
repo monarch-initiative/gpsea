@@ -49,7 +49,7 @@ class TestHpoTermAnalysis:
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]
     ):
         results = analysis.compare_genotype_vs_phenotypes(
-            patients=suox_cohort.all_patients,
+            cohort=suox_cohort.all_patients,
             gt_predicate=suox_gt_predicate,
             pheno_predicates=suox_pheno_predicates,
         )
