@@ -4,7 +4,7 @@ import pytest
 
 import pandas as pd
 
-from gpsea.analysis.multip import HpoTermAnalysisResult
+from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.predicate import PatientCategories
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult

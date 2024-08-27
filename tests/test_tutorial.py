@@ -4,9 +4,9 @@ import hpotk
 
 from gpsea.model import Cohort, VariantEffect
 from gpsea.preprocessing import configure_caching_cohort_creator, CohortCreator, load_phenopackets
-from gpsea.analysis.multip import HpoTermAnalysis
+from gpsea.analysis.pcats import HpoTermAnalysis
 from gpsea.analysis.mtc_filter import HpoMtcFilter
-from gpsea.analysis.stats import ScipyFisherExact
+from gpsea.analysis.pcats.stats import ScipyFisherExact
 from gpsea.analysis.predicate.genotype import VariantPredicates, groups_predicate
 from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
 
@@ -30,7 +30,7 @@ class TestTutorial:
         registry = ppktstore.registry.configure_phenopacket_registry()
         with registry.open_phenopacket_store('0.1.18') as ps:
             phenopackets = tuple(ps.iter_cohort_phenopackets('TBX5'))
-        
+
         cohort, _ = load_phenopackets(
             phenopackets=phenopackets,
             cohort_creator=cohort_creator,

@@ -3,7 +3,8 @@ import typing
 from collections import Counter
 
 from jinja2 import Environment, PackageLoader
-from gpsea.analysis.multip import HpoTermAnalysisResult
+
+from gpsea.analysis.pcats import HpoTermAnalysisResult
 
 
 class MtcStatsViewer:
@@ -22,7 +23,7 @@ class MtcStatsViewer:
     ) -> str:
         """
         Create an HTML to present MTC part of the :class:`HpoTermAnalysisResult`.
-        
+
         Use the `display(HTML(..))` functions of the IPython package.
 
         Args:

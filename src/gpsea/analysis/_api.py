@@ -9,7 +9,8 @@ from gpsea.model import Patient
 from gpsea.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, PatientCategory
 from .predicate.genotype import GenotypePolyPredicate, VariantPredicate, ProteinPredicates
-from .predicate.phenotype import P, PhenotypePolyPredicate, CountingPhenotypeScorer
+from .predicate.phenotype import P, PhenotypePolyPredicate
+from .pscore import CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -142,7 +143,7 @@ class GenotypePhenotypeAnalysisResult:
         Get a sequence of phenotype patient categories that can be investigated.
         """
         return self._phenotype_categories
-    
+
     @property
     def total_tests(self) -> int:
         """
@@ -308,7 +309,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
             predicate: VariantPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
-        Bin patients according to a presence of at least one allele that matches `predicate` 
+        Bin patients according to a presence of at least one allele that matches `predicate`
         and test for genotype-phenotype correlations.
         """
         pass
@@ -352,6 +353,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         gt_predicate: GenotypePolyPredicate,
         phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ) -> PhenotypeScoreAnalysisResult:
+        # TODO: separate into pscore module
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         assert gt_predicate.n_categorizations() == 2
 

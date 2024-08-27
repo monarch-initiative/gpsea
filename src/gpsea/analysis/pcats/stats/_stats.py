@@ -14,7 +14,7 @@ class CountStatistic(metaclass=abc.ABCMeta):
     """
     `CountStatistic` calculates a p value for a contingency table
     produced by a pair of discrete random variables.
-    
+
     The `counts` table is usually `2x2` or `2x3`.
     """
 
@@ -176,17 +176,3 @@ class PythonMultiFisherExact(CountStatistic):
                 else:
                     pos_new = (xx + 1, yy)
                 self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
-
-
-def run_recessive_fisher_exact(
-    two_by_three_table: typing.Sequence[typing.Sequence[int]],
-):
-    a = np.array(two_by_three_table, dtype=np.int64)
-    test_class = PythonMultiFisherExact()
-    val = test_class.calculate(a)
-    return val
-
-
-def run_fisher_exact(two_by_two_table: typing.Sequence[typing.Sequence[int]]):
-    oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative="two-sided")
-    return p
