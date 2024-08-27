@@ -3,13 +3,15 @@ import typing
 import hpotk
 
 from gpsea.model import Patient
+from ._api import PhenotypeScorer
 
 
-class CountingPhenotypeScorer:
+class CountingPhenotypeScorer(PhenotypeScorer):
     """
     `CountingPhenotypeScorer` assigns the patient with a phenotype score
     that is equivalent to the count of present phenotypes that are either
     an exact match to the `query` terms or their descendants.
+    
     For instance, we may want to count whether an individual has brain, liver, kidney, and skin abormalities.
     In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
     An individual can then have between 0 and 4 phenotype group abnormalities.
@@ -86,9 +88,9 @@ class CountingPhenotypeScorer:
         )
 
     def __init__(
-            self,
-            hpo: hpotk.MinimalOntology,
-            query: typing.Iterable[hpotk.TermId],
+        self,
+        hpo: hpotk.MinimalOntology,
+        query: typing.Iterable[hpotk.TermId],
     ):
         self._hpo = hpo
         self._query = set(query)
@@ -97,8 +99,8 @@ class CountingPhenotypeScorer:
         return "How many of the query HPO terms (or their descendants) does the individual display"
 
     def score(
-            self,
-            patient: Patient,
+        self,
+        patient: Patient,
     ) -> float:
         """
         Get the count (number) of terms in the query set
@@ -122,12 +124,12 @@ class CountingPhenotypeScorer:
 
         return count
 
-    def __call__(
-            self,
-            *args: typing.Any,
-            **kwds: typing.Any,
-    ) -> float:
-        # TODO: move to `PhenotypeScorer` API.
-        assert len(args) == 1 and isinstance(args[0], Patient), 'The first argument must be an instance of `Patient`'
-        assert len(kwds) == 0, 'We do not take any key-word arguments'
-        return self.score(args[0])
+    # def __call__(
+    #         self,
+    #         *args: typing.Any,
+    #         **kwds: typing.Any,
+    # ) -> float:
+    #     # TODO: move to `PhenotypeScorer` API.
+    #     assert len(args) == 1 and isinstance(args[0], Patient), 'The first argument must be an instance of `Patient`'
+    #     assert len(kwds) == 0, 'We do not take any key-word arguments'
+    #     return self.score(args[0])
