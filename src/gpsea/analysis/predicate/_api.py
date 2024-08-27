@@ -148,11 +148,11 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         pass
 
-    def get_categories(self) -> typing.Sequence[PatientCategory]:
+    def get_categories(self) -> typing.Iterator[PatientCategory]:
         """
-        Get a sequence with :class:`PatientCategory` instances that the predicate can produce.
+        Get an iterator with :class:`PatientCategory` instances that the predicate can produce.
         """
-        return tuple(c.category for c in self.get_categorizations())
+        return (c.category for c in self.get_categorizations())
 
     def get_category(
         self,
@@ -164,9 +164,9 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         :param cat_id: an `int` with the id.
         :raises: ValueError if there is no such category was defined.
         """
-        for ctg in self.get_categorizations():
-            if ctg.category.cat_id == cat_id:
-                return ctg.category.name
+        for ctg in self.get_categories():
+            if ctg.cat_id == cat_id:
+                return ctg.name
         raise ValueError(f'No category for {cat_id} was found')
 
     def get_category_name(

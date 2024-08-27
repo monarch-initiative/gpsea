@@ -35,10 +35,33 @@ class PhenotypeScoreAnalysisResult:
 
     @property
     def genotype_phenotype_scores(self) -> pd.DataFrame:
+        """
+        Get the DataFrame with the genotype group and the phenotype score for each patient.
+
+        The DataFrame has the following structure:
+
+        ==========  ========  =========
+        patient_id  genotype  phenotype
+        ==========  ========  =========
+        patient_1   0         1
+        patient_2   0         3
+        patient_3   None      2
+        patient_4   1         2
+        ...         ...       ...
+        ==========  ========  =========
+
+        The DataFrame index includes the patient IDs, and then there are 2 columns
+        with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
+        and the `phenotype` score. A `genotype` value may be missing if the patient
+        cannot be assigned into any genotype category.
+        """
         return self._genotype_phenotype_scores
 
     @property
     def pval(self) -> float:
+        """
+        Get the p value of the test.
+        """
         return self._pval
 
     def plot_boxplots(
@@ -47,9 +70,14 @@ class PhenotypeScoreAnalysisResult:
         ax,
         colors=["darksalmon", "honeydew"],
     ):
+        """
+        Draw box plots with distributions of phenotype scores for genotype groups
+        """
         # skip the patients with unassigned genotype group
         not_na_gts = self._genotype_phenotype_scores["genotype"].notna()
         data = self._genotype_phenotype_scores.loc[not_na_gts]
+        actual = set(data["genotype"].unique())
+        expected = gt_predicate.get_categorizations()
         x = [
             data.loc[data["genotype"] == c.category.cat_id, "phenotype"].to_list()
             for c in gt_predicate.get_categorizations()

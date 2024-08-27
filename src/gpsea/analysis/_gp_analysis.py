@@ -45,6 +45,7 @@ def apply_predicates_on_patients(
         - a mapping from phenotype :class:`P` to a data frame with counts of patients
           in i-th phenotype category and j-th genotype category where i and j are rows and columns of the data frame
     """
+    # TODO: delete with no replacement.
     phenotypes = set()
     categories = set()
     for predicate in pheno_predicates:
@@ -85,6 +86,7 @@ class GPAnalyzer(typing.Generic[P], metaclass=abc.ABCMeta):
     """
     `GPAnalyzer` calculates p values for genotype-phenotype correlation of phenotypic features of interest.
     """
+    # TODO: delete with no replacement.
 
     @abc.abstractmethod
     def analyze(
@@ -113,6 +115,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
       should be applied.
     :param mtc_alpha: a `float` in range :math:`(0, 1]` with the multiple testing correction alpha value.
     """
+    # TODO: delete and use `gpsea.analysis.pcats.MultiPhenotypeAnalysis`.
 
     def __init__(
         self,

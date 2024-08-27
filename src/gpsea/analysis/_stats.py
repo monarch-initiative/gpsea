@@ -6,6 +6,8 @@ from decimal import Decimal
 import numpy as np
 import scipy
 
+# TODO: delete the module
+
 
 class MultiFisherExact(metaclass=abc.ABCMeta):
 

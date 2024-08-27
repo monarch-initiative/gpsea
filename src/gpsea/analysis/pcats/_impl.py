@@ -14,7 +14,7 @@ from gpsea.model import Patient
 from gpsea.analysis.pcats.stats import CountStatistic
 from ..predicate import PatientCategory
 from ..predicate.genotype import GenotypePolyPredicate
-from ..predicate.phenotype import P, PhenotypePolyPredicate
+from ..predicate.phenotype import P, PhenotypePolyPredicate, prepare_predicates_for_terms_of_interest
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
 
 

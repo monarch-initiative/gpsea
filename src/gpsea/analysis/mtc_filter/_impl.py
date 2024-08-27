@@ -366,6 +366,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         p_to_idx = {p: i for i, p in enumerate(phenotypes)}
         
         results = [None for _ in range(len(phenotypes))]
+        categories = tuple(gt_predicate.get_categories())
         for term_id in self._get_ordered_terms(phenotypes):
             try:
                 idx = p_to_idx[term_id]
@@ -416,7 +417,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
             elif HpoMtcFilter.genotypes_have_same_hpo_proportions(
                 contingency_matrix,
-                gt_predicate.get_categories(),
+                categories,
             ):
                 reason = "Skipping term because all genotypes have same HPO observed proportions"
                 results[idx] = PhenotypeMtcResult.fail(reason)
@@ -424,7 +425,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
                 contingency_matrix,
-                gt_predicate.get_categories(),
+                categories,
             ):
                 reason = "Skipping term because one genotype had zero observations"
                 results[idx] = PhenotypeMtcResult.fail(reason)
@@ -482,6 +483,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         )  # key is an HP id, value is a tuple with counts, i.e.,
 
         # iterate through the terms in the sorted order, starting from the leaves of the induced graph.
+        categories = tuple(gt_predicate.get_categories())
         for term_id in self._get_ordered_terms(all_counts.keys()):
             if term_id in self._general_hpo_terms:
                 reason_for_filtering_out["Skipping general term"] += 1
@@ -524,7 +526,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
             elif HpoMtcFilter.genotypes_have_same_hpo_proportions(
                 counts_frame,
-                gt_predicate.get_categories(),
+                categories,
             ):
                 reason = "Skipping term because all genotypes have same HPO observed proportions"
                 reason_for_filtering_out[reason] += 1
@@ -532,7 +534,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
                 counts_frame,
-                gt_predicate.get_categories(),
+                categories,
             ):
                 reason = "Skipping term because one genotype had zero observations"
                 reason_for_filtering_out[reason] += 1

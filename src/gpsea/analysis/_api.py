@@ -19,6 +19,7 @@ class HpoMtcReport:
     """
     Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses.
     """
+    # TODO: delete with no replacement.
 
     def __init__(
             self,
@@ -75,6 +76,7 @@ class GenotypePhenotypeAnalysisResult:
     """
     `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.
     """
+    # TODO: delete and use `gpsea.analysis.pcats.MultiPhenotypeAnalysisResult`.
 
     def __init__(
             self,
@@ -240,6 +242,7 @@ class PhenotypeScoreAnalysisResult:
 
     See :ref:`Mann Whitney U Test for phenotype score <phenotype-score-stats>` for more background.
     """
+    # TODO: delete and use `gpsea.analysis.pscore.PhenotypeScoreAnalysisResult`
 
     def __init__(
         self,
@@ -293,6 +296,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     The class provides various methods to test genotype-phenotype correlations. All methods wrap results
     into :class:`GenotypePhenotypeAnalysisResult`.
     """
+    # TODO: remove and use the analyses described in `User Guide > Statistical tests`.
 
     def __init__(
         self,
@@ -388,8 +392,6 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         self,
         gt_predicate: GenotypePolyPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
-        # TODO: if we had access to the cohort, it would be trivial to prepare
-        # all phenotype predicates and to call `self.compare_genotype_vs_phenotypes`.
         pass
 
     @abc.abstractmethod

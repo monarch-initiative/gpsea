@@ -6,7 +6,7 @@ import pandas as pd
 
 from scipy.stats import mannwhitneyu
 
-from gpsea.model import Cohort, Patient
+from gpsea.model import Cohort
 from gpsea.preprocessing import ProteinMetadataService
 from .pscore import PhenotypeScorer
 from .predicate.genotype import GenotypePolyPredicate, VariantPredicate
