@@ -16,29 +16,6 @@ class CountingPhenotypeScorer(PhenotypeScorer):
     In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
     An individual can then have between 0 and 4 phenotype group abnormalities.
     This predicate is intended to be used with the Mann Whitney U test.
-
-    Example
-    ^^^^^^^
-    We first need to load HPO using HPO toolkit:
-
-        >>> import hpotk
-        >>> store = hpotk.configure_ontology_store()
-        >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
-
-    Now we can create `CountingPhenotypeScorer` to test for presence of brain, liver, kidney and skin abnormalities:
-
-        >>> from gpsea.analysis.pscore import CountingPhenotypeScorer
-        >>> phenotype_groups = (
-        ...     "HP:0012443",  # Abnormal brain morphology
-        ...     "HP:0410042",  # Abnormal liver morphology
-        ...     "HP:0012210",  # Abnormal renal morphology
-        ...     "HP:0011121",  # Abnormal skin morphology
-        ... )
-        >>> scorer = CountingPhenotypeScorer.from_query_curies(
-        ...     hpo=hpo,
-        ...     query=phenotype_groups,
-        ... )
-
     """
 
     @staticmethod

@@ -14,8 +14,14 @@ from gpsea.model import Patient
 from gpsea.analysis.pcats.stats import CountStatistic
 from ..predicate import PatientCategory
 from ..predicate.genotype import GenotypePolyPredicate
-from ..predicate.phenotype import P, PhenotypePolyPredicate, prepare_predicates_for_terms_of_interest
+from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
+
+
+DEFAULT_MTC_PROCEDURE = 'fdr_bh'
+"""
+Use Benjamini-Hochberg as the default MTC procedure.
+"""
 
 
 def apply_predicates_on_patients(
@@ -253,12 +259,23 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
     def __init__(
         self,
         count_statistic: CountStatistic,
-        mtc_correction: typing.Optional[str] = None,
+        mtc_correction: typing.Optional[str] = DEFAULT_MTC_PROCEDURE,
         mtc_alpha: float = 0.05,
     ):
+        """
+        Create the analysis.
+
+        See the :func:`~statsmodels.stats.multitest.multipletests` for the accepted `mtc_correction` values.
+
+        :param count_statistic: the statistical test for computing p value for genotype-phenotype contingency table.
+        :param mtc_correction: a `str` with the MTC procedure code or `None` if no MTC should be performed.
+        :param mtc_alpha: a `float` with the family-wise error rate for FWER controlling procedures
+            (e.g. Bonferroni MTC) or false discovery rate for the FDR procedures (e.g. Benjamini-Hochberg).
+        """
         assert isinstance(count_statistic, CountStatistic)
         self._count_statistic = count_statistic
         self._mtc_correction = mtc_correction
+        assert isinstance(mtc_alpha, float) and 0. <= mtc_alpha <= 1.
         self._mtc_alpha = mtc_alpha
 
     @abc.abstractmethod
@@ -485,7 +502,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         self,
         count_statistic: CountStatistic,
         mtc_filter: PhenotypeMtcFilter,
-        mtc_correction: typing.Optional[str] = None,
+        mtc_correction: typing.Optional[str] = DEFAULT_MTC_PROCEDURE,
         mtc_alpha: float = 0.05,
     ):
         super().__init__(
