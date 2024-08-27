@@ -1,13 +1,15 @@
+import enum
 import logging
 import os
 import typing
-import enum
+import warnings
+
 import hpotk
 
 from gpsea.config import get_cache_dir_path
 from gpsea.model import Cohort
-from gpsea.preprocessing import ProteinMetadataService, UniprotProteinMetadataService, ProteinAnnotationCache, \
-    ProtCachingMetadataService
+from gpsea.preprocessing import ProteinMetadataService
+from gpsea.preprocessing import configure_default_protein_metadata_service as backup_pms
 from .mtc_filter import PhenotypeMtcFilter, UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, HpoMtcFilter
 from ._api import CohortAnalysis
 from ._gp_analysis import FisherExactAnalyzer
@@ -264,7 +266,11 @@ def configure_cohort_analysis(
     """
     if config is None:
         config = CohortAnalysisConfiguration()  # Use the default config
-    cache_dir = _configure_cache_dir(cache_dir)
+
+    cache_path = get_cache_dir_path(cache_dir)
+    os.makedirs(cache_path, exist_ok=True)
+
+    cache_dir = str(cache_path)
     protein_metadata_service = configure_default_protein_metadata_service(protein_source, cache_dir)
 
     mtc_filter: PhenotypeMtcFilter
@@ -338,36 +344,9 @@ def configure_default_protein_metadata_service(
     in current working directory under `.gpsea_cache/protein_cache`
     and reach out to UNIPROT REST API if a cache entry is missing.
     """
-    cache_dir = _configure_cache_dir(cache_dir)
-    return _configure_protein_service(protein_fallback=protein_source, cache_dir=cache_dir)
-
-
-def _configure_protein_service(
-    protein_fallback: str,
-    cache_dir: str,
-) -> ProteinMetadataService:
-    # (1) ProteinMetadataService
-    # Setup fallback
-    protein_fallback = _configure_fallback_protein_service(protein_fallback)
-    # Setup protein metadata cache
-    prot_cache_dir = os.path.join(cache_dir, 'protein_cache')
-    os.makedirs(prot_cache_dir, exist_ok=True)
-    prot_cache = ProteinAnnotationCache(prot_cache_dir)
-    # Assemble the final protein metadata service
-    protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
-    return protein_metadata_service
-
-
-def _configure_fallback_protein_service(protein_fallback: str) -> ProteinMetadataService:
-    if protein_fallback == 'UNIPROT':
-        fallback1 = UniprotProteinMetadataService()
-    else:
-        raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
-    return fallback1
-
-
-def _configure_cache_dir(cache_dir: typing.Optional[str]) -> str:
-    cache_path = get_cache_dir_path(cache_dir)
-    os.makedirs(cache_path, exist_ok=True)
-
-    return str(cache_path)
+    # TODO: remove at some point.
+    warnings.warn(
+        'Use gpsea.preprocessing.configure_default_protein_metadata_service` instead',
+        DeprecationWarning, stacklevel=2,
+    )
+    return backup_pms(protein_source=protein_source, cache_dir=cache_dir)

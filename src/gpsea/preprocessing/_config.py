@@ -225,14 +225,65 @@ def configure_protein_metadata_service(
      In any case, the directory will be created if it does not exist (including any non-existing parents).
     :param timeout: timeout in seconds for the REST APIs.
     """
+    warnings.warn('Use `configure_default_protein_metadata_service` instead', DeprecationWarning, stacklevel=2)
+    return configure_default_protein_metadata_service(
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
+
+
+def configure_default_protein_metadata_service(
+    protein_source: typing.Literal['UNIPROT'] = 'UNIPROT',
+    cache_dir: typing.Optional[str] = None,
+    timeout: float = 30.,
+) -> ProteinMetadataService:
+    """
+    Create default protein metadata service that will cache the protein metadata
+    in current working directory under `.gpsea_cache/protein_cache`
+    and reach out to UNIPROT REST API if a cache entry is missing.
+
+    :param protein_source: a `str` with the code of the protein data sources (currently accepting just `UNIPROT`).
+    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
+        if the data should be cached as described by :func:`~gpsea.config.get_cache_dir_path` function.
+        In any case, the directory will be created if it does not exist (including any non-existing parents).
+    :param timeout: timeout in seconds for the REST APIs.
+    """
     cache_dir = _configure_cache_dir(cache_dir)
+    return _configure_protein_service(
+        protein_fallback=protein_source,
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
 
-    protein_cache_dir = os.path.join(cache_dir, "protein_cache")
-    os.makedirs(protein_cache_dir, exist_ok=True)
 
-    cache = ProteinAnnotationCache(protein_cache_dir)
-    fallback = UniprotProteinMetadataService(timeout=timeout)
-    return ProtCachingMetadataService(cache=cache, fallback=fallback)
+def _configure_protein_service(
+    protein_fallback: str,
+    cache_dir: str,
+    timeout: float,
+) -> ProteinMetadataService:
+    # (1) ProteinMetadataService
+    # Setup fallback
+    protein_fallback = _configure_fallback_protein_service(
+        protein_fallback,
+        timeout,
+    )
+    # Setup protein metadata cache
+    prot_cache_dir = os.path.join(cache_dir, 'protein_cache')
+    os.makedirs(prot_cache_dir, exist_ok=True)
+    prot_cache = ProteinAnnotationCache(prot_cache_dir)
+    # Assemble the final protein metadata service
+    protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
+    return protein_metadata_service
+
+
+def _configure_fallback_protein_service(
+    protein_fallback: str,
+    timeout: float,
+) -> ProteinMetadataService:
+    if protein_fallback == 'UNIPROT':
+        return UniprotProteinMetadataService(timeout)
+    else:
+        raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
 
 
 def _configure_cache_dir(
