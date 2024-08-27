@@ -133,3 +133,16 @@ class CountingPhenotypeScorer(PhenotypeScorer):
     #     assert len(args) == 1 and isinstance(args[0], Patient), 'The first argument must be an instance of `Patient`'
     #     assert len(kwds) == 0, 'We do not take any key-word arguments'
     #     return self.score(args[0])
+
+
+class DeVriesPhenotypeScorer(PhenotypeScorer):
+    """
+    `DeVriesPhenotypeScorer` computes "adapted De Vries Score"
+    as described in `Feenstra et al <https://pubmed.ncbi.nlm.nih.gov/21712853>`_.
+    """
+
+    def score(self, patient: Patient) -> float:
+        """
+        Compute the score for the `patient`.
+        """
+        raise NotImplementedError()
