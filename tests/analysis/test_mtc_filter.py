@@ -13,7 +13,7 @@ from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
 from gpsea.model import Cohort
 
 
-class TestHeuristicSamplerMtcFilter:
+class TestHpoMtcFilter:
 
     @pytest.fixture
     def mtc_filter(
@@ -75,7 +75,7 @@ class TestHeuristicSamplerMtcFilter:
             gt_categories: pd.Index,
             pheno_categories: pd.Index,
     ):
-        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
+        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
         actual = HpoMtcFilter.one_genotype_has_zero_hpo_observations(
             counts=counts_df,
@@ -104,7 +104,7 @@ class TestHeuristicSamplerMtcFilter:
             gt_categories: pd.Index,
             pheno_categories: pd.Index,
     ):
-        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
+        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
         actual = HpoMtcFilter.some_cell_has_greater_than_one_count(counts=counts_df)
 
@@ -125,7 +125,7 @@ class TestHeuristicSamplerMtcFilter:
             gt_categories: pd.Index,
             pheno_categories: pd.Index,
     ):
-        counts_df = TestHeuristicSamplerMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
+        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_categories, pheno_categories)
 
         actual = HpoMtcFilter.genotypes_have_same_hpo_proportions(
             counts=counts_df,
@@ -165,7 +165,6 @@ class TestHeuristicSamplerMtcFilter:
 
     def test_specified_term_mtc_filter(
             self,
-            hpo: hpotk.MinimalOntology,
             suox_gt_predicate: GenotypePolyPredicate,
             patient_counts: typing.Tuple[
                 typing.Mapping[hpotk.TermId, int],
@@ -178,7 +177,7 @@ class TestHeuristicSamplerMtcFilter:
         but after our filter, only one survives (filtered_n_usable == 1), and we have four cases in which the
         reason for filtering out is 'Skipping non-specified term'
         """
-        specified_filter = SpecifiedTermsMtcFilter(hpo=hpo, terms_to_test={hpotk.TermId.from_curie("HP:0032350")})
+        specified_filter = SpecifiedTermsMtcFilter(terms_to_test={hpotk.TermId.from_curie("HP:0032350")})
         n_usable, all_counts = patient_counts
         mtc_report = specified_filter.filter_terms_to_test(
             suox_gt_predicate,

@@ -32,7 +32,7 @@ the standard `gpsea` installation:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
->>> hpo = store.load_minimal_hpo(release='v2024-03-06')
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
 Next, let's prepare a :class:`~gpsea.preprocessing.CohortCreator` that will turn a collection of phenopacket
 into a :class:`~gpsea.model.Cohort`, required in the downstream steps.
