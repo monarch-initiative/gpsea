@@ -1,0 +1,34 @@
+{
+  "subjectOrBiosampleId": "KBG6",
+  "interpretationStatus": "CAUSATIVE",
+  "variantInterpretation": {
+    "variationDescriptor": {
+      "geneContext": {
+        "valueId": "HGNC:21316",
+        "symbol": "ANKRD11"
+      },
+      "expressions": [
+        {
+          "syntax": "hgvs.c",
+          "value": "NM_013275.6:c.6691dup"
+        },
+        {
+          "syntax": "hgvs.g",
+          "value": "NC_000016.10:g.89279853dup"
+        }
+      ],
+      "vcfRecord": {
+        "genomeAssembly": "hg38",
+        "chrom": "chr16",
+        "pos": "89279850",
+        "ref": "G",
+        "alt": "GC"
+      },
+      "moleculeContext": "genomic",
+      "allelicState": {
+        "id": "GENO:0000135",
+        "label": "heterozygous"
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+  <style>table {
+    border-collapse: collapse;
+    margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+
+  th {
+    background-color: #f2f2f2;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 2px;
+  }
+
+  tr {
+    border: 1px solid #dddddd;
+  }
+
+  td {
+    padding: 2px;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table td,tr {
+    text-align: left;
+}
+
+.table td:first-child, tr:first-child {
+    text-align: left;
+}
+
+  </style>
+</head>
+
+<body>
+  <h1>Phenotype testing report</h1>
+  <p>Phenotype MTC filter: <em>{{ hpo_mtc_filter_name }}</em></p>
+  <p>Multiple testing correction: <em>{{ mtc_name }}</em></p>
+  <p>Performed statistical tests for {{ tested_hpo_count }} out of the total of {{ total_hpo_count }} HPO terms.</p>
+    <table>
+      <caption>Using <em>{{ hpo_mtc_filter_name }}</em>, {{ skipped_hpo_count }} term(s) were omitted from statistical analysis.</caption>
+        <tbody>
+          <tr>
+            <th>Code</th>
+            <th>Reason</th>
+            <th>Count</th>
+          </tr>
+          {% for skipped  in reason_to_count %}
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>{{ skipped.reason }}</td>
+            <td>{{ skipped.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

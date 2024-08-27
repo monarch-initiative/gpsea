@@ -32,8 +32,8 @@ jobs:
         touch gh-pages/.nojekyll
         
         function build_docs {
-          # The function will checkout a branch and build the Javadoc & documentation 
-          # into provided documentation directory.
+          # The function will checkout a branch and build the API docs & documentation 
+          # into provided directory.
           BRANCH=${1}
           DOCDIR=${2}
         
@@ -50,8 +50,8 @@ jobs:
           printf "Building the %s documentation\n" ${DOCDIR}
 
           cd docs
-          sphinx-apidoc --separate --module-first -d 2 -H "API reference" --follow-links -o apidocs ../src/genophenocorr
-          make html
+          sphinx-apidoc --separate --module-first -d 2 -H "API reference" --follow-links -o apidocs ../src/gpsea
+          make clean html
           
           mv _build/html/* ../gh-pages/${DOCDIR}
           cd ..

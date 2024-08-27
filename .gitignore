@@ -1,3 +1,6 @@
+# Cache with transcript/protein pickle files
+.gpsea_cache
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -29,7 +32,6 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-phenopackets
 notebooks/KBG/Backup/
 notebooks/KBG/phenopackets_extraHPO/
 notebooks/KBG/pickledVariants/
@@ -130,6 +132,10 @@ venv.bak/
 
 # PyCharm
 .idea/
+
+# VsCode
+*.code-workspace
+.vscode
 
 # mkdocs documentation
 /site

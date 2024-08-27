@@ -1,41 +1,50 @@
-[![Build status](https://github.com/monarch-initiative/genophenocorr/workflows/CI/badge.svg)](https://github.com/monarch-initiative/genophenocorr/actions/workflows/python_ci.yml)
-![PyPi downloads](https://img.shields.io/pypi/dm/genophenocorr.svg?label=Pypi%20downloads)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/genophenocorr)
+[![Build status](https://github.com/monarch-initiative/gpsea/workflows/CI/badge.svg)](https://github.com/monarch-initiative/gpsea/actions/workflows/python_ci.yml)
+[![GitHub release](https://img.shields.io/github/release/monarch-initiative/gpsea.svg)](https://github.com/monarch-initiative/gpsea/releases)
+![PyPi downloads](https://img.shields.io/pypi/dm/gpsea.svg?label=Pypi%20downloads)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gpsea)
 
-Genophenocorr is a Python library for genotype-phenotype association analysis. 
+GPSEA is a Python library for discovery of genotype-phenotype associations.
 
 An example of simple genotype-phenotype association analysis
+
 ```python
 # Load HPO
 import hpotk
-hpo = hpotk.load_minimal_ontology('http://purl.obolibrary.org/obo/hp.json')
 
-# Load a cohort of phenopackets 
-from genophenocorr.data import get_toy_cohort
+store = hpotk.configure_ontology_store()
+hpo = store.load_minimal_hpo()
+
+# Load a cohort of phenopackets
+from gpsea.data import get_toy_cohort
+
 cohort = get_toy_cohort()
 
-# Analyze genotype-phenotype associations 
-from genophenocorr.analysis import CohortAnalysis
-from genophenocorr.constants import VariantEffect
+# Analyze genotype-phenotype associations
+from gpsea.analysis import configure_cohort_analysis
+from gpsea.analysis.predicate import PatientCategories
 
-cohort_analysis = CohortAnalysis(cohort, 'NM_1234.5', hpo)
-frameshift = cohort_analysis.compare_by_variant_type(VariantEffect.FRAMESHIFT_VARIANT)
-print(frameshift)
+from gpsea.model import VariantEffect
+
+cohort_analysis = configure_cohort_analysis(cohort, hpo)
+frameshift = cohort_analysis.compare_by_variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id='NM_1234.5')
+
+frameshift.summarize(hpo, category=PatientCategories.YES)
 ```
 
-prints a table with genotype-phenotype correlations:
+provides a pandas data frame with genotype-phenotype correlations:
 
 ```text
-                            With frameshift_variant         Without frameshift_variant
-                                              Count Percent                      Count Percent  p-value
-HP:0001166 (Arachnodactyly)                       4  30.77%                         10  76.92%  0.04718
-HP:0001250 (Seizure)                             11  84.62%                          9  69.23%  0.64472
-HP:0001257 (Spasticity)                           8  61.54%                          9  69.23%  1.00000
+FRAMESHIFT_VARIANT on NM_1234.5                                    No                Yes
+                                                                Count   Percent    Count   Percent    p value    Corrected p value
+    Arachnodactyly [HP:0001166]                                  1/10       10%    13/16       81%   0.000781             0.020299
+    Abnormality of the musculature [HP:0003011]                   6/6      100%    11/11      100%   1.000000             1.000000
+    Abnormal nervous system physiology [HP:0012638]               9/9      100%    15/15      100%   1.000000             1.000000
+    ...                                                           ...       ...      ...       ...        ...                  ...
 ```
 
 ## Documentation
 
 Check out the User guide and the API reference for more info:
 
-- [Stable documentation](https://monarch-initiative.github.io/genophenocorr/stable/) (last release on `main` branch)
-- [Latest documentation](https://monarch-initiative.github.io/genophenocorr/latest) (bleeding edge, latest commit on `development` branch)
+- [Stable documentation](https://monarch-initiative.github.io/gpsea/stable/) (last release on `main` branch)
+- [Latest documentation](https://monarch-initiative.github.io/gpsea/latest) (bleeding edge, latest commit on `develop` branch)

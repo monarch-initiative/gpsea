@@ -1,4 +1,4 @@
-.. _cohort-exploratory:
+.. _exploratory:
 
 ===========================
 Cohort exploratory analysis

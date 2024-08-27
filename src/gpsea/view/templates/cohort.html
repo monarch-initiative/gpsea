@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .table .column-1 {
+      text-align: left;
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
+
+    tr {
+      border: 1px solid #dddddd;
+    }
+
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .table td, tr {
+      text-align: right;
+    }
+
+    .lft {
+      text-align: left;
+    }
+
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GPSEA cohort analysis</h1>
+  <p>Successfully loaded {{ n_individuals }} individuals.</p>
+  {% if n_excluded > 0 %}
+  <p>Not able to load {{ n_excluded }} individuals.</p>
+  {% else %}
+  <p>No errors encountered.</p>
+  {% endif %}
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top {{top_hpo_count}} HPO Terms</h3>
+        A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort.
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">HPO Term</th>
+                <th>ID</th>
+                <th>Seen in <em>n</em> individuals</th>
+            </tr>
+            {% for hpo_count in hpo_counts %}
+            <tr>
+                <td class="lft">{{ hpo_count.HPO }}</td>
+                <td>{{ hpo_count.ID }}</td>
+                <td>{{ hpo_count.Count }}</td>
+                </tr>
+            {% endfor %}
+                </tbody>
+    </table>
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top {{top_var_count}} Variants</h3>
+        Variants are shown according to {{ transcript_id }}. A total of {{ unique_variant_count}} unique variants were identified in the cohort.
+    </caption>
+            <tbody>
+                <tr class="strng">
+                    <th>Count</th>
+                    <th class="lft">Variant key</th>
+                    <th>Variant Name</th>
+                    <th>Protein Variant</th>
+                    <th>Variant Class</th>
+                </tr>
+                {% for var_count in var_counts %}
+                <tr>
+                    <td>{{ var_count.Count }}</td>
+                    <td class="lft">{{ var_count.variant }}</td>
+                    <td>{{ var_count.variant_name }}</td>
+                    <td>{{ var_count.protein_name }}</td>
+                    <td>{{ var_count.variant_effects }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <table>
+    <caption style="color: black;">
+        <h3>Diseases</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Disease Name</th>
+                <th >Disease ID</th>
+                <th>Annotation Count</th>
+              </tr>
+              {% for disease_count in disease_counts %}
+              <tr>
+                <td class="lft">{{ disease_count.disease_name   }}</td>
+                <td>{{ disease_count.disease_id }}</td>
+                <td>{{ disease_count.count }}</td>
+                </tr>
+            {% endfor %}
+           </tbody>
+    </table>
+    {% if has_transcript > 0 %}
+    <table>
+    <caption style="color: black;">
+        <h3>Variant categories for {{ transcript_id }}</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
+                <th>Annotation Count</th>
+              </tr>
+              {% for var_effect in var_effects_list %}
+              <tr>
+                <td class="lft">{{ var_effect.effect }}</td>
+                <td>{{ var_effect.count }}</td>
+                </tr>
+            {% endfor %}
+           </tbody>
+    </table>
+  {% else %}
+  <p>Call this function with transcript to see table with variant effect counts.</p>
+  {% endif %}
+
+
+</body>
+</html>

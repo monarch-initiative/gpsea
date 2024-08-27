@@ -1,0 +1,15 @@
+[flake8]
+max-line-length = 120
+
+# F405 - ignore error if class is imported in `*` import.
+# W293 - blank line contains whitespace
+# W503 - line break before binary operator
+ignore = F405,W293,W503
+
+exclude =
+    .git,
+    __pycache__,
+    docs/conf.py,
+    build,
+    dist,
+    venv,

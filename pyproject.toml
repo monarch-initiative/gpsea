@@ -3,52 +3,65 @@ requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "genophenocorr"
+name = "gpsea"
 authors = [
     {name = "Lauren Rekerle", email="lauren.rekerle@jax.org"},
     {name = "Daniel Danis", email="daniel.danis@jax.org"},
     {name = "Peter Robinson", email="peter.robinson@jax.org"},
      ]
-description = "Search for genotype-phenotype correlations with GA4GH phenopackets"
+description = "Discover genotype-phenotype correlations with GA4GH phenopackets"
 readme = "README.md"
-requires-python = ">=3.5"
+requires-python = ">=3.10"
 keywords = [
     "Global Alliance for Genomics and Health",
     "GA4GH Phenopacket Schema",
     "Human Phenotype Ontology",
     "GA4GH",
     "Genotype-phenotype correlation",
-    "HPO"]
+    "HPO",
+]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
-    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
 dependencies = [
     "hpo-toolkit>=0.3.0",
+    "Jinja2>=3.1.4,<4.0.0",
     "protobuf>=3.15.0",
-    "pandas>=2.0.0",
-    "phenopackets>=2.0.2",
-    "requests>=2.25.0",
-    "scipy>=1.11",
+    "pandas>=2.0.0,<3.0.0",
+    "phenopacket-store-toolkit>=0.1.2",
+    "requests>=2.25.0,<3.0",
+    "scipy>=1.10,<2.0",
     "statsmodels>=0.13.0",
-    "numpy>=1.23"
+    "numpy>=1.23",
+    "matplotlib>=3.2.0,<4.0",
+    "ratelimit>=2.2.1,<3",
+    "tqdm>=4.60",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest>=7.0.0"]
+test = [
+    "pytest>=7.0.0,<8.0.0",
+    "pytest-cov",
+]
 docs = ["sphinx>=7.0.0", "sphinx-rtd-theme>=1.3.0", "sphinx-copybutton>=0.5.0"]
 
 [project.urls]
-homepage = "https://github.com/monarch-initiative/genophenocorr"
-repository = "https://github.com/monarch-initiative/genophenocorr.git"
-documentation = "https://monarch-initiative.github.io/genophenocorr/stable"
-bugtracker = "https://github.com/monarch-initiative/genophenocorr/issues"
+homepage = "https://github.com/monarch-initiative/gpsea"
+repository = "https://github.com/monarch-initiative/gpsea.git"
+documentation = "https://monarch-initiative.github.io/gpsea/stable"
+bugtracker = "https://github.com/monarch-initiative/gpsea/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
 
 [tool.setuptools.dynamic]
-version = { attr = "genophenocorr.__version__" }
+version = { attr = "gpsea.__version__" }

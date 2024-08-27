@@ -1,0 +1,34 @@
+{
+  "subjectOrBiosampleId": "KBG7",
+  "interpretationStatus": "CAUSATIVE",
+  "variantInterpretation": {
+    "variationDescriptor": {
+      "geneContext": {
+        "valueId": "HGNC:21316",
+        "symbol": "ANKRD11"
+      },
+      "expressions": [
+        {
+          "syntax": "hgvs.c",
+          "value": "NM_013275.6:c.1940_1941delinsT"
+        },
+        {
+          "syntax": "hgvs.g",
+          "value": "NC_000016.10:g.89284601_89284602delinsA"
+        }
+      ],
+      "vcfRecord": {
+        "genomeAssembly": "hg38",
+        "chrom": "chr16",
+        "pos": "89284601",
+        "ref": "GG",
+        "alt": "A"
+      },
+      "moleculeContext": "genomic",
+      "allelicState": {
+        "id": "GENO:0000135",
+        "label": "heterozygous"
+      }
+    }
+  }
+}
