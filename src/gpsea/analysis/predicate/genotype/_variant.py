@@ -30,12 +30,12 @@ class VariantPredicates:
         Build a predicate to test if variant has a functional annotation to genes *SURF1* and *SURF2*:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
-        
+
         >>> genes = ('SURF1', 'SURF2',)
         >>> predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)
         >>> predicate.get_question()
         '(impacts SURF1 AND impacts SURF2)'
-        
+
         Args:
             predicates: an iterable of predicates to test
         """
@@ -55,11 +55,12 @@ class VariantPredicates:
 
         **Example**
 
-        Build a predicate to test if variant leads to a missense or non-sense change on a fictive transcript `NM_123456.7`:
+        Build a predicate to test if variant leads to a missense
+        or nonsense change on a fictional transcript `NM_123456.7`:
 
         >>> from gpsea.model import VariantEffect
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
-        
+
         >>> tx_id = 'NM_123456.7'
         >>> effects = (VariantEffect.MISSENSE_VARIANT, VariantEffect.STOP_GAINED,)
         >>> predicate = VariantPredicates.any(VariantPredicates.variant_effect(e, tx_id) for e in effects)
@@ -140,7 +141,8 @@ class VariantPredicates:
         Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.
 
         Args:
-            exon: a non-negative `int` with the index of the target exon (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
+            exon: a non-negative `int` with the index of the target exon
+                (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
         """
         return VariantExonPredicate(exon, tx_id)
@@ -148,10 +150,12 @@ class VariantPredicates:
     @staticmethod
     def region(region: Region, tx_id: str) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` that tests if the variant overlaps with a region on a protein of a specific transcript.
+        Prepare a :class:`VariantPredicate` that tests if the variant
+        overlaps with a region on a protein of a specific transcript.
 
         Args:
-            region: a :class:`Region` that gives the start and end coordinate of the region of interest on a protein strand.
+            region: a :class:`Region` that gives the start and end coordinate
+                of the region of interest on a protein strand.
         """
         return ProteinRegionPredicate(region, tx_id)
 
@@ -173,15 +177,20 @@ class VariantPredicates:
         SVs are usually defined as variant affecting more than a certain number of base pairs.
         The thresholds vary in the literature, but here we use 50bp as a default.
 
-        Any variant that affects at least `threshold` base pairs is considered an SV. 
-        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`) 
+        Any variant that affects at least `threshold` base pairs is considered an SV.
+        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`)
         are always considered as an SV.
 
         Args:
             threshold: a non-negative `int` with the number of base pairs that must be affected
         """
-        assert threshold >= 0, '`threshold` must be non-negative!'
-        return VariantPredicates.change_length('<=', -threshold) | VariantPredicates.change_length('>=', threshold) | VariantPredicates.is_large_imprecise_sv() | IS_BND
+        assert threshold >= 0, "`threshold` must be non-negative!"
+        return (
+            VariantPredicates.change_length("<=", -threshold)
+            | VariantPredicates.change_length(">=", threshold)
+            | VariantPredicates.is_large_imprecise_sv()
+            | IS_BND
+        )
 
     @staticmethod
     def structural_type(
@@ -190,7 +199,8 @@ class VariantPredicates:
         """
         Prepare a :class:`VariantPredicate` for testing if the variant has a certain structural type.
 
-        We recommend using a descendant of `structural_variant` (`SO:0001537 <https://purl.obolibrary.org/obo/SO_0001537>`_)
+        We recommend using a descendant of `structural_variant`
+        (`SO:0001537 <https://purl.obolibrary.org/obo/SO_0001537>`_)
         as the structural type.
 
         **Example**
@@ -237,51 +247,12 @@ class VariantPredicates:
         length: int,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the reference (REF) allele 
+        Prepare a :class:`VariantPredicate` for testing if the reference (REF) allele
         of variant is above, below, or (not) equal to certain `length`.
 
-        The length of the REF allele corresponds to the length of the genomic region affected by the variant.
-        Let's show a few examples.
+        .. seealso::
 
-        >>> from gpsea.model import VariantCoordinates
-        >>> from gpsea.model.genome import GRCh38
-        >>> chr1 = GRCh38.contig_by_name("chr1")
-
-        The length of the reference allele of a missense variant is 1 
-        because the variant affects a 1-bp region spanned by the ``C`` nucleotide:
-
-        >>> missense = VariantCoordinates.from_vcf_literal(chr1, 1001, 'C', 'T')
-        >>> len(missense)
-        1
-
-        The length of a "small" deletion is the same as the length of the ref allele `str`:
-        (``'CCC'`` in the example below):
-
-        >>> deletion = VariantCoordinates.from_vcf_literal(chr1, 1001, 'CCC', 'C')
-        >>> len(deletion)
-        3
-
-        This is because the literal notation spells out the alleles. 
-        However, this simple rule does not apply in symbolic notation. 
-        Here, the REF length corresponds to the length of the allele region.
-
-        For instance, for the following structural variant
-
-        .. code::
-           
-           #CHROM   POS    ID   REF  ALT     QUAL   FILTER   INFO 
-           1        1001   .    C    <DEL>   6      PASS     SVTYPE=DEL;END=1003;SVLEN=-3
-
-        the length of the REF allele is `3`:
-
-        >>> sv_deletion = VariantCoordinates.from_vcf_symbolic(
-        ...     chr1, pos=1001, end=1003, 
-        ...     ref='C', alt='<DEL>', svlen=-3,
-        ... )
-        >>> len(sv_deletion)
-        3
-
-        because the deletion removes 3 base pairs at the coordinates :math:`[1001, 1003]`.
+            See :ref:`length-of-the-reference-allele` for more info.
 
         **Example**
 
@@ -291,13 +262,12 @@ class VariantPredicates:
         >>> predicate = VariantPredicates.ref_length('>', 5)
         >>> predicate.get_question()
         'ref allele length > 5'
-        
+
         Args:
             operator: a `str` with the desired test. Must be one of ``{ '<', '<=', '==', '!=', '>=', '>' }``.
             length: a non-negative `int` with the length threshold.
         """
         return RefAlleleLengthPredicate(operator, length)
-        
 
     @staticmethod
     def change_length(
@@ -310,11 +280,11 @@ class VariantPredicates:
 
         .. seealso::
 
-            See :meth:`gpsea.model.VariantCoordinates.change_length` for more info on change length.
+            See :ref:`change-length-of-an-allele` for more info.
 
         **Example**
 
-        Make a predicate for testing if the change length is less than or equal to `-10`, 
+        Make a predicate for testing if the change length is less than or equal to `-10`,
         e.g. to test if a variant is a *deletion* leading to removal of at least 10 base pairs:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
@@ -333,15 +303,15 @@ class VariantPredicates:
         threshold: int = -50,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant 
+        Prepare a :class:`VariantPredicate` for testing if the variant
         is a `chromosomal deletion <https://purl.obolibrary.org/obo/SO_1000029>`_ or a structural variant deletion
         that leads to removal of at least *n* base pairs (50bp by default).
-        
+
         .. note::
 
             The predicate uses :meth:`~gpsea.model.VariantCoordinates.change_length`
             to determine if the length of the variant is above or below `threshold`.
-            
+
             **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele
             is shorter than the reference allele. See the method's documentation for more info.
 
@@ -378,9 +348,7 @@ class ProteinPredicates:
         self._protein_metadata_service = protein_metadata_service
 
     def protein_feature_type(
-        self,
-        feature_type: FeatureType,
-        tx_id: str
+        self, feature_type: FeatureType, tx_id: str
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
@@ -392,11 +360,7 @@ class ProteinPredicates:
             feature_type, tx_id, self._protein_metadata_service
         )
 
-    def protein_feature(
-        self,
-        feature_id: str,
-        tx_id: str
-    ) -> VariantPredicate:
+    def protein_feature(self, feature_id: str, tx_id: str) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
 

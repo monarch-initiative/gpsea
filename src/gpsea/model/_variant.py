@@ -439,8 +439,7 @@ class VariantCoordinates:
         """
         Get the change of length between the `ref` and `alt` alleles due to the variant presence.
 
-        SNVs lead to change length of zero, deletions and insertions/duplications lead to negative
-        and positive change lengths, respectively.
+        See :ref:`change-length-of-an-allele` for more info.
         """
         return self._change_length
 

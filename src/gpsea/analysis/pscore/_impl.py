@@ -11,7 +11,7 @@ class CountingPhenotypeScorer(PhenotypeScorer):
     `CountingPhenotypeScorer` assigns the patient with a phenotype score
     that is equivalent to the count of present phenotypes that are either
     an exact match to the `query` terms or their descendants.
-    
+
     For instance, we may want to count whether an individual has brain, liver, kidney, and skin abormalities.
     In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
     An individual can then have between 0 and 4 phenotype group abnormalities.
@@ -23,7 +23,7 @@ class CountingPhenotypeScorer(PhenotypeScorer):
 
         >>> import hpotk
         >>> store = hpotk.configure_ontology_store()
-        >>> hpo = store.load_minimal_hpo(release='v2023-10-09')
+        >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
     Now we can create `CountingPhenotypeScorer` to test for presence of brain, liver, kidney and skin abnormalities:
 
@@ -43,8 +43,8 @@ class CountingPhenotypeScorer(PhenotypeScorer):
 
     @staticmethod
     def from_query_curies(
-            hpo: hpotk.MinimalOntology,
-            query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        hpo: hpotk.MinimalOntology,
+        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
         """
         Create a scorer to test for the number of phenotype terms that fall into the phenotype groups.

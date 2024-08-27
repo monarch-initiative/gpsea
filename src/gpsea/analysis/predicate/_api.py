@@ -154,6 +154,33 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         return tuple(c.category for c in self.get_categorizations())
 
+    def get_category(
+        self,
+        cat_id: int,
+    ) -> PatientCategory:
+        """
+        Get the category name for a :class:`PatientCategory.cat_id`.
+
+        :param cat_id: an `int` with the id.
+        :raises: ValueError if there is no such category was defined.
+        """
+        for ctg in self.get_categorizations():
+            if ctg.category.cat_id == cat_id:
+                return ctg.category.name
+        raise ValueError(f'No category for {cat_id} was found')
+
+    def get_category_name(
+        self,
+        cat_id: int,
+    ) -> str:
+        """
+        Get the category name for a :class:`PatientCategory.cat_id`.
+
+        :param cat_id: an `int` with the id.
+        :raises: ValueError if there is no such category was defined.
+        """
+        return self.get_category(cat_id).name
+
     @abc.abstractmethod
     def get_question(self) -> str:
         """

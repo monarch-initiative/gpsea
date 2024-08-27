@@ -10,7 +10,7 @@ from gpsea.preprocessing import ProteinMetadataService
 from .predicate import PolyPredicate, PatientCategory
 from .predicate.genotype import GenotypePolyPredicate, VariantPredicate, ProteinPredicates
 from .predicate.phenotype import P, PhenotypePolyPredicate
-from .pscore import CountingPhenotypeScorer
+from .pscore import PhenotypeScorer, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -371,7 +371,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     def compare_genotype_vs_phenotype_score(
         self,
         gt_predicate: GenotypePolyPredicate,
-        phenotype_scorer: typing.Callable[[Patient,], float],
+        phenotype_scorer: PhenotypeScorer,
     ) -> PhenotypeScoreAnalysisResult:
         """
         Score the patients with a phenotype scoring method and test for correlation between the genotype group
