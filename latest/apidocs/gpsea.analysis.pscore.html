@@ -213,27 +213,6 @@ an exact match to the <cite>query</cite> terms or their descendants.</p>
 In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
 An individual can then have between 0 and 4 phenotype group abnormalities.
 This predicate is intended to be used with the Mann Whitney U test.</p>
-<p class="rubric">Example</p>
-<p>We first need to load HPO using HPO toolkit:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now we can create <cite>CountingPhenotypeScorer</cite> to test for presence of brain, liver, kidney and skin abnormalities:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">CountingPhenotypeScorer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">phenotype_groups</span> <span class="o">=</span> <span class="p">(</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0012443&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal brain morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0410042&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal liver morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0012210&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal renal morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0011121&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal skin morphology</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">scorer</span> <span class="o">=</span> <span class="n">CountingPhenotypeScorer</span><span class="o">.</span><span class="n">from_query_curies</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">phenotype_groups</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_query_curies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_impl.html#CountingPhenotypeScorer.from_query_curies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies" title="Link to this definition"></a></dt>

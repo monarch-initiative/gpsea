@@ -27,7 +27,7 @@ Briefly, we first load HPO:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
->>> hpo = store.load_minimal_hpo(release='v2024-03-06')
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
 then, we configure the cohort creator:
 

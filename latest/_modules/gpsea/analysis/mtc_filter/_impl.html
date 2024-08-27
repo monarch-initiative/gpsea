@@ -305,18 +305,14 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">terms_to_test</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-
 <span class="sd">        Args:</span>
-<span class="sd">            hpo: reference to HPO ontology object</span>
 <span class="sd">            terms_to_test: an iterable of TermIds representing the terms to test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ok</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">ok</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fail</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;Non-specified term&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">terms_to_test</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter">

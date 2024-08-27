@@ -130,21 +130,15 @@ least one significant result.</p>
 in the cohort, meaning that we may perform up to hundreds of tests.
 Therefore, unless we take into account the fact that multiple statistical tests are being performed,
 it is likely that we will obtain one or more false-positive results.</p>
-<p>Genephenocorr offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
+<p>GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
 and MTC filters to choose the terms to be tested.</p>
-<p>Here we will show how to configure the MTC approach
-using <a class="reference internal" href="../apidocs/gpsea.analysis.html#gpsea.analysis.CohortAnalysisConfiguration" title="gpsea.analysis.CohortAnalysisConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohortAnalysisConfiguration</span></code></a> class.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis</span> <span class="kn">import</span> <span class="n">CohortAnalysisConfiguration</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>
-</pre></div>
-</div>
 <section id="multiple-testing-correction-procedures">
 <h3>Multiple-testing correction procedures<a class="headerlink" href="#multiple-testing-correction-procedures" title="Link to this heading"></a></h3>
 <p>A number of MTC procedures have
 been developed to limit the probability of false-positive results. The
 MTC procedures differ in complexity, in their assumptions about the
 data, and in the type of control they provide.</p>
-<p>The genephenocorr package uses the Python package <a class="reference external" href="https://www.statsmodels.org/devel/">statsmodels</a> to implement
+<p>The GPSEA package uses the Python package <a class="reference external" href="https://www.statsmodels.org/devel/">statsmodels</a> to implement
 MTC. See the <a class="reference external" href="https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html">documentation</a> for details;
 the following table shows allowable options.</p>
 <table class="docutils align-default">
@@ -190,23 +184,26 @@ the following table shows allowable options.</p>
 </tbody>
 </table>
 <p>The oldest and simplest MTC procedure is the Bonferroni
-correction. The Bonferroni procedure thus provides control of the family-wise
+correction (<code class="docutils literal notranslate"><span class="pre">bonferroni</span></code>). The Bonferroni procedure thus provides control of the family-wise
 error rate (FWER), which is the probability of at least one Type I
 error.  The Bonferroni method multiplies the p-value
 returned by each test (which is call the <em>nominal</em> p-value)
-by the number of tests performed (the result is capped at 1.0). This is the <em>default</em> method in genephenocorr.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span>
-<span class="go">&#39;bonferroni&#39;</span>
-</pre></div>
-</div>
+by the number of tests performed (the result is capped at 1.0).</p>
 <p>Alternatively, procedures that control the false-discovery rate (FDR),
 limit the proportion of significant results that are type I
 errors (false discoveries).
-The Benjamini and Hochberg method (<code class="docutils literal notranslate"><span class="pre">fdr_bh</span></code>) is probably the most commonly used one.</p>
-<p>This is how we can set an alternative MTC correction procedure:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span> <span class="o">=</span> <span class="s1">&#39;fdr_bh&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">pval_correction</span>
-<span class="go">&#39;fdr_bh&#39;</span>
+The Benjamini and Hochberg method (<code class="docutils literal notranslate"><span class="pre">fdr_bh</span></code>) is probably the most commonly used one.
+This is the <em>default</em> method in GPSEA.</p>
+<p>To set an alternative MTC procedure, we use the <cite>mtc_correction</cite> option
+when creating an instance of <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">ScipyFisherExact</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">ScipyFisherExact</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">mtc_filter</span><span class="o">=</span><span class="n">UseAllTermsMtcFilter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">mtc_correction</span><span class="o">=</span><span class="s1">&#39;bonferroni&#39;</span><span class="p">,</span>  <span class="c1">#      &lt;--- The MTC correction setup</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -218,67 +215,75 @@ then the mutliplication factor of the Bonferroni correction
 is only 10 instead of 450, and more p-values
 may “survive” the multiple-testing correction.</p>
 <p>In the context of GPSEA, we represent the concept of phenotype filtering
-by <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code>.
-We describe the three filtering strategies in the next sections.</p>
+by <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>.
+The filter must be chosen before the <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysis" title="gpsea.analysis.pcats.MultiPhenotypeAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPhenotypeAnalysis</span></code></a>,
+such as <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>, is run:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">()</span>  
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">  </span><span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">HpoTermAnalysis.__init__() missing 2 required positional arguments: &#39;count_statistic&#39; and &#39;mtc_filter&#39;</span>
+</pre></div>
+</div>
+<p>Note the missing <cite>mtc_filter</cite> option.</p>
+<p>We describe the three filtering strategies in the following sections.</p>
 <section id="test-all-terms">
 <span id="use-all-terms-strategy"></span><h4>Test all terms<a class="headerlink" href="#test-all-terms" title="Link to this heading"></a></h4>
 <p>The first MTC filtering strategy is the simplest - do not apply any filtering at all.
 This will result in testing all terms. We do not recommend this strategy,
 but it can be useful to disable MTC filtering.</p>
-<p>The strategy is invoked by default,
-or explicitly by <a class="reference internal" href="../apidocs/gpsea.analysis.html#gpsea.analysis.CohortAnalysisConfiguration.all_terms_strategy" title="gpsea.analysis.CohortAnalysisConfiguration.all_terms_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">all_terms_strategy()</span></code></a> method:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">all_terms_strategy</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span>
-<span class="go">&lt;MtcStrategy.ALL_PHENOTYPE_TERMS: 0&gt;</span>
+<p>The strategy is implemented in <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter" title="gpsea.analysis.mtc_filter.UseAllTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">UseAllTermsMtcFilter</span></code></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">use_all</span> <span class="o">=</span> <span class="n">UseAllTermsMtcFilter</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
 <section id="specify-terms-strategy">
 <span id="id1"></span><h4>Specify terms strategy<a class="headerlink" href="#specify-terms-strategy" title="Link to this heading"></a></h4>
 <p>In presence of a specific hypothesis as to which terms may be different between groups,
-then you can specify these terms using
-the <a class="reference internal" href="../apidocs/gpsea.analysis.html#gpsea.analysis.CohortAnalysisConfiguration.specify_terms_strategy" title="gpsea.analysis.CohortAnalysisConfiguration.specify_terms_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">specify_terms_strategy()</span></code></a> method.</p>
+then you can specify these terms in <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>.</p>
 <p>For example if we want to specifically test
 <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0031982">Abnormal putamen morphology (HP:0031982)</a> and
 <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0002339">Abnormal caudate nucleus morphology (HP:0002339)</a>
 we pass an iterable (e.g. a tuple) with these two terms as an argument:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">specify_terms_strategy</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">SpecifiedTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specified_terms</span> <span class="o">=</span> <span class="n">SpecifiedTermsMtcFilter</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">terms_to_test</span><span class="o">=</span><span class="p">(</span>
 <span class="gp">... </span>        <span class="s2">&quot;HP:0031982&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal putamen morphology</span>
 <span class="gp">... </span>        <span class="s2">&quot;HP:0002339&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal caudate nucleus morphology</span>
 <span class="gp">... </span>    <span class="p">)</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span>
-<span class="go">&lt;MtcStrategy.SPECIFY_TERMS: 1&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">terms_to_test</span>
-<span class="go">(&#39;HP:0031982&#39;, &#39;HP:0002339&#39;)</span>
 </pre></div>
 </div>
-<p>Later, when the <cite>config</cite> is used in analysis,
-GPSEA will only perform two hypothesis tests, one for each of the two terms.</p>
 </section>
 <section id="hpo-mtc-filter-strategy">
 <span id="id2"></span><h4>HPO MTC filter strategy<a class="headerlink" href="#hpo-mtc-filter-strategy" title="Link to this heading"></a></h4>
-<p>Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.</p>
-<p>The strategy is chosen by invoking
-<a class="reference internal" href="../apidocs/gpsea.analysis.html#gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy" title="gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_mtc_strategy()</span></code></a> method:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">hpo_mtc_strategy</span><span class="p">(</span><span class="n">min_patients_w_hpo</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span>
-<span class="go">&lt;MtcStrategy.HPO_MTC: 2&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">min_patients_w_hpo</span>
-<span class="go">0.5</span>
+<p>Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
+The strategy needs access to HPO:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>HPO MTC takes a threshold as an argument (e.g. 50% in the example above)
+<p>and it is implemented in the <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a> class:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use static constructor <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a>
+for creating <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.
+The constructor takes a threshold as an argument (e.g. 20% in the example above)
 and the method’s logic is made up of 8 individual heuristics
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:</p>
 <ol class="arabic">
 <li><dl>
-<dt>Skip terms that occur very rarely</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">min_patients_w_hpo</span></code> determines the mininum proportion of individuals
+<dt>Skip terms that occur very rarely</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> determines the mininum proportion of individuals
 with direct or indirect annotation by the HPO term to test.
 We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE), and we only retain a term for testing
-if the proportion of individuals in at least one genotype group is at least <code class="docutils literal notranslate"><span class="pre">min_patients_w_hpo</span></code>.</p>
+if the proportion of individuals in at least one genotype group is greater than or equal to <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code>.</p>
 <p>This is because of our assumption that even if there is statistical significance,
 if a term is only seen in (for example) 7% of individuals in the MISSENSE group and 2% in the not-MISSENSE group,
 the term is unlikely to be of great interest because it is rare.</p>

@@ -127,10 +127,10 @@ corresponding protein accession <cite>NP_852259.1</cite>.</p>
 <section id="load-hpo">
 <h3>Load HPO<a class="headerlink" href="#load-hpo" title="Link to this heading"></a></h3>
 <p>GPSEA needs HPO to do the analysis.
-We use HPO toolkit to load HPO version <cite>v2023-10-09</cite>:</p>
+We use HPO toolkit to load HPO version <cite>v2024-07-01</cite>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ontology_store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">ontology_store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2023-10-09&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -649,12 +649,12 @@ into <a class="reference internal" href="apidocs/gpsea.analysis.pcats.html#gpsea
 </pre></div>
 </div>
 <p>We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
-259 direct and indirect HPO terms</p>
+260 direct and indirect HPO terms</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
-<span class="go">259</span>
+<span class="go">260</span>
 </pre></div>
 </div>
-<p>We can show the reasoning behind <em>not</em> testing 243 (<cite>259 - 16</cite>) HPO terms
+<p>We can show the reasoning behind <em>not</em> testing 244 (<cite>260 - 16</cite>) HPO terms
 by exploring the phenotype MTC filtering report.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
@@ -713,9 +713,9 @@ by exploring the phenotype MTC filtering report.</p>
   <h1>Phenotype testing report</h1>
   <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
   <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 16 out of the total of 259 HPO terms.</p>
+  <p>Performed statistical tests for 16 out of the total of 260 HPO terms.</p>
     <table>
-      <caption>Using <em>HPO MTC filter</em>, 243 term(s) were omitted from statistical analysis.</caption>
+      <caption>Using <em>HPO MTC filter</em>, 244 term(s) were omitted from statistical analysis.</caption>
         <tbody>
           <tr>
             <th>Code</th>
@@ -727,7 +727,7 @@ by exploring the phenotype MTC filtering report.</p>
             <!-- TODO: plug the real reason code here -->
             <td>TODO</td>
             <td>Skipping general term</td>
-            <td>43</td>
+            <td>44</td>
           </tr>
           
           <tr>
@@ -748,7 +748,7 @@ by exploring the phenotype MTC filtering report.</p>
             <!-- TODO: plug the real reason code here -->
             <td>TODO</td>
             <td>Skipping term with only 2 observations (not powered for 2x2)</td>
-            <td>25</td>
+            <td>26</td>
           </tr>
           
           <tr>
@@ -776,7 +776,7 @@ by exploring the phenotype MTC filtering report.</p>
             <!-- TODO: plug the real reason code here -->
             <td>TODO</td>
             <td>Skipping term with only 6 observations (not powered for 2x2)</td>
-            <td>13</td>
+            <td>12</td>
           </tr>
           
           <tr>
@@ -811,10 +811,6 @@ by exploring the phenotype MTC filtering report.</p>
     </table>
 </body>
 </html>
-<blockquote>
-<div><p>TODO:
-Show how to write out the tested HPO terms.</p>
-</div></blockquote>
 <p>and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
@@ -954,15 +950,7 @@ Show how to write out the tested HPO terms.</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Short humerus [HP:0005792]</p></td>
-<td><p>7/17</p></td>
-<td><p>41%</p></td>
-<td><p>4/9</p></td>
-<td><p>44%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
+<tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
 <td><p>7/32</p></td>
 <td><p>22%</p></td>
 <td><p>6/25</p></td>
@@ -970,42 +958,50 @@ Show how to write out the tested HPO terms.</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
-<td><p>43/43</p></td>
+<tr class="row-even"><td><p>Short humerus [HP:0005792]</p></td>
+<td><p>7/17</p></td>
+<td><p>41%</p></td>
+<td><p>4/9</p></td>
+<td><p>44%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal carpal morphology [HP:0001191]</p></td>
+<td><p>30/32</p></td>
+<td><p>94%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
+<td><p>53/53</p></td>
 <td><p>100%</p></td>
 <td><p>20/20</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
-<td><p>62/62</p></td>
+<tr class="row-odd"><td><p>Abnormality of the hand [HP:0001155]</p></td>
+<td><p>60/60</p></td>
 <td><p>100%</p></td>
-<td><p>28/28</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal heart morphology [HP:0001627]</p></td>
-<td><p>62/62</p></td>
-<td><p>100%</p></td>
-<td><p>30/30</p></td>
+<td><p>31/31</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiovascular system morphology [HP:0030680]</p></td>
-<td><p>63/63</p></td>
+<tr class="row-even"><td><p>Abnormality of the upper limb [HP:0002817]</p></td>
+<td><p>73/73</p></td>
 <td><p>100%</p></td>
-<td><p>30/30</p></td>
+<td><p>34/34</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the cardiovascular system [HP:0001626]</p></td>
-<td><p>65/65</p></td>
+<tr class="row-odd"><td><p>Abnormality of limbs [HP:0040064]</p></td>
+<td><p>73/73</p></td>
 <td><p>100%</p></td>
-<td><p>32/32</p></td>
+<td><p>34/34</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
@@ -1026,35 +1022,51 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
-<td><p>43/43</p></td>
+<tr class="row-even"><td><p>Abnormality of the wrist [HP:0003019]</p></td>
+<td><p>30/30</p></td>
 <td><p>100%</p></td>
-<td><p>20/20</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of upper limb joint [HP:0009810]</p></td>
+<td><p>30/30</p></td>
+<td><p>100%</p></td>
+<td><p>6/6</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal ventricular septum morphology [HP:0010438]</p></td>
+<tr class="row-even"><td><p>Abnormal joint morphology [HP:0001367]</p></td>
 <td><p>31/31</p></td>
 <td><p>100%</p></td>
-<td><p>19/19</p></td>
+<td><p>6/6</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiac ventricle morphology [HP:0001713]</p></td>
-<td><p>31/31</p></td>
+<tr class="row-odd"><td><p>Abnormal skeletal morphology [HP:0011842]</p></td>
+<td><p>73/73</p></td>
 <td><p>100%</p></td>
-<td><p>19/19</p></td>
+<td><p>35/35</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Perimembranous ventricular septal defect [HP:0011682]</p></td>
-<td><p>3/59</p></td>
-<td><p>5%</p></td>
-<td><p>3/25</p></td>
-<td><p>12%</p></td>
+<tr class="row-even"><td><p>Abnormality of the skeletal system [HP:0000924]</p></td>
+<td><p>73/73</p></td>
+<td><p>100%</p></td>
+<td><p>35/35</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the musculoskeletal system [HP:0033127]</p></td>
+<td><p>74/74</p></td>
+<td><p>100%</p></td>
+<td><p>35/35</p></td>
+<td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
@@ -1114,42 +1126,10 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of limbs [HP:0040064]</p></td>
-<td><p>73/73</p></td>
-<td><p>100%</p></td>
-<td><p>34/34</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
 <td><p>56/56</p></td>
 <td><p>100%</p></td>
 <td><p>23/23</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal skeletal morphology [HP:0011842]</p></td>
-<td><p>73/73</p></td>
-<td><p>100%</p></td>
-<td><p>35/35</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of the skeletal system [HP:0000924]</p></td>
-<td><p>73/73</p></td>
-<td><p>100%</p></td>
-<td><p>35/35</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the musculoskeletal system [HP:0033127]</p></td>
-<td><p>74/74</p></td>
-<td><p>100%</p></td>
-<td><p>35/35</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
@@ -1178,31 +1158,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the upper limb [HP:0002817]</p></td>
-<td><p>73/73</p></td>
-<td><p>100%</p></td>
-<td><p>34/34</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
-<td><p>53/53</p></td>
-<td><p>100%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the hand [HP:0001155]</p></td>
-<td><p>60/60</p></td>
-<td><p>100%</p></td>
-<td><p>31/31</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
+<tr class="row-odd"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
 <td><p>36/36</p></td>
 <td><p>100%</p></td>
 <td><p>31/31</p></td>
@@ -1210,7 +1166,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
+<tr class="row-even"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
 <td><p>38/38</p></td>
 <td><p>100%</p></td>
 <td><p>33/33</p></td>
@@ -1218,7 +1174,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
+<tr class="row-odd"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
 <td><p>30/30</p></td>
 <td><p>100%</p></td>
 <td><p>31/31</p></td>
@@ -1226,7 +1182,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Short finger [HP:0009381]</p></td>
+<tr class="row-even"><td><p>Short finger [HP:0009381]</p></td>
 <td><p>11/11</p></td>
 <td><p>100%</p></td>
 <td><p>8/8</p></td>
@@ -1234,10 +1190,274 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Short digit [HP:0011927]</p></td>
+<tr class="row-odd"><td><p>Short digit [HP:0011927]</p></td>
 <td><p>11/11</p></td>
 <td><p>100%</p></td>
 <td><p>10/10</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Complete atrioventricular canal defect [HP:0001674]</p></td>
+<td><p>5/37</p></td>
+<td><p>14%</p></td>
+<td><p>3/36</p></td>
+<td><p>8%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Atrioventricular canal defect [HP:0006695]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>3/3</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<td><p>62/62</p></td>
+<td><p>100%</p></td>
+<td><p>28/28</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal heart morphology [HP:0001627]</p></td>
+<td><p>62/62</p></td>
+<td><p>100%</p></td>
+<td><p>30/30</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal cardiovascular system morphology [HP:0030680]</p></td>
+<td><p>63/63</p></td>
+<td><p>100%</p></td>
+<td><p>30/30</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the cardiovascular system [HP:0001626]</p></td>
+<td><p>65/65</p></td>
+<td><p>100%</p></td>
+<td><p>32/32</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>11 pairs of ribs [HP:0000878]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Missing ribs [HP:0000921]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the ribs [HP:0006712]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving bones of the thorax [HP:0006711]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia affecting bones of the axial skeleton [HP:0009122]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal axial skeleton morphology [HP:0009121]</p></td>
+<td><p>8/8</p></td>
+<td><p>100%</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal thorax morphology [HP:0000765]</p></td>
+<td><p>6/6</p></td>
+<td><p>100%</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal rib morphology [HP:0000772]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal rib cage morphology [HP:0001547]</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal cardiac ventricle morphology [HP:0001713]</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<td><p>43/43</p></td>
+<td><p>100%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<td><p>43/43</p></td>
+<td><p>100%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Finger aplasia [HP:0009380]</p></td>
+<td><p>15/15</p></td>
+<td><p>100%</p></td>
+<td><p>14/14</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia involving forearm bones [HP:0009822]</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>6/6</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving forearm bones [HP:0006503]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>12/12</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal forearm bone morphology [HP:0040072]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>14/14</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal upper limb bone morphology [HP:0040070]</p></td>
+<td><p>40/40</p></td>
+<td><p>100%</p></td>
+<td><p>14/14</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal forearm morphology [HP:0002973]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>14/14</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the radius [HP:0006501]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>11/11</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal morphology of the radius [HP:0002818]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>13/13</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Absent forearm bone [HP:0003953]</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>6/6</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Forearm undergrowth [HP:0009821]</p></td>
+<td><p>30/30</p></td>
+<td><p>100%</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Upper limb undergrowth [HP:0009824]</p></td>
+<td><p>33/33</p></td>
+<td><p>100%</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Limb undergrowth [HP:0009826]</p></td>
+<td><p>33/33</p></td>
+<td><p>100%</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Short long bone [HP:0003026]</p></td>
+<td><p>35/35</p></td>
+<td><p>100%</p></td>
+<td><p>9/9</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
+<td><p>44/44</p></td>
+<td><p>100%</p></td>
+<td><p>13/13</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal ventricular septum morphology [HP:0010438]</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
@@ -1246,326 +1466,6 @@ Show how to write out the tested HPO terms.</p>
 <td><p>13/13</p></td>
 <td><p>100%</p></td>
 <td><p>13/13</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Forearm undergrowth [HP:0009821]</p></td>
-<td><p>30/30</p></td>
-<td><p>100%</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Upper limb undergrowth [HP:0009824]</p></td>
-<td><p>33/33</p></td>
-<td><p>100%</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Limb undergrowth [HP:0009826]</p></td>
-<td><p>33/33</p></td>
-<td><p>100%</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving forearm bones [HP:0006503]</p></td>
-<td><p>37/37</p></td>
-<td><p>100%</p></td>
-<td><p>12/12</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal forearm bone morphology [HP:0040072]</p></td>
-<td><p>37/37</p></td>
-<td><p>100%</p></td>
-<td><p>14/14</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal upper limb bone morphology [HP:0040070]</p></td>
-<td><p>40/40</p></td>
-<td><p>100%</p></td>
-<td><p>14/14</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal forearm morphology [HP:0002973]</p></td>
-<td><p>37/37</p></td>
-<td><p>100%</p></td>
-<td><p>14/14</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Short long bone [HP:0003026]</p></td>
-<td><p>35/35</p></td>
-<td><p>100%</p></td>
-<td><p>9/9</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>13/13</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the radius [HP:0006501]</p></td>
-<td><p>37/37</p></td>
-<td><p>100%</p></td>
-<td><p>11/11</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal morphology of the radius [HP:0002818]</p></td>
-<td><p>37/37</p></td>
-<td><p>100%</p></td>
-<td><p>13/13</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia of the fingers [HP:0009380]</p></td>
-<td><p>15/15</p></td>
-<td><p>100%</p></td>
-<td><p>14/14</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Tricuspid regurgitation [HP:0005180]</p></td>
-<td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Atrioventricular valve regurgitation [HP:0034376]</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal atrioventricular valve physiology [HP:0031650]</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal heart valve physiology [HP:0031653]</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal cardiovascular system physiology [HP:0011025]</p></td>
-<td><p>23/23</p></td>
-<td><p>100%</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal tricuspid valve physiology [HP:0031651]</p></td>
-<td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Deviation of the hand or of fingers of the hand [HP:0009484]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Cleft soft palate [HP:0000185]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal soft palate morphology [HP:0100736]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal palate morphology [HP:0000174]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal oral cavity morphology [HP:0000163]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal oral morphology [HP:0031816]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of the mouth [HP:0000153]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the face [HP:0000271]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of the head [HP:0000234]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of head or neck [HP:0000152]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Cleft palate [HP:0000175]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Orofacial cleft [HP:0000202]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal carpal morphology [HP:0001191]</p></td>
-<td><p>30/32</p></td>
-<td><p>94%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the wrist [HP:0003019]</p></td>
-<td><p>30/30</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of upper limb joint [HP:0009810]</p></td>
-<td><p>30/30</p></td>
-<td><p>100%</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal joint morphology [HP:0001367]</p></td>
-<td><p>31/31</p></td>
-<td><p>100%</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Mitral valve prolapse [HP:0001634]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal mitral valve morphology [HP:0001633]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal atrioventricular valve morphology [HP:0006705]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal heart valve morphology [HP:0001654]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Mitral regurgitation [HP:0001653]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal mitral valve physiology [HP:0031481]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
@@ -1634,23 +1534,15 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Upper limb phocomelia [HP:0009813]</p></td>
-<td><p>8/85</p></td>
-<td><p>9%</p></td>
-<td><p>2/37</p></td>
-<td><p>5%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Phocomelia [HP:0009829]</p></td>
-<td><p>8/8</p></td>
+<tr class="row-even"><td><p>Abnormal cardiovascular system physiology [HP:0011025]</p></td>
+<td><p>23/23</p></td>
 <td><p>100%</p></td>
-<td><p>2/2</p></td>
+<td><p>5/5</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Pre-capillary pulmonary hypertension [HP:0033578]</p></td>
+<tr class="row-odd"><td><p>Pre-capillary pulmonary hypertension [HP:0033578]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1658,7 +1550,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Elevated pulmonary artery pressure [HP:0004890]</p></td>
+<tr class="row-even"><td><p>Elevated pulmonary artery pressure [HP:0004890]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1666,7 +1558,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormality of pulmonary circulation [HP:0030875]</p></td>
+<tr class="row-odd"><td><p>Abnormality of pulmonary circulation [HP:0030875]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1674,7 +1566,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal vascular physiology [HP:0030163]</p></td>
+<tr class="row-even"><td><p>Abnormal vascular physiology [HP:0030163]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1682,7 +1574,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormality of the vasculature [HP:0002597]</p></td>
+<tr class="row-odd"><td><p>Abnormality of the vasculature [HP:0002597]</p></td>
 <td><p>10/10</p></td>
 <td><p>100%</p></td>
 <td><p>2/2</p></td>
@@ -1690,7 +1582,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal respiratory system physiology [HP:0002795]</p></td>
+<tr class="row-even"><td><p>Abnormal respiratory system physiology [HP:0002795]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1698,8 +1590,48 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormality of the respiratory system [HP:0002086]</p></td>
+<tr class="row-odd"><td><p>Abnormality of the respiratory system [HP:0002086]</p></td>
 <td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Tricuspid regurgitation [HP:0005180]</p></td>
+<td><p>3/3</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Atrioventricular valve regurgitation [HP:0034376]</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal atrioventricular valve physiology [HP:0031650]</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal heart valve physiology [HP:0031653]</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal tricuspid valve physiology [HP:0031651]</p></td>
+<td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
 <td><p>0%</p></td>
@@ -1858,127 +1790,71 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Complete atrioventricular canal defect [HP:0001674]</p></td>
-<td><p>5/37</p></td>
-<td><p>14%</p></td>
-<td><p>3/36</p></td>
-<td><p>8%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Atrioventricular canal defect [HP:0006695]</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Persistent left superior vena cava [HP:0005301]</p></td>
+<tr class="row-even"><td><p>Upper limb phocomelia [HP:0009813]</p></td>
+<td><p>8/85</p></td>
+<td><p>9%</p></td>
 <td><p>2/37</p></td>
 <td><p>5%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal superior vena cava morphology [HP:0025575]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal vena cava morphology [HP:0005345]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal morphology of the great vessels [HP:0030962]</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal blood vessel morphology [HP:0033353]</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal vascular morphology [HP:0025015]</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal venous morphology [HP:0002624]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal shoulder morphology [HP:0003043]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal thorax morphology [HP:0000765]</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td><p>5/5</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal axial skeleton morphology [HP:0009121]</p></td>
+<tr class="row-odd"><td><p>Phocomelia [HP:0009829]</p></td>
 <td><p>8/8</p></td>
 <td><p>100%</p></td>
-<td><p>5/5</p></td>
+<td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia of the humerus [HP:0006507]</p></td>
-<td><p>7/7</p></td>
+<tr class="row-even"><td><p>Clinodactyly of the 5th finger [HP:0004209]</p></td>
+<td><p>1/1</p></td>
 <td><p>100%</p></td>
-<td><p>4/4</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Finger clinodactyly [HP:0040019]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Clinodactyly [HP:0030084]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Deviation of finger [HP:0004097]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the humerus [HP:0003063]</p></td>
-<td><p>7/7</p></td>
+<tr class="row-even"><td><p>Deviation of the hand or of fingers of the hand [HP:0009484]</p></td>
+<td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of the upper arm [HP:0001454]</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td><p>4/4</p></td>
+<td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Right atrial enlargement [HP:0030718]</p></td>
+<tr class="row-odd"><td><p>Deviation of the 5th finger [HP:0009179]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal 5th finger morphology [HP:0004207]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1986,7 +1862,111 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal right atrium morphology [HP:0025580]</p></td>
+<tr class="row-odd"><td><p>Patent foramen ovale [HP:0001655]</p></td>
+<td><p>4/40</p></td>
+<td><p>10%</p></td>
+<td><p>0/36</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Small hypothenar eminence [HP:0010487]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the hypothenar eminence [HP:0010486]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the musculature of the hand [HP:0001421]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the musculature of the upper limbs [HP:0001446]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the musculature of the limbs [HP:0009127]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal skeletal muscle morphology [HP:0011805]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the musculature [HP:0003011]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Perimembranous ventricular septal defect [HP:0011682]</p></td>
+<td><p>3/59</p></td>
+<td><p>5%</p></td>
+<td><p>3/25</p></td>
+<td><p>12%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Deviation of the thumb [HP:0009603]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia of the humerus [HP:0006507]</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the humerus [HP:0003063]</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the upper arm [HP:0001454]</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Right atrial enlargement [HP:0030718]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -1994,7 +1974,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Atrial septal dilatation [HP:0011995]</p></td>
+<tr class="row-odd"><td><p>Abnormal right atrium morphology [HP:0025580]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2002,7 +1982,15 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Pectus excavatum [HP:0000767]</p></td>
+<tr class="row-even"><td><p>Atrial septal dilatation [HP:0011995]</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Pectus excavatum [HP:0000767]</p></td>
 <td><p>3/4</p></td>
 <td><p>75%</p></td>
 <td><p>2/2</p></td>
@@ -2010,7 +1998,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal sternum morphology [HP:0000766]</p></td>
+<tr class="row-even"><td><p>Abnormal sternum morphology [HP:0000766]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>2/2</p></td>
@@ -2018,7 +2006,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Postaxial hand polydactyly [HP:0001162]</p></td>
+<tr class="row-odd"><td><p>Postaxial hand polydactyly [HP:0001162]</p></td>
 <td><p>3/4</p></td>
 <td><p>75%</p></td>
 <td><p>0/0</p></td>
@@ -2026,7 +2014,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Postaxial polydactyly [HP:0100259]</p></td>
+<tr class="row-even"><td><p>Postaxial polydactyly [HP:0100259]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2034,16 +2022,8 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Polydactyly [HP:0010442]</p></td>
+<tr class="row-odd"><td><p>Polydactyly [HP:0010442]</p></td>
 <td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal 5th finger morphology [HP:0004207]</p></td>
-<td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
 <td><p>0%</p></td>
@@ -2090,7 +2070,63 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Short neck [HP:0000470]</p></td>
+<tr class="row-odd"><td><p>Abnormal palate morphology [HP:0000174]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal oral cavity morphology [HP:0000163]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal oral morphology [HP:0031816]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the mouth [HP:0000153]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the face [HP:0000271]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the head [HP:0000234]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of head or neck [HP:0000152]</p></td>
+<td><p>5/5</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Short neck [HP:0000470]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2098,7 +2134,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal neck morphology [HP:0025668]</p></td>
+<tr class="row-odd"><td><p>Abnormal neck morphology [HP:0025668]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2106,7 +2142,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the neck [HP:0000464]</p></td>
+<tr class="row-even"><td><p>Abnormality of the neck [HP:0000464]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2114,7 +2150,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormality of the cervical spine [HP:0003319]</p></td>
+<tr class="row-odd"><td><p>Abnormality of the cervical spine [HP:0003319]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2122,7 +2158,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the vertebral column [HP:0000925]</p></td>
+<tr class="row-even"><td><p>Abnormality of the vertebral column [HP:0000925]</p></td>
 <td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>1/1</p></td>
@@ -2130,7 +2166,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Shield chest [HP:0000914]</p></td>
+<tr class="row-odd"><td><p>Shield chest [HP:0000914]</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
@@ -2138,16 +2174,8 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Enlarged thorax [HP:0100625]</p></td>
+<tr class="row-even"><td><p>Enlarged thorax [HP:0100625]</p></td>
 <td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal rib cage morphology [HP:0001547]</p></td>
-<td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>0/0</p></td>
 <td><p>0%</p></td>
@@ -2194,47 +2222,7 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Upper extremity joint dislocation [HP:0030310]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Joint dislocation [HP:0001373]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Clinodactyly of the 5th finger [HP:0004209]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Finger clinodactyly [HP:0040019]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Clinodactyly [HP:0030084]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Deviation of finger [HP:0004097]</p></td>
+<tr class="row-even"><td><p>Mitral regurgitation [HP:0001653]</p></td>
 <td><p>1/1</p></td>
 <td><p>100%</p></td>
 <td><p>2/2</p></td>
@@ -2242,403 +2230,11 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Deviation of the 5th finger [HP:0009179]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Proximal placement of thumb [HP:0009623]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Deviation of the thumb [HP:0009603]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal 2nd finger morphology [HP:0004100]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the 2nd finger [HP:0006264]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Short middle phalanx of finger [HP:0005819]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the middle phalanges of the hand [HP:0009843]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal middle phalanx morphology of the hand [HP:0009833]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Short phalanx of finger [HP:0009803]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Short middle phalanx of the 5th finger [HP:0004220]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Type A brachydactyly [HP:0009370]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Brachydactyly [HP:0001156]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Short 5th finger [HP:0009237]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the 5th finger [HP:0006262]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the middle phalanx of the 5th finger [HP:0009161]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the phalanges of the 5th finger [HP:0009376]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal 5th finger phalanx morphology [HP:0004213]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the middle phalanx of the 5th finger [HP:0004219]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Congenital malformation of the great arteries [HP:0011603]</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia involving forearm bones [HP:0009822]</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Absent forearm bone [HP:0003953]</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the ulna [HP:0006495]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal morphology of ulna [HP:0040071]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>4/4</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Hypoplasia of deltoid muscle [HP:0030241]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Shoulder muscle hypoplasia [HP:0008952]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Hypoplasia of the musculature [HP:0009004]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the skeletal musculature [HP:0001460]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of muscle size [HP:0030236]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal skeletal muscle morphology [HP:0011805]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the musculature [HP:0003011]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the shoulder musculature [HP:0001464]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving the musculature of the upper limbs [HP:0001467]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the musculature of the extremities [HP:0009128]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the musculature of the limbs [HP:0009127]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of the musculature of the upper limbs [HP:0001446]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the shoulder girdle musculature [HP:0001435]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Atrioventricular dissociation [HP:0011709]</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal toe morphology [HP:0001780]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal toe phalanx morphology [HP:0010161]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormality of the distal phalanges of the toes [HP:0010182]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Patent foramen ovale [HP:0001655]</p></td>
-<td><p>4/40</p></td>
-<td><p>10%</p></td>
-<td><p>0/36</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Synostosis of joints [HP:0100240]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Short 1st metacarpal [HP:0010034]</p></td>
-<td><p>0/30</p></td>
-<td><p>0%</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Short phalanx of the thumb [HP:0009660]</p></td>
-<td><p>0/30</p></td>
-<td><p>0%</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>11 pairs of ribs [HP:0000878]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Missing ribs [HP:0000921]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the ribs [HP:0006712]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving bones of the thorax [HP:0006711]</p></td>
+<tr class="row-odd"><td><p>Abnormal mitral valve physiology [HP:0031481]</p></td>
 <td><p>1/1</p></td>
 <td><p>100%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia affecting bones of the axial skeleton [HP:0009122]</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal rib morphology [HP:0000772]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
@@ -2650,202 +2246,42 @@ Show how to write out the tested HPO terms.</p>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Micrognathia [HP:0000347]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the mandible [HP:0009118]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving bones of the skull [HP:0009116]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal skull morphology [HP:0000929]</p></td>
-<td><p>1/1</p></td>
+<tr class="row-odd"><td><p>Congenital malformation of the great arteries [HP:0011603]</p></td>
+<td><p>4/4</p></td>
 <td><p>100%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal mandible morphology [HP:0000277]</p></td>
-<td><p>1/1</p></td>
+<tr class="row-even"><td><p>Abnormal morphology of the great vessels [HP:0030962]</p></td>
+<td><p>6/6</p></td>
 <td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal jaw morphology [HP:0030791]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal facial skeleton morphology [HP:0011821]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Bowed forearm bones [HP:0003956]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Bowing of the arm [HP:0006488]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Bowing of the long bones [HP:0006487]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal diaphysis morphology [HP:0000940]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Common atrium [HP:0011565]</p></td>
-<td><p>0/83</p></td>
-<td><p>0%</p></td>
-<td><p>0/38</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Unroofed coronary sinus [HP:0031297]</p></td>
-<td><p>0/85</p></td>
-<td><p>0%</p></td>
-<td><p>0/38</p></td>
-<td><p>0%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Amelia involving the upper limbs [HP:0009812]</p></td>
-<td><p>0/83</p></td>
-<td><p>0%</p></td>
-<td><p>1/37</p></td>
-<td><p>3%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Third degree atrioventricular block [HP:0001709]</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Small hypothenar eminence [HP:0010487]</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormality of the hypothenar eminence [HP:0010486]</p></td>
+<tr class="row-odd"><td><p>Abnormal blood vessel morphology [HP:0033353]</p></td>
+<td><p>6/6</p></td>
+<td><p>100%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Abnormality of the musculature of the hand [HP:0001421]</p></td>
+<tr class="row-even"><td><p>Abnormal vascular morphology [HP:0025015]</p></td>
+<td><p>6/6</p></td>
+<td><p>100%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Hypoplastic scapulae [HP:0000882]</p></td>
+<tr class="row-odd"><td><p>Abnormal skull morphology [HP:0000929]</p></td>
 <td><p>1/1</p></td>
 <td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the scapulae [HP:0006713]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal scapula morphology [HP:0000782]</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Left ventricular noncompaction cardiomyopathy [HP:0011664]</p></td>
-<td><p>0/1</p></td>
-<td><p>0%</p></td>
-<td><p>1/5</p></td>
-<td><p>20%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Noncompaction cardiomyopathy [HP:0012817]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Cardiomyopathy [HP:0001638]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal myocardium morphology [HP:0001637]</p></td>
-<td><p>0/0</p></td>
-<td><p>0%</p></td>
-<td><p>1/1</p></td>
+<td><p>2/2</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
@@ -2911,6 +2347,574 @@ Show how to write out the tested HPO terms.</p>
 <td><p>0%</p></td>
 <td><p>1/1</p></td>
 <td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal morphology of ulna [HP:0040071]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>4/4</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the ulna [HP:0006495]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Persistent left superior vena cava [HP:0005301]</p></td>
+<td><p>2/37</p></td>
+<td><p>5%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal superior vena cava morphology [HP:0025575]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal vena cava morphology [HP:0005345]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal venous morphology [HP:0002624]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal shoulder morphology [HP:0003043]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Hypoplasia of deltoid muscle [HP:0030241]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Shoulder muscle hypoplasia [HP:0008952]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Hypoplasia of the musculature [HP:0009004]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the skeletal musculature [HP:0001460]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of muscle size [HP:0030236]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the shoulder musculature [HP:0001464]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving the musculature of the upper limbs [HP:0001467]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia involving the musculature of the extremities [HP:0009128]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the shoulder girdle musculature [HP:0001435]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Common atrium [HP:0011565]</p></td>
+<td><p>0/83</p></td>
+<td><p>0%</p></td>
+<td><p>0/38</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Unroofed coronary sinus [HP:0031297]</p></td>
+<td><p>0/85</p></td>
+<td><p>0%</p></td>
+<td><p>0/38</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Atrioventricular dissociation [HP:0011709]</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Bowed forearm bones [HP:0003956]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Bowing of the arm [HP:0006488]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Bowing of the long bones [HP:0006487]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal diaphysis morphology [HP:0000940]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Proximal placement of thumb [HP:0009623]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Short middle phalanx of the 5th finger [HP:0004220]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Type A brachydactyly [HP:0009370]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Brachydactyly [HP:0001156]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Short 5th finger [HP:0009237]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the 5th finger [HP:0006262]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the middle phalanx of the 5th finger [HP:0009161]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the phalanges of the 5th finger [HP:0009376]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal 5th finger phalanx morphology [HP:0004213]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormality of the middle phalanx of the 5th finger [HP:0004219]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Short middle phalanx of finger [HP:0005819]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the middle phalanges of the hand [HP:0009843]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal middle phalanx morphology of the hand [HP:0009833]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Short phalanx of finger [HP:0009803]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Micrognathia [HP:0000347]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the mandible [HP:0009118]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia involving bones of the skull [HP:0009116]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal mandible morphology [HP:0000277]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal jaw morphology [HP:0030791]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal facial skeleton morphology [HP:0011821]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Cleft soft palate [HP:0000185]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal soft palate morphology [HP:0100736]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Cleft palate [HP:0000175]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Orofacial cleft [HP:0000202]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Craniofacial cleft [HP:5201015]</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Hypoplastic scapulae [HP:0000882]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the scapulae [HP:0006713]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal scapula morphology [HP:0000782]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Amelia involving the upper limbs [HP:0009812]</p></td>
+<td><p>0/83</p></td>
+<td><p>0%</p></td>
+<td><p>1/37</p></td>
+<td><p>3%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Third degree atrioventricular block [HP:0001709]</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Upper extremity joint dislocation [HP:0030310]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Joint dislocation [HP:0001373]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>2/2</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal toe morphology [HP:0001780]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal toe phalanx morphology [HP:0010161]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormality of the distal phalanges of the toes [HP:0010182]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the 2nd finger [HP:0006264]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal 2nd finger morphology [HP:0004100]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Synostosis of joints [HP:0100240]</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Left ventricular noncompaction cardiomyopathy [HP:0011664]</p></td>
+<td><p>0/1</p></td>
+<td><p>0%</p></td>
+<td><p>1/5</p></td>
+<td><p>20%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Noncompaction cardiomyopathy [HP:0012817]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Cardiomyopathy [HP:0001638]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal myocardium morphology [HP:0001637]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Mitral valve prolapse [HP:0001634]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal mitral valve morphology [HP:0001633]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal atrioventricular valve morphology [HP:0006705]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal heart valve morphology [HP:0001654]</p></td>
+<td><p>0/0</p></td>
+<td><p>0%</p></td>
+<td><p>1/1</p></td>
+<td><p>100%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Short 1st metacarpal [HP:0010034]</p></td>
+<td><p>0/30</p></td>
+<td><p>0%</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Short phalanx of the thumb [HP:0009660]</p></td>
+<td><p>0/30</p></td>
+<td><p>0%</p></td>
+<td><p>0/22</p></td>
+<td><p>0%</p></td>
 <td></td>
 <td></td>
 </tr>
