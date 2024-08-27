@@ -13,8 +13,6 @@ and explanations of how they are implemented by our software.
 Compare genotype and phenotype groups
 *************************************
 
-TODO
-
 .. _fisher-exact-test:
 
 Fisher exact test (FET)
@@ -214,7 +212,7 @@ We can now execute the analysis:
 17
 
 
-Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
+Thanks to Phenotype MTC filter, we only tested 17 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer

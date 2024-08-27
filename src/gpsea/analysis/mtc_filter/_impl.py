@@ -181,18 +181,14 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     def __init__(
         self,
-        hpo: hpotk.MinimalOntology,
         terms_to_test: typing.Iterable[hpotk.TermId],
     ):
         """
-
         Args:
-            hpo: reference to HPO ontology object
             terms_to_test: an iterable of TermIds representing the terms to test
         """
         self._ok = PhenotypeMtcResult.ok()
         self._fail = PhenotypeMtcResult.fail("Non-specified term")
-        self._hpo = hpo
         self._terms_to_test_set = set(terms_to_test)
 
     def filter(

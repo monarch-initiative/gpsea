@@ -50,11 +50,11 @@ Load HPO
 ^^^^^^^^
 
 GPSEA needs HPO to do the analysis.
-We use HPO toolkit to load HPO version `v2023-10-09`:
+We use HPO toolkit to load HPO version `v2024-07-01`:
 
 >>> import hpotk
->>> ontology_store = hpotk.configure_ontology_store()
->>> hpo = ontology_store.load_minimal_hpo(release='v2023-10-09')
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
 .. tip::
 
@@ -249,12 +249,12 @@ Now we can perform the analysis and investigate the results.
 16
 
 We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
-259 direct and indirect HPO terms
+260 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
-259
+260
 
-We can show the reasoning behind *not* testing 243 (`259 - 16`) HPO terms
+We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
@@ -265,11 +265,6 @@ by exploring the phenotype MTC filtering report.
 
 .. raw:: html
   :file: report/tbx5_frameshift_vs_missense.mtc_report.html
-
-..
-
-  TODO:
-  Show how to write out the tested HPO terms.
 
 and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
