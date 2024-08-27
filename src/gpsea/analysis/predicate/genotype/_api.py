@@ -2,30 +2,15 @@ import abc
 import typing
 
 from gpsea.model import Variant
-from .._api import PolyPredicate, Categorization, PatientCategory, PatientCategories
+from .._api import PolyPredicate, Categorization, PatientCategory
 
 
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
     """
-    `GenotypePolyPredicate` constrains `PolyPredicate` to investigate the genotype aspects
-    of patients.
+    `GenotypePolyPredicate` is a base class for all :class:`PolyPredicate`
+    that test the genotype axis.
     """
     pass
-
-
-class GenotypeBooleanPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    """
-    `GenotypeBooleanPredicate` tests if a :class:`~gpsea.model.Patient` belongs to a genotype group
-     and returns a boolean binning.
-    """
-    YES = Categorization(PatientCategories.YES)
-    NO = Categorization(PatientCategories.NO)
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        """
-        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
-        """
-        return GenotypeBooleanPredicate.YES, GenotypeBooleanPredicate.NO
 
 
 class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
@@ -41,7 +26,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
 
-    The subclasses are expected to implement all abstract methods of this class 
+    The subclasses are expected to implement all abstract methods of this class
     *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.
 
     We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.
@@ -76,7 +61,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
                 return self
     
             if isinstance(self, AllVariantPredicate) and isinstance(other, AllVariantPredicate):
-                # Merging two *all* variant predicates is equivalent 
+                # Merging two *all* variant predicates is equivalent
                 # to chaining their predicates
                 return AllVariantPredicate(*self.predicates, *other.predicates)
             else:
@@ -93,7 +78,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
                 return self
             
             if isinstance(self, AnyVariantPredicate) and isinstance(other, AnyVariantPredicate):
-                # Merging two any variant predicates is equivalent 
+                # Merging two any variant predicates is equivalent
                 # to chaining their predicates
                 return AnyVariantPredicate(*self.predicates, *other.predicates)
             else:
@@ -104,7 +89,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     def __invert__(self):
         """
         Create a variant predicate that passes if the underlying predicate fails.
-        """    
+        """
         if isinstance(self, InvVariantPredicate):
             # Unwrap to prevent double negation
             return self._inner
@@ -122,7 +107,6 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
         if len(predicates) == 0:
             raise ValueError('Predicates must not be empty!')
         self._predicates = tuple(predicates)
-        
 
     @property
     def predicates(self) -> typing.Sequence[VariantPredicate]:
@@ -202,4 +186,3 @@ class InvVariantPredicate(VariantPredicate):
     
     def __repr__(self) -> str:
         return f'NotVariantPredicate(inner={self._inner})'
-    
