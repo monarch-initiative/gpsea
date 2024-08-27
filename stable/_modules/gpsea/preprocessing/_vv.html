@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.preprocessing._vv &mdash; GPSEA 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.preprocessing._vv</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.preprocessing._vv</h1><div class="highlight"><pre>
+<span></span><span class="c1"># A module with classes that interact with Variant validator&#39;s REST API to fetch required data.</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">ratelimit</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span>
+<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">transpose_coordinate</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantCoordinateFinder</span><span class="p">,</span> <span class="n">TranscriptCoordinateService</span><span class="p">,</span> <span class="n">GeneCoordinateService</span>
+
+<span class="c1"># To match strings such as `NM_1234.56`, `NM_1234`, or `XM_123456.7`</span>
+<span class="n">REFSEQ_TX_PT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[NX]M_\d+(\.\d+)?$&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@ratelimit</span><span class="o">.</span><span class="n">sleep_and_retry</span>
+<span class="nd">@ratelimit</span><span class="o">.</span><span class="n">limits</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">fetch_response</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">,</span> 
+    <span class="n">headers</span><span class="p">,</span> 
+    <span class="n">timeout</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># This is the only place we interact with the Variant validator REST API.</span>
+    <span class="c1"># Per documentation at `https://rest.variantvalidator.org/`,</span>
+    <span class="c1"># we must limit requests to up to 1 request per second (+ 100ms buffer).</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="VVHgvsVariantCoordinateFinder">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVHgvsVariantCoordinateFinder">[docs]</a>
+<span class="k">class</span> <span class="nc">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VVHgvsVariantCoordinateFinder` uses Variant Validator&#39;s REST API to build :class:`VariantCoordinates`</span>
+<span class="sd">    from an HGVS string.</span>
+
+<span class="sd">    The finder takes an HGVS `str` (e.g. `NM_005912.3:c.253A&gt;G`) and extracts the variant coordinates from the response.</span>
+
+<span class="sd">    :param genome_build: the genome build to use to construct :class:`VariantCoordinates`</span>
+<span class="sd">    :param timeout: the REST API request timeout</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">genome_build</span><span class="p">,</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="s1">&#39;genome_build&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="s1">&#39;https://rest.variantvalidator.org/VariantValidator/variantvalidator/</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Content-type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;tx&gt;NM_\d+\.\d+):c.\d+(_\d+)?.*&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VVHgvsVariantCoordinateFinder.find_coordinates">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVHgvsVariantCoordinateFinder.find_coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantCoordinates</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts variant coordinates from an HGVS string using Variant Validator&#39;s REST API.</span>
+
+<span class="sd">        :param item: a hgvs string</span>
+<span class="sd">        :return: variant coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">matcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matcher</span><span class="p">:</span>
+            <span class="n">transcript</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;tx&#39;</span><span class="p">)</span>
+            <span class="n">request_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">genome_build_id</span><span class="o">.</span><span class="n">major_assembly</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">transcript</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">fetch_response</span><span class="p">(</span><span class="n">request_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+                <span class="n">variant_coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_variant_coordinates</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">,</span> <span class="n">VariantValidatorDecodeException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error processing </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The HGVS did not pass validation by a regular expression.</span>
+            <span class="c1"># Please submit an issue to our GitHub tracker if you believe</span>
+            <span class="c1"># the HGVS expression is correct.</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid HGVS string: </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">variant_coordinates</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_extract_variant_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantCoordinates</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts variant coordinates from a response from Variant Validator&#39;s REST API.</span>
+<span class="sd">        :param response: Variant Validator&#39;s REST API response as a dictionary</span>
+<span class="sd">        :return: variant coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">variant_identifier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">variant_identifier</span><span class="p">]</span>
+
+        <span class="n">selected_assembly</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;selected_assembly&#39;</span><span class="p">]</span>
+        <span class="n">variant_data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;primary_assembly_loci&#39;</span><span class="p">][</span><span class="n">selected_assembly</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="s1">&#39;vcf&#39;</span><span class="p">]</span>
+
+        <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">variant_data</span><span class="p">[</span><span class="s1">&#39;chr&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">contig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VariantValidatorDecodeException</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Contig </span><span class="si">{</span><span class="n">variant_data</span><span class="p">[</span><span class="s2">&quot;chr&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> was not found in build &#39;</span>
+                                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variant_data</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">])</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">variant_data</span><span class="p">[</span><span class="s1">&#39;ref&#39;</span><span class="p">]</span>
+        <span class="n">alt</span> <span class="o">=</span> <span class="n">variant_data</span><span class="p">[</span><span class="s1">&#39;alt&#39;</span><span class="p">]</span>
+
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">change_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_coordinates</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span>
+            <span class="n">region</span><span class="o">=</span><span class="n">GenomicRegion</span><span class="p">(</span>
+                <span class="n">contig</span><span class="o">=</span><span class="n">contig</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+                <span class="n">strand</span><span class="o">=</span><span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">alt</span><span class="o">=</span><span class="n">alt</span><span class="p">,</span>
+            <span class="n">change_length</span><span class="o">=</span><span class="n">change_length</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_extract_coordinates</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts 0-based start, end and change_length from 1-based position, reference and alternative alleles.</span>
+
+<span class="sd">        :param pos: 1-based position</span>
+<span class="sd">        :param ref: reference allele</span>
+<span class="sd">        :param alt: alternative allele</span>
+<span class="sd">        :return: 0-based start, end and change_length</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">change_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">change_length</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">VariantValidatorDecodeException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An exception thrown when parsing variant validator response fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="VVMultiCoordinateService">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService">[docs]</a>
+<span class="k">class</span> <span class="nc">VVMultiCoordinateService</span><span class="p">(</span><span class="n">TranscriptCoordinateService</span><span class="p">,</span> <span class="n">GeneCoordinateService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VVMultiCoordinateService` uses the Variant Validator REST API to fetch transcript coordinates for</span>
+<span class="sd">    both a *gene* ID and a specific *transcript* ID.</span>
+
+<span class="sd">    :param genome_build: the genome build for constructing the transcript coordinates.</span>
+<span class="sd">    :param timeout: a positive `float` with the REST API timeout in seconds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span> 
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_genome_build</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">genome_build</span><span class="p">,</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="s1">&#39;genome_build&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`timeout` must be a positive `float` but got </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="s2">&quot;https://rest.variantvalidator.org/VariantValidator/tools/gene2transcripts/</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="VVMultiCoordinateService.fetch">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.fetch">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">TranscriptCoordinates</span><span class="p">:</span>
+        <span class="n">tx_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+        <span class="n">response_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_response</span><span class="p">(</span><span class="n">tx_id</span><span class="p">,</span> <span class="n">response_json</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VVMultiCoordinateService.fetch_for_gene">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.fetch_for_gene">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_for_gene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptCoordinates</span><span class="p">]:</span>
+        <span class="n">response_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">gene</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_multiple</span><span class="p">(</span><span class="n">response_json</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tx</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected a `str` or `TranscriptInfoAware` but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">tx</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VVMultiCoordinateService.get_response">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.get_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="n">tx_id</span>
+        <span class="k">return</span> <span class="n">fetch_response</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VVMultiCoordinateService.parse_response">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.parse_response">[docs]</a>
+    <span class="k">def</span> <span class="nf">parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TranscriptCoordinates</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">transcript_response</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Response has </span><span class="si">%s</span><span class="s1">!=1 items. Choosing the first&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+            <span class="n">transcript_response</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;requested_symbol&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transcript_response</span> <span class="ow">or</span> <span class="n">transcript_response</span><span class="p">[</span><span class="s1">&#39;requested_symbol&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">tx_id</span><span class="p">:</span>
+            <span class="n">json_formatted_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">error_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Not able to find </span><span class="si">{</span><span class="n">tx_id</span><span class="si">}</span><span class="s2"> in the `requested_symbol` field in the response from Variant Validator API: </span><span class="se">\n</span><span class="si">{</span><span class="n">json_formatted_str</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;transcripts&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transcript_response</span><span class="p">:</span>
+            <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_handle_missing_field</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span> 
+                <span class="n">field</span><span class="o">=</span><span class="s1">&#39;transcripts&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">tx_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_tx_data</span><span class="p">(</span><span class="n">tx_id</span><span class="p">,</span> <span class="n">transcript_response</span><span class="p">[</span><span class="s1">&#39;transcripts&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;genomic_spans&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tx_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A required `genomic_spans` field is missing in the response from Variant Validator API&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_tx_coordinates</span><span class="p">(</span>
+            <span class="n">genome_build</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_genome_build</span><span class="p">,</span>
+            <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span>
+            <span class="n">tx_data</span><span class="o">=</span><span class="n">tx_data</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VVMultiCoordinateService.parse_multiple">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.parse_multiple">[docs]</a>
+    <span class="k">def</span> <span class="nf">parse_multiple</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">response</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptCoordinates</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s1">&#39;transcripts&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_handle_missing_field</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span> 
+                <span class="n">field</span><span class="o">=</span><span class="s1">&#39;transcripts&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">transcripts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;transcripts&#39;</span><span class="p">]</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">tx_data</span> <span class="ow">in</span> <span class="n">transcripts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tx_data</span><span class="p">:</span>
+                <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_handle_missing_field</span><span class="p">(</span>
+                    <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span> 
+                    <span class="n">field</span><span class="o">=</span><span class="s1">&#39;reference&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">tx_id</span> <span class="o">=</span> <span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span>
+            <span class="n">matcher</span> <span class="o">=</span> <span class="n">REFSEQ_TX_PT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matcher</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skipping processing transcript </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_tx_coordinates</span><span class="p">(</span>
+                <span class="n">genome_build</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_genome_build</span><span class="p">,</span>
+                <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span>
+                <span class="n">tx_data</span><span class="o">=</span><span class="n">tx_data</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx_coordinates</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_find_tx_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">txs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tx_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">txs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tx_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Skipping `transcripts` element </span><span class="si">%d</span><span class="s1"> due to missing `reference` field&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tx_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tx_data</span>
+
+        <span class="c1"># If we get here, we did not find the transcript data, so we raise.</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Did not find transcript data for the requested transcript </span><span class="si">{</span><span class="n">tx_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_handle_missing_field</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">json_formatted_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">error_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A required `</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">` field is missing in the response from Variant Validator API: </span><span class="se">\n</span><span class="si">{</span><span class="n">json_formatted_str</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_string</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_tx_coordinates</span><span class="p">(</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tx_data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TranscriptCoordinates</span><span class="p">:</span>
+        <span class="n">contig</span><span class="p">,</span> <span class="n">genomic_span</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_find_genomic_span</span><span class="p">(</span>
+            <span class="n">genome_build</span><span class="o">=</span><span class="n">genome_build</span><span class="p">,</span> 
+            <span class="n">genomic_spans</span><span class="o">=</span><span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;genomic_spans&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">strand</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_strand</span><span class="p">(</span><span class="n">genomic_span</span><span class="p">)</span>
+        <span class="n">start_pos</span> <span class="o">=</span> <span class="n">genomic_span</span><span class="p">[</span><span class="s1">&#39;start_position&#39;</span><span class="p">]</span>
+        <span class="n">end_pos</span> <span class="o">=</span> <span class="n">genomic_span</span><span class="p">[</span><span class="s1">&#39;end_position&#39;</span><span class="p">]</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_tx_region</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">,</span> <span class="n">strand</span><span class="p">)</span>
+
+        <span class="n">exons</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_exons</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">strand</span><span class="p">,</span> <span class="n">genomic_span</span><span class="p">)</span>
+
+        <span class="n">cds_start</span><span class="p">,</span> <span class="n">cds_end</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_cds</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;coding_start&#39;</span><span class="p">],</span> <span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;coding_end&#39;</span><span class="p">],</span> <span class="n">exons</span><span class="p">)</span>
+
+        <span class="n">is_preferred</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="o">.</span><span class="n">_parse_is_preferred</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TranscriptCoordinates</span><span class="p">(</span>
+            <span class="n">identifier</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span> 
+            <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> 
+            <span class="n">exons</span><span class="o">=</span><span class="n">exons</span><span class="p">,</span> 
+            <span class="n">cds_start</span><span class="o">=</span><span class="n">cds_start</span><span class="p">,</span> 
+            <span class="n">cds_end</span><span class="o">=</span><span class="n">cds_end</span><span class="p">,</span>
+            <span class="n">is_preferred</span><span class="o">=</span><span class="n">is_preferred</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_genomic_span</span><span class="p">(</span>
+        <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
+        <span class="n">genomic_spans</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Contig</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">contig_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">genomic_spans</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">contig</span> <span class="o">=</span> <span class="n">genome_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">contig_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">contig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">contig</span><span class="p">,</span> <span class="n">value</span>
+
+        <span class="n">contig_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genomic_spans</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Contigs </span><span class="si">{</span><span class="n">contig_names</span><span class="si">}</span><span class="s1"> were not found in genome build `</span><span class="si">{</span><span class="n">genome_build</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_strand</span><span class="p">(</span><span class="n">genomic_span</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strand</span><span class="p">:</span>
+        <span class="n">orientation</span> <span class="o">=</span> <span class="n">genomic_span</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span>
+        <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Strand</span><span class="o">.</span><span class="n">NEGATIVE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid orientation value </span><span class="si">{</span><span class="n">orientation</span><span class="si">}</span><span class="s1"> was not </span><span class="se">{{</span><span class="s1">-1, 1</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_tx_region</span><span class="p">(</span><span class="n">contig</span><span class="p">:</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strand</span><span class="p">:</span> <span class="n">Strand</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The `start_pos` and `end_pos` coordinates are on the positive strand, but the genomic region that we</span>
+<span class="sd">        are returning must be on given `strand`. Therefore, we transpose accordingly.</span>
+
+<span class="sd">        However, note that start_pos &gt; end_pos if `strand == Strand.NEGATIVE`. This is unusual in our environment,</span>
+<span class="sd">        where we ensure the following: `start &lt;= end`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">strand</span> <span class="o">==</span> <span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">start_pos</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Convert from 1-based to 0-based coordinate</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">end_pos</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">transpose_coordinate</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Convert from 1-based to 0-based coordinate</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">transpose_coordinate</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">GenomicRegion</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">strand</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_exons</span><span class="p">(</span><span class="n">contig</span><span class="p">:</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">strand</span><span class="p">:</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">genomic_span</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
+        <span class="c1"># Ensure the exons are sorted in ascending order</span>
+        <span class="n">exons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genomic_span</span><span class="p">[</span><span class="s1">&#39;exon_structure&#39;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">exon_data</span><span class="p">:</span> <span class="n">exon_data</span><span class="p">[</span><span class="s1">&#39;exon_number&#39;</span><span class="p">]):</span>
+            <span class="n">gen_start</span> <span class="o">=</span> <span class="n">exon</span><span class="p">[</span><span class="s1">&#39;genomic_start&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># -1 to convert to 0-based coordinates.</span>
+            <span class="n">gen_end</span> <span class="o">=</span> <span class="n">exon</span><span class="p">[</span><span class="s1">&#39;genomic_end&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">strand</span><span class="o">.</span><span class="n">is_positive</span><span class="p">():</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">gen_start</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">gen_end</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">transpose_coordinate</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">gen_end</span><span class="p">)</span>  <span class="c1"># !</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">transpose_coordinate</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">gen_start</span><span class="p">)</span>  <span class="c1"># !</span>
+            <span class="n">gr</span> <span class="o">=</span> <span class="n">GenomicRegion</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">strand</span><span class="p">)</span>
+            <span class="n">exons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">exons</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_cds</span><span class="p">(</span><span class="n">coding_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">coding_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exons</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="c1"># Variant validator reports CDS start and end as n-th exonic bases. We need to figure out which exon overlaps</span>
+        <span class="c1"># with `coding_start` and `coding_end` in the CDS space and then calculate the</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="n">exons</span><span class="p">:</span>
+            <span class="n">exon_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">exon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">processed</span> <span class="o">&lt;</span> <span class="n">coding_start</span> <span class="o">&lt;=</span> <span class="n">processed</span> <span class="o">+</span> <span class="n">exon_len</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">coding_start</span> <span class="o">-</span> <span class="n">processed</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># `-1` to convert to 0-based coordinate!</span>
+
+            <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">processed</span> <span class="o">&lt;</span> <span class="n">coding_end</span> <span class="o">&lt;=</span> <span class="n">processed</span> <span class="o">+</span> <span class="n">exon_len</span><span class="p">:</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">coding_end</span> <span class="o">-</span> <span class="n">processed</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span>
+
+            <span class="n">processed</span> <span class="o">+=</span> <span class="n">exon_len</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not parse CDS start and end from given coordinates&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_is_preferred</span><span class="p">(</span>
+        <span class="n">tx_data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s1">&#39;annotations&#39;</span> <span class="ow">in</span> <span class="n">tx_data</span><span class="p">:</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="n">tx_data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;mane_select&#39;</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;mane_select&#39;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">mane_select</span><span class="se">\&#39;</span><span class="s1"> field must be `bool`&#39;</span>
+                <span class="k">return</span> <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;mane_select&#39;</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

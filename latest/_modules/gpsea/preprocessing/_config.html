@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.preprocessing._config &mdash; GPSEA 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.preprocessing._config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.preprocessing._config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="c1"># pyright: reportGeneralTypeIssues=false</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
+<span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.config</span> <span class="kn">import</span> <span class="n">get_cache_dir_path</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span><span class="p">,</span> <span class="n">GenomeBuild</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">PreprocessingValidationResult</span>
+<span class="kn">from</span> <span class="nn">._generic</span> <span class="kn">import</span> <span class="n">DefaultImpreciseSvFunctionalAnnotator</span>
+<span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">CohortCreator</span>
+<span class="kn">from</span> <span class="nn">._phenopacket</span> <span class="kn">import</span> <span class="n">PhenopacketPatientCreator</span>
+<span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
+<span class="kn">from</span> <span class="nn">._protein</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ProteinMetadataService</span><span class="p">,</span>
+    <span class="n">ProtCachingMetadataService</span><span class="p">,</span>
+    <span class="n">ProteinAnnotationCache</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._uniprot</span> <span class="kn">import</span> <span class="n">UniprotProteinMetadataService</span>
+<span class="kn">from</span> <span class="nn">._variant</span> <span class="kn">import</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">,</span> <span class="n">VariantAnnotationCache</span>
+<span class="kn">from</span> <span class="nn">._vep</span> <span class="kn">import</span> <span class="n">VepFunctionalAnnotator</span>
+<span class="kn">from</span> <span class="nn">._vv</span> <span class="kn">import</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">,</span> <span class="n">VVMultiCoordinateService</span>
+
+<span class="n">VALIDATION_POLICIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="configure_caching_cohort_creator">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_cohort_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_caching_cohort_creator</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
+    <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;VEP&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A convenience function for configuring a caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.</span>
+
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional.</span>
+
+<span class="sd">    :param hpo: a HPO instance.</span>
+<span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
+<span class="sd">    :param validation_runner: an instance of the validation runner.</span>
+<span class="sd">    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`</span>
+<span class="sd">        if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.</span>
+<span class="sd">        In any case, the directory will be created if it does not exist (including non-existing parents).</span>
+<span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the REST APIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
+    <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span>
+        <span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+        <span class="n">build</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="n">pc</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span>
+        <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">,</span>
+        <span class="n">phenotype_creator</span><span class="o">=</span><span class="n">phenotype_creator</span><span class="p">,</span>
+        <span class="n">functional_annotator</span><span class="o">=</span><span class="n">functional_annotator</span><span class="p">,</span>
+        <span class="n">imprecise_sv_functional_annotator</span><span class="o">=</span><span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
+        <span class="n">hgvs_coordinate_finder</span><span class="o">=</span><span class="n">hgvs_annotator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">CohortCreator</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="configure_caching_patient_creator">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_patient_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_caching_patient_creator</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
+    <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;VEP&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A convenience function for configuring a caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.</span>
+
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional.</span>
+
+<span class="sd">    :param hpo: a HPO instance.</span>
+<span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
+<span class="sd">    :param validation_runner: an instance of the validation runner.</span>
+<span class="sd">    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`</span>
+<span class="sd">        if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.</span>
+<span class="sd">        In any case, the directory will be created if it does not exist (including non-existing parents).</span>
+<span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the REST APIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`configure_caching_patient_creator` was deprecated. &quot;</span>
+        <span class="s2">&quot;Use `configure_caching_cohort_creator` instead&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
+    <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_functional_annotator</span><span class="p">(</span>
+        <span class="n">cache_dir</span><span class="p">,</span> <span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+        <span class="n">build</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span>
+        <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">,</span>
+        <span class="n">phenotype_creator</span><span class="o">=</span><span class="n">phenotype_creator</span><span class="p">,</span>
+        <span class="n">functional_annotator</span><span class="o">=</span><span class="n">functional_annotator</span><span class="p">,</span>
+        <span class="n">imprecise_sv_functional_annotator</span><span class="o">=</span><span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
+        <span class="n">hgvs_coordinate_finder</span><span class="o">=</span><span class="n">hgvs_annotator</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="configure_cohort_creator">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_cohort_creator</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
+    <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;VEP&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A convenience function for configuring a non-caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.</span>
+
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional</span>
+
+<span class="sd">    :param hpo: a HPO instance.</span>
+<span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
+<span class="sd">    :param validation_runner: an instance of the validation runner.</span>
+<span class="sd">     if the data should be cached in `.cache` folder in the current working directory.</span>
+<span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
+<span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the VEP API</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
+
+    <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="n">imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+        <span class="n">build</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="n">pc</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span>
+        <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">,</span>
+        <span class="n">phenotype_creator</span><span class="o">=</span><span class="n">phenotype_creator</span><span class="p">,</span>
+        <span class="n">functional_annotator</span><span class="o">=</span><span class="n">functional_annotator</span><span class="p">,</span>
+        <span class="n">imprecise_sv_functional_annotator</span><span class="o">=</span><span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
+        <span class="n">hgvs_coordinate_finder</span><span class="o">=</span><span class="n">hgvs_annotator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">CohortCreator</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="configure_patient_creator">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_patient_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_patient_creator</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
+    <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;VEP&quot;</span><span class="p">,</span>
+    <span class="n">validation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenopacketPatientCreator</span><span class="p">:</span>  <span class="c1"># Rename to something more understandable by user</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A convenience function for configuring a non-caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.</span>
+
+<span class="sd">    To create the patient creator, we need hpo-toolkit&#39;s representation of HPO. Other options are optional</span>
+
+<span class="sd">    :param hpo: a HPO instance.</span>
+<span class="sd">    :param genome_build: name of the genome build to use, choose from `{&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;}`.</span>
+<span class="sd">    :param validation_runner: an instance of the validation runner.</span>
+<span class="sd">     if the data should be cached in `.gpsea_cache` folder in the current working directory.</span>
+<span class="sd">     In any case, the directory will be created if it does not exist (including non-existing parents).</span>
+<span class="sd">    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.</span>
+<span class="sd">     Choose from ``{&#39;VEP&#39;}`` (just one fallback implementation is available at the moment).</span>
+<span class="sd">    :param timeout: timeout in seconds for the REST APIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`configure_patient_creator` was deprecated. &quot;</span>
+        <span class="s2">&quot;Use `configure_cohort_creator` instead&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">build</span> <span class="o">=</span> <span class="n">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">)</span>
+
+    <span class="n">phenotype_creator</span> <span class="o">=</span> <span class="n">_setup_phenotype_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validation_runner</span><span class="p">)</span>
+    <span class="n">functional_annotator</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="n">imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+        <span class="n">build</span><span class="p">,</span> <span class="n">timeout</span>
+    <span class="p">)</span>
+    <span class="n">hgvs_annotator</span> <span class="o">=</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="p">(</span>
+        <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">,</span>
+        <span class="n">phenotype_creator</span><span class="o">=</span><span class="n">phenotype_creator</span><span class="p">,</span>
+        <span class="n">functional_annotator</span><span class="o">=</span><span class="n">functional_annotator</span><span class="p">,</span>
+        <span class="n">imprecise_sv_functional_annotator</span><span class="o">=</span><span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
+        <span class="n">hgvs_coordinate_finder</span><span class="o">=</span><span class="n">hgvs_annotator</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="configure_protein_metadata_service">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_protein_metadata_service">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_protein_metadata_service</span><span class="p">(</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configure default protein metadata service.</span>
+
+<span class="sd">    The service will cache the responses in `cache_dir` and reach out to UNIPROT API for cache misses.</span>
+
+<span class="sd">    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`</span>
+<span class="sd">     if the data should be cached in `.gpsea_cache` folder in the current working directory.</span>
+<span class="sd">     In any case, the directory will be created if it does not exist (including any non-existing parents).</span>
+<span class="sd">    :param timeout: timeout in seconds for the REST APIs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+
+    <span class="n">protein_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;protein_cache&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">protein_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">ProteinAnnotationCache</span><span class="p">(</span><span class="n">protein_cache_dir</span><span class="p">)</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">UniprotProteinMetadataService</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ProtCachingMetadataService</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_configure_cache_dir</span><span class="p">(</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">get_cache_dir_path</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomeBuild</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GRCh38</span>
+    <span class="k">elif</span> <span class="n">genome_build</span> <span class="o">==</span> <span class="s2">&quot;GRCh37.p13&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GRCh37</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown build </span><span class="si">{</span><span class="n">genome_build</span><span class="si">}</span><span class="s2">. Choose from [&#39;GRCh37.p13&#39;, &#39;GRCh38.p13&#39;]&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_setup_phenotype_creator</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">validator</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCreator</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">validator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># This will be the default validator</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ObsoleteTermIdsValidator</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
+                <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">AnnotationPropagationValidator</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
+                <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">PhenotypicAbnormalityValidator</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
+            <span class="n">validator</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">ValidationRunner</span><span class="p">,</span> <span class="s2">&quot;validator&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">PhenotypeCreator</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">validator</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_functional_annotator</span><span class="p">(</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+
+    <span class="c1"># (2) FunctionalAnnotator</span>
+    <span class="c1"># Setup fallback</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_functional</span><span class="p">(</span><span class="n">variant_fallback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="c1"># Setup variant cache</span>
+    <span class="n">var_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;variant_cache&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">var_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">var_cache</span> <span class="o">=</span> <span class="n">VariantAnnotationCache</span><span class="p">(</span><span class="n">var_cache_dir</span><span class="p">)</span>
+
+    <span class="c1"># Assemble the final functional annotator</span>
+    <span class="k">return</span> <span class="n">VarCachingFunctionalAnnotator</span><span class="p">(</span><span class="n">var_cache</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span>
+    <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">variant_fallback</span> <span class="o">==</span> <span class="s2">&quot;VEP&quot;</span><span class="p">:</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="n">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown variant fallback annotator type </span><span class="si">{</span><span class="n">variant_fallback</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fallback</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+    <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># Setup cache for SVs</span>
+    <span class="n">sv_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;sv_cache&quot;</span><span class="p">)</span>
+    <span class="c1"># TODO: implement the cache.</span>
+    <span class="c1"># os.makedirs(sv_cache_dir, exist_ok=True)</span>
+    <span class="c1"># var_cache = VariantAnnotationCache(sv_cache_dir)</span>
+
+    <span class="k">return</span> <span class="n">DefaultImpreciseSvFunctionalAnnotator</span><span class="p">(</span>
+        <span class="n">gene_coordinate_service</span><span class="o">=</span><span class="n">VVMultiCoordinateService</span><span class="p">(</span>
+            <span class="n">genome_build</span><span class="o">=</span><span class="n">genome_build</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_phenopacket_folder">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_folder">[docs]</a>
+<span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span>
+    <span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
+    <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Cohort</span><span class="p">,</span> <span class="n">PreprocessingValidationResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.</span>
+
+<span class="sd">    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to</span>
+<span class="sd">      a directory with at least one phenopacket.</span>
+<span class="sd">    :param cohort_creator: cohort creator for turning a sequence of phenopacket</span>
+<span class="sd">      into a :class:`~gpsea.model.Cohort`.</span>
+<span class="sd">    :param validation_policy: a `str` with the validation policy.</span>
+<span class="sd">      The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
+<span class="sd">    :return: a tuple with the cohort and the preprocessing validation result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load phenopackets</span>
+    <span class="n">phenopackets</span> <span class="o">=</span> <span class="n">_load_phenopacket_dir</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">)</span>
+
+    <span class="c1"># Map to patients</span>
+    <span class="k">return</span> <span class="n">load_phenopackets</span><span class="p">(</span>
+        <span class="n">phenopackets</span><span class="o">=</span><span class="n">phenopackets</span><span class="p">,</span>
+        <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
+        <span class="n">validation_policy</span><span class="o">=</span><span class="n">validation_policy</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_phenopackets">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopackets">[docs]</a>
+<span class="k">def</span> <span class="nf">load_phenopackets</span><span class="p">(</span>
+    <span class="n">phenopackets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
+    <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
+    <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Cohort</span><span class="p">,</span> <span class="n">PreprocessingValidationResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Map phenopacket JSON file into patient, validate the patient data, and assemble the patients into a cohort.</span>
+
+<span class="sd">    :param phenopackets: path to a folder with phenopacket JSON files. An error is raised if the path does not point to</span>
+<span class="sd">      a directory with at least one phenopacket.</span>
+<span class="sd">    :param cohort_creator: cohort creator for turning a sequence of phenopacket</span>
+<span class="sd">      into a :class:`~gpsea.model.Cohort`.</span>
+<span class="sd">    :param validation_policy: a `str` with the validation policy.</span>
+<span class="sd">      The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
+<span class="sd">    :return: a tuple with the cohort and the preprocessing validation result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check inputs before doing anything</span>
+    <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">cohort_creator</span><span class="p">,</span> <span class="n">CohortCreator</span><span class="p">,</span> <span class="s2">&quot;cohort_creator&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">validation_policy</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALIDATION_POLICIES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">validation_policy</span><span class="si">}</span><span class="s2"> must be one of </span><span class="si">{</span><span class="n">VALIDATION_POLICIES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Turn phenopackets into a cohort using the cohort creator.</span>
+    <span class="c1"># Keep track of the progress by wrapping the list of phenopackets</span>
+    <span class="c1"># with TQDM 😎</span>
+    <span class="n">cohort_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Patients Created&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="n">notepad</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">prepare_notepad</span><span class="p">(</span><span class="s2">&quot;Phenopackets&quot;</span><span class="p">)</span>
+    <span class="n">cohort</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort_iter</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
+
+    <span class="n">validation_result</span> <span class="o">=</span> <span class="n">PreprocessingValidationResult</span><span class="p">(</span>
+        <span class="n">policy</span><span class="o">=</span><span class="n">validation_policy</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cohort</span><span class="p">,</span> <span class="n">validation_result</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_load_phenopacket_dir</span><span class="p">(</span>
+    <span class="n">pp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+    <span class="n">fpath_pp_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fpath_pp_abs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">fpath_pp_abs</span><span class="si">}</span><span class="s2">` does not point to a directory&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">patient_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">patient_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">phenopacket_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">patient_file</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phenopacket</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load phenopacket JSON file.</span>
+
+<span class="sd">    :param phenopacket_path: a `str` pointing to phenopacket JSON file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Parse</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Phenopacket</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

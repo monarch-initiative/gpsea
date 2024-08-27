@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.view._protein_visualizable &mdash; GPSEA 0.1.1dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.view._protein_visualizable</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.view._protein_visualizable</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="ProteinVisualizable">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable">[docs]</a>
+<span class="k">class</span> <span class="nc">ProteinVisualizable</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">tx_coordinates</span><span class="p">:</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span>
+            <span class="n">protein_meta</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+            <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_coordinates</span> <span class="o">=</span> <span class="n">tx_coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span> <span class="o">=</span> <span class="n">protein_meta</span>
+
+        <span class="c1"># store the annotations for the target transcript</span>
+        <span class="n">transcript_annotations</span> <span class="o">=</span> <span class="n">ProteinVisualizable</span><span class="o">.</span><span class="n">_get_tx_anns</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_coordinates</span><span class="o">.</span><span class="n">identifier</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_regions_on_protein</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effect</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tx_ann</span> <span class="ow">in</span> <span class="n">transcript_annotations</span><span class="p">:</span>
+            <span class="n">variant_effects</span> <span class="o">=</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">variant_effects</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variant_effects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">prot_eff_loc</span> <span class="o">=</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">protein_effect_location</span>
+            <span class="k">if</span> <span class="n">prot_eff_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_variant_regions_on_protein</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prot_eff_loc</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variant_effects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_starts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">feature_type</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">item</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_regions_on_protein</span><span class="p">])</span>
+
+        <span class="c1">#variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases</span>
+        <span class="c1">#variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])</span>
+        <span class="c1"># count marker occurrences and remove duplicates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations_counted_absolute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marker_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span> <span class="o">=</span> <span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_length</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unable to get protein_length for </span><span class="si">{</span><span class="n">protein_meta</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Consider deleting cache and trying again. Also check accession numbers&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_tx_anns</span><span class="p">(</span>
+            <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">],</span>
+            <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By default, the API returns transcript annotations for many transcripts.</span>
+<span class="sd">        We would like to store the annotations only for our transcript of interest (tx_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tx_anns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variants</span><span class="p">):</span>
+            <span class="n">tx_ann</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">tx_id</span><span class="p">:</span>
+                    <span class="n">tx_ann</span> <span class="o">=</span> <span class="n">ann</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">tx_ann</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The transcript annotation for </span><span class="si">{</span><span class="n">tx_id</span><span class="si">}</span><span class="s1"> was not found!&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tx_anns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx_ann</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tx_anns</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transcript_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TranscriptCoordinates</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_coordinates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transcript_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_coordinates</span><span class="o">.</span><span class="n">identifier</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_feature_starts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_starts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_feature_ends</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_ends</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_feature_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_types</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span>
+        <span class="c1"># TODO: ignoring the code below because we check the length in __init__ method.</span>
+        <span class="c1">#  Remove the commented code if there are no issues.</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># We try to parse the protein length from the UniProt API. If it worked, then self._protein_length is greater than zero.</span>
+        <span class="c1"># If it did not work, then we take the maximum value of the protein features and variants and add 30 amino acids to it so that</span>
+        <span class="c1"># the display will show something reasonable. We also print an error.</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># if self._protein_length &gt; 0:</span>
+        <span class="c1">#     return self._protein_length</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     print(&quot;There was some problem parsing the protein length; here we estimate the length based on features and variants&quot;)</span>
+        <span class="c1">#     max_feat = max(self._protein_feature_ends)</span>
+        <span class="c1">#     max_var = max(self._variant_locations)</span>
+        <span class="c1">#     return  max(max_feat, max_var) + 30</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protein_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_feature_names</span>
+            
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_effect</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_locations_counted_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations_counted_absolute</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">marker_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marker_counts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variant_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an array with 0-based start coordinates of aminoacids that overlap with the variant regions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">          a 1D array with ints containing a coordinate for each variant</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
