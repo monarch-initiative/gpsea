@@ -122,8 +122,13 @@ class PhenotypeScoreAnalysisResult:
         # skip the patients with unassigned genotype group
         not_na_gts = self._genotype_phenotype_scores["genotype"].notna()
         data = self._genotype_phenotype_scores.loc[not_na_gts]
+        
+        # Check that the provided genotype predicate defines the same categories
+        # as those found in `data.`
         actual = set(data["genotype"].unique())
-        expected = gt_predicate.get_categorizations()
+        expected = set(gt_predicate.get_categorizations())
+        assert actual == expected, 'Mismatch in the genotype categories'
+        
         x = [
             data.loc[data["genotype"] == c.category.cat_id, "phenotype"].to_list()
             for c in gt_predicate.get_categorizations()
