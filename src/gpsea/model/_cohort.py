@@ -107,7 +107,7 @@ class Patient:
         return hash((self._labels, self._variants, self._phenotypes, self._diseases))
 
 
-class Cohort(typing.Sized):
+class Cohort(typing.Sized, typing.Iterable[Patient]):
 
     @staticmethod
     def from_patients(
@@ -141,7 +141,7 @@ class Cohort(typing.Sized):
         members: typing.Iterable[Patient],
         excluded_member_count: int,
     ):
-        self._patient_set = frozenset(members)
+        self._members = tuple(set(members))
         self._excluded_count = excluded_member_count
 
     @property
@@ -149,25 +149,25 @@ class Cohort(typing.Sized):
         """
         Get a collection of all patients in the cohort.
         """
-        return self._patient_set
+        return self._members
 
     def all_phenotypes(self) -> typing.Set[Phenotype]:
         """
         Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
-        return set(itertools.chain(phenotype for patient in self._patient_set for phenotype in patient.phenotypes))
+        return set(itertools.chain(phenotype for patient in self._members for phenotype in patient.phenotypes))
 
     def all_diseases(self) -> typing.Set[Disease]:
         """
         Get a set of all diseases (observed or excluded) in the cohort members.
         """
-        return set(itertools.chain(disease for patient in self._patient_set for disease in patient.diseases))
+        return set(itertools.chain(disease for patient in self._members for disease in patient.diseases))
 
     def all_variants(self) -> typing.Set[Variant]:
         """
         Get a set of all variants observed in the cohort members.
         """
-        return set(itertools.chain(variant for patient in self._patient_set for variant in patient.variants))
+        return set(itertools.chain(variant for patient in self._members for variant in patient.variants))
 
     @property
     def all_transcript_ids(self) -> typing.Set[str]:
@@ -181,13 +181,13 @@ class Cohort(typing.Sized):
         """
         Get the total number of cohort members.
         """
-        return len(self._patient_set)
+        return len(self._members)
 
     def get_patient_ids(self) -> typing.Set[str]:
         """
         Get a set of the patient IDs.
         """
-        return set(pat.patient_id for pat in self._patient_set)
+        return set(pat.patient_id for pat in self._members)
 
     def list_present_phenotypes(
         self,
@@ -205,7 +205,7 @@ class Cohort(typing.Sized):
                 number of patients with that phenotype)
         """
         counter = Counter()
-        for patient in self._patient_set:
+        for patient in self._members:
             counter.update(p.identifier.value for p in patient.phenotypes if p.is_present)
         return counter.most_common(top)
 
@@ -214,7 +214,7 @@ class Cohort(typing.Sized):
             top=None,
     ) -> typing.Sequence[typing.Tuple[hpotk.TermId, int]]:
         counter = Counter()
-        for patient in self._patient_set:
+        for patient in self._members:
             counter.update(d.identifier for d in patient.diseases)
         return counter.most_common(top)
 
@@ -230,7 +230,7 @@ class Cohort(typing.Sized):
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
         """
         counter = Counter()
-        for patient in self._patient_set:
+        for patient in self._members:
             counter.update(variant.variant_info.variant_key for variant in patient.variants)
         return counter.most_common(top)
 
@@ -246,7 +246,7 @@ class Cohort(typing.Sized):
             list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)
         """
         counter = Counter()
-        for patient in self._patient_set:
+        for patient in self._members:
             counter.update(txa.protein_id for variant in patient.variants for txa in variant.tx_annotations)
         return counter.most_common(top)
 
@@ -287,13 +287,16 @@ class Cohort(typing.Sized):
             raise ValueError(f"Variant key {variant_key} not found in cohort.")
 
     def __eq__(self, other):
-        return isinstance(other, Cohort) and self._patient_set == other._patient_set
+        return isinstance(other, Cohort) and self._members == other._members
+
+    def __iter__(self) -> typing.Iterator[Patient]:
+        return iter(self._members)
 
     def __len__(self) -> int:
-        return len(self._patient_set)
+        return len(self._members)
 
     def __repr__(self):
-        return f'Cohort(members={self._patient_set}, excluded_count={self._excluded_count})'
+        return f'Cohort(members={self._members}, excluded_count={self._excluded_count})'
 
     def __str__(self):
         return repr(self)

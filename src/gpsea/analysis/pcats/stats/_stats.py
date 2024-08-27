@@ -1,41 +1,76 @@
 import abc
 import math
-import typing
 from decimal import Decimal
 
+
 import numpy as np
+import pandas as pd
+
 import scipy
 
-# TODO: delete the module
 
+class CountStatistic(metaclass=abc.ABCMeta):
+    """
+    `CountStatistic` calculates a p value for a contingency table
+    produced by a pair of discrete random variables.
 
-class MultiFisherExact(metaclass=abc.ABCMeta):
+    The `counts` table is usually `2x2` or `2x3`.
+    """
 
     @abc.abstractmethod
-    def calculate(self, a: np.ndarray) -> float:
-        """
-        :param a: a 2x3 int array with counts
-        :returns: a p value calculated with Fisher's exact test
-        """
+    def compute_pval(
+        self,
+        counts: pd.DataFrame,
+    ) -> float:
         pass
 
+
+class ScipyFisherExact(CountStatistic):
+    """
+    `ScipyFisherExact` performs Fisher Exact Test on a `2x2` contingency table.
+
+    The class is a thin wrapper around Scipy :func:`~scipy.stats.fisher_exact` function.
+    The two-sided :math:`H_1` is considered.
+    """
+
+    def compute_pval(
+        self,
+        counts: pd.DataFrame,
+    ) -> float:
+        assert counts.shape == (
+            2,
+            2,
+        ), f"Cannot run Fisher exact test on an array with {counts.shape} shape"
+        _, pval = scipy.stats.fisher_exact(counts.values, alternative="two-sided")
+        return pval
+
+
+class PythonMultiFisherExact(CountStatistic):
+    """
+    `PythonMultiFisherExact` is a Python implementation of Fisher Exact Test to compute
+    p value for a `2x3` contingency table.
+    """
+
+    def compute_pval(
+        self,
+        counts: pd.DataFrame,
+    ) -> float:
+        PythonMultiFisherExact._check_input(counts)
+        return self._fisher_exact(counts.values)
+
     @staticmethod
-    def _check_input(a: np.ndarray):
-        if not isinstance(a, np.ndarray):
-            raise ValueError(f'Expected a numpy array but got {type(a)}')
+    def _check_input(a: pd.DataFrame):
+        if not isinstance(a, pd.DataFrame):
+            raise ValueError(f"Expected a pandas DataFrame but got {type(a)}")
         if not a.shape == (2, 3):
-            raise ValueError(f'Shape of the array must be (2, 3) but got {a.shape}')
-        if np.array_equal(a, np.zeros_like(a)):
-            raise ValueError(f'Array is all zeros, cannot run analysis')
+            raise ValueError(f"Shape of the array must be (2, 3) but got {a.shape}")
+        if np.array_equal(a.values, np.zeros_like(a)):
+            raise ValueError("Data frame is all zeros, cannot run analysis")
 
-
-class PythonMultiFisherExact(MultiFisherExact):
-
-    def calculate(self, a: np.ndarray) -> float:
-        MultiFisherExact._check_input(a)
-        return self._fisher_exact(a)
-
-    def _fisher_exact(self, table):
+    def _fisher_exact(
+        self,
+        table: np.ndarray,
+    ):
         row_sum = []
         col_sum = []
 
@@ -140,15 +175,3 @@ class PythonMultiFisherExact(MultiFisherExact):
                 else:
                     pos_new = (xx + 1, yy)
                 self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
-
-
-def run_recessive_fisher_exact(two_by_three_table: typing.Sequence[typing.Sequence[int]]):
-    a = np.array(two_by_three_table, dtype=np.int64)
-    test_class = PythonMultiFisherExact()
-    val = test_class.calculate(a)
-    return val
-
-
-def run_fisher_exact(two_by_two_table: typing.Sequence[typing.Sequence[int]]):
-    oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
-    return p

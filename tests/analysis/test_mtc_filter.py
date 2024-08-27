@@ -5,8 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from gpsea.analysis import HpoMtcFilter, SpecifiedTermsMtcFilter, apply_predicates_on_patients
-from gpsea.analysis.predicate import PatientCategories, GenotypePolyPredicate
+from gpsea.analysis import apply_predicates_on_patients
+from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
+from gpsea.analysis.predicate import PatientCategories
+from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
 from gpsea.model import Cohort
 
@@ -154,7 +156,7 @@ class TestHeuristicSamplerMtcFilter:
         filtered_n_usable, filtered_all_counts, reason_for_filtering_out = mtc_report
 
         assert reason_for_filtering_out['Skipping term because all genotypes have same HPO observed proportions'] == 1
-        assert reason_for_filtering_out['Skipping general term'] == 14
+        assert reason_for_filtering_out['Skipping general term'] == 16
         assert reason_for_filtering_out['Skipping non-target term'] == 5
         assert reason_for_filtering_out['Skipping top level term'] == 0
 

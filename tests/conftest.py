@@ -5,8 +5,7 @@ import typing
 import hpotk
 import pytest
 
-from gpsea.analysis.predicate import GenotypePolyPredicate
-from gpsea.analysis.predicate.genotype import VariantPredicates, VariantPredicate, boolean_predicate
+from gpsea.analysis.predicate.genotype import GenotypePolyPredicate, VariantPredicates, boolean_predicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
 from gpsea.io import GpseaJSONEncoder, GpseaJSONDecoder
 from gpsea.model import *

@@ -6,10 +6,10 @@ import pandas as pd
 
 from scipy.stats import mannwhitneyu
 
-from gpsea.model import Cohort, Patient
+from gpsea.model import Cohort
 from gpsea.preprocessing import ProteinMetadataService
-from .predicate import GenotypePolyPredicate
-from .predicate.genotype import VariantPredicate
+from .pscore import PhenotypeScorer
+from .predicate.genotype import GenotypePolyPredicate, VariantPredicate
 from .predicate.genotype import boolean_predicate as wrap_as_boolean_predicate
 from .predicate.genotype import groups_predicate as wrap_as_groups_predicate
 from .predicate.genotype import recessive_predicate as wrap_as_recessive_predicate
@@ -131,7 +131,7 @@ class GpCohortAnalysis(CohortAnalysis):
     def compare_genotype_vs_phenotype_score(
         self,
         gt_predicate: GenotypePolyPredicate,
-        phenotype_scorer: typing.Callable[[Patient,], float],
+        phenotype_scorer: PhenotypeScorer,
     ) -> PhenotypeScoreAnalysisResult:
         idx = pd.Index(tuple(p.patient_id for p in self._patient_list), name='patient_id')
         data = pd.DataFrame(
@@ -144,7 +144,7 @@ class GpCohortAnalysis(CohortAnalysis):
         for patient in self._patient_list:
             gt_cat = gt_predicate.test(patient)
             data.loc[patient.patient_id, 'genotype'] = None if gt_cat is None else gt_cat.category.cat_id
-            data.loc[patient.patient_id, 'phenotype'] = phenotype_scorer(patient)
+            data.loc[patient.patient_id, 'phenotype'] = phenotype_scorer.score(patient)
 
         # To improve the determinism
         data.sort_index(inplace=True)

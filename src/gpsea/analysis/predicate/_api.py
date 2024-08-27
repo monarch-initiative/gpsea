@@ -148,11 +148,38 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         pass
 
-    def get_categories(self) -> typing.Sequence[PatientCategory]:
+    def get_categories(self) -> typing.Iterator[PatientCategory]:
         """
-        Get a sequence with :class:`PatientCategory` instances that the predicate can produce.
+        Get an iterator with :class:`PatientCategory` instances that the predicate can produce.
         """
-        return tuple(c.category for c in self.get_categorizations())
+        return (c.category for c in self.get_categorizations())
+
+    def get_category(
+        self,
+        cat_id: int,
+    ) -> PatientCategory:
+        """
+        Get the category name for a :class:`PatientCategory.cat_id`.
+
+        :param cat_id: an `int` with the id.
+        :raises: ValueError if there is no such category was defined.
+        """
+        for ctg in self.get_categories():
+            if ctg.cat_id == cat_id:
+                return ctg.name
+        raise ValueError(f'No category for {cat_id} was found')
+
+    def get_category_name(
+        self,
+        cat_id: int,
+    ) -> str:
+        """
+        Get the category name for a :class:`PatientCategory.cat_id`.
+
+        :param cat_id: an `int` with the id.
+        :raises: ValueError if there is no such category was defined.
+        """
+        return self.get_category(cat_id).name
 
     @abc.abstractmethod
     def get_question(self) -> str:
@@ -183,35 +210,3 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
-
-
-class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
-    """
-    `GenotypePolyPredicate` constrains `PolyPredicate` to investigate the genotype aspects
-    of patients.
-    """
-    pass
-
-
-class GenotypeBooleanPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    """
-    `GenotypeBooleanPredicate` tests if a :class:`~gpsea.model.Patient` belongs to a genotype group
-     and returns a boolean binning.
-    """
-    YES = Categorization(PatientCategories.YES)
-    NO = Categorization(PatientCategories.NO)
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        """
-        The predicate bins a patient into :class:`BooleanPredicate.NO` or :class:`BooleanPredicate.YES` category.
-        """
-        return GenotypeBooleanPredicate.YES, GenotypeBooleanPredicate.NO
-
-
-class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    BOTH = Categorization(PatientCategory(0, 'Both', 'The patient belongs in both groups.'))
-    ONE = Categorization(PatientCategory(1, 'One', 'The patient belongs in one of the two groups.'))
-    NEITHER = Categorization(PatientCategory(2, 'Neither', 'The patient does not belong in either group.'))
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        return RecessiveGroupingPredicate.BOTH, RecessiveGroupingPredicate.ONE, RecessiveGroupingPredicate.NEITHER

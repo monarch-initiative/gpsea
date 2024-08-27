@@ -7,9 +7,10 @@ import pandas as pd
 
 from gpsea.model import Patient
 from gpsea.preprocessing import ProteinMetadataService
-from .predicate import PolyPredicate, GenotypePolyPredicate, PatientCategory
-from .predicate.genotype import VariantPredicate, ProteinPredicates
-from .predicate.phenotype import P, PhenotypePolyPredicate, CountingPhenotypeScorer
+from .predicate import PolyPredicate, PatientCategory
+from .predicate.genotype import GenotypePolyPredicate, VariantPredicate, ProteinPredicates
+from .predicate.phenotype import P, PhenotypePolyPredicate
+from .pscore import PhenotypeScorer, CountingPhenotypeScorer
 
 PatientsByHPO = namedtuple('PatientsByHPO', field_names=['all_with_hpo', 'all_without_hpo'])
 
@@ -18,6 +19,7 @@ class HpoMtcReport:
     """
     Class to simplify reporting results of multiple testing filtering by HpoMtcFilter subclasses.
     """
+    # TODO: delete with no replacement.
 
     def __init__(
             self,
@@ -74,6 +76,7 @@ class GenotypePhenotypeAnalysisResult:
     """
     `GenotypePhenotypeAnalysisResult` summarizes results of genotype-phenotype correlation analysis of a cohort.
     """
+    # TODO: delete and use `gpsea.analysis.pcats.MultiPhenotypeAnalysisResult`.
 
     def __init__(
             self,
@@ -142,7 +145,7 @@ class GenotypePhenotypeAnalysisResult:
         Get a sequence of phenotype patient categories that can be investigated.
         """
         return self._phenotype_categories
-    
+
     @property
     def total_tests(self) -> int:
         """
@@ -239,6 +242,7 @@ class PhenotypeScoreAnalysisResult:
 
     See :ref:`Mann Whitney U Test for phenotype score <phenotype-score-stats>` for more background.
     """
+    # TODO: delete and use `gpsea.analysis.pscore.PhenotypeScoreAnalysisResult`
 
     def __init__(
         self,
@@ -292,6 +296,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     The class provides various methods to test genotype-phenotype correlations. All methods wrap results
     into :class:`GenotypePhenotypeAnalysisResult`.
     """
+    # TODO: remove and use the analyses described in `User Guide > Statistical tests`.
 
     def __init__(
         self,
@@ -308,7 +313,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
             predicate: VariantPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
         """
-        Bin patients according to a presence of at least one allele that matches `predicate` 
+        Bin patients according to a presence of at least one allele that matches `predicate`
         and test for genotype-phenotype correlations.
         """
         pass
@@ -352,6 +357,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         gt_predicate: GenotypePolyPredicate,
         phenotype_group_terms: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ) -> PhenotypeScoreAnalysisResult:
+        # TODO: separate into pscore module
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         assert gt_predicate.n_categorizations() == 2
 
@@ -369,7 +375,7 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
     def compare_genotype_vs_phenotype_score(
         self,
         gt_predicate: GenotypePolyPredicate,
-        phenotype_scorer: typing.Callable[[Patient,], float],
+        phenotype_scorer: PhenotypeScorer,
     ) -> PhenotypeScoreAnalysisResult:
         """
         Score the patients with a phenotype scoring method and test for correlation between the genotype group
@@ -386,8 +392,6 @@ class CohortAnalysis(metaclass=abc.ABCMeta):
         self,
         gt_predicate: GenotypePolyPredicate,
     ) -> GenotypePhenotypeAnalysisResult:
-        # TODO: if we had access to the cohort, it would be trivial to prepare
-        # all phenotype predicates and to call `self.compare_genotype_vs_phenotypes`.
         pass
 
     @abc.abstractmethod

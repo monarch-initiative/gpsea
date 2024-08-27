@@ -8,6 +8,8 @@ from ._stats import PythonMultiFisherExact
 def MultiExact() -> PythonMultiFisherExact:
     return PythonMultiFisherExact()
 
+# TODO: remove
+
 @pytest.mark.parametrize('table, raise_error, pVal', 
                         ([[[0,0,0],[0,0,0]], pytest.raises(ValueError), None],
                         [[[2, 1, 0],[3, 0, 2]], does_not_raise(), 0.6429],

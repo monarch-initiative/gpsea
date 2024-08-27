@@ -6,11 +6,12 @@ import pandas as pd
 from statsmodels.stats import multitest
 
 from gpsea.model import Patient
-from ._api import GenotypePhenotypeAnalysisResult, HpoMtcReport
-from ._mtc_filter import PhenotypeMtcFilter
-from ._stats import run_fisher_exact, run_recessive_fisher_exact
-from .predicate import GenotypePolyPredicate, PatientCategory
+from .mtc_filter import PhenotypeMtcFilter
+from .predicate import PatientCategory
+from .predicate.genotype import GenotypePolyPredicate
 from .predicate.phenotype import PhenotypePolyPredicate, P
+from ._api import GenotypePhenotypeAnalysisResult, HpoMtcReport
+from ._stats import run_fisher_exact, run_recessive_fisher_exact
 
 
 def apply_predicates_on_patients(
@@ -44,33 +45,31 @@ def apply_predicates_on_patients(
         - a mapping from phenotype :class:`P` to a data frame with counts of patients
           in i-th phenotype category and j-th genotype category where i and j are rows and columns of the data frame
     """
+    # TODO: delete with no replacement.
     phenotypes = set()
     categories = set()
     for predicate in pheno_predicates:
         categories.update(predicate.get_categories())
-        phenotypes.update(predicate.phenotypes)
+        phenotypes.add(predicate.phenotype)
 
     n_usable_patients = pd.Series(data=0, index=pd.Index(phenotypes))
 
     # Apply genotype and phenotype predicates
     counts = {}
     for ph_predicate in pheno_predicates:
-        phenotypes = ph_predicate.phenotypes
-
-        for phenotype in phenotypes:
-            if phenotype not in counts:
-                # Make an empty frame for keeping track of the counts.
-                counts[phenotype] = pd.DataFrame(
-                    data=0,
-                    index=pd.Index(
-                        data=ph_predicate.get_categories(),
-                        name=ph_predicate.get_question(),
-                    ),
-                    columns=pd.Index(
-                        data=gt_predicate.get_categories(),
-                        name=gt_predicate.get_question(),
-                    ),
-                )
+        if ph_predicate.phenotype not in counts:
+            # Make an empty frame for keeping track of the counts.
+            counts[ph_predicate.phenotype] = pd.DataFrame(
+                data=0,
+                index=pd.Index(
+                    data=ph_predicate.get_categories(),
+                    name=ph_predicate.get_question(),
+                ),
+                columns=pd.Index(
+                    data=gt_predicate.get_categories(),
+                    name=gt_predicate.get_question(),
+                ),
+            )
 
         for patient in patients:
             pheno_cat = ph_predicate.test(patient)
@@ -87,6 +86,7 @@ class GPAnalyzer(typing.Generic[P], metaclass=abc.ABCMeta):
     """
     `GPAnalyzer` calculates p values for genotype-phenotype correlation of phenotypic features of interest.
     """
+    # TODO: delete with no replacement.
 
     @abc.abstractmethod
     def analyze(
@@ -115,6 +115,7 @@ class FisherExactAnalyzer(typing.Generic[P], GPAnalyzer[P]):
       should be applied.
     :param mtc_alpha: a `float` in range :math:`(0, 1]` with the multiple testing correction alpha value.
     """
+    # TODO: delete and use `gpsea.analysis.pcats.MultiPhenotypeAnalysis`.
 
     def __init__(
         self,

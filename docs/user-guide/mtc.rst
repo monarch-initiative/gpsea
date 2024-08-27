@@ -104,6 +104,8 @@ This is how we can set an alternative MTC correction procedure:
 'fdr_bh'
 
 
+.. _mtc-filters:
+
 MTC filters: Choosing which terms to test
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

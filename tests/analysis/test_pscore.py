@@ -4,7 +4,7 @@ import hpotk
 import pytest
 
 from gpsea.model import Patient, Phenotype, SampleLabels
-from gpsea.analysis.predicate.phenotype import CountingPhenotypeScorer
+from gpsea.analysis.pscore import CountingPhenotypeScorer
 
 
 class TestCountingPhenotypeScorer:
