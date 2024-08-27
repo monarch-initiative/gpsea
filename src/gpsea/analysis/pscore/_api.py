@@ -126,7 +126,7 @@ class PhenotypeScoreAnalysisResult:
         # Check that the provided genotype predicate defines the same categories
         # as those found in `data.`
         actual = set(data["genotype"].unique())
-        expected = set(gt_predicate.get_categorizations())
+        expected = set(c.cat_id for c in gt_predicate.get_categories())
         assert actual == expected, 'Mismatch in the genotype categories'
         
         x = [
