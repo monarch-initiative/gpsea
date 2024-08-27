@@ -11,13 +11,59 @@ from .stats import PhenotypeScoreStatistic
 class PhenotypeScorer(metaclass=abc.ABCMeta):
     """
     `PhenotypeScorer` assigns the patient with a phenotype score.
+
+    The score can be :attr:`math.nan` if it is not possible to compute the score for a patient.
+
+    The scorer can be created by wrapping a scoring function (see :func:`~PhenotypeScorer.wrap_scoring_function`).
     """
+
+    @staticmethod
+    def wrap_scoring_function(
+        func: typing.Callable[[Patient], float],
+    ) -> "PhenotypeScorer":
+        """
+        Create a `PhenotypeScorer` by wrap the provided scoring function `func`.
+
+        The function must take exactly one argument of type :class:`~gpsea.model.Patient`
+        and return a `float` with the corresponding phenotype score.
+
+        Example
+        ^^^^^^^
+
+        >>> from gpsea.analysis.pscore import PhenotypeScorer
+        >>> def f(p): 123.4
+        >>> phenotype_scorer = PhenotypeScorer.wrap_scoring_function(f)
+
+        `phenotype_scorer` will assign all patients a score of `123.4`.
+
+        :param func: the scoring function.
+        """
+        return FunctionPhenotypeScorer(func=func)
 
     def score(self, patient: Patient) -> float:
         """
         Compute the score for the `patient`.
         """
         pass
+
+
+class FunctionPhenotypeScorer(PhenotypeScorer):
+    """
+    `FunctionPhenotypeScorer` computes the phenotype score using the provided function/closure.
+    """
+    # NOT PART OF THE PUBLIC API
+
+    def __init__(
+        self,
+        func: typing.Callable[[Patient], float],
+    ):
+        self._func = func
+
+    def score(self, patient: Patient) -> float:
+        """
+        Apply the function to compute the phenotype score.
+        """
+        return self._func(patient)
 
 
 class PhenotypeScoreAnalysisResult:
