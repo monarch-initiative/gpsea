@@ -38,10 +38,14 @@ class CohortCreator(typing.Generic[T], Auditor[typing.Iterable[T], Cohort]):
 
     def process(self, inputs: typing.Iterable[T], notepad: Notepad) -> Cohort:
         patients = []
+        patient_ids = set()
 
         for i, pp in enumerate(inputs):
             sub = notepad.add_subsection(f'patient #{i}')
             patient = self._pc.process(pp, sub)
+            if patient.patient_id in patient_ids:
+                raise ValueError(f"Patient ID ({patient.patient_id}) is being used more than once. Please verify every ID is different.")
+            patient_ids.add(patient.patient_id)
             patients.append(patient)
 
         # What happens if a sample has
