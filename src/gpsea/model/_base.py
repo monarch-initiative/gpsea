@@ -1,6 +1,69 @@
+import enum
 import typing
 
 import hpotk
+
+
+class KaryotypicSex(enum.Enum):
+    """
+    `KaryotypicSex`, as included in
+    `Phenopacket Schema <https://phenopacket-schema.readthedocs.io/en/2.0.0/karyotypicsex.html>`_
+    """
+    
+    UNKNOWN_KARYOTYPE = 0
+    """
+    Untyped or inconclusive karyotyping.
+    """
+    
+    XX = 1
+    """
+    Female.
+    """
+
+    XY = 2
+    """
+    Male.
+    """
+    
+    XO = 3
+    """
+    Single X chromosome.
+    """
+    
+    XXY = 4
+    """
+    Two X and one Y chromosome.
+    """
+    
+    XXX = 5
+    """
+    Three X chromosomes
+    """
+
+    XXYY = 6
+    """
+    Two X chromosomes and two Y chromosomes.
+    """
+
+    XXXY = 7
+    """
+    Three X chromosomes and one Y chromosome.
+    """
+    
+    XXXX = 8
+    """
+    Four X chromosomes.
+    """
+
+    XYY = 9
+    """
+    One X and two Y chromosomes.
+    """
+
+    OTHER_KARYOTYPE = 10
+    """
+    None of the above types.
+    """
 
 
 class SampleLabels:
