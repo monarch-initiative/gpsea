@@ -165,7 +165,7 @@ class Notepad(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def add_subsection(self, label: str):
+    def add_subsection(self, label: str) -> "Notepad":
         """
         Add a labeled subsection.
 

@@ -23,7 +23,7 @@ class GpseaJSONEncoder(JSONEncoder):
                 'tx_annotations': o.tx_annotations,
                 'genotypes': o.genotypes,
             }
-        elif isinstance(o, VariantInfo): 
+        elif isinstance(o, VariantInfo):
             return {
                 'variant_coordinates': o.variant_coordinates,
                 'sv_info': o.sv_info,
@@ -87,7 +87,7 @@ class GpseaJSONEncoder(JSONEncoder):
                 'label': o.label,
                 'meta_label': o.meta_label,
             }
-        elif isinstance(o, (Genotype, VariantEffect, Strand, VariantClass)):
+        elif isinstance(o, (Sex, Genotype, VariantEffect, Strand, VariantClass)):
             # enums
             return o.name
         elif isinstance(o, Phenotype):
@@ -104,6 +104,7 @@ class GpseaJSONEncoder(JSONEncoder):
         elif isinstance(o, Patient):
             return {
                 'labels': o.labels,
+                'sex': o.sex,
                 'phenotypes': o.phenotypes,
                 'diseases': o.diseases,
                 'variants': o.variants,
@@ -161,7 +162,7 @@ _PROTEIN_FEATURE = ('info', 'feature_type')
 _FEATURE_INFO = ('name', 'region')
 _PHENOTYPE_FIELDS = ('term_id', 'is_present')
 _DISEASE_FIELDS = ('term_id', 'name', 'is_observed')
-_PATIENT_FIELDS = ('labels', 'phenotypes', 'diseases', 'variants')
+_PATIENT_FIELDS = ('labels', 'sex', 'phenotypes', 'diseases', 'variants')
 _COHORT_FIELDS = ('members', 'excluded_patient_count')
 
 
@@ -281,6 +282,7 @@ class GpseaJSONDecoder(JSONDecoder):
         elif GpseaJSONDecoder._has_all_fields(obj, _PATIENT_FIELDS):
             return Patient(
                 labels=obj['labels'],
+                sex=Sex[obj['sex']],
                 phenotypes=obj['phenotypes'],
                 diseases=obj['diseases'],
                 variants=obj['variants'],

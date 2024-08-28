@@ -4,65 +4,26 @@ import typing
 import hpotk
 
 
-class KaryotypicSex(enum.Enum):
+class Sex(enum.Enum):
     """
-    `KaryotypicSex`, as included in
-    `Phenopacket Schema <https://phenopacket-schema.readthedocs.io/en/2.0.0/karyotypicsex.html>`_
+    `Sex` represents typical “phenotypic sex”, as would be determined by a midwife or physician at birth.
+    
+    The definition is aligned with `Phenopacket Schema <https://phenopacket-schema.readthedocs.io/en/2.0.0/sex.html>`_
     """
     
-    UNKNOWN_KARYOTYPE = 0
+    UNKNOWN_SEX = 0
     """
-    Untyped or inconclusive karyotyping.
+    Not assessed or not available. Maps to `NCIT:C17998`.
     """
     
-    XX = 1
+    FEMALE = 1
     """
-    Female.
+    Female sex. Maps to `NCIT:C46113`.
     """
 
-    XY = 2
+    MALE = 2
     """
-    Male.
-    """
-    
-    XO = 3
-    """
-    Single X chromosome.
-    """
-    
-    XXY = 4
-    """
-    Two X and one Y chromosome.
-    """
-    
-    XXX = 5
-    """
-    Three X chromosomes
-    """
-
-    XXYY = 6
-    """
-    Two X chromosomes and two Y chromosomes.
-    """
-
-    XXXY = 7
-    """
-    Three X chromosomes and one Y chromosome.
-    """
-    
-    XXXX = 8
-    """
-    Four X chromosomes.
-    """
-
-    XYY = 9
-    """
-    One X and two Y chromosomes.
-    """
-
-    OTHER_KARYOTYPE = 10
-    """
-    None of the above types.
+    Male sex. Maps to `NCIT:C46112`.
     """
 
 

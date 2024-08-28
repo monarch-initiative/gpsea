@@ -268,42 +268,53 @@ def toy_cohort(
         genotypes=Genotypes.from_mapping({SampleLabels('LargeCNV'): Genotype.HETEROZYGOUS}))
 
     patients = (
-        Patient(SampleLabels('HetSingleVar'),
-                phenotypes=(
-                    test_phenotypes['arachnodactyly_T'],
-                    test_phenotypes['spasticity_F'],
-                    test_phenotypes['focal_clonic_seizure_T']),
-                variants=(dup,),
-                diseases=(test_diseases['KBG_T'],)
-                ),
-        Patient(SampleLabels('HetDoubleVar1'),
-                phenotypes=(
-                    test_phenotypes['arachnodactyly_T'], test_phenotypes['seizure_T'], test_phenotypes['spasticity_T'],
-                ),
-                variants=(indel, snv_stop_gain),
-                diseases=(test_diseases['KBG_T'],)
-                ),
-        Patient(SampleLabels('HetDoubleVar2'),
-                phenotypes=(
-                    test_phenotypes['arachnodactyly_F'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
-                ),
-                variants=(snv_missense, del_frameshift),
-                diseases=(test_diseases['KBG_T'],)
-                ),
-        Patient(SampleLabels('HomoVar'),
-                phenotypes=(
-                    test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
-                ),
-                variants=(del_small,),
-                diseases=()
-                ),
-        Patient(SampleLabels('LargeCNV'),
-                phenotypes=(
-                    test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_F'],
-                ),
-                variants=(del_large,),
-                diseases=()
-                ),
+        Patient.from_raw_parts(
+            SampleLabels('HetSingleVar'),
+            sex=Sex.UNKNOWN_SEX,
+            phenotypes=(
+                test_phenotypes['arachnodactyly_T'],
+                test_phenotypes['spasticity_F'],
+                test_phenotypes['focal_clonic_seizure_T']
+            ),
+            variants=(dup,),
+            diseases=(test_diseases['KBG_T'],)
+        ),
+        Patient.from_raw_parts(
+            SampleLabels('HetDoubleVar1'),
+            sex=Sex.UNKNOWN_SEX,
+            phenotypes=(
+                test_phenotypes['arachnodactyly_T'], test_phenotypes['seizure_T'], test_phenotypes['spasticity_T'],
+            ),
+            variants=(indel, snv_stop_gain),
+            diseases=(test_diseases['KBG_T'],)
+        ),
+        Patient.from_raw_parts(
+            SampleLabels('HetDoubleVar2'),
+            sex=Sex.UNKNOWN_SEX,        
+            phenotypes=(
+                test_phenotypes['arachnodactyly_F'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
+            ),
+            variants=(snv_missense, del_frameshift),
+            diseases=(test_diseases['KBG_T'],)
+        ),
+        Patient.from_raw_parts(
+            SampleLabels('HomoVar'),
+            sex=Sex.UNKNOWN_SEX,
+            phenotypes=(
+                test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
+            ),
+            variants=(del_small,),
+            diseases=()
+        ),
+        Patient.from_raw_parts(
+            SampleLabels('LargeCNV'),
+            sex=Sex.UNKNOWN_SEX,
+            phenotypes=(
+                test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_F'],
+            ),
+            variants=(del_large,),
+            diseases=()
+        ),
     )
 
     return Cohort.from_patients(patients)

@@ -271,7 +271,7 @@ def configure_cohort_analysis(
     os.makedirs(cache_path, exist_ok=True)
 
     cache_dir = str(cache_path)
-    protein_metadata_service = configure_default_protein_metadata_service(protein_source, cache_dir)
+    protein_metadata_service = backup_pms(protein_source, cache_dir)
 
     mtc_filter: PhenotypeMtcFilter
     if config.mtc_strategy == MtcStrategy.HPO_MTC:

@@ -187,8 +187,9 @@ def patient_w_missense(
     sample_labels: SampleLabels,
     missense_variant: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         labels=sample_labels,
+        sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
         diseases=(),
         variants=(
@@ -202,8 +203,9 @@ def patient_w_frameshift(
     sample_labels: SampleLabels,
     frameshift_variant: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         labels=sample_labels,
+        sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
         diseases=(),
         variants=(

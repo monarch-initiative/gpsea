@@ -175,8 +175,9 @@ class TestAlleleCounter:
         hom_alt_lmna: Variant,
         hemi_dmd: Variant,
     ) -> Patient:
-        return Patient(
+        return Patient.from_raw_parts(
             labels=sample_labels,
+            sex=Sex.UNKNOWN_SEX,
             variants=(
                 het_lmna,
                 hom_alt_lmna,

@@ -5,7 +5,7 @@ from collections import Counter
 
 import hpotk
 
-from ._base import SampleLabels
+from ._base import SampleLabels, Sex
 from ._phenotype import Phenotype, Disease
 from ._variant import Variant
 
@@ -13,16 +13,49 @@ from ._variant import Variant
 class Patient:
     """
     `Patient` represents a single investigated individual.
+
+    .. note::
+    
+        We strongly recommend using the :func:`from_raw_parts` static constructor
+        instead of `__init__`.
     """
+
+    @staticmethod
+    def from_raw_parts(
+        labels: SampleLabels,
+        sex: typing.Optional[Sex],
+        phenotypes: typing.Iterable[Phenotype],
+        diseases: typing.Iterable[Disease],
+        variants: typing.Iterable[Variant]
+    ) -> "Patient":
+        """
+        Create `Patient` from the primary data.
+        """
+        if sex is None:
+            sex = Sex.UNKNOWN_SEX
+        
+        return Patient(
+            labels=labels,
+            sex=sex,
+            phenotypes=phenotypes,
+            diseases=diseases,
+            variants=variants,
+        )
 
     def __init__(
         self,
         labels: SampleLabels,
+        sex: Sex,
         phenotypes: typing.Iterable[Phenotype],
         diseases: typing.Iterable[Disease],
         variants: typing.Iterable[Variant]
     ):
+        assert isinstance(labels, SampleLabels)
         self._labels = labels
+        
+        assert isinstance(sex, Sex)
+        self._sex = sex
+
         self._phenotypes = tuple(phenotypes)
         self._diseases = tuple(diseases)
         self._variants = tuple(variants)
@@ -40,6 +73,13 @@ class Patient:
         Get the sample identifiers.
         """
         return self._labels
+
+    @property
+    def sex(self) -> Sex:
+        """
+        Get the "phenotype sex" of the sample.
+        """
+        return self._sex
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
@@ -89,6 +129,7 @@ class Patient:
     def __str__(self) -> str:
         return (f"Patient("
                 f"labels:{self._labels}, "
+                f"sex:{self._sex}, "
                 f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
                 f"diseases:{[dis.identifier for dis in self.diseases]}")
@@ -99,12 +140,13 @@ class Patient:
     def __eq__(self, other) -> bool:
         return (isinstance(other, Patient)
                 and self._labels == other._labels
+                and self._sex == other._sex
                 and self._variants == other._variants
                 and self._phenotypes == other._phenotypes
                 and self._diseases == other._diseases)
 
     def __hash__(self) -> int:
-        return hash((self._labels, self._variants, self._phenotypes, self._diseases))
+        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._diseases))
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):
@@ -201,7 +243,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
                 Otherwise, lists only the `top` highest counts
         
         Returns:
-            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE, 
+            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,
                 number of patients with that phenotype)
         """
         counter = Counter()
