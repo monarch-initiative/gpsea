@@ -51,9 +51,9 @@ class CohortCreator(typing.Generic[T], Auditor[typing.Iterable[T], Cohort]):
 
         # What happens if a sample has
         if len(duplicate_pat_labels) > 0:
-            list = [d.label_summary() for d in duplicate_pat_labels]
-            list.sort()
-            notepad.add_error(f"Patient ID/s {', '.join(list)} have a duplicate",
+            label_summaries = [d.label_summary() for d in duplicate_pat_labels]
+            label_summaries.sort()
+            notepad.add_error(f"Patient ID/s {', '.join(label_summaries)} have a duplicate",
                               "Please verify every patient has an unique ID.")
 
         # We should have >1 patients in the cohort, right?
