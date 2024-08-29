@@ -171,7 +171,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             observed_term_ids: all terms observed in patient
 
         Returns:
-            1 if the term or any descendant is present in the patient, otherwise 0
+            the total count of the terms equal to or descending from the target_tid
         """
         total_count = 0
         for term_id in observed_term_ids:
