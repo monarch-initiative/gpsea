@@ -65,6 +65,22 @@ If none of the above terms is found, then the scorer assigns terms based on the 
 If none of these terms is found, a score of zero is assigned for this section.
 
 
+Prenatal-onset growth retardation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In the original score, two points are assigned if Prenatal-onset growth retardation is present. In our implementation,
+we assign two points if either of the following terms is present (the score is thus either zero or two).
+
++----------------------------------------------------------------------------------------------------------+-----------+
+| HPO term                                                                                                 | Score     |
++==========================================================================================================+===========+
+| `Small for gestational age (HP:0001518) <https://hpo.jax.org/browse/term/HP:0001518>`_                   | 2         |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Intrauterine growth retardation (HP:0001511)  <https://hpo.jax.org/browse/term/HP:0001511>`_            | 2         |
++----------------------------------------------------------------------------------------------------------+-----------+
+
+
+
+
 Postnatal growth abnormalities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
