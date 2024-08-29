@@ -15,7 +15,7 @@ Statistical significance of a difference in the De Vries score between groups ca
 determined using the Mann–Whitney-U test.
 
 We refer to `Feenstra et al. (2011) <https://pubmed.ncbi.nlm.nih.gov/21712853/>`_ for
-te original description of the adjusted De Vries score. Here we offer a version of the
+the original description of the adjusted De Vries score. Here we offer a version of the
 score that leverages the structure of the Human Phenotype Ontology to assess the phenotype.
 
 The De Vries score has several sections, each of which is scored on a point system. The
@@ -119,7 +119,7 @@ number of terms or descendents of the following HPO terms.
 +----------------------------------------------------------------------------------------------------------+-----------+
 | `Abnormal external nose morphology (HP:0010938) <https://hpo.jax.org/browse/term/HP:0010938>`_           | 1 each    |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Abnormal pinna morphology (HP:0000377)  <https://hpo.jax.org/browse/term/HP:0000377>`_                  | 1  each   |
+| `Abnormal pinna morphology (HP:0000377)  <https://hpo.jax.org/browse/term/HP:0000377>`_                  | 1 each    |
 +----------------------------------------------------------------------------------------------------------+-----------+
 
 If two or more terms are found, the score is 2, otherwise a score of zero is assigned.
@@ -127,17 +127,17 @@ If two or more terms are found, the score is 2, otherwise a score of zero is ass
 
 Non-facial dysmorphism and congenital abnormalities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-One point is assigned for for either the
+One point is assigned for either the
 corresponding HPO terms or any of their descendents up to a maximum of two points.
 
 +----------------------------------------------------------------------------------------------------------+-----------+
 | HPO term                                                                                                 | Score     |
 +==========================================================================================================+===========+
-| `Abnormal hand morphology (HP:0005922) <https://hpo.jax.org/browse/term/HP:0005922>`_                    | 1  each   |
+| `Abnormal hand morphology (HP:0005922) <https://hpo.jax.org/browse/term/HP:0005922>`_                    | 1 each    |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Abnormal heart morphology (HP:0001627) <https://hpo.jax.org/browse/term/HP:0001627>`_                   | 1  each   |
+| `Abnormal heart morphology (HP:0001627) <https://hpo.jax.org/browse/term/HP:0001627>`_                   | 1 each    |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Hypospadias (HP:0000047)  <https://hpo.jax.org/browse/term/HP:0000047>`_                                | 1         |
+| `Hypospadias (HP:0000047) <https://hpo.jax.org/browse/term/HP:0000047>`_                                 | 1         |
 +----------------------------------------------------------------------------------------------------------+-----------+
 
 Final score

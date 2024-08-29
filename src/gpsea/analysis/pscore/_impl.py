@@ -101,16 +101,6 @@ class CountingPhenotypeScorer(PhenotypeScorer):
 
         return count
 
-    # def __call__(
-    #         self,
-    #         *args: typing.Any,
-    #         **kwds: typing.Any,
-    # ) -> float:
-    #     # TODO: move to `PhenotypeScorer` API.
-    #     assert len(args) == 1 and isinstance(args[0], Patient), 'The first argument must be an instance of `Patient`'
-    #     assert len(kwds) == 0, 'We do not take any key-word arguments'
-    #     return self.score(args[0])
-
 
 class DeVriesPhenotypeScorer(PhenotypeScorer):
     """
@@ -119,35 +109,54 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     """
 
     def __init__(
-            self,
-            hpo: hpotk.MinimalOntology,
+        self,
+        hpo: hpotk.MinimalOntology,
     ):
         self._hpo = hpo
 
-    def _developmental_delay_score(self, observed_term_ids: typing.List[str]) -> float:
+        # severe and profound GDD
+        self._gdd_tids = {
+            'HP:0011344': 2, 'HP:0012736': 2,
+            'HP:0011342': 1, 'HP:0011343': 1, 'HP:0001263': 1,
+        }
+
+        # mild, moderate, and unspecified GDD (borderline has 0.5)
+        self._idd_tids = {
+            'HP:0010864': 2, 'HP:0002187': 2,
+            'HP:0001256': 1, 'HP:0002342': 1, 'HP:0001249': 1,
+            'HP:0006889': 0.5,
+        }
+
+    def _developmental_delay_score(
+        self,
+        observed_term_ids: typing.Iterable[str],
+    ) -> float:
         """
-        calculate the dev delay component of the score
+        Calculate the dev delay component of the score
+        
         Args:
             observed_term_ids: terms observed in patient
 
         Returns: a score between 0 and 2
         """
-        gdd_tids = {'HP:0011344': 2, 'HP:0012736': 2,
-                    'HP:0011342': 1, 'HP:0011343': 1, 'HP:0001263': 1}  # severe and profound GDD
-        idd_tids = {'HP:0010864': 2, 'HP:0002187': 2, 'HP:0001256': 1, 'HP:0002342': 1, 'HP:0001249': 1,
-                    'HP:0006889': 0.5}  # mild, moderate, and unspecified GDD (borderline has 0.5)
-        # check GDD terms with higher priority than ID terms
+        # Check GDD terms with higher priority than ID terms.
+        # Global developmental delay
         for t in observed_term_ids:
-            if t in gdd_tids:
-                return gdd_tids.get(t)
+            if t in self._gdd_tids:
+                return self._gdd_tids[t]
+        
+        # Intellectual disability
         for t in observed_term_ids:
-            if t in idd_tids:
-                return idd_tids.get(t)
+            if t in self._idd_tids:
+                return self._idd_tids[t]
+        
         return 0
 
-    def _term_or_descendant(self,
-                            target_tid: str,
-                            observed_term_ids: typing.List[str]):
+    def _term_or_descendant(
+        self,
+        target_tid: str,
+        observed_term_ids: typing.Iterable[str],
+    ) -> int:
         """
         Args:
             target_tid: term of interest
@@ -157,14 +166,17 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             1 if the term or any descendant is present in the patient, otherwise 0
         """
         for term_id in observed_term_ids:
-            for desc_tid in self._hpo.graph.get_ancestors(term_id, include_source=True):
-                if desc_tid.value == target_tid:
-                    return 1
+            if term_id == target_tid \
+               or any(ancestor == target_tid for ancestor in self._hpo.graph.get_ancestors(term_id)):
+                return 1
+        
         return 0
 
-    def _term_or_descendant_count(self,
-                                  target_tid: str,
-                                  observed_term_ids: typing.List[str]):
+    def _term_or_descendant_count(
+        self,
+        target_tid: str,
+        observed_term_ids: typing.Iterable[str],
+    ) -> int:
         """
         Args:
             target_tid: term of interest
@@ -180,31 +192,37 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
                     total_count += 1
         return total_count
 
-    def _postnatal_growth_score(self, observed_term_ids: typing.List[str]) -> float:
+    def _postnatal_growth_score(
+        self,
+        observed_term_ids: typing.Iterable[str],
+    ) -> int:
         """
-        calculate the postnatal growth component of the score
+        Calculate the postnatal growth component of the score.
+        
         Args:
             observed_term_ids: terms observed in patient
 
-        Returns:
-
+        Returns: an `int` (between 0 and 2)
         """
         microcephaly = 'HP:0000252'
         short_stature = 'HP:0004322'
         macrocephaly = 'HP:0000256'
         tall_stature = 'HP:0000098'
         total_count = 0
-        for tid in [microcephaly, short_stature, macrocephaly, tall_stature]:
+        for tid in (microcephaly, short_stature, macrocephaly, tall_stature):
             total_count += self._term_or_descendant(tid, observed_term_ids)
         if total_count > 2:
             raise ValueError(f"Inconsistent annotations for postnatal growth score {total_count}:  {observed_term_ids}")
         return total_count
 
-    def _facial_dysmorphism_score(self, observed_term_ids: typing.List[str]) -> float:
+    def _facial_dysmorphism_score(
+        self,
+        observed_term_ids: typing.Collection[str],
+    ) -> int:
         """
         This section assigns two points if two or more anomalies are identified in the following
         categories: hypertelorism, nasal anomalies and ear anomalies. Our implementation counts the total
-        number of terms or descendents of the hypertelorism, Abnormal external nose morphology, and
+        number of terms or descendants of the hypertelorism, Abnormal external nose morphology, and
         Abnormal pinna morphology.
 
         Args:
@@ -216,7 +234,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         hypertelorism = 'HP:0000316'
         external_nose = 'HP:0010938'
         pinna_morphology = 'HP:0000377'
-        total_count = len([t for t in observed_term_ids if t == hypertelorism])
+        total_count = self._term_or_descendant_count(target_tid=hypertelorism, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=external_nose, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=pinna_morphology, observed_term_ids=observed_term_ids)
         if total_count > 1:
@@ -224,10 +242,14 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         else:
             return 0
 
-    def _congenital_score(self, observed_term_ids: typing.List[str]) -> float:
+    def _congenital_score(
+        self,
+        observed_term_ids: typing.Iterable[str],
+    ) -> int:
         """
-        Non-facial dysmorphism and congenital abnormalities component
+        Non-facial dysmorphism and congenital abnormalities component.
         One point is assigned for either the corresponding HPO terms or any of their descendents up to a maximum of 2.
+        
         Args:
             observed_term_ids:  terms observed in patient
 
@@ -237,51 +259,53 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         hypospadias = 'HP:0000047'
         abnormal_hand_morphology = 'HP:0005922'
         abnormal_heart_morphology = 'HP:0001627'
-        total_count = len([t for t in observed_term_ids if t == hypospadias])
+        # total_count = len([t for t in observed_term_ids if t == hypospadias])
+        total_count = self._term_or_descendant_count(
+            target_tid=hypospadias, observed_term_ids=observed_term_ids,
+        )
         total_count += self._term_or_descendant_count(target_tid=abnormal_hand_morphology,
                                                       observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=abnormal_heart_morphology,
                                                       observed_term_ids=observed_term_ids)
         return min(2, total_count)
 
-    def _prenatal_growth_score(self, observed_term_ids: typing.List[str]) -> float:
+    def _prenatal_growth_score(
+        self,
+        observed_term_ids: typing.Iterable[str],
+    ) -> int:
         """
-        two points are assigned if Prenatal-onset growth retardation is present
+        Two points are assigned if Prenatal-onset growth retardation is present.
 
         Args:
-        observed_term_ids: list of strings with term identifiers or observed HPO terms
+            observed_term_ids: list of strings with term identifiers or observed HPO terms
 
         Returns: score between 0 and 2
 
         """
         small_for_gestational_age = 'HP:0001518'
         intrauterine_growth_retardation = 'HP:0001511'
-        targets = {small_for_gestational_age, intrauterine_growth_retardation}
+        targets = (small_for_gestational_age, intrauterine_growth_retardation)
         for tid in observed_term_ids:
             if tid in targets:
                 return 2
         return 0
 
-    def _calculate_score(self, observed_term_ids: typing.List[str]) -> float:
+    def score(self, patient: Patient) -> float:
         """
-        calculate score based on list of strings with term identifiers or observed HPO terms.
+        Calculate score based on list of strings with term identifiers or observed HPO terms.
+        
         Args:
-            observed_term_ids: list of strings with term identifiers or observed HPO terms
+            patient: list of strings with term identifiers or observed HPO terms
 
         Returns: de Vries score between 0 and 10
 
         """
+        observed_term_ids = tuple(tid.identifier.value for tid in patient.present_phenotypes())
+
         delay_score = self._developmental_delay_score(observed_term_ids)
         growth_score = self._postnatal_growth_score(observed_term_ids)
         facial_score = self._facial_dysmorphism_score(observed_term_ids)
         congen_score = self._congenital_score(observed_term_ids)
         prenatal_score = self._prenatal_growth_score(observed_term_ids)
+        
         return delay_score + growth_score + facial_score + congen_score + prenatal_score
-
-    def score(self, patient: Patient) -> float:
-        """
-        Compute the score for the `patient`.
-        """
-        # collect term identifiers as strings for all observed phenotypes
-        observed_term_ids = [tid.identifier.value for tid in patient.present_phenotypes()]
-        return self._calculate_score(observed_term_ids)
