@@ -105,7 +105,7 @@ class GpCohortAnalysis(CohortAnalysis):
 
         # This can be updated to any genotype poly predicate in future, if necessary.
         genotype_predicate = wrap_as_boolean_predicate(predicate)
-        return self.compare_genotype_vs_phenotypes(pheno_predicates, genotype_predicate)
+        return self.compare_genotype_vs_phenotypes(genotype_predicate, pheno_predicates)
 
     def _prepare_disease_predicates(
         self,
