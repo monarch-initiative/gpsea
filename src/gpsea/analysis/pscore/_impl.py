@@ -234,7 +234,9 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         hypertelorism = 'HP:0000316'
         external_nose = 'HP:0010938'
         pinna_morphology = 'HP:0000377'
-        total_count = self._term_or_descendant_count(target_tid=hypertelorism, observed_term_ids=observed_term_ids)
+
+        # No need to inspect descendants since Hypertelorism has none.
+        total_count = 1 if hypertelorism in observed_term_ids else 0
         total_count += self._term_or_descendant_count(target_tid=external_nose, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=pinna_morphology, observed_term_ids=observed_term_ids)
         if total_count > 1:
