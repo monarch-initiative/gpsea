@@ -1,8 +1,12 @@
+import dataclasses
+import enum
 import typing
 
-from gpsea.model import Patient
+from collections import defaultdict
 
-from .._api import Categorization, PatientCategories
+from gpsea.model import Patient, Sex
+
+from .._api import Categorization, PatientCategory, PatientCategories
 from ._api import GenotypePolyPredicate, RecessiveGroupingPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
@@ -30,7 +34,10 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
         :attr:`AlleleCountingGenotypeBooleanPredicate.NO`
         or :class:`AlleleCountingGenotypeBooleanPredicate.YES` category.
         """
-        return AlleleCountingGenotypeBooleanPredicate.YES, AlleleCountingGenotypeBooleanPredicate.NO
+        return (
+            AlleleCountingGenotypeBooleanPredicate.YES,
+            AlleleCountingGenotypeBooleanPredicate.NO,
+        )
 
     def get_question(self) -> str:
         return self._allele_counter.get_question()
@@ -49,15 +56,17 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
             )
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountingGenotypeBooleanPredicate) \
+        return (
+            isinstance(value, AlleleCountingGenotypeBooleanPredicate)
             and self._allele_counter == value._allele_counter
-    
+        )
+
     def __hash__(self) -> int:
         return hash((self._allele_counter,))
-    
+
     def __str__(self) -> str:
-        return f'AlleleCountingGenotypeBooleanPredicate(allele_counter={self._allele_counter})'
-    
+        return f"AlleleCountingGenotypeBooleanPredicate(allele_counter={self._allele_counter})"
+
     def __repr__(self) -> str:
         return str(self)
 
@@ -83,8 +92,8 @@ class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
     ):
         self._counters = tuple(counters)
         self._categorizations = tuple(categorizations)
-        group_names = ', '.join(c.category.name for c in self._categorizations)
-        self._question = f'Genotype group: {group_names}'
+        group_names = ", ".join(c.category.name for c in self._categorizations)
+        self._question = f"Genotype group: {group_names}"
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -108,20 +117,29 @@ class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
             return None
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountingGroupsPredicate) \
-            and self._counters == value._counters \
+        return (
+            isinstance(value, AlleleCountingGroupsPredicate)
+            and self._counters == value._counters
             and self._categorizations == value._categorizations
+        )
 
     def __hash__(self) -> int:
-        return hash((self._counters, self._categorizations,))
+        return hash(
+            (
+                self._counters,
+                self._categorizations,
+            )
+        )
 
     def __str__(self) -> str:
         return self.get_question()
 
     def __repr__(self) -> str:
-        return 'AlleleCountingGroupsPredicate(' \
-            + 'counters={self._counters}, ' \
-            + 'categorizations={self._categorizations})'
+        return (
+            "AlleleCountingGroupsPredicate("
+            + "counters={self._counters}, "
+            + "categorizations={self._categorizations})"
+        )
 
 
 def groups_predicate(
@@ -141,9 +159,10 @@ def groups_predicate(
     predicates = tuple(predicates)
     group_names = tuple(group_names)
 
-    assert len(predicates) >= 2, f'We need at least 2 predicates: {len(predicates)}'
-    assert len(predicates) == len(group_names), \
-        f'The number of group names must match the number of predicates: {len(group_names)}!={len(predicates)}'
+    assert len(predicates) >= 2, f"We need at least 2 predicates: {len(predicates)}"
+    assert len(predicates) == len(
+        group_names
+    ), f"The number of group names must match the number of predicates: {len(group_names)}!={len(predicates)}"
 
     # Then, prepare the counters and categorizations.
     counters = [AlleleCounter(predicate=predicate) for predicate in predicates]
@@ -170,7 +189,7 @@ class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
     #  Therefore, I do not write any tests at this point.
 
     def __init__(
-        self, 
+        self,
         allele_counter: AlleleCounter,
     ):
         self._allele_counter = allele_counter
@@ -190,16 +209,21 @@ class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
             return RecessiveGroupingPredicate.BOTH
         else:
             return None
-    
+
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountingRecessivePredicate) and self._allele_counter == value._allele_counter
-    
+        return (
+            isinstance(value, AlleleCountingRecessivePredicate)
+            and self._allele_counter == value._allele_counter
+        )
+
     def __hash__(self) -> int:
         return hash((self._allele_counter,))
-    
+
     def __str__(self) -> str:
-        return f'AlleleCountingRecessivePredicate(allele_counter={self._allele_counter})'
-    
+        return (
+            f"AlleleCountingRecessivePredicate(allele_counter={self._allele_counter})"
+        )
+
     def __repr__(self) -> str:
         return str(self)
 
@@ -209,8 +233,8 @@ def recessive_predicate(
 ) -> GenotypePolyPredicate:
     """
     Create a recessive grouping predicate from given `variant_predicate`
-    to bin the patient into :class:`RecessiveGroupingPredicate.NEITHER`, 
-    :class:`RecessiveGroupingPredicate.ONE`, or :class:`RecessiveGroupingPredicate.BOTH`, 
+    to bin the patient into :class:`RecessiveGroupingPredicate.NEITHER`,
+    :class:`RecessiveGroupingPredicate.ONE`, or :class:`RecessiveGroupingPredicate.BOTH`,
     depending on the number of variant alleles matching the variant predicate.
 
     The patient is assigned into a group in the following manner:
@@ -221,3 +245,347 @@ def recessive_predicate(
     """
     allele_counter = AlleleCounter(predicate=variant_predicate)
     return AlleleCountingRecessivePredicate(allele_counter=allele_counter)
+
+
+@dataclasses.dataclass(eq=True, frozen=True)
+class GenotypeGroup:
+    allele_count: int
+    sex: typing.Optional[Sex]
+    categorization: Categorization
+
+
+class MendelianInheritanceAspect(enum.Enum):
+    AUTOSOMAL = 0
+    """
+    Related to chromosomes that do *not* determine the sex of an individual.
+    """
+    
+    GONOSOMAL = 1
+    """
+    Related to chromosomes that determine the sex of an individual.
+    """
+    
+    MITOCHONDRIAL = 2
+    """
+    Related to mitochondrial DNA.
+    """
+
+
+class ModeOfInheritanceInfo:
+
+    @staticmethod
+    def autosomal_dominant() -> "ModeOfInheritanceInfo":
+        groups = (
+            GenotypeGroup(
+                allele_count=0,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(
+                        cat_id=0, name="0/0", description="Homozygous reference"
+                    ),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
+                ),
+            ),
+        )
+        return ModeOfInheritanceInfo(
+            mendelian_inheritance_aspect=MendelianInheritanceAspect.AUTOSOMAL,
+            groups=groups,
+        )
+
+    @staticmethod
+    def autosomal_recessive() -> "ModeOfInheritanceInfo":
+        groups = (
+            GenotypeGroup(
+                allele_count=0,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(
+                        cat_id=0, name="0/0", description="Homozygous reference"
+                    ),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=2,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(cat_id=2, name="1/1", description="Homozygous alternate"),
+                ),
+            ),
+        )
+        return ModeOfInheritanceInfo(
+            mendelian_inheritance_aspect=MendelianInheritanceAspect.AUTOSOMAL,
+            groups=groups,
+        )
+
+    @staticmethod
+    def x_dominant() -> "ModeOfInheritanceInfo":
+        groups = (
+            GenotypeGroup(
+                allele_count=0,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(
+                        cat_id=0, name="0", description="Homozygous reference"
+                    ),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=Sex.FEMALE,
+                categorization=Categorization(
+                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=Sex.MALE,
+                categorization=Categorization(
+                    PatientCategory(cat_id=2, name="1", description="Hemizygous"),
+                ),
+            ),
+        )
+        return ModeOfInheritanceInfo(
+            mendelian_inheritance_aspect=MendelianInheritanceAspect.GONOSOMAL,
+            groups=groups,
+        )
+
+    @staticmethod
+    def x_recessive() -> "ModeOfInheritanceInfo":
+        groups = (
+            GenotypeGroup(
+                allele_count=0,
+                sex=None,
+                categorization=Categorization(
+                    PatientCategory(
+                        cat_id=0, name="0/0", description="Homozygous reference"
+                    ),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=Sex.FEMALE,
+                categorization=Categorization(
+                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
+                ),
+            ),
+            GenotypeGroup(
+                allele_count=1,
+                sex=Sex.MALE,
+                categorization=Categorization(
+                    PatientCategory(cat_id=2, name="1", description="Hemizygous"),
+                ),
+            ),
+        )
+
+        return ModeOfInheritanceInfo(
+            mendelian_inheritance_aspect=MendelianInheritanceAspect.GONOSOMAL,
+            groups=groups,
+        )
+
+    def __init__(
+        self,
+        mendelian_inheritance_aspect: MendelianInheritanceAspect,
+        groups: typing.Iterable[GenotypeGroup],
+    ):
+        # We pre-compute the hash manually.
+        # The correctness depends on two default dicts with same keys and values
+        # comparing equal.
+        hash_value = 17
+        assert isinstance(mendelian_inheritance_aspect, MendelianInheritanceAspect)
+        self._aspect = mendelian_inheritance_aspect
+
+        hash_value += 31 * hash(self._aspect)
+
+        self._groups = defaultdict(list)
+        for group in groups:
+            assert isinstance(group, GenotypeGroup)
+            self._groups[group.allele_count].append(group)
+            hash_value += 13 * hash(group)
+            
+        self._hash = hash_value
+
+    @property
+    def groups(self) -> typing.Iterator[GenotypeGroup]:
+        # Flatten `values()` which is an iterable of lists.
+        return (group for meta_group in self._groups.values() for group in meta_group)
+
+    @property
+    def mendelian_inheritance_aspect(self) -> MendelianInheritanceAspect:
+        return self._aspect
+
+    def get_groups_for_allele_count(
+        self,
+        allele_count: int,
+    ) -> typing.Sequence[GenotypeGroup]:
+        try:
+            return self._groups[allele_count]
+        except KeyError:
+            # No group for this allele count is OK
+            return ()
+
+    def is_autosomal(self) -> bool:
+        return self._aspect == MendelianInheritanceAspect.AUTOSOMAL
+
+    def is_gonosomal(self) -> bool:
+        return self._aspect == MendelianInheritanceAspect.GONOSOMAL
+
+    def is_mitochondrial(self) -> bool:
+        return self._aspect == MendelianInheritanceAspect.MITOCHONDRIAL
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, ModeOfInheritanceInfo)
+            and self._aspect == value._aspect
+            and self._groups == value._groups
+        )
+
+    def __hash__(self) -> int:
+        return self._hash
+
+    def __str__(self) -> str:
+        return f"ModeOfInheritanceInfo(aspect={self._aspect}, groups={self._groups})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+class ModeOfInheritancePredicate(GenotypePolyPredicate):
+
+    @staticmethod
+    def autosomal_dominant(
+        variant_predicate: VariantPredicate,
+    ) -> "ModeOfInheritancePredicate":
+        return ModeOfInheritancePredicate.from_moi_info(
+            variant_predicate=variant_predicate,
+            mode_of_inheritance_info=ModeOfInheritanceInfo.autosomal_dominant(),
+        )
+    
+    @staticmethod
+    def autosomal_recessive(
+        variant_predicate: VariantPredicate,
+    ) -> "ModeOfInheritancePredicate":
+        return ModeOfInheritancePredicate.from_moi_info(
+            variant_predicate=variant_predicate,
+            mode_of_inheritance_info=ModeOfInheritanceInfo.autosomal_recessive(),
+        )
+    
+    @staticmethod
+    def x_dominant(
+        variant_predicate: VariantPredicate,
+    ) -> "ModeOfInheritancePredicate":
+        return ModeOfInheritancePredicate.from_moi_info(
+            variant_predicate=variant_predicate,
+            mode_of_inheritance_info=ModeOfInheritanceInfo.x_dominant(),
+        )
+
+    @staticmethod
+    def x_recessive(
+        variant_predicate: VariantPredicate,
+    ) -> "ModeOfInheritancePredicate":
+        return ModeOfInheritancePredicate.from_moi_info(
+            variant_predicate=variant_predicate,
+            mode_of_inheritance_info=ModeOfInheritanceInfo.x_recessive(),
+        )
+
+    @staticmethod
+    def from_moi_info(
+        variant_predicate: VariantPredicate,
+        mode_of_inheritance_info: ModeOfInheritanceInfo,
+    ) -> "ModeOfInheritancePredicate":
+        allele_counter = AlleleCounter(predicate=variant_predicate)
+        return ModeOfInheritancePredicate(
+            allele_counter=allele_counter,
+            mode_of_inheritance_info=mode_of_inheritance_info,
+        )
+
+    def __init__(
+        self,
+        allele_counter: AlleleCounter,
+        mode_of_inheritance_info: ModeOfInheritanceInfo,
+    ):
+        assert isinstance(allele_counter, AlleleCounter)
+        self._allele_counter = allele_counter
+
+        assert isinstance(mode_of_inheritance_info, ModeOfInheritanceInfo)
+        self._moi_info = mode_of_inheritance_info
+
+        self._categorizations = tuple(group.categorization for group in mode_of_inheritance_info.groups)
+        issues = ModeOfInheritancePredicate._check_categorizations(self._categorizations)
+        if issues:
+            raise ValueError('Cannot create predicate: {}'.format(', '.join(issues)))
+        self._question = 'Which genotype group does the patient fit in: {}'.format(
+            ', '.join(cat.category.name for cat in self._categorizations),
+        )
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return self._categorizations
+
+    def get_question(self) -> str:
+        return self._question
+
+    def test(
+        self,
+        patient: Patient,
+    ) -> typing.Optional[Categorization]:
+        self._check_patient(patient)
+
+        if self._moi_info.is_autosomal():
+            allele_count = self._allele_counter.count(patient)
+            groups = self._moi_info.get_groups_for_allele_count(allele_count)
+            if len(groups) == 1:
+                return groups[0].categorization
+            else:
+                return None
+        elif self._moi_info.is_gonosomal():
+            if patient.sex.is_provided():
+                allele_count = self._allele_counter.count(patient)
+                groups = self._moi_info.get_groups_for_allele_count(allele_count)
+                for group in groups:
+                    if group.sex is not None and group.sex == patient.sex:
+                        return group.categorization
+                return None
+            else:
+                # We must have patient's sex
+                # to do any meaningful analysis
+                # in the non-autosomal scenario.
+                return None
+
+        elif self._moi_info.is_mitochondrial():
+            # Cannot deal with mitochondrial inheritance right now.
+            return None
+        else:
+            # Bug, please report to the developers
+            raise ValueError("Unexpected mode of inheritance condition")
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, ModeOfInheritancePredicate)
+            and self._allele_counter == value._allele_counter
+            and self._moi_info == value._moi_info
+        )
+
+    def __hash__(self) -> int:
+        return hash((self._allele_counter, self._moi_info,))
+
+    def __str__(self) -> str:
+        return (
+            "ModeOfInheritancePredicate("
+            f"allele_counter={self._allele_counter}, "
+            f"moi_info={self._moi_info})"
+        )
+
+    def __repr__(self) -> str:
+        return str(self)

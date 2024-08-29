@@ -1,6 +1,8 @@
 import abc
 import typing
 
+from collections import Counter
+
 import hpotk.util
 
 from gpsea.model import Patient
@@ -136,9 +138,7 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
     and *exhaustive* - the groups must cover all possible scenarios.
 
     However, if the patient cannot be assigned into any meaningful category, `None` can be returned.
-
-    Note, that `PolyPredicate` must be used on a happy path - testing a patient must inherently make sense.
-    Predicate will *not* check if, for instance, the patient variants are compatible with a certain mode of inheritance.
+    As a rule of thumb, returning `None` will exclude the patient from the analysis.
     """
 
     @abc.abstractmethod
@@ -210,3 +210,28 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         if not isinstance(patient, Patient):
             raise ValueError(f"patient must be type Patient but was type {type(patient)}")
+
+    @staticmethod
+    def _check_categorizations(
+        categorizations: typing.Sequence[Categorization],
+    ) -> typing.Sequence[str]:
+        """
+        Check that the categorizations meet the requirements.
+
+        The requirements include:
+
+        * the `cat_id` must be unique within the predicate
+        """
+        issues = []
+        # There must be at least one category
+
+        # `cat_id` must be unique for a predicate!
+        cat_id_counts = Counter()
+        for c in categorizations:
+            cat_id_counts[c.category.cat_id] += 1
+
+        for cat_id, count in cat_id_counts.items():
+            if count > 1:
+                issues.append(f'`cat_id` {cat_id} is present {count}>1 times')
+        
+        return issues

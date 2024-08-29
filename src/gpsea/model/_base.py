@@ -26,6 +26,30 @@ class Sex(enum.Enum):
     Male sex. Maps to `NCIT:C46112`.
     """
 
+    def is_provided(self) -> bool:
+        """
+        Return `True` if the sex is a known value, such as `FEMALE` or `MALE`.
+        """
+        return self != Sex.UNKNOWN_SEX
+
+    def is_unknown(self) -> bool:
+        """
+        Return `True` if this is an `UNKNOWN_SEX`.
+        """
+        return self == Sex.UNKNOWN_SEX
+
+    def is_female(self) -> bool:
+        """
+        Return `True` if the sex represents a `FEMALE`.
+        """
+        return self == Sex.MALE
+
+    def is_male(self) -> bool:
+        """
+        Return `True` if the sex represents a `MALE`.
+        """
+        return self == Sex.MALE
+
 
 class SampleLabels:
     """

@@ -5,22 +5,23 @@ from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
     VariantPredicates,
+    VariantPredicate,
+    ModeOfInheritancePredicate,
 )
 
 
-class TestGroupsPredicate:
+TX_ID = "tx:xyz"
 
-    TX_ID = "tx:xyz"
+
+class TestGroupsPredicate:
 
     @pytest.fixture(scope="class")
     def predicate(self) -> GenotypePolyPredicate:
         return groups_predicate(
             predicates=(
+                VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID),
                 VariantPredicates.variant_effect(
-                    VariantEffect.MISSENSE_VARIANT, TestGroupsPredicate.TX_ID
-                ),
-                VariantPredicates.variant_effect(
-                    VariantEffect.FRAMESHIFT_VARIANT, TestGroupsPredicate.TX_ID
+                    VariantEffect.FRAMESHIFT_VARIANT, TX_ID
                 ),
             ),
             group_names=(
@@ -53,7 +54,7 @@ class TestGroupsPredicate:
 
     def test_test__missense(
         self,
-        patient_w_missense: Variant,
+        patient_w_missense: Patient,
         predicate: GenotypePolyPredicate,
     ):
         cat = predicate.test(patient_w_missense)
@@ -65,7 +66,7 @@ class TestGroupsPredicate:
 
     def test_test__frameshift(
         self,
-        patient_w_frameshift: Variant,
+        patient_w_frameshift: Patient,
         predicate: GenotypePolyPredicate,
     ):
         cat = predicate.test(patient_w_frameshift)
@@ -74,3 +75,90 @@ class TestGroupsPredicate:
         assert cat.category.cat_id == 1
         assert cat.category.name == "LoF"
         assert cat.category.description == "FRAMESHIFT_VARIANT on tx:xyz"
+
+
+class TestModeOfInheritancePredicate:
+
+    @pytest.fixture(scope="class")
+    def variant_predicate(self) -> VariantPredicate:
+        return VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+
+    @pytest.mark.parametrize(
+        "patient_name,cat_id,name",
+        [
+            ("adam", 1, "0/1"),
+            ("eve", 0, "0/0"),
+            ("cain", 1, "0/1"),
+        ],
+    )
+    def test_autosomal_dominant(
+        self,
+        patient_name: str,
+        cat_id: int,
+        name: str,
+        variant_predicate: VariantPredicate,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.autosomal_dominant(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.cat_id == cat_id
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,cat_id,name",
+        [
+            ("walt", 1, "0/1"),
+            ("skyler", 1, "0/1"),
+            ("flynn", 2, "1/1"),
+            ("holly", 0, "0/0"),
+        ],
+    )
+    def test_autosomal_recessive(
+        self,
+        patient_name: str,
+        cat_id: int,
+        name: str,
+        variant_predicate: VariantPredicate,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.autosomal_recessive(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.cat_id == cat_id
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,cat_id,name",
+        [
+            ("anakin", 0, "0/0"),
+            ("padme", 1, "0/1"),
+            ("luke", 2, "1"),
+            ("leia", 1, "0/1"),
+        ],
+    )
+    def test_x_recessive(
+        self,
+        patient_name: str,
+        cat_id: int,
+        name: str,
+        variant_predicate: VariantPredicate,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.x_recessive(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.cat_id == cat_id
+        assert categorization.category.name == name
