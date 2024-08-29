@@ -1,4 +1,5 @@
 import os
+import io
 
 import hpotk
 import pytest
@@ -92,3 +93,13 @@ class TestPhenopacketCohortCreator:
             cohort_creator=phenopacket_cohort_creator,
         )
         print(cohort)
+
+    def test_cohort_creator(
+        self,
+        phenopacket_cohort_creator: CohortCreator,
+    ):
+        folder = os.path.join(os.getcwd(), 'tests', 'preprocessing', 'data', 'dup_id_test_data')
+        cohort, results = load_phenopacket_folder(folder, phenopacket_cohort_creator)
+        outfile = io.StringIO()
+        results.summarize(outfile)
+        assert " Patient ID/s Pat_1[PMID_12345], Pat_2[PMID_67890] have a duplicate. Please verify every patient has an unique ID." in outfile.getvalue().split('\n')
