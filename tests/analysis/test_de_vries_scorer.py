@@ -27,8 +27,8 @@ class TestDeVriesScorer:
 
     @pytest.fixture
     def devries_scorer(
-            self,
-            hpo: hpotk.MinimalOntology,
+        self,
+        hpo: hpotk.MinimalOntology,
     ) -> DeVriesPhenotypeScorer:
         return DeVriesPhenotypeScorer(hpo=hpo)
 
@@ -70,8 +70,8 @@ class TestDeVriesScorer:
         patient = Patient(
             labels=SampleLabels("test"),
             phenotypes=(
-                Phenotype(
-                    hpotk.TermId.from_curie(curie),
+                Phenotype.from_raw_parts(
+                    term_id=curie,
                     is_observed=True,
                 )
                 for curie in term_set
