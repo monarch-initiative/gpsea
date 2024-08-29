@@ -20,8 +20,8 @@ class CountingPhenotypeScorer(PhenotypeScorer):
 
     @staticmethod
     def from_query_curies(
-        hpo: hpotk.MinimalOntology,
-        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+            hpo: hpotk.MinimalOntology,
+            query: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
         """
         Create a scorer to test for the number of phenotype terms that fall into the phenotype groups.
@@ -65,9 +65,9 @@ class CountingPhenotypeScorer(PhenotypeScorer):
         )
 
     def __init__(
-        self,
-        hpo: hpotk.MinimalOntology,
-        query: typing.Iterable[hpotk.TermId],
+            self,
+            hpo: hpotk.MinimalOntology,
+            query: typing.Iterable[hpotk.TermId],
     ):
         self._hpo = hpo
         self._query = set(query)
@@ -76,8 +76,8 @@ class CountingPhenotypeScorer(PhenotypeScorer):
         return "How many of the query HPO terms (or their descendants) does the individual display"
 
     def score(
-        self,
-        patient: Patient,
+            self,
+            patient: Patient,
     ) -> float:
         """
         Get the count (number) of terms in the query set
@@ -118,8 +118,67 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     as described in `Feenstra et al <https://pubmed.ncbi.nlm.nih.gov/21712853>`_.
     """
 
+    def __init__(
+            self,
+            hpo: hpotk.MinimalOntology,
+    ):
+        self._hpo = hpo
+
+    def _developmental_delay_score(self, observed_term_ids: typing.List[str]) -> float:
+        """
+        calculate the dev delay component of the score
+        Args:
+            observed_term_ids: terms observed in patient
+
+        Returns: a score between 0 and 2
+        """
+        gdd_tids = {'HP:0011344': 2, 'HP:0011344': 2,
+                    'HP:0011342': 1, 'HP:0011343': 1, 'HP:0001263': 1}  # severe and profound GDD
+        idd_tids = {'HP:0010864': 2, 'HP:0002187': 2,'HP:0001256': 1, 'HP:0002342': 1, 'HP:0001249': 1,
+                          'HP:0006889': 0.5}  # mild, moderate, and unspecified GDD (borderline has 0.5)
+        # check GDD terms with higher priority than ID terms
+        for t in observed_term_ids:
+            if t in gdd_tids:
+                return gdd_tids.get(t)
+        for t in observed_term_ids:
+            if t in idd_tids:
+                return idd_tids.get(t)
+        return 0
+
+
+    def _postnatal_growth_score(self, observed_term_ids: typing.List[str]) -> float:
+        """
+        calculate the postnatal growth component of the score
+        Args:
+            observed_term_ids:
+
+        Returns:
+
+        """
+        microcephaly = 'HP:0000252'
+        short_stature = 'HP:0004322'
+        macrocephaly = 'HP: 0000256'
+        tall_stature = 'HP:0000098'
+        # to do -- implement me
+
+    def _calculate_score(self, observed_term_ids: typing.List[str]) -> float:
+        """
+        calculate score based on list of strings with term identifiers or observed HPO terms.
+        Args:
+            observed_term_ids: list of strings with term identifiers or observed HPO terms
+
+        Returns: de Vries score between 0 and 10
+
+        """
+        delay_score = self._developmental_delay_score(observed_term_ids)
+        growth_score = self._postnatal_growth_score(observed_term_ids)
+        ## todo -- complete
+        return delay_score + growth_score
+
     def score(self, patient: Patient) -> float:
         """
         Compute the score for the `patient`.
         """
-        raise NotImplementedError()
+        # collect term identifiers as strings for all observed phenotypes
+        observed_term_ids = [tid.identifier.value for tid in patient.present_phenotypes()]
+        return self._calculate_score(observed_term_ids)
