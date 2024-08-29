@@ -96,7 +96,37 @@
 <span class="k">class</span> <span class="nc">PhenotypeScorer</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScorer` assigns the patient with a phenotype score.</span>
+
+<span class="sd">    The score can be :attr:`math.nan` if it is not possible to compute the score for a patient.</span>
+
+<span class="sd">    The scorer can be created by wrapping a scoring function (see :func:`~PhenotypeScorer.wrap_scoring_function`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PhenotypeScorer.wrap_scoring_function">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">wrap_scoring_function</span><span class="p">(</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeScorer&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a `PhenotypeScorer` by wrap the provided scoring function `func`.</span>
+
+<span class="sd">        The function must take exactly one argument of type :class:`~gpsea.model.Patient`</span>
+<span class="sd">        and return a `float` with the corresponding phenotype score.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        ^^^^^^^</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpsea.analysis.pscore import PhenotypeScorer</span>
+<span class="sd">        &gt;&gt;&gt; def f(p): 123.4</span>
+<span class="sd">        &gt;&gt;&gt; phenotype_scorer = PhenotypeScorer.wrap_scoring_function(f)</span>
+
+<span class="sd">        `phenotype_scorer` will assign all patients a score of `123.4`.</span>
+
+<span class="sd">        :param func: the scoring function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FunctionPhenotypeScorer</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="PhenotypeScorer.score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer.score">[docs]</a>
@@ -107,6 +137,25 @@
         <span class="k">pass</span></div>
 </div>
 
+
+
+<span class="k">class</span> <span class="nc">FunctionPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `FunctionPhenotypeScorer` computes the phenotype score using the provided function/closure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># NOT PART OF THE PUBLIC API</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_func</span> <span class="o">=</span> <span class="n">func</span>
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the function to compute the phenotype score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult">
@@ -169,8 +218,13 @@
         <span class="c1"># skip the patients with unassigned genotype group</span>
         <span class="n">not_na_gts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">not_na_gts</span><span class="p">]</span>
+        
+        <span class="c1"># Check that the provided genotype predicate defines the same categories</span>
+        <span class="c1"># as those found in `data.`</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cat_id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">&#39;Mismatch in the genotype categories&#39;</span>
+        
         <span class="n">x</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
