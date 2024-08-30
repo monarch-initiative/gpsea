@@ -13,7 +13,30 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
 
     @staticmethod
     def from_term(term: hpotk.model.MinimalTerm, is_observed: bool):
-        return Phenotype(term.identifier, is_observed)
+        return Phenotype.from_raw_parts(term.identifier, is_observed)
+
+    @staticmethod
+    def from_raw_parts(
+        term_id: typing.Union[str, hpotk.TermId],
+        is_observed: bool,
+    ) -> "Phenotype":
+        """
+        Create `Phenotype` from a term ID and observation state.
+
+        :param term_id: a `str` with CURIE (e.g. `HP:0001250`) or a :class:`~hpotk.TermId`.
+        :param is_observed: `True` if the term ID was observed in patient or `False` if it was explicitly excluded.
+        """
+        if isinstance(term_id, str):
+            term_id = hpotk.TermId.from_curie(term_id)
+        elif isinstance(term_id, hpotk.TermId):
+            pass
+        else:
+            raise ValueError('`term_id` must be either a `str` or a `hpotk.TermId`')
+        
+        return Phenotype(
+            term_id,
+            is_observed,
+        )
 
     def __init__(
         self,
