@@ -84,17 +84,16 @@ class TestModeOfInheritancePredicate:
         return VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
 
     @pytest.mark.parametrize(
-        "patient_name,cat_id,name",
+        "patient_name,name",
         [
-            ("adam", 1, "0/1"),
-            ("eve", 0, "0/0"),
-            ("cain", 1, "0/1"),
+            ("adam", "HOM_REF"),
+            ("eve", "HET"),
+            ("cain", "HET"),
         ],
     )
     def test_autosomal_dominant(
         self,
         patient_name: str,
-        cat_id: int,
         name: str,
         variant_predicate: VariantPredicate,
         request: pytest.FixtureRequest,
@@ -106,22 +105,20 @@ class TestModeOfInheritancePredicate:
 
         assert categorization is not None
 
-        assert categorization.category.cat_id == cat_id
         assert categorization.category.name == name
 
     @pytest.mark.parametrize(
-        "patient_name,cat_id,name",
+        "patient_name,name",
         [
-            ("walt", 1, "0/1"),
-            ("skyler", 1, "0/1"),
-            ("flynn", 2, "1/1"),
-            ("holly", 0, "0/0"),
+            ("walt", "HET"),
+            ("skyler", "HET"),
+            ("flynn", "BIALLELIC_ALT"),
+            ("holly", "HOM_REF"),
         ],
     )
     def test_autosomal_recessive(
         self,
         patient_name: str,
-        cat_id: int,
         name: str,
         variant_predicate: VariantPredicate,
         request: pytest.FixtureRequest,
@@ -133,22 +130,44 @@ class TestModeOfInheritancePredicate:
 
         assert categorization is not None
 
-        assert categorization.category.cat_id == cat_id
         assert categorization.category.name == name
 
     @pytest.mark.parametrize(
-        "patient_name,cat_id,name",
+        "patient_name,name",
         [
-            ("anakin", 0, "0/0"),
-            ("padme", 1, "0/1"),
-            ("luke", 2, "1"),
-            ("leia", 1, "0/1"),
+            ("adam", "HOM_REF"),
+            ("eve", "HET"),
+            ("cain", "HET"),
+        ],
+    )
+    def test_x_dominant(
+        self,
+        patient_name: str,
+        name: str,
+        variant_predicate: VariantPredicate,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.x_dominant(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("anakin", "HOM_REF"),
+            ("padme", "HET"),
+            ("luke", "HEMI"),
+            ("leia", "HET"),
         ],
     )
     def test_x_recessive(
         self,
         patient_name: str,
-        cat_id: int,
         name: str,
         variant_predicate: VariantPredicate,
         request: pytest.FixtureRequest,
@@ -160,5 +179,4 @@ class TestModeOfInheritancePredicate:
 
         assert categorization is not None
 
-        assert categorization.category.cat_id == cat_id
         assert categorization.category.name == name

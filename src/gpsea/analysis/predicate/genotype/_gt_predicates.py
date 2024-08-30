@@ -273,24 +273,42 @@ class MendelianInheritanceAspect(enum.Enum):
 
 class ModeOfInheritanceInfo:
 
+    # NOT PART OF THE PUBLIC API!!!
+
+    HOM_REF = Categorization(
+        PatientCategory(
+            cat_id=0, name="HOM_REF", description="Homozygous reference",
+        ),
+    )
+    HET = Categorization(
+        PatientCategory(
+            cat_id=1, name="HET", description="Heterozygous",
+        ),
+    )
+    BIALLELIC_ALT = Categorization(
+        PatientCategory(
+            cat_id=2, name="BIALLELIC_ALT",
+            description="Homozygous alternate or compound heterozygous",
+        ),
+    )
+    HEMI = Categorization(
+        PatientCategory(
+            cat_id=3, name="HEMI", description="Hemizygous",
+        ),
+    )
+
     @staticmethod
     def autosomal_dominant() -> "ModeOfInheritanceInfo":
         groups = (
             GenotypeGroup(
                 allele_count=0,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(
-                        cat_id=0, name="0/0", description="Homozygous reference"
-                    ),
-                ),
+                categorization=ModeOfInheritanceInfo.HOM_REF,
             ),
             GenotypeGroup(
                 allele_count=1,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
-                ),
+                categorization=ModeOfInheritanceInfo.HET,
             ),
         )
         return ModeOfInheritanceInfo(
@@ -304,25 +322,17 @@ class ModeOfInheritanceInfo:
             GenotypeGroup(
                 allele_count=0,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(
-                        cat_id=0, name="0/0", description="Homozygous reference"
-                    ),
-                ),
+                categorization=ModeOfInheritanceInfo.HOM_REF,
             ),
             GenotypeGroup(
                 allele_count=1,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
-                ),
+                categorization=ModeOfInheritanceInfo.HET,
             ),
             GenotypeGroup(
                 allele_count=2,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(cat_id=2, name="1/1", description="Homozygous alternate"),
-                ),
+                categorization=ModeOfInheritanceInfo.BIALLELIC_ALT,
             ),
         )
         return ModeOfInheritanceInfo(
@@ -336,25 +346,12 @@ class ModeOfInheritanceInfo:
             GenotypeGroup(
                 allele_count=0,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(
-                        cat_id=0, name="0", description="Homozygous reference"
-                    ),
-                ),
+                categorization=ModeOfInheritanceInfo.HOM_REF,
             ),
             GenotypeGroup(
                 allele_count=1,
-                sex=Sex.FEMALE,
-                categorization=Categorization(
-                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
-                ),
-            ),
-            GenotypeGroup(
-                allele_count=1,
-                sex=Sex.MALE,
-                categorization=Categorization(
-                    PatientCategory(cat_id=2, name="1", description="Hemizygous"),
-                ),
+                sex=None,
+                categorization=ModeOfInheritanceInfo.HET,
             ),
         )
         return ModeOfInheritanceInfo(
@@ -368,25 +365,22 @@ class ModeOfInheritanceInfo:
             GenotypeGroup(
                 allele_count=0,
                 sex=None,
-                categorization=Categorization(
-                    PatientCategory(
-                        cat_id=0, name="0/0", description="Homozygous reference"
-                    ),
-                ),
+                categorization=ModeOfInheritanceInfo.HOM_REF,
             ),
             GenotypeGroup(
                 allele_count=1,
                 sex=Sex.FEMALE,
-                categorization=Categorization(
-                    PatientCategory(cat_id=1, name="0/1", description="Heterozygous"),
-                ),
+                categorization=ModeOfInheritanceInfo.HET,
+            ),
+            GenotypeGroup(
+                allele_count=2,
+                sex=Sex.FEMALE,
+                categorization=ModeOfInheritanceInfo.BIALLELIC_ALT,
             ),
             GenotypeGroup(
                 allele_count=1,
                 sex=Sex.MALE,
-                categorization=Categorization(
-                    PatientCategory(cat_id=2, name="1", description="Hemizygous"),
-                ),
+                categorization=ModeOfInheritanceInfo.HEMI,
             ),
         )
 
@@ -400,7 +394,8 @@ class ModeOfInheritanceInfo:
         mendelian_inheritance_aspect: MendelianInheritanceAspect,
         groups: typing.Iterable[GenotypeGroup],
     ):
-        # We pre-compute the hash manually.
+        # We want this to be hashable but also keep a non-hashable dict
+        # as a field. Therefore, we pre-compute the hash manually.
         # The correctness depends on two default dicts with same keys and values
         # comparing equal.
         hash_value = 17

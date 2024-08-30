@@ -13,17 +13,17 @@ class Sex(enum.Enum):
     
     UNKNOWN_SEX = 0
     """
-    Not assessed or not available. Maps to `NCIT:C17998`.
+    Not assessed or not available. Maps to ``NCIT:C17998``.
     """
     
     FEMALE = 1
     """
-    Female sex. Maps to `NCIT:C46113`.
+    Female sex. Maps to ``NCIT:C46113``.
     """
 
     MALE = 2
     """
-    Male sex. Maps to `NCIT:C46112`.
+    Male sex. Maps to ``NCIT:C46112``.
     """
 
     def is_provided(self) -> bool:

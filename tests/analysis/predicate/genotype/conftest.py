@@ -211,10 +211,10 @@ def patient_w_frameshift(
 
 
 """
-Genesis family - Autosomal dominant
+Genesis family - Autosomal dominant but can also be used as X dominant.
 
-* Adam - father, affected
-* Eve - mother, unaffected
+* Adam - father, unaffected
+* Eve - mother, affected
 * Cain - son, affected
 """
 
@@ -260,8 +260,8 @@ def genesis_mutation(
         ),
         genotypes=Genotypes.from_mapping(
             {
-                adam_label: Genotype.HETEROZYGOUS,
-                eve_label: Genotype.HOMOZYGOUS_REFERENCE,
+                adam_label: Genotype.HOMOZYGOUS_REFERENCE,
+                eve_label: Genotype.HETEROZYGOUS,
                 cain_label: Genotype.HETEROZYGOUS,
             }
         ),
@@ -597,8 +597,3 @@ def leia(
         diseases=(),
         variants=(skywalker_mutation,),
     )
-
-
-"""
-XR family
-"""

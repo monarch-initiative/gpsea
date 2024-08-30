@@ -266,11 +266,11 @@ by exploring the phenotype MTC filtering report.
 .. raw:: html
   :file: report/tbx5_frameshift_vs_missense.mtc_report.html
 
-and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
+and these are the top 20 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
 >>> from gpsea.analysis.predicate import PatientCategories
 >>> summary_df = result.summarize(hpo, PatientCategories.YES)
->>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+>>> summary_df.head(20).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
    :file: report/tbx5_frameshift_vs_missense.csv
@@ -283,4 +283,4 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.0000562`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00112`.
+is `~0.000899`.
