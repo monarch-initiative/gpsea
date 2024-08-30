@@ -553,9 +553,17 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
             if patient.sex.is_provided():
                 allele_count = self._allele_counter.count(patient)
                 groups = self._moi_info.get_groups_for_allele_count(allele_count)
-                for group in groups:
-                    if group.sex is not None and group.sex == patient.sex:
-                        return group.categorization
+                if len(groups) == 0:
+                    # Unable to assign the individual.
+                    return None
+                elif len(groups) == 1:
+                    # We can only assign into one category no matter what the individual's sex is.
+                    return groups[0].categorization
+                else:
+                    # We choose depending on the sex.
+                    for group in groups:
+                        if group.sex is not None and group.sex == patient.sex:
+                            return group.categorization
                 return None
             else:
                 # We must have patient's sex
