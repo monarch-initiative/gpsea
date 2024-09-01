@@ -224,8 +224,8 @@ with a false discovery control level at (``mtc_alpha=0.05``):
 Choosing the statistical procedure for assessment of association between genotype and phenotype
 groups is the last missing piece of the analysis. We will use Fisher Exact Test:
 
->>> from gpsea.analysis.pcats.stats import ScipyFisherExact
->>> count_statistic = ScipyFisherExact()
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> count_statistic = FisherExactTest()
 
 and we finalize the analysis setup by putting all components together
 into :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:

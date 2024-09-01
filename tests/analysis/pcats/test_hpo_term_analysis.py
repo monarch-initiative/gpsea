@@ -7,7 +7,7 @@ from gpsea.model import Cohort
 
 from gpsea.analysis.mtc_filter import PhenotypeMtcFilter, HpoMtcFilter
 from gpsea.analysis.pcats import HpoTermAnalysis
-from gpsea.analysis.pcats.stats import CountStatistic, ScipyFisherExact
+from gpsea.analysis.pcats.stats import CountStatistic, FisherExactTest
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
 
@@ -16,7 +16,7 @@ class TestHpoTermAnalysis:
 
     @pytest.fixture(scope='class')
     def count_statistic(self) -> CountStatistic:
-        return ScipyFisherExact()
+        return FisherExactTest()
 
     @pytest.fixture(scope='class')
     def phenotype_mtc_filter(

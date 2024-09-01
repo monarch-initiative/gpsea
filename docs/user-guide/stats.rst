@@ -176,8 +176,8 @@ including the *indirect* annotations whose presence is implied by the true path 
 We will use :ref:<fisher-exact-test> to test the association
 between genotype and phenotype groups, as described previously.
 
->>> from gpsea.analysis.pcats.stats import ScipyFisherExact
->>> count_statistic = ScipyFisherExact()
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> count_statistic = FisherExactTest()
 
 FET will compute a p value for each genotype phenotype group.
 

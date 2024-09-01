@@ -1,5 +1,6 @@
 import abc
 import math
+import os
 import typing
 
 from collections import Counter
@@ -273,19 +274,86 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
             (e.g. Bonferroni MTC) or false discovery rate for the FDR procedures (e.g. Benjamini-Hochberg).
         """
         assert isinstance(count_statistic, CountStatistic)
+        assert len(count_statistic.supports_shape) == 2, "The statistic must support 2D contingency tables"
         self._count_statistic = count_statistic
         self._mtc_correction = mtc_correction
         assert isinstance(mtc_alpha, float) and 0. <= mtc_alpha <= 1.
         self._mtc_alpha = mtc_alpha
 
-    @abc.abstractmethod
     def compare_genotype_vs_phenotypes(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
     ) -> MultiPhenotypeAnalysisResult[P]:
+        # Check compatibility between the count statistic and predicate.
+        issues = MultiPhenotypeAnalysis._check_compatibility(
+            count_statistic=self._count_statistic,
+            gt_predicate=gt_predicate,
+            pheno_predicates=pheno_predicates,
+        )
+        if len(issues) != 0:
+            msg = os.linesep.join(issues)
+            raise ValueError(f'Cannot execute the analysis: {msg}')
+
+        return self._compute_result(
+            cohort=cohort,
+            gt_predicate=gt_predicate,
+            pheno_predicates=pheno_predicates,
+        )
+
+    @abc.abstractmethod
+    def _compute_result(
+        self,
+        cohort: typing.Iterable[Patient],
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ) -> MultiPhenotypeAnalysisResult[P]:
         pass
+
+    @staticmethod
+    def _check_compatibility(
+        count_statistic: CountStatistic,
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ) -> typing.Collection[str]:
+        # There should be 2 items due to check in `__init__`.
+        (pheno, geno) = count_statistic.supports_shape
+
+        issues = []
+        # Check phenotype
+        if isinstance(pheno, int):
+            pheno_accepted = (pheno,)
+        elif isinstance(pheno, typing.Sequence):
+            pheno_accepted = pheno
+        else:
+            issues.append('Cannot use a count statistic that does not check phenotypes')
+
+        pheno_failed = []
+        for i, ph_predicate in enumerate(pheno_predicates):
+            if ph_predicate.n_categorizations not in pheno_accepted:
+                pheno_failed.append(i)
+        if len(pheno_failed) != 0:
+            issues.append(
+                'Phenotype predicates {} are incompatible with the count statistic'.format(
+                    ', '.join(str(i) for i in pheno_failed)
+                )
+            )
+
+        # Check genotype
+        if isinstance(geno, int):
+            geno_accepted = (geno,)
+        elif isinstance(geno, typing.Sequence):
+            geno_accepted = geno
+        elif pheno is None:
+            raise ValueError('Cannot use a count statistic that does not check genotypes')
+        else:
+            raise ValueError(f'Cannot use a count statistic that supports shape {pheno, geno}')
+        
+        if gt_predicate.n_categorizations not in geno_accepted:
+            issues.append('Genotype predicate is incompatible with the count statistic')
+        
+        return issues
 
     def _compute_nominal_pvals(
         self,
@@ -380,7 +448,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
 
 class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
 
-    def compare_genotype_vs_phenotypes(
+    def _compute_result(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,
@@ -513,7 +581,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         assert isinstance(mtc_filter, PhenotypeMtcFilter)
         self._mtc_filter = mtc_filter
 
-    def compare_genotype_vs_phenotypes(
+    def _compute_result(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,

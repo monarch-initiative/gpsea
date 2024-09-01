@@ -2,14 +2,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ._stats import PythonMultiFisherExact
+from ._stats import FisherExactTest
 
 
 class TestPythonMultiFisherExact:
 
     @pytest.fixture
-    def fisher_exact(self) -> PythonMultiFisherExact:
-        return PythonMultiFisherExact()
+    def fisher_exact(self) -> FisherExactTest:
+        return FisherExactTest()
 
     @pytest.mark.parametrize(
         "counts, expected",
@@ -24,10 +24,9 @@ class TestPythonMultiFisherExact:
         self,
         counts,
         expected,
-        fisher_exact: PythonMultiFisherExact,
+        fisher_exact: FisherExactTest,
     ):
         contingency_matrix = pd.DataFrame(np.array(counts, dtype=np.int64))
 
         final_pval = fisher_exact.compute_pval(contingency_matrix)
         assert final_pval == pytest.approx(expected)
-
