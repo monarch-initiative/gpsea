@@ -331,7 +331,7 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
 
         pheno_failed = []
         for i, ph_predicate in enumerate(pheno_predicates):
-            if ph_predicate.n_categorizations not in pheno_accepted:
+            if ph_predicate.n_categorizations() not in pheno_accepted:
                 pheno_failed.append(i)
         if len(pheno_failed) != 0:
             issues.append(
@@ -350,7 +350,7 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
         else:
             raise ValueError(f'Cannot use a count statistic that supports shape {pheno, geno}')
         
-        if gt_predicate.n_categorizations not in geno_accepted:
+        if gt_predicate.n_categorizations() not in geno_accepted:
             issues.append('Genotype predicate is incompatible with the count statistic')
         
         return issues
