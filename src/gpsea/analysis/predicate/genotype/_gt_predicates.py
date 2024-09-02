@@ -458,52 +458,89 @@ class ModeOfInheritanceInfo:
 
 
 class ModeOfInheritancePredicate(GenotypePolyPredicate):
+    """
+    `ModeOfInheritancePredicate` assigns an individual into a group based on compatibility with
+    the selected mode of inheritance.
+    """
 
     @staticmethod
     def autosomal_dominant(
         variant_predicate: VariantPredicate,
     ) -> "ModeOfInheritancePredicate":
+        """
+        Create a predicate that assigns the patient either
+        into homozygous reference or heterozygous
+        group in line with the autosomal dominant mode of inheritance.
+
+        :param variant_predicate: a predicate for choosing the variants for testing.
+        """
         return ModeOfInheritancePredicate.from_moi_info(
             variant_predicate=variant_predicate,
-            mode_of_inheritance_info=ModeOfInheritanceInfo.autosomal_dominant(),
+            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
         )
     
     @staticmethod
     def autosomal_recessive(
         variant_predicate: VariantPredicate,
     ) -> "ModeOfInheritancePredicate":
+        """
+        Create a predicate that assigns the patient either into
+        homozygous reference, heterozygous, or biallelic alternative allele
+        (homozygous alternative or compound heterozygous)
+        group in line with the autosomal recessive mode of inheritance.
+
+        :param variant_predicate: a predicate for choosing the variants for testing.
+        """
         return ModeOfInheritancePredicate.from_moi_info(
             variant_predicate=variant_predicate,
-            mode_of_inheritance_info=ModeOfInheritanceInfo.autosomal_recessive(),
+            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
         )
     
     @staticmethod
     def x_dominant(
         variant_predicate: VariantPredicate,
     ) -> "ModeOfInheritancePredicate":
+        """
+        Create a predicate that assigns the patient either into
+        homozygous reference or heterozygous
+        group in line with the X-linked dominant mode of inheritance.
+        
+        :param variant_predicate: a predicate for choosing the variants for testing.
+        """
         return ModeOfInheritancePredicate.from_moi_info(
             variant_predicate=variant_predicate,
-            mode_of_inheritance_info=ModeOfInheritanceInfo.x_dominant(),
+            mode_of_inheritance_data=ModeOfInheritanceInfo.x_dominant(),
         )
 
     @staticmethod
     def x_recessive(
         variant_predicate: VariantPredicate,
     ) -> "ModeOfInheritancePredicate":
+        """
+        Create a predicate that assigns the patient either into
+        homozygous reference, heterozygous, biallelic alternative allele
+        (homozygous alternative or compound heterozygous), or hemizygous
+        group in line with the X-linked recessive mode of inheritance.
+
+        :param variant_predicate: a predicate for choosing the variants for testing.
+        """
         return ModeOfInheritancePredicate.from_moi_info(
             variant_predicate=variant_predicate,
-            mode_of_inheritance_info=ModeOfInheritanceInfo.x_recessive(),
+            mode_of_inheritance_data=ModeOfInheritanceInfo.x_recessive(),
         )
 
     @staticmethod
     def from_moi_info(
         variant_predicate: VariantPredicate,
-        mode_of_inheritance_info: ModeOfInheritanceInfo,
+        mode_of_inheritance_data: ModeOfInheritanceInfo,
     ) -> "ModeOfInheritancePredicate":
+        """
+        Create a predicate for specified mode of inheritance data.
+        """
         allele_counter = AlleleCounter(predicate=variant_predicate)
         return ModeOfInheritancePredicate(
             allele_counter=allele_counter,
-            mode_of_inheritance_info=mode_of_inheritance_info,
+            mode_of_inheritance_info=mode_of_inheritance_data,
         )
 
     def __init__(

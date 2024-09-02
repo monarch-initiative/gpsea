@@ -313,7 +313,7 @@ class VariantPredicates:
             to determine if the length of the variant is above or below `threshold`.
 
             **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele
-            is shorter than the reference allele. See the method's documentation for more info.
+            is shorter than the reference allele. See :ref:`change-length-of-an-allele` for more info.
 
         **Example**
 
