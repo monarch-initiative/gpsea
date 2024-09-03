@@ -1,3 +1,4 @@
+from itertools import count
 import typing
 
 import hpotk
@@ -5,11 +6,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from gpsea.analysis import apply_predicates_on_patients
 from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
 from gpsea.analysis.predicate import PatientCategories
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
+from gpsea.analysis.pcats import apply_predicates_on_patients
 from gpsea.model import Cohort
 
 
@@ -31,16 +32,13 @@ class TestHpoMtcFilter:
             suox_cohort: Cohort,
             suox_gt_predicate: GenotypePolyPredicate,
             suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
-    ) -> typing.Tuple[
-        typing.Mapping[hpotk.TermId, int],
-        typing.Mapping[hpotk.TermId, pd.DataFrame],
-    ]:
-        categories, n_usable, all_counts = apply_predicates_on_patients(
+    ) -> typing.Sequence[pd.DataFrame]:
+        _, counts = apply_predicates_on_patients(
             patients=suox_cohort.all_patients,
             gt_predicate=suox_gt_predicate,
             pheno_predicates=suox_pheno_predicates,
         )
-        return n_usable, all_counts
+        return counts
 
     @pytest.fixture(scope='class')
     def gt_categories(self) -> pd.Index:
@@ -135,74 +133,80 @@ class TestHpoMtcFilter:
         assert actual == expected
 
     def test_filter_terms_to_test(
-            self,
-            mtc_filter: HpoMtcFilter,
-            suox_gt_predicate: GenotypePolyPredicate,
-            patient_counts: typing.Tuple[
-                typing.Mapping[hpotk.TermId, int],
-                typing.Mapping[hpotk.TermId, pd.DataFrame],
-            ],
+        self,
+        mtc_filter: HpoMtcFilter,
+        suox_gt_predicate: GenotypePolyPredicate,
+        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        patient_counts: typing.Sequence[pd.DataFrame],
     ):
-        n_usable, all_counts = patient_counts
-        mtc_report = mtc_filter.filter_terms_to_test(
-            suox_gt_predicate,
-            n_usable,
-            all_counts,
+        phenotypes = [p.phenotype for p in suox_pheno_predicates]
+        
+        mtc_report = mtc_filter.filter(
+            gt_predicate=suox_gt_predicate,
+            phenotypes=phenotypes,
+            counts=patient_counts,
         )
 
-        assert isinstance(mtc_report, tuple)
-        assert len(mtc_report) == 3
+        assert isinstance(mtc_report, typing.Sequence)
+        assert len(mtc_report) == 5
 
-        filtered_n_usable, filtered_all_counts, reason_for_filtering_out = mtc_report
+        is_ok = [r.is_passed() for r in mtc_report]
+        assert is_ok == [True, True, False, True, True]
 
-        assert reason_for_filtering_out['Skipping term because all genotypes have same HPO observed proportions'] == 1
-        assert reason_for_filtering_out['Skipping general term'] == 16
-        assert reason_for_filtering_out['Skipping non-target term'] == 5
-        assert reason_for_filtering_out['Skipping top level term'] == 0
-
-        assert len(filtered_n_usable) == 4
-        assert len(filtered_all_counts) == 4
+        reasons = [r.reason for r in mtc_report]
+        assert reasons == [
+            None, None,
+            'Skipping term because all genotypes have same HPO observed proportions',
+            None, None,
+        ]
 
     def test_specified_term_mtc_filter(
-            self,
-            suox_gt_predicate: GenotypePolyPredicate,
-            patient_counts: typing.Tuple[
-                typing.Mapping[hpotk.TermId, int],
-                typing.Mapping[hpotk.TermId, pd.DataFrame],
-            ],
+        self,
+        suox_gt_predicate: GenotypePolyPredicate,
+        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        patient_counts: typing.Sequence[pd.DataFrame],
     ):
         """
         The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
         is the only term that should survive the filter. We start with a total of five terms (n_usable==5),
-        but after our filter, only one survives (filtered_n_usable == 1), and we have four cases in which the
-        reason for filtering out is 'Skipping non-specified term'
+        but after our filter, only one survives, and we have four cases in which the
+        reason for filtering out is 'Non-specified term'
         """
-        specified_filter = SpecifiedTermsMtcFilter(terms_to_test={hpotk.TermId.from_curie("HP:0032350")})
-        n_usable, all_counts = patient_counts
-        mtc_report = specified_filter.filter_terms_to_test(
-            suox_gt_predicate,
-            n_usable,
-            all_counts,
+        specified_filter = SpecifiedTermsMtcFilter(
+            terms_to_test=(hpotk.TermId.from_curie("HP:0032350"),),
         )
-        assert isinstance(mtc_report, tuple)
-        assert len(mtc_report) == 3  # # Skipping non-specified term (n=5)
+        phenotypes = [p.phenotype for p in suox_pheno_predicates]
+        
+        mtc_report = specified_filter.filter(
+            gt_predicate=suox_gt_predicate,
+            phenotypes=phenotypes,
+            counts=patient_counts,
+        )
+        assert isinstance(mtc_report, typing.Sequence)
+        assert len(mtc_report) == 5
 
-        filtered_n_usable, filtered_all_counts, reason_for_filtering_out = mtc_report
-        assert len(n_usable) == 5
-        assert len(filtered_n_usable) == 1
-        assert reason_for_filtering_out['Skipping non-specified term'] == 4
+        is_passed = [r.is_passed() for r in mtc_report]
+        assert is_passed == [
+            False, False, True, False, False,
+        ]
+
+        reasons = [r.reason for r in mtc_report]
+        assert reasons == [
+            'Non-specified term',
+            'Non-specified term',
+            None,
+            'Non-specified term',
+            'Non-specified term',
+        ]
 
     def test_min_observed_HPO_threshold(
         self,
-        patient_counts: typing.Tuple[
-            typing.Mapping[hpotk.TermId, int],
-            typing.Mapping[hpotk.TermId, pd.DataFrame],
-        ],
+        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        patient_counts: typing.Sequence[pd.DataFrame],
     ):
         """
         In our heuristic filter, we only test terms that have at least a threshold
-        frequency in at least one of the groups. We use the "all counts" datastructure, that
-        is a dictionary whose keys are hpotoolkit TermIds and whose values are pandas DataFrames
+        frequency in at least one of the groups. We use the `patient_counts` - a sequence of DataFrames
         with 2x2 contingenicy tables of counts. For instance, each column will have one row for
         PatientCategories.YES and one for PatientCategories.NO, indicating counts of measured observed/excluded
         HPO phenotypes. Each column is a certain genotype, e.g., MISSENSE or NON-MISSENSE. We want the
@@ -211,28 +215,32 @@ class TestHpoMtcFilter:
         for all of the HPO terms in the dictionary.
         """
         EPSILON = 0.001
-        _, all_counts = patient_counts
+        curie2idx = {
+            p.phenotype.value: i
+            for i, p
+            in enumerate(suox_pheno_predicates)
+        }
         # Ectopia lentis HP:0001083  (6 9  1 2), freqs are 6/15=0.4 and 1/3=0.33
-        ectopia = all_counts[hpotk.TermId.from_curie("HP:0001083")]
+        ectopia = patient_counts[curie2idx["HP:0001083"]]
         max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(ectopia)
         assert max_f == pytest.approx(0.4, abs=EPSILON)
         
         # Seizure HP:0001250 (17 7 11 0), freqs are 17/24=0.7083 and 11/11=1
-        seizure = all_counts[hpotk.TermId.from_curie("HP:0001250")]
+        seizure = patient_counts[curie2idx["HP:0001250"]]
         max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(seizure)
         assert max_f == pytest.approx(1.0, abs=EPSILON)
         
         # Sulfocysteinuria HP:0032350 (11 0 2 0), freqs are both 1
-        sulfocysteinuria = all_counts[hpotk.TermId.from_curie("HP:0032350")]
+        sulfocysteinuria = patient_counts[curie2idx["HP:0032350"]]
         max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(sulfocysteinuria)
         assert max_f == pytest.approx(1.0, abs=EPSILON)
         
         # Neurodevelopmental delay HP:0012758 (4 13 4 4), freqs are 4/17 = 0.235 and 4/8=0.5
-        ndelay = all_counts[hpotk.TermId.from_curie("HP:0012758")]
+        ndelay = patient_counts[curie2idx["HP:0012758"]]
         max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(ndelay)
         assert max_f == pytest.approx(0.5, abs=EPSILON)
         
         # Hypertonia HP:0001276 (7 9 4 3) fresa are 7/16=0.4375 and 4/7=0.5714
-        hypertonia = all_counts[hpotk.TermId.from_curie("HP:0001276")]
+        hypertonia = patient_counts[curie2idx["HP:0001276"]]
         max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(hypertonia)
         assert max_f == pytest.approx(0.5714, abs=EPSILON)

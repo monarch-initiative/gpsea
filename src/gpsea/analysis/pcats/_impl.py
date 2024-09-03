@@ -606,6 +606,8 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             counts=all_counts,
         )
         mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
+        if not mtc_mask.any():
+            raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
         # 3 - Compute nominal p values
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)

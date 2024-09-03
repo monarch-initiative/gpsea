@@ -8,10 +8,11 @@ import pytest
 
 from gpsea.analysis import (
     apply_predicates_on_patients,
-    CohortAnalysis, CohortAnalysisConfiguration,
+    CohortAnalysis,
     configure_cohort_analysis,
 )
 
+from gpsea.analysis.mtc_filter._impl import HpoMtcFilter
 from gpsea.model import *
 from gpsea.model.genome import *
 from gpsea.analysis.predicate import PatientCategories
@@ -69,26 +70,3 @@ class TestCohortAnalysis:
             predicate=always_false_variant_predicate
         )
         assert results is not None
-
-    def test_analysis_explodes_if_no_phenotypes_are_left_for_analysis(
-        self,
-        hpo: hpotk.MinimalOntology,
-        degenerated_cohort: Cohort,
-        tmp_path: pathlib.Path,
-        always_false_variant_predicate: VariantPredicate,
-    ):
-        config = CohortAnalysisConfiguration()
-        config.hpo_mtc_strategy()
-        cohort_analysis = configure_cohort_analysis(
-            hpo=hpo,
-            cohort=degenerated_cohort,
-            cache_dir=str(tmp_path),
-            config=config,
-        )
-
-        with pytest.raises(ValueError) as e:
-            _ = cohort_analysis.compare_hpo_vs_genotype(
-                predicate=always_false_variant_predicate,
-            )
-
-        assert e.value.args[0] == 'No phenotypes are left for the analysis after MTC filtering step'

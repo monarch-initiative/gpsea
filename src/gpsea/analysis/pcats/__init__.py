@@ -21,9 +21,11 @@ The results are provided as :class:`MultiPhenotypeAnalysisResult`
 from ._impl import MultiPhenotypeAnalysis, MultiPhenotypeAnalysisResult
 from ._impl import DiseaseAnalysis
 from ._impl import HpoTermAnalysis, HpoTermAnalysisResult
+from ._impl import apply_predicates_on_patients
 
 __all__ = [
     'MultiPhenotypeAnalysis', 'MultiPhenotypeAnalysisResult',
     'DiseaseAnalysis',
     'HpoTermAnalysis', 'HpoTermAnalysisResult',
+    'apply_predicates_on_patients',
 ]
