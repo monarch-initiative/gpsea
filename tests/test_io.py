@@ -24,7 +24,6 @@ def test_regenerate_cohort(
 ):
     """
     The test for regenerating the `SUOX.json` file based on a cohort of phenopackets.
-    The test needs path to a folder with phenopacket JSON files (empty `str` below).
 
     Note, the test may need to be run multiple times if the ENSEMBL API times out.
     """

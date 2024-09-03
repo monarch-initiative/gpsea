@@ -4,7 +4,7 @@ import hpotk
 import pytest
 
 from gpsea.analysis.pscore import DeVriesPhenotypeScorer
-from gpsea.model import Patient, SampleLabels, Phenotype
+from gpsea.model import Patient, SampleLabels, Phenotype, Sex
 
 intrauterine_growth_retardation = 'HP:0001511'
 small_for_gestational_age = 'HP:0001518'
@@ -69,6 +69,7 @@ class TestDeVriesScorer:
     ):
         patient = Patient(
             labels=SampleLabels("test"),
+            sex=Sex.UNKNOWN_SEX,
             phenotypes=(
                 Phenotype.from_raw_parts(
                     term_id=curie,

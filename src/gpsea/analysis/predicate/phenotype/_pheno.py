@@ -60,11 +60,12 @@ class PhenotypePolyPredicate(
 
     Each phenotype category `P` can be a :class:`~hpotk.model.TermId` representing an HPO term or an OMIM/MONDO term.
 
-    Most of the time, only one category is investigated, and :attr:`phenotype` will return a sequence with
-    one element only (e.g. *Arachnodactyly* `HP:0001166`). However, multiple categories can be sought as well,
-    such as when the predicate bins the patient into one of discrete diseases
-    (e.g. Geleophysic dysplasia, Marfan syndrome, ...). Then the predicate should return a sequence of disease
-    identifiers.
+    Only one category can be investigated, and :attr:`phenotype` returns the investigated phenotype
+    (e.g. *Arachnodactyly* `HP:0001166`).
+
+    As another hallmark of this predicate, one of the categorizations must correspond to the group of patients
+    who exibit the investigated phenotype. The categorization is provided
+    via :attr:`present_phenotype_categorization` property.
     """
 
     @property
@@ -74,6 +75,21 @@ class PhenotypePolyPredicate(
         Get the phenotype entity of interest.
         """
         pass
+
+    @property
+    @abc.abstractmethod
+    def present_phenotype_categorization(self) -> PhenotypeCategorization[P]:
+        """
+        Get the categorization which represents the group of the patients who exibit the investigated phenotype.
+        """
+        pass
+
+    @property
+    def present_phenotype_category(self) -> PatientCategory:
+        """
+        Get the patient category that correspond to the group of the patients who exibit the investigated phenotype.
+        """
+        return self.present_phenotype_categorization.category
 
 
 class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
@@ -112,18 +128,24 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
             category=PatientCategories.NO,
             phenotype=self._query,
         )
+        # Some tests depend on the order of `self._categorizations`.
+        self._categorizations = (self._phenotype_observed, self._phenotype_excluded)
 
-    def get_question(self) -> str:
-        return f"Is {self._query_label} present in the patient?"
+    def get_question_base(self) -> str:
+        return f"Is {self._query_label} present in the patient"
 
     @property
     def phenotype(self) -> hpotk.TermId:
         return self._query
 
+    @property
+    def present_phenotype_categorization(self) -> PhenotypeCategorization[hpotk.TermId]:
+        return self._phenotype_observed
+
     def get_categorizations(
         self,
     ) -> typing.Sequence[PhenotypeCategorization[hpotk.TermId]]:
-        return self._phenotype_observed, self._phenotype_excluded
+        return self._categorizations
 
     def test(
         self, patient: Patient
@@ -200,12 +222,16 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
             phenotype=disease_id_query,
         )
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return f"Was {self._query} diagnosed in the patient"
 
     @property
     def phenotype(self) -> hpotk.TermId:
         return self._query
+
+    @property
+    def present_phenotype_categorization(self) -> PhenotypeCategorization[hpotk.TermId]:
+        return self._diagnosis_present
 
     def get_categorizations(
         self,

@@ -202,6 +202,7 @@ class TestProteinPredicates:
 
         assert predicate.test(missense_variant) == expected
 
+
 class TestLogicalVariantPredicate:
     """
     Test that the AND and OR variant predicate combinators work as expected.

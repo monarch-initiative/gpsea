@@ -3,7 +3,7 @@ import typing
 import hpotk
 import pytest
 
-from gpsea.model import Patient, Phenotype, SampleLabels
+from gpsea.model import Patient, Phenotype, SampleLabels, Sex
 from gpsea.analysis.pscore import CountingPhenotypeScorer
 
 
@@ -50,8 +50,9 @@ class TestCountingPhenotypeScorer:
         expected: int,
         counting_scorer: CountingPhenotypeScorer,
     ):
-        patient = Patient(
+        patient = Patient.from_raw_parts(
             labels=SampleLabels("test"),
+            sex=Sex.UNKNOWN_SEX,
             phenotypes=(
                 Phenotype(
                     hpotk.TermId.from_curie(curie),
