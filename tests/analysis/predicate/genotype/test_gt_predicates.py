@@ -6,6 +6,7 @@ from gpsea.model import *
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
+    filtering_predicate,
     VariantPredicates,
     VariantPredicate,
     ModeOfInheritancePredicate,
@@ -209,7 +210,7 @@ class TestPolyPredicate:
     ):
         cats = x_recessive_gt_predicate.get_categorizations()
         targets = [cats[i] for i in indices]
-        predicate = GenotypePolyPredicate.filtering_predicate(
+        predicate = filtering_predicate(
             predicate=x_recessive_gt_predicate,
             targets=targets,
         )
@@ -223,7 +224,7 @@ class TestPolyPredicate:
         x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
         with pytest.raises(ValueError) as ve:
-            GenotypePolyPredicate.filtering_predicate(
+            filtering_predicate(
                 predicate=x_recessive_gt_predicate,
                 targets=x_recessive_gt_predicate.get_categorizations(),
             )
@@ -238,7 +239,7 @@ class TestPolyPredicate:
         x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
         with pytest.raises(ValueError) as ve:
-            GenotypePolyPredicate.filtering_predicate(
+            filtering_predicate(
                 predicate=x_recessive_gt_predicate,
                 targets=(0, 1),
             )
@@ -253,7 +254,7 @@ class TestPolyPredicate:
         x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
         with pytest.raises(ValueError) as ve:
-            GenotypePolyPredicate.filtering_predicate(
+            filtering_predicate(
                 predicate=x_recessive_gt_predicate,
                 targets=(x_recessive_gt_predicate.get_categorizations()[0],),
             )

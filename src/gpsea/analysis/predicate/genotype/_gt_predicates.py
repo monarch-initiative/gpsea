@@ -151,6 +151,8 @@ def groups_predicate(
     The genotype groups *should* not overlap.
     In case of an overlap, the patient will be assigned into no group (`None`).
 
+    See the :ref:`groups-predicate` section for an example.
+
     :param predicates: an iterable with at least 2 variant predicates to determine a genotype group.
     :param group_names: an iterable with group names. The number of group names must match the number of predicates.
     """
@@ -179,6 +181,99 @@ def groups_predicate(
     return AlleleCountingGroupsPredicate(
         counters=counters,
         categorizations=categorizations,
+    )
+
+
+class FilteringGenotypePolyPredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
+
+    @staticmethod
+    def create(
+        predicate: "GenotypePolyPredicate",
+        targets: typing.Collection[Categorization],
+    ) -> "FilteringGenotypePolyPredicate":
+        # At least 2 target categorizations must be provided
+        if len(targets) <= 1:
+            raise ValueError(f'At least 2 target categorizations must be provided but got {len(targets)}')
+
+        good_boys = tuple(isinstance(cat, Categorization) for cat in targets)
+        if not all(good_boys):
+            offenders = ', '.join(
+                str(i)
+                for i, is_instance
+                in enumerate(good_boys) if not is_instance
+            )
+            raise ValueError(f'The targets at following indices are not categorizations: [{offenders}]')
+
+        # All `allowed` categorizations must in fact be present in the `base` predicate.
+        cats_are_in_fact_present = tuple(cat in predicate.get_categorizations() for cat in targets)
+        if not all(cats_are_in_fact_present):
+            missing = ', '.join(
+                c.category.name
+                for c, is_present
+                in zip(targets, cats_are_in_fact_present) if not is_present
+            )
+            raise ValueError(f'Some from the categories are not present: {missing}')
+        
+        if len(targets) == predicate.n_categorizations():
+            raise ValueError(
+                f'It makes no sense to subset the a predicate with {predicate.n_categorizations()} categorizations '
+                f'with the same number ({len(targets)}) of targets'
+            )
+
+        return FilteringGenotypePolyPredicate(
+            predicate=predicate,
+            allowed=targets,
+        )
+
+    def __init__(
+        self,
+        predicate: "GenotypePolyPredicate",
+        allowed: typing.Iterable[Categorization],
+    ):
+        self._predicate = predicate
+        self._allowed = tuple(allowed)
+    
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return self._allowed
+
+    def get_question_base(self) -> str:
+        return self._predicate.get_question_base()
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        cat = self._predicate.test(patient)
+        if cat in self._allowed:
+            return cat
+        else:
+            return None
+
+    def __repr__(self):
+        return f"FilteringGenotypePolyPredicate(predicate={self._predicate}, allowed={self._allowed})"
+
+ 
+def filtering_predicate(
+    predicate: GenotypePolyPredicate,
+    targets: typing.Collection[Categorization],
+) -> GenotypePolyPredicate:
+    """
+    Filtering predicate applies the base `predicate` but only returns the categorizations
+    from the provided `targets` collection.
+
+    This can be useful if only some of the categorizations are interesting.
+    For instance, if we only seek to compare the differences between heterozygous and hemizygous variants,
+    but the predicate also bins the patients into homozygous reference, and biallelic alt genotype groups.
+
+    See the :ref:`filtering-predicate` section for an example.
+
+    The `predicate` is checked for being able to produce the all items in `targets`
+    and the `targets` must include at least 2 categorizations.
+
+    :param predicate: the base predicate whose categorizations are subject to filteration.
+    :param targets: the categorizations to retain
+    """
+    return FilteringGenotypePolyPredicate.create(
+        predicate=predicate,
+        targets=targets,
     )
 
 
