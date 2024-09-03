@@ -189,7 +189,7 @@ class GenotypePhenotypeAnalysisResult:
         # Column index: multiindex of counts and percentages for all genotype predicate groups
         geno_idx = pd.MultiIndex.from_product(
             iterables=(self._geno_predicate.get_categories(), ('Count', 'Percent')),
-            names=(self._geno_predicate.get_question(), None),
+            names=(self._geno_predicate.get_question_base(), None),
         )
 
         # We'll fill this frame with data

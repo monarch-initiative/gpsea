@@ -300,7 +300,7 @@ for assigning a patient into a genotype group:
 
 >>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
 >>> gt_predicate = ModeOfInheritancePredicate.autosomal_recessive(is_frameshift_or_stop_gain)
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Which genotype group does the patient fit in: HOM_REF, HET, BIALLELIC_ALT'
 
 The `gt_predicate` can be used in downstream analysis, such as in :class:
@@ -337,7 +337,7 @@ for testing if the individual has at least one missense vs. frameshift vs. synon
 ...     ),
 ...     group_names=('Missense', 'Frameshift', 'Synonymous'),
 ... )
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Genotype group: Missense, Frameshift, Synonymous'
 
 
@@ -380,8 +380,8 @@ to test for a presence of `Abnormal lens morphology <https://hpo.jax.org/browse/
 ...     hpo=hpo,
 ...     query=query,
 ... )
->>> pheno_predicate.get_question()
-'Is Abnormal lens morphology present in the patient?'
+>>> pheno_predicate.display_question()
+'Is Abnormal lens morphology present in the patient: Yes, No'
 
 
 TODO: explain ``missing_implies_phenotype_excluded``

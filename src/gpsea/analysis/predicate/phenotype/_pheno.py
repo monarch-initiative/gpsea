@@ -131,8 +131,8 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
         # Some tests depend on the order of `self._categorizations`.
         self._categorizations = (self._phenotype_observed, self._phenotype_excluded)
 
-    def get_question(self) -> str:
-        return f"Is {self._query_label} present in the patient?"
+    def get_question_base(self) -> str:
+        return f"Is {self._query_label} present in the patient"
 
     @property
     def phenotype(self) -> hpotk.TermId:
@@ -222,7 +222,7 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
             phenotype=disease_id_query,
         )
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return f"Was {self._query} diagnosed in the patient"
 
     @property

@@ -64,11 +64,11 @@ def apply_predicates_on_patients(
                 data=0,
                 index=pd.Index(
                     data=ph_predicate.get_categories(),
-                    name=ph_predicate.get_question(),
+                    name=ph_predicate.get_question_base(),
                 ),
                 columns=pd.Index(
                     data=gt_predicate.get_categories(),
-                    name=gt_predicate.get_question(),
+                    name=gt_predicate.get_question_base(),
                 ),
             )
 
@@ -198,7 +198,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
         gt_idx = pd.MultiIndex.from_product(
             # TODO: fix the below
             iterables=(self._gt_predicate.get_categories(), ("Count", "Percent")),
-            names=(self._gt_predicate.get_question(), None),
+            names=(self._gt_predicate.get_question_base(), None),
         )
 
         # We'll fill this frame with data

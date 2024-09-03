@@ -39,7 +39,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
             AlleleCountingGenotypeBooleanPredicate.NO,
         )
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return self._allele_counter.get_question()
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
@@ -92,13 +92,12 @@ class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
     ):
         self._counters = tuple(counters)
         self._categorizations = tuple(categorizations)
-        group_names = ", ".join(c.category.name for c in self._categorizations)
-        self._question = f"Genotype group: {group_names}"
+        self._question = "Genotype group"
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return self._question
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
@@ -132,7 +131,7 @@ class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
         )
 
     def __str__(self) -> str:
-        return self.get_question()
+        return self.get_question_base()
 
     def __repr__(self) -> str:
         return (
@@ -194,7 +193,7 @@ class AlleleCountingRecessivePredicate(RecessiveGroupingPredicate):
     ):
         self._allele_counter = allele_counter
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return self._allele_counter.get_question()
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
@@ -558,14 +557,12 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         issues = ModeOfInheritancePredicate._check_categorizations(self._categorizations)
         if issues:
             raise ValueError('Cannot create predicate: {}'.format(', '.join(issues)))
-        self._question = 'Which genotype group does the patient fit in: {}'.format(
-            ', '.join(cat.category.name for cat in self._categorizations),
-        )
+        self._question = 'Which genotype group does the patient fit in'
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         return self._question
 
     def test(

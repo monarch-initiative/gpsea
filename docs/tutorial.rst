@@ -171,7 +171,7 @@ in the individuals of the *TBX5* cohort.
 ...     ),
 ...     group_names=('Missense', 'Frameshift'),
 ... )
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Genotype group: Missense, Frameshift'
 
 .. note::

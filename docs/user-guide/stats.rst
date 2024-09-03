@@ -138,7 +138,7 @@ we expect the autosomal dominant mode of inheritance:
 
 >>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
 >>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Which genotype group does the patient fit in: HOM_REF, HET'
 
 `gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
@@ -409,7 +409,7 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 ...     predicates=(point_mutation, lof_mutation),
 ...     group_names=('Point', 'LoF'),
 ... )
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Genotype group: Point, LoF'
 
 

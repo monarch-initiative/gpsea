@@ -154,6 +154,12 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         """
         return (c.category for c in self.get_categorizations())
 
+    def get_category_names(self) -> typing.Iterator[str]:
+        """
+        Get an iterator with names of the :class:`PatientCategory` items that the predicate can produce.
+        """
+        return (cat.name for cat in self.get_categories())
+
     def get_category(
         self,
         cat_id: int,
@@ -182,11 +188,20 @@ class PolyPredicate(typing.Generic[C], metaclass=abc.ABCMeta):
         return self.get_category(cat_id).name
 
     @abc.abstractmethod
-    def get_question(self) -> str:
+    def get_question_base(self) -> str:
         """
         Prepare a `str` with the question the predicate can answer.
         """
         pass
+
+    def display_question(self) -> str:
+        """
+        Prepare the question which the predicate can answer.
+
+        The question includes the question base and the category names
+        """
+        cat_names = ', '.join(self.get_category_names())
+        return f'{self.get_question_base()}: {cat_names}'
 
     @abc.abstractmethod
     def test(self, patient: Patient) -> typing.Optional[C]:

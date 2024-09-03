@@ -36,8 +36,8 @@ class TestGroupsPredicate:
         self,
         predicate: GenotypePolyPredicate,
     ):
-        question = predicate.get_question()
-        assert question == "Genotype group: Point, LoF"
+        question = predicate.get_question_base()
+        assert question == "Genotype group"
 
     def test_get_categorizations(
         self,

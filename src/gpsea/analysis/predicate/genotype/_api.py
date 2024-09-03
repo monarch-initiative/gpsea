@@ -77,8 +77,8 @@ class FilteringGenotypePolyPredicate(GenotypePolyPredicate):
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._allowed
 
-    def get_question(self) -> str:
-        return self._predicate.get_question()
+    def get_question_base(self) -> str:
+        return self._predicate.get_question_base()
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         cat = self._predicate.test(patient)
