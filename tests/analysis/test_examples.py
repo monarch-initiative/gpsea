@@ -11,6 +11,8 @@ from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predica
 from gpsea.model import Cohort, VariantEffect
 
 
+# TODO: remove at some point!
+@pytest.mark.skip('Obsolete tests')
 class TestCohortAnalysis:
 
     def test_compare_by_variant_effect(

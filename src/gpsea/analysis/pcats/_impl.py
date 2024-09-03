@@ -602,7 +602,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         # 2 - Apply MTC filter and select p values to MTC
         mtc_filter_results = self._mtc_filter.filter(
             gt_predicate=gt_predicate,
-            phenotypes=phenotypes,
+            ph_predicates=pheno_predicates,
             counts=all_counts,
         )
         mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])

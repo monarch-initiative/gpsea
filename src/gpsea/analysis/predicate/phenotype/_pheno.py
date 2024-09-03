@@ -84,6 +84,13 @@ class PhenotypePolyPredicate(
         """
         pass
 
+    @property
+    def present_phenotype_category(self) -> PatientCategory:
+        """
+        Get the patient category that correspond to the group of the patients who exibit the investigated phenotype.
+        """
+        return self.present_phenotype_categorization.category
+
 
 class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
@@ -121,6 +128,7 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
             category=PatientCategories.NO,
             phenotype=self._query,
         )
+        # Some tests depend on the order of `self._categorizations`.
         self._categorizations = (self._phenotype_observed, self._phenotype_excluded)
 
     def get_question(self) -> str:
