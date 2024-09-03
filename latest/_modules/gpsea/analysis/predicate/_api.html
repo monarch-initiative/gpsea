@@ -84,6 +84,8 @@
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
 <span class="kn">import</span> <span class="nn">hpotk.util</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
@@ -233,9 +235,7 @@
 <span class="sd">    and *exhaustive* - the groups must cover all possible scenarios.</span>
 
 <span class="sd">    However, if the patient cannot be assigned into any meaningful category, `None` can be returned.</span>
-
-<span class="sd">    Note, that `PolyPredicate` must be used on a happy path - testing a patient must inherently make sense.</span>
-<span class="sd">    Predicate will *not* check if, for instance, the patient variants are compatible with a certain mode of inheritance.</span>
+<span class="sd">    As a rule of thumb, returning `None` will exclude the patient from the analysis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PolyPredicate.get_categorizations">
@@ -255,6 +255,15 @@
 <span class="sd">        Get an iterator with :class:`PatientCategory` instances that the predicate can produce.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">category</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="PolyPredicate.get_category_names">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_category_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_category_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an iterator with names of the :class:`PatientCategory` items that the predicate can produce.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="PolyPredicate.get_category">
@@ -290,14 +299,26 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category</span><span class="p">(</span><span class="n">cat_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span></div>
 
 
-<div class="viewcode-block" id="PolyPredicate.get_question">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_question">[docs]</a>
+<div class="viewcode-block" id="PolyPredicate.get_question_base">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_question_base">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a `str` with the question the predicate can answer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PolyPredicate.display_question">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.display_question">[docs]</a>
+    <span class="k">def</span> <span class="nf">display_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare the question which the predicate can answer.</span>
+
+<span class="sd">        The question includes the question base and the category names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cat_names</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_category_names</span><span class="p">())</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">cat_names</span><span class="si">}</span><span class="s1">&#39;</span></div>
 
 
 <div class="viewcode-block" id="PolyPredicate.test">
@@ -327,7 +348,32 @@
 <span class="sd">        Check if the `patient` meets the predicate requirements.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patient</span><span class="p">,</span> <span class="n">Patient</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;patient must be type Patient but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;patient must be type Patient but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_categorizations</span><span class="p">(</span>
+        <span class="n">categorizations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the categorizations meet the requirements.</span>
+
+<span class="sd">        The requirements include:</span>
+
+<span class="sd">        * the `cat_id` must be unique within the predicate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">issues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># There must be at least one category</span>
+
+        <span class="c1"># `cat_id` must be unique for a predicate!</span>
+        <span class="n">cat_id_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">categorizations</span><span class="p">:</span>
+            <span class="n">cat_id_counts</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">cat_id</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">cat_id_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`cat_id` </span><span class="si">{</span><span class="n">cat_id</span><span class="si">}</span><span class="s1"> is present </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&gt;1 times&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">issues</span></div>
 
 </pre></div>
 

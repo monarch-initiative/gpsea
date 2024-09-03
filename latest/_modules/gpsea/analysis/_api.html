@@ -279,7 +279,7 @@
         <span class="c1"># Column index: multiindex of counts and percentages for all genotype predicate groups</span>
         <span class="n">geno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
             <span class="n">iterables</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geno_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span> <span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Percent&#39;</span><span class="p">)),</span>
-            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geno_predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">(),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geno_predicate</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">(),</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># We&#39;ll fill this frame with data</span>

@@ -87,15 +87,28 @@
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span>
 <span class="kn">from</span> <span class="nn">phenopackets.vrsatile.v1.vrsatile_pb2</span> <span class="kn">import</span> <span class="n">VcfRecord</span><span class="p">,</span> <span class="n">VariationDescriptor</span>
 <span class="kn">from</span> <span class="nn">phenopackets.vrs.v1.vrs_pb2</span> <span class="kn">import</span> <span class="n">Variation</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Disease</span>
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span>  <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">Genotypes</span> 
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span><span class="p">,</span> <span class="n">Disease</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">VariantClass</span><span class="p">,</span>
+    <span class="n">VariantCoordinates</span><span class="p">,</span>
+    <span class="n">ImpreciseSvInfo</span><span class="p">,</span>
+    <span class="n">VariantInfo</span><span class="p">,</span>
+    <span class="n">Variant</span><span class="p">,</span>
+    <span class="n">Genotype</span><span class="p">,</span>
+    <span class="n">Genotypes</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantCoordinateFinder</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="n">ImpreciseSvFunctionalAnnotator</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">VariantCoordinateFinder</span><span class="p">,</span>
+    <span class="n">FunctionalAnnotator</span><span class="p">,</span>
+    <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Notepad</span>
 <span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
@@ -110,14 +123,14 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">item</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;variant_interpretation&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;variant_interpretation&quot;</span><span class="p">):</span>
             <span class="n">variant_interpretation</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">variant_interpretation</span>
-            <span class="k">if</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;variation_descriptor&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;variation_descriptor&quot;</span><span class="p">):</span>
                 <span class="n">variation_descriptor</span> <span class="o">=</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">variation_descriptor</span>
-                <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;allelic_state&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;allelic_state&quot;</span><span class="p">):</span>
                     <span class="n">genotype</span> <span class="o">=</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">allelic_state</span><span class="o">.</span><span class="n">label</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_geno_genotype_label</span><span class="p">(</span><span class="n">genotype</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
@@ -172,7 +185,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            typing.Optional[VariantCoordinates]: variant coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -189,8 +202,9 @@
                 <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">genome_assembly</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Variant id </span><span class="si">{</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> for patient </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">subject_or_biosample_id</span><span class="si">}</span><span class="s2"> has a different Genome Assembly than what was given. &quot;</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">genome_assembly</span><span class="si">}</span><span class="s2"> is not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Variant id </span><span class="si">{</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> for patient </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">subject_or_biosample_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;has a different Genome Assembly than what was given. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">genome_assembly</span><span class="si">}</span><span class="s2"> is not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
             <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">)</span>
             <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -221,7 +235,9 @@
                 <span class="n">alt</span> <span class="o">=</span> <span class="s2">&quot;&lt;DUP&gt;&quot;</span>
                 <span class="n">change_length</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The copy number of </span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2"> is not supported. Supported values: </span><span class="se">{{</span><span class="s2">1, 3</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The copy number of </span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2"> is not supported. Supported values: </span><span class="se">{{</span><span class="s2">1, 3</span><span class="se">}}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
             <span class="n">region</span> <span class="o">=</span> <span class="n">GenomicRegion</span><span class="p">(</span><span class="n">contig</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">Strand</span><span class="o">.</span><span class="n">POSITIVE</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">change_length</span><span class="p">)</span>
@@ -285,7 +301,7 @@
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
-        <span class="c1"># If we have these fields, we seem to have all information </span>
+        <span class="c1"># If we have these fields, we seem to have all information</span>
         <span class="c1"># to parse the variation descriptor elsewhere.</span>
         <span class="k">return</span> <span class="n">structural_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gene_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
@@ -305,7 +321,19 @@
         <span class="n">functional_annotator</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span>
         <span class="n">imprecise_sv_functional_annotator</span><span class="p">:</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
         <span class="n">hgvs_coordinate_finder</span><span class="p">:</span> <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">assume_karyotypic_sex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an instance.</span>
+
+<span class="sd">        :param build: the genome build to use for variants.</span>
+<span class="sd">        :param phenotype_creator: a phenotype creator for creating phenotypes.</span>
+<span class="sd">        :param functional_annotator: for computing functional annotations.</span>
+<span class="sd">        :param imprecise_sv_functional_annotator: for getting info about imprecise variants.</span>
+<span class="sd">        :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.</span>
+<span class="sd">        :param assume_karyotypic_sex: `True` if it is OK to assume that `FEMALE` has the `XX` karyotype</span>
+<span class="sd">            and `MALE` has `XY`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="c1"># Violates DI, but it is specific to this class, so I&#39;ll leave it &quot;as is&quot;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span> <span class="o">=</span> <span class="n">PhenopacketVariantCoordinateFinder</span><span class="p">(</span>
@@ -319,51 +347,66 @@
             <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s2">&quot;functional_annotator&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
-            <span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span> <span class="s2">&quot;imprecise_sv_functional_annotator&quot;</span>
+            <span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
+            <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
+            <span class="s2">&quot;imprecise_sv_functional_annotator&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="c1"># Set of sequence ontology IDs that we will treat as a deletion (`DEL`)</span>
         <span class="c1"># for the purpose of assigning imprecise SV info with a variant class.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_so_deletions</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;1000029&#39;</span><span class="p">,</span>  <span class="c1"># chromosomal deletion: An incomplete chromosome.</span>
-            <span class="s1">&#39;0001893&#39;</span><span class="p">,</span>  <span class="c1"># transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.</span>
-            <span class="s1">&#39;0001879&#39;</span><span class="p">,</span>  <span class="c1"># feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.</span>
+            <span class="s2">&quot;1000029&quot;</span><span class="p">,</span>  <span class="c1"># chromosomal deletion: An incomplete chromosome.</span>
+            <span class="c1"># transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.</span>
+            <span class="s2">&quot;0001893&quot;</span><span class="p">,</span>
+            <span class="c1"># feature_ablation: A sequence variant, caused by an alteration of the genomic sequence,</span>
+            <span class="c1"># where the deletion, is greater than the extent of the underlying genomic features.</span>
+            <span class="s2">&quot;0001879&quot;</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_so_duplications</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;1000037&#39;</span><span class="p">,</span>  <span class="c1"># chromosomal_duplication</span>
+            <span class="s2">&quot;1000037&quot;</span><span class="p">,</span>  <span class="c1"># chromosomal_duplication</span>
         <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assume_karyotypic_sex</span> <span class="o">=</span> <span class="n">assume_karyotypic_sex</span>
 
 <div class="viewcode-block" id="PhenopacketPatientCreator.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Patient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Patient</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Patient from the data in a given Phenopacket</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            inputs (Phenopacket): A Phenopacket object</span>
+<span class="sd">            pp (Phenopacket): A Phenopacket object</span>
 <span class="sd">            notepad (Notepad): notepad to write down the issues</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            Patient: A Patient object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_id</span> <span class="o">=</span> <span class="n">SampleLabels</span><span class="p">(</span>
-            <span class="n">label</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">meta_label</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">meta_label</span><span class="o">=</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="c1"># Extract karyotypic sex</span>
+        <span class="n">indi</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;individual&quot;</span><span class="p">)</span>
+        <span class="n">sex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_sex</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">indi</span><span class="p">)</span>
 
         <span class="c1"># Check phenotypes</span>
         <span class="n">pfs</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;phenotype-features&quot;</span><span class="p">)</span>
         <span class="n">phenotypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
-            <span class="p">((</span><span class="n">pf</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">excluded</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">phenotypic_features</span><span class="p">),</span> <span class="n">pfs</span>
+            <span class="p">((</span><span class="n">pf</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">excluded</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">pp</span><span class="o">.</span><span class="n">phenotypic_features</span><span class="p">),</span> <span class="n">pfs</span>
         <span class="p">)</span>
 
         <span class="c1"># Check diseases</span>
-        <span class="n">diseases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_diseases</span><span class="p">([</span><span class="n">dis</span> <span class="k">for</span> <span class="n">dis</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">diseases</span><span class="p">],</span> <span class="n">pfs</span><span class="p">)</span>
+        <span class="n">dip</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;diseases&quot;</span><span class="p">)</span>
+        <span class="n">diseases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_diseases</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">diseases</span><span class="p">,</span> <span class="n">dip</span><span class="p">)</span>
 
         <span class="c1"># Check variants</span>
         <span class="n">vs</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;variants&quot;</span><span class="p">)</span>
-        <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">vs</span><span class="p">)</span>
+        <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">vs</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span>
-            <span class="n">sample_id</span><span class="p">,</span> <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span> <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span> <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span>
+        <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">sample_id</span><span class="p">,</span>
+            <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span>
+            <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -379,21 +422,43 @@
 <span class="sd">            Sequence[Dis]: A list of Disease objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diseases</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No diseases found.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="s2">&quot;No diseases found&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">()</span>
+
         <span class="n">final_diseases</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">diseases</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find term in Disease.&quot;</span><span class="p">)</span>
-            <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `term`&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
             <span class="c1"># Do not include excluded diseases if we decide to assume excluded if not included</span>
             <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Disease</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">final_diseases</span>
 
+    <span class="k">def</span> <span class="nf">_extract_sex</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Sex</span><span class="p">]:</span>
+        <span class="c1"># Let&#39;s use the phenotypic sex as fallback</span>
+        <span class="n">sex</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">sex</span>
+        <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="n">ppi</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span>
+        <span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="n">ppi</span><span class="o">.</span><span class="n">MALE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">MALE</span>
+        <span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="n">ppi</span><span class="o">.</span><span class="n">OTHER_SEX</span> <span class="ow">or</span> <span class="n">sex</span> <span class="o">==</span> <span class="n">ppi</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown sex type: </span><span class="si">{</span><span class="n">sex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span>
+
     <span class="k">def</span> <span class="nf">_add_variants</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span> 
-        <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
+        <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Variant objects from the data in a given Phenopacket</span>
@@ -405,24 +470,28 @@
 <span class="sd">            Sequence[Variant]: A list of Variant objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">variants</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interpretation</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">interpretations</span><span class="p">):</span>
-            <span class="n">sub_note</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;diagnosis&#39;</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">genomic_interpretation</span> <span class="ow">in</span> <span class="n">interpretation</span><span class="o">.</span><span class="n">diagnosis</span><span class="o">.</span><span class="n">genomic_interpretations</span><span class="p">:</span>
+            <span class="n">sub_note</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;diagnosis&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="p">(</span>
+                    <span class="n">genomic_interpretation</span>
+                <span class="p">)</span> <span class="ow">in</span> <span class="n">interpretation</span><span class="o">.</span><span class="n">diagnosis</span><span class="o">.</span><span class="n">genomic_interpretations</span><span class="p">:</span>
                     <span class="n">gt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_parser</span><span class="o">.</span><span class="n">find_genotype</span><span class="p">(</span><span class="n">genomic_interpretation</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">gt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Could not extract genotype from genomic interpretation&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Could not extract genotype from genomic interpretation&quot;</span><span class="p">,</span>
                             <span class="s2">&quot;Remove variant from testing&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
-                    
-                    <span class="n">variant_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_variant_info</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">genomic_interpretation</span><span class="p">,</span> <span class="n">sub_note</span><span class="p">)</span>
+
+                    <span class="n">variant_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_variant_info</span><span class="p">(</span>
+                        <span class="n">sample_id</span><span class="p">,</span> <span class="n">genomic_interpretation</span><span class="p">,</span> <span class="n">sub_note</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">variant_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="c1"># We already complained in the extract function</span>
                         <span class="k">continue</span>
-                    
+
                     <span class="k">if</span> <span class="n">variant_info</span><span class="o">.</span><span class="n">has_variant_coordinates</span><span class="p">():</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">tx_annotations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
@@ -436,8 +505,10 @@
                             <span class="k">continue</span>
                     <span class="k">elif</span> <span class="n">variant_info</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
                         <span class="k">try</span><span class="p">:</span>
-                            <span class="n">tx_annotations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
-                                <span class="n">item</span><span class="o">=</span><span class="n">variant_info</span><span class="o">.</span><span class="n">sv_info</span><span class="p">,</span>
+                            <span class="n">tx_annotations</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                                    <span class="n">item</span><span class="o">=</span><span class="n">variant_info</span><span class="o">.</span><span class="n">sv_info</span><span class="p">,</span>
+                                <span class="p">)</span>
                             <span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                             <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
@@ -446,23 +517,25 @@
                             <span class="p">)</span>
                             <span class="k">continue</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;VariantInfo should have either the coordinates or the SV info, but had neither!&#39;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;VariantInfo should have either the coordinates or the SV info, but had neither!&quot;</span>
+                        <span class="p">)</span>
 
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                            <span class="sa">f</span><span class="s2">&quot;Remove variant from testing... tx_anno == 0&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Remove variant from testing... tx_anno == 0&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
 
-                    
                     <span class="n">genotype</span> <span class="o">=</span> <span class="n">Genotypes</span><span class="o">.</span><span class="n">single</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">gt</span><span class="p">)</span>
                     <span class="n">variants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">Variant</span><span class="p">(</span>
-                            <span class="n">variant_info</span><span class="o">=</span><span class="n">variant_info</span><span class="p">,</span> 
-                            <span class="n">tx_annotations</span><span class="o">=</span><span class="n">tx_annotations</span><span class="p">,</span> 
+                            <span class="n">variant_info</span><span class="o">=</span><span class="n">variant_info</span><span class="p">,</span>
+                            <span class="n">tx_annotations</span><span class="o">=</span><span class="n">tx_annotations</span><span class="p">,</span>
                             <span class="n">genotypes</span><span class="o">=</span><span class="n">genotype</span><span class="p">,</span>
-                        <span class="p">))</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no variants to work with&quot;</span><span class="p">)</span>
@@ -479,39 +552,50 @@
         <span class="n">sv_info</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">variant_coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span><span class="n">genomic_interpretation</span><span class="p">)</span>
+            <span class="n">variant_coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span><span class="o">.</span><span class="n">find_coordinates</span><span class="p">(</span>
+                <span class="n">genomic_interpretation</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Expected a VCF record, a VRS CNV, or an expression with `hgvs.c`&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but had an error retrieving any from patient </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Remove variant from testing&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-        
+
         <span class="k">if</span> <span class="n">variant_coordinates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sv_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_imprecise_sv</span><span class="p">(</span><span class="n">genomic_interpretation</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sv_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Could not extract the information for large SV annotation&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Could not extract the information for large SV annotation&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;Remove variant from testing&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        
+
         <span class="k">return</span> <span class="n">VariantInfo</span><span class="p">(</span>
             <span class="n">variant_coordinates</span><span class="o">=</span><span class="n">variant_coordinates</span><span class="p">,</span>
             <span class="n">sv_info</span><span class="o">=</span><span class="n">sv_info</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_map_to_imprecise_sv</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">genomic_interpretation</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ImpreciseSvInfo</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">genomic_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;variant_interpretation&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">genomic_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;variant_interpretation&quot;</span><span class="p">):</span>
             <span class="n">variant_interpretation</span> <span class="o">=</span> <span class="n">genomic_interpretation</span><span class="o">.</span><span class="n">variant_interpretation</span>
-            <span class="k">if</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;variation_descriptor&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;variation_descriptor&quot;</span><span class="p">):</span>
                 <span class="n">variation_descriptor</span> <span class="o">=</span> <span class="n">variant_interpretation</span><span class="o">.</span><span class="n">variation_descriptor</span>
-                
-                <span class="n">structural_type</span> <span class="o">=</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">structural_type</span> <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;structural_type&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-                <span class="n">gene_context</span> <span class="o">=</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">gene_context</span> <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;gene_context&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+                <span class="n">structural_type</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">structural_type</span>
+                    <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;structural_type&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">gene_context</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">gene_context</span>
+                    <span class="k">if</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;gene_context&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">structural_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gene_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">st</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="o">=</span><span class="n">structural_type</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -522,26 +606,26 @@
                         <span class="n">gene_id</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">value_id</span><span class="p">,</span>
                         <span class="n">gene_symbol</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
                     <span class="p">)</span>
-                
+
         <span class="k">return</span> <span class="kc">None</span>
-    
+
     <span class="k">def</span> <span class="nf">_map_structural_type_to_variant_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">structural_type</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantClass</span><span class="p">:</span>
         <span class="c1"># This method is most likely incomplete.</span>
-        <span class="c1"># Please open a ticket if you receive a `ValueError` </span>
+        <span class="c1"># Please open a ticket if you receive a `ValueError`</span>
         <span class="c1"># for a structural type, that is not mapped at the moment,</span>
         <span class="c1"># to help us enhance the mapping.</span>
-        <span class="k">if</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s1">&#39;SO&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;SO&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_so_deletions</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span>
             <span class="k">elif</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_so_duplications</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DUP</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 

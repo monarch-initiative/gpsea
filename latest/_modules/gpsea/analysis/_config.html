@@ -81,16 +81,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis._config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.config</span> <span class="kn">import</span> <span class="n">get_cache_dir_path</span>
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
-<span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span><span class="p">,</span> <span class="n">UniprotProteinMetadataService</span><span class="p">,</span> <span class="n">ProteinAnnotationCache</span><span class="p">,</span> \
-    <span class="n">ProtCachingMetadataService</span>
+<span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
+<span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_default_protein_metadata_service</span> <span class="k">as</span> <span class="n">backup_pms</span>
 <span class="kn">from</span> <span class="nn">.mtc_filter</span> <span class="kn">import</span> <span class="n">PhenotypeMtcFilter</span><span class="p">,</span> <span class="n">UseAllTermsMtcFilter</span><span class="p">,</span> <span class="n">SpecifiedTermsMtcFilter</span><span class="p">,</span> <span class="n">HpoMtcFilter</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">CohortAnalysis</span>
 <span class="kn">from</span> <span class="nn">._gp_analysis</span> <span class="kn">import</span> <span class="n">FisherExactAnalyzer</span>
@@ -364,8 +366,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">CohortAnalysisConfiguration</span><span class="p">()</span>  <span class="c1"># Use the default config</span>
-    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
-    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">(</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span>
+
+    <span class="n">cache_path</span> <span class="o">=</span> <span class="n">get_cache_dir_path</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
+    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">backup_pms</span><span class="p">(</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">)</span>
 
     <span class="n">mtc_filter</span><span class="p">:</span> <span class="n">PhenotypeMtcFilter</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mtc_strategy</span> <span class="o">==</span> <span class="n">MtcStrategy</span><span class="o">.</span><span class="n">HPO_MTC</span><span class="p">:</span>
@@ -441,40 +447,13 @@
 <span class="sd">    in current working directory under `.gpsea_cache/protein_cache`</span>
 <span class="sd">    and reach out to UNIPROT REST API if a cache entry is missing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_configure_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="o">=</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span></div>
+    <span class="c1"># TODO: remove at some point.</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;Use gpsea.preprocessing.configure_default_protein_metadata_service` instead&#39;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">backup_pms</span><span class="p">(</span><span class="n">protein_source</span><span class="o">=</span><span class="n">protein_source</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span></div>
 
-
-
-<span class="k">def</span> <span class="nf">_configure_protein_service</span><span class="p">(</span>
-    <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
-    <span class="c1"># (1) ProteinMetadataService</span>
-    <span class="c1"># Setup fallback</span>
-    <span class="n">protein_fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">)</span>
-    <span class="c1"># Setup protein metadata cache</span>
-    <span class="n">prot_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;protein_cache&#39;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">prot_cache</span> <span class="o">=</span> <span class="n">ProteinAnnotationCache</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">)</span>
-    <span class="c1"># Assemble the final protein metadata service</span>
-    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">ProtCachingMetadataService</span><span class="p">(</span><span class="n">prot_cache</span><span class="p">,</span> <span class="n">protein_fallback</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">protein_metadata_service</span>
-
-
-<span class="k">def</span> <span class="nf">_configure_fallback_protein_service</span><span class="p">(</span><span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">protein_fallback</span> <span class="o">==</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">:</span>
-        <span class="n">fallback1</span> <span class="o">=</span> <span class="n">UniprotProteinMetadataService</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fallback1</span>
-
-
-<span class="k">def</span> <span class="nf">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">cache_path</span> <span class="o">=</span> <span class="n">get_cache_dir_path</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
 </pre></div>
 
            </div>

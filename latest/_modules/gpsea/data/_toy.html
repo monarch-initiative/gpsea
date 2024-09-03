@@ -86,7 +86,7 @@
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 
-<span class="n">CONTIG</span> <span class="o">=</span> <span class="n">Contig</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;GB_ACC&#39;</span><span class="p">,</span> <span class="s1">&#39;REFSEQ_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;UCSC_NAME&#39;</span><span class="p">,</span> <span class="mi">1_000</span><span class="p">)</span>
+<span class="n">CONTIG</span> <span class="o">=</span> <span class="n">Contig</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;GB_ACC&quot;</span><span class="p">,</span> <span class="s2">&quot;REFSEQ_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;UCSC_NAME&quot;</span><span class="p">,</span> <span class="mi">1_000</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">make_region</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
@@ -107,189 +107,293 @@
     <span class="c1"># - Spasticity HP:0001257</span>
     <span class="c1"># - Chronic pancreatitis HP:0006280</span>
 
-    <span class="n">arachnodactyly_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001166&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">focal_clonic_seizure_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0002266&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">seizure_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001250&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">spasticity_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001257&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">arachnodactyly_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001166&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">focal_clonic_seizure_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0002266&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">seizure_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001250&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">spasticity_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0001257&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
-    
-    <span class="n">Disease_T</span> <span class="o">=</span> <span class="n">Disease</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;OMIM:001234&#39;</span><span class="p">),</span> <span class="s2">&quot;Test present disease&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">Disease_F</span> <span class="o">=</span> <span class="n">Disease</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;OMIM:001234&#39;</span><span class="p">),</span> <span class="s2">&quot;Test absent disease&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">arachnodactyly_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001166&quot;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">focal_clonic_seizure_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0002266&quot;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">seizure_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001250&quot;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">spasticity_T</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001257&quot;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">arachnodactyly_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001166&quot;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">focal_clonic_seizure_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0002266&quot;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">seizure_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001250&quot;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">spasticity_F</span> <span class="o">=</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;HP:0001257&quot;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">snv</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span><span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="mi">281</span><span class="p">),</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span>
-                                                  <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.180A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                                                  <span class="s1">&#39;NP_09876.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NP_09876.5:p.Unk200&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span>
-                                                  <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">({</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;J&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                  <span class="p">})</span>
-                                              <span class="p">)</span>
-    <span class="n">deletion</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span><span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">363</span><span class="p">),</span> <span class="s1">&#39;TTC&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
-                                                  <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5:c.261_263del&#39;</span><span class="p">,</span>
-                                                  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span>
-                                                  <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;NP_09876.5&#39;</span><span class="p">,</span><span class="s1">&#39;NP_09876.5:p.Unk200&#39;</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span>
-                                                  <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">({</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                      <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
-                                                  <span class="p">})</span>
-                                                   <span class="p">)</span>
+    <span class="n">Disease_T</span> <span class="o">=</span> <span class="n">Disease</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;OMIM:001234&quot;</span><span class="p">),</span> <span class="s2">&quot;Test present disease&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">Disease_F</span> <span class="o">=</span> <span class="n">Disease</span><span class="p">(</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s2">&quot;OMIM:001234&quot;</span><span class="p">),</span> <span class="s2">&quot;Test absent disease&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">snv</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">280</span><span class="p">,</span> <span class="mi">281</span><span class="p">),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;FakeGene&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5:c.180A&gt;G&quot;</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;NP_09876.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NP_09876.5:p.Unk200&quot;</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Q&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">deletion</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">363</span><span class="p">),</span> <span class="s2">&quot;TTC&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+        <span class="s2">&quot;FakeGene&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5:c.261_263del&quot;</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="s2">&quot;NP_09876.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NP_09876.5:p.Unk200&quot;</span><span class="p">,</span>
+        <span class="mi">86</span><span class="p">,</span>
+        <span class="mi">87</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HOMOZYGOUS_ALTERNATE</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;U&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+                <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">):</span> <span class="n">Genotype</span><span class="o">.</span><span class="n">HETEROZYGOUS</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
     <span class="n">het_dup</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;NP_09876.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NP_09876.5:p.Unk200&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
-        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">())</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;TG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;FakeGene&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5:c.75A&gt;G&quot;</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;NP_09876.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NP_09876.5:p.Unk200&quot;</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">(),</span>
+    <span class="p">)</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
     <span class="n">hom_dup</span> <span class="o">=</span> <span class="n">Variant</span><span class="o">.</span><span class="n">create_variant_from_scratch</span><span class="p">(</span>
-        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span><span class="s1">&#39;FakeGene&#39;</span><span class="p">,</span> <span class="s1">&#39;NM_1234.5&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;NM_1234.5:c.75A&gt;G&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;NP_09876.5&#39;</span><span class="p">,</span> <span class="s1">&#39;NP_09876.5:p.Unk200&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
-        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">())</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
+        <span class="n">VariantCoordinates</span><span class="p">(</span><span class="n">make_region</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">),</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;TG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;FakeGene&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NM_1234.5:c.75A&gt;G&quot;</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;NP_09876.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NP_09876.5:p.Unk200&quot;</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="n">Genotypes</span><span class="o">.</span><span class="n">empty</span><span class="p">(),</span>
+    <span class="p">)</span>  <span class="c1"># Not used in the patients below, hence `empty()`.</span>
 
     <span class="n">patients</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;J&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
-        <span class="n">Patient</span><span class="p">(</span><span class="n">SampleLabels</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">),</span>
-                <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
-                <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
-                <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">]</span>
-                <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Q&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_F</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">,</span> <span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_F</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;U&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_T</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">snv</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">SampleLabels</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+            <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="p">(</span><span class="n">arachnodactyly_F</span><span class="p">,</span> <span class="n">seizure_T</span><span class="p">,</span> <span class="n">spasticity_T</span><span class="p">),</span>
+            <span class="n">variants</span><span class="o">=</span><span class="p">[</span><span class="n">deletion</span><span class="p">],</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="p">[</span><span class="n">Disease_T</span><span class="p">],</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span></div>

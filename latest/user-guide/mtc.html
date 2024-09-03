@@ -199,9 +199,9 @@ This is the <em>default</em> method in GPSEA.</p>
 when creating an instance of <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">ScipyFisherExact</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">ScipyFisherExact</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">FisherExactTest</span><span class="p">(),</span>
 <span class="gp">... </span>    <span class="n">mtc_filter</span><span class="o">=</span><span class="n">UseAllTermsMtcFilter</span><span class="p">(),</span>
 <span class="gp">... </span>    <span class="n">mtc_correction</span><span class="o">=</span><span class="s1">&#39;bonferroni&#39;</span><span class="p">,</span>  <span class="c1">#      &lt;--- The MTC correction setup</span>
 <span class="gp">... </span><span class="p">)</span>

@@ -84,14 +84,15 @@
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">axis</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">..predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span><span class="p">,</span> <span class="n">PatientCategory</span>
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
-<span class="kn">from</span> <span class="nn">..predicate.phenotype</span> <span class="kn">import</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">..predicate.phenotype</span> <span class="kn">import</span> <span class="n">PhenotypePolyPredicate</span><span class="p">,</span> <span class="n">P</span>
 
 
 <div class="viewcode-block" id="PhenotypeMtcResult">
@@ -178,50 +179,17 @@
     <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">P</span><span class="p">],</span>
+        <span class="n">ph_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the phenotype with given counts should be included in the downstream analysis.</span>
 
 <span class="sd">        :param gt_predicate: the predicate that produced the columns of the `count` data frame.</span>
-<span class="sd">        :param phenotypes: the tested phenotypes.</span>
+<span class="sd">        :param ph_predicates: the phenotype predicates that produced the rows of the `counts` data frames.</span>
 <span class="sd">        :param counts: a sequence of 2D data frames for the tested phenotypes.</span>
 <span class="sd">            Each data frame corrresponds to a genotype/phenotype contingency matrix.</span>
 <span class="sd">        :returns: a sequence of filter results for the input `phenotypes`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="PhenotypeMtcFilter.filter_terms_to_test">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter.filter_terms_to_test">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decide which terms to pass through for statistical testing.</span>
-<span class="sd">        The intention of this class is to reduce multiple testing burden by removing terms that are unlikely</span>
-<span class="sd">        to lead to interesting statistical/analytical results.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            gt_predicate: the predicate used to bin patients into groups along the genotype axis</span>
-<span class="sd">            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients</span>
-<span class="sd">              that could be binned according to the used genotype/phenotype predicate.</span>
-<span class="sd">            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients</span>
-<span class="sd">              in the i-th phenotype (rows) and j-th genotype (column) group</span>
-<span class="sd">        Returns:</span>
-<span class="sd">           a tuple with three items:</span>
-<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
-<span class="sd">            - a mapping from :class:`hpotk.TermId` -&gt;</span>
-<span class="sd">            - a mapping from a `str` with reason why a term was filtered out (e.g. *Skipping top level term*)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -255,30 +223,11 @@
     <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">P</span><span class="p">],</span>
+        <span class="n">ph_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="c1"># Always OK! 😏</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ok</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">phenotypes</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="UseAllTermsMtcFilter.filter_terms_to_test">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter.filter_terms_to_test">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Use this implementation to test all available HPO terms.</span>
-<span class="sd">        No HPO terms will be filtered out!</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">,</span> <span class="p">{}</span></div>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ok</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ph_predicates</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter.filter_method_name">
@@ -320,57 +269,16 @@
     <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">P</span><span class="p">],</span>
+        <span class="n">ph_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="n">phenotypes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="n">ph_predicates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">phenotype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span><span class="p">:</span>
                 <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ok</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fail</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter_terms_to_test">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.filter_terms_to_test">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove terms that are not members of the specific set of HPO terms to be tested.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            gt_predicate: the predicate used to bin patients into groups along the genotype axis</span>
-<span class="sd">            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients</span>
-<span class="sd">              that could be binned according to the used genotype/phenotype predicate.</span>
-<span class="sd">            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients</span>
-<span class="sd">              in the i-th phenotype (rows) and j-th genotype (column) group</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            filtered versions of the two dictionaries above and dataframe with reasons for skipping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">filtered_n_usable</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">filtered_all_counts</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">reason_for_filtering_out</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">DefaultDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="n">all_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">term_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test_set</span><span class="p">:</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="s2">&quot;Skipping non-specified term&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="c1"># if we get here, then the term is a member of our list of terms to be tested.</span>
-            <span class="n">filtered_n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-            <span class="n">filtered_all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">filtered_n_usable</span><span class="p">,</span> <span class="n">filtered_all_counts</span><span class="p">,</span> <span class="n">reason_for_filtering_out</span></div>
 
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter_method_name">
@@ -497,13 +405,13 @@
     <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+        <span class="n">ph_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">phenotype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ph_predicates</span><span class="p">]</span>
         <span class="n">p_to_idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)}</span>
         
-        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">))]</span>
-        <span class="n">categories</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
+        <span class="n">results</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">MutableSequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">))]</span>
         <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ordered_terms</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="n">p_to_idx</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
@@ -528,10 +436,12 @@
             <span class="c1">#     reason_for_filtering_out[&quot;Skipping non-target term&quot;] += 1</span>
             <span class="c1">#     continue</span>
 
+            <span class="n">ph_predicate</span> <span class="o">=</span> <span class="n">ph_predicates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="n">contingency_matrix</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="n">total</span> <span class="o">=</span> <span class="n">contingency_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">max_freq</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
-                <span class="n">contingency_matrix</span>
+                <span class="n">contingency_matrix</span><span class="p">,</span>
+                <span class="n">ph_predicate</span><span class="o">=</span><span class="n">ph_predicate</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">max_freq</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span><span class="p">:</span>
                 <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
@@ -546,23 +456,26 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># todo -- similar for (3,2)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">some_cell_has_greater_than_one_count</span><span class="p">(</span><span class="n">contingency_matrix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">some_cell_has_greater_than_one_count</span><span class="p">(</span>
+                <span class="n">counts</span><span class="o">=</span><span class="n">contingency_matrix</span><span class="p">,</span>
+                <span class="n">ph_predicate</span><span class="o">=</span><span class="n">ph_predicate</span><span class="p">,</span>
+            <span class="p">):</span>
                 <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because no genotype has more than one observed HPO count&quot;</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
                 <span class="k">continue</span>
-
+            
             <span class="k">elif</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">genotypes_have_same_hpo_proportions</span><span class="p">(</span>
                 <span class="n">contingency_matrix</span><span class="p">,</span>
-                <span class="n">categories</span><span class="p">,</span>
+                <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+                <span class="n">ph_predicate</span><span class="o">=</span><span class="n">ph_predicate</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because all genotypes have same HPO observed proportions&quot;</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="k">elif</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
-                <span class="n">contingency_matrix</span><span class="p">,</span>
-                <span class="n">categories</span><span class="p">,</span>
+                <span class="n">counts</span><span class="o">=</span><span class="n">contingency_matrix</span><span class="p">,</span>
+                <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because one genotype had zero observations&quot;</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span>
@@ -588,111 +501,11 @@
                     <span class="n">term_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                     <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term_name</span><span class="p">)</span>
             
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;BLAAAAAA&#39;</span><span class="p">)</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Missing results for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">))</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="HpoMtcFilter.filter_terms_to_test">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.filter_terms_to_test">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_terms_to_test</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
-        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            gt_predicate: the predicate used to bin patients into groups along the genotype axis</span>
-<span class="sd">            n_usable: a mapping from the :class:`hpotk.TermId` to an `int` with the count of patients</span>
-<span class="sd">              that could be binned according to the used genotype/phenotype predicate.</span>
-<span class="sd">            all_counts: a mapping from the :class:`hpotk.TermId` to counts of patients</span>
-<span class="sd">              in the i-th phenotype (rows) and j-th genotype (column) group</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">filtered_n_usable</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">filtered_all_counts</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">reason_for_filtering_out</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">tested_counts_pf</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-        <span class="p">)</span>  <span class="c1"># key is an HP id, value is a tuple with counts, i.e.,</span>
-
-        <span class="c1"># iterate through the terms in the sorted order, starting from the leaves of the induced graph.</span>
-        <span class="n">categories</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ordered_terms</span><span class="p">(</span><span class="n">all_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="k">if</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_general_hpo_terms</span><span class="p">:</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="s2">&quot;Skipping general term&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-            
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_ancestor_of</span><span class="p">(</span>
-                <span class="n">hpotk</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span> <span class="n">term_id</span>
-            <span class="p">):</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="s2">&quot;Skipping non phenotype term&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="c1"># get total number of observations</span>
-            <span class="k">if</span> <span class="n">term_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_counts</span><span class="p">:</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="s2">&quot;Skipping non-target term&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="n">counts_frame</span> <span class="o">=</span> <span class="n">all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-            <span class="n">total</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">max_freq</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
-                <span class="n">counts_frame</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">max_freq</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span><span class="p">:</span>
-                <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;Skipping term with maximum frequency &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;that was less than threshold </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="k">if</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">total</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-                <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Skipping term with only </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> observations (not powered for 2x2)&quot;</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="c1"># todo -- similar for (3,2)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">some_cell_has_greater_than_one_count</span><span class="p">(</span><span class="n">counts_frame</span><span class="p">):</span>
-                <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because no genotype has more than one observed HPO count&quot;</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="k">elif</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">genotypes_have_same_hpo_proportions</span><span class="p">(</span>
-                <span class="n">counts_frame</span><span class="p">,</span>
-                <span class="n">categories</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because all genotypes have same HPO observed proportions&quot;</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="k">elif</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
-                <span class="n">counts_frame</span><span class="p">,</span>
-                <span class="n">categories</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Skipping term because one genotype had zero observations&quot;</span>
-                <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="k">for</span> <span class="n">child_term_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">term_id</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">child_term_id</span> <span class="ow">in</span> <span class="n">tested_counts_pf</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">tested_counts_pf</span><span class="p">[</span><span class="n">child_term_id</span><span class="p">]</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">counts_frame</span><span class="p">):</span>
-                        <span class="c1"># TODO: should we make the match fuzzier by adding a tolerance instead of the exact matches?</span>
-                        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;Child term with same counts previously tested&quot;</span>
-                        <span class="n">reason_for_filtering_out</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="k">continue</span>
-            
-            <span class="c1"># if we get here, then we include the test for `term_id`</span>
-            <span class="n">filtered_n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_usable</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-            <span class="n">filtered_all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_counts</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">filtered_n_usable</span><span class="p">,</span> <span class="n">filtered_all_counts</span><span class="p">,</span> <span class="n">reason_for_filtering_out</span></div>
+        <span class="c1"># Ignoring the type hint, because we checked the type match above.</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.filter_method_name">
@@ -704,23 +517,31 @@
 <div class="viewcode-block" id="HpoMtcFilter.get_number_of_observed_hpo_observations">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.get_number_of_observed_hpo_observations">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_number_of_observed_hpo_observations</span><span class="p">(</span><span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="nf">get_number_of_observed_hpo_observations</span><span class="p">(</span>
+        <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">ph_predicate</span><span class="p">:</span> <span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.get_maximum_group_observed_HPO_frequency">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.get_maximum_group_observed_HPO_frequency">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span><span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
+        <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">ph_predicate</span><span class="p">:</span> <span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The maximum frequency of observed HPO annotations across all genotypes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-            <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">]</span>
-            <span class="o">+</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">NO</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
+        <span class="n">all_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">all_hpo_count_per_gt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="c1"># Prevent division by zeros</span>
+            <span class="k">return</span> <span class="mf">0.</span>
+        
+        <span class="n">present_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">present_hpo_count_per_gt</span> <span class="o">/</span> <span class="n">all_hpo_count_per_gt</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.one_genotype_has_zero_hpo_observations">
@@ -728,47 +549,30 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">gt_categories</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;argument &#39;counts&#39; must be pandas DataFrame but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> \
-                <span class="sa">f</span><span class="s2">&quot;The counts frame is 2x2 but we found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gt_categories</span><span class="p">)</span><span class="si">}</span><span class="s2"> patient categories!&quot;</span>
-            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gt_categories</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;(2,3) not yet implemented&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Did not recognize shape of counts matrix: </span><span class="si">{</span><span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.some_cell_has_greater_than_one_count">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.some_cell_has_greater_than_one_count">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">some_cell_has_greater_than_one_count</span><span class="p">(</span><span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">some_cell_has_greater_than_one_count</span><span class="p">(</span>
+        <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">ph_predicate</span><span class="p">:</span> <span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one</span>
 <span class="sd">        observed HPO and N excluded, and NOT MISSENSE has zero or one observed HPO, then we will skip the test</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            counts: pandas DataFrame with counts</span>
+<span class="sd">            ph_predicate: the phenotype predicate that produced the counts</span>
 
 <span class="sd">        Returns: true if at least one of the genotypes has more than one observed HPO count</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;argument &#39;counts&#39; must be pandas DataFrame but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.genotypes_have_same_hpo_proportions">
@@ -776,8 +580,9 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">genotypes_have_same_hpo_proportions</span><span class="p">(</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">gt_categories</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PatientCategory</span><span class="p">],</span>
-        <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">ph_predicate</span><span class="p">:</span> <span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+        <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5e-4</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If each genotype has the same proportion of observed HPOs, then we do not want to do a test.</span>
@@ -789,28 +594,20 @@
 
 <span class="sd">        Returns: true if the genotypes differ by more than `delta`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;argument &#39;counts&#39; must be pandas DataFrame but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="n">numerators</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">()</span>
+        <span class="p">])</span>
+        <span class="n">denominators</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">()</span>
+        <span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">denominators</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> \
-                <span class="sa">f</span><span class="s2">&quot;The counts frame is 2x2 but we found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gt_categories</span><span class="p">)</span><span class="si">}</span><span class="s2"> patient categories!&quot;</span>
-            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gt_categories</span>
-            <span class="n">num1</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
-            <span class="n">denom1</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">num2</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span>
-            <span class="n">denom2</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">denom1</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">denom2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">num1</span> <span class="o">/</span> <span class="n">denom1</span> <span class="o">-</span> <span class="n">num2</span> <span class="o">/</span> <span class="n">denom2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">delta</span>
-        <span class="k">elif</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;(2,3) not implemented yet&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Did not recognize shape of counts matrix: </span><span class="si">{</span><span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span></div>
+        <span class="n">ratios</span> <span class="o">=</span> <span class="n">numerators</span> <span class="o">/</span> <span class="n">denominators</span>
+        <span class="n">mean_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ratios</span><span class="p">)</span>
+        <span class="n">abs_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ratios</span> <span class="o">-</span> <span class="n">mean_ratio</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">abs_diff</span> <span class="o">&lt;</span> <span class="n">delta</span><span class="p">))</span></div>
 
 
     <span class="k">def</span> <span class="nf">_get_ordered_terms</span><span class="p">(</span>

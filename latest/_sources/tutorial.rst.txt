@@ -171,7 +171,7 @@ in the individuals of the *TBX5* cohort.
 ...     ),
 ...     group_names=('Missense', 'Frameshift'),
 ... )
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Genotype group: Missense, Frameshift'
 
 .. note::
@@ -224,8 +224,8 @@ with a false discovery control level at (``mtc_alpha=0.05``):
 Choosing the statistical procedure for assessment of association between genotype and phenotype
 groups is the last missing piece of the analysis. We will use Fisher Exact Test:
 
->>> from gpsea.analysis.pcats.stats import ScipyFisherExact
->>> count_statistic = ScipyFisherExact()
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> count_statistic = FisherExactTest()
 
 and we finalize the analysis setup by putting all components together
 into :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
@@ -246,15 +246,15 @@ Now we can perform the analysis and investigate the results.
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> result.total_tests
-16
+17
 
-We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+We only tested 1y HPO terms. This is despite the individuals being collectively annotated with
 260 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
 260
 
-We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
+We can show the reasoning behind *not* testing 243 (`260 - 17`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
@@ -266,11 +266,11 @@ by exploring the phenotype MTC filtering report.
 .. raw:: html
   :file: report/tbx5_frameshift_vs_missense.mtc_report.html
 
-and these are the HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
+and these are the top 20 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
 >>> from gpsea.analysis.predicate import PatientCategories
 >>> summary_df = result.summarize(hpo, PatientCategories.YES)
->>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+>>> summary_df.head(20).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
    :file: report/tbx5_frameshift_vs_missense.csv
@@ -283,4 +283,4 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.0000562`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00112`.
+is `~0.000955`.

@@ -322,15 +322,69 @@
 <span class="sd">     In any case, the directory will be created if it does not exist (including any non-existing parents).</span>
 <span class="sd">    :param timeout: timeout in seconds for the REST APIs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Use `configure_default_protein_metadata_service` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">(</span>
+        <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="configure_default_protein_metadata_service">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_default_protein_metadata_service</span><span class="p">(</span>
+    <span class="n">protein_source</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;UNIPROT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create default protein metadata service that will cache the protein metadata</span>
+<span class="sd">    in current working directory under `.gpsea_cache/protein_cache`</span>
+<span class="sd">    and reach out to UNIPROT REST API if a cache entry is missing.</span>
+
+<span class="sd">    :param protein_source: a `str` with the code of the protein data sources (currently accepting just `UNIPROT`).</span>
+<span class="sd">    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`</span>
+<span class="sd">        if the data should be cached as described by :func:`~gpsea.config.get_cache_dir_path` function.</span>
+<span class="sd">        In any case, the directory will be created if it does not exist (including any non-existing parents).</span>
+<span class="sd">    :param timeout: timeout in seconds for the REST APIs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">_configure_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_configure_protein_service</span><span class="p">(</span>
+        <span class="n">protein_fallback</span><span class="o">=</span><span class="n">protein_source</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
-    <span class="n">protein_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;protein_cache&quot;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">protein_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">cache</span> <span class="o">=</span> <span class="n">ProteinAnnotationCache</span><span class="p">(</span><span class="n">protein_cache_dir</span><span class="p">)</span>
-    <span class="n">fallback</span> <span class="o">=</span> <span class="n">UniprotProteinMetadataService</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ProtCachingMetadataService</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
 
+<span class="k">def</span> <span class="nf">_configure_protein_service</span><span class="p">(</span>
+    <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+    <span class="c1"># (1) ProteinMetadataService</span>
+    <span class="c1"># Setup fallback</span>
+    <span class="n">protein_fallback</span> <span class="o">=</span> <span class="n">_configure_fallback_protein_service</span><span class="p">(</span>
+        <span class="n">protein_fallback</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Setup protein metadata cache</span>
+    <span class="n">prot_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;protein_cache&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">prot_cache</span> <span class="o">=</span> <span class="n">ProteinAnnotationCache</span><span class="p">(</span><span class="n">prot_cache_dir</span><span class="p">)</span>
+    <span class="c1"># Assemble the final protein metadata service</span>
+    <span class="n">protein_metadata_service</span> <span class="o">=</span> <span class="n">ProtCachingMetadataService</span><span class="p">(</span><span class="n">prot_cache</span><span class="p">,</span> <span class="n">protein_fallback</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">protein_metadata_service</span>
+
+
+<span class="k">def</span> <span class="nf">_configure_fallback_protein_service</span><span class="p">(</span>
+    <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">protein_fallback</span> <span class="o">==</span> <span class="s1">&#39;UNIPROT&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_configure_cache_dir</span><span class="p">(</span>
