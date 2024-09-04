@@ -71,7 +71,6 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
         return str(self)
 
 
-# TODO: write AD, AR, XLR, XLD
 def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredicate:
     """
     Create a genotype boolean predicate from given `variant_predicate`
@@ -657,3 +656,48 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
     def __repr__(self) -> str:
         return str(self)
+
+
+class SexGenotypePredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
+
+    def __init__(self):
+        self._categorizations = (
+            Categorization(
+                PatientCategory(
+                    cat_id=0, name="FEMALE", description="Female",
+                ),
+            ),
+            Categorization(
+                PatientCategory(
+                    cat_id=1, name="MALE", description="Male",
+                ),
+            )
+        )
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return self._categorizations
+
+    def get_question_base(self) -> str:
+        return "Sex of the individual"
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        if patient.sex.is_provided():
+            if patient.sex.is_female():
+                return self._categorizations[0]
+            elif patient.sex.is_male():
+                return self._categorizations[1]
+            else:
+                raise ValueError(f'Unsupported sex {patient.sex}')
+        else:
+            return None
+
+
+INSTANCE = SexGenotypePredicate()
+
+
+def sex_predicate() -> GenotypePolyPredicate:
+    """
+    Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.
+    """
+    return INSTANCE

@@ -42,7 +42,7 @@ class Sex(enum.Enum):
         """
         Return `True` if the sex represents a `FEMALE`.
         """
-        return self == Sex.MALE
+        return self == Sex.FEMALE
 
     def is_male(self) -> bool:
         """
