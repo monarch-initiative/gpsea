@@ -49,8 +49,6 @@ class TTestStatistic(PhenotypeScoreStatistic):
     `TTestStatistic` is a wrapper around SciPy's
     :func:`~scipy.stats.ttest_ind` function to apply
     T test on 2 phenotype scores.
-
-    See :ref:`phenotype-score-stats` for an example usage.
     """
 
     def compute_pval(

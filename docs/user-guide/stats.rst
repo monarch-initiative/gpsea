@@ -463,6 +463,12 @@ We will use :ref:`mann-whitney-u-test` as described above.
 >>> score_statistic = MannWhitneyStatistic()
 
 
+.. tip::
+
+   See :mod:`gpsea.analysis.pscore.stats` module for more statistical tests available
+   for using with phenotype scores.
+
+
 **Final analysis**
 
 We will put the final analysis together into :class:`~gpsea.analysis.pscore.PhenotypeScoreAnalysis`.
