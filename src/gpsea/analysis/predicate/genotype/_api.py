@@ -2,7 +2,7 @@ import abc
 import typing
 
 from gpsea.model import Variant
-from .._api import PolyPredicate, Categorization, PatientCategory
+from .._api import PolyPredicate, Categorization
 
 
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
@@ -11,15 +11,6 @@ class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta
     that test the genotype axis.
     """
     pass
-
-
-class RecessiveGroupingPredicate(GenotypePolyPredicate, metaclass=abc.ABCMeta):
-    BOTH = Categorization(PatientCategory(0, 'Both', 'The patient belongs in both groups.'))
-    ONE = Categorization(PatientCategory(1, 'One', 'The patient belongs in one of the two groups.'))
-    NEITHER = Categorization(PatientCategory(2, 'Neither', 'The patient does not belong in either group.'))
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        return RecessiveGroupingPredicate.BOTH, RecessiveGroupingPredicate.ONE, RecessiveGroupingPredicate.NEITHER
 
 
 class VariantPredicate(metaclass=abc.ABCMeta):
