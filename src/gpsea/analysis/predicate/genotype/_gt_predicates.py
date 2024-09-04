@@ -1,8 +1,11 @@
+from cProfile import label
 import dataclasses
 import enum
 import typing
 
 from collections import defaultdict
+
+import hpotk
 
 from gpsea.model import Patient, Sex
 
@@ -193,31 +196,35 @@ class FilteringGenotypePolyPredicate(GenotypePolyPredicate):
     ) -> "FilteringGenotypePolyPredicate":
         # At least 2 target categorizations must be provided
         if len(targets) <= 1:
-            raise ValueError(f'At least 2 target categorizations must be provided but got {len(targets)}')
+            raise ValueError(
+                f"At least 2 target categorizations must be provided but got {len(targets)}"
+            )
 
         good_boys = tuple(isinstance(cat, Categorization) for cat in targets)
         if not all(good_boys):
-            offenders = ', '.join(
-                str(i)
-                for i, is_instance
-                in enumerate(good_boys) if not is_instance
+            offenders = ", ".join(
+                str(i) for i, is_instance in enumerate(good_boys) if not is_instance
             )
-            raise ValueError(f'The targets at following indices are not categorizations: [{offenders}]')
+            raise ValueError(
+                f"The targets at following indices are not categorizations: [{offenders}]"
+            )
 
         # All `allowed` categorizations must in fact be present in the `base` predicate.
-        cats_are_in_fact_present = tuple(cat in predicate.get_categorizations() for cat in targets)
+        cats_are_in_fact_present = tuple(
+            cat in predicate.get_categorizations() for cat in targets
+        )
         if not all(cats_are_in_fact_present):
-            missing = ', '.join(
+            missing = ", ".join(
                 c.category.name
-                for c, is_present
-                in zip(targets, cats_are_in_fact_present) if not is_present
+                for c, is_present in zip(targets, cats_are_in_fact_present)
+                if not is_present
             )
-            raise ValueError(f'Some from the categories are not present: {missing}')
-        
+            raise ValueError(f"Some from the categories are not present: {missing}")
+
         if len(targets) == predicate.n_categorizations():
             raise ValueError(
-                f'It makes no sense to subset the a predicate with {predicate.n_categorizations()} categorizations '
-                f'with the same number ({len(targets)}) of targets'
+                f"It makes no sense to subset the a predicate with {predicate.n_categorizations()} categorizations "
+                f"with the same number ({len(targets)}) of targets"
             )
 
         return FilteringGenotypePolyPredicate(
@@ -232,7 +239,7 @@ class FilteringGenotypePolyPredicate(GenotypePolyPredicate):
     ):
         self._predicate = predicate
         self._allowed = tuple(allowed)
-    
+
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._allowed
 
@@ -249,7 +256,7 @@ class FilteringGenotypePolyPredicate(GenotypePolyPredicate):
     def __repr__(self):
         return f"FilteringGenotypePolyPredicate(predicate={self._predicate}, allowed={self._allowed})"
 
- 
+
 def filtering_predicate(
     predicate: GenotypePolyPredicate,
     targets: typing.Collection[Categorization],
@@ -288,12 +295,12 @@ class MendelianInheritanceAspect(enum.Enum):
     """
     Related to chromosomes that do *not* determine the sex of an individual.
     """
-    
+
     GONOSOMAL = 1
     """
     Related to chromosomes that determine the sex of an individual.
     """
-    
+
     MITOCHONDRIAL = 2
     """
     Related to mitochondrial DNA.
@@ -306,23 +313,30 @@ class ModeOfInheritanceInfo:
 
     HOM_REF = Categorization(
         PatientCategory(
-            cat_id=0, name="HOM_REF", description="Homozygous reference",
+            cat_id=0,
+            name="HOM_REF",
+            description="Homozygous reference",
         ),
     )
     HET = Categorization(
         PatientCategory(
-            cat_id=1, name="HET", description="Heterozygous",
+            cat_id=1,
+            name="HET",
+            description="Heterozygous",
         ),
     )
     BIALLELIC_ALT = Categorization(
         PatientCategory(
-            cat_id=2, name="BIALLELIC_ALT",
+            cat_id=2,
+            name="BIALLELIC_ALT",
             description="Homozygous alternate or compound heterozygous",
         ),
     )
     HEMI = Categorization(
         PatientCategory(
-            cat_id=3, name="HEMI", description="Hemizygous",
+            cat_id=3,
+            name="HEMI",
+            description="Hemizygous",
         ),
     )
 
@@ -438,7 +452,7 @@ class ModeOfInheritanceInfo:
             assert isinstance(group, GenotypeGroup)
             self._groups[group.allele_count].append(group)
             hash_value += 13 * hash(group)
-            
+
         self._hash = hash_value
 
     @property
@@ -507,7 +521,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
         )
-    
+
     @staticmethod
     def autosomal_recessive(
         variant_predicate: VariantPredicate,
@@ -524,7 +538,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
         )
-    
+
     @staticmethod
     def x_dominant(
         variant_predicate: VariantPredicate,
@@ -533,7 +547,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         Create a predicate that assigns the patient either into
         homozygous reference or heterozygous
         group in line with the X-linked dominant mode of inheritance.
-        
+
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
         return ModeOfInheritancePredicate.from_moi_info(
@@ -583,11 +597,15 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         assert isinstance(mode_of_inheritance_info, ModeOfInheritanceInfo)
         self._moi_info = mode_of_inheritance_info
 
-        self._categorizations = tuple(group.categorization for group in mode_of_inheritance_info.groups)
-        issues = ModeOfInheritancePredicate._check_categorizations(self._categorizations)
+        self._categorizations = tuple(
+            group.categorization for group in mode_of_inheritance_info.groups
+        )
+        issues = ModeOfInheritancePredicate._check_categorizations(
+            self._categorizations
+        )
         if issues:
-            raise ValueError('Cannot create predicate: {}'.format(', '.join(issues)))
-        self._question = 'Which genotype group does the patient fit in'
+            raise ValueError("Cannot create predicate: {}".format(", ".join(issues)))
+        self._question = "Which genotype group does the patient fit in"
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -645,7 +663,12 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         )
 
     def __hash__(self) -> int:
-        return hash((self._allele_counter, self._moi_info,))
+        return hash(
+            (
+                self._allele_counter,
+                self._moi_info,
+            )
+        )
 
     def __str__(self) -> str:
         return (
@@ -665,14 +688,18 @@ class SexGenotypePredicate(GenotypePolyPredicate):
         self._categorizations = (
             Categorization(
                 PatientCategory(
-                    cat_id=0, name="FEMALE", description="Female",
+                    cat_id=0,
+                    name="FEMALE",
+                    description="Female",
                 ),
             ),
             Categorization(
                 PatientCategory(
-                    cat_id=1, name="MALE", description="Male",
+                    cat_id=1,
+                    name="MALE",
+                    description="Male",
                 ),
-            )
+            ),
         )
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
@@ -688,7 +715,7 @@ class SexGenotypePredicate(GenotypePolyPredicate):
             elif patient.sex.is_male():
                 return self._categorizations[1]
             else:
-                raise ValueError(f'Unsupported sex {patient.sex}')
+                raise ValueError(f"Unsupported sex {patient.sex}")
         else:
             return None
 
@@ -699,5 +726,107 @@ INSTANCE = SexGenotypePredicate()
 def sex_predicate() -> GenotypePolyPredicate:
     """
     Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.
+
+    See the :ref:`sex-predicate` section for an example.
     """
     return INSTANCE
+
+
+class DiagnosisPredicate(GenotypePolyPredicate):
+
+    @staticmethod
+    def create(
+        diagnoses: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        labels: typing.Optional[typing.Iterable[str]] = None,
+    ) -> "DiagnosisPredicate":
+        # First, collect the iterables and check sanity.
+        diagnosis_ids = []
+        for d in diagnoses:
+            if isinstance(d, str):
+                d = hpotk.TermId.from_curie(d)
+            elif isinstance(d, hpotk.TermId):
+                pass
+            else:
+                raise ValueError(f"{d} is neither `str` nor `hpotk.TermId`")
+            
+            diagnosis_ids.append(d)
+
+        if labels is None:
+            labels = tuple(d.value for d in diagnosis_ids)
+        else:
+            labels = tuple(labels)
+
+        assert (len(diagnosis_ids) >= 2), \
+            f"We need at least 2 diagnoses: {len(diagnosis_ids)}"
+        assert len(diagnosis_ids) == len(labels), \
+            f"The number of labels must match the number of diagnose IDs: {len(diagnosis_ids)}!={len(labels)}"
+
+        # Then, prepare the categorizations.
+        categorizations = {
+            diagnosis_id: Categorization.from_raw_parts(
+                cat_id=i,
+                name=diagnosis_id.value,
+                description=label,
+            )
+            for i, (diagnosis_id, label) in enumerate(zip(diagnosis_ids, labels))
+        }
+
+        # Last, put the predicate together.
+        return DiagnosisPredicate(categorizations)
+
+    def __init__(
+        self,
+        categorizations: typing.Mapping[hpotk.TermId, Categorization],
+    ):
+        self._id2cat = dict(categorizations)
+        self._categorizations = tuple(
+            sorted(categorizations.values(), key=lambda c: c.category.cat_id)
+        )
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return self._categorizations
+
+    def get_question_base(self) -> str:
+        return 'What disease was diagnosed'
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        categorization = None
+        for disease in patient.diseases:
+            try:
+                candidate = self._id2cat[disease.identifier]
+            except KeyError:
+                # No match for this disease, no problem.
+                continue
+            
+            if categorization is None:
+                # First time we found a candidate disease
+                categorization = candidate
+            else:
+                # Ambiguous match. We found several matching diagnoses!
+                return None
+                
+        return categorization
+
+
+def diagnosis_predicate(
+    diagnoses: typing.Iterable[typing.Union[str, hpotk.TermId]],
+    labels: typing.Optional[typing.Iterable[str]] = None,
+) -> GenotypePolyPredicate:
+    """
+    Create a genotype predicate that bins the patient based on presence of a disease diagnosis,
+    as listed in :attr:`~gpsea.model.Patient.diseases` attribute.
+
+    If an individual is diagnosed with more than one disease from the provided `diagnoses`,
+    the individual will be assigned into no group (`None`).
+
+    See the :ref:`diagnosis-predicate` section for an example.
+
+    :param diagnoses: an iterable with at least 2 diagnose IDs, either as a `str` or a :class:`~hpotk.TermId`
+      to determine the genotype group.
+    :param labels: an iterable with diagnose names or `None` if CURIEs should be used instead.
+      The number of labels must match the number of predicates.
+    """
+    return DiagnosisPredicate.create(
+        diagnoses=diagnoses,
+        labels=labels,
+    )
