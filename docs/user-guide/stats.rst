@@ -122,12 +122,33 @@ We want to separate the patients into two groups: a group *with* a frameshift va
 and a group *without* a frameshift variant, based on the functional annotation.
 We will use the *MANE* transcript for the analysis:
 
+Building a genotype predicate is a two step process. 
+First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+to test if the variant leads to a frameshift (in this case):
+
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
 >>> tx_id = 'NM_181486.4'
->>> gt_predicate = boolean_predicate(VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id))
->>> gt_predicate.get_question()
+>>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
+>>> is_frameshift.get_question()
 'FRAMESHIFT_VARIANT on NM_181486.4'
+
+and then we choose the expected mode of inheritance to test. In case of *TBX5*,
+we expect the autosomal dominant mode of inheritance:
+
+>>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
+>>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
+>>> gt_predicate.display_question()
+'Which genotype group does the patient fit in: HOM_REF, HET'
+
+`gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
+and the patients with one frameshift allele will be assigned into `HET` group.
+Note, any patient with 2 or more alleles will be *omitted* from the analysis.
+
+.. note::
+
+   Mode of inheritance testing is not the only way to dissect by a genotype.
+   See the :ref:`genotype-predicates` section for more info.
 
 
 **Phenotype predicates**
@@ -155,8 +176,8 @@ including the *indirect* annotations whose presence is implied by the true path 
 We will use :ref:<fisher-exact-test> to test the association
 between genotype and phenotype groups, as described previously.
 
->>> from gpsea.analysis.pcats.stats import ScipyFisherExact
->>> count_statistic = ScipyFisherExact()
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> count_statistic = FisherExactTest()
 
 FET will compute a p value for each genotype phenotype group.
 
@@ -229,16 +250,30 @@ We can learn more by showing the MTC filter report:
 Genotype phenotype associations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Last, let's explore the associations. This is a table of the tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR):
+Last, let's explore the associations. The results include a table with all tested HPO terms
+ordered by the corrected p value (Benjamini-Hochberg FDR).
+Here we show the top 20 table rows:
 
 >>> from gpsea.analysis.predicate import PatientCategories
 >>> summary_df = result.summarize(hpo, PatientCategories.YES)
->>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
+>>> summary_df.head(20).to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
    :header-rows: 2
+
+
+The table shows that several HPO terms are significantly associated
+with presence of a heterozygous (`HET`) frameshift variant in *TBX5*.
+For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
+was observed in 31/60 (52%) patients with a missense variant
+but it was observed in 19/19 (100%) patients with a frameshift variant.
+Fisher exact test computed a p value of `~0.000242`
+and the p value corrected by Benjamini-Hochberg procedure
+is `~0.00411`.
+
+The table includes all HPO terms of the cohort, including the terms that were not selected for testing
+and thus have no associated p value.
 
 
 .. _phenotype-score-stats:
@@ -374,7 +409,7 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 ...     predicates=(point_mutation, lof_mutation),
 ...     group_names=('Point', 'LoF'),
 ... )
->>> gt_predicate.get_question()
+>>> gt_predicate.display_question()
 'Genotype group: Point, LoF'
 
 

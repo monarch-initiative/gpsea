@@ -63,11 +63,11 @@ def apply_predicates_on_patients(
                 data=0,
                 index=pd.Index(
                     data=ph_predicate.get_categories(),
-                    name=ph_predicate.get_question(),
+                    name=ph_predicate.get_question_base(),
                 ),
                 columns=pd.Index(
                     data=gt_predicate.get_categories(),
-                    name=gt_predicate.get_question(),
+                    name=gt_predicate.get_question_base(),
                 ),
             )
 

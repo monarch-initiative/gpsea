@@ -48,14 +48,21 @@
   <h1>Phenotype testing report</h1>
   <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
   <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 16 out of the total of 260 HPO terms.</p>
+  <p>Performed statistical tests for 17 out of the total of 260 HPO terms.</p>
     <table>
-      <caption>Using <em>HPO MTC filter</em>, 244 term(s) were omitted from statistical analysis.</caption>
+      <caption>Using <em>HPO MTC filter</em>, 243 term(s) were omitted from statistical analysis.</caption>
         <tbody>
           <tr>
             <th>Code</th>
             <th>Reason</th>
             <th>Count</th>
+          </tr>
+          
+          <tr>
+            <!-- TODO: plug the real reason code here -->
+            <td>TODO</td>
+            <td>Skipping term with maximum frequency that was less than threshold 0.2</td>
+            <td>51</td>
           </tr>
           
           <tr>
@@ -69,13 +76,6 @@
             <!-- TODO: plug the real reason code here -->
             <td>TODO</td>
             <td>Skipping term because all genotypes have same HPO observed proportions</td>
-            <td>42</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 0 observations (not powered for 2x2)</td>
             <td>41</td>
           </tr>
           
@@ -112,13 +112,6 @@
             <td>TODO</td>
             <td>Skipping term with only 6 observations (not powered for 2x2)</td>
             <td>12</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with maximum frequency that was less than threshold 0.2</td>
-            <td>10</td>
           </tr>
           
           <tr>

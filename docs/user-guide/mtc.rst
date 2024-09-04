@@ -96,9 +96,9 @@ when creating an instance of :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
 
 >>> from gpsea.analysis.mtc_filter import UseAllTermsMtcFilter
 >>> from gpsea.analysis.pcats import HpoTermAnalysis
->>> from gpsea.analysis.pcats.stats import ScipyFisherExact
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
 >>> analysis = HpoTermAnalysis(
-...     count_statistic=ScipyFisherExact(),
+...     count_statistic=FisherExactTest(),
 ...     mtc_filter=UseAllTermsMtcFilter(),
 ...     mtc_correction='bonferroni',  #      <--- The MTC correction setup
 ... )
