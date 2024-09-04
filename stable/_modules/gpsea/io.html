@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.io &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.io &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -110,7 +110,7 @@
                 <span class="s1">&#39;tx_annotations&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">,</span>
                 <span class="s1">&#39;genotypes&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">genotypes</span><span class="p">,</span>
             <span class="p">}</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">):</span> 
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">VariantInfo</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s1">&#39;variant_coordinates&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="p">,</span>
                 <span class="s1">&#39;sv_info&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">sv_info</span><span class="p">,</span>
@@ -174,7 +174,7 @@
                 <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                 <span class="s1">&#39;meta_label&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">meta_label</span><span class="p">,</span>
             <span class="p">}</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Sex</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">)):</span>
             <span class="c1"># enums</span>
             <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Phenotype</span><span class="p">):</span>
@@ -191,6 +191,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Patient</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+                <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">sex</span><span class="p">,</span>
                 <span class="s1">&#39;phenotypes&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">,</span>
                 <span class="s1">&#39;diseases&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">diseases</span><span class="p">,</span>
                 <span class="s1">&#39;variants&#39;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variants</span><span class="p">,</span>
@@ -250,7 +251,7 @@
 <span class="n">_FEATURE_INFO</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>
 <span class="n">_PHENOTYPE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;term_id&#39;</span><span class="p">,</span> <span class="s1">&#39;is_present&#39;</span><span class="p">)</span>
 <span class="n">_DISEASE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;term_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;is_observed&#39;</span><span class="p">)</span>
-<span class="n">_PATIENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;phenotypes&#39;</span><span class="p">,</span> <span class="s1">&#39;diseases&#39;</span><span class="p">,</span> <span class="s1">&#39;variants&#39;</span><span class="p">)</span>
+<span class="n">_PATIENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;phenotypes&#39;</span><span class="p">,</span> <span class="s1">&#39;diseases&#39;</span><span class="p">,</span> <span class="s1">&#39;variants&#39;</span><span class="p">)</span>
 <span class="n">_COHORT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;members&#39;</span><span class="p">,</span> <span class="s1">&#39;excluded_patient_count&#39;</span><span class="p">)</span>
 
 
@@ -374,6 +375,7 @@
         <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_PATIENT_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span>
                 <span class="n">labels</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
+                <span class="n">sex</span><span class="o">=</span><span class="n">Sex</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;sex&#39;</span><span class="p">]],</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;phenotypes&#39;</span><span class="p">],</span>
                 <span class="n">diseases</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;diseases&#39;</span><span class="p">],</span>
                 <span class="n">variants</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;variants&#39;</span><span class="p">],</span>

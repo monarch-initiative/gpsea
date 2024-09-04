@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
@@ -148,11 +148,12 @@
 
 <span class="sd">    Each phenotype category `P` can be a :class:`~hpotk.model.TermId` representing an HPO term or an OMIM/MONDO term.</span>
 
-<span class="sd">    Most of the time, only one category is investigated, and :attr:`phenotype` will return a sequence with</span>
-<span class="sd">    one element only (e.g. *Arachnodactyly* `HP:0001166`). However, multiple categories can be sought as well,</span>
-<span class="sd">    such as when the predicate bins the patient into one of discrete diseases</span>
-<span class="sd">    (e.g. Geleophysic dysplasia, Marfan syndrome, ...). Then the predicate should return a sequence of disease</span>
-<span class="sd">    identifiers.</span>
+<span class="sd">    Only one category can be investigated, and :attr:`phenotype` returns the investigated phenotype</span>
+<span class="sd">    (e.g. *Arachnodactyly* `HP:0001166`).</span>
+
+<span class="sd">    As another hallmark of this predicate, one of the categorizations must correspond to the group of patients</span>
+<span class="sd">    who exibit the investigated phenotype. The categorization is provided</span>
+<span class="sd">    via :attr:`present_phenotype_categorization` property.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
@@ -161,7 +162,22 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the phenotype entity of interest.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">present_phenotype_categorization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">P</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the categorization which represents the group of the patients who exibit the investigated phenotype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">present_phenotype_category</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatientCategory</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the patient category that correspond to the group of the patients who exibit the investigated phenotype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">present_phenotype_categorization</span><span class="o">.</span><span class="n">category</span></div>
 
 
 
@@ -203,23 +219,29 @@
             <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">NO</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="c1"># Some tests depend on the order of `self._categorizations`.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> present in the patient?&quot;</span></div>
+<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_question_base">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question_base">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> present in the patient&quot;</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">present_phenotype_categorization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span>
+
 <div class="viewcode-block" id="PropagatingPhenotypePredicate.get_categorizations">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">[docs]</a>
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span></div>
 
 
 <div class="viewcode-block" id="PropagatingPhenotypePredicate.test">
@@ -303,15 +325,19 @@
             <span class="n">phenotype</span><span class="o">=</span><span class="n">disease_id_query</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DiseasePresencePredicate.get_question">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_question">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DiseasePresencePredicate.get_question_base">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_question_base">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2"> diagnosed in the patient&quot;</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">present_phenotype_categorization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_present</span>
 
 <div class="viewcode-block" id="DiseasePresencePredicate.get_categorizations">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">[docs]</a>

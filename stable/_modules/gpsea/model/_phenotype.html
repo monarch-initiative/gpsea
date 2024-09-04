@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._phenotype &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.model._phenotype &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -100,7 +100,33 @@
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Phenotype.from_term">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_term</span><span class="p">(</span><span class="n">term</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">MinimalTerm</span><span class="p">,</span> <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Phenotype</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">is_observed</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Phenotype</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">is_observed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phenotype.from_raw_parts">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Phenotype.from_raw_parts">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+        <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Phenotype&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `Phenotype` from a term ID and observation state.</span>
+
+<span class="sd">        :param term_id: a `str` with CURIE (e.g. `HP:0001250`) or a :class:`~hpotk.TermId`.</span>
+<span class="sd">        :param is_observed: `True` if the term ID was observed in patient or `False` if it was explicitly excluded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`term_id` must be either a `str` or a `hpotk.TermId`&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">Phenotype</span><span class="p">(</span>
+            <span class="n">term_id</span><span class="p">,</span>
+            <span class="n">is_observed</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

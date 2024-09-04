@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._base &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.model._base &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -81,9 +81,72 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.model._base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
+
+
+<div class="viewcode-block" id="Sex">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Sex">[docs]</a>
+<span class="k">class</span> <span class="nc">Sex</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `Sex` represents typical “phenotypic sex”, as would be determined by a midwife or physician at birth.</span>
+<span class="sd">    </span>
+<span class="sd">    The definition is aligned with `Phenopacket Schema &lt;https://phenopacket-schema.readthedocs.io/en/2.0.0/sex.html&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">UNKNOWN_SEX</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Not assessed or not available. Maps to ``NCIT:C17998``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">FEMALE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Female sex. Maps to ``NCIT:C46113``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MALE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Male sex. Maps to ``NCIT:C46112``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Sex.is_provided">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Sex.is_provided">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_provided</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the sex is a known value, such as `FEMALE` or `MALE`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">!=</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span></div>
+
+
+<div class="viewcode-block" id="Sex.is_unknown">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Sex.is_unknown">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if this is an `UNKNOWN_SEX`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span></div>
+
+
+<div class="viewcode-block" id="Sex.is_female">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Sex.is_female">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_female</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the sex represents a `FEMALE`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span></div>
+
+
+<div class="viewcode-block" id="Sex.is_male">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Sex.is_male">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_male</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the sex represents a `MALE`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Sex</span><span class="o">.</span><span class="n">MALE</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="SampleLabels">

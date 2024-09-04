@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._cohort &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.model._cohort &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -88,7 +88,7 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">SampleLabels</span>
+<span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Sex</span>
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">Disease</span>
 <span class="kn">from</span> <span class="nn">._variant</span> <span class="kn">import</span> <span class="n">Variant</span>
 
@@ -98,16 +98,52 @@
 <span class="k">class</span> <span class="nc">Patient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Patient` represents a single investigated individual.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">    </span>
+<span class="sd">        We strongly recommend using the :func:`from_raw_parts` static constructor</span>
+<span class="sd">        instead of `__init__`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Patient.from_raw_parts">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Patient.from_raw_parts">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
+        <span class="n">sex</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Sex</span><span class="p">],</span>
+        <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">],</span>
+        <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Disease</span><span class="p">],</span>
+        <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Patient&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `Patient` from the primary data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sex</span> <span class="o">=</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span>
+        
+        <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">,</span>
+            <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span>
+            <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span><span class="p">,</span>
+            <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
+        <span class="n">sex</span><span class="p">:</span> <span class="n">Sex</span><span class="p">,</span>
         <span class="n">phenotypes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">],</span>
         <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Disease</span><span class="p">],</span>
         <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">]</span>
     <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">SampleLabels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">labels</span>
+        
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sex</span><span class="p">,</span> <span class="n">Sex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sex</span> <span class="o">=</span> <span class="n">sex</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">diseases</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span>
@@ -125,6 +161,13 @@
 <span class="sd">        Get the sample identifiers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sex</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the &quot;phenotype sex&quot; of the sample.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sex</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
@@ -186,6 +229,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient(&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;labels:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;sex:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sex</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;variants:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variants</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;phenotypes:</span><span class="si">{</span><span class="p">[</span><span class="n">pheno</span><span class="o">.</span><span class="n">identifier</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">pheno</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;diseases:</span><span class="si">{</span><span class="p">[</span><span class="n">dis</span><span class="o">.</span><span class="n">identifier</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">dis</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">diseases</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -196,12 +240,13 @@
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Patient</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_labels</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sex</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_sex</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_variants</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_phenotypes</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_diseases</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variants</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span><span class="p">))</span></div>
 
 
 
@@ -318,7 +363,7 @@
 <span class="sd">                Otherwise, lists only the `top` highest counts</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE, </span>
+<span class="sd">            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,</span>
 <span class="sd">                number of patients with that phenotype)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>

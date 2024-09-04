@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.genotype._gt_predicates &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.analysis.predicate.genotype._gt_predicates &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../../../../../_static/documentation_options.js?v=e259d695"></script>
         <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
@@ -81,12 +81,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis.predicate.genotype._gt_predicates</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">from</span> <span class="nn">cProfile</span> <span class="kn">import</span> <span class="n">label</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">PatientCategories</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span> <span class="n">RecessiveGroupingPredicate</span>
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span>
+
+<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span>
 <span class="kn">from</span> <span class="nn">._counter</span> <span class="kn">import</span> <span class="n">AlleleCounter</span>
 
@@ -113,9 +120,12 @@
 <span class="sd">        :attr:`AlleleCountingGenotypeBooleanPredicate.NO`</span>
 <span class="sd">        or :class:`AlleleCountingGenotypeBooleanPredicate.YES` category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span> <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span>
+            <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="o">.</span><span class="n">NO</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
@@ -132,20 +142,21 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="p">)</span> \
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingGenotypeBooleanPredicate</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_allele_counter</span>
-    
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="p">,))</span>
-    
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;AlleleCountingGenotypeBooleanPredicate(allele_counter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="si">}</span><span class="s1">)&#39;</span>
-    
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AlleleCountingGenotypeBooleanPredicate(allele_counter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="si">}</span><span class="s2">)&quot;</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
-<span class="c1"># TODO: write AD, AR, XLR, XLD</span>
 <div class="viewcode-block" id="boolean_predicate">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.boolean_predicate">[docs]</a>
 <span class="k">def</span> <span class="nf">boolean_predicate</span><span class="p">(</span><span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
@@ -169,13 +180,12 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_counters</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">counters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">categorizations</span><span class="p">)</span>
-        <span class="n">group_names</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Genotype group: </span><span class="si">{</span><span class="n">group_names</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="s2">&quot;Genotype group&quot;</span>
 
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
 
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_question</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
@@ -194,20 +204,29 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingGroupsPredicate</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counters</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_counters</span> \
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingGroupsPredicate</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counters</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_counters</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_categorizations</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_counters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_counters</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;AlleleCountingGroupsPredicate(&#39;</span> \
-            <span class="o">+</span> <span class="s1">&#39;counters=</span><span class="si">{self._counters}</span><span class="s1">, &#39;</span> \
-            <span class="o">+</span> <span class="s1">&#39;categorizations=</span><span class="si">{self._categorizations}</span><span class="s1">)&#39;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;AlleleCountingGroupsPredicate(&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;counters=</span><span class="si">{self._counters}</span><span class="s2">, &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;categorizations=</span><span class="si">{self._categorizations}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="groups_predicate">
@@ -222,6 +241,8 @@
 <span class="sd">    The genotype groups *should* not overlap.</span>
 <span class="sd">    In case of an overlap, the patient will be assigned into no group (`None`).</span>
 
+<span class="sd">    See the :ref:`groups-predicate` section for an example.</span>
+
 <span class="sd">    :param predicates: an iterable with at least 2 variant predicates to determine a genotype group.</span>
 <span class="sd">    :param group_names: an iterable with group names. The number of group names must match the number of predicates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -229,9 +250,10 @@
     <span class="n">predicates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span>
     <span class="n">group_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">group_names</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;We need at least 2 predicates: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">group_names</span><span class="p">),</span> \
-        <span class="sa">f</span><span class="s1">&#39;The number of group names must match the number of predicates: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">group_names</span><span class="p">)</span><span class="si">}</span><span class="s1">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;We need at least 2 predicates: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">group_names</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;The number of group names must match the number of predicates: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">group_names</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># Then, prepare the counters and categorizations.</span>
     <span class="n">counters</span> <span class="o">=</span> <span class="p">[</span><span class="n">AlleleCounter</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">)</span> <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="n">predicates</span><span class="p">]</span>
@@ -253,65 +275,685 @@
 
 
 
-<span class="k">class</span> <span class="nc">AlleleCountingRecessivePredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FilteringGenotypePolyPredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">):</span>
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
-    <span class="c1"># TODO: this predicate is a bit weird and I think it should eventually go away.</span>
-    <span class="c1">#  Therefore, I do not write any tests at this point.</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;GenotypePolyPredicate&quot;</span><span class="p">,</span>
+        <span class="n">targets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">Categorization</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FilteringGenotypePolyPredicate&quot;</span><span class="p">:</span>
+        <span class="c1"># At least 2 target categorizations must be provided</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;At least 2 target categorizations must be provided but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">good_boys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">Categorization</span><span class="p">)</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">good_boys</span><span class="p">):</span>
+            <span class="n">offenders</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">is_instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">good_boys</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_instance</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The targets at following indices are not categorizations: [</span><span class="si">{</span><span class="n">offenders</span><span class="si">}</span><span class="s2">]&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># All `allowed` categorizations must in fact be present in the `base` predicate.</span>
+        <span class="n">cats_are_in_fact_present</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">cat</span> <span class="ow">in</span> <span class="n">predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">targets</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">cats_are_in_fact_present</span><span class="p">):</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">is_present</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">cats_are_in_fact_present</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_present</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some from the categories are not present: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="n">predicate</span><span class="o">.</span><span class="n">n_categorizations</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;It makes no sense to subset the a predicate with </span><span class="si">{</span><span class="n">predicate</span><span class="o">.</span><span class="n">n_categorizations</span><span class="p">()</span><span class="si">}</span><span class="s2"> categorizations &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;with the same number (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">) of targets&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FilteringGenotypePolyPredicate</span><span class="p">(</span>
+            <span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
+            <span class="n">allowed</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">allele_counter</span><span class="p">:</span> <span class="n">AlleleCounter</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;GenotypePolyPredicate&quot;</span><span class="p">,</span>
+        <span class="n">allowed</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Categorization</span><span class="p">],</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">=</span> <span class="n">allele_counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_predicate</span> <span class="o">=</span> <span class="n">predicate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span>
+
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicate</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
-
-        <span class="n">allele_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span>
-        <span class="k">elif</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
-        <span class="k">elif</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cat</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-    
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;FilteringGenotypePolyPredicate(predicate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_predicate</span><span class="si">}</span><span class="s2">, allowed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
+<div class="viewcode-block" id="filtering_predicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.filtering_predicate">[docs]</a>
+<span class="k">def</span> <span class="nf">filtering_predicate</span><span class="p">(</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+    <span class="n">targets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">Categorization</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filtering predicate applies the base `predicate` but only returns the categorizations</span>
+<span class="sd">    from the provided `targets` collection.</span>
+
+<span class="sd">    This can be useful if only some of the categorizations are interesting.</span>
+<span class="sd">    For instance, if we only seek to compare the differences between heterozygous and hemizygous variants,</span>
+<span class="sd">    but the predicate also bins the patients into homozygous reference, and biallelic alt genotype groups.</span>
+
+<span class="sd">    See the :ref:`filtering-predicate` section for an example.</span>
+
+<span class="sd">    The `predicate` is checked for being able to produce the all items in `targets`</span>
+<span class="sd">    and the `targets` must include at least 2 categorizations.</span>
+
+<span class="sd">    :param predicate: the base predicate whose categorizations are subject to filteration.</span>
+<span class="sd">    :param targets: the categorizations to retain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">FilteringGenotypePolyPredicate</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
+        <span class="n">targets</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">GenotypeGroup</span><span class="p">:</span>
+    <span class="n">allele_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">sex</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Sex</span><span class="p">]</span>
+    <span class="n">categorization</span><span class="p">:</span> <span class="n">Categorization</span>
+
+
+<span class="k">class</span> <span class="nc">MendelianInheritanceAspect</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">AUTOSOMAL</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Related to chromosomes that do *not* determine the sex of an individual.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">GONOSOMAL</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Related to chromosomes that determine the sex of an individual.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MITOCHONDRIAL</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Related to mitochondrial DNA.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">ModeOfInheritanceInfo</span><span class="p">:</span>
+
+    <span class="c1"># NOT PART OF THE PUBLIC API!!!</span>
+
+    <span class="n">HOM_REF</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span>
+        <span class="n">PatientCategory</span><span class="p">(</span>
+            <span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HOM_REF&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Homozygous reference&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">HET</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span>
+        <span class="n">PatientCategory</span><span class="p">(</span>
+            <span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HET&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Heterozygous&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">BIALLELIC_ALT</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span>
+        <span class="n">PatientCategory</span><span class="p">(</span>
+            <span class="n">cat_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BIALLELIC_ALT&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Homozygous alternate or compound heterozygous&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">HEMI</span> <span class="o">=</span> <span class="n">Categorization</span><span class="p">(</span>
+        <span class="n">PatientCategory</span><span class="p">(</span>
+            <span class="n">cat_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HEMI&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hemizygous&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">autosomal_dominant</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritanceInfo&quot;</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HOM_REF</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HET</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">(</span>
+            <span class="n">mendelian_inheritance_aspect</span><span class="o">=</span><span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">AUTOSOMAL</span><span class="p">,</span>
+            <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">autosomal_recessive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritanceInfo&quot;</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HOM_REF</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HET</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">BIALLELIC_ALT</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">(</span>
+            <span class="n">mendelian_inheritance_aspect</span><span class="o">=</span><span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">AUTOSOMAL</span><span class="p">,</span>
+            <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">x_dominant</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritanceInfo&quot;</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HOM_REF</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HET</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">(</span>
+            <span class="n">mendelian_inheritance_aspect</span><span class="o">=</span><span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">GONOSOMAL</span><span class="p">,</span>
+            <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">x_recessive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritanceInfo&quot;</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HOM_REF</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HET</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">BIALLELIC_ALT</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">GenotypeGroup</span><span class="p">(</span>
+                <span class="n">allele_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">sex</span><span class="o">=</span><span class="n">Sex</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span>
+                <span class="n">categorization</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">HEMI</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">(</span>
+            <span class="n">mendelian_inheritance_aspect</span><span class="o">=</span><span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">GONOSOMAL</span><span class="p">,</span>
+            <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mendelian_inheritance_aspect</span><span class="p">:</span> <span class="n">MendelianInheritanceAspect</span><span class="p">,</span>
+        <span class="n">groups</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">GenotypeGroup</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="c1"># We want this to be hashable but also keep a non-hashable dict</span>
+        <span class="c1"># as a field. Therefore, we pre-compute the hash manually.</span>
+        <span class="c1"># The correctness depends on two default dicts with same keys and values</span>
+        <span class="c1"># comparing equal.</span>
+        <span class="n">hash_value</span> <span class="o">=</span> <span class="mi">17</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mendelian_inheritance_aspect</span><span class="p">,</span> <span class="n">MendelianInheritanceAspect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="o">=</span> <span class="n">mendelian_inheritance_aspect</span>
+
+        <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">31</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">GenotypeGroup</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">allele_count</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">13</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="n">hash_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">GenotypeGroup</span><span class="p">]:</span>
+        <span class="c1"># Flatten `values()` which is an iterable of lists.</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">group</span> <span class="k">for</span> <span class="n">meta_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">meta_group</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mendelian_inheritance_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MendelianInheritanceAspect</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span>
+
+    <span class="k">def</span> <span class="nf">get_groups_for_allele_count</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">allele_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenotypeGroup</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">allele_count</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># No group for this allele count is OK</span>
+            <span class="k">return</span> <span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">is_autosomal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="o">==</span> <span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">AUTOSOMAL</span>
+
+    <span class="k">def</span> <span class="nf">is_gonosomal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="o">==</span> <span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">GONOSOMAL</span>
+
+    <span class="k">def</span> <span class="nf">is_mitochondrial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="o">==</span> <span class="n">MendelianInheritanceAspect</span><span class="o">.</span><span class="n">MITOCHONDRIAL</span>
+
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingRecessivePredicate</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_allele_counter</span>
-    
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_aspect</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="p">,))</span>
-    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;AlleleCountingRecessivePredicate(allele_counter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="si">}</span><span class="s1">)&#39;</span>
-    
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ModeOfInheritanceInfo(aspect=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="si">}</span><span class="s2">, groups=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="si">}</span><span class="s2">)&quot;</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="recessive_predicate">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.recessive_predicate">[docs]</a>
-<span class="k">def</span> <span class="nf">recessive_predicate</span><span class="p">(</span>
-    <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+<div class="viewcode-block" id="ModeOfInheritancePredicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">ModeOfInheritancePredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `ModeOfInheritancePredicate` assigns an individual into a group based on compatibility with</span>
+<span class="sd">    the selected mode of inheritance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.autosomal_dominant">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">autosomal_dominant</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a predicate that assigns the patient either</span>
+<span class="sd">        into homozygous reference or heterozygous</span>
+<span class="sd">        group in line with the autosomal dominant mode of inheritance.</span>
+
+<span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">from_moi_info</span><span class="p">(</span>
+            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_dominant</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.autosomal_recessive">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">autosomal_recessive</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a predicate that assigns the patient either into</span>
+<span class="sd">        homozygous reference, heterozygous, or biallelic alternative allele</span>
+<span class="sd">        (homozygous alternative or compound heterozygous)</span>
+<span class="sd">        group in line with the autosomal recessive mode of inheritance.</span>
+
+<span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">from_moi_info</span><span class="p">(</span>
+            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.x_dominant">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_dominant">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">x_dominant</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a predicate that assigns the patient either into</span>
+<span class="sd">        homozygous reference or heterozygous</span>
+<span class="sd">        group in line with the X-linked dominant mode of inheritance.</span>
+
+<span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">from_moi_info</span><span class="p">(</span>
+            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">x_dominant</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.x_recessive">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_recessive">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">x_recessive</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a predicate that assigns the patient either into</span>
+<span class="sd">        homozygous reference, heterozygous, biallelic alternative allele</span>
+<span class="sd">        (homozygous alternative or compound heterozygous), or hemizygous</span>
+<span class="sd">        group in line with the X-linked recessive mode of inheritance.</span>
+
+<span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">from_moi_info</span><span class="p">(</span>
+            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">x_recessive</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.from_moi_info">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.from_moi_info">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_moi_info</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+        <span class="n">mode_of_inheritance_data</span><span class="p">:</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a predicate for specified mode of inheritance data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allele_counter</span> <span class="o">=</span> <span class="n">AlleleCounter</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="p">(</span>
+            <span class="n">allele_counter</span><span class="o">=</span><span class="n">allele_counter</span><span class="p">,</span>
+            <span class="n">mode_of_inheritance_info</span><span class="o">=</span><span class="n">mode_of_inheritance_data</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">allele_counter</span><span class="p">:</span> <span class="n">AlleleCounter</span><span class="p">,</span>
+        <span class="n">mode_of_inheritance_info</span><span class="p">:</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allele_counter</span><span class="p">,</span> <span class="n">AlleleCounter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">=</span> <span class="n">allele_counter</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode_of_inheritance_info</span><span class="p">,</span> <span class="n">ModeOfInheritanceInfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span> <span class="o">=</span> <span class="n">mode_of_inheritance_info</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">categorization</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">mode_of_inheritance_info</span><span class="o">.</span><span class="n">groups</span>
+        <span class="p">)</span>
+        <span class="n">issues</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_check_categorizations</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">issues</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot create predicate: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="s2">&quot;Which genotype group does the patient fit in&quot;</span>
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.get_categorizations">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_categorizations">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.get_question_base">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_question_base">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_question</span></div>
+
+
+<div class="viewcode-block" id="ModeOfInheritancePredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="o">.</span><span class="n">is_autosomal</span><span class="p">():</span>
+            <span class="n">allele_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="o">.</span><span class="n">get_groups_for_allele_count</span><span class="p">(</span><span class="n">allele_count</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">categorization</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="o">.</span><span class="n">is_gonosomal</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="o">.</span><span class="n">is_provided</span><span class="p">():</span>
+                <span class="n">allele_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="o">.</span><span class="n">get_groups_for_allele_count</span><span class="p">(</span><span class="n">allele_count</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Unable to assign the individual.</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># We can only assign into one category no matter what the individual&#39;s sex is.</span>
+                    <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">categorization</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># We choose depending on the sex.</span>
+                    <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">sex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">group</span><span class="o">.</span><span class="n">sex</span> <span class="o">==</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">group</span><span class="o">.</span><span class="n">categorization</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We must have patient&#39;s sex</span>
+                <span class="c1"># to do any meaningful analysis</span>
+                <span class="c1"># in the non-autosomal scenario.</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="o">.</span><span class="n">is_mitochondrial</span><span class="p">():</span>
+            <span class="c1"># Cannot deal with mitochondrial inheritance right now.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Bug, please report to the developers</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unexpected mode of inheritance condition&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ModeOfInheritancePredicate</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_allele_counter</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_moi_info</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;ModeOfInheritancePredicate(&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;allele_counter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;moi_info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_moi_info</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">SexGenotypePredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">):</span>
+    <span class="c1"># NOT PART OF THE PUBLIC API</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Categorization</span><span class="p">(</span>
+                <span class="n">PatientCategory</span><span class="p">(</span>
+                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;FEMALE&quot;</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Female&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Categorization</span><span class="p">(</span>
+                <span class="n">PatientCategory</span><span class="p">(</span>
+                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MALE&quot;</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Male&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
+
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Sex of the individual&quot;</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="o">.</span><span class="n">is_provided</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="o">.</span><span class="n">is_female</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="o">.</span><span class="n">is_male</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported sex </span><span class="si">{</span><span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">INSTANCE</span> <span class="o">=</span> <span class="n">SexGenotypePredicate</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="sex_predicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate">[docs]</a>
+<span class="k">def</span> <span class="nf">sex_predicate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.</span>
+
+<span class="sd">    See the :ref:`sex-predicate` section for an example.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">INSTANCE</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">DiagnosisPredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="n">diagnoses</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DiagnosisPredicate&quot;</span><span class="p">:</span>
+        <span class="c1"># First, collect the iterables and check sanity.</span>
+        <span class="n">diagnosis_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">diagnoses</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2"> is neither `str` nor `hpotk.TermId`&quot;</span><span class="p">)</span>
+            
+            <span class="n">diagnosis_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">diagnosis_ids</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">diagnosis_ids</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">),</span> \
+            <span class="sa">f</span><span class="s2">&quot;We need at least 2 diagnoses: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">diagnosis_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">diagnosis_ids</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> \
+            <span class="sa">f</span><span class="s2">&quot;The number of labels must match the number of diagnose IDs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">diagnosis_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Then, prepare the categorizations.</span>
+        <span class="n">categorizations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">diagnosis_id</span><span class="p">:</span> <span class="n">Categorization</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+                <span class="n">cat_id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">diagnosis_id</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">diagnosis_id</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">diagnosis_ids</span><span class="p">,</span> <span class="n">labels</span><span class="p">))</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Last, put the predicate together.</span>
+        <span class="k">return</span> <span class="n">DiagnosisPredicate</span><span class="p">(</span><span class="n">categorizations</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">categorizations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">Categorization</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id2cat</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">categorizations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">categorizations</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
+
+    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;What disease was diagnosed&#39;</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
+        <span class="n">categorization</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">diseases</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id2cat</span><span class="p">[</span><span class="n">disease</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># No match for this disease, no problem.</span>
+                <span class="k">continue</span>
+            
+            <span class="k">if</span> <span class="n">categorization</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># First time we found a candidate disease</span>
+                <span class="n">categorization</span> <span class="o">=</span> <span class="n">candidate</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Ambiguous match. We found several matching diagnoses!</span>
+                <span class="k">return</span> <span class="kc">None</span>
+                
+        <span class="k">return</span> <span class="n">categorization</span>
+
+
+<div class="viewcode-block" id="diagnosis_predicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate">[docs]</a>
+<span class="k">def</span> <span class="nf">diagnosis_predicate</span><span class="p">(</span>
+    <span class="n">diagnoses</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a recessive grouping predicate from given `variant_predicate`</span>
-<span class="sd">    to bin the patient into :class:`RecessiveGroupingPredicate.NEITHER`, </span>
-<span class="sd">    :class:`RecessiveGroupingPredicate.ONE`, or :class:`RecessiveGroupingPredicate.BOTH`, </span>
-<span class="sd">    depending on the number of variant alleles matching the variant predicate.</span>
+<span class="sd">    Create a genotype predicate that bins the patient based on presence of a disease diagnosis,</span>
+<span class="sd">    as listed in :attr:`~gpsea.model.Patient.diseases` attribute.</span>
 
-<span class="sd">    The patient is assigned into a group in the following manner:</span>
-<span class="sd">    * 0 alleles: :class:`RecessiveGroupingPredicate.NEITHER`</span>
-<span class="sd">    * 1 alleles: :class:`RecessiveGroupingPredicate.ONE`</span>
-<span class="sd">    * 2 alleles: :class:`RecessiveGroupingPredicate.BOTH`</span>
-<span class="sd">    * other: `None`</span>
+<span class="sd">    If an individual is diagnosed with more than one disease from the provided `diagnoses`,</span>
+<span class="sd">    the individual will be assigned into no group (`None`).</span>
+
+<span class="sd">    See the :ref:`diagnosis-predicate` section for an example.</span>
+
+<span class="sd">    :param diagnoses: an iterable with at least 2 diagnose IDs, either as a `str` or a :class:`~hpotk.TermId`</span>
+<span class="sd">      to determine the genotype group.</span>
+<span class="sd">    :param labels: an iterable with diagnose names or `None` if CURIEs should be used instead.</span>
+<span class="sd">      The number of labels must match the number of predicates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">allele_counter</span> <span class="o">=</span> <span class="n">AlleleCounter</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">AlleleCountingRecessivePredicate</span><span class="p">(</span><span class="n">allele_counter</span><span class="o">=</span><span class="n">allele_counter</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">DiagnosisPredicate</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">diagnoses</span><span class="o">=</span><span class="n">diagnoses</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pcats.stats package &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.analysis.pcats.stats package &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,7 +17,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/documentation_options.js?v=e259d695"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,7 +43,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -111,37 +111,68 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><cite>CountStatistic</cite> calculates a p value for a contingency table
 produced by a pair of discrete random variables.</p>
-<p>The <cite>counts</cite> table is usually <cite>2x2</cite> or <cite>2x3</cite>.</p>
+<section id="supports-shape">
+<h2>Supports shape<a class="headerlink" href="#supports-shape" title="Link to this heading"></a></h2>
+<p><cite>CountStatistic</cite> takes the counts in form of a data frame,
+and some statistics impose additional requirements on the frame shape.
+For instance, GPSEA’s implementation of the Fisher exact test
+can compare counts in a <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2)</span></code> or <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3)</span></code> arrays
+but χ2 test can test an <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n)</span></code> array.</p>
+<p>It is important to check that a genotype/phenotype predicate produces
+the number of groups which the statistic can test.</p>
+<p>The <a class="reference internal" href="#gpsea.analysis.pcats.stats.CountStatistic.supports_shape" title="gpsea.analysis.pcats.stats.CountStatistic.supports_shape"><code class="xref py py-attr docutils literal notranslate"><span class="pre">supports_shape</span></code></a> returns a sequence with requirements
+on the shape of the data array/frame. The sequence includes
+the number of</p>
+<p class="rubric">Examples</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Test</p></th>
+<th class="head"><p>Array shape</p></th>
+<th class="head"><p><cite>supports_shape</cite></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Fisher Exact Test</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">[2,</span> <span class="pre">3])</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">[2,3])</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>χ2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(*,</span> <span class="pre">*)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">None)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.CountStatistic.supports_shape">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">supports_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.pcats.stats.CountStatistic.supports_shape" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of the supported shapes.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.CountStatistic.compute_pval">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_pval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#CountStatistic.compute_pval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.CountStatistic.compute_pval" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.ScipyFisherExact">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pcats.stats.</span></span><span class="sig-name descname"><span class="pre">ScipyFisherExact</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#ScipyFisherExact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.ScipyFisherExact" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.FisherExactTest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pcats.stats.</span></span><span class="sig-name descname"><span class="pre">FisherExactTest</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#FisherExactTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.FisherExactTest" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.pcats.stats.CountStatistic" title="gpsea.analysis.pcats.stats._stats.CountStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountStatistic</span></code></a></p>
-<p><cite>ScipyFisherExact</cite> performs Fisher Exact Test on a <cite>2x2</cite> contingency table.</p>
-<p>The class is a thin wrapper around Scipy <a class="reference external" href="https://docs.scipy.org/doc/scipy-1.11.0/reference/generated/scipy.stats.fisher_exact.html#scipy.stats.fisher_exact" title="(in SciPy v1.11.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">fisher_exact()</span></code></a> function.
-The two-sided <span class="math notranslate nohighlight">\(H_1\)</span> is considered.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.ScipyFisherExact.compute_pval">
-<span class="sig-name descname"><span class="pre">compute_pval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#ScipyFisherExact.compute_pval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.ScipyFisherExact.compute_pval" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p><cite>FisherExactTest</cite> performs Fisher Exact Test on a <cite>2x2</cite> or <cite>2x3</cite> contingency table.</p>
+<p>The <cite>2x2</cite> version is a thin wrapper around Scipy <a class="reference external" href="https://docs.scipy.org/doc/scipy-1.11.0/reference/generated/scipy.stats.fisher_exact.html#scipy.stats.fisher_exact" title="(in SciPy v1.11.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">fisher_exact()</span></code></a> function,
+while the <cite>2x3</cite> variant is implemented in Python.
+In both variants, the two-sided <span class="math notranslate nohighlight">\(H_1\)</span> is considered.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.FisherExactTest.supports_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">supports_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.pcats.stats.FisherExactTest.supports_shape" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of the supported shapes.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.PythonMultiFisherExact">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pcats.stats.</span></span><span class="sig-name descname"><span class="pre">PythonMultiFisherExact</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#PythonMultiFisherExact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.PythonMultiFisherExact" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.pcats.stats.CountStatistic" title="gpsea.analysis.pcats.stats._stats.CountStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountStatistic</span></code></a></p>
-<p><cite>PythonMultiFisherExact</cite> is a Python implementation of Fisher Exact Test to compute
-p value for a <cite>2x3</cite> contingency table.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.PythonMultiFisherExact.compute_pval">
-<span class="sig-name descname"><span class="pre">compute_pval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#PythonMultiFisherExact.compute_pval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.PythonMultiFisherExact.compute_pval" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.stats.FisherExactTest.compute_pval">
+<span class="sig-name descname"><span class="pre">compute_pval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/stats/_stats.html#FisherExactTest.compute_pval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.stats.FisherExactTest.compute_pval" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

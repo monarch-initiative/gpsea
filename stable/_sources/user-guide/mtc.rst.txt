@@ -4,8 +4,9 @@
 Multiple-testing correction
 ===========================
 
+**********
 Background
-~~~~~~~~~~
+**********
 
 A p-value is the probability that a test result, under the null hypothesis, 
 assumes the observed or a more extreme value. It is important to realize that if we
@@ -25,33 +26,28 @@ tests, the probability that none will be significant is
 least one significant result.
 
 
+***********************
 Implementation in GPSEA
-~~~~~~~~~~~~~~~~~~~~~~~
+***********************
 
 By default, GPSEA performs a hypothesis test for each HPO term found at least twice
 in the cohort, meaning that we may perform up to hundreds of tests.
 Therefore, unless we take into account the fact that multiple statistical tests are being performed,
 it is likely that we will obtain one or more false-positive results.
 
-Genephenocorr offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
+GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
 and MTC filters to choose the terms to be tested.
-
-Here we will show how to configure the MTC approach 
-using :class:`~gpsea.analysis.CohortAnalysisConfiguration` class.
-
->>> from gpsea.analysis import CohortAnalysisConfiguration
->>> config = CohortAnalysisConfiguration()
 
 
 Multiple-testing correction procedures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+======================================
 
 A number of MTC procedures have
 been developed to limit the probability of false-positive results. The
 MTC procedures differ in complexity, in their assumptions about the
 data, and in the type of control they provide.
 
-The genephenocorr package uses the Python package `statsmodels <https://www.statsmodels.org/devel/>`_ to implement
+The GPSEA package uses the Python package `statsmodels <https://www.statsmodels.org/devel/>`_ to implement
 MTC. See the `documentation <https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html>`_ for details;
 the following table shows allowable options.
 
@@ -83,31 +79,35 @@ the following table shows allowable options.
 
 
 The oldest and simplest MTC procedure is the Bonferroni
-correction. The Bonferroni procedure thus provides control of the family-wise
+correction (``bonferroni``). The Bonferroni procedure thus provides control of the family-wise
 error rate (FWER), which is the probability of at least one Type I
 error.  The Bonferroni method multiplies the p-value
 returned by each test (which is call the *nominal* p-value)
-by the number of tests performed (the result is capped at 1.0). This is the *default* method in genephenocorr.
-
->>> config.pval_correction
-'bonferroni'
+by the number of tests performed (the result is capped at 1.0).
 
 Alternatively, procedures that control the false-discovery rate (FDR),
 limit the proportion of significant results that are type I
 errors (false discoveries). 
 The Benjamini and Hochberg method (``fdr_bh``) is probably the most commonly used one.
+This is the *default* method in GPSEA.
 
-This is how we can set an alternative MTC correction procedure:
+To set an alternative MTC procedure, we use the `mtc_correction` option
+when creating an instance of :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
 
->>> config.pval_correction = 'fdr_bh'
->>> config.pval_correction
-'fdr_bh'
+>>> from gpsea.analysis.mtc_filter import UseAllTermsMtcFilter
+>>> from gpsea.analysis.pcats import HpoTermAnalysis
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> analysis = HpoTermAnalysis(
+...     count_statistic=FisherExactTest(),
+...     mtc_filter=UseAllTermsMtcFilter(),
+...     mtc_correction='bonferroni',  #      <--- The MTC correction setup
+... )
 
 
 .. _mtc-filters:
 
 MTC filters: Choosing which terms to test
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=========================================
 
 We can reduce the overall MTC burden by choosing which terms to test. 
 For example, if we choose to test only ten terms out of 450, 
@@ -116,8 +116,19 @@ is only 10 instead of 450, and more p-values
 may "survive" the multiple-testing correction.
 
 In the context of GPSEA, we represent the concept of phenotype filtering 
-by :class:`~gpsea.analysis.PhenotypeMtcFilter`.
-We describe the three filtering strategies in the next sections.
+by :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.
+The filter must be chosen before the :class:`~gpsea.analysis.pcats.MultiPhenotypeAnalysis`,
+such as :class:`~gpsea.analysis.pcats.HpoTermAnalysis`, is run:
+
+>>> from gpsea.analysis.pcats import HpoTermAnalysis
+>>> analysis = HpoTermAnalysis()  # doctest: +ELLIPSIS
+Traceback (most recent call last):
+  ...
+TypeError: HpoTermAnalysis.__init__() missing 2 required positional arguments: 'count_statistic' and 'mtc_filter'
+
+Note the missing `mtc_filter` option.
+
+We describe the three filtering strategies in the following sections.
 
 
 .. _use-all-terms-strategy:
@@ -129,13 +140,10 @@ The first MTC filtering strategy is the simplest - do not apply any filtering at
 This will result in testing all terms. We do not recommend this strategy, 
 but it can be useful to disable MTC filtering.
 
-The strategy is invoked by default, 
-or explicitly by :func:`~gpsea.analysis.CohortAnalysisConfiguration.all_terms_strategy` method:
+The strategy is implemented in :class:`~gpsea.analysis.mtc_filter.UseAllTermsMtcFilter`.
 
->>> config.all_terms_strategy()
->>> config.mtc_strategy
-<MtcStrategy.ALL_PHENOTYPE_TERMS: 0>
-
+>>> from gpsea.analysis.mtc_filter import UseAllTermsMtcFilter
+>>> use_all = UseAllTermsMtcFilter()
 
 .. _specify-terms-strategy:
 
@@ -143,27 +151,20 @@ Specify terms strategy
 ----------------------
 
 In presence of a specific hypothesis as to which terms may be different between groups, 
-then you can specify these terms using
-the :func:`~gpsea.analysis.CohortAnalysisConfiguration.specify_terms_strategy` method.
+then you can specify these terms in :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`.
 
 For example if we want to specifically test
 `Abnormal putamen morphology (HP:0031982) <https://hpo.jax.org/browse/term/HP:0031982>`_ and
 `Abnormal caudate nucleus morphology (HP:0002339) <https://hpo.jax.org/browse/term/HP:0002339>`_
 we pass an iterable (e.g. a tuple) with these two terms as an argument:
 
->>> config.specify_terms_strategy(
+>>> from gpsea.analysis.mtc_filter import SpecifiedTermsMtcFilter
+>>> specified_terms = SpecifiedTermsMtcFilter(
 ...     terms_to_test=(
 ...         "HP:0031982",  # Abnormal putamen morphology
 ...         "HP:0002339",  # Abnormal caudate nucleus morphology
 ...     )
 ... )
->>> config.mtc_strategy
-<MtcStrategy.SPECIFY_TERMS: 1>
->>> config.terms_to_test
-('HP:0031982', 'HP:0002339')
-
-Later, when the `config` is used in analysis, 
-GPSEA will only perform two hypothesis tests, one for each of the two terms.
 
 
 .. _hpo-mtc-filter-strategy:
@@ -172,26 +173,32 @@ HPO MTC filter strategy
 -----------------------
 
 Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
+The strategy needs access to HPO:
 
-The strategy is chosen by invoking 
-:func:`~gpsea.analysis.CohortAnalysisConfiguration.hpo_mtc_strategy` method:
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
->>> config = CohortAnalysisConfiguration()
->>> config.hpo_mtc_strategy(min_patients_w_hpo=0.5)
->>> config.mtc_strategy
-<MtcStrategy.HPO_MTC: 2>
->>> config.min_patients_w_hpo
-0.5
+and it is implemented in the :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter` class:
 
-HPO MTC takes a threshold as an argument (e.g. 50% in the example above) 
+>>> from gpsea.analysis.mtc_filter import HpoMtcFilter
+>>> hpo_mtc = HpoMtcFilter.default_filter(
+...     hpo=hpo,
+...     term_frequency_threshold=0.2,
+... )
+
+
+We use static constructor :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter`
+for creating :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
+The constructor takes a threshold as an argument (e.g. 20% in the example above) 
 and the method's logic is made up of 8 individual heuristics 
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:
 
 #. Skip terms that occur very rarely
-    The ``min_patients_w_hpo`` determines the mininum proportion of individuals 
+    The ``term_frequency_threshold`` determines the mininum proportion of individuals 
     with direct or indirect annotation by the HPO term to test. 
     We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE), and we only retain a term for testing 
-    if the proportion of individuals in at least one genotype group is at least ``min_patients_w_hpo``. 
+    if the proportion of individuals in at least one genotype group is greater than or equal to ``term_frequency_threshold``. 
     
     This is because of our assumption that even if there is statistical significance, 
     if a term is only seen in (for example) 7% of individuals in the MISSENSE group and 2% in the not-MISSENSE group, 

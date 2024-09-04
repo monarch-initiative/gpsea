@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,7 +17,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/documentation_options.js?v=e259d695"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -41,7 +41,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -107,6 +107,28 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScorer</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><cite>PhenotypeScorer</cite> assigns the patient with a phenotype score.</p>
+<p>The score can be <code class="xref py py-attr docutils literal notranslate"><span class="pre">math.nan</span></code> if it is not possible to compute the score for a patient.</p>
+<p>The scorer can be created by wrapping a scoring function (see <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">wrap_scoring_function()</span></code></a>).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_scoring_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer.wrap_scoring_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="Link to this definition"></a></dt>
+<dd><p>Create a <cite>PhenotypeScorer</cite> by wrap the provided scoring function <cite>func</cite>.</p>
+<p>The function must take exactly one argument of type <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>
+and return a <cite>float</cite> with the corresponding phenotype score.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">PhenotypeScorer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="mf">123.4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phenotype_scorer</span> <span class="o">=</span> <span class="n">PhenotypeScorer</span><span class="o">.</span><span class="n">wrap_scoring_function</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><cite>phenotype_scorer</cite> will assign all patients a score of <cite>123.4</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> – the scoring function.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScorer.score">
 <span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer.score" title="Link to this definition"></a></dt>
@@ -209,31 +231,10 @@ cannot be assigned into any genotype category.</p>
 <p><cite>CountingPhenotypeScorer</cite> assigns the patient with a phenotype score
 that is equivalent to the count of present phenotypes that are either
 an exact match to the <cite>query</cite> terms or their descendants.</p>
-<p>For instance, we may want to count whether an individual has brain, liver, kidney, and skin abormalities.
+<p>For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
 In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
 An individual can then have between 0 and 4 phenotype group abnormalities.
 This predicate is intended to be used with the Mann Whitney U test.</p>
-<p class="rubric">Example</p>
-<p>We first need to load HPO using HPO toolkit:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now we can create <cite>CountingPhenotypeScorer</cite> to test for presence of brain, liver, kidney and skin abnormalities:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">CountingPhenotypeScorer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">phenotype_groups</span> <span class="o">=</span> <span class="p">(</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0012443&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal brain morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0410042&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal liver morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0012210&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal renal morphology</span>
-<span class="gp">... </span>    <span class="s2">&quot;HP:0011121&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal skin morphology</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">scorer</span> <span class="o">=</span> <span class="n">CountingPhenotypeScorer</span><span class="o">.</span><span class="n">from_query_curies</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">phenotype_groups</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_query_curies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_impl.html#CountingPhenotypeScorer.from_query_curies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies" title="Link to this definition"></a></dt>
@@ -265,6 +266,26 @@ Do not double count if the patient has two terms
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">DeVriesPhenotypeScorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_impl.html#DeVriesPhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a></p>
+<p><cite>DeVriesPhenotypeScorer</cite> computes “adapted De Vries Score”
+as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/21712853">Feenstra et al.</a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_impl.html#DeVriesPhenotypeScorer.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.score" title="Link to this definition"></a></dt>
+<dd><p>Calculate score based on list of strings with term identifiers or observed HPO terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patient</strong> – list of strings with term identifiers or observed HPO terms</p>
+</dd>
+</dl>
+<p>Returns: de Vries score between 0 and 10</p>
+</dd></dl>
+
+</dd></dl>
+
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
@@ -272,6 +293,7 @@ Do not double count if the patient has two terms
 <li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.pscore.stats.html">gpsea.analysis.pscore.stats package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.PhenotypeScoreStatistic"><code class="docutils literal notranslate"><span class="pre">PhenotypeScoreStatistic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.MannWhitneyStatistic"><code class="docutils literal notranslate"><span class="pre">MannWhitneyStatistic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.TTestStatistic"><code class="docutils literal notranslate"><span class="pre">TTestStatistic</span></code></a></li>
 </ul>
 </li>
 </ul>

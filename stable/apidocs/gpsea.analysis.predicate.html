@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.1.1dev documentation</title>
+  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,7 +17,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=8427294d"></script>
+        <script src="../_static/documentation_options.js?v=e259d695"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -41,7 +41,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.1
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -174,9 +174,8 @@
 by <a class="reference internal" href="#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>.</p>
 <p>The groups must be <em>exclusive</em> - the patient can be binned into one and only one group,
 and <em>exhaustive</em> - the groups must cover all possible scenarios.</p>
-<p>However, if the patient cannot be assigned into any meaningful category, <cite>None</cite> can be returned.</p>
-<p>Note, that <cite>PolyPredicate</cite> must be used on a happy path - testing a patient must inherently make sense.
-Predicate will <em>not</em> check if, for instance, the patient variants are compatible with a certain mode of inheritance.</p>
+<p>However, if the patient cannot be assigned into any meaningful category, <cite>None</cite> can be returned.
+As a rule of thumb, returning <cite>None</cite> will exclude the patient from the analysis.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_categorizations">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_categorizations" title="Link to this definition"></a></dt>
@@ -187,6 +186,12 @@ Predicate will <em>not</em> check if, for instance, the patient variants are com
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_categories">
 <span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_categories" title="Link to this definition"></a></dt>
 <dd><p>Get an iterator with <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> instances that the predicate can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_category_names">
+<span class="sig-name descname"><span class="pre">get_category_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_category_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_category_names" title="Link to this definition"></a></dt>
+<dd><p>Get an iterator with names of the <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> items that the predicate can produce.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -218,9 +223,16 @@ Predicate will <em>not</em> check if, for instance, the patient variants are com
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_question">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_question" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_question_base">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_question_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_question_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_question_base" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.display_question">
+<span class="sig-name descname"><span class="pre">display_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.display_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.display_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare the question which the predicate can answer.</p>
+<p>The question includes the question base and the category names</p>
 </dd></dl>
 
 <dl class="py method">
@@ -246,7 +258,10 @@ Predicate will <em>not</em> check if, for instance, the patient variants are com
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.boolean_predicate"><code class="docutils literal notranslate"><span class="pre">boolean_predicate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.groups_predicate"><code class="docutils literal notranslate"><span class="pre">groups_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.recessive_predicate"><code class="docutils literal notranslate"><span class="pre">recessive_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.filtering_predicate"><code class="docutils literal notranslate"><span class="pre">filtering_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate"><code class="docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter"><code class="docutils literal notranslate"><span class="pre">AlleleCounter</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate"><code class="docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates"><code class="docutils literal notranslate"><span class="pre">VariantPredicates</span></code></a></li>
