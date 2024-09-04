@@ -90,7 +90,7 @@
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span>
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span> <span class="n">RecessiveGroupingPredicate</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span>
 <span class="kn">from</span> <span class="nn">._counter</span> <span class="kn">import</span> <span class="n">AlleleCounter</span>
 
@@ -366,73 +366,6 @@
         <span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
         <span class="n">targets</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
     <span class="p">)</span></div>
-
-
-
-<span class="k">class</span> <span class="nc">AlleleCountingRecessivePredicate</span><span class="p">(</span><span class="n">RecessiveGroupingPredicate</span><span class="p">):</span>
-    <span class="c1"># NOT PART OF THE PUBLIC API</span>
-    <span class="c1"># TODO: this predicate is a bit weird and I think it should eventually go away.</span>
-    <span class="c1">#  Therefore, I do not write any tests at this point.</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">allele_counter</span><span class="p">:</span> <span class="n">AlleleCounter</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">=</span> <span class="n">allele_counter</span>
-
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
-
-        <span class="n">allele_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">NEITHER</span>
-        <span class="k">elif</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">ONE</span>
-        <span class="k">elif</span> <span class="n">allele_count</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">RecessiveGroupingPredicate</span><span class="o">.</span><span class="n">BOTH</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AlleleCountingRecessivePredicate</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_allele_counter</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="p">,))</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;AlleleCountingRecessivePredicate(allele_counter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_allele_counter</span><span class="si">}</span><span class="s2">)&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="recessive_predicate">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.recessive_predicate">[docs]</a>
-<span class="k">def</span> <span class="nf">recessive_predicate</span><span class="p">(</span>
-    <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a recessive grouping predicate from given `variant_predicate`</span>
-<span class="sd">    to bin the patient into :class:`RecessiveGroupingPredicate.NEITHER`,</span>
-<span class="sd">    :class:`RecessiveGroupingPredicate.ONE`, or :class:`RecessiveGroupingPredicate.BOTH`,</span>
-<span class="sd">    depending on the number of variant alleles matching the variant predicate.</span>
-
-<span class="sd">    The patient is assigned into a group in the following manner:</span>
-<span class="sd">    * 0 alleles: :class:`RecessiveGroupingPredicate.NEITHER`</span>
-<span class="sd">    * 1 alleles: :class:`RecessiveGroupingPredicate.ONE`</span>
-<span class="sd">    * 2 alleles: :class:`RecessiveGroupingPredicate.BOTH`</span>
-<span class="sd">    * other: `None`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">allele_counter</span> <span class="o">=</span> <span class="n">AlleleCounter</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">AlleleCountingRecessivePredicate</span><span class="p">(</span><span class="n">allele_counter</span><span class="o">=</span><span class="n">allele_counter</span><span class="p">)</span></div>
 
 
 

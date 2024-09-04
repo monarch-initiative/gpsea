@@ -156,20 +156,6 @@ and the <cite>targets</cite> must include at least 2 categorizations.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.recessive_predicate">
-<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">recessive_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#recessive_predicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.recessive_predicate" title="Link to this definition"></a></dt>
-<dd><p>Create a recessive grouping predicate from given <cite>variant_predicate</cite>
-to bin the patient into <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.NEITHER</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.ONE</span></code>, or <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.BOTH</span></code>,
-depending on the number of variant alleles matching the variant predicate.</p>
-<p>The patient is assigned into a group in the following manner:
-* 0 alleles: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.NEITHER</span></code>
-* 1 alleles: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.ONE</span></code>
-* 2 alleles: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecessiveGroupingPredicate.BOTH</span></code>
-* other: <cite>None</cite></p>
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ModeOfInheritancePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">allele_counter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.AlleleCounter" title="gpsea.analysis.predicate.genotype._counter.AlleleCounter"><span class="pre">AlleleCounter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_of_inheritance_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModeOfInheritanceInfo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="Link to this definition"></a></dt>
