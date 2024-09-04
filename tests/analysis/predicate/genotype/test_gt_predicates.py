@@ -7,6 +7,7 @@ from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
     filtering_predicate,
+    sex_predicate,
     VariantPredicates,
     VariantPredicate,
     ModeOfInheritancePredicate,
@@ -185,7 +186,7 @@ class TestModeOfInheritancePredicate:
         assert categorization.category.name == name
 
 
-class TestPolyPredicate:
+class TestFilteringPredicate:
 
     @pytest.fixture(scope="class")
     def x_recessive_gt_predicate(self) -> GenotypePolyPredicate:
@@ -262,4 +263,35 @@ class TestPolyPredicate:
         assert (
             ve.value.args[0]
             == "At least 2 target categorizations must be provided but got 1"
+        )
+
+
+class TestSexPredicate:
+
+    def test_sex_predicate(
+        self,
+    ):
+        joe = TestSexPredicate.make_patient('Joe', Sex.MALE)
+        jane = TestSexPredicate.make_patient('Jane', Sex.FEMALE)
+        miffy = TestSexPredicate.make_patient('Miffy', Sex.UNKNOWN_SEX)
+        
+        gt_predicate = sex_predicate()
+        female, male = gt_predicate.get_categorizations()
+
+        assert gt_predicate.test(joe) == male
+        assert gt_predicate.test(jane) == female
+        assert gt_predicate.test(miffy) is None
+
+    def test_get_question(self):
+        gt_predicate = sex_predicate()
+        assert gt_predicate.display_question() == 'Sex of the individual: FEMALE, MALE'
+
+    @staticmethod
+    def make_patient(label: str, sex: Sex) -> Patient:
+        return Patient(
+            SampleLabels(label),
+            sex,
+            phenotypes=(),
+            diseases=(),
+            variants=(),
         )
