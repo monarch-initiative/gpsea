@@ -486,20 +486,50 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.</span>
 
+<span class="sd">    A file with `.json` suffix is considered to be a JSON file and all JSON files are assumed to be phenopackets.</span>
+<span class="sd">    Non-JSON files are ignored.</span>
+
 <span class="sd">    :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to</span>
 <span class="sd">      a directory with at least one phenopacket.</span>
 <span class="sd">    :param cohort_creator: cohort creator for turning a sequence of phenopacket</span>
 <span class="sd">      into a :class:`~gpsea.model.Cohort`.</span>
 <span class="sd">    :param validation_policy: a `str` with the validation policy.</span>
 <span class="sd">      The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
-<span class="sd">    :return: a tuple with the cohort and the preprocessing validation result.</span>
+<span class="sd">    :return: a tuple with the cohort and the validation result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Load phenopackets</span>
-    <span class="n">phenopackets</span> <span class="o">=</span> <span class="n">_load_phenopacket_dir</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">)</span>
+    <span class="n">pp_files</span> <span class="o">=</span> <span class="n">_find_phenopacket_files</span><span class="p">(</span><span class="n">pp_directory</span><span class="p">)</span>
 
     <span class="c1"># Map to patients</span>
+    <span class="k">return</span> <span class="n">load_phenopacket_files</span><span class="p">(</span>
+        <span class="n">pp_files</span><span class="o">=</span><span class="n">pp_files</span><span class="p">,</span>
+        <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
+        <span class="n">validation_policy</span><span class="o">=</span><span class="n">validation_policy</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_phenopacket_files">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_files">[docs]</a>
+<span class="k">def</span> <span class="nf">load_phenopacket_files</span><span class="p">(</span>
+    <span class="n">pp_files</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
+    <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Cohort</span><span class="p">,</span> <span class="n">PreprocessingValidationResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load phenopacket JSON files, validate the data, and assemble into a :class:`~gpsea.model.Cohort`.</span>
+<span class="sd">    </span>
+<span class="sd">    Phenopackets are validated, assembled into a cohort, and the validation results are reported back.</span>
+
+<span class="sd">    :param pp_files: an iterator with paths to phenopacket JSON files.</span>
+<span class="sd">    :param cohort_creator: cohort creator for turning a phenopacket collection</span>
+<span class="sd">      into a :class:`~gpsea.model.Cohort`.</span>
+<span class="sd">    :param validation_policy: a `str` with the validation policy.</span>
+<span class="sd">      The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
+<span class="sd">    :return: a tuple with the cohort and the validation result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">load_phenopackets</span><span class="p">(</span>
-        <span class="n">phenopackets</span><span class="o">=</span><span class="n">phenopackets</span><span class="p">,</span>
+        <span class="n">phenopackets</span><span class="o">=</span><span class="p">(</span><span class="n">_load_phenopacket</span><span class="p">(</span><span class="n">pp_file</span><span class="p">)</span> <span class="k">for</span> <span class="n">pp_file</span> <span class="ow">in</span> <span class="n">pp_files</span><span class="p">),</span>
         <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
         <span class="n">validation_policy</span><span class="o">=</span><span class="n">validation_policy</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -514,7 +544,9 @@
     <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Cohort</span><span class="p">,</span> <span class="n">PreprocessingValidationResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Map phenopacket JSON file into patient, validate the patient data, and assemble the patients into a cohort.</span>
+<span class="sd">    Validate the phenopackets and assemble into a :class:`~gpsea.model.Cohort`.</span>
+<span class="sd">    </span>
+<span class="sd">    The results of the validation are reported back.</span>
 
 <span class="sd">    :param phenopackets: path to a folder with phenopacket JSON files. An error is raised if the path does not point to</span>
 <span class="sd">      a directory with at least one phenopacket.</span>
@@ -522,7 +554,7 @@
 <span class="sd">      into a :class:`~gpsea.model.Cohort`.</span>
 <span class="sd">    :param validation_policy: a `str` with the validation policy.</span>
 <span class="sd">      The value must be one of `{&#39;none&#39;, &#39;lenient&#39;, &#39;strict&#39;}`</span>
-<span class="sd">    :return: a tuple with the cohort and the preprocessing validation result.</span>
+<span class="sd">    :return: a tuple with the cohort and the validation result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check inputs before doing anything</span>
     <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">cohort_creator</span><span class="p">,</span> <span class="n">CohortCreator</span><span class="p">,</span> <span class="s2">&quot;cohort_creator&quot;</span><span class="p">)</span>
@@ -545,17 +577,16 @@
 
 
 
-<span class="k">def</span> <span class="nf">_load_phenopacket_dir</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_find_phenopacket_files</span><span class="p">(</span>
     <span class="n">pp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">fpath_pp_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fpath_pp_abs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">fpath_pp_abs</span><span class="si">}</span><span class="s2">` does not point to a directory&quot;</span><span class="p">)</span>
-
+    
     <span class="k">for</span> <span class="n">patient_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">patient_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
-            <span class="n">phenopacket_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">patient_file</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="n">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">patient_file</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phenopacket</span><span class="p">:</span>
