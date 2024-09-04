@@ -1,5 +1,7 @@
 import abc
 import math
+import typing
+
 from decimal import Decimal
 
 
@@ -14,8 +16,44 @@ class CountStatistic(metaclass=abc.ABCMeta):
     `CountStatistic` calculates a p value for a contingency table
     produced by a pair of discrete random variables.
 
-    The `counts` table is usually `2x2` or `2x3`.
+    
+    Supports shape
+    ^^^^^^^^^^^^^^
+
+    `CountStatistic` takes the counts in form of a data frame,
+    and some statistics impose additional requirements on the frame shape.
+    For instance, GPSEA's implementation of the Fisher exact test
+    can compare counts in a ``(2, 2)`` or ``(2, 3)`` arrays
+    but χ2 test can test an ``(m, n)`` array.
+
+    It is important to check that a genotype/phenotype predicate produces
+    the number of groups which the statistic can test.
+
+    The :attr:`supports_shape` returns a sequence with requirements
+    on the shape of the data array/frame. The sequence includes
+    the number of
+
+    Examples
+    ********
+
+    +------------------------+-------------------------+------------------+
+    | Test                   | Array shape             | `supports_shape` |
+    +========================+=========================+==================+
+    | Fisher Exact Test      | ``(2, [2, 3])``         | ``(2, [2,3])``   |
+    +------------------------+-------------------------+------------------+
+    | χ2                     | ``(*, *)``              | ``(None, None)`` |
+    +------------------------+-------------------------+------------------+
     """
+
+    @property
+    @abc.abstractmethod
+    def supports_shape(
+        self,
+    ) -> typing.Sequence[typing.Union[int, typing.Sequence[int], None]]:
+        """
+        Get a sequence of the supported shapes.
+        """
+        pass
 
     @abc.abstractmethod
     def compute_pval(
@@ -25,47 +63,35 @@ class CountStatistic(metaclass=abc.ABCMeta):
         pass
 
 
-class ScipyFisherExact(CountStatistic):
+class FisherExactTest(CountStatistic):
     """
-    `ScipyFisherExact` performs Fisher Exact Test on a `2x2` contingency table.
+    `FisherExactTest` performs Fisher Exact Test on a `2x2` or `2x3` contingency table.
 
-    The class is a thin wrapper around Scipy :func:`~scipy.stats.fisher_exact` function.
-    The two-sided :math:`H_1` is considered.
+    The `2x2` version is a thin wrapper around Scipy :func:`~scipy.stats.fisher_exact` function,
+    while the `2x3` variant is implemented in Python.
+    In both variants, the two-sided :math:`H_1` is considered.
     """
+    
+    def __init__(self):
+        self._shape = (2, (2, 3))
+
+    @property
+    def supports_shape(
+        self,
+    ) -> typing.Sequence[typing.Union[int, typing.Sequence[int], None]]:
+        return self._shape
 
     def compute_pval(
         self,
         counts: pd.DataFrame,
     ) -> float:
-        assert counts.shape == (
-            2,
-            2,
-        ), f"Cannot run Fisher exact test on an array with {counts.shape} shape"
-        _, pval = scipy.stats.fisher_exact(counts.values, alternative="two-sided")
-        return pval
-
-
-class PythonMultiFisherExact(CountStatistic):
-    """
-    `PythonMultiFisherExact` is a Python implementation of Fisher Exact Test to compute
-    p value for a `2x3` contingency table.
-    """
-
-    def compute_pval(
-        self,
-        counts: pd.DataFrame,
-    ) -> float:
-        PythonMultiFisherExact._check_input(counts)
-        return self._fisher_exact(counts.values)
-
-    @staticmethod
-    def _check_input(a: pd.DataFrame):
-        if not isinstance(a, pd.DataFrame):
-            raise ValueError(f"Expected a pandas DataFrame but got {type(a)}")
-        if not a.shape == (2, 3):
-            raise ValueError(f"Shape of the array must be (2, 3) but got {a.shape}")
-        if np.array_equal(a.values, np.zeros_like(a)):
-            raise ValueError("Data frame is all zeros, cannot run analysis")
+        if counts.shape == (2, 2):
+            _, pval = scipy.stats.fisher_exact(counts.values, alternative="two-sided")
+            return pval
+        elif counts.shape == (2, 3):
+            return self._fisher_exact(counts.values)
+        else:
+            raise ValueError(f'Unsupported counts shape {counts.shape}')
 
     def _fisher_exact(
         self,

@@ -225,14 +225,65 @@ def configure_protein_metadata_service(
      In any case, the directory will be created if it does not exist (including any non-existing parents).
     :param timeout: timeout in seconds for the REST APIs.
     """
+    warnings.warn('Use `configure_default_protein_metadata_service` instead', DeprecationWarning, stacklevel=2)
+    return configure_default_protein_metadata_service(
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
+
+
+def configure_default_protein_metadata_service(
+    protein_source: typing.Literal['UNIPROT'] = 'UNIPROT',
+    cache_dir: typing.Optional[str] = None,
+    timeout: float = 30.,
+) -> ProteinMetadataService:
+    """
+    Create default protein metadata service that will cache the protein metadata
+    in current working directory under `.gpsea_cache/protein_cache`
+    and reach out to UNIPROT REST API if a cache entry is missing.
+
+    :param protein_source: a `str` with the code of the protein data sources (currently accepting just `UNIPROT`).
+    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
+        if the data should be cached as described by :func:`~gpsea.config.get_cache_dir_path` function.
+        In any case, the directory will be created if it does not exist (including any non-existing parents).
+    :param timeout: timeout in seconds for the REST APIs.
+    """
     cache_dir = _configure_cache_dir(cache_dir)
+    return _configure_protein_service(
+        protein_fallback=protein_source,
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
 
-    protein_cache_dir = os.path.join(cache_dir, "protein_cache")
-    os.makedirs(protein_cache_dir, exist_ok=True)
 
-    cache = ProteinAnnotationCache(protein_cache_dir)
-    fallback = UniprotProteinMetadataService(timeout=timeout)
-    return ProtCachingMetadataService(cache=cache, fallback=fallback)
+def _configure_protein_service(
+    protein_fallback: str,
+    cache_dir: str,
+    timeout: float,
+) -> ProteinMetadataService:
+    # (1) ProteinMetadataService
+    # Setup fallback
+    protein_fallback = _configure_fallback_protein_service(
+        protein_fallback,
+        timeout,
+    )
+    # Setup protein metadata cache
+    prot_cache_dir = os.path.join(cache_dir, 'protein_cache')
+    os.makedirs(prot_cache_dir, exist_ok=True)
+    prot_cache = ProteinAnnotationCache(prot_cache_dir)
+    # Assemble the final protein metadata service
+    protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
+    return protein_metadata_service
+
+
+def _configure_fallback_protein_service(
+    protein_fallback: str,
+    timeout: float,
+) -> ProteinMetadataService:
+    if protein_fallback == 'UNIPROT':
+        return UniprotProteinMetadataService(timeout)
+    else:
+        raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
 
 
 def _configure_cache_dir(
@@ -332,20 +383,47 @@ def load_phenopacket_folder(
     """
     Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.
 
+    A file with `.json` suffix is considered to be a JSON file and all JSON files are assumed to be phenopackets.
+    Non-JSON files are ignored.
+
     :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
       a directory with at least one phenopacket.
     :param cohort_creator: cohort creator for turning a sequence of phenopacket
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
       The value must be one of `{'none', 'lenient', 'strict'}`
-    :return: a tuple with the cohort and the preprocessing validation result.
+    :return: a tuple with the cohort and the validation result.
     """
     # Load phenopackets
-    phenopackets = _load_phenopacket_dir(pp_directory)
+    pp_files = _find_phenopacket_files(pp_directory)
 
     # Map to patients
+    return load_phenopacket_files(
+        pp_files=pp_files,
+        cohort_creator=cohort_creator,
+        validation_policy=validation_policy,
+    )
+
+
+def load_phenopacket_files(
+    pp_files: typing.Iterator[str],
+    cohort_creator: CohortCreator[Phenopacket],
+    validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
+) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
+    """
+    Load phenopacket JSON files, validate the data, and assemble into a :class:`~gpsea.model.Cohort`.
+    
+    Phenopackets are validated, assembled into a cohort, and the validation results are reported back.
+
+    :param pp_files: an iterator with paths to phenopacket JSON files.
+    :param cohort_creator: cohort creator for turning a phenopacket collection
+      into a :class:`~gpsea.model.Cohort`.
+    :param validation_policy: a `str` with the validation policy.
+      The value must be one of `{'none', 'lenient', 'strict'}`
+    :return: a tuple with the cohort and the validation result.
+    """
     return load_phenopackets(
-        phenopackets=phenopackets,
+        phenopackets=(_load_phenopacket(pp_file) for pp_file in pp_files),
         cohort_creator=cohort_creator,
         validation_policy=validation_policy,
     )
@@ -357,7 +435,9 @@ def load_phenopackets(
     validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
-    Map phenopacket JSON file into patient, validate the patient data, and assemble the patients into a cohort.
+    Validate the phenopackets and assemble into a :class:`~gpsea.model.Cohort`.
+    
+    The results of the validation are reported back.
 
     :param phenopackets: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
       a directory with at least one phenopacket.
@@ -365,7 +445,7 @@ def load_phenopackets(
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
       The value must be one of `{'none', 'lenient', 'strict'}`
-    :return: a tuple with the cohort and the preprocessing validation result.
+    :return: a tuple with the cohort and the validation result.
     """
     # Check inputs before doing anything
     hpotk.util.validate_instance(cohort_creator, CohortCreator, "cohort_creator")
@@ -387,17 +467,16 @@ def load_phenopackets(
     return cohort, validation_result
 
 
-def _load_phenopacket_dir(
+def _find_phenopacket_files(
     pp_dir: str,
-) -> typing.Iterator[Phenopacket]:
+) -> typing.Iterator[str]:
     fpath_pp_abs = os.path.abspath(pp_dir)
     if not os.path.isdir(fpath_pp_abs):
         raise ValueError(f"`{fpath_pp_abs}` does not point to a directory")
-
+    
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith(".json"):
-            phenopacket_path = os.path.join(pp_dir, patient_file)
-            yield _load_phenopacket(phenopacket_path)
+            yield os.path.join(pp_dir, patient_file)
 
 
 def _load_phenopacket(phenopacket_path: str) -> Phenopacket:

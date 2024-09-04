@@ -4,15 +4,28 @@ import typing
 import hpotk
 
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
+import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 from phenopackets.vrsatile.v1.vrsatile_pb2 import VcfRecord, VariationDescriptor
 from phenopackets.vrs.v1.vrs_pb2 import Variation
 
-from gpsea.model import Patient, SampleLabels, Disease
-from gpsea.model import  VariantClass, VariantCoordinates, ImpreciseSvInfo, VariantInfo, Variant, Genotype, Genotypes 
+from gpsea.model import SampleLabels, Patient, Sex, Disease
+from gpsea.model import (
+    VariantClass,
+    VariantCoordinates,
+    ImpreciseSvInfo,
+    VariantInfo,
+    Variant,
+    Genotype,
+    Genotypes,
+)
 from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
-from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator
+from ._api import (
+    VariantCoordinateFinder,
+    FunctionalAnnotator,
+    ImpreciseSvFunctionalAnnotator,
+)
 from ._audit import Notepad
 from ._patient import PatientCreator
 from ._phenotype import PhenotypeCreator
@@ -27,14 +40,14 @@ class PhenopacketGenotypeParser:
         self,
         item: GenomicInterpretation,
     ) -> typing.Optional[Genotype]:
-        if item.HasField('variant_interpretation'):
+        if item.HasField("variant_interpretation"):
             variant_interpretation = item.variant_interpretation
-            if variant_interpretation.HasField('variation_descriptor'):
+            if variant_interpretation.HasField("variation_descriptor"):
                 variation_descriptor = variant_interpretation.variation_descriptor
-                if variation_descriptor.HasField('allelic_state'):
+                if variation_descriptor.HasField("allelic_state"):
                     genotype = variation_descriptor.allelic_state.label
                     return self._map_geno_genotype_label(genotype)
-        
+
         return None
 
     @staticmethod
@@ -85,7 +98,7 @@ class PhenopacketVariantCoordinateFinder(
 
         Args:
             item (GenomicInterpretation): a genomic interpretation element from Phenopacket Schema
-        
+
         Returns:
             typing.Optional[VariantCoordinates]: variant coordinates
         """
@@ -102,8 +115,9 @@ class PhenopacketVariantCoordinateFinder(
                 variation_descriptor.vcf_record.genome_assembly
             ):
                 raise ValueError(
-                    f"Variant id {variation_descriptor.id} for patient {item.subject_or_biosample_id} has a different Genome Assembly than what was given. "
-                    + f"{variation_descriptor.vcf_record.genome_assembly} is not {self._build.identifier}."
+                    f"Variant id {variation_descriptor.id} for patient {item.subject_or_biosample_id} "
+                    "has a different Genome Assembly than what was given. "
+                    f"{variation_descriptor.vcf_record.genome_assembly} is not {self._build.identifier}."
                 )
             contig = self._build.contig_by_name(variation_descriptor.vcf_record.chrom)
             start = int(variation_descriptor.vcf_record.pos) - 1
@@ -134,7 +148,9 @@ class PhenopacketVariantCoordinateFinder(
                 alt = "<DUP>"
                 change_length = end - start
             else:
-                raise ValueError(f"The copy number of {number} is not supported. Supported values: {{1, 3}}")
+                raise ValueError(
+                    f"The copy number of {number} is not supported. Supported values: {{1, 3}}"
+                )
 
             region = GenomicRegion(contig, start, end, Strand.POSITIVE)
             return VariantCoordinates(region, ref, alt, change_length)
@@ -197,7 +213,7 @@ class PhenopacketVariantCoordinateFinder(
             else None
         )
 
-        # If we have these fields, we seem to have all information 
+        # If we have these fields, we seem to have all information
         # to parse the variation descriptor elsewhere.
         return structural_type is not None and gene_context is not None
 
@@ -214,7 +230,19 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
+        assume_karyotypic_sex: bool = True,
     ):
+        """
+        Create an instance.
+
+        :param build: the genome build to use for variants.
+        :param phenotype_creator: a phenotype creator for creating phenotypes.
+        :param functional_annotator: for computing functional annotations.
+        :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
+        :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
+        :param assume_karyotypic_sex: `True` if it is OK to assume that `FEMALE` has the `XX` karyotype
+            and `MALE` has `XY`.
+        """
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder(
@@ -228,49 +256,64 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
         self._imprecise_sv_functional_annotator = hpotk.util.validate_instance(
-            imprecise_sv_functional_annotator, ImpreciseSvFunctionalAnnotator, "imprecise_sv_functional_annotator"
+            imprecise_sv_functional_annotator,
+            ImpreciseSvFunctionalAnnotator,
+            "imprecise_sv_functional_annotator",
         )
-        
+
         # Set of sequence ontology IDs that we will treat as a deletion (`DEL`)
         # for the purpose of assigning imprecise SV info with a variant class.
         self._so_deletions = {
-            '1000029',  # chromosomal deletion: An incomplete chromosome.
-            '0001893',  # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
-            '0001879',  # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence, where the deletion, is greater than the extent of the underlying genomic features.
+            "1000029",  # chromosomal deletion: An incomplete chromosome.
+            # transcript ablation: A feature ablation whereby the deleted region includes a transcript feature.
+            "0001893",
+            # feature_ablation: A sequence variant, caused by an alteration of the genomic sequence,
+            # where the deletion, is greater than the extent of the underlying genomic features.
+            "0001879",
         }
         self._so_duplications = {
-            '1000037',  # chromosomal_duplication
+            "1000037",  # chromosomal_duplication
         }
+        self._assume_karyotypic_sex = assume_karyotypic_sex
 
-    def process(self, inputs: Phenopacket, notepad: Notepad) -> Patient:
+    def process(self, pp: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
 
         Args:
-            inputs (Phenopacket): A Phenopacket object
+            pp (Phenopacket): A Phenopacket object
             notepad (Notepad): notepad to write down the issues
         Returns:
             Patient: A Patient object
         """
         sample_id = SampleLabels(
-            label=inputs.subject.id,
-            meta_label=inputs.id if len(inputs.id) > 0 else None,
+            label=pp.subject.id,
+            meta_label=pp.id if len(pp.id) > 0 else None,
         )
+
+        # Extract karyotypic sex
+        indi = notepad.add_subsection("individual")
+        sex = self._extract_sex(pp.subject, indi)
 
         # Check phenotypes
         pfs = notepad.add_subsection("phenotype-features")
         phenotypes = self._phenotype_creator.process(
-            ((pf.type.id, not pf.excluded) for pf in inputs.phenotypic_features), pfs
+            ((pf.type.id, not pf.excluded) for pf in pp.phenotypic_features), pfs
         )
 
         # Check diseases
-        diseases = self._add_diseases([dis for dis in inputs.diseases], pfs)
+        dip = notepad.add_subsection("diseases")
+        diseases = self._add_diseases(pp.diseases, dip)
 
         # Check variants
         vs = notepad.add_subsection("variants")
-        variants = self._add_variants(sample_id, inputs, vs)
+        variants = self._add_variants(sample_id, pp, vs)
 
-        return Patient(
-            sample_id, phenotypes=phenotypes, variants=variants, diseases=diseases
+        return Patient.from_raw_parts(
+            sample_id,
+            sex=sex,
+            phenotypes=phenotypes,
+            variants=variants,
+            diseases=diseases,
         )
 
     def _add_diseases(
@@ -285,21 +328,43 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             Sequence[Dis]: A list of Disease objects
         """
         if len(diseases) == 0:
-            notepad.add_warning(f"No diseases found.")
-            return []
+            notepad.add_warning("No diseases found")
+            return ()
+
         final_diseases = []
         for i, dis in enumerate(diseases):
             if not dis.HasField("term"):
-                raise ValueError("Could not find term in Disease.")
-            term_id = hpotk.TermId.from_curie(dis.term.id)
+                notepad.add_error(f"#{i} has no `term`")
+                continue
+            else:
+                term_id = hpotk.TermId.from_curie(dis.term.id)
+
             # Do not include excluded diseases if we decide to assume excluded if not included
             final_diseases.append(Disease(term_id, dis.term.label, not dis.excluded))
+
         return final_diseases
 
+    def _extract_sex(
+        self,
+        individual: ppi.Individual,
+        notepad: Notepad,
+    ) -> typing.Optional[Sex]:
+        # Let's use the phenotypic sex as fallback
+        sex = individual.sex
+        if sex == ppi.FEMALE:
+            return Sex.FEMALE
+        elif sex == ppi.MALE:
+            return Sex.MALE
+        elif sex == ppi.OTHER_SEX or sex == ppi.UNKNOWN_SEX:
+            return Sex.UNKNOWN_SEX
+        else:
+            notepad.add_warning(f'Unknown sex type: {sex}')
+            return Sex.UNKNOWN_SEX
+
     def _add_variants(
-        self, 
-        sample_id: SampleLabels, 
-        pp: Phenopacket, 
+        self,
+        sample_id: SampleLabels,
+        pp: Phenopacket,
         notepad: Notepad,
     ) -> typing.Sequence[Variant]:
         """Creates a list of Variant objects from the data in a given Phenopacket
@@ -311,24 +376,28 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             Sequence[Variant]: A list of Variant objects
         """
         variants = []
-        
+
         for i, interpretation in enumerate(pp.interpretations):
-            sub_note = notepad.add_subsection(f'#{i}')
-            if interpretation.HasField('diagnosis'):
-                for genomic_interpretation in interpretation.diagnosis.genomic_interpretations:
+            sub_note = notepad.add_subsection(f"#{i}")
+            if interpretation.HasField("diagnosis"):
+                for (
+                    genomic_interpretation
+                ) in interpretation.diagnosis.genomic_interpretations:
                     gt = self._gt_parser.find_genotype(genomic_interpretation)
                     if gt is None:
                         sub_note.add_warning(
-                            f"Could not extract genotype from genomic interpretation",
+                            "Could not extract genotype from genomic interpretation",
                             "Remove variant from testing",
                         )
                         continue
-                    
-                    variant_info = self._extract_variant_info(sample_id, genomic_interpretation, sub_note)
+
+                    variant_info = self._extract_variant_info(
+                        sample_id, genomic_interpretation, sub_note
+                    )
                     if variant_info is None:
                         # We already complained in the extract function
                         continue
-                    
+
                     if variant_info.has_variant_coordinates():
                         try:
                             tx_annotations = self._functional_annotator.annotate(
@@ -342,8 +411,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             continue
                     elif variant_info.has_sv_info():
                         try:
-                            tx_annotations = self._imprecise_sv_functional_annotator.annotate(
-                                item=variant_info.sv_info,
+                            tx_annotations = (
+                                self._imprecise_sv_functional_annotator.annotate(
+                                    item=variant_info.sv_info,
+                                )
                             )
                         except ValueError as error:
                             sub_note.add_warning(
@@ -352,23 +423,25 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             )
                             continue
                     else:
-                        raise ValueError('VariantInfo should have either the coordinates or the SV info, but had neither!')
+                        raise ValueError(
+                            "VariantInfo should have either the coordinates or the SV info, but had neither!"
+                        )
 
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
                             f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                            f"Remove variant from testing... tx_anno == 0",
+                            "Remove variant from testing... tx_anno == 0",
                         )
                         continue
 
-                    
                     genotype = Genotypes.single(sample_id, gt)
                     variants.append(
                         Variant(
-                            variant_info=variant_info, 
-                            tx_annotations=tx_annotations, 
+                            variant_info=variant_info,
+                            tx_annotations=tx_annotations,
                             genotypes=genotype,
-                        ))
+                        )
+                    )
 
         if len(variants) == 0:
             notepad.add_warning(f"Patient {pp.id} has no variants to work with")
@@ -385,39 +458,50 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         sv_info = None
 
         try:
-            variant_coordinates = self._coord_finder.find_coordinates(genomic_interpretation)
+            variant_coordinates = self._coord_finder.find_coordinates(
+                genomic_interpretation
+            )
         except ValueError:
             notepad.add_warning(
-                f"Expected a VCF record, a VRS CNV, or an expression with `hgvs.c` but had an error retrieving any from patient {sample_id}",
+                "Expected a VCF record, a VRS CNV, or an expression with `hgvs.c`"
+                f"but had an error retrieving any from patient {sample_id}",
                 "Remove variant from testing",
             )
             return None
-        
+
         if variant_coordinates is None:
             sv_info = self._map_to_imprecise_sv(genomic_interpretation)
             if sv_info is None:
                 notepad.add_warning(
-                    f"Could not extract the information for large SV annotation",
+                    "Could not extract the information for large SV annotation",
                     "Remove variant from testing",
                 )
                 return None
-        
+
         return VariantInfo(
             variant_coordinates=variant_coordinates,
             sv_info=sv_info,
         )
 
     def _map_to_imprecise_sv(
-        self, 
+        self,
         genomic_interpretation: GenomicInterpretation,
     ) -> typing.Optional[ImpreciseSvInfo]:
-        if genomic_interpretation.HasField('variant_interpretation'):
+        if genomic_interpretation.HasField("variant_interpretation"):
             variant_interpretation = genomic_interpretation.variant_interpretation
-            if variant_interpretation.HasField('variation_descriptor'):
+            if variant_interpretation.HasField("variation_descriptor"):
                 variation_descriptor = variant_interpretation.variation_descriptor
-                
-                structural_type = variation_descriptor.structural_type if variation_descriptor.HasField('structural_type') else None
-                gene_context = variation_descriptor.gene_context if variation_descriptor.HasField('gene_context') else None
+
+                structural_type = (
+                    variation_descriptor.structural_type
+                    if variation_descriptor.HasField("structural_type")
+                    else None
+                )
+                gene_context = (
+                    variation_descriptor.gene_context
+                    if variation_descriptor.HasField("gene_context")
+                    else None
+                )
 
                 if structural_type is not None and gene_context is not None:
                     st = hpotk.TermId.from_curie(curie=structural_type.id)
@@ -428,23 +512,23 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                         gene_id=gene_context.value_id,
                         gene_symbol=gene_context.symbol,
                     )
-                
+
         return None
-    
+
     def _map_structural_type_to_variant_class(
         self,
         structural_type: hpotk.TermId,
     ) -> VariantClass:
         # This method is most likely incomplete.
-        # Please open a ticket if you receive a `ValueError` 
+        # Please open a ticket if you receive a `ValueError`
         # for a structural type, that is not mapped at the moment,
         # to help us enhance the mapping.
-        if structural_type.prefix == 'SO':
+        if structural_type.prefix == "SO":
             if structural_type.id in self._so_deletions:
                 return VariantClass.DEL
             elif structural_type.id in self._so_duplications:
                 return VariantClass.DUP
             else:
-                raise ValueError(f'Unknown structural type {structural_type}')
+                raise ValueError(f"Unknown structural type {structural_type}")
         else:
-            raise ValueError(f'Unknown structural type {structural_type}')
+            raise ValueError(f"Unknown structural type {structural_type}")

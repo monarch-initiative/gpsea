@@ -1,0 +1,54 @@
+{
+    "id": "PMID_12345",
+    "subject": {
+      "id": "Pat_1"
+    },
+    "phenotypicFeatures": [
+      {
+        "type": {
+          "id": "HP:5200338",
+          "label": "Excessive fire setting"
+        }
+      }
+    ],
+    "interpretations": [
+      {
+        "id": "Pat_1",
+        "progressStatus": "SOLVED",
+        "diagnosis": {
+          "genomicInterpretations": [
+            {
+              "subjectOrBiosampleId": "Pat_1",
+              "interpretationStatus": "CAUSATIVE",
+              "variantInterpretation": {
+                "variationDescriptor": {
+                  "geneContext": {
+                    "valueId": "HGNC:6138",
+                    "symbol": "ITGA2B"
+                  },
+                  "expressions": [
+                    {
+                      "syntax": "hgvs.c",
+                      "value": "NM_000419.3:c.3077G>A"
+                    },
+                    {
+                      "syntax": "hgvs.g",
+                      "value": "NC_000017.11:g.44372407C>T"
+                    }
+                  ],
+                  "vcfRecord": {
+                    "genomeAssembly": "hg38",
+                    "chrom": "chr17",
+                    "pos": "44372407",
+                    "ref": "C",
+                    "alt": "T"
+                  },
+                  "moleculeContext": "genomic"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+}

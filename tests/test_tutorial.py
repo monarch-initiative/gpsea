@@ -6,7 +6,7 @@ from gpsea.model import Cohort, VariantEffect
 from gpsea.preprocessing import configure_caching_cohort_creator, CohortCreator, load_phenopackets
 from gpsea.analysis.pcats import HpoTermAnalysis
 from gpsea.analysis.mtc_filter import HpoMtcFilter
-from gpsea.analysis.pcats.stats import ScipyFisherExact
+from gpsea.analysis.pcats.stats import FisherExactTest
 from gpsea.analysis.predicate.genotype import VariantPredicates, groups_predicate
 from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
 
@@ -53,7 +53,7 @@ class TestTutorial:
         mtc_filter,
     ) -> HpoTermAnalysis:
         return HpoTermAnalysis(
-            count_statistic=ScipyFisherExact(),
+            count_statistic=FisherExactTest(),
             mtc_filter=mtc_filter,
             mtc_correction='fdr_bh',
             mtc_alpha=0.05,

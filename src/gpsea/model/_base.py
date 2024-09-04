@@ -1,6 +1,54 @@
+import enum
 import typing
 
 import hpotk
+
+
+class Sex(enum.Enum):
+    """
+    `Sex` represents typical “phenotypic sex”, as would be determined by a midwife or physician at birth.
+    
+    The definition is aligned with `Phenopacket Schema <https://phenopacket-schema.readthedocs.io/en/2.0.0/sex.html>`_
+    """
+    
+    UNKNOWN_SEX = 0
+    """
+    Not assessed or not available. Maps to ``NCIT:C17998``.
+    """
+    
+    FEMALE = 1
+    """
+    Female sex. Maps to ``NCIT:C46113``.
+    """
+
+    MALE = 2
+    """
+    Male sex. Maps to ``NCIT:C46112``.
+    """
+
+    def is_provided(self) -> bool:
+        """
+        Return `True` if the sex is a known value, such as `FEMALE` or `MALE`.
+        """
+        return self != Sex.UNKNOWN_SEX
+
+    def is_unknown(self) -> bool:
+        """
+        Return `True` if this is an `UNKNOWN_SEX`.
+        """
+        return self == Sex.UNKNOWN_SEX
+
+    def is_female(self) -> bool:
+        """
+        Return `True` if the sex represents a `FEMALE`.
+        """
+        return self == Sex.FEMALE
+
+    def is_male(self) -> bool:
+        """
+        Return `True` if the sex represents a `MALE`.
+        """
+        return self == Sex.MALE
 
 
 class SampleLabels:

@@ -1,5 +1,5 @@
-from ._stats import CountStatistic, ScipyFisherExact, PythonMultiFisherExact
+from ._stats import CountStatistic, FisherExactTest
 
 __all__ = [
-    'CountStatistic', 'ScipyFisherExact', 'PythonMultiFisherExact',
+    'CountStatistic', 'FisherExactTest',
 ]

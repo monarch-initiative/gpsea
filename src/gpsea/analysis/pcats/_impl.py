@@ -1,5 +1,6 @@
 import abc
 import math
+import os
 import typing
 
 from collections import Counter
@@ -14,8 +15,14 @@ from gpsea.model import Patient
 from gpsea.analysis.pcats.stats import CountStatistic
 from ..predicate import PatientCategory
 from ..predicate.genotype import GenotypePolyPredicate
-from ..predicate.phenotype import P, PhenotypePolyPredicate, prepare_predicates_for_terms_of_interest
+from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
+
+
+DEFAULT_MTC_PROCEDURE = 'fdr_bh'
+"""
+Use Benjamini-Hochberg as the default MTC procedure.
+"""
 
 
 def apply_predicates_on_patients(
@@ -57,11 +64,11 @@ def apply_predicates_on_patients(
                 data=0,
                 index=pd.Index(
                     data=ph_predicate.get_categories(),
-                    name=ph_predicate.get_question(),
+                    name=ph_predicate.get_question_base(),
                 ),
                 columns=pd.Index(
                     data=gt_predicate.get_categories(),
-                    name=gt_predicate.get_question(),
+                    name=gt_predicate.get_question_base(),
                 ),
             )
 
@@ -191,7 +198,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
         gt_idx = pd.MultiIndex.from_product(
             # TODO: fix the below
             iterables=(self._gt_predicate.get_categories(), ("Count", "Percent")),
-            names=(self._gt_predicate.get_question(), None),
+            names=(self._gt_predicate.get_question_base(), None),
         )
 
         # We'll fill this frame with data
@@ -253,22 +260,100 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
     def __init__(
         self,
         count_statistic: CountStatistic,
-        mtc_correction: typing.Optional[str] = None,
+        mtc_correction: typing.Optional[str] = DEFAULT_MTC_PROCEDURE,
         mtc_alpha: float = 0.05,
     ):
+        """
+        Create the analysis.
+
+        See the :func:`~statsmodels.stats.multitest.multipletests` for the accepted `mtc_correction` values.
+
+        :param count_statistic: the statistical test for computing p value for genotype-phenotype contingency table.
+        :param mtc_correction: a `str` with the MTC procedure code or `None` if no MTC should be performed.
+        :param mtc_alpha: a `float` with the family-wise error rate for FWER controlling procedures
+            (e.g. Bonferroni MTC) or false discovery rate for the FDR procedures (e.g. Benjamini-Hochberg).
+        """
         assert isinstance(count_statistic, CountStatistic)
+        assert len(count_statistic.supports_shape) == 2, "The statistic must support 2D contingency tables"
         self._count_statistic = count_statistic
         self._mtc_correction = mtc_correction
+        assert isinstance(mtc_alpha, float) and 0. <= mtc_alpha <= 1.
         self._mtc_alpha = mtc_alpha
 
-    @abc.abstractmethod
     def compare_genotype_vs_phenotypes(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
     ) -> MultiPhenotypeAnalysisResult[P]:
+        # Check compatibility between the count statistic and predicate.
+        issues = MultiPhenotypeAnalysis._check_compatibility(
+            count_statistic=self._count_statistic,
+            gt_predicate=gt_predicate,
+            pheno_predicates=pheno_predicates,
+        )
+        if len(issues) != 0:
+            msg = os.linesep.join(issues)
+            raise ValueError(f'Cannot execute the analysis: {msg}')
+
+        return self._compute_result(
+            cohort=cohort,
+            gt_predicate=gt_predicate,
+            pheno_predicates=pheno_predicates,
+        )
+
+    @abc.abstractmethod
+    def _compute_result(
+        self,
+        cohort: typing.Iterable[Patient],
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ) -> MultiPhenotypeAnalysisResult[P]:
         pass
+
+    @staticmethod
+    def _check_compatibility(
+        count_statistic: CountStatistic,
+        gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
+    ) -> typing.Collection[str]:
+        # There should be 2 items due to check in `__init__`.
+        (pheno, geno) = count_statistic.supports_shape
+
+        issues = []
+        # Check phenotype
+        if isinstance(pheno, int):
+            pheno_accepted = (pheno,)
+        elif isinstance(pheno, typing.Sequence):
+            pheno_accepted = pheno
+        else:
+            issues.append('Cannot use a count statistic that does not check phenotypes')
+
+        pheno_failed = []
+        for i, ph_predicate in enumerate(pheno_predicates):
+            if ph_predicate.n_categorizations() not in pheno_accepted:
+                pheno_failed.append(i)
+        if len(pheno_failed) != 0:
+            issues.append(
+                'Phenotype predicates {} are incompatible with the count statistic'.format(
+                    ', '.join(str(i) for i in pheno_failed)
+                )
+            )
+
+        # Check genotype
+        if isinstance(geno, int):
+            geno_accepted = (geno,)
+        elif isinstance(geno, typing.Sequence):
+            geno_accepted = geno
+        elif pheno is None:
+            raise ValueError('Cannot use a count statistic that does not check genotypes')
+        else:
+            raise ValueError(f'Cannot use a count statistic that supports shape {pheno, geno}')
+        
+        if gt_predicate.n_categorizations() not in geno_accepted:
+            issues.append('Genotype predicate is incompatible with the count statistic')
+        
+        return issues
 
     def _compute_nominal_pvals(
         self,
@@ -363,7 +448,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
 
 class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
 
-    def compare_genotype_vs_phenotypes(
+    def _compute_result(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,
@@ -485,7 +570,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         self,
         count_statistic: CountStatistic,
         mtc_filter: PhenotypeMtcFilter,
-        mtc_correction: typing.Optional[str] = None,
+        mtc_correction: typing.Optional[str] = DEFAULT_MTC_PROCEDURE,
         mtc_alpha: float = 0.05,
     ):
         super().__init__(
@@ -496,7 +581,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         assert isinstance(mtc_filter, PhenotypeMtcFilter)
         self._mtc_filter = mtc_filter
 
-    def compare_genotype_vs_phenotypes(
+    def _compute_result(
         self,
         cohort: typing.Iterable[Patient],
         gt_predicate: GenotypePolyPredicate,
@@ -517,10 +602,12 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         # 2 - Apply MTC filter and select p values to MTC
         mtc_filter_results = self._mtc_filter.filter(
             gt_predicate=gt_predicate,
-            phenotypes=phenotypes,
+            ph_predicates=pheno_predicates,
             counts=all_counts,
         )
         mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
+        if not mtc_mask.any():
+            raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
         # 3 - Compute nominal p values
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)

@@ -187,13 +187,12 @@ def patient_w_missense(
     sample_labels: SampleLabels,
     missense_variant: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         labels=sample_labels,
+        sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
         diseases=(),
-        variants=(
-            missense_variant,
-        ),
+        variants=(missense_variant,),
     )
 
 
@@ -202,11 +201,399 @@ def patient_w_frameshift(
     sample_labels: SampleLabels,
     frameshift_variant: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         labels=sample_labels,
+        sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
         diseases=(),
-        variants=(
-            frameshift_variant,
+        variants=(frameshift_variant,),
+    )
+
+
+"""
+Genesis family - Autosomal dominant but can also be used as X dominant.
+
+* Adam - father, unaffected
+* Eve - mother, affected
+* Cain - son, affected
+"""
+
+
+@pytest.fixture(scope="package")
+def genesis_mutation(
+    genome_build: GenomeBuild,
+    adam_label: SampleLabels,
+    eve_label: SampleLabels,
+    cain_label: SampleLabels,
+) -> Variant:
+    chr22 = genome_build.contig_by_name("chr22")
+    assert chr22 is not None
+    return Variant(
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chr22,
+                    start=100,
+                    end=101,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="C",
+                alt="G",
+                change_length=0,
+            )
         ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:xyz",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(
+                    VariantEffect.MISSENSE_VARIANT,
+                    VariantEffect.SPLICE_DONOR_VARIANT,
+                ),
+                affected_exons=(4,),
+                protein_id="pt:xyz",
+                hgvsp=None,
+                protein_effect_coordinates=Region(40, 41),
+            ),
+        ),
+        genotypes=Genotypes.from_mapping(
+            {
+                adam_label: Genotype.HOMOZYGOUS_REFERENCE,
+                eve_label: Genotype.HETEROZYGOUS,
+                cain_label: Genotype.HETEROZYGOUS,
+            }
+        ),
+    )
+
+
+@pytest.fixture(scope="package")
+def adam_label() -> SampleLabels:
+    return SampleLabels("Adam")
+
+
+@pytest.fixture(scope="package")
+def adam(
+    adam_label: SampleLabels,
+    genesis_mutation: Variant,
+) -> Patient:
+    return Patient(
+        adam_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(genesis_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def eve_label() -> SampleLabels:
+    return SampleLabels("Eve")
+
+
+@pytest.fixture(scope="package")
+def eve(
+    eve_label: SampleLabels,
+    genesis_mutation: Variant,
+) -> Patient:
+    return Patient(
+        eve_label,
+        sex=Sex.FEMALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(genesis_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def cain_label() -> SampleLabels:
+    return SampleLabels("Cain")
+
+
+@pytest.fixture(scope="package")
+def cain(
+    cain_label: SampleLabels,
+    genesis_mutation: Variant,
+) -> Patient:
+    return Patient(
+        cain_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(genesis_mutation,),
+    )
+
+
+"""
+White family - Autosomal recessive
+
+* Walt - father, HET
+* Skyler - mother, HET
+* Flynn - son, HOM_ALT
+* Holly - daughter, HOM_REF
+"""
+
+
+@pytest.fixture(scope="package")
+def white_mutation(
+    genome_build: GenomeBuild,
+    walt_label: SampleLabels,
+    skyler_label: SampleLabels,
+    flynn_label: SampleLabels,
+    holly_label: SampleLabels,
+) -> Variant:
+    chr22 = genome_build.contig_by_name("chr22")
+    assert chr22 is not None
+    return Variant(
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chr22,
+                    start=100,
+                    end=101,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="C",
+                alt="G",
+                change_length=0,
+            )
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:xyz",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(
+                    VariantEffect.MISSENSE_VARIANT,
+                    VariantEffect.SPLICE_DONOR_VARIANT,
+                ),
+                affected_exons=(4,),
+                protein_id="pt:xyz",
+                hgvsp=None,
+                protein_effect_coordinates=Region(40, 41),
+            ),
+        ),
+        genotypes=Genotypes.from_mapping(
+            {
+                walt_label: Genotype.HETEROZYGOUS,
+                skyler_label: Genotype.HETEROZYGOUS,
+                flynn_label: Genotype.HOMOZYGOUS_ALTERNATE,
+                holly_label: Genotype.HOMOZYGOUS_REFERENCE,
+            }
+        ),
+    )
+
+
+@pytest.fixture(scope="package")
+def walt_label() -> SampleLabels:
+    return SampleLabels("Walt")
+
+
+@pytest.fixture(scope="package")
+def walt(
+    walt_label: SampleLabels,
+    white_mutation: Variant,
+) -> Patient:
+    return Patient(
+        walt_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(white_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def skyler_label() -> SampleLabels:
+    return SampleLabels("Skyler")
+
+
+@pytest.fixture(scope="package")
+def skyler(
+    skyler_label: SampleLabels,
+    white_mutation: Variant,
+) -> Patient:
+    return Patient(
+        skyler_label,
+        sex=Sex.FEMALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(white_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def flynn_label() -> SampleLabels:
+    return SampleLabels("Flynn")
+
+
+@pytest.fixture(scope="package")
+def flynn(
+    flynn_label: SampleLabels,
+    white_mutation: Variant,
+) -> Patient:
+    return Patient(
+        flynn_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(white_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def holly_label() -> SampleLabels:
+    return SampleLabels("Holly")
+
+
+@pytest.fixture(scope="package")
+def holly(
+    holly_label: SampleLabels,
+    white_mutation: Variant,
+) -> Patient:
+    return Patient(
+        holly_label,
+        sex=Sex.FEMALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(white_mutation,),
+    )
+
+
+"""
+Skywalker family - X-linked recessive
+
+* Anakin - father, homozygous reference  (possibly hemizygous reference?)
+* Padme - mother, heterozygous
+* Luke - son, hemizygous
+* Leia - daughter, heterozygous
+"""
+
+
+@pytest.fixture(scope="package")
+def skywalker_mutation(
+    genome_build: GenomeBuild,
+    anakin_label: SampleLabels,
+    padme_label: SampleLabels,
+    luke_label: SampleLabels,
+    leia_label: SampleLabels,
+) -> Variant:
+    chrX = genome_build.contig_by_name("chrX")
+    assert chrX is not None
+    return Variant(
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chrX,
+                    start=100,
+                    end=101,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="C",
+                alt="G",
+                change_length=0,
+            )
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:xyz",
+                hgvs_cdna=None,
+                is_preferred=False,
+                variant_effects=(
+                    VariantEffect.MISSENSE_VARIANT,
+                    VariantEffect.SPLICE_DONOR_VARIANT,
+                ),
+                affected_exons=(4,),
+                protein_id="pt:xyz",
+                hgvsp=None,
+                protein_effect_coordinates=Region(40, 41),
+            ),
+        ),
+        genotypes=Genotypes.from_mapping(
+            {
+                anakin_label: Genotype.HOMOZYGOUS_REFERENCE,
+                padme_label: Genotype.HETEROZYGOUS,
+                luke_label: Genotype.HEMIZYGOUS,
+                leia_label: Genotype.HETEROZYGOUS,
+            }
+        ),
+    )
+
+
+@pytest.fixture(scope="package")
+def anakin_label() -> SampleLabels:
+    return SampleLabels("Anakin")
+
+
+@pytest.fixture(scope="package")
+def anakin(
+    anakin_label: SampleLabels,
+    skywalker_mutation: Variant,
+) -> Patient:
+    return Patient(
+        anakin_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(skywalker_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def padme_label() -> SampleLabels:
+    return SampleLabels("Padme")
+
+
+@pytest.fixture(scope="package")
+def padme(
+    padme_label: SampleLabels,
+    skywalker_mutation: Variant,
+) -> Patient:
+    return Patient(
+        padme_label,
+        sex=Sex.FEMALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(skywalker_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def luke_label() -> SampleLabels:
+    return SampleLabels("Luke")
+
+
+@pytest.fixture(scope="package")
+def luke(
+    luke_label: SampleLabels,
+    skywalker_mutation: Variant,
+) -> Patient:
+    return Patient(
+        luke_label,
+        sex=Sex.MALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(skywalker_mutation,),
+    )
+
+
+@pytest.fixture(scope="package")
+def leia_label() -> SampleLabels:
+    return SampleLabels("Leia")
+
+
+@pytest.fixture(scope="package")
+def leia(
+    leia_label: SampleLabels,
+    skywalker_mutation: Variant,
+) -> Patient:
+    return Patient(
+        leia_label,
+        sex=Sex.FEMALE,
+        phenotypes=(),
+        diseases=(),
+        variants=(skywalker_mutation,),
     )

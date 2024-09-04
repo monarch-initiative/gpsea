@@ -4,7 +4,7 @@ import pytest
 from gpsea.model import Cohort
 
 from gpsea.analysis.pcats import DiseaseAnalysis
-from gpsea.analysis.pcats.stats import CountStatistic, ScipyFisherExact
+from gpsea.analysis.pcats.stats import CountStatistic, FisherExactTest
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import DiseasePresencePredicate
 
@@ -13,7 +13,7 @@ class TestDiseaseAnalysis:
 
     @pytest.fixture(scope='class')
     def count_statistic(self) -> CountStatistic:
-        return ScipyFisherExact()
+        return FisherExactTest()
 
     @pytest.fixture(scope='class')
     def suox_disease(self) -> DiseasePresencePredicate:
