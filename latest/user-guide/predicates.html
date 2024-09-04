@@ -66,6 +66,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#mode-of-inheritance-predicate">Mode of inheritance predicate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#filtering-predicate">Filtering predicate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#groups-predicate">Groups predicate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#partition-by-the-sex-of-the-individual">Partition by the sex of the individual</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#partition-by-a-diagnosis">Partition by a diagnosis</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#phenotype-predicates">Phenotype predicates</a><ul>
@@ -515,6 +517,37 @@ for testing if the individual has at least one missense vs. frameshift vs. synon
 </pre></div>
 </div>
 </section>
+</section>
+<section id="partition-by-the-sex-of-the-individual">
+<span id="sex-predicate"></span><h3>Partition by the sex of the individual<a class="headerlink" href="#partition-by-the-sex-of-the-individual" title="Link to this heading"></a></h3>
+<p>It is easy to investigate the phenotypic differences between females and males.
+The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate" title="gpsea.analysis.predicate.genotype.sex_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a> provides a predicate
+for partitioning based on the sex of the individual:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">sex_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">sex_predicate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
+<span class="go">&#39;Sex of the individual: FEMALE, MALE&#39;</span>
+</pre></div>
+</div>
+<p>The individuals with <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Sex.UNKNOWN_SEX" title="gpsea.model.Sex.UNKNOWN_SEX"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNKNOWN_SEX</span></code></a> will be omitted from the analysis.</p>
+</section>
+<section id="partition-by-a-diagnosis">
+<span id="diagnosis-predicate"></span><h3>Partition by a diagnosis<a class="headerlink" href="#partition-by-a-diagnosis" title="Link to this heading"></a></h3>
+<p>It is also possible to bin the individuals based on a diagnosis.
+The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate" title="gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a>
+prepares a genotype predicate for assigning an individual into a diagnosis group:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">diagnosis_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">diagnosis_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">diagnoses</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;OMIM:154700&#39;</span><span class="p">,</span> <span class="s1">&#39;OMIM:129600&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Marfan syndrome&#39;</span><span class="p">,</span> <span class="s1">&#39;Ectopia lentis, familial&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
+<span class="go">&#39;What disease was diagnosed: OMIM:154700, OMIM:129600&#39;</span>
+</pre></div>
+</div>
+<p>Note, an individual must match only one diagnosis group. Any individuals labeled with two or more diagnoses
+(e.g. an individual with both <em>Marfan syndrome</em> and <em>Ectopia lentis, familial</em>)
+will be automatically omitted from the analysis.</p>
 </section>
 </section>
 <section id="phenotype-predicates">
