@@ -38,13 +38,23 @@ class CohortCreator(typing.Generic[T], Auditor[typing.Iterable[T], Cohort]):
 
     def process(self, inputs: typing.Iterable[T], notepad: Notepad) -> Cohort:
         patients = []
+        patient_labels = set()
+        duplicate_pat_labels = set()
 
         for i, pp in enumerate(inputs):
             sub = notepad.add_subsection(f'patient #{i}')
             patient = self._pc.process(pp, sub)
+            if patient.labels in patient_labels:
+                duplicate_pat_labels.add(patient.labels)
+            patient_labels.add(patient.labels)
             patients.append(patient)
 
         # What happens if a sample has
+        if len(duplicate_pat_labels) > 0:
+            label_summaries = [d.label_summary() for d in duplicate_pat_labels]
+            label_summaries.sort()
+            notepad.add_error(f"Patient ID/s {', '.join(label_summaries)} have a duplicate",
+                              "Please verify every patient has an unique ID.")
 
         # We should have >1 patients in the cohort, right?
         if len(patients) <= 1:
