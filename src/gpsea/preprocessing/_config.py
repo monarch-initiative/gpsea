@@ -383,20 +383,47 @@ def load_phenopacket_folder(
     """
     Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.
 
+    A file with `.json` suffix is considered to be a JSON file and all JSON files are assumed to be phenopackets.
+    Non-JSON files are ignored.
+
     :param pp_directory: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
       a directory with at least one phenopacket.
     :param cohort_creator: cohort creator for turning a sequence of phenopacket
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
       The value must be one of `{'none', 'lenient', 'strict'}`
-    :return: a tuple with the cohort and the preprocessing validation result.
+    :return: a tuple with the cohort and the validation result.
     """
     # Load phenopackets
-    phenopackets = _load_phenopacket_dir(pp_directory)
+    pp_files = _find_phenopacket_files(pp_directory)
 
     # Map to patients
+    return load_phenopacket_files(
+        pp_files=pp_files,
+        cohort_creator=cohort_creator,
+        validation_policy=validation_policy,
+    )
+
+
+def load_phenopacket_files(
+    pp_files: typing.Iterator[str],
+    cohort_creator: CohortCreator[Phenopacket],
+    validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
+) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
+    """
+    Load phenopacket JSON files, validate the data, and assemble into a :class:`~gpsea.model.Cohort`.
+    
+    Phenopackets are validated, assembled into a cohort, and the validation results are reported back.
+
+    :param pp_files: an iterator with paths to phenopacket JSON files.
+    :param cohort_creator: cohort creator for turning a phenopacket collection
+      into a :class:`~gpsea.model.Cohort`.
+    :param validation_policy: a `str` with the validation policy.
+      The value must be one of `{'none', 'lenient', 'strict'}`
+    :return: a tuple with the cohort and the validation result.
+    """
     return load_phenopackets(
-        phenopackets=phenopackets,
+        phenopackets=(_load_phenopacket(pp_file) for pp_file in pp_files),
         cohort_creator=cohort_creator,
         validation_policy=validation_policy,
     )
@@ -408,7 +435,9 @@ def load_phenopackets(
     validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
-    Map phenopacket JSON file into patient, validate the patient data, and assemble the patients into a cohort.
+    Validate the phenopackets and assemble into a :class:`~gpsea.model.Cohort`.
+    
+    The results of the validation are reported back.
 
     :param phenopackets: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
       a directory with at least one phenopacket.
@@ -416,7 +445,7 @@ def load_phenopackets(
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
       The value must be one of `{'none', 'lenient', 'strict'}`
-    :return: a tuple with the cohort and the preprocessing validation result.
+    :return: a tuple with the cohort and the validation result.
     """
     # Check inputs before doing anything
     hpotk.util.validate_instance(cohort_creator, CohortCreator, "cohort_creator")
@@ -438,17 +467,16 @@ def load_phenopackets(
     return cohort, validation_result
 
 
-def _load_phenopacket_dir(
+def _find_phenopacket_files(
     pp_dir: str,
-) -> typing.Iterator[Phenopacket]:
+) -> typing.Iterator[str]:
     fpath_pp_abs = os.path.abspath(pp_dir)
     if not os.path.isdir(fpath_pp_abs):
         raise ValueError(f"`{fpath_pp_abs}` does not point to a directory")
-
+    
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith(".json"):
-            phenopacket_path = os.path.join(pp_dir, patient_file)
-            yield _load_phenopacket(phenopacket_path)
+            yield os.path.join(pp_dir, patient_file)
 
 
 def _load_phenopacket(phenopacket_path: str) -> Phenopacket:
