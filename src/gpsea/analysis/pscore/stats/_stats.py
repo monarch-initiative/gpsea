@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from scipy.stats import mannwhitneyu
+from scipy.stats import mannwhitneyu, ttest_ind
 
 
 class PhenotypeScoreStatistic(metaclass=abc.ABCMeta):
@@ -42,3 +42,27 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
         )
 
         return pval
+
+
+class TTestStatistic(PhenotypeScoreStatistic):
+    """
+    `TTestStatistic` is a wrapper around SciPy's
+    :func:`~scipy.stats.ttest_ind` function to apply
+    T test on 2 phenotype scores.
+
+    See :ref:`phenotype-score-stats` for an example usage.
+    """
+
+    def compute_pval(
+        self,
+        scores: typing.Collection[typing.Sequence[float]],
+    ) -> float:
+        assert len(scores) == 2, 'T test only supports 2 categories at this time'
+        
+        x, y = scores
+        res = ttest_ind(
+            a=x, b=y,
+            alternative='two-sided',
+        )
+
+        return res.pvalue
