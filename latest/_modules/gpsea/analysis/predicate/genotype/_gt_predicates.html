@@ -81,8 +81,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis.predicate.genotype._gt_predicates</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">cProfile</span> <span class="kn">import</span> <span class="n">label</span>
-<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -714,7 +713,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">issues</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot create predicate: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="s2">&quot;Which genotype group does the patient fit in&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_question</span> <span class="o">=</span> <span class="s2">&quot;What is the genotype group&quot;</span>
 
 <div class="viewcode-block" id="ModeOfInheritancePredicate.get_categorizations">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_categorizations">[docs]</a>
@@ -848,7 +847,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.</span>
 
-<span class="sd">    See the :ref:`sex-predicate` section for an example.</span>
+<span class="sd">    See the :ref:`male-female-predicate` section for an example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">INSTANCE</span></div>
 

@@ -181,15 +181,17 @@
 
 
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">PropagatingPhenotypePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
+<div class="viewcode-block" id="HpoPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">HpoPredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `PropagatingPhenotypePredicate` tests if a patient is annotated with an HPO term.</span>
+<span class="sd">    `HpoPredicate` tests if a patient is annotated with an HPO term.</span>
 
 <span class="sd">    Note, `query` must be a term of the provided `hpo`!</span>
 
-<span class="sd">    :param hpo: HPO object</span>
+<span class="sd">    See :ref:`hpo-predicate` section for an example usage.</span>
+
+<span class="sd">    :param hpo: HPO ontology</span>
 <span class="sd">    :param query: the HPO term to test</span>
 <span class="sd">    :param missing_implies_phenotype_excluded: `True` if lack of an explicit annotation implies term&#39;s absence`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -222,8 +224,8 @@
         <span class="c1"># Some tests depend on the order of `self._categorizations`.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_question_base">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question_base">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.get_question_base">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_question_base">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> present in the patient&quot;</span></div>
 
@@ -236,16 +238,16 @@
     <span class="k">def</span> <span class="nf">present_phenotype_categorization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span>
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_categorizations">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.get_categorizations">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_categorizations">[docs]</a>
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span></div>
 
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>

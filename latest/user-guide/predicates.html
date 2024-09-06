@@ -27,7 +27,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Phenotype Predicates" href="phenotype_predicates.html" />
+    <link rel="next" title="Phenotype Predicates" href="predicates/phenotype_predicates.html" />
     <link rel="prev" title="Cohort exploratory analysis" href="exploratory.html" /> 
 </head>
 
@@ -61,25 +61,12 @@
 <li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Predicates</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#genotype-predicates">Genotype predicates</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#variant-predicates">Variant predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mode-of-inheritance-predicate">Mode of inheritance predicate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#filtering-predicate">Filtering predicate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#groups-predicate">Groups predicate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#partition-by-the-sex-of-the-individual">Partition by the sex of the individual</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#partition-by-a-diagnosis">Partition by a diagnosis</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#phenotype-predicates">Phenotype predicates</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#propagating-phenotype-predicate">Propagating phenotype predicate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/phenotype_predicates.html">Phenotype Predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/genotype_predicates.html">Genotype Predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gallery">Gallery</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#need-more">Need more?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stats.html">Statistical tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
@@ -116,490 +103,29 @@
              
   <section id="predicates">
 <span id="id1"></span><h1>Predicates<a class="headerlink" href="#predicates" title="Link to this heading"></a></h1>
-<p>Searching for genotype-phenotype associations usually requires to partition
-the individuals into several discrete groups to allow testing for the inter-group differences.
-GPSEA reflects these requirements with its predicate API.
-Perhaps unsurprisingly, a predicate must be capable of partitioning the individuals into two or more groups.
+<p>Searching for genotype-phenotype associations usually requires that
+the individuals are partitioned into two or more discrete groups to allow testing for the inter-group differences.
+GPSEA reflects these requirements with its predicate API.</p>
+<p>A <strong>predicate</strong> must be capable of partitioning the individuals into two or more groups.
 The groups must be <em>exclusive</em> - each individual must be assigned at most into one group.
-Moreover, the groups should be <em>exhaustive</em> and cover maximum of the possible states.
+In general, it is desirable that the groups cover all or at least the majority of the cohort being analyzed to maximize statistical power.
 However, the predicate is allowed to return <cite>None</cite> if the individual cannot be assigned.
-In result, the individual will be omitted from the downstream analysis.</p>
-<p>Predicates serve both <em>genotype</em> and <em>phenotype</em> prongs of the analysis.
+As a result, the individual will be omitted from the downstream analysis.</p>
+<p>Predicates serve both the <em>genotype</em> and <em>phenotype</em> prongs of the analysis.
 Genotype predicates (<a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a>)
 assign the <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>
 into a group (mostly) based on the variant information, while the
 phenotype predicates (<a class="reference internal" href="../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a>)
 use the HPO terms to assign a group.</p>
-<p>It is literally impossible to use GPSEA without the predicates
-because all analyses need at least one predicate (typically a <em>genotype</em> predicate).
-Luckily, the purpose of this guide is to show all that is to know about predicates.
-We will first discuss the genotype predicates and end with phenotype predicates.</p>
-<section id="genotype-predicates">
-<span id="id2"></span><h2>Genotype predicates<a class="headerlink" href="#genotype-predicates" title="Link to this heading"></a></h2>
-<p>A genotype predicate seeks to divide the individuals along an axis that is orthogonal to phenotypes.
-Typically, this includes using the genotype data, such as presence of a missense variant
-in a heterozygous genotype. However, other categorical variables,
-such as diagnoses (TODO - add link to disease predicate) or cluster ids can also be used.</p>
-<p>The genotype predicates test the individual for a presence of variants that meet certain inclusion criteria.
-The testing is done in two steps. First, we count the alleles
-of the matching variants and then we interpret the count, possibly including factors
-such as the expected mode of inheritance and sex, to assign the individual into a group.
-Finding the matching variants is what
-the <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> is all about.</p>
-<p>TODO: wordsmith
-We must first create the variant predicate and then wrap it in genotype predicate.</p>
-<section id="variant-predicates">
-<h3>Variant predicates<a class="headerlink" href="#variant-predicates" title="Link to this heading"></a></h3>
-<p>GPSEA uses the <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> class
-to test if a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a> meets the inclusion criteria.
-The variant predicate can leverage multiple primary data:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Primary data source</p></th>
-<th class="head"><p>Example</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Allele</p></td>
-<td><p>the variant being a deletion or a single nucleotide variant (SNV)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genome</p></td>
-<td><p>overlaps of a target genomic region</p></td>
-</tr>
-<tr class="row-even"><td><p>Functional annotation</p></td>
-<td><p>variant is predicted to lead to a missense change or affect an exon of certain transcript</p></td>
-</tr>
-<tr class="row-odd"><td><p>Protein data</p></td>
-<td><p>variant is located in a region encoding a protein domain, protein feature type</p></td>
-</tr>
-</tbody>
-</table>
-<p>which demands a considerable amount of flexibility for creating the predicate.</p>
-<p>As a rule of thumb, the predicates for testing basic conditions are available off the shelf,
-and they can be used as building block for testing for more complex conditions,
-such as testing if the variant is “a missense or synonymous variant located in exon 6 of transcript <cite>NM_013275.6</cite>”.</p>
-<p>Let’s demonstrate this on few examples.
-We will load a cohort of 19 subjects with variants in <em>RERE</em>,
-leading to <a class="reference external" href="https://omim.org/entry/142900">Holt-Oram syndrome MIM:142900</a>.
-The the clinical signs and symptoms of the subjects were encoded into HPO terms
-along with the pathogenic <em>RERE</em> variant.</p>
-<p>Let’s load the phenopackets, as previously described in greater detail the <a class="reference internal" href="input-data.html#input-data"><span class="std std-ref">Input data</span></a> section.
-Briefly, we first load HPO:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>then, we configure the cohort creator:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>which we use to create a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> from a bunch of phenopackets
-from the release <cite>0.1.18</cite> of <a class="reference external" href="https://github.com/monarch-initiative/phenopacket-store">Phenopacket Store</a>.
-We will load 19 individuals with mutations in <em>RERE</em> gene:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="s1">&#39;RERE&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
-<span class="go">19</span>
-</pre></div>
-</div>
-<p>and we will convert the phenopacket into a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopackets</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
-<span class="go">Patients Created: ...</span>
-</pre></div>
-</div>
-<p>To demonstrate the predicate API, we will use the variant <code class="docutils literal notranslate"><span class="pre">1_8358231_8358231_T_C</span></code> that corresponds
-to a pathogenic variant <a class="reference external" href="https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/">VCV000522858.5</a>
-that replaces the histidine encoded by the 1435th codon of <cite>NM_001042681.2</cite> with arginine: <code class="docutils literal notranslate"><span class="pre">NM_001042681.2(RERE):c.4304A&gt;G</span> <span class="pre">(p.His1435Arg)</span></code>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">variant_key_of_interest</span> <span class="o">=</span> <span class="s1">&#39;1_8358231_8358231_T_C&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">variant</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_variant_by_key</span><span class="p">(</span><span class="n">variant_key_of_interest</span><span class="p">)</span>
-</pre></div>
-</div>
-<section id="building-blocks">
-<h4>Building blocks<a class="headerlink" href="#building-blocks" title="Link to this heading"></a></h4>
-<p>We can check that the variant overlaps with <em>RERE</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gene</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="s1">&#39;RERE&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gene</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>it overlaps with the <em>MANE</em> transcript:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rere_mane_tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_001042681.2&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">transcript</span><span class="p">(</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>it in fact overlaps with the exon 20:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exon20</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exon20</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>and leads to a missense mutation with respect to the MANE transcript:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>See <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates" title="gpsea.analysis.predicate.genotype.VariantPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicates</span></code></a>
-for more info on the predicates available off the shelf.</p>
-</section>
-<section id="complex-conditions">
-<h4>Complex conditions<a class="headerlink" href="#complex-conditions" title="Link to this heading"></a></h4>
-<p>We can combine the building blocks to test for more elaborate conditions.
-For instance, we can test if the variant meets <em>any</em> or several conditions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nonsense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense_or_nonsense</span> <span class="o">=</span> <span class="n">missense</span> <span class="o">|</span> <span class="n">nonsense</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense_or_nonsense</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>or <em>all</em> conditions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missense_and_exon20</span> <span class="o">=</span> <span class="n">missense</span> <span class="o">&amp;</span> <span class="n">exon20</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">missense_and_exon20</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>The <cite>VariantPredicate</cite> overloads Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators to build a compound predicate from lower level building blocks.</p>
-<p>Therefore, there is nothing that prevents us to combine the predicates into multi-level tests,
-such as testing if the variant is a <em>“chromosomal deletion” or a deletion which removes at least 50 bp</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chromosomal_deletion</span> <span class="o">=</span> <span class="s2">&quot;SO:1000029&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">structural_type</span><span class="p">(</span><span class="n">chromosomal_deletion</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -50))&#39;</span>
-</pre></div>
-</div>
-</section>
-<section id="inverting-conditions">
-<h4>Inverting conditions<a class="headerlink" href="#inverting-conditions" title="Link to this heading"></a></h4>
-<p>Sometimes we may want to test the variant for a condition that must <em>not</em> be met.
-For instance, we may want to test if the variant is a deletion
-that is <em>not</em> predicted to shift the transcript reading frame.
-One of doing this would be to build a compound predicates
-for all variant effects except of <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.VariantEffect.FRAMESHIFT_VARIANT" title="gpsea.model.VariantEffect.FRAMESHIFT_VARIANT"><code class="xref py py-class docutils literal notranslate"><span class="pre">FRAMESHIFT_VARIANT</span></code></a>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_effects</span> <span class="o">=</span> <span class="p">(</span>
-<span class="gp">... </span>  <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SYNONYMOUS_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INTRON_VARIANT</span><span class="p">,</span>
-<span class="gp">... </span>  <span class="c1"># and many more effects..</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">non_frameshift_effects</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>However, this is clearly tedious and it would be much better implemented
-by a simple logical not of a predicate for a frameshift variant effect.</p>
-<p>To support this, <cite>VariantPredicate</cite> implements <em>logical inversion</em>
-which corresponds to Python’s <code class="docutils literal notranslate"><span class="pre">~</span></code> operator (tilde), to wrap
-the underlying predicate and to invert its test result.</p>
-<p>This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_del</span> <span class="o">=</span> <span class="o">~</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">non_frameshift_del</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(NOT FRAMESHIFT_VARIANT on NM_001042681.2 AND variant class is DEL)&#39;</span>
-</pre></div>
-</div>
-<p>Note the presence of a tilde <code class="docutils literal notranslate"><span class="pre">~</span></code> before the variant effect predicate and resulting <code class="docutils literal notranslate"><span class="pre">NOT</span></code> in the predicate question.</p>
-<p>The variant predicate offers a flexible API for testing if variants meet a condition.
-However, the genotype phenotype correlations are done on the individual level
-and the variant predicates are used as a component of the genotype predicate.
-The next sections show how to use variant predicates to assign individuals into groups.</p>
-</section>
-</section>
-<section id="mode-of-inheritance-predicate">
-<h3>Mode of inheritance predicate<a class="headerlink" href="#mode-of-inheritance-predicate" title="Link to this heading"></a></h3>
-<p>The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a>
-assigns the individual into a group based on the number of alleles
-that match a condition specified by a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>.
-The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a> supports
-the following Mendelian modes of inheritance (MoI):</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Mode of inheritance</p></th>
-<th class="head"><p>Sex</p></th>
-<th class="head"><p>Allele count</p></th>
-<th class="head"><p>Genotype category</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td rowspan="3"><p>Autosomal dominant</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td rowspan="4"><p>Autosomal recessive</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p>2</p></td>
-<td><p><cite>BIALLELIC_ALT</cite></p></td>
-</tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td rowspan="3"><p>X-linked dominant</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td rowspan="6"><p>X-linked recessive</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-odd"><td rowspan="3"><p><a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Sex.FEMALE" title="gpsea.model.Sex.FEMALE"><code class="xref py py-class docutils literal notranslate"><span class="pre">FEMALE</span></code></a></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p><cite>BIALLELIC_ALT</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td rowspan="2"><p><a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Sex.MALE" title="gpsea.model.Sex.MALE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MALE</span></code></a></p></td>
-<td><p>1</p></td>
-<td><p><cite>HEMI</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><cite>BIALLELIC_ALT</cite> includes both homozygous and compound heterozygous genotypes.</p>
-</div>
-<p>Clinical judgment should be used to choose the MoI for the cohort analysis.
-Then a predicate for the desired MoI can be created by one of
-<a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a> static constructors:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant"><code class="xref py py-func docutils literal notranslate"><span class="pre">autosomal_dominant()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-func docutils literal notranslate"><span class="pre">autosomal_recessive()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_dominant" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_dominant"><code class="xref py py-func docutils literal notranslate"><span class="pre">x_dominant()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.x_recessive"><code class="xref py py-func docutils literal notranslate"><span class="pre">x_recessive()</span></code></a></p></li>
+<p>All GPSEA analyses need at least one predicate (typically a <em>genotype</em> predicate) and many require both <em>genotype</em> and <em>phenotype</em> predicates.
+The following pages provide more information.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="predicates/phenotype_predicates.html">Phenotype Predicates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predicates/genotype_predicates.html">Genotype Predicates</a></li>
 </ul>
-<p>All constructors take an instance
-of <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> as an argument.</p>
-<section id="example">
-<h4>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h4>
-<p>Here we show seting up a predicate for grouping individuals based on
-having a variant that leads to a frameshift or to a stop gain to a fictional transcript <code class="docutils literal notranslate"><span class="pre">NM_1234.5</span></code>
-to test differences between the genotypes of a disease with an autosomal recessive MoI.</p>
-<p>First, we set up a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
-for testing if a variant meets the condition:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_1234.5&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> \
-<span class="gp">... </span>    <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(FRAMESHIFT_VARIANT on NM_1234.5 OR STOP_GAINED on NM_1234.5)&#39;</span>
-</pre></div>
 </div>
-<p>Next, we use <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-class docutils literal notranslate"><span class="pre">autosomal_recessive</span></code></a>
-for assigning a patient into a genotype group:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">ModeOfInheritancePredicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">is_frameshift_or_stop_gain</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Which genotype group does the patient fit in: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
-</pre></div>
-</div>
-<p>The <cite>gt_predicate</cite> can be used in downstream analysis, such as in :class:</p>
-</section>
-</section>
-<section id="filtering-predicate">
-<span id="id3"></span><h3>Filtering predicate<a class="headerlink" href="#filtering-predicate" title="Link to this heading"></a></h3>
-<p>Sometimes a predicate can bin individuals into more genotype groups than necessary and there may be need
-to consider only a subset of the groups. A <cite>GenotypePolyPredicate</cite>
-created by <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.filtering_predicate" title="gpsea.analysis.predicate.genotype.filtering_predicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">filtering_predicate</span></code></a> can retain only a subset
-of the target categorizations of interest.</p>
-<section id="id4">
-<h4>Example<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
-<p>Let’s suppose we want test the genotype-phenotype association between variants
-that lead to frameshift or a stop gain in a fictional transcript <cite>NM_1234.5</cite>,
-and we are specifically interested in comparing the heterozygous variants
-in a biallelic alternative allele genotypes (homozygous alternate and compound heterozygous).</p>
-<p>First, we set up a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
-for testing if a variant introduces a premature stop codon or leads to the shift of the reading frame:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_1234.5&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> \
-<span class="gp">... </span>    <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(FRAMESHIFT_VARIANT on NM_1234.5 OR STOP_GAINED on NM_1234.5)&#39;</span>
-</pre></div>
-</div>
-<p>Then, we create <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-class docutils literal notranslate"><span class="pre">autosomal_recessive</span></code></a>
-to bin according to a genotype group:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">ModeOfInheritancePredicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">is_frameshift_or_stop_gain</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Which genotype group does the patient fit in: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
-</pre></div>
-</div>
-<p>We see that the <cite>gt_predicate</cite> bins the patients into three groups:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cats</span> <span class="o">=</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cats</span>
-<span class="go">(Categorization(category=HOM_REF), Categorization(category=HET), Categorization(category=BIALLELIC_ALT))</span>
-</pre></div>
-</div>
-<p>We wrap the categorizations of interest along with the <cite>gt_predicate</cite> by the <cite>filtering_predicate</cite> function,
-and we will get a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a>
-that includes only the categories of interest:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">filtering_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fgt_predicate</span> <span class="o">=</span> <span class="n">filtering_predicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">targets</span><span class="o">=</span><span class="p">(</span><span class="n">cats</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cats</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fgt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Which genotype group does the patient fit in: HET, BIALLELIC_ALT&#39;</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="groups-predicate">
-<span id="id5"></span><h3>Groups predicate<a class="headerlink" href="#groups-predicate" title="Link to this heading"></a></h3>
-<p>Sometimes, all we want is to compare if there is a difference between individuals
-who include one or more alleles of variant $X$ vs. individuals with variants $Y$,
-vs. individuals with variants $Z$, where $X$, $Y$ and $Z$ are variant predicates.
-We can do this with a <em>groups</em> predicate.</p>
-<p>The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.groups_predicate" title="gpsea.analysis.predicate.genotype.groups_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">groups_predicate()</span></code></a>
-takes <em>n</em> variant predicates and <em>n</em> group labels, and it will assign the patients
-into the respective groups if one or more matching allele is found.
-However, only one predicate is allowed to return a non-zero allele count.
-Otherwise, the patient is assigned with <code class="docutils literal notranslate"><span class="pre">None</span></code> and excluded from the analysis.</p>
-<section id="id6">
-<h4>Example<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
-<p>Here we show how to build a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a>
-for testing if the individual has at least one missense vs. frameshift vs. synonymous variant.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">groups_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_1234.5&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">groups_predicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">predicates</span><span class="o">=</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
-<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
-<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">SYNONYMOUS_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span>    <span class="n">group_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Missense&#39;</span><span class="p">,</span> <span class="s1">&#39;Frameshift&#39;</span><span class="p">,</span> <span class="s1">&#39;Synonymous&#39;</span><span class="p">),</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Genotype group: Missense, Frameshift, Synonymous&#39;</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="partition-by-the-sex-of-the-individual">
-<span id="sex-predicate"></span><h3>Partition by the sex of the individual<a class="headerlink" href="#partition-by-the-sex-of-the-individual" title="Link to this heading"></a></h3>
-<p>It is easy to investigate the phenotypic differences between females and males.
-The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate" title="gpsea.analysis.predicate.genotype.sex_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a> provides a predicate
-for partitioning based on the sex of the individual:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">sex_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">sex_predicate</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Sex of the individual: FEMALE, MALE&#39;</span>
-</pre></div>
-</div>
-<p>The individuals with <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Sex.UNKNOWN_SEX" title="gpsea.model.Sex.UNKNOWN_SEX"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNKNOWN_SEX</span></code></a> will be omitted from the analysis.</p>
-</section>
-<section id="partition-by-a-diagnosis">
-<span id="diagnosis-predicate"></span><h3>Partition by a diagnosis<a class="headerlink" href="#partition-by-a-diagnosis" title="Link to this heading"></a></h3>
-<p>It is also possible to bin the individuals based on a diagnosis.
-The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate" title="gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a>
-prepares a genotype predicate for assigning an individual into a diagnosis group:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">diagnosis_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">diagnosis_predicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">diagnoses</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;OMIM:154700&#39;</span><span class="p">,</span> <span class="s1">&#39;OMIM:129600&#39;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Marfan syndrome&#39;</span><span class="p">,</span> <span class="s1">&#39;Ectopia lentis, familial&#39;</span><span class="p">),</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What disease was diagnosed: OMIM:154700, OMIM:129600&#39;</span>
-</pre></div>
-</div>
-<p>Note, an individual must match only one diagnosis group. Any individuals labeled with two or more diagnoses
-(e.g. an individual with both <em>Marfan syndrome</em> and <em>Ectopia lentis, familial</em>)
-will be automatically omitted from the analysis.</p>
-</section>
-</section>
-<section id="phenotype-predicates">
-<span id="id7"></span><h2>Phenotype predicates<a class="headerlink" href="#phenotype-predicates" title="Link to this heading"></a></h2>
-<p>The phenotype predicate assigns the individual into a group with respect to tested phenotype.
-Typically, the phenotype corresponds to a clinical sign or symptom encoded into an HPO term.</p>
-<section id="propagating-phenotype-predicate">
-<h3>Propagating phenotype predicate<a class="headerlink" href="#propagating-phenotype-predicate" title="Link to this heading"></a></h3>
-<p>When testing for presence or absence of an HPO term, the propagating phenotype predicate
-leverages the <a class="reference internal" href="glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a> to take advantage of the HPO hierarchy.
-In result, an individual annotated with a term is implicitly annotated with all its ancestors.
-For instance, an individual annotated with <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001083">Ectopia lentis</a>
-is also annotated with <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000517">Abnormal lens morphology</a>,
-<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0004328">Abnormal anterior eye segment morphology</a>,
-<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0012372">Abnormal eye morphology</a>, …</p>
-<p>Similarly, all descendants of a term, whose presence was specifically excluded in an individual,
-are implicitly excluded.</p>
-<p><a class="reference internal" href="../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate" title="gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate</span></code></a> implements this logic.</p>
-<section id="id8">
-<h4>Example<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
-<p>Here we show how to set up <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate" title="gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate</span></code></a>
-to test for a presence of <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000517">Abnormal lens morphology</a>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">PropagatingPhenotypePredicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0000517&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span> <span class="o">=</span> <span class="n">PropagatingPhenotypePredicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Is Abnormal lens morphology present in the patient: Yes, No&#39;</span>
-</pre></div>
-</div>
-<p>TODO: explain <code class="docutils literal notranslate"><span class="pre">missing_implies_phenotype_excluded</span></code></p>
-</section>
-</section>
-<section id="predicates-for-all-cohort-phenotypes">
-<h3>Predicates for all cohort phenotypes<a class="headerlink" href="#predicates-for-all-cohort-phenotypes" title="Link to this heading"></a></h3>
-<p>Constructing phenotype predicates for all HPO terms of a cohort sounds a bit tedious.
-The <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest" title="gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a>
-function cuts down the tedium:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">prepare_predicates_for_terms_of_interest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicates</span> <span class="o">=</span> <span class="n">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
-<span class="go">301</span>
-</pre></div>
-</div>
-<p>and prepares predicates for testing 301 HPO terms of the <em>RERE</em> cohort.</p>
-</section>
-</section>
 <section id="gallery">
 <h2>Gallery<a class="headerlink" href="#gallery" title="Link to this heading"></a></h2>
 <p>Here we show examples of predicates used in some of our analyses.</p>
@@ -620,7 +146,7 @@ if a predicate seems to be missing.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="exploratory.html" class="btn btn-neutral float-left" title="Cohort exploratory analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="phenotype_predicates.html" class="btn btn-neutral float-right" title="Phenotype Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="predicates/phenotype_predicates.html" class="btn btn-neutral float-right" title="Phenotype Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
