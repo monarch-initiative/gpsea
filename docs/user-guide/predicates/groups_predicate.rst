@@ -1,4 +1,4 @@
-.. _groups_predicate:
+.. _groups-predicate:
 
 ================
 Groups Predicate
@@ -7,8 +7,8 @@ Groups Predicate
 
 
 Sometimes, all we want is to compare if there is a difference between individuals
-who include one or more alleles of variant $X$ vs. individuals with variants $Y$,
-vs. individuals with variants $Z$, where $X$, $Y$ and $Z$ are variant predicates.
+who include one or more alleles of variant `X` vs. individuals with variants `Y`,
+vs. individuals with variants `Z`, where `X`, `Y` and `Z` are variant predicates.
 We can do this with a *groups* predicate.
 
 The :func:`~gpsea.analysis.predicate.genotype.groups_predicate`

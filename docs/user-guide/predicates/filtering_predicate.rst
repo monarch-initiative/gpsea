@@ -35,7 +35,7 @@ to bin according to a genotype group:
 >>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
 >>> gt_predicate = ModeOfInheritancePredicate.autosomal_recessive(is_frameshift_or_stop_gain)
 >>> gt_predicate.display_question()
-'What is the genotype group?: HOM_REF, HET, BIALLELIC_ALT'
+'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
 
 We see that the `gt_predicate` bins the patients into three groups:
 
@@ -53,4 +53,4 @@ that includes only the categories of interest:
 ...     targets=(cats[1], cats[2]),
 ... )
 >>> fgt_predicate.display_question()
-'What is the genotype group?: HET, BIALLELIC_ALT'
+'What is the genotype group: HET, BIALLELIC_ALT'

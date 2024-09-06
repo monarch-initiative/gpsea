@@ -25,8 +25,6 @@ use the HPO terms to assign a group.
 All GPSEA analyses need at least one predicate (typically a *genotype* predicate) and many require both *genotype* and *phenotype* predicates.
 The following pages provide more information.
 
-.. _genotype-predicates:
-
 
 
 .. toctree::
@@ -35,35 +33,6 @@ The following pages provide more information.
 
   predicates/phenotype_predicates
   predicates/genotype_predicates
-
-
-
-
-.. _groups-predicate:
-
-
-
-.. _phenotype-predicates:
-
-
-
-
-Predicates for all cohort phenotypes
-====================================
-
-Constructing phenotype predicates for all HPO terms of a cohort sounds a bit tedious.
-The :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
-function cuts down the tedium:
-
->>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
->>> pheno_predicates = prepare_predicates_for_terms_of_interest(
-...     cohort=cohort,
-...     hpo=hpo,
-... )
->>> len(pheno_predicates)
-301
-
-and prepares predicates for testing 301 HPO terms of the *RERE* cohort.
 
 
 *******

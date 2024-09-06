@@ -1,4 +1,3 @@
-from cProfile import label
 import dataclasses
 import enum
 import typing
@@ -605,7 +604,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         )
         if issues:
             raise ValueError("Cannot create predicate: {}".format(", ".join(issues)))
-        self._question = "What is the genotype group?"
+        self._question = "What is the genotype group"
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -727,7 +726,7 @@ def sex_predicate() -> GenotypePolyPredicate:
     """
     Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.
 
-    See the :ref:`sex-predicate` section for an example.
+    See the :ref:`male-female-predicate` section for an example.
     """
     return INSTANCE
 

@@ -1,4 +1,4 @@
-.. _mode_of_inheritance_predicate:
+.. _mode-of-inheritance-predicate:
 
 ==============================
 Mode of Inheritance Predicates
@@ -92,6 +92,6 @@ for assigning a patient into a genotype group:
 >>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
 >>> gt_predicate = ModeOfInheritancePredicate.autosomal_recessive(is_frameshift_or_stop_gain)
 >>> gt_predicate.display_question()
-'What is the genotype group?: HOM_REF, HET, BIALLELIC_ALT'
+'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
 
-The `gt_predicate` can be used in downstream analysis, such as in :class:
+The `gt_predicate` can be used in downstream analysis, such as in :class:`~gpsea.analysis.pcats.HpoTermAnalysis`.

@@ -1,4 +1,4 @@
-.. _diagnosis_predicate:
+.. _diagnosis-predicate:
 
 ========================
 Partition by a diagnosis

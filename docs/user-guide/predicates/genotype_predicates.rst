@@ -1,4 +1,4 @@
-.. _genotype_predicates:
+.. _genotype-predicates:
 
 ===================
 Genotype Predicates

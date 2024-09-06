@@ -1,4 +1,4 @@
-.. _male_female_predicate:
+.. _male-female-predicate:
 
 Partition by the sex of the individual
 ======================================
