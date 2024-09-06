@@ -2,7 +2,7 @@ import hpotk
 import pytest
 
 from gpsea.analysis.predicate import PatientCategory, PatientCategories
-from gpsea.analysis.predicate.phenotype import PropagatingPhenotypePredicate, DiseasePresencePredicate
+from gpsea.analysis.predicate.phenotype import HpoPredicate, DiseasePresencePredicate
 from gpsea.analysis.predicate.genotype import *
 from gpsea.model import Cohort, Patient, FeatureType, VariantEffect
 from gpsea.model.genome import Region
@@ -16,7 +16,7 @@ def find_patient(pat_id: str, cohort: Cohort) -> Patient:
     raise ValueError(f'Could not find patient {pat_id}')
 
 
-class TestPropagatingPhenotypeBooleanPredicate:
+class TestHpoPredicate:
 
     @pytest.mark.parametrize('curie, patient_id, expected',
                              # Patient "HetSingleVar" has Phenotypes:
@@ -46,7 +46,7 @@ class TestPropagatingPhenotypeBooleanPredicate:
     ):
         patient = find_patient(patient_id, toy_cohort)
         term_id = hpotk.TermId.from_curie(curie)
-        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
+        predicate = HpoPredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual.phenotype == term_id
@@ -60,7 +60,7 @@ class TestPropagatingPhenotypeBooleanPredicate:
         # Not Measured and not Observed - 'HP:0006280',  # Chronic pancreatitis
         patient = find_patient('HetSingleVar', toy_cohort)
         term_id = hpotk.TermId.from_curie('HP:0006280')
-        predicate = PropagatingPhenotypePredicate(hpo=hpo, query=term_id)
+        predicate = HpoPredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual is None
