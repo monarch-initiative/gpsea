@@ -605,7 +605,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         )
         if issues:
             raise ValueError("Cannot create predicate: {}".format(", ".join(issues)))
-        self._question = "Which genotype group does the patient fit in"
+        self._question = "What is the genotype group?"
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
