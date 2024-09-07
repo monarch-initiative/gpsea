@@ -392,14 +392,14 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
 
     def __init__(
         self,
-        phenotypes: typing.Sequence[P],
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
         pvals: typing.Sequence[float],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         gt_predicate: GenotypePolyPredicate,
     ):
-        self._phenotypes = tuple(phenotypes)
+        self._pheno_predicates = tuple(pheno_predicates)
         self._n_usable = tuple(n_usable)
         self._all_counts = tuple(all_counts)
         self._pvals = tuple(pvals)
@@ -411,7 +411,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
 
     @property
     def phenotypes(self) -> typing.Sequence[P]:
-        return self._phenotypes
+        return tuple(p.phenotype for p in self._pheno_predicates)
 
     @property
     def n_usable(self) -> typing.Sequence[int]:
@@ -431,7 +431,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
 
     def __eq__(self, other):
         return isinstance(other, BaseMultiPhenotypeAnalysisResult) \
-            and self._phenotypes == other._phenotypes \
+            and self._pheno_predicates == other._pheno_predicates \
             and self._n_usable == other._n_usable \
             and self._all_counts == other._all_counts \
             and self._pvals == other._pvals \
@@ -441,7 +441,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
     def __hash__(self):
         # NOTE: if a field is added, the hash method of the subclasses must be updated as well.
         return hash((
-            self._phenotypes, self._n_usable, self._all_counts,
+            self._pheno_predicates, self._n_usable, self._all_counts,
             self._pvals, self._corrected_pvals, self._gt_predicate,
         ))
 
@@ -474,10 +474,8 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         else:
             corrected_pvals = self._apply_mtc(pvals=pvals)
 
-        phenotypes = tuple(p.phenotype for p in pheno_predicates)
-
         return BaseMultiPhenotypeAnalysisResult(
-            phenotypes=phenotypes,
+            pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
@@ -496,7 +494,7 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
 
     def __init__(
         self,
-        phenotypes: typing.Sequence[hpotk.TermId],
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[hpotk.TermId]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
         pvals: typing.Sequence[float],
@@ -507,7 +505,7 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         mtc_name: typing.Optional[str],
     ):
         super().__init__(
-            phenotypes=phenotypes,
+            pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
@@ -549,7 +547,7 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
 
     def __hash__(self):
         return hash((
-            self._phenotypes, self._n_usable, self._all_counts,
+            self._pheno_predicates, self._n_usable, self._all_counts,
             self._pvals, self._corrected_pvals, self._gt_predicate,
             self._mtc_filter_name, self._mtc_filter_results, self._mtc_name,
         ))
@@ -590,7 +588,6 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         pheno_predicates = tuple(pheno_predicates)
         if len(pheno_predicates) == 0:
             raise ValueError("No phenotype predicates were provided")
-        phenotypes = tuple(p.phenotype for p in pheno_predicates)
 
         # 1 - Count the patients
         n_usable, all_counts = apply_predicates_on_patients(
@@ -625,7 +622,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
 
         return HpoTermAnalysisResult(
-            phenotypes=phenotypes,
+            pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,

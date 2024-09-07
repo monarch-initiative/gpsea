@@ -195,6 +195,15 @@ class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
         return None
 
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, PropagatingPhenotypePredicate) \
+            and self._hpo.version == value._hpo.version \
+            and self._query == value._query \
+            and self._missing_implies_phenotype_excluded == value._missing_implies_phenotype_excluded
+    
+    def __hash__(self) -> int:
+        return hash((self._hpo.version, self._query, self._missing_implies_phenotype_excluded))
+
     def __repr__(self):
         return f"PropagatingPhenotypeBooleanPredicate(query={self._query})"
 
@@ -261,6 +270,13 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
                 return self._diagnosis_present
 
         return self._diagnosis_excluded
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, DiseasePresencePredicate) \
+            and self._query == value._query
+    
+    def __hash__(self) -> int:
+        return hash((self._query,))
 
     def __repr__(self):
         return f"DiseasePresencePredicate(query={self._query})"
