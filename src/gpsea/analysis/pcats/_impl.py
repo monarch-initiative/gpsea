@@ -13,7 +13,6 @@ from statsmodels.stats import multitest
 
 from gpsea.model import Patient
 from gpsea.analysis.pcats.stats import CountStatistic
-from ..predicate import PatientCategory
 from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
@@ -103,14 +102,6 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def phenotypes(self) -> typing.Sequence[P]:
-        """
-        Get the tested phenotypes.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
     def n_usable(self) -> typing.Sequence[int]:
         """
         Get a sequence of numbers of patients where the phenotype was assessable,
@@ -164,95 +155,6 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
         Get total count of tests that were run for this analysis.
         """
         return sum(1 for pval in self.pvals if not math.isnan(pval))
-
-    def summarize(
-        self,
-        hpo: hpotk.MinimalOntology,
-        target_phenotype_category: PatientCategory,
-    ) -> pd.DataFrame:
-        """
-        Create a data frame with summary of the genotype phenotype analysis.
-
-        The *rows* of the frame correspond to the analyzed HPO terms.
-
-        The columns of the data frame have `Count` and `Percentage` per used genotype predicate.
-
-        **Example**
-
-        If we use :class:`~gpsea.analysis.predicate.genotype.VariantEffectPredicate`
-        which can compare phenotype with and without a missense variant, we will have a data frame
-        that looks like this::
-
-            MISSENSE_VARIANT on `NM_1234.5`                       No                  Yes
-                                                                  Count    Percent    Count    Percent   Corrected p value  p value
-            Arachnodactyly [HP:0001166]                           1/10         10%    13/16        81%   0.020299           0.000781
-            Abnormality of the musculature [HP:0003011]           6/6         100%    11/11       100%   1.000000           1.000000
-            Abnormal nervous system physiology [HP:0012638]       9/9         100%    15/15       100%   1.000000           1.000000
-            ...                                                   ...      ...        ...      ...       ...                ...
-        """
-
-        # TODO: this should be plotted by a formatter.
-        # Row index: a list of tested HPO terms
-        pheno_idx = pd.Index(self.phenotypes)
-        # Column index: multiindex of counts and percentages for all genotype predicate groups
-        gt_idx = pd.MultiIndex.from_product(
-            # TODO: fix the below
-            iterables=(self._gt_predicate.get_categories(), ("Count", "Percent")),
-            names=(self._gt_predicate.get_question_base(), None),
-        )
-
-        # We'll fill this frame with data
-        df = pd.DataFrame(index=pheno_idx, columns=gt_idx)
-
-        for phenotype, count in zip(self.phenotypes, self.all_counts):
-            gt_totals = (
-                count.sum()
-            )  # Sum across the phenotype categories (collapse the rows).
-            for gt_cat in count.columns:
-                cnt = count.loc[target_phenotype_category, gt_cat]
-                total = gt_totals[gt_cat]
-                df.loc[phenotype, (gt_cat, "Count")] = f"{cnt}/{total}"
-                pct = 0 if total == 0 else round(cnt * 100 / total)
-                df.loc[phenotype, (gt_cat, "Percent")] = f"{pct}%"
-
-        # Add columns with p values and corrected p values (if present)
-        p_val_col_name = "p values"
-        corrected_p_val_col_name = "Corrected p values"
-        if self.corrected_pvals is not None:
-            df.insert(
-                df.shape[1], ("", corrected_p_val_col_name), self.corrected_pvals
-            )
-        df.insert(df.shape[1], ("", p_val_col_name), self.pvals)
-
-        # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms
-        # or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).
-        labeled_idx = df.index.map(
-            lambda term_id: MultiPhenotypeAnalysisResult._format_term_id(hpo, term_id)
-        )
-
-        # Last, sort by corrected p value or just p value
-        df = df.set_index(labeled_idx)
-        if self.corrected_pvals is not None:
-            return df.sort_values(
-                by=[("", corrected_p_val_col_name), ("", p_val_col_name)]
-            )
-        else:
-            return df.sort_values(by=("", p_val_col_name))
-
-    @staticmethod
-    def _format_term_id(
-        hpo: hpotk.MinimalOntology,
-        term_id: hpotk.TermId,
-    ) -> str:
-        """
-        Format a `term_id` as a `str`. HPO term ID is formatted as `<name> [<term_id>]` whereas other term IDs
-        are formatted as CURIEs (e.g. `OMIM:123000`).
-        """
-        if term_id.prefix == "HP":
-            term_name = hpo.get_term_name(term_id)
-            return f"{term_name} [{term_id.value}]"
-        else:
-            return term_id.value
 
 
 class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
@@ -377,7 +279,8 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
     def _apply_mtc(
         self,
         pvals: typing.Sequence[float],
-    ) -> typing.Optional[typing.Sequence[float]]:
+    ) -> typing.Sequence[float]:
+        assert self._mtc_correction is not None
         _, corrected_pvals, _, _ = multitest.multipletests(
             pvals=pvals,
             alpha=self._mtc_alpha,
@@ -408,6 +311,16 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         )
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         self._gt_predicate = gt_predicate
+
+    @property
+    def gt_predicate(self) -> GenotypePolyPredicate:
+        return self._gt_predicate
+
+    @property
+    def pheno_predicates(
+        self,
+    ) -> typing.Sequence[PhenotypePolyPredicate[P]]:
+        return self._pheno_predicates
 
     @property
     def phenotypes(self) -> typing.Sequence[P]:
