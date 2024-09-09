@@ -268,8 +268,8 @@ by exploring the phenotype MTC filtering report.
 
 and these are the top 20 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
->>> from gpsea.analysis.predicate import PatientCategories
->>> summary_df = result.summarize(hpo, PatientCategories.YES)
+>>> from gpsea.view import summarize_hpo_analysis
+>>> summary_df = summarize_hpo_analysis(hpo, result)
 >>> summary_df.head(20).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
