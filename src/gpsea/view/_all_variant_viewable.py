@@ -1,17 +1,16 @@
 import typing
 
-from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple, defaultdict
 
 from gpsea.model import Cohort
-from gpsea.model._variant import Variant
+from gpsea.model._variant import Variant, VariantEffect
 from ._formatter import VariantFormatter
 
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
-VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'chromosomal_description', 'variant_effects'] )
+VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'variant_effects'] )
 
 class AllVariantViewable:
     """
@@ -25,13 +24,14 @@ class AllVariantViewable:
     ):
         """
         Args:
-            hpo(MinimalOntology): An HPO ontology object from hpo-toolkit
-            top_phenotype_count(int): Maximum number of HPO terms to display in the HTML table (default: 10)
-            top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)
+            transcript_id(str): The transcript identifier (Usually, the MANE RefSeq transcript, that should start with "NM_")
         """
         environment = Environment(loader=PackageLoader('gpsea.view', 'templates'))
         self._cohort_template = environment.get_template("all_variants.html")
         self._var_formatter = VariantFormatter(transcript_id)
+        if not transcript_id.startswith("NM"):
+            print(f"[WARNING] Non-RefSeq transcript id: {transcript_id}")
+        self._transcript_id = transcript_id
 
     def process(
         self,
@@ -57,30 +57,51 @@ class AllVariantViewable:
         transcript_id: typing.Optional[str],
         only_hgvs
     ) -> typing.Mapping[str, typing.Any]:
-        variant_count_dictionary = defaultdict()
+        variant_count_dictionary = defaultdict(int)
+        variant_effect_count_dictionary = defaultdict(int)
+        variant_key_to_variant = dict()
         for var in cohort.all_variants():
+            var_key = var.variant_info.variant_key
             vdata = self._get_variant_data(var, only_hgvs)
-            variant_count_dictionary[vdata] += 1
+            variant_key_to_variant[var_key] = vdata
+            variant_count_dictionary[var_key] += 1
+            for v_eff in vdata.variant_effects:
+                variant_effect_count_dictionary[v_eff] += 1
         variant_counts = list()
-        for var_data, count in variant_count_dictionary.items():
+        variant_effect_counts = list()
+        for var_key, count in variant_count_dictionary.items():
+            var_data = variant_key_to_variant[var_key]
             variant_counts.append(
                 {
                     "variant_key": var_data.variant_key,
                     "variant": var_data.hgvs_cdna, 
                     "variant_name": var_data.hgvs_cdna, 
                     "protein_name": var_data.hgvsp, 
-                    "variant_effects": var_data.variant_effects,
+                    "variant_effects": ", ".join(var_data.variant_effects),
                     "count": count,
                 }
             )
+        for v_effect, count in variant_effect_count_dictionary.items():
+            variant_effect_counts.append(
+                {
+                    "effect": v_effect,
+                    "count": count
+                }
+            )
+        print(f"variants eee {len(variant_effect_counts)}")
+        variant_counts = sorted(variant_counts, key=lambda row: row.get("count"), reverse=True)
+        variant_effect_counts = sorted(variant_effect_counts, key=lambda row: row.get("count"), reverse=True)
+
         # The following dictionary is used by the Jinja2 HTML template
         return {
+            "has_transcript": False,
             "variant_count_list": variant_counts,
+            "variant_effect_count_list": variant_effect_counts,
             "total_unique_allele_count": len(variant_counts)
         }
 
 
-    def _get_variant_description(
+    def _get_variant_data(
         self,
         variant: Variant,
         only_hgvs: bool
@@ -96,24 +117,32 @@ class AllVariantViewable:
             typing.Mapping[str, ToDisplay]: key: variant key, value: namedtuple(display (e.g. HGVS) string of variant, hgvsp protein string of variant)
         """
         variant_key = variant.variant_info.variant_key
-        display = self._var_formatter.format_as_string(variant)
-        tx_annotation = variant.get_tx_anno_by_tx_id(self._transcript_id)
-        if tx_annotation is not None:
-            hgvsp = tx_annotation.hgvsp
-            var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+        if variant.variant_info.has_sv_info():
+            sv_info = variant.variant_info.sv_info
+            gene_symbol = sv_info.gene_symbol
+            display = f"SV involving {gene_symbol}"
+            effect = VariantEffect.structural_so_id_to_display(so_term=sv_info.structural_type)
+            return VariantData(variant_key=variant_key, hgvs_cdna = display, hgvsp = "p.?", variant_effects=[effect])
         else:
-            hgvsp = None
-            var_effects = None
-        if only_hgvs:
-            # do not show the transcript id
-            fields_dna = display.split(":")
-            fields_ps = hgvsp.split(":") if hgvsp is not None else [None]
-            if len(fields_dna) > 1:
-                display = fields_dna[1]
+            variant_key = variant.variant_info.variant_key
+            display = self._var_formatter.format_as_string(variant)
+            tx_annotation = variant.get_tx_anno_by_tx_id(self._transcript_id)
+            if tx_annotation is not None:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [VariantEffect.to_display(var_eff) for var_eff in tx_annotation.variant_effects]
             else:
-                display = fields_dna[0]
-            if len(fields_ps) > 1:
-                hgvsp = fields_ps[1]
-            else:
-                hgvsp = fields_ps[0]
-            return VariantData(variant_key=variant_key, hgvs_cdna = fields_dna, hgvsp = hgvsp, chromosomal_description=None, variant_effects=var_effects)
+                hgvsp = None
+                var_effects = []
+            if only_hgvs:
+                # do not show the transcript id
+                fields_dna = display.split(":")
+                fields_ps = hgvsp.split(":") if hgvsp is not None else [None]
+                if len(fields_dna) > 1:
+                    display_hgvs_cDNA = fields_dna[1]
+                else:
+                    display_hgvs_cDNA = fields_dna[0]
+                if len(fields_ps) > 1:
+                    hgvsp = fields_ps[1]
+                else:
+                    hgvsp = fields_ps[0]
+            return VariantData(variant_key=variant_key, hgvs_cdna = display_hgvs_cDNA, hgvsp = hgvsp, variant_effects=var_effects)

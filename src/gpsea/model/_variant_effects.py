@@ -1,5 +1,6 @@
 from enum import Enum
-
+import typing
+from hpotk import TermId
 
 class VariantEffect(Enum):
     """
@@ -61,6 +62,68 @@ class VariantEffect(Enum):
     FEATURE_TRUNCATION = "SO:0001906"
     INTERGENIC_VARIANT = "SO:0001628"
     SEQUENCE_VARIANT = "SO:0001060"
+
+    @staticmethod
+    def to_display(veffect: "VariantEffect") -> str:
+        effect_to_display = {
+            VariantEffect.TRANSCRIPT_ABLATION : "transcript ablation",
+            VariantEffect.SPLICE_ACCEPTOR_VARIANT : "splice acceptor",
+            VariantEffect.SPLICE_DONOR_VARIANT : "splice donor",
+            VariantEffect.STOP_GAINED : "stop gained",
+            VariantEffect.FRAMESHIFT_VARIANT : "frameshift",
+            VariantEffect.STOP_LOST : "stop lost",
+            VariantEffect.START_LOST : "start lost",
+            VariantEffect.TRANSCRIPT_AMPLIFICATION : "transcript amplification",
+            VariantEffect.INFRAME_INSERTION : "inframe insertion",
+            VariantEffect.INFRAME_DELETION : "inframe deletion",
+            VariantEffect. MISSENSE_VARIANT : "missense",
+            VariantEffect. PROTEIN_ALTERING_VARIANT : "protein altering",
+            VariantEffect.SPLICE_REGION_VARIANT : "splice region",
+            VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT : "splice donor 5th base",
+            VariantEffect.SPLICE_DONOR_REGION_VARIANT : "splice donor",
+            VariantEffect. SPLICE_POLYPYRIMIDINE_TRACT_VARIANT : "splice polypyrimidine",
+            VariantEffect.INCOMPLETE_TERMINAL_CODON_VARIANT : "incomplete terminal codon",
+            VariantEffect.START_RETAINED_VARIANT : "start retained",
+            VariantEffect.STOP_RETAINED_VARIANT : "stop retainined",
+            VariantEffect.SYNONYMOUS_VARIANT : "synonymous",
+            VariantEffect.CODING_SEQUENCE_VARIANT : "coding sequence",
+            VariantEffect. MATURE_MIRNA_VARIANT : "mature miRNA",
+            VariantEffect. FIVE_PRIME_UTR_VARIANT : "5UTR",
+            VariantEffect. THREE_PRIME_UTR_VARIANT : "3UTR",
+            VariantEffect. NON_CODING_TRANSCRIPT_EXON_VARIANT : "non-coding transcript exon",
+            VariantEffect.INTRON_VARIANT : "intronic",
+            VariantEffect. NMD_TRANSCRIPT_VARIANT : "NMD transcript",
+            VariantEffect.NON_CODING_TRANSCRIPT_VARIANT : "non-coding transcript",
+            VariantEffect.UPSTREAM_GENE_VARIANT : "upstream of gene",
+            VariantEffect. DOWNSTREAM_GENE_VARIANT : "downstream of gene",
+            VariantEffect.TFBS_ABLATION : "TFBS ablation",
+            VariantEffect. TFBS_AMPLIFICATION : "TFBS amplification",
+            VariantEffect.TF_BINDING_SITE_VARIANT : "TFBS binding site",
+            VariantEffect.REGULATORY_REGION_ABLATION : "regulatory region ablation",
+            VariantEffect. REGULATORY_REGION_AMPLIFICATION : "regulatory region amplification",
+            VariantEffect.FEATURE_ELONGATION : "feature elongation",
+            VariantEffect.REGULATORY_REGION_VARIANT : "regulatory region",
+            VariantEffect.FEATURE_TRUNCATION : "feature truncation",
+            VariantEffect.INTERGENIC_VARIANT : "intergenic",
+            VariantEffect.SEQUENCE_VARIANT : "sequence variant"
+          }
+        return effect_to_display.get(veffect, "n/a")
+    
+    @staticmethod
+    def structural_so_id_to_display(so_term: typing.Union[TermId, str]) -> str:
+        """
+        get a string to represent a Sequence Ontology (SO) term identifier
+        """
+        if isinstance(so_term, TermId):
+            so_term = so_term.value
+        so_id_to_display = {"SO:1000029": "chromosomal deletion",
+                            "SO:1000037": "chromosomal duplication",
+                             "SO:1000030": "chromosomal_inversion",
+                            "SO:1000044": "chromosomal_translocation",
+                            }
+        return so_id_to_display.get(so_term, "n/a")
+
+
 
     def __init__(self, curie: str):
         self._curie = curie

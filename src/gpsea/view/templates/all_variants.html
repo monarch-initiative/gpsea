@@ -73,24 +73,17 @@
     </caption>
 
 
-    "variant": var_data.hgvs_cdna, 
-    "variant_name": var_data.hgvs_cdna, 
-    "protein_name": var_data.hgvsp, 
-    "variant_effects": var_data.variant_effects,
-    "count": count,
-
-
         <tbody>
             <tr class="strng">
-                <th class="lft">Variant</th>
-                <th>hgvs_cdna</th>
-                <th>protein</th>
+                <th class="lft">Variant key</th>
+                <th>Variant (cDNA)</th>
+                <th>Variant (protein)</th>
                 <th>Effects</th>
-                <th>count</th>
+                <th>Count</th>
             </tr>
-            {% for vdata in variant_counts %}
+            {% for vdata in variant_count_list %}
             <tr>
-                <td class="lft">{{ vdata.variant }}</td>
+                <td class="lft">{{ vdata.variant_key }}</td>
                 <td>{{ vdata.variant_name }}</td>
                 <td>{{ vdata.protein_name }}</td>
                 <td>{{ vdata.variant_effects }}</td>
@@ -99,61 +92,17 @@
             {% endfor %}
                 </tbody>
     </table>
-
-    <table>
+<!--
+   <table>
     <caption style="color: black;">
-        <h3>Top {{top_var_count}} Variants</h3>
-        Variants are shown according to {{ transcript_id }}. A total of {{ unique_variant_count}} unique variants were identified in the cohort.
-    </caption>
-            <tbody>
-                <tr class="strng">
-                    <th>Count</th>
-                    <th class="lft">Variant key</th>
-                    <th>Variant Name</th>
-                    <th>Protein Variant</th>
-                    <th>Variant Class</th>
-                </tr>
-                {% for var_count in var_counts %}
-                <tr>
-                    <td>{{ var_count.Count }}</td>
-                    <td class="lft">{{ var_count.variant }}</td>
-                    <td>{{ var_count.variant_name }}</td>
-                    <td>{{ var_count.protein_name }}</td>
-                    <td>{{ var_count.variant_effects }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    <table>
-    <caption style="color: black;">
-        <h3>Diseases</h3>
-    </caption>
-        <tbody>
-            <tr class="strng">
-                <th class="lft">Disease Name</th>
-                <th >Disease ID</th>
-                <th>Annotation Count</th>
-              </tr>
-              {% for disease_count in disease_counts %}
-              <tr>
-                <td class="lft">{{ disease_count.disease_name   }}</td>
-                <td>{{ disease_count.disease_id }}</td>
-                <td>{{ disease_count.count }}</td>
-                </tr>
-            {% endfor %}
-           </tbody>
-    </table>
-    {% if has_transcript > 0 %}
-    <table>
-    <caption style="color: black;">
-        <h3>Variant categories for {{ transcript_id }}</h3>
+        <h3>Variant category counts for {{ transcript_id }}</h3>
     </caption>
         <tbody>
             <tr class="strng">
                 <th class="lft">Variant effect</th>
                 <th>Annotation Count</th>
               </tr>
-              {% for var_effect in var_effects_list %}
+              {% for var_effect in variant_effect_count_list %}
               <tr>
                 <td class="lft">{{ var_effect.effect }}</td>
                 <td>{{ var_effect.count }}</td>
@@ -161,9 +110,7 @@
             {% endfor %}
            </tbody>
     </table>
-  {% else %}
-  <p>Call this function with transcript to see table with variant effect counts.</p>
-  {% endif %}
+ -->
 
 
 </body>
