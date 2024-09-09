@@ -103,7 +103,13 @@ We loaded the patient data into a `cohort` which is ready for the next steps.
 Explore cohort
 ^^^^^^^^^^^^^^
 
-We can now explore the cohort to see how many patients are included.
+GPSEA helps with gaining insight into the cohort by providing 
+
+
+Show cohort summary
+-------------------
+
+The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:
 
 >>> from gpsea.view import CohortViewable
 >>> viewer = CohortViewable(hpo)
@@ -120,6 +126,10 @@ We can now explore the cohort to see how many patients are included.
 
     from IPython.display import HTML, display
     display(HTML(report))
+
+
+Plot distribution of variants with respect to the protein sequence
+------------------------------------------------------------------
 
 Now we can show the distribution of variants with respect to the encoded protein.
 We first obtain `tx_coordinates` (:class:`~gpsea.model.TranscriptCoordinates`)
@@ -152,6 +162,27 @@ and we follow with plotting the diagram of the mutations on the protein:
    :alt: TBX5 protein diagram
    :align: center
    :width: 600px
+
+
+.. _show-cohort-variants:
+
+Summarize all variant alleles
+-----------------------------
+
+We can prepare a table of all variant alleles that occurr in the cohort.
+Each table row corresponds to a single allele and lists the variant key,
+the predicted effect on the transcript (*cDNA*) and protein of interest,
+the variant effects, and the number of patients who present
+with one or more variant alleles (*Count*):
+
+>>> from gpsea.view import CohortVariantViewer
+>>> viewer = CohortVariantViewer(tx_id=tx_id)
+>>> report = viewer.process(cohort=cohort)
+>>> with open('docs/report/tbx5_all_variants.html', 'w') as fh:  # doctest: +SKIP
+...     _ = fh.write(report)
+
+.. raw:: html
+  :file: report/tbx5_all_variants.html
 
 
 Prepare genotype and phenotype predicates

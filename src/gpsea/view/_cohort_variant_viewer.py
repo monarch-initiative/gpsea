@@ -17,22 +17,24 @@ class CohortVariantViewer:
     `AllVariantViewer` creates an HTML report with the cohort variants.
 
     The report can be either written into an HTML file or displayed in a Jupyter notebook.
+
+    See :ref:show-cohort-variants: for an example usage.
     """
 
     def __init__(
         self,
-        transcript_id: str
+        tx_id: str
     ):
         """
         Args:
-            transcript_id(str): The transcript identifier (Usually, the MANE RefSeq transcript, that should start with "NM_")
+            tx_id (str): The transcript identifier (Usually, the MANE RefSeq transcript, that should start with "NM_")
         """
         environment = Environment(loader=PackageLoader('gpsea.view', 'templates'))
         self._cohort_template = environment.get_template("all_variants.html")
-        self._var_formatter = VariantFormatter(transcript_id)
-        if not transcript_id.startswith("NM"):
-            print(f"[WARNING] Non-RefSeq transcript id: {transcript_id}")
-        self._transcript_id = transcript_id
+        self._var_formatter = VariantFormatter(tx_id)
+        if not tx_id.startswith("NM"):
+            print(f"[WARNING] Non-RefSeq transcript id: {tx_id}")
+        self._transcript_id = tx_id
 
     def process(
         self,
