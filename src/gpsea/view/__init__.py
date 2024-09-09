@@ -1,6 +1,6 @@
 from ._cohort import CohortViewable
 from ._disease import DiseaseViewable
-from ._phenotype_analysis import HpoTermAnalysisResultViewer
+from ._phenotype_analysis import summarize_hpo_analysis
 from ._protein_viewer import ProteinViewable
 from ._protein_visualizable import ProteinVisualizable
 from ._stats import MtcStatsViewer
@@ -13,7 +13,7 @@ __all__ = [
     'ProteinVisualizer', 'ProteinVisualizable', 'ProteinViewable',
     'DiseaseViewable',
     'MtcStatsViewer',
-    'HpoTermAnalysisResultViewer',
+    'summarize_hpo_analysis',
     'VariantTranscriptVisualizer',
     'VariantFormatter',
 ]
