@@ -13,6 +13,8 @@ from ._api import GenotypePolyPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
 
+# TODO: implement __hash__, __eq__ on predicates
+
 
 class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
     # NOT PART OF THE PUBLIC API

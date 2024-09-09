@@ -254,8 +254,8 @@ Last, let's explore the associations. The results include a table with all teste
 ordered by the corrected p value (Benjamini-Hochberg FDR).
 Here we show the top 20 table rows:
 
->>> from gpsea.analysis.predicate import PatientCategories
->>> summary_df = result.summarize(hpo, PatientCategories.YES)
+>>> from gpsea.view import summarize_hpo_analysis
+>>> summary_df = summarize_hpo_analysis(hpo, result)
 >>> summary_df.head(20).to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
