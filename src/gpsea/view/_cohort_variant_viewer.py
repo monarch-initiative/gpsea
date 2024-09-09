@@ -14,7 +14,7 @@ VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'v
 
 class CohortVariantViewer:
     """
-    `AllVariantViewer` creates an HTML report with the cohort variants.
+    `CohortVariantViewer` creates an HTML report with the cohort variants.
 
     The report can be either written into an HTML file or displayed in a Jupyter notebook.
 
@@ -133,7 +133,7 @@ class CohortVariantViewer:
             tx_annotation = variant.get_tx_anno_by_tx_id(self._transcript_id)
             if tx_annotation is not None:
                 hgvsp = tx_annotation.hgvsp
-                var_effects = [VariantEffect.to_display(var_eff) for var_eff in tx_annotation.variant_effects]
+                var_effects = [var_eff.to_display() for var_eff in tx_annotation.variant_effects]
             else:
                 hgvsp = None
                 var_effects = []

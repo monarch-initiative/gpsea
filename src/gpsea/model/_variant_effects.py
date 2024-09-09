@@ -73,9 +73,9 @@ class VariantEffect(enum.Enum):
         ^^^^^^^
 
         >>> from gpsea.model import VariantEffect
-        >>> VariantEffect.MISSENSE_VARIANT
+        >>> VariantEffect.MISSENSE_VARIANT.to_display()
         'missense'
-        >>> VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT
+        >>> VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT.to_display()
         'splice donor 5th base'
 
         :returns: a `str` with the name or `'n/a'` if the variant effect was not assigned a concise name.
