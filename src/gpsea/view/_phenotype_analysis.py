@@ -4,9 +4,9 @@ import pandas as pd
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 
 
-class HpoTermAnalysisResultFormatter:
+class HpoTermAnalysisResultViewer:
     """
-    `HpoTermAnalysisResultFormatter` presents the :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`
+    `HpoTermAnalysisResultViewer` presents the :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`
     in a form suitable for humans.
 
     This includes preparing a dataframe with counts, frequencies, and p values for the tested HPO terms.
@@ -61,7 +61,7 @@ class HpoTermAnalysisResultFormatter:
         # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms
         # or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).
         labeled_idx = df.index.map(
-            lambda term_id: HpoTermAnalysisResultFormatter._format_term_id(
+            lambda term_id: HpoTermAnalysisResultViewer._format_term_id(
                 self._hpo, term_id
             )
         )
