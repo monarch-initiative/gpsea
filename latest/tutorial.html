@@ -805,8 +805,8 @@ by exploring the phenotype MTC filtering report.</p>
 </body>
 </html>
 <p>and these are the top 20 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_frameshift_vs_missense.csv&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
@@ -935,11 +935,11 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>0.7735491022101784</p></td>
 </tr>
-<tr class="row-even"><td><p>Short humerus [HP:0005792]</p></td>
-<td><p>7/17</p></td>
-<td><p>41%</p></td>
-<td><p>4/9</p></td>
-<td><p>44%</p></td>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>42/44</p></td>
+<td><p>95%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
@@ -951,15 +951,7 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
-<td><p>42/44</p></td>
-<td><p>95%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
+<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
 <td><p>7/32</p></td>
 <td><p>22%</p></td>
 <td><p>6/25</p></td>
@@ -967,26 +959,34 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the thumb [HP:0009601]</p></td>
+<tr class="row-odd"><td><p>Short humerus [HP:0005792]</p></td>
+<td><p>7/17</p></td>
+<td><p>41%</p></td>
+<td><p>4/9</p></td>
+<td><p>44%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<td><p>43/43</p></td>
+<td><p>100%</p></td>
 <td><p>20/20</p></td>
 <td><p>100%</p></td>
-<td><p>19/19</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<td><p>62/62</p></td>
+<td><p>100%</p></td>
+<td><p>28/28</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
-<td><p>22/22</p></td>
+<tr class="row-even"><td><p>Abnormal heart morphology [HP:0001627]</p></td>
+<td><p>62/62</p></td>
 <td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
-<td><p>22/22</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
+<td><p>30/30</p></td>
 <td><p>100%</p></td>
 <td></td>
 <td></td>

@@ -297,6 +297,15 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PropagatingPhenotypePredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_query</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PropagatingPhenotypeBooleanPredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
@@ -375,6 +384,13 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_excluded</span></div>
 
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DiseasePresencePredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_query</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,))</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;DiseasePresencePredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2">)&quot;</span></div>

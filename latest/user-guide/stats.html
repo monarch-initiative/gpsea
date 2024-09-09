@@ -453,8 +453,8 @@ We can learn more by showing the MTC filter report:</p>
 <p>Last, let’s explore the associations. The results include a table with all tested HPO terms
 ordered by the corrected p value (Benjamini-Hochberg FDR).
 Here we show the top 20 table rows:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">PatientCategories</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/report/tbx5_frameshift.csv&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
