@@ -8,7 +8,7 @@ import pytest
 
 from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
 from gpsea.analysis.pcats import apply_predicates_on_patients
 from gpsea.model import Cohort
 
@@ -55,7 +55,7 @@ class TestHpoMtcFilter:
         For the purpose of testing counts, let's pretend the counts
         were created by this predicate.
         """
-        return PropagatingPhenotypePredicate(
+        return HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
             missing_implies_phenotype_excluded=False,

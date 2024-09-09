@@ -10,7 +10,7 @@ import pytest
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate, VariantPredicates, boolean_predicate
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
 from gpsea.io import GpseaJSONDecoder
 from gpsea.model import *
 from gpsea.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
@@ -133,23 +133,23 @@ def suox_pheno_predicates(
     Note, these are just a *SUBSET* of all phenotypes that can be tested for in the *SUOX* cohort.
     """
     return (
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie('HP:0001250'),  # Seizure
         ),
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie('HP:0001083'),  # Ectopia lentis
         ),
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie('HP:0032350'),  # Sulfocysteinuria
         ),
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie('HP:0012758'),  # Neurodevelopmental delay
         ),
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie('HP:0001276'),  # Hypertonia
         ),

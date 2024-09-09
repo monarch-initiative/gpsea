@@ -92,13 +92,15 @@ class PhenotypePolyPredicate(
         return self.present_phenotype_categorization.category
 
 
-class PropagatingPhenotypePredicate(PhenotypePolyPredicate[hpotk.TermId]):
+class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
-    `PropagatingPhenotypePredicate` tests if a patient is annotated with an HPO term.
+    `HpoPredicate` tests if a patient is annotated with an HPO term.
 
     Note, `query` must be a term of the provided `hpo`!
 
-    :param hpo: HPO object
+    See :ref:`hpo-predicate` section for an example usage.
+
+    :param hpo: HPO ontology
     :param query: the HPO term to test
     :param missing_implies_phenotype_excluded: `True` if lack of an explicit annotation implies term's absence`.
     """
