@@ -139,7 +139,7 @@ we expect the autosomal dominant mode of inheritance:
 >>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
 >>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
-'Which genotype group does the patient fit in: HOM_REF, HET'
+'What is the genotype group: HOM_REF, HET'
 
 `gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
 and the patients with one frameshift allele will be assigned into `HET` group.
@@ -254,8 +254,8 @@ Last, let's explore the associations. The results include a table with all teste
 ordered by the corrected p value (Benjamini-Hochberg FDR).
 Here we show the top 20 table rows:
 
->>> from gpsea.analysis.predicate import PatientCategories
->>> summary_df = result.summarize(hpo, PatientCategories.YES)
+>>> from gpsea.view import summarize_hpo_analysis
+>>> summary_df = summarize_hpo_analysis(hpo, result)
 >>> summary_df.head(20).to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest

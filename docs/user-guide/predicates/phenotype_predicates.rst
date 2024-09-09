@@ -15,4 +15,5 @@ TODO -- separate explanations for HPO (Fisher), scores (Mann Whitney) and surviv
   :maxdepth: 1
   :caption: Contents:
 
+  hpo_predicate
   devries
