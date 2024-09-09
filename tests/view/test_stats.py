@@ -7,7 +7,7 @@ import pandas as pd
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.predicate import PatientCategories
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import PropagatingPhenotypePredicate
+from gpsea.analysis.predicate.phenotype import HpoPredicate
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.view import MtcStatsViewer
 
@@ -22,11 +22,11 @@ class TestStatsViewable:
     ) -> HpoTermAnalysisResult:
         return HpoTermAnalysisResult(
             pheno_predicates=(
-                PropagatingPhenotypePredicate(
+                HpoPredicate(
                     hpo=hpo,
                     query=hpotk.TermId.from_curie('HP:0001166'),  # Arachnodactyly
                 ),
-                PropagatingPhenotypePredicate(
+                HpoPredicate(
                     hpo=hpo,
                     query=hpotk.TermId.from_curie('HP:0001250'),  # Seizure
                 ),
