@@ -269,7 +269,7 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00411`.
+is `~0.00387`.
 
 The table includes all HPO terms of the cohort, including the terms that were not selected for testing
 and thus have no associated p value.
