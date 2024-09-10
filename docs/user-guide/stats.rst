@@ -230,10 +230,10 @@ We can now execute the analysis:
 >>> len(result.phenotypes)
 260
 >>> result.total_tests
-17
+16
 
 
-Thanks to Phenotype MTC filter, we only tested 17 out of 260 terms.
+Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -251,12 +251,11 @@ Genotype phenotype associations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Last, let's explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR).
-Here we show the top 20 table rows:
+ordered by the corrected p value (Benjamini-Hochberg FDR):
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
->>> summary_df.head(20).to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
+>>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
@@ -270,7 +269,7 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00411`.
+is `~0.00387`.
 
 The table includes all HPO terms of the cohort, including the terms that were not selected for testing
 and thus have no associated p value.

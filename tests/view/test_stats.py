@@ -49,7 +49,7 @@ class TestStatsViewable:
             gt_predicate=suox_gt_predicate,
             mtc_filter_name='Random MTC filter',
             mtc_filter_results=(
-                PhenotypeMtcResult.fail("Not too interesting"),
+                PhenotypeMtcResult.fail("RMF01", "Not too interesting"),
                 PhenotypeMtcResult.ok(),
             ),
             mtc_name='fdr_bh',

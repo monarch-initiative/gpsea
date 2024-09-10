@@ -11,6 +11,8 @@ def summarize_hpo_analysis(
     """
     Create a dataframe with counts, frequencies, and p values for the tested HPO terms.
 
+    The HPO terms that were not tested will *not* be included in the frame.
+
     :param hpo: HPO data.
     :param result: the HPO term analysis results to show.
     """
@@ -51,10 +53,12 @@ def summarize_hpo_analysis(
 
     # Last, sort by corrected p value or just p value
     df = df.set_index(labeled_idx)
+    # and only report the tested HPO terms
+    with_p_value = df[("", p_val_col_name)].notna()
     if result.corrected_pvals is not None:
-        return df.sort_values(by=[("", corrected_p_val_col_name), ("", p_val_col_name)])
+        return df.sort_values(by=[("", corrected_p_val_col_name), ("", p_val_col_name)]).loc[with_p_value]
     else:
-        return df.sort_values(by=("", p_val_col_name))
+        return df.sort_values(by=("", p_val_col_name)).loc[with_p_value]
 
 
 def format_term_id(

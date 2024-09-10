@@ -111,12 +111,19 @@ def suox_cohort(
 
 
 @pytest.fixture(scope='session')
-def suox_gt_predicate() -> GenotypePolyPredicate:
+def suox_mane_tx_id() -> str:
+    return 'NM_001032386.2'
+
+
+@pytest.fixture(scope='session')
+def suox_gt_predicate(
+    suox_mane_tx_id: str,
+) -> GenotypePolyPredicate:
     # To bin the patients to a group with >1 MISSENSE variant or 0 MISSENSE variants.
-    suox_mane_tx_id = 'NM_001032386.2'
+    
     return boolean_predicate(
         variant_predicate=VariantPredicates.variant_effect(
-            effect=VariantEffect.MISSENSE_VARIANT, 
+            effect=VariantEffect.MISSENSE_VARIANT,
             tx_id=suox_mane_tx_id
         )
     )
