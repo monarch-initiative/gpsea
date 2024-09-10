@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .table .column-1 {
+      text-align: left;
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
+
+    tr {
+      border: 1px solid #dddddd;
+    }
+
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .table td, tr {
+      text-align: right;
+    }
+
+    .lft {
+      text-align: left;
+    }
+
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GPSEA cohort analysis: All variant alleles</h1>
+
+
+    <table>
+    <caption style="color: black;">
+        <h3>Variant alleles</h3>
+        A total of {{ total_unique_allele_count }} unique alleles were identified in the cohort.
+    </caption>
+
+
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant key</th>
+                <th>Variant (cDNA)</th>
+                <th>Variant (protein)</th>
+                <th>Effects</th>
+                <th>Count</th>
+            </tr>
+            {% for vdata in variant_count_list %}
+            <tr>
+                <td class="lft">{{ vdata.variant_key }}</td>
+                <td>{{ vdata.variant_name }}</td>
+                <td>{{ vdata.protein_name }}</td>
+                <td>{{ vdata.variant_effects }}</td>
+                <td>{{ vdata.count }}</td>
+                </tr>
+            {% endfor %}
+                </tbody>
+    </table>
+<!--
+   <table>
+    <caption style="color: black;">
+        <h3>Variant category counts for {{ transcript_id }}</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
+                <th>Annotation Count</th>
+              </tr>
+              {% for var_effect in variant_effect_count_list %}
+              <tr>
+                <td class="lft">{{ var_effect.effect }}</td>
+                <td>{{ var_effect.count }}</td>
+                </tr>
+            {% endfor %}
+           </tbody>
+    </table>
+ -->
+
+
+</body>
+</html>

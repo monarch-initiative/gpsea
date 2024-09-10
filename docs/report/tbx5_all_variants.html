@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .table .column-1 {
+      text-align: left;
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
+
+    tr {
+      border: 1px solid #dddddd;
+    }
+
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .table td, tr {
+      text-align: right;
+    }
+
+    .lft {
+      text-align: left;
+    }
+
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GPSEA cohort analysis: All variant alleles</h1>
+
+
+    <table>
+    <caption style="color: black;">
+        <h3>Variant alleles</h3>
+        A total of 53 unique alleles were identified in the cohort.
+    </caption>
+
+
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant key</th>
+                <th>Variant (cDNA)</th>
+                <th>Variant (protein)</th>
+                <th>Effects</th>
+                <th>Count</th>
+            </tr>
+            
+            <tr>
+                <td class="lft">12_114385521_114385521_C_T</td>
+                <td>c.710G>A</td>
+                <td>p.Arg237Gln</td>
+                <td>missense</td>
+                <td>22</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401830_114401830_C_T</td>
+                <td>c.238G>A</td>
+                <td>p.Gly80Arg</td>
+                <td>missense</td>
+                <td>20</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385563_114385563_G_A</td>
+                <td>c.668C>T</td>
+                <td>p.Thr223Met</td>
+                <td>missense</td>
+                <td>8</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398675_114398675_G_T</td>
+                <td>c.408C>A</td>
+                <td>p.Tyr136Ter</td>
+                <td>stop gained</td>
+                <td>6</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399514_114399514_A_C</td>
+                <td>c.361T>G</td>
+                <td>p.Trp121Gly</td>
+                <td>missense, splice region</td>
+                <td>5</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114403792_114403792_C_CG</td>
+                <td>c.106_107insC</td>
+                <td>p.Ser36ThrfsTer25</td>
+                <td>frameshift</td>
+                <td>5</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398682_114398682_C_CG</td>
+                <td>c.400dup</td>
+                <td>p.Arg134ProfsTer49</td>
+                <td>frameshift</td>
+                <td>5</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385474_114385474_A_G</td>
+                <td>c.755+2T>C</td>
+                <td>None</td>
+                <td>splice donor</td>
+                <td>4</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398656_114398656_C_CG</td>
+                <td>c.426dup</td>
+                <td>p.Ala143ArgfsTer40</td>
+                <td>frameshift</td>
+                <td>4</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366360_114366360_C_T</td>
+                <td>c.787G>A</td>
+                <td>p.Val263Met</td>
+                <td>missense</td>
+                <td>4</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385522_114385522_G_A</td>
+                <td>c.709C>T</td>
+                <td>p.Arg237Trp</td>
+                <td>missense</td>
+                <td>4</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114403798_114403798_G_GC</td>
+                <td>c.100dup</td>
+                <td>p.Ala34GlyfsTer27</td>
+                <td>frameshift</td>
+                <td>4</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399613_114399613_T_A</td>
+                <td>c.262A>T</td>
+                <td>p.Lys88Ter</td>
+                <td>stop gained</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401827_114401827_T_A</td>
+                <td>c.241A>T</td>
+                <td>p.Arg81Trp</td>
+                <td>missense, splice region</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366312_114366312_G_A</td>
+                <td>c.835C>T</td>
+                <td>p.Arg279Ter</td>
+                <td>stop gained</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366366_114366366_T_A</td>
+                <td>c.781A>T</td>
+                <td>p.Ser261Cys</td>
+                <td>missense</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114403798_114403799_GC_G</td>
+                <td>c.100del</td>
+                <td>p.Ala34ProfsTer32</td>
+                <td>frameshift</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385475_114385475_C_T</td>
+                <td>c.755+1G>A</td>
+                <td>None</td>
+                <td>splice donor</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401853_114401853_G_T</td>
+                <td>c.215C>A</td>
+                <td>p.Thr72Lys</td>
+                <td>missense</td>
+                <td>3</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385521_114385521_C_G</td>
+                <td>c.710G>C</td>
+                <td>p.Arg237Pro</td>
+                <td>missense</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398568_114398568_C_A</td>
+                <td>c.510+5G>T</td>
+                <td>None</td>
+                <td>splice donor 5th base, intronic</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366207_114366208_GC_G</td>
+                <td>c.939del</td>
+                <td>p.Gln315ArgfsTer79</td>
+                <td>frameshift</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366274_114366274_G_T</td>
+                <td>c.873C>A</td>
+                <td>p.Tyr291Ter</td>
+                <td>stop gained</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366267_114366267_C_A</td>
+                <td>c.880G>T</td>
+                <td>p.Glu294Ter</td>
+                <td>stop gained</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398578_114398579_CA_C</td>
+                <td>c.504del</td>
+                <td>p.Phe168LeufsTer6</td>
+                <td>frameshift</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114394762_114394763_CA_C</td>
+                <td>c.641del</td>
+                <td>p.Val214GlyfsTer12</td>
+                <td>frameshift</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398666_114398667_TG_T</td>
+                <td>c.416del</td>
+                <td>p.Pro139GlnfsTer11</td>
+                <td>frameshift</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114403754_114403754_G_T</td>
+                <td>c.145C>A</td>
+                <td>p.Gln49Lys</td>
+                <td>missense, splice region</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385550_114385550_A_AATTATTCTCAG</td>
+                <td>c.680_681insCTGAGAATAAT</td>
+                <td>p.Ile227_Glu228insTer</td>
+                <td>inframe insertion, stop retainined</td>
+                <td>2</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366348_114366349_CT_C</td>
+                <td>c.798del</td>
+                <td>p.Val267TrpfsTer127</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399559_114399559_T_C</td>
+                <td>c.316A>G</td>
+                <td>p.Ile106Val</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114356064_114356065_TA_T</td>
+                <td>c.1024del</td>
+                <td>p.Tyr342ThrfsTer52</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114355755_114355756_TG_T</td>
+                <td>c.1333del</td>
+                <td>p.His445MetfsTer137</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398632_114398632_G_A</td>
+                <td>c.451C>T</td>
+                <td>p.Gln151Ter</td>
+                <td>stop gained</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401907_114401907_A_G</td>
+                <td>c.161T>C</td>
+                <td>p.Ile54Thr</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114355723_114355723_G_A</td>
+                <td>c.1366C>T</td>
+                <td>p.Gln456Ter</td>
+                <td>stop gained</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398602_114398602_T_G</td>
+                <td>c.481A>C</td>
+                <td>p.Thr161Pro</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398708_114398709_GC_G</td>
+                <td>c.374del</td>
+                <td>p.Gly125AlafsTer25</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114385553_114385553_C_A</td>
+                <td>c.678G>T</td>
+                <td>p.Lys226Asn</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399633_114399633_C_G</td>
+                <td>c.243-1G>C</td>
+                <td>None</td>
+                <td>splice acceptor</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401873_114401874_TA_T</td>
+                <td>c.194del</td>
+                <td>p.Leu65GlnfsTer10</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399594_114399594_A_C</td>
+                <td>c.281T>G</td>
+                <td>p.Leu94Arg</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399622_114399622_G_T</td>
+                <td>c.253C>A</td>
+                <td>p.Pro85Thr</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114394743_114394746_TGTG_T</td>
+                <td>c.658_660del</td>
+                <td>p.His220del</td>
+                <td>inframe deletion</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114394820_114394820_C_G</td>
+                <td>c.584G>C</td>
+                <td>p.Gly195Ala</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401846_114401846_C_G</td>
+                <td>c.222G>C</td>
+                <td>p.Met74Ile</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114366241_114366242_CT_C</td>
+                <td>c.905del</td>
+                <td>p.Gln302ArgfsTer92</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114355784_114355785_CA_C</td>
+                <td>c.1304del</td>
+                <td>p.Leu435ArgfsTer147</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114398626_114398627_CG_C</td>
+                <td>c.456del</td>
+                <td>p.Val153SerfsTer21</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114403859_114403859_G_T</td>
+                <td>c.40C>A</td>
+                <td>p.Pro14Thr</td>
+                <td>missense</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114399625_114399629_ACATC_A</td>
+                <td>c.246_249del</td>
+                <td>p.Met83PhefsTer6</td>
+                <td>frameshift</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114394817_114394817_G_C</td>
+                <td>c.587C>G</td>
+                <td>p.Ser196Ter</td>
+                <td>stop gained</td>
+                <td>1</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">12_114401921_114401921_C_G</td>
+                <td>c.148-1G>C</td>
+                <td>None</td>
+                <td>splice acceptor</td>
+                <td>1</td>
+                </tr>
+            
+                </tbody>
+    </table>
+<!--
+   <table>
+    <caption style="color: black;">
+        <h3>Variant category counts for </h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
+                <th>Annotation Count</th>
+              </tr>
+              
+              <tr>
+                <td class="lft">missense</td>
+                <td>85</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">frameshift</td>
+                <td>38</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">stop gained</td>
+                <td>19</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">splice region</td>
+                <td>10</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">splice donor</td>
+                <td>7</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">splice donor 5th base</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">intronic</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">splice acceptor</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">inframe insertion</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">stop retainined</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">inframe deletion</td>
+                <td>1</td>
+                </tr>
+            
+           </tbody>
+    </table>
+ -->
+
+
+</body>
+</html>
