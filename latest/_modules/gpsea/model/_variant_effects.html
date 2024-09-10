@@ -81,12 +81,15 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.model._variant_effects</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
 
 
 <div class="viewcode-block" id="VariantEffect">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.VariantEffect">[docs]</a>
-<span class="k">class</span> <span class="nc">VariantEffect</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">VariantEffect</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantEffect` represents consequences of a variant on transcript that are supported by GPSEA.</span>
 
@@ -132,7 +135,7 @@
     <span class="n">THREE_PRIME_UTR_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001624&quot;</span>
     <span class="n">NON_CODING_TRANSCRIPT_EXON_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001792&quot;</span>
     <span class="n">INTRON_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001627&quot;</span>
-    <span class="n">NMD_TRANSCRIPT_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001621&quot;</span><span class="p">,</span>
+    <span class="n">NMD_TRANSCRIPT_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001621&quot;</span>
     <span class="n">NON_CODING_TRANSCRIPT_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001619&quot;</span>
     <span class="n">UPSTREAM_GENE_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001631&quot;</span>
     <span class="n">DOWNSTREAM_GENE_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001632&quot;</span>
@@ -146,6 +149,49 @@
     <span class="n">FEATURE_TRUNCATION</span> <span class="o">=</span> <span class="s2">&quot;SO:0001906&quot;</span>
     <span class="n">INTERGENIC_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001628&quot;</span>
     <span class="n">SEQUENCE_VARIANT</span> <span class="o">=</span> <span class="s2">&quot;SO:0001060&quot;</span>
+
+<div class="viewcode-block" id="VariantEffect.to_display">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.VariantEffect.to_display">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a concise name of the variant effect that is suitable for showing to humans.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        ^^^^^^^</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpsea.model import VariantEffect</span>
+<span class="sd">        &gt;&gt;&gt; VariantEffect.MISSENSE_VARIANT.to_display()</span>
+<span class="sd">        &#39;missense&#39;</span>
+<span class="sd">        &gt;&gt;&gt; VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT.to_display()</span>
+<span class="sd">        &#39;splice donor 5th base&#39;</span>
+
+<span class="sd">        :returns: a `str` with the name or `&#39;n/a&#39;` if the variant effect was not assigned a concise name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">effect_to_display</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariantEffect.structural_so_id_to_display">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.VariantEffect.structural_so_id_to_display">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">structural_so_id_to_display</span><span class="p">(</span><span class="n">so_term</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `str` with a concise name for representing a Sequence Ontology (SO) term identifier.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        ^^^^^^^</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpsea.model import VariantEffect</span>
+<span class="sd">        &gt;&gt;&gt; VariantEffect.structural_so_id_to_display(&#39;SO:1000029&#39;)</span>
+<span class="sd">        &#39;chromosomal deletion&#39;</span>
+
+<span class="sd">        :param so_term: a CURIE `str` or a :class:`~hpotk.TermId` with the query SO term.</span>
+<span class="sd">        :returns: a `str` with the concise name for the SO term or `&#39;n/a&#39;` if a name has not been assigned yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">so_term</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+            <span class="n">so_term</span> <span class="o">=</span> <span class="n">so_term</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">so_id_to_display</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">so_term</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curie</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span> <span class="o">=</span> <span class="n">curie</span>
@@ -161,6 +207,57 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
+
+
+<span class="n">effect_to_display</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">:</span> <span class="s2">&quot;transcript ablation&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_ACCEPTOR_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice acceptor&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice donor&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">:</span> <span class="s2">&quot;stop gained&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">:</span> <span class="s2">&quot;frameshift&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_LOST</span><span class="p">:</span> <span class="s2">&quot;stop lost&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_LOST</span><span class="p">:</span> <span class="s2">&quot;start lost&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_AMPLIFICATION</span><span class="p">:</span> <span class="s2">&quot;transcript amplification&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INFRAME_INSERTION</span><span class="p">:</span> <span class="s2">&quot;inframe insertion&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INFRAME_DELETION</span><span class="p">:</span> <span class="s2">&quot;inframe deletion&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;missense&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">PROTEIN_ALTERING_VARIANT</span><span class="p">:</span> <span class="s2">&quot;protein altering&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_REGION_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice region&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_5TH_BASE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice donor 5th base&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_REGION_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice donor&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_POLYPYRIMIDINE_TRACT_VARIANT</span><span class="p">:</span> <span class="s2">&quot;splice polypyrimidine&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INCOMPLETE_TERMINAL_CODON_VARIANT</span><span class="p">:</span> <span class="s2">&quot;incomplete terminal codon&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_RETAINED_VARIANT</span><span class="p">:</span> <span class="s2">&quot;start retained&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_RETAINED_VARIANT</span><span class="p">:</span> <span class="s2">&quot;stop retainined&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SYNONYMOUS_VARIANT</span><span class="p">:</span> <span class="s2">&quot;synonymous&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">CODING_SEQUENCE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;coding sequence&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MATURE_MIRNA_VARIANT</span><span class="p">:</span> <span class="s2">&quot;mature miRNA&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FIVE_PRIME_UTR_VARIANT</span><span class="p">:</span> <span class="s2">&quot;5UTR&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">THREE_PRIME_UTR_VARIANT</span><span class="p">:</span> <span class="s2">&quot;3UTR&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">NON_CODING_TRANSCRIPT_EXON_VARIANT</span><span class="p">:</span> <span class="s2">&quot;non-coding transcript exon&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INTRON_VARIANT</span><span class="p">:</span> <span class="s2">&quot;intronic&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">NMD_TRANSCRIPT_VARIANT</span><span class="p">:</span> <span class="s2">&quot;NMD transcript&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">NON_CODING_TRANSCRIPT_VARIANT</span><span class="p">:</span> <span class="s2">&quot;non-coding transcript&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">UPSTREAM_GENE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;upstream of gene&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">DOWNSTREAM_GENE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;downstream of gene&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TFBS_ABLATION</span><span class="p">:</span> <span class="s2">&quot;TFBS ablation&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TFBS_AMPLIFICATION</span><span class="p">:</span> <span class="s2">&quot;TFBS amplification&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TF_BINDING_SITE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;TFBS binding site&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">REGULATORY_REGION_ABLATION</span><span class="p">:</span> <span class="s2">&quot;regulatory region ablation&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">REGULATORY_REGION_AMPLIFICATION</span><span class="p">:</span> <span class="s2">&quot;regulatory region amplification&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FEATURE_ELONGATION</span><span class="p">:</span> <span class="s2">&quot;feature elongation&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">REGULATORY_REGION_VARIANT</span><span class="p">:</span> <span class="s2">&quot;regulatory region&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FEATURE_TRUNCATION</span><span class="p">:</span> <span class="s2">&quot;feature truncation&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INTERGENIC_VARIANT</span><span class="p">:</span> <span class="s2">&quot;intergenic&quot;</span><span class="p">,</span>
+    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SEQUENCE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;sequence variant&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">so_id_to_display</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;SO:1000029&quot;</span><span class="p">:</span> <span class="s2">&quot;chromosomal deletion&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SO:1000037&quot;</span><span class="p">:</span> <span class="s2">&quot;chromosomal duplication&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SO:1000030&quot;</span><span class="p">:</span> <span class="s2">&quot;chromosomal_inversion&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SO:1000044&quot;</span><span class="p">:</span> <span class="s2">&quot;chromosomal_translocation&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 
            </div>
