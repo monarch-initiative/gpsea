@@ -277,15 +277,15 @@ Now we can perform the analysis and investigate the results.
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> result.total_tests
-17
+16
 
-We only tested 1y HPO terms. This is despite the individuals being collectively annotated with
+We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
 260 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
 260
 
-We can show the reasoning behind *not* testing 243 (`260 - 17`) HPO terms
+We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
@@ -297,11 +297,11 @@ by exploring the phenotype MTC filtering report.
 .. raw:: html
   :file: report/tbx5_frameshift_vs_missense.mtc_report.html
 
-and these are the top 20 HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
+and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
->>> summary_df.head(20).to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+>>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
    :file: report/tbx5_frameshift_vs_missense.csv
