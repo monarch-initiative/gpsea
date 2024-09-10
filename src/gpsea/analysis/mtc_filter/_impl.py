@@ -35,7 +35,7 @@ class PhenotypeMtcResult:
 
     The phenotype can either pass the filter, in order to be included in the downstream analysis (:meth:`is_passed`)
     of be filtered out (:meth:`is_filtered_out`) in which case :attr:`mtc_issue` with more context
-    regarding culprit must be available.
+    regarding the culprit must be available.
     """
 
     @staticmethod
