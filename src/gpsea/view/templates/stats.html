@@ -57,10 +57,9 @@
             <th>Reason</th>
             <th>Count</th>
           </tr>
-          {% for skipped  in reason_to_count %}
+          {% for skipped  in issue_to_count %}
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
+            <td>{{ skipped.code }}</td>
             <td>{{ skipped.reason }}</td>
             <td>{{ skipped.count }}</td>
           </tr>
