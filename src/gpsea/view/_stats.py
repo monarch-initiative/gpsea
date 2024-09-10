@@ -43,12 +43,19 @@ class MtcStatsViewer:
         counts = Counter()
         for result in report.mtc_filter_results:
             if result.is_filtered_out():
-                counts[result.reason] += 1
+                counts[result.mtc_issue] += 1
 
         n_skipped = 0
-        reason_to_count = list()
-        for reason, count in sorted(counts.items(), key=lambda item: item[1], reverse=True):
-            reason_to_count.append({"reason": reason, "count": count})
+        issue_to_count = list()
+        for mtc_issue, count in sorted(
+            counts.items(),
+            key=lambda issue2count: (issue2count[0].code, issue2count[0].reason)
+        ):
+            issue_to_count.append({
+                "code": mtc_issue.code,
+                "reason": mtc_issue.reason,
+                "count": count,
+            })
             n_skipped += count
 
         n_all = len(report.phenotypes)
@@ -61,5 +68,5 @@ class MtcStatsViewer:
             "skipped_hpo_count": n_skipped,
             "tested_hpo_count": n_tested,
             "total_hpo_count": n_all,
-            "reason_to_count": reason_to_count,
+            "issue_to_count": issue_to_count,
         }
