@@ -1,10 +1,10 @@
 import abc
+import dataclasses
 import typing
 
 from collections import deque
 
 import hpotk
-from matplotlib import axis
 import numpy as np
 import pandas as pd
 
@@ -12,51 +12,83 @@ from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import PhenotypePolyPredicate, P
 
 
+@dataclasses.dataclass(eq=True, frozen=True)
+class PhenotypeMtcIssue:
+    """
+    The container for data available regarding the reason why a phenotype was filtered out.
+    """
+
+    code: str
+    """
+    A `str` with a unique code of the issue.
+    """
+    
+    reason: str
+    """
+    A human-friendly explanation of the issue.
+    """
+
+
 class PhenotypeMtcResult:
     """
     `PhenotypeMtcResult` represents a result of :class:`PhenotypeMtcFilter` for a single phenotype.
 
     The phenotype can either pass the filter, in order to be included in the downstream analysis (:meth:`is_passed`)
-    of be filtered out (:meth:`is_filtered_out`) in which case :attr:`reason` must be available.
+    of be filtered out (:meth:`is_filtered_out`) in which case :attr:`mtc_issue` with more context
+    regarding culprit must be available.
     """
 
     @staticmethod
     def ok() -> "PhenotypeMtcResult":
         # A singleton would be nice here...
-        return PhenotypeMtcResult(status=True, reason=None)
+        return PhenotypeMtcResult(status=True, issue=None)
 
     @staticmethod
-    def fail(reason: str) -> "PhenotypeMtcResult":
-        return PhenotypeMtcResult(status=False, reason=reason)
+    def fail(code: str, reason: str) -> "PhenotypeMtcResult":
+        issue = PhenotypeMtcIssue(code=code, reason=reason)
+        return PhenotypeMtcResult(status=False, issue=issue)
 
     def __init__(
         self,
         status: bool,
-        reason: typing.Optional[str],
+        issue: typing.Optional[PhenotypeMtcIssue],
     ):
+        assert isinstance(status, bool)
+        if status:
+            assert issue is None, '`issue` must NOT be provided if the HPO term passed the MTC filter'
+        else:
+            assert issue is not None, '`issue` must be provided if the HPO term failed the MTC filter'
+        
         self._status = status
-        self._reason = reason
+        self._issue = issue
 
     def is_passed(self) -> bool:
         return self._status
     
     def is_filtered_out(self) -> bool:
         return not self._status
-    
+
+    @property
+    def mtc_issue(self) -> typing.Optional[PhenotypeMtcIssue]:
+        return self._issue
+
     @property
     def reason(self) -> typing.Optional[str]:
-        return self._reason
+        if self.mtc_issue is None:
+            return None
+        else:
+            return self.mtc_issue.reason
     
     def __eq__(self, value: object) -> bool:
         return isinstance(value, PhenotypeMtcResult) \
             and self._status == value._status \
-            and self._reason == value._reason
+            and self._issue == value._issue
 
     def __hash__(self) -> int:
-        return hash((self._status, self._reason))
+        return hash((self._status, self._issue))
     
     def __str__(self) -> str:
-        return f'PhenotypeMtcResult(status={self._status}, reason={self._reason})'
+        return f'PhenotypeMtcResult(status={self._status}, issue={self._issue})'
     
     def __repr__(self) -> str:
         return str(self)
@@ -71,6 +103,14 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
     Therefore, the expected input asks for :class:`hpotk.TermId` items.
     For instance, `n_usable` is a mapping from an *HPO term* to an `int` with the count of the patients
     categorized according to the HPO term.
+
+    :attr:`PhenotypeMtcFilter.OK` is returned for HPO terms that pass MTC filtering
+    and *should* be included in the analysis.
+    """
+
+    OK = PhenotypeMtcResult.ok()
+    """
+    The MTC result for the phenotypes that pass the filtering and *should* be included in the analysis.
     """
 
     @abc.abstractmethod
@@ -92,6 +132,13 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
+        """
+        Return all possible result types which the `PhenotypeMtcFilter` can produce.
+        """
+        pass
+
+    @abc.abstractmethod
     def filter_method_name(self) -> str:
         """
         Get a `str` with the MTC filter name to display for humans.
@@ -106,9 +153,6 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
     See :ref:`use-all-terms-strategy` section for more info.
     """
 
-    def __init__(self):
-        self._ok = PhenotypeMtcResult.ok()
-
     def filter(
         self,
         gt_predicate: GenotypePolyPredicate,
@@ -116,7 +160,10 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
         counts: typing.Sequence[pd.DataFrame],
     ) -> typing.Sequence[PhenotypeMtcResult]:
         # Always OK! 😏
-        return tuple(self._ok for _ in ph_predicates)
+        return tuple(PhenotypeMtcFilter.OK for _ in ph_predicates)
+
+    def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
+        return (PhenotypeMtcFilter.OK,)
 
     def filter_method_name(self) -> str:
         return "All HPO terms"
@@ -133,6 +180,11 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     
     See :ref:`specify-terms-strategy` section for more info.
     """
+    
+    NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(code="ST1", reason="Non-specified term")
+    """
+    The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.
+    """
 
     def __init__(
         self,
@@ -142,8 +194,6 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         Args:
             terms_to_test: an iterable of TermIds representing the terms to test
         """
-        self._ok = PhenotypeMtcResult.ok()
-        self._fail = PhenotypeMtcResult.fail("Non-specified term")
         self._terms_to_test_set = set(terms_to_test)
 
     def filter(
@@ -155,10 +205,16 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         results = []
         for predicate in ph_predicates:
             if predicate.phenotype in self._terms_to_test_set:
-                results.append(self._ok)
+                results.append(SpecifiedTermsMtcFilter.OK)
             else:
-                results.append(self._fail)
+                results.append(SpecifiedTermsMtcFilter.NON_SPECIFIED_TERM)
         return tuple(results)
+    
+    def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
+        return (
+            PhenotypeMtcFilter.OK,
+            SpecifiedTermsMtcFilter.NON_SPECIFIED_TERM,
+        )
 
     def filter_method_name(self) -> str:
         return "Specified terms MTC filter"
@@ -174,16 +230,21 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     We recommend creating an instance using the :func:`default_filter` static factory method.
     """
 
-    # TODO: this has been here before. Is it still valid?
-    # 2. Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
-    # for i in range(2,6):
-    #     for j in range(2,6):
-    #         # create a table with the most extreme possible counts. If this is not significant, then
-    #         # other counts also cannot be
-    #         two_by_two_table = [[i, 0], [0, j]]
-    #         oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
-    # This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
-    # ## TODO -- similar calculate for 3x2
+    NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO = PhenotypeMtcResult.fail(
+        "HMF02", "Skipping term because no genotype has more than one observed HPO count",
+    )
+    SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
+        "HMF03", "Skipping term because of a child term with the same individual counts",
+    )
+    SKIPPING_SAME_OBSERVED_PROPORTIONS = PhenotypeMtcResult.fail(
+        "HMF04",
+        "Skipping term because all genotypes have same HPO observed proportions",
+    )
+    SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS = PhenotypeMtcResult.fail(
+        "HMF05", "Skipping term because one genotype had zero observations"
+    )
+    SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail("HMF07", "Skipping non phenotype term")
+    SKIPPING_GENERAL_TERM = PhenotypeMtcResult.fail("HMF08", "Skipping general term")
 
     @staticmethod
     def default_filter(
@@ -262,13 +323,40 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         """
         self._hpo = hpo
         self._hpo_term_frequency_filter = term_frequency_threshold
-        # The following numbers of total observations in the genotype groups can never be significant,
-        # so we just skip them see above explanation
-        self._powerless_set = {(2, 4), (4, 2), (2, 3), (3, 3), (2, 2), (3, 2)}
-        # thus if the total count is 6 or less, there is no power - CAN WE SIMPLIFY?
 
         self._general_hpo_terms = set(general_hpo_terms)
-        self._ok = PhenotypeMtcResult.ok()
+        
+        self._below_frequency_threshold = PhenotypeMtcResult.fail(
+            code="HMF01",
+            reason="Skipping term with maximum frequency that was"
+            f" less than threshold {self._hpo_term_frequency_filter}",
+        )
+
+        # Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
+        # The following numbers of total observations in the genotype groups can never be significant,
+        # so we just skip them.
+        # ```
+        # for i in range(2,6):
+        #     for j in range(2,6):
+        #         # create a table with the most extreme possible counts. If this is not significant, then
+        #         # other counts also cannot be
+        #         two_by_two_table = [[i, 0], [0, j]]
+        #         oddsr, p = scipy.stats.fisher_exact(two_by_two_table, alternative='two-sided')
+        # ```
+        # This code reveals that (2,4), (4,2), (2,3), (3,3), (2,2) and (3,2) are not powered so we can always skip them
+        # Thus if the total count is 6 or less, there is no power.
+        self._min_observations_for_2_by_2 = 7
+        self._not_powered_for_2_by_2 = PhenotypeMtcResult.fail(
+            code="HMF06",
+            reason=f"Skipping term with less than {self._min_observations_for_2_by_2} observations"
+            " (not powered for 2x2)",
+        )
+        self._min_observations_for_2_by_3 = 6
+        self._not_powered_for_2_by_3 = PhenotypeMtcResult.fail(
+            code="HMF06",
+            reason=f"Skipping term with less than {self._min_observations_for_2_by_3} observations"
+            " (not powered for 2x3)",
+        )
 
     def filter(
         self,
@@ -290,46 +378,39 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 continue
 
             if term_id in self._general_hpo_terms:
-                results[idx] = PhenotypeMtcResult.fail("Skipping general term")
+                results[idx] = HpoMtcFilter.SKIPPING_GENERAL_TERM
                 continue
             
             if not self._hpo.graph.is_ancestor_of(
                 hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY, term_id
             ):
-                results[idx] = PhenotypeMtcResult.fail("Skipping non phenotype term")
+                results[idx] = HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM
                 continue
-
-            # get total number of observations
-            # if term_id not in all_counts:
-            #     reason_for_filtering_out["Skipping non-target term"] += 1
-            #     continue
 
             ph_predicate = ph_predicates[idx]
             contingency_matrix = counts[idx]
-            total = contingency_matrix.sum().sum()
+            
             max_freq = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
                 contingency_matrix,
                 ph_predicate=ph_predicate,
             )
             if max_freq < self._hpo_term_frequency_filter:
-                reason = (
-                    "Skipping term with maximum frequency "
-                    f"that was less than threshold {self._hpo_term_frequency_filter}"
-                )
-                results[idx] = PhenotypeMtcResult.fail(reason)
+                results[idx] = self._below_frequency_threshold
                 continue
 
-            if contingency_matrix.shape == (2, 2) and total < 7:
-                reason = f"Skipping term with only {total} observations (not powered for 2x2)"
-                results[idx] = PhenotypeMtcResult.fail(reason)
+            total_count = contingency_matrix.sum().sum()
+            if contingency_matrix.shape == (2, 2) and total_count < self._min_observations_for_2_by_2:
+                results[idx] = self._not_powered_for_2_by_2
+                continue
+            elif contingency_matrix.shape == (2, 3) and total_count < self._min_observations_for_2_by_3:
+                results[idx] = self._not_powered_for_2_by_3
                 continue
 
             if not HpoMtcFilter.some_cell_has_greater_than_one_count(
                 counts=contingency_matrix,
                 ph_predicate=ph_predicate,
             ):
-                reason = "Skipping term because no genotype has more than one observed HPO count"
-                results[idx] = PhenotypeMtcResult.fail(reason)
+                results[idx] = HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
                 continue
             
             elif HpoMtcFilter.genotypes_have_same_hpo_proportions(
@@ -337,29 +418,40 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 gt_predicate=gt_predicate,
                 ph_predicate=ph_predicate,
             ):
-                reason = "Skipping term because all genotypes have same HPO observed proportions"
-                results[idx] = PhenotypeMtcResult.fail(reason)
+                results[idx] = HpoMtcFilter.SKIPPING_SAME_OBSERVED_PROPORTIONS
                 continue
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
                 counts=contingency_matrix,
                 gt_predicate=gt_predicate,
             ):
-                reason = "Skipping term because one genotype had zero observations"
-                results[idx] = PhenotypeMtcResult.fail(reason)
+                results[idx] = HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
                 continue
 
-            # TODO: the code below actually did not work.
-            # for child_term_id in self._hpo.graph.get_children(term_id):
-            #     if child_term_id in tested_counts_pf:
-            #         if tested_counts_pf[child_term_id].equals(contingency_matrix):
-            #             # TODO: should we make the match fuzzier by adding a tolerance instead of the exact matches?
-            #             reason = "Child term with same counts previously tested"
-            #             reason_for_filtering_out[reason] += 1
-            #             continue
-
+            # Check if the term has exactly one child with a very similar number of individuals
+            # in the genotype and phenotype groups.
+            child_contingency_matrix = None
+            for child in self._hpo.graph.get_children(term_id):
+                if child in p_to_idx:
+                    child_idx = p_to_idx[child]
+                    if child_contingency_matrix is None:
+                        child_contingency_matrix = counts[child_idx]
+                    else:
+                        # Found 2nd child of this term.
+                        # We always want to test a term with
+                        # >1 children in the target set.
+                        child_contingency_matrix = None
+                        break
+            
+            if child_contingency_matrix is not None:
+                if (contingency_matrix - child_contingency_matrix).abs().max(axis=None) < 1:
+                    # Do not test if the count is exactly the same to the counts in the only child term.
+                    results[idx] = HpoMtcFilter.SAME_COUNT_AS_THE_ONLY_CHILD
+                    continue
+            
+            # ##
             # The term should be tested if we get here.
-            results[idx] = self._ok
+            results[idx] = PhenotypeMtcFilter.OK
 
         # There should be no `None` elements in `results` at this point.
         if any(r is None for r in results):
@@ -374,6 +466,18 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
         # Ignoring the type hint, because we checked the type match above.
         return tuple(results)  # type: ignore
+
+    def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
+        return (
+            PhenotypeMtcFilter.OK,
+            HpoMtcFilter.SKIPPING_GENERAL_TERM,
+            HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM,
+            self._below_frequency_threshold,
+            self._not_powered_for_2_by_2,
+            HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,
+            HpoMtcFilter.SKIPPING_SAME_OBSERVED_PROPORTIONS,
+            HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,
+        )
 
     def filter_method_name(self) -> str:
         return "HPO MTC filter"
