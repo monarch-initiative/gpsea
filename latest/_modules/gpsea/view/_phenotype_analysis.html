@@ -96,6 +96,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dataframe with counts, frequencies, and p values for the tested HPO terms.</span>
 
+<span class="sd">    The HPO terms that were not tested will *not* be included in the frame.</span>
+
 <span class="sd">    :param hpo: HPO data.</span>
 <span class="sd">    :param result: the HPO term analysis results to show.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -136,10 +138,12 @@
 
     <span class="c1"># Last, sort by corrected p value or just p value</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">labeled_idx</span><span class="p">)</span>
+    <span class="c1"># and only report the tested HPO terms</span>
+    <span class="n">with_p_value</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">)]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corrected_p_val_col_name</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corrected_p_val_col_name</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">)])</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">with_p_value</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">))</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">with_p_value</span><span class="p">]</span></div>
 
 
 

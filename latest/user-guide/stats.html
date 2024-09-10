@@ -294,10 +294,10 @@ into <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gp
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
 <span class="go">260</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
-<span class="go">17</span>
+<span class="go">16</span>
 </pre></div>
 </div>
-<p>Thanks to Phenotype MTC filter, we only tested 17 out of 260 terms.
+<p>Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
 We can learn more by showing the MTC filter report:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
@@ -356,9 +356,9 @@ We can learn more by showing the MTC filter report:</p>
   <h1>Phenotype testing report</h1>
   <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
   <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 17 out of the total of 260 HPO terms.</p>
+  <p>Performed statistical tests for 16 out of the total of 260 HPO terms.</p>
     <table>
-      <caption>Using <em>HPO MTC filter</em>, 243 term(s) were omitted from statistical analysis.</caption>
+      <caption>Using <em>HPO MTC filter</em>, 244 term(s) were omitted from statistical analysis.</caption>
         <tbody>
           <tr>
             <th>Code</th>
@@ -367,80 +367,45 @@ We can learn more by showing the MTC filter report:</p>
           </tr>
           
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 2 observations (not powered for 2x2)</td>
-            <td>51</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term because all genotypes have same HPO observed proportions</td>
-            <td>50</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping general term</td>
-            <td>44</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 3 observations (not powered for 2x2)</td>
-            <td>27</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 6 observations (not powered for 2x2)</td>
-            <td>19</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 4 observations (not powered for 2x2)</td>
-            <td>16</td>
-          </tr>
-          
-          <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
+            <td>HMF01</td>
             <td>Skipping term with maximum frequency that was less than threshold 0.2</td>
             <td>10</td>
           </tr>
           
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 5 observations (not powered for 2x2)</td>
-            <td>10</td>
+            <td>HMF02</td>
+            <td>Skipping term because no genotype has more than one observed HPO count</td>
+            <td>4</td>
           </tr>
           
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term with only 1 observations (not powered for 2x2)</td>
-            <td>7</td>
+            <td>HMF03</td>
+            <td>Skipping term because of a child term with the same individual counts</td>
+            <td>1</td>
           </tr>
           
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
+            <td>HMF04</td>
+            <td>Skipping term because all genotypes have same HPO observed proportions</td>
+            <td>50</td>
+          </tr>
+          
+          <tr>
+            <td>HMF05</td>
             <td>Skipping term because one genotype had zero observations</td>
             <td>5</td>
           </tr>
           
           <tr>
-            <!-- TODO: plug the real reason code here -->
-            <td>TODO</td>
-            <td>Skipping term because no genotype has more than one observed HPO count</td>
-            <td>4</td>
+            <td>HMF06</td>
+            <td>Skipping term with less than 7 observations (not powered for 2x2)</td>
+            <td>130</td>
+          </tr>
+          
+          <tr>
+            <td>HMF08</td>
+            <td>Skipping general term</td>
+            <td>44</td>
           </tr>
           
         </tbody>
@@ -451,11 +416,10 @@ We can learn more by showing the MTC filter report:</p>
 <section id="genotype-phenotype-associations">
 <h5>Genotype phenotype associations<a class="headerlink" href="#genotype-phenotype-associations" title="Link to this heading"></a></h5>
 <p>Last, let’s explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR).
-Here we show the top 20 table rows:</p>
+ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/report/tbx5_frameshift.csv&#39;</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/report/tbx5_frameshift.csv&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
 <table class="docutils align-default" id="id5">
@@ -484,7 +448,7 @@ Here we show the top 20 table rows:</p>
 <td><p>59%</p></td>
 <td><p>19/19</p></td>
 <td><p>100%</p></td>
-<td><p>0.00411275392326226</p></td>
+<td><p>0.003870827221893892</p></td>
 <td><p>0.00024192670136836825</p></td>
 </tr>
 <tr class="row-even"><td><p>Abnormal atrioventricular conduction [HP:0005150]</p></td>
@@ -492,7 +456,7 @@ Here we show the top 20 table rows:</p>
 <td><p>4%</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
-<td><p>0.01307692307692308</p></td>
+<td><p>0.01230769230769231</p></td>
 <td><p>0.0015384615384615387</p></td>
 </tr>
 <tr class="row-odd"><td><p>Absent thumb [HP:0009777]</p></td>
@@ -500,7 +464,7 @@ Here we show the top 20 table rows:</p>
 <td><p>18%</p></td>
 <td><p>14/31</p></td>
 <td><p>45%</p></td>
-<td><p>0.021044138590779585</p></td>
+<td><p>0.01980624808543961</p></td>
 <td><p>0.003713671516019927</p></td>
 </tr>
 <tr class="row-even"><td><p>Atrioventricular block [HP:0001678]</p></td>
@@ -508,80 +472,80 @@ Here we show the top 20 table rows:</p>
 <td><p>4%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0.034</p></td>
+<td><p>0.04</p></td>
 <td><p>0.01</p></td>
 </tr>
-<tr class="row-odd"><td><p>Heart block [HP:0012722]</p></td>
-<td><p>1/23</p></td>
-<td><p>4%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0.034</p></td>
-<td><p>0.01</p></td>
-</tr>
-<tr class="row-even"><td><p>Patent ductus arteriosus [HP:0001643]</p></td>
+<tr class="row-odd"><td><p>Patent ductus arteriosus [HP:0001643]</p></td>
 <td><p>6/40</p></td>
 <td><p>15%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0.09214092140921408</p></td>
+<td><p>0.10406504065040649</p></td>
 <td><p>0.03252032520325203</p></td>
 </tr>
-<tr class="row-odd"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
+<tr class="row-even"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
 <td><p>23/55</p></td>
 <td><p>42%</p></td>
 <td><p>4/22</p></td>
 <td><p>18%</p></td>
-<td><p>0.1440020479198931</p></td>
+<td><p>0.15059037690969213</p></td>
 <td><p>0.06544319142266644</p></td>
 </tr>
-<tr class="row-even"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
+<tr class="row-odd"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
 <td><p>23/99</p></td>
 <td><p>23%</p></td>
 <td><p>13/32</p></td>
 <td><p>41%</p></td>
-<td><p>0.1440020479198931</p></td>
+<td><p>0.15059037690969213</p></td>
 <td><p>0.06932119159387057</p></td>
 </tr>
-<tr class="row-odd"><td><p>Cardiac conduction abnormality [HP:0031546]</p></td>
+<tr class="row-even"><td><p>Cardiac conduction abnormality [HP:0031546]</p></td>
 <td><p>15/37</p></td>
 <td><p>41%</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
-<td><p>0.1440020479198931</p></td>
+<td><p>0.15059037690969213</p></td>
 <td><p>0.08259109311740892</p></td>
 </tr>
-<tr class="row-even"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
+<tr class="row-odd"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
 <td><p>8/84</p></td>
 <td><p>10%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
-<td><p>0.1440020479198931</p></td>
+<td><p>0.15059037690969213</p></td>
 <td><p>0.08470708701170182</p></td>
 </tr>
-<tr class="row-odd"><td><p>Pulmonary arterial hypertension [HP:0002092]</p></td>
+<tr class="row-even"><td><p>Pulmonary arterial hypertension [HP:0002092]</p></td>
 <td><p>8/14</p></td>
 <td><p>57%</p></td>
 <td><p>0/2</p></td>
 <td><p>0%</p></td>
-<td><p>0.6899307928951143</p></td>
+<td><p>0.708378140298727</p></td>
 <td><p>0.4666666666666667</p></td>
 </tr>
-<tr class="row-even"><td><p>Short thumb [HP:0009778]</p></td>
+<tr class="row-odd"><td><p>Short thumb [HP:0009778]</p></td>
 <td><p>25/69</p></td>
 <td><p>36%</p></td>
 <td><p>8/30</p></td>
 <td><p>27%</p></td>
-<td><p>0.6899307928951143</p></td>
+<td><p>0.708378140298727</p></td>
 <td><p>0.48700997145537483</p></td>
 </tr>
-<tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
+<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
 <td><p>9/43</p></td>
 <td><p>21%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
 <td><p>1.0</p></td>
 <td><p>0.7703831604944444</p></td>
+</tr>
+<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>63/65</p></td>
+<td><p>97%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
 </tr>
 <tr class="row-even"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
 <td><p>34/75</p></td>
@@ -606,38 +570,6 @@ Here we show the top 20 table rows:</p>
 <td><p>44%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
-<td><p>63/65</p></td>
-<td><p>97%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the thumb [HP:0009601]</p></td>
-<td><p>40/40</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td></td>
-<td></td>
 </tr>
 </tbody>
 </table>
