@@ -220,7 +220,7 @@ Genesis family - Autosomal dominant but can also be used as X dominant.
 
 
 @pytest.fixture(scope="package")
-def genesis_mutation(
+def genesis_missense_mutation(
     genome_build: GenomeBuild,
     adam_label: SampleLabels,
     eve_label: SampleLabels,
@@ -269,6 +269,54 @@ def genesis_mutation(
 
 
 @pytest.fixture(scope="package")
+def genesis_synonymous_mutation(
+    genome_build: GenomeBuild,
+    adam_label: SampleLabels,
+    eve_label: SampleLabels,
+    cain_label: SampleLabels,
+) -> Variant:
+    chr22 = genome_build.contig_by_name("chr22")
+    assert chr22 is not None
+    return Variant(
+        variant_info=VariantInfo(
+            variant_coordinates=VariantCoordinates(
+                region=GenomicRegion(
+                    contig=chr22,
+                    start=200,
+                    end=201,
+                    strand=Strand.POSITIVE,
+                ),
+                ref="T",
+                alt="G",
+                change_length=0,
+            )
+        ),
+        tx_annotations=(
+            TranscriptAnnotation(
+                gene_id="a_gene",
+                tx_id="tx:xyz",
+                hgvs_cdna=None,
+                is_preferred=True,
+                variant_effects=(
+                    VariantEffect.SYNONYMOUS_VARIANT,
+                ),
+                affected_exons=(5,),
+                protein_id="pt:xyz",
+                hgvsp=None,
+                protein_effect_coordinates=Region(80, 81),
+            ),
+        ),
+        genotypes=Genotypes.from_mapping(
+            {
+                adam_label: Genotype.HETEROZYGOUS,
+                eve_label: Genotype.HOMOZYGOUS_REFERENCE,
+                cain_label: Genotype.HOMOZYGOUS_REFERENCE,
+            }
+        ),
+    )
+
+
+@pytest.fixture(scope="package")
 def adam_label() -> SampleLabels:
     return SampleLabels("Adam")
 
@@ -276,14 +324,18 @@ def adam_label() -> SampleLabels:
 @pytest.fixture(scope="package")
 def adam(
     adam_label: SampleLabels,
-    genesis_mutation: Variant,
+    genesis_missense_mutation: Variant,
+    genesis_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         adam_label,
         sex=Sex.MALE,
         phenotypes=(),
         diseases=(),
-        variants=(genesis_mutation,),
+        variants=(
+            genesis_missense_mutation,
+            genesis_synonymous_mutation,
+        ),
     )
 
 
@@ -295,14 +347,18 @@ def eve_label() -> SampleLabels:
 @pytest.fixture(scope="package")
 def eve(
     eve_label: SampleLabels,
-    genesis_mutation: Variant,
+    genesis_missense_mutation: Variant,
+    genesis_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         eve_label,
         sex=Sex.FEMALE,
         phenotypes=(),
         diseases=(),
-        variants=(genesis_mutation,),
+        variants=(
+            genesis_missense_mutation,
+            genesis_synonymous_mutation,
+        ),
     )
 
 
@@ -314,14 +370,18 @@ def cain_label() -> SampleLabels:
 @pytest.fixture(scope="package")
 def cain(
     cain_label: SampleLabels,
-    genesis_mutation: Variant,
+    genesis_missense_mutation: Variant,
+    genesis_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         cain_label,
         sex=Sex.MALE,
         phenotypes=(),
         diseases=(),
-        variants=(genesis_mutation,),
+        variants=(
+            genesis_missense_mutation,
+            genesis_synonymous_mutation,
+        ),
     )
 
 
@@ -387,7 +447,7 @@ def white_missense_mutation(
 
 
 @pytest.fixture(scope="package")
-def white_stop_gain_mutation(
+def white_synonymous_mutation(
     genome_build: GenomeBuild,
     walt_label: SampleLabels,
     skyler_label: SampleLabels,
@@ -417,7 +477,7 @@ def white_stop_gain_mutation(
                 hgvs_cdna=None,
                 is_preferred=True,
                 variant_effects=(
-                    VariantEffect.STOP_GAINED,
+                    VariantEffect.SYNONYMOUS_VARIANT,
                 ),
                 affected_exons=(5,),
                 protein_id="pt:xyz",
@@ -445,7 +505,7 @@ def walt_label() -> SampleLabels:
 def walt(
     walt_label: SampleLabels,
     white_missense_mutation: Variant,
-    white_stop_gain_mutation: Variant,
+    white_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         walt_label,
@@ -454,7 +514,7 @@ def walt(
         diseases=(),
         variants=(
             white_missense_mutation,
-            white_stop_gain_mutation,
+            white_synonymous_mutation,
         ),
     )
 
@@ -468,7 +528,7 @@ def skyler_label() -> SampleLabels:
 def skyler(
     skyler_label: SampleLabels,
     white_missense_mutation: Variant,
-    white_stop_gain_mutation: Variant,
+    white_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         skyler_label,
@@ -477,7 +537,7 @@ def skyler(
         diseases=(),
         variants=(
             white_missense_mutation,
-            white_stop_gain_mutation,
+            white_synonymous_mutation,
         ),
     )
 
@@ -491,7 +551,7 @@ def flynn_label() -> SampleLabels:
 def flynn(
     flynn_label: SampleLabels,
     white_missense_mutation: Variant,
-    white_stop_gain_mutation: Variant,
+    white_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         flynn_label,
@@ -500,7 +560,7 @@ def flynn(
         diseases=(),
         variants=(
             white_missense_mutation,
-            white_stop_gain_mutation,
+            white_synonymous_mutation,
         ),
     )
 
@@ -514,7 +574,7 @@ def holly_label() -> SampleLabels:
 def holly(
     holly_label: SampleLabels,
     white_missense_mutation: Variant,
-    white_stop_gain_mutation: Variant,
+    white_synonymous_mutation: Variant,
 ) -> Patient:
     return Patient(
         holly_label,
@@ -523,7 +583,7 @@ def holly(
         diseases=(),
         variants=(
             white_missense_mutation,
-            white_stop_gain_mutation,
+            white_synonymous_mutation,
         ),
     )
 

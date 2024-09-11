@@ -186,148 +186,112 @@ def groups_predicate(
     )
 
 
-class MonoallelicGenotypePredicate(GenotypePolyPredicate):
-    # NOT PART OF THE PUBLIC API
+class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
-    ZERO = Categorization(
-        PatientCategory(cat_id=0, name="Zero", description="Zero alleles")
-    )
-    ONE = Categorization(
-        PatientCategory(cat_id=1, name="One", description="One allele")
-    )
-
-    @staticmethod
-    def for_variant_predicate(predicate: VariantPredicate):
-        allele_counter = AlleleCounter(predicate=predicate)
-        return MonoallelicGenotypePredicate(allele_counter=allele_counter)
-
-    def __init__(
-        self,
-        allele_counter: AlleleCounter,
-    ):
-        self._allele_counter = allele_counter
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        return (MonoallelicGenotypePredicate.ZERO, MonoallelicGenotypePredicate.ONE)
-
-    def get_question_base(self) -> str:
-        return "The variant allele count"
-
-    def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        self._check_patient(patient)
-
-        allele_count = self._allele_counter.count(patient)
-        if allele_count == 0:
-            return MonoallelicGenotypePredicate.ZERO
-        elif allele_count == 1:
-            return MonoallelicGenotypePredicate.ONE
-        else:
-            return None
-
-    def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, MonoallelicGenotypePredicate)
-            and self._allele_counter == value._allele_counter
-        )
-
-    def __hash__(self) -> int:
-        return hash((self._allele_counter,))
-
-    def __str__(self) -> str:
-        return f"MonoallelicGenotypePredicate(allele_counter={self._allele_counter})"
-
-    def __repr__(self) -> str:
-        return str(self)
-
-
-def monoallelic_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredicate:
-    """
+    A = Categorization(PatientCategory(cat_id=0, name="A", description="Monoallelic A"))
+    B = Categorization(PatientCategory(cat_id=1, name="B", description="Monoallelic B"))
     
-    The predicate bins patient into one of two groups: `Zero` and `One`:
-
-    +-----------+------------------+
-    | Group     | Allele count     |
-    +===========+==================+
-    | Zero      | 0                |
-    +-----------+------------------+
-    | One       | 1                |
-    +-----------+------------------+
-
-    Individuals with different allele counts (e.g. `2)
-    are assigned the ``None`` group and, thus, omitted from the analysis.
-    """
-
-    return MonoallelicGenotypePredicate.for_variant_predicate(variant_predicate)
-
-
-class BiallelicGenotypePredicate(GenotypePolyPredicate):
-    # NOT PART OF THE PUBLIC API
-
     AA = Categorization(PatientCategory(cat_id=0, name="AA", description="Biallelic A"))
-    AB = Categorization(
-        PatientCategory(
-            cat_id=1, name="AB", description="One copy of A and one copy of B"
-        )
-    )
+    AB = Categorization(PatientCategory(cat_id=1, name="AB", description="Monoallelic A + monoallelic B"))
     BB = Categorization(PatientCategory(cat_id=2, name="BB", description="Biallelic B"))
 
     @staticmethod
-    def for_variant_predicates(
+    def monoallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
     ):
-        return BiallelicGenotypePredicate(
+        count2cat = {
+            (0, 1): PolyCountingGenotypePredicate.A,
+            (1, 0): PolyCountingGenotypePredicate.B,
+        }
+
+        return PolyCountingGenotypePredicate._for_predicates_and_categories(
+            count2cat=count2cat,
+            a_predicate=a_predicate,
+            b_predicate=b_predicate,
+        )
+
+    @staticmethod
+    def biallelic(
+        a_predicate: VariantPredicate,
+        b_predicate: VariantPredicate,
+    ):
+        count2cat = {
+            (2, 0): PolyCountingGenotypePredicate.AA,
+            (1, 1): PolyCountingGenotypePredicate.AB,
+            (0, 2): PolyCountingGenotypePredicate.BB,
+        }
+
+        return PolyCountingGenotypePredicate._for_predicates_and_categories(
+            count2cat=count2cat,
+            a_predicate=a_predicate,
+            b_predicate=b_predicate,
+        )
+    
+    @staticmethod
+    def _for_predicates_and_categories(
+        count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
+        a_predicate: VariantPredicate,
+        b_predicate: VariantPredicate,
+    ) -> "PolyCountingGenotypePredicate":
+        return PolyCountingGenotypePredicate(
             a_counter=AlleleCounter(a_predicate),
             b_counter=AlleleCounter(b_predicate),
+            count2cat=count2cat,
         )
 
     def __init__(
         self,
+        count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
         a_counter: AlleleCounter,
         b_counter: AlleleCounter,
     ):
+        self._count2cat = dict(count2cat)
+        self._categorizations = tuple(count2cat.values())
         self._a_counter = a_counter
         self._b_counter = b_counter
-
+    
     def get_categorizations(self) -> typing.Sequence[Categorization]:
-        return (
-            BiallelicGenotypePredicate.AA,
-            BiallelicGenotypePredicate.AB,
-            BiallelicGenotypePredicate.BB,
-        )
+        return self._categorizations
 
     def get_question_base(self) -> str:
-        return "The variant allele count"
+        raise NotImplementedError
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
 
         a_count = self._a_counter.count(patient)
         b_count = self._b_counter.count(patient)
-        if a_count == 2 and b_count == 0:
-            return BiallelicGenotypePredicate.AA
-        elif a_count == 1 and b_count == 1:
-            return BiallelicGenotypePredicate.AB
-        elif a_count == 0 and b_count == 2:
-            return BiallelicGenotypePredicate.BB
-        else:
-            return None
+        counts = (a_count, b_count)
+        
+        return self._count2cat.get(counts, None)
 
-    def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, BiallelicGenotypePredicate)
-            and self._a_counter == value._a_counter
-            and self._b_counter == value._b_counter
-        )
+    # TODO: implement __hash__, __eq__
 
-    def __hash__(self) -> int:
-        return hash((self._a_counter, self._b_counter))
 
-    def __str__(self) -> str:
-        return f"BiallelicGenotypePredicate(a_counter={self._a_counter}, b_counter={self._b_counter})"
+def monoallelic_predicate(
+    a_predicate: VariantPredicate,
+    b_predicate: VariantPredicate,
+) -> GenotypePolyPredicate:
+    """
+    
+    The predicate bins patient into one of two groups: `Zero` and `One`:
 
-    def __repr__(self) -> str:
-        return str(self)
+    +-----------+------------------+------------------+
+    | Group     | `A` allele count | `B` allele count |
+    +===========+==================+==================+
+    | A         | 1                | 0                |
+    +-----------+------------------+------------------+
+    | B         | 0                | 1                |
+    +-----------+------------------+------------------+
+
+    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)
+    are assigned the ``None`` group and, thus, omitted from the analysis.
+    """
+    return PolyCountingGenotypePredicate.monoallelic(
+        a_predicate=a_predicate,
+        b_predicate=b_predicate,
+    )
 
 
 def biallelic_predicate(
@@ -354,7 +318,7 @@ def biallelic_predicate(
     are assigned the ``None`` group and, thus, omitted from the analysis.
 
     """
-    return BiallelicGenotypePredicate.for_variant_predicates(
+    return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
     )
