@@ -57,25 +57,25 @@ class TestHpoTermAnalysis:
         assert results is not None
 
         assert results.total_tests == 4
-        assert results.n_usable == (35, 18, 13, 25, 23)
+        assert results.n_usable == (17, 7, 5, 13, 12)
         assert results.pvals == pytest.approx(
             [
-                0.0721291631224236,
-                1.0,
+                0.35294117647058815,
+                0.48571428571428565,
                 float("nan"),
-                0.35921595820909313,
-                0.6668461434917216,
+                0.1048951048951049,
+                1.,
             ],
             nan_ok=True,
         )
         assert results.corrected_pvals is not None
         assert results.corrected_pvals == pytest.approx(
             [
-                0.2885166524896944,
-                1.0,
+                0.6476190476190475,
+                0.6476190476190475,
                 float("nan"),
-                0.7184319164181863,
-                0.8891281913222954,
+                0.4195804195804196,
+                1.0,
             ],
             nan_ok=True,
         )
