@@ -344,7 +344,7 @@ which we will use to preprocess the cohort
 
 >>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 
 
 resulting in a cohort consisting of 19 individuals
