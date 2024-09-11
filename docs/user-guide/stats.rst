@@ -127,7 +127,7 @@ First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
 to test if the variant leads to a frameshift (in this case):
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> tx_id = 'NM_181486.4'
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
 >>> is_frameshift.get_question()

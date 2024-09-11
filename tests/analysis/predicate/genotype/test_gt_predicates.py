@@ -141,9 +141,9 @@ class TestAllelePredicates:
     @pytest.mark.parametrize(
         "individual_name,expected_name",
         [
-            ("adam", "A"),  # 0/0 & 0/1
-            ("eve", "B"),  # 0/1 & 0/0
-            ("cain", "B"),  # 0/1 & 0/0
+            ("adam", "B"),  # 0/0 & 0/1
+            ("eve", "A"),  # 0/1 & 0/0
+            ("cain", "A"),  # 0/1 & 0/0
         ],
     )
     def test_monoallelic_predicate_ad_family(
@@ -161,6 +161,16 @@ class TestAllelePredicates:
 
         assert actual_cat is not None
         assert actual_cat.category.name == expected_name
+
+    def test_monoallelic_predicate__general_stuff(
+        self,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        
+        gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
+        
+        assert gt_predicate.display_question() == 'Allele group: A, B'
 
     @pytest.mark.parametrize(
         "individual_name,expected_name",
@@ -186,6 +196,16 @@ class TestAllelePredicates:
 
         assert actual_cat is not None
         assert actual_cat.category.name == expected_name
+
+    def test_biallelic_predicate__general_stuff(
+        self,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        
+        gt_predicate = biallelic_predicate(is_missense, is_synonymous)
+        
+        assert gt_predicate.display_question() == 'Allele group: A/A, A/B, B/B'
 
 
 class TestSexPredicate:

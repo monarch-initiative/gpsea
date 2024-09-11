@@ -188,21 +188,15 @@ def groups_predicate(
 
 class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
-    A = Categorization(PatientCategory(cat_id=0, name="A", description="Monoallelic A"))
-    B = Categorization(PatientCategory(cat_id=1, name="B", description="Monoallelic B"))
-    
-    AA = Categorization(PatientCategory(cat_id=0, name="AA", description="Biallelic A"))
-    AB = Categorization(PatientCategory(cat_id=1, name="AB", description="Monoallelic A + monoallelic B"))
-    BB = Categorization(PatientCategory(cat_id=2, name="BB", description="Biallelic B"))
-
     @staticmethod
     def monoallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
+        names: typing.Tuple[str, str],
     ):
         count2cat = {
-            (0, 1): PolyCountingGenotypePredicate.A,
-            (1, 0): PolyCountingGenotypePredicate.B,
+            (1, 0): Categorization(PatientCategory(cat_id=0, name=names[0], description=f"Monoallelic {names[0]}")),
+            (0, 1): Categorization(PatientCategory(cat_id=1, name=names[1], description=f"Monoallelic {names[1]}")),
         }
 
         return PolyCountingGenotypePredicate._for_predicates_and_categories(
@@ -215,11 +209,24 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
     def biallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
+        names: typing.Tuple[str, str],
     ):
         count2cat = {
-            (2, 0): PolyCountingGenotypePredicate.AA,
-            (1, 1): PolyCountingGenotypePredicate.AB,
-            (0, 2): PolyCountingGenotypePredicate.BB,
+            (2, 0): Categorization(
+                PatientCategory(
+                    cat_id=0, name=f'{names[0]}/{names[0]}', description=f"Biallelic {names[0]}",
+                )
+            ),
+            (1, 1): Categorization(
+                PatientCategory(
+                    cat_id=1, name=f'{names[0]}/{names[1]}', description=f"{names[0]}/{names[1]}",
+                ),
+            ),
+            (0, 2): Categorization(
+                PatientCategory(
+                    cat_id=2, name=f'{names[1]}/{names[1]}', description=f"Biallelic {names[1]}"
+                ),
+            ),
         }
 
         return PolyCountingGenotypePredicate._for_predicates_and_categories(
@@ -255,7 +262,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         return self._categorizations
 
     def get_question_base(self) -> str:
-        raise NotImplementedError
+        return 'Allele group'
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
@@ -272,31 +279,34 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 def monoallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: VariantPredicate,
+    names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
     
-    The predicate bins patient into one of two groups: `Zero` and `One`:
+    The predicate bins patient into one of two groups: `A` and `B`:
 
-    +-----------+------------------+------------------+
-    | Group     | `A` allele count | `B` allele count |
-    +===========+==================+==================+
-    | A         | 1                | 0                |
-    +-----------+------------------+------------------+
-    | B         | 0                | 1                |
-    +-----------+------------------+------------------+
+    +-----------+------------+------------+
+    | Group     | `A` count  | `B` count  |
+    +===========+============+============+
+    | A         | 1          | 0          |
+    +-----------+------------+------------+
+    | B         | 0          | 1          |
+    +-----------+------------+------------+
 
-    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)
+    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)
     are assigned the ``None`` group and, thus, omitted from the analysis.
     """
     return PolyCountingGenotypePredicate.monoallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
+        names=names,
     )
 
 
 def biallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: VariantPredicate,
+    names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
     Get a predicate for binning the individuals into groups,
@@ -321,6 +331,7 @@ def biallelic_predicate(
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
+        names=names,
     )
 
 
