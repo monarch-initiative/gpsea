@@ -71,7 +71,7 @@ processed into a cohort
 >>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 
 
 we can create HPO predicates for testing all 260 HPO terms used in the cohort
