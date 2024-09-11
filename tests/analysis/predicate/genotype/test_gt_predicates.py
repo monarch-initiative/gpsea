@@ -1,12 +1,9 @@
-import typing
-
 import pytest
 
 from gpsea.model import *
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
-    filtering_predicate,
     sex_predicate,
     monoallelic_predicate,
     biallelic_predicate,
@@ -216,87 +213,6 @@ class TestAllelePredicates:
 
         assert actual_cat is not None
         assert actual_cat.category.name == expected_name
-
-
-class TestFilteringPredicate:
-
-    @pytest.fixture(scope="class")
-    def x_recessive_gt_predicate(self) -> GenotypePolyPredicate:
-        affects_suox = VariantPredicates.gene("SUOX")
-        return ModeOfInheritancePredicate.autosomal_recessive(
-            variant_predicate=affects_suox,
-        )
-
-    @pytest.mark.parametrize(
-        "indices, expected",
-        [
-            ((0, 1), 2),
-            ((1, 0), 2),
-            ((1, 2), 2),
-        ],
-    )
-    def test_filtering_predicate(
-        self,
-        indices: typing.Sequence[int],
-        expected: int,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
-    ):
-        cats = x_recessive_gt_predicate.get_categorizations()
-        targets = [cats[i] for i in indices]
-        predicate = filtering_predicate(
-            predicate=x_recessive_gt_predicate,
-            targets=targets,
-        )
-
-        actual = len(predicate.get_categorizations())
-
-        assert actual == expected
-
-    def test_filtering_predicate__explodes_when_not_subsetting(
-        self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
-    ):
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=x_recessive_gt_predicate.get_categorizations(),
-            )
-
-        assert (
-            ve.value.args[0]
-            == "It makes no sense to subset the a predicate with 3 categorizations with the same number (3) of targets"
-        )
-
-    def test_filtering_predicate__explodes_when_using_random_junk(
-        self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
-    ):
-        random_junk = (0, 1)
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=random_junk,  # type: ignore
-            )
-
-        assert (
-            ve.value.args[0]
-            == "The targets at following indices are not categorizations: [0, 1]"
-        )
-
-    def test_filtering_predicate__explodes_when_using_one_category(
-        self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
-    ):
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=(x_recessive_gt_predicate.get_categorizations()[0],),
-            )
-
-        assert (
-            ve.value.args[0]
-            == "At least 2 target categorizations must be provided but got 1"
-        )
 
 
 class TestSexPredicate:
