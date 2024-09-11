@@ -15,7 +15,7 @@ from ._counter import AlleleCounter
 # TODO: implement __hash__, __eq__ on predicates
 
 
-class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
+class AlleleCountingGenotypePredicate(GenotypePolyPredicate):
     # NOT PART OF THE PUBLIC API
     """
     The predicate tests presence of at least one matching allele in the patient.
@@ -26,7 +26,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
     @staticmethod
     def for_variant_predicate(predicate: VariantPredicate):
         allele_counter = AlleleCounter(predicate=predicate)
-        return AlleleCountingGenotypeBooleanPredicate(allele_counter=allele_counter)
+        return AlleleCountingGenotypePredicate(allele_counter=allele_counter)
 
     def __init__(self, allele_counter: AlleleCounter):
         self._allele_counter = allele_counter
@@ -34,12 +34,12 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         """
         The predicate bins a patient into
-        :attr:`AlleleCountingGenotypeBooleanPredicate.NO`
-        or :class:`AlleleCountingGenotypeBooleanPredicate.YES` category.
+        :attr:`AlleleCountingGenotypePredicate.NO`
+        or :class:`AlleleCountingGenotypePredicate.YES` category.
         """
         return (
-            AlleleCountingGenotypeBooleanPredicate.YES,
-            AlleleCountingGenotypeBooleanPredicate.NO,
+            AlleleCountingGenotypePredicate.YES,
+            AlleleCountingGenotypePredicate.NO,
         )
 
     def get_question_base(self) -> str:
@@ -50,9 +50,9 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
 
         allele_count = self._allele_counter.count(patient)
         if allele_count > 0:
-            return AlleleCountingGenotypeBooleanPredicate.YES
+            return AlleleCountingGenotypePredicate.YES
         elif allele_count == 0:
-            return AlleleCountingGenotypeBooleanPredicate.NO
+            return AlleleCountingGenotypePredicate.NO
         else:
             raise ValueError(
                 f"Allele counter should return a non-negative allele count: {allele_count}"
@@ -60,7 +60,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
 
     def __eq__(self, value: object) -> bool:
         return (
-            isinstance(value, AlleleCountingGenotypeBooleanPredicate)
+            isinstance(value, AlleleCountingGenotypePredicate)
             and self._allele_counter == value._allele_counter
         )
 
@@ -68,7 +68,7 @@ class AlleleCountingGenotypeBooleanPredicate(GenotypePolyPredicate):
         return hash((self._allele_counter,))
 
     def __str__(self) -> str:
-        return f"AlleleCountingGenotypeBooleanPredicate(allele_counter={self._allele_counter})"
+        return f"AlleleCountingGenotypePredicate(allele_counter={self._allele_counter})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -79,7 +79,7 @@ def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredic
     Create a genotype boolean predicate from given `variant_predicate`
     to test for presence of at least one matching allele in the patient.
     """
-    return AlleleCountingGenotypeBooleanPredicate.for_variant_predicate(
+    return AlleleCountingGenotypePredicate.for_variant_predicate(
         predicate=variant_predicate,
     )
 
@@ -183,6 +183,144 @@ def groups_predicate(
     return AlleleCountingGroupsPredicate(
         counters=counters,
         categorizations=categorizations,
+    )
+
+
+class MonoallelicGenotypePredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
+
+    ZERO = Categorization(
+        PatientCategory(cat_id=0, name="Zero", description="Zero alleles")
+    )
+    ONE = Categorization(
+        PatientCategory(cat_id=1, name="One", description="One allele")
+    )
+
+    @staticmethod
+    def for_variant_predicate(predicate: VariantPredicate):
+        allele_counter = AlleleCounter(predicate=predicate)
+        return MonoallelicGenotypePredicate(allele_counter=allele_counter)
+
+    def __init__(
+        self,
+        allele_counter: AlleleCounter,
+    ):
+        self._allele_counter = allele_counter
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return (MonoallelicGenotypePredicate.ZERO, MonoallelicGenotypePredicate.ONE)
+
+    def get_question_base(self) -> str:
+        return "The variant allele count"
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        self._check_patient(patient)
+
+        allele_count = self._allele_counter.count(patient)
+        if allele_count == 0:
+            return MonoallelicGenotypePredicate.ZERO
+        elif allele_count == 1:
+            return MonoallelicGenotypePredicate.ONE
+        else:
+            return None
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, MonoallelicGenotypePredicate)
+            and self._allele_counter == value._allele_counter
+        )
+
+    def __hash__(self) -> int:
+        return hash((self._allele_counter,))
+
+    def __str__(self) -> str:
+        return f"MonoallelicGenotypePredicate(allele_counter={self._allele_counter})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+def monoallelic_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredicate:
+    return MonoallelicGenotypePredicate.for_variant_predicate(variant_predicate)
+
+
+class BiallelicGenotypePredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
+
+    AA = Categorization(PatientCategory(cat_id=0, name="AA", description="Biallelic A"))
+    AB = Categorization(
+        PatientCategory(
+            cat_id=1, name="AB", description="One copy of A and one copy of B"
+        )
+    )
+    BB = Categorization(PatientCategory(cat_id=2, name="BB", description="Biallelic B"))
+
+    @staticmethod
+    def for_variant_predicates(
+        a_predicate: VariantPredicate,
+        b_predicate: VariantPredicate,
+    ):
+        return BiallelicGenotypePredicate(
+            a_counter=AlleleCounter(a_predicate),
+            b_counter=AlleleCounter(b_predicate),
+        )
+
+    def __init__(
+        self,
+        a_counter: AlleleCounter,
+        b_counter: AlleleCounter,
+    ):
+        self._a_counter = a_counter
+        self._b_counter = b_counter
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return (
+            BiallelicGenotypePredicate.AA,
+            BiallelicGenotypePredicate.AB,
+            BiallelicGenotypePredicate.BB,
+        )
+
+    def get_question_base(self) -> str:
+        return "The variant allele count"
+
+    def test(self, patient: Patient) -> typing.Optional[Categorization]:
+        self._check_patient(patient)
+
+        a_count = self._a_counter.count(patient)
+        b_count = self._b_counter.count(patient)
+        if a_count == 2 and b_count == 0:
+            return BiallelicGenotypePredicate.AA
+        elif a_count == 1 and b_count == 1:
+            return BiallelicGenotypePredicate.AB
+        elif a_count == 0 and b_count == 2:
+            return BiallelicGenotypePredicate.BB
+        else:
+            return None
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, BiallelicGenotypePredicate)
+            and self._a_counter == value._a_counter
+            and self._b_counter == value._b_counter
+        )
+
+    def __hash__(self) -> int:
+        return hash((self._a_counter, self._b_counter))
+
+    def __str__(self) -> str:
+        return f"BiallelicGenotypePredicate(a_counter={self._a_counter}, b_counter={self._b_counter})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+def biallelic_predicate(
+    a_predicate: VariantPredicate,
+    b_predicate: VariantPredicate,
+) -> GenotypePolyPredicate:
+    return BiallelicGenotypePredicate.for_variant_predicates(
+        a_predicate=a_predicate,
+        b_predicate=b_predicate,
     )
 
 
@@ -592,7 +730,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
                 pass
             else:
                 raise ValueError(f"{d} is neither `str` nor `hpotk.TermId`")
-            
+
             diagnosis_ids.append(d)
 
         if labels is None:
@@ -631,7 +769,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         return self._categorizations
 
     def get_question_base(self) -> str:
-        return 'What disease was diagnosed'
+        return "What disease was diagnosed"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         categorization = None
@@ -641,14 +779,14 @@ class DiagnosisPredicate(GenotypePolyPredicate):
             except KeyError:
                 # No match for this disease, no problem.
                 continue
-            
+
             if categorization is None:
                 # First time we found a candidate disease
                 categorization = candidate
             else:
                 # Ambiguous match. We found several matching diagnoses!
                 return None
-                
+
         return categorization
 
 

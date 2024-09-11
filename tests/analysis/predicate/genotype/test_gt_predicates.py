@@ -8,6 +8,8 @@ from gpsea.analysis.predicate.genotype import (
     groups_predicate,
     filtering_predicate,
     sex_predicate,
+    monoallelic_predicate,
+    biallelic_predicate,
     VariantPredicates,
     VariantPredicate,
     ModeOfInheritancePredicate,
@@ -135,6 +137,85 @@ class TestModeOfInheritancePredicate:
         assert categorization is not None
 
         assert categorization.category.name == name
+
+
+class TestAllelePredicates:
+
+    @pytest.mark.parametrize(
+        "individual_name,expected_name",
+        [
+            ("adam", "Zero"),  # 0/0
+            ("eve", "One"),  # 0/1
+            ("cain", "One"),  # 0/1
+        ],
+    )
+    def test_monoallelic_predicate_ad_family(
+        self,
+        individual_name: str,
+        expected_name: str,
+        request: pytest.FixtureRequest,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        gt_predicate = monoallelic_predicate(is_missense)
+        individual = request.getfixturevalue(individual_name)
+
+        actual_cat = gt_predicate.test(individual)
+
+        assert actual_cat is not None
+        assert actual_cat.category.name == expected_name
+
+    @pytest.mark.parametrize(
+        "individual_name,not_none,expected_name",
+        [
+            ("walt", True, "One"),  # 1/2
+            ("skyler", True, "One"),  # 1/2
+            ("flynn", False, None),  # 1/1, hence 2 alleles which is too much to work with monoallelic predicate.
+            ("holly", True, "Zero"),  # 2/2
+        ],
+    )
+    def test_monoallelic_predicate_ar_family(
+        self,
+        individual_name: str,
+        not_none: bool,
+        expected_name: str,
+        request: pytest.FixtureRequest,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        gt_predicate = monoallelic_predicate(is_missense)
+        individual = request.getfixturevalue(individual_name)
+
+        actual_cat = gt_predicate.test(individual)
+
+        if not_none:
+            assert actual_cat is not None
+            assert actual_cat.category.name == expected_name
+        else:
+            assert actual_cat is None
+
+    @pytest.mark.parametrize(
+        "individual_name,expected_name",
+        [
+            ("walt", "AB"),  # 1/2
+            ("skyler", "AB"),  # 1/2
+            ("flynn", "AA"),  # 1/1
+            ("holly", "BB"),  # 2/2
+        ],
+    )
+    def test_biallelic_predicate(
+        self,
+        individual_name: str,
+        expected_name: str,
+        request: pytest.FixtureRequest,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_stop_gained = VariantPredicates.variant_effect(VariantEffect.STOP_GAINED, TX_ID)
+        gt_predicate = biallelic_predicate(is_missense, is_stop_gained)
+        individual = request.getfixturevalue(individual_name)
+
+        actual_cat = gt_predicate.test(individual)
+
+        assert actual_cat is not None
+        assert actual_cat.category.name == expected_name
 
 
 class TestFilteringPredicate:
