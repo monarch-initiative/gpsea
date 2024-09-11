@@ -7,81 +7,12 @@ import hpotk
 
 from gpsea.model import Patient, Sex
 
-from .._api import Categorization, PatientCategory, PatientCategories
+from .._api import Categorization, PatientCategory
 from ._api import GenotypePolyPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
 
 # TODO: implement __hash__, __eq__ on predicates
-
-
-class AlleleCountingGenotypePredicate(GenotypePolyPredicate):
-    # NOT PART OF THE PUBLIC API
-    """
-    The predicate tests presence of at least one matching allele in the patient.
-    """
-    YES = Categorization(PatientCategories.YES)
-    NO = Categorization(PatientCategories.NO)
-
-    @staticmethod
-    def for_variant_predicate(predicate: VariantPredicate):
-        allele_counter = AlleleCounter(predicate=predicate)
-        return AlleleCountingGenotypePredicate(allele_counter=allele_counter)
-
-    def __init__(self, allele_counter: AlleleCounter):
-        self._allele_counter = allele_counter
-
-    def get_categorizations(self) -> typing.Sequence[Categorization]:
-        """
-        The predicate bins a patient into
-        :attr:`AlleleCountingGenotypePredicate.NO`
-        or :class:`AlleleCountingGenotypePredicate.YES` category.
-        """
-        return (
-            AlleleCountingGenotypePredicate.YES,
-            AlleleCountingGenotypePredicate.NO,
-        )
-
-    def get_question_base(self) -> str:
-        return self._allele_counter.get_question()
-
-    def test(self, patient: Patient) -> typing.Optional[Categorization]:
-        self._check_patient(patient)
-
-        allele_count = self._allele_counter.count(patient)
-        if allele_count > 0:
-            return AlleleCountingGenotypePredicate.YES
-        elif allele_count == 0:
-            return AlleleCountingGenotypePredicate.NO
-        else:
-            raise ValueError(
-                f"Allele counter should return a non-negative allele count: {allele_count}"
-            )
-
-    def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, AlleleCountingGenotypePredicate)
-            and self._allele_counter == value._allele_counter
-        )
-
-    def __hash__(self) -> int:
-        return hash((self._allele_counter,))
-
-    def __str__(self) -> str:
-        return f"AlleleCountingGenotypePredicate(allele_counter={self._allele_counter})"
-
-    def __repr__(self) -> str:
-        return str(self)
-
-
-def boolean_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredicate:
-    """
-    Create a genotype boolean predicate from given `variant_predicate`
-    to test for presence of at least one matching allele in the patient.
-    """
-    return AlleleCountingGenotypePredicate.for_variant_predicate(
-        predicate=variant_predicate,
-    )
 
 
 class AlleleCountingGroupsPredicate(GenotypePolyPredicate):

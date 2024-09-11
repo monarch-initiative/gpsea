@@ -9,7 +9,7 @@ import pytest
 
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
-from gpsea.analysis.predicate.genotype import GenotypePolyPredicate, VariantPredicates, boolean_predicate
+from gpsea.analysis.predicate.genotype import GenotypePolyPredicate, ModeOfInheritancePredicate, VariantPredicates
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
 from gpsea.io import GpseaJSONDecoder
 from gpsea.model import *
@@ -119,9 +119,7 @@ def suox_mane_tx_id() -> str:
 def suox_gt_predicate(
     suox_mane_tx_id: str,
 ) -> GenotypePolyPredicate:
-    # To bin the patients to a group with >1 MISSENSE variant or 0 MISSENSE variants.
-    
-    return boolean_predicate(
+    return ModeOfInheritancePredicate.autosomal_dominant(
         variant_predicate=VariantPredicates.variant_effect(
             effect=VariantEffect.MISSENSE_VARIANT,
             tx_id=suox_mane_tx_id

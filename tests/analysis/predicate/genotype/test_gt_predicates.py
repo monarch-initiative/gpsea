@@ -175,10 +175,10 @@ class TestAllelePredicates:
     @pytest.mark.parametrize(
         "individual_name,expected_name",
         [
-            ("walt", "AB"),  # 0/1 & 0/1
-            ("skyler", "AB"),  # 0/1 & 0/1
-            ("flynn", "AA"),  # 1/1 & 0/0
-            ("holly", "BB"),  # 0/0 & 1/1
+            ("walt", "A/B"),  # 0/1 & 0/1
+            ("skyler", "A/B"),  # 0/1 & 0/1
+            ("flynn", "A/A"),  # 1/1 & 0/0
+            ("holly", "B/B"),  # 0/0 & 1/1
         ],
     )
     def test_biallelic_predicate(
