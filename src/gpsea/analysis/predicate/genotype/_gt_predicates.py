@@ -241,6 +241,22 @@ class MonoallelicGenotypePredicate(GenotypePolyPredicate):
 
 
 def monoallelic_predicate(variant_predicate: VariantPredicate) -> GenotypePolyPredicate:
+    """
+    
+    The predicate bins patient into one of two groups: `Zero` and `One`:
+
+    +-----------+------------------+
+    | Group     | Allele count     |
+    +===========+==================+
+    | Zero      | 0                |
+    +-----------+------------------+
+    | One       | 1                |
+    +-----------+------------------+
+
+    Individuals with different allele counts (e.g. `2)
+    are assigned the ``None`` group and, thus, omitted from the analysis.
+    """
+
     return MonoallelicGenotypePredicate.for_variant_predicate(variant_predicate)
 
 
@@ -318,6 +334,26 @@ def biallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: VariantPredicate,
 ) -> GenotypePolyPredicate:
+    """
+    Get a predicate for binning the individuals into groups,
+    with respect to allele counts of variants selected by `a_predicate` and `b_predicate`.
+
+    The predicate bins patient into one of three groups: `AA`, `AB` and `BB`:
+
+    +-----------+------------------+------------------+
+    | Group     | `A` allele count | `B` allele count |
+    +===========+==================+==================+
+    | AA        | 2                | 0                |
+    +-----------+------------------+------------------+
+    | AB        | 1                | 1                |
+    +-----------+------------------+------------------+
+    | AA        | 0                | 2                |
+    +-----------+------------------+------------------+
+
+    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)
+    are assigned the ``None`` group and, thus, omitted from the analysis.
+
+    """
     return BiallelicGenotypePredicate.for_variant_predicates(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
