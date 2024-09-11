@@ -136,62 +136,13 @@ class TestModeOfInheritancePredicate:
 
         assert categorization.category.name == name
 
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            ("adam", "HOM_REF"),
-            ("eve", "HET"),
-            ("cain", "HET"),
-        ],
-    )
-    def test_x_dominant(
-        self,
-        patient_name: str,
-        name: str,
-        variant_predicate: VariantPredicate,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.x_dominant(variant_predicate)
-
-        categorization = predicate.test(patient)
-
-        assert categorization is not None
-
-        assert categorization.category.name == name
-
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            ("anakin", "HOM_REF"),
-            ("padme", "HET"),
-            ("luke", "HEMI"),
-            ("leia", "HET"),
-        ],
-    )
-    def test_x_recessive(
-        self,
-        patient_name: str,
-        name: str,
-        variant_predicate: VariantPredicate,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.x_recessive(variant_predicate)
-
-        categorization = predicate.test(patient)
-
-        assert categorization is not None
-
-        assert categorization.category.name == name
-
 
 class TestFilteringPredicate:
 
     @pytest.fixture(scope="class")
     def x_recessive_gt_predicate(self) -> GenotypePolyPredicate:
         affects_suox = VariantPredicates.gene("SUOX")
-        return ModeOfInheritancePredicate.x_recessive(
+        return ModeOfInheritancePredicate.autosomal_recessive(
             variant_predicate=affects_suox,
         )
 
@@ -232,17 +183,18 @@ class TestFilteringPredicate:
 
         assert (
             ve.value.args[0]
-            == "It makes no sense to subset the a predicate with 4 categorizations with the same number (4) of targets"
+            == "It makes no sense to subset the a predicate with 3 categorizations with the same number (3) of targets"
         )
 
     def test_filtering_predicate__explodes_when_using_random_junk(
         self,
         x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
+        random_junk = (0, 1)
         with pytest.raises(ValueError) as ve:
             filtering_predicate(
                 predicate=x_recessive_gt_predicate,
-                targets=(0, 1),
+                targets=random_junk,  # type: ignore
             )
 
         assert (

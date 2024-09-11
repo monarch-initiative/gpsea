@@ -1,5 +1,4 @@
 import dataclasses
-import enum
 import typing
 
 from collections import defaultdict
@@ -291,23 +290,6 @@ class GenotypeGroup:
     categorization: Categorization
 
 
-class MendelianInheritanceAspect(enum.Enum):
-    AUTOSOMAL = 0
-    """
-    Related to chromosomes that do *not* determine the sex of an individual.
-    """
-
-    GONOSOMAL = 1
-    """
-    Related to chromosomes that determine the sex of an individual.
-    """
-
-    MITOCHONDRIAL = 2
-    """
-    Related to mitochondrial DNA.
-    """
-
-
 class ModeOfInheritanceInfo:
 
     # NOT PART OF THE PUBLIC API!!!
@@ -333,13 +315,6 @@ class ModeOfInheritanceInfo:
             description="Homozygous alternate or compound heterozygous",
         ),
     )
-    HEMI = Categorization(
-        PatientCategory(
-            cat_id=3,
-            name="HEMI",
-            description="Hemizygous",
-        ),
-    )
 
     @staticmethod
     def autosomal_dominant() -> "ModeOfInheritanceInfo":
@@ -356,7 +331,6 @@ class ModeOfInheritanceInfo:
             ),
         )
         return ModeOfInheritanceInfo(
-            mendelian_inheritance_aspect=MendelianInheritanceAspect.AUTOSOMAL,
             groups=groups,
         )
 
@@ -380,62 +354,11 @@ class ModeOfInheritanceInfo:
             ),
         )
         return ModeOfInheritanceInfo(
-            mendelian_inheritance_aspect=MendelianInheritanceAspect.AUTOSOMAL,
-            groups=groups,
-        )
-
-    @staticmethod
-    def x_dominant() -> "ModeOfInheritanceInfo":
-        groups = (
-            GenotypeGroup(
-                allele_count=0,
-                sex=None,
-                categorization=ModeOfInheritanceInfo.HOM_REF,
-            ),
-            GenotypeGroup(
-                allele_count=1,
-                sex=None,
-                categorization=ModeOfInheritanceInfo.HET,
-            ),
-        )
-        return ModeOfInheritanceInfo(
-            mendelian_inheritance_aspect=MendelianInheritanceAspect.GONOSOMAL,
-            groups=groups,
-        )
-
-    @staticmethod
-    def x_recessive() -> "ModeOfInheritanceInfo":
-        groups = (
-            GenotypeGroup(
-                allele_count=0,
-                sex=None,
-                categorization=ModeOfInheritanceInfo.HOM_REF,
-            ),
-            GenotypeGroup(
-                allele_count=1,
-                sex=Sex.FEMALE,
-                categorization=ModeOfInheritanceInfo.HET,
-            ),
-            GenotypeGroup(
-                allele_count=2,
-                sex=Sex.FEMALE,
-                categorization=ModeOfInheritanceInfo.BIALLELIC_ALT,
-            ),
-            GenotypeGroup(
-                allele_count=1,
-                sex=Sex.MALE,
-                categorization=ModeOfInheritanceInfo.HEMI,
-            ),
-        )
-
-        return ModeOfInheritanceInfo(
-            mendelian_inheritance_aspect=MendelianInheritanceAspect.GONOSOMAL,
             groups=groups,
         )
 
     def __init__(
         self,
-        mendelian_inheritance_aspect: MendelianInheritanceAspect,
         groups: typing.Iterable[GenotypeGroup],
     ):
         # We want this to be hashable but also keep a non-hashable dict
@@ -443,10 +366,6 @@ class ModeOfInheritanceInfo:
         # The correctness depends on two default dicts with same keys and values
         # comparing equal.
         hash_value = 17
-        assert isinstance(mendelian_inheritance_aspect, MendelianInheritanceAspect)
-        self._aspect = mendelian_inheritance_aspect
-
-        hash_value += 31 * hash(self._aspect)
 
         self._groups = defaultdict(list)
         for group in groups:
@@ -461,10 +380,6 @@ class ModeOfInheritanceInfo:
         # Flatten `values()` which is an iterable of lists.
         return (group for meta_group in self._groups.values() for group in meta_group)
 
-    @property
-    def mendelian_inheritance_aspect(self) -> MendelianInheritanceAspect:
-        return self._aspect
-
     def get_groups_for_allele_count(
         self,
         allele_count: int,
@@ -475,19 +390,9 @@ class ModeOfInheritanceInfo:
             # No group for this allele count is OK
             return ()
 
-    def is_autosomal(self) -> bool:
-        return self._aspect == MendelianInheritanceAspect.AUTOSOMAL
-
-    def is_gonosomal(self) -> bool:
-        return self._aspect == MendelianInheritanceAspect.GONOSOMAL
-
-    def is_mitochondrial(self) -> bool:
-        return self._aspect == MendelianInheritanceAspect.MITOCHONDRIAL
-
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, ModeOfInheritanceInfo)
-            and self._aspect == value._aspect
             and self._groups == value._groups
         )
 
@@ -495,7 +400,7 @@ class ModeOfInheritanceInfo:
         return self._hash
 
     def __str__(self) -> str:
-        return f"ModeOfInheritanceInfo(aspect={self._aspect}, groups={self._groups})"
+        return f"ModeOfInheritanceInfo(groups={self._groups})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -518,7 +423,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        return ModeOfInheritancePredicate.from_moi_info(
+        return ModeOfInheritancePredicate._from_moi_info(
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
         )
@@ -535,46 +440,13 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        return ModeOfInheritancePredicate.from_moi_info(
+        return ModeOfInheritancePredicate._from_moi_info(
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
         )
 
     @staticmethod
-    def x_dominant(
-        variant_predicate: VariantPredicate,
-    ) -> "ModeOfInheritancePredicate":
-        """
-        Create a predicate that assigns the patient either into
-        homozygous reference or heterozygous
-        group in line with the X-linked dominant mode of inheritance.
-
-        :param variant_predicate: a predicate for choosing the variants for testing.
-        """
-        return ModeOfInheritancePredicate.from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.x_dominant(),
-        )
-
-    @staticmethod
-    def x_recessive(
-        variant_predicate: VariantPredicate,
-    ) -> "ModeOfInheritancePredicate":
-        """
-        Create a predicate that assigns the patient either into
-        homozygous reference, heterozygous, biallelic alternative allele
-        (homozygous alternative or compound heterozygous), or hemizygous
-        group in line with the X-linked recessive mode of inheritance.
-
-        :param variant_predicate: a predicate for choosing the variants for testing.
-        """
-        return ModeOfInheritancePredicate.from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.x_recessive(),
-        )
-
-    @staticmethod
-    def from_moi_info(
+    def _from_moi_info(
         variant_predicate: VariantPredicate,
         mode_of_inheritance_data: ModeOfInheritanceInfo,
     ) -> "ModeOfInheritancePredicate":
@@ -620,41 +492,12 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
     ) -> typing.Optional[Categorization]:
         self._check_patient(patient)
 
-        if self._moi_info.is_autosomal():
-            allele_count = self._allele_counter.count(patient)
-            groups = self._moi_info.get_groups_for_allele_count(allele_count)
-            if len(groups) == 1:
-                return groups[0].categorization
-            else:
-                return None
-        elif self._moi_info.is_gonosomal():
-            if patient.sex.is_provided():
-                allele_count = self._allele_counter.count(patient)
-                groups = self._moi_info.get_groups_for_allele_count(allele_count)
-                if len(groups) == 0:
-                    # Unable to assign the individual.
-                    return None
-                elif len(groups) == 1:
-                    # We can only assign into one category no matter what the individual's sex is.
-                    return groups[0].categorization
-                else:
-                    # We choose depending on the sex.
-                    for group in groups:
-                        if group.sex is not None and group.sex == patient.sex:
-                            return group.categorization
-                return None
-            else:
-                # We must have patient's sex
-                # to do any meaningful analysis
-                # in the non-autosomal scenario.
-                return None
-
-        elif self._moi_info.is_mitochondrial():
-            # Cannot deal with mitochondrial inheritance right now.
-            return None
+        allele_count = self._allele_counter.count(patient)
+        groups = self._moi_info.get_groups_for_allele_count(allele_count)
+        if len(groups) == 1:
+            return groups[0].categorization
         else:
-            # Bug, please report to the developers
-            raise ValueError("Unexpected mode of inheritance condition")
+            return None
 
     def __eq__(self, value: object) -> bool:
         return (
