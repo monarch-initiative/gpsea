@@ -198,7 +198,7 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
         return None
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, PropagatingPhenotypePredicate) \
+        return isinstance(value, HpoPredicate) \
             and self._hpo.version == value._hpo.version \
             and self._query == value._query \
             and self._missing_implies_phenotype_excluded == value._missing_implies_phenotype_excluded
@@ -207,7 +207,7 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
         return hash((self._hpo.version, self._query, self._missing_implies_phenotype_excluded))
 
     def __repr__(self):
-        return f"PropagatingPhenotypeBooleanPredicate(query={self._query})"
+        return f"HpoPredicate(query={self._query})"
 
 
 class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
