@@ -1170,20 +1170,18 @@ with one or more variant alleles (<em>Count</em>):</p>
 <section id="prepare-genotype-and-phenotype-predicates">
 <h3>Prepare genotype and phenotype predicates<a class="headerlink" href="#prepare-genotype-and-phenotype-predicates" title="Link to this heading"></a></h3>
 <p>We will create a predicate to bin patients into group
-depending on presence of a missense and frameshift variant to test
+depending on presence of a single allele of a missense or frameshift variant to test
 if there is a difference between frameshift and non-frameshift variants
 in the individuals of the <em>TBX5</em> cohort.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">groups_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">groups_predicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">predicates</span><span class="o">=</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
-<span class="gp">... </span>        <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span>    <span class="n">group_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Missense&#39;</span><span class="p">,</span> <span class="s1">&#39;Frameshift&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">monoallelic_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Missense&#39;</span><span class="p">,</span> <span class="s1">&#39;Frameshift&#39;</span><span class="p">)</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Genotype group: Missense, Frameshift&#39;</span>
+<span class="go">&#39;Allele group: Missense, Frameshift&#39;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1388,7 +1386,7 @@ by exploring the phenotype MTC filtering report.</p>
 <table class="docutils align-default" id="id5">
 <caption><span class="caption-text"><em>TBX5</em> frameshift vs missense</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <thead>
-<tr class="row-odd"><th class="head"><p>Genotype group</p></th>
+<tr class="row-odd"><th class="head"><p>Allele group</p></th>
 <th class="head"><p>Missense</p></th>
 <th class="head"><p>Missense</p></th>
 <th class="head"><p>Frameshift</p></th>
@@ -1502,19 +1500,19 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>0.7735491022101784</p></td>
 </tr>
-<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
-<td><p>42/44</p></td>
-<td><p>95%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Short thumb [HP:0009778]</p></td>
+<tr class="row-odd"><td><p>Short thumb [HP:0009778]</p></td>
 <td><p>11/41</p></td>
 <td><p>27%</p></td>
 <td><p>8/30</p></td>
 <td><p>27%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>42/44</p></td>
+<td><p>95%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
