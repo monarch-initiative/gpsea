@@ -7,9 +7,10 @@ from gpsea.analysis.predicate.genotype import (
     sex_predicate,
     monoallelic_predicate,
     biallelic_predicate,
+    autosomal_dominant,
+    autosomal_recessive,
     VariantPredicates,
     VariantPredicate,
-    ModeOfInheritancePredicate,
 )
 
 
@@ -102,7 +103,7 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_dominant(variant_predicate)
+        predicate = autosomal_dominant(variant_predicate)
 
         categorization = predicate.test(patient)
 
@@ -125,7 +126,7 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_dominant()
+        predicate = autosomal_dominant()
 
         categorization = predicate.test(patient)
 
@@ -150,7 +151,7 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_recessive(variant_predicate)
+        predicate = autosomal_recessive(variant_predicate)
 
         categorization = predicate.test(patient)
 
@@ -175,7 +176,7 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_recessive()
+        predicate = autosomal_recessive()
 
         categorization = predicate.test(patient)
 

@@ -9,11 +9,11 @@ autosomal recessive, X-linked dominant, X-linked recessive, and mitochondrial
 (See `Understanding Genetics, Appendix B <https://www.ncbi.nlm.nih.gov/books/NBK132145/>`_).
 
 
-The :class:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate`
-assigns the individual into a group based on the number of alleles
-that match a condition specified by a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`.
-The :class:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate` supports
-the following Mendelian modes of inheritance (MoI):
+The :class:`~gpsea.analysis.predicate.genotype.autosomal_dominant`
+and :class:`~gpsea.analysis.predicate.genotype.autosomal_recessive`
+assigns the individual into a group based on the number of the alleles
+observed in the individual.
+GPSEA supports the following Mendelian modes of inheritance (MoI):
 
 
 +-----------------------+------------------+------------------------+
@@ -40,11 +40,11 @@ the following Mendelian modes of inheritance (MoI):
     `BIALLELIC_ALT` includes both homozygous and compound heterozygous genotypes.
 
 Clinical judgment should be used to choose the MoI for the cohort analysis.
-Then a predicate for the desired MoI can be created by one of 
-:class:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate` static constructors:
+Then a predicate for the desired MoI can be created by calling one
+of the following methods:
 
-* :func:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant`
-* :func:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive`
+* :func:`~gpsea.analysis.predicate.genotype.autosomal_dominant`
+* :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive`
 
 By default, the MoI predicates will use *all* variants recorded in the individual.
 However, a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
@@ -57,11 +57,11 @@ Assign individuals into genotype groups
 Here we show seting up a predicate for grouping individuals for differences
 between genotypes of a disease with an autosomal recessive MoI.
 
-We use :class:`~gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive`
+We use :class:`~gpsea.analysis.predicate.genotype.autosomal_recessive`
 to create the predicate:
 
->>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
->>> gt_predicate = ModeOfInheritancePredicate.autosomal_recessive()
+>>> from gpsea.analysis.predicate.genotype import autosomal_recessive
+>>> gt_predicate = autosomal_recessive()
 >>> gt_predicate.display_question()
 'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
 
@@ -88,6 +88,6 @@ when assigning the genotype group. We set up the variant predicate:
 
 and we use it to create the MoI predicate:
 
->>> gt_predicate = ModeOfInheritancePredicate.autosomal_recessive(is_missense)
+>>> gt_predicate = autosomal_recessive(is_missense)
 >>> gt_predicate.display_question()
 'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
