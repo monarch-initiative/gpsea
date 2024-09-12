@@ -1,11 +1,18 @@
 import pytest
 
-from gpsea.analysis.predicate.genotype import VariantPredicates, ProteinPredicates, VariantPredicate
+from gpsea.analysis.predicate.genotype import VariantPredicates, ProteinPredicates
 from gpsea.model import *
 from gpsea.model.genome import *
 
 
 class TestVariantPredicates:
+
+    def test_always_true_predicate(
+        self,
+        suox_cohort: Cohort,
+    ):
+        predicate = VariantPredicates.true()
+        assert all(predicate.test(v) for v in suox_cohort.all_variants())
 
     @pytest.mark.parametrize(
         'effect, expected',
