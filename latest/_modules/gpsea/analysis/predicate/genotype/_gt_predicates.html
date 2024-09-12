@@ -83,20 +83,19 @@
   <h1>Source code for gpsea.analysis.predicate.genotype._gt_predicates</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype._variant</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span>
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">PatientCategory</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span>
 <span class="kn">from</span> <span class="nn">._counter</span> <span class="kn">import</span> <span class="n">AlleleCounter</span>
-
-<span class="c1"># TODO: implement __hash__, __eq__ on predicates</span>
+<span class="kn">from</span> <span class="nn">._variant</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 
 
 <span class="k">class</span> <span class="nc">AlleleCountingGroupsPredicate</span><span class="p">(</span><span class="n">GenotypePolyPredicate</span><span class="p">):</span>
@@ -275,7 +274,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">count2cat</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_a_counter</span> <span class="o">=</span> <span class="n">a_counter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_b_counter</span> <span class="o">=</span> <span class="n">b_counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_hash</span><span class="p">()</span>
     
+    <span class="k">def</span> <span class="nf">_compute_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">hash_value</span> <span class="o">=</span> <span class="mi">17</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count2cat</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">13</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+            <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">13</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+
+        <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">23</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_counter</span><span class="p">)</span>
+        <span class="n">hash_value</span> <span class="o">+=</span> <span class="mi">23</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_counter</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hash_value</span>
+
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
 
@@ -291,7 +304,14 @@
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count2cat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="c1"># TODO: implement __hash__, __eq__</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PolyCountingGenotypePredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count2cat</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_count2cat</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_a_counter</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_counter</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_b_counter</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
 
 
 <div class="viewcode-block" id="monoallelic_predicate">
@@ -302,19 +322,32 @@
     <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The predicate bins patient into one of two groups, `A` and `B`,</span>
+<span class="sd">    based on presence of *exactly* one allele of a variant</span>
+<span class="sd">    that meets the predicate criteria.</span>
+
+<span class="sd">    The number of alleles :math:`count_{A}` and :math:`count_{B}`</span>
+<span class="sd">    is computed using `a_predicate` and `b_predicate`</span>
+<span class="sd">    and the individual is assigned into a group</span>
+<span class="sd">    based on the following table:</span>
 <span class="sd">    </span>
-<span class="sd">    The predicate bins patient into one of two groups: `A` and `B`:</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
+<span class="sd">    | Group     | :math:`count_{A}` | :math:`count_{B}` |</span>
+<span class="sd">    +===========+===================+===================+</span>
+<span class="sd">    | A         | 1                 | 0                 |</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
+<span class="sd">    | B         | 0                 | 1                 |</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
 
-<span class="sd">    +-----------+------------+------------+</span>
-<span class="sd">    | Group     | `A` count  | `B` count  |</span>
-<span class="sd">    +===========+============+============+</span>
-<span class="sd">    | A         | 1          | 0          |</span>
-<span class="sd">    +-----------+------------+------------+</span>
-<span class="sd">    | B         | 0          | 1          |</span>
-<span class="sd">    +-----------+------------+------------+</span>
+<span class="sd">    The individuals with different allele counts</span>
+<span class="sd">    (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)</span>
+<span class="sd">    are assigned into the ``None`` group and, thus, omitted from the analysis.</span>
 
-<span class="sd">    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)</span>
-<span class="sd">    are assigned the ``None`` group and, thus, omitted from the analysis.</span>
+<span class="sd">    :param a_predicate: predicate to test if the variants</span>
+<span class="sd">        meet the criteria of the first group (named `A` by default).</span>
+<span class="sd">    :param b_predicate: predicate to test if the variants</span>
+<span class="sd">        meet the criteria of the second group (named `B` by default).</span>
+<span class="sd">    :param names: group names (default ``(&#39;A&#39;, &#39;B&#39;)``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">monoallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
@@ -332,29 +365,88 @@
     <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get a predicate for binning the individuals into groups,</span>
-<span class="sd">    with respect to allele counts of variants selected by `a_predicate` and `b_predicate`.</span>
+<span class="sd">    The predicate bins patient into one of the three groups,</span>
+<span class="sd">    `AA`, `AB`, and `BB`,</span>
+<span class="sd">    based on presence of one or two variant alleles</span>
+<span class="sd">    that meet the predicate criteria.</span>
 
-<span class="sd">    The predicate bins patient into one of three groups: `AA`, `AB` and `BB`:</span>
+<span class="sd">    The number of alleles :math:`count_{A}` and :math:`count_{B}`</span>
+<span class="sd">    is computed using `a_predicate` and `b_predicate`</span>
+<span class="sd">    and the individual is assigned into a group</span>
+<span class="sd">    based on the following table:</span>
+<span class="sd">    </span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
+<span class="sd">    | Group     | :math:`count_{A}` | :math:`count_{B}` |</span>
+<span class="sd">    +===========+===================+===================+</span>
+<span class="sd">    | AA        | 2                 | 0                 |</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
+<span class="sd">    | AB        | 1                 | 1                 |</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
+<span class="sd">    | AA        | 0                 | 2                 |</span>
+<span class="sd">    +-----------+-------------------+-------------------+</span>
 
-<span class="sd">    +-----------+------------------+------------------+</span>
-<span class="sd">    | Group     | `A` allele count | `B` allele count |</span>
-<span class="sd">    +===========+==================+==================+</span>
-<span class="sd">    | AA        | 2                | 0                |</span>
-<span class="sd">    +-----------+------------------+------------------+</span>
-<span class="sd">    | AB        | 1                | 1                |</span>
-<span class="sd">    +-----------+------------------+------------------+</span>
-<span class="sd">    | AA        | 0                | 2                |</span>
-<span class="sd">    +-----------+------------------+------------------+</span>
+<span class="sd">    The individuals with different allele counts</span>
+<span class="sd">    (e.g. :math:`count_{A} = 1` and :math:`count_{B} = 2`)</span>
+<span class="sd">    are assigned into the ``None`` group and will be, thus,</span>
+<span class="sd">    omitted from the analysis.</span>
 
-<span class="sd">    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)</span>
-<span class="sd">    are assigned the ``None`` group and, thus, omitted from the analysis.</span>
-
+<span class="sd">    :param a_predicate: predicate to test if the variants</span>
+<span class="sd">        meet the criteria of the first group (named `A` by default).</span>
+<span class="sd">    :param b_predicate: predicate to test if the variants</span>
+<span class="sd">        meet the criteria of the second group (named `B` by default).</span>
+<span class="sd">    :param names: group names (default ``(&#39;A&#39;, &#39;B&#39;)``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">biallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="o">=</span><span class="n">b_predicate</span><span class="p">,</span>
         <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="autosomal_dominant">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.autosomal_dominant">[docs]</a>
+<span class="k">def</span> <span class="nf">autosomal_dominant</span><span class="p">(</span>
+    <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a predicate that assigns the patient either</span>
+<span class="sd">    into homozygous reference or heterozygous</span>
+<span class="sd">    group in line with the autosomal dominant mode of inheritance.</span>
+
+<span class="sd">    :param variant_predicate: a predicate for choosing the variants for testing</span>
+<span class="sd">        or `None` if all variants should be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+        <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_dominant</span><span class="p">(),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="autosomal_recessive">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.autosomal_recessive">[docs]</a>
+<span class="k">def</span> <span class="nf">autosomal_recessive</span><span class="p">(</span>
+    <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a predicate that assigns the patient either into</span>
+<span class="sd">    homozygous reference, heterozygous, or biallelic alternative allele</span>
+<span class="sd">    (homozygous alternative or compound heterozygous)</span>
+<span class="sd">    group in line with the autosomal recessive mode of inheritance.</span>
+
+<span class="sd">    :param variant_predicate: a predicate for choosing the variants for testing</span>
+<span class="sd">        or `None` if all variants should be used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
+        <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
+        <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(),</span>
     <span class="p">)</span></div>
 
 
@@ -495,7 +587,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">autosomal_dominant</span><span class="p">(</span>
         <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a predicate that assigns the patient either</span>
 <span class="sd">        into homozygous reference or heterozygous</span>
@@ -503,13 +595,13 @@
 
 <span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+        <span class="c1"># TODO: remove before 1.0.0</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Use `gpsea.analysis.predicate.genotype.autosomal_dominant` instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
-            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
-            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_dominant</span><span class="p">(),</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">autosomal_dominant</span><span class="p">(</span><span class="n">variant_predicate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModeOfInheritancePredicate.autosomal_recessive">
@@ -517,7 +609,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">autosomal_recessive</span><span class="p">(</span>
         <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a predicate that assigns the patient either into</span>
 <span class="sd">        homozygous reference, heterozygous, or biallelic alternative allele</span>
@@ -526,13 +618,13 @@
 
 <span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+        <span class="c1"># TODO: remove before 1.0.0</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Use `gpsea.analysis.predicate.genotype.autosomal_recessive` instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
-            <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
-            <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(),</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">variant_predicate</span><span class="p">)</span></div>
 
 
     <span class="nd">@staticmethod</span>
@@ -663,6 +755,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SexGenotypePredicate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">31</span>
+
 
 <span class="n">INSTANCE</span> <span class="o">=</span> <span class="n">SexGenotypePredicate</span><span class="p">()</span>
 
@@ -729,6 +827,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="nb">sorted</span><span class="p">(</span><span class="n">categorizations</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">)</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">categorizations</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
@@ -753,6 +852,13 @@
                 <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">categorization</span>
+    
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DiagnosisPredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id2cat</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_id2cat</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
 
 
 <div class="viewcode-block" id="diagnosis_predicate">

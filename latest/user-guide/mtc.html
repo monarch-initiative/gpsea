@@ -277,17 +277,10 @@ The strategy needs access to HPO:</p>
 for creating <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.
 The constructor takes a threshold as an argument (e.g. 20% in the example above)
 and the method’s logic is made up of 8 individual heuristics
-designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:</p>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p>Code</p></td>
-<td><p>Name</p></td>
-<td><p>Description</p></td>
-</tr>
-<tr class="row-even"><td><p><cite>HMF01</cite></p></td>
-<td><p>Skip terms that
-occur very rarely</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> determines the mininum proportion of individuals
+designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.</p>
+<section id="hmf01-skip-terms-that-occur-very-rarely">
+<h5><cite>HMF01</cite> - Skip terms that occur very rarely<a class="headerlink" href="#hmf01-skip-terms-that-occur-very-rarely" title="Link to this heading"></a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> determines the mininum proportion of individuals
 with direct or indirect annotation by the HPO term to test.
 We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE),
 and we only retain a term for testing if the proportion of individuals
@@ -296,24 +289,17 @@ or equal to <code class="docutils literal notranslate"><span class="pre">term_fr
 This is because of our assumption that even if there is statistical significance,
 if a term is only seen in (for example) 7% of individuals
 in the MISSENSE group and 2% in the not-MISSENSE group,
-the term is unlikely to be of great interest because it is rare.</p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>HMF02</cite></p></td>
-<td><p>Skip terms if
-no cell has more
-than one count</p></td>
-<td><p>In a related heuristic, we skip terms if no genotype group has more
+the term is unlikely to be of great interest because it is rare.</p>
+</section>
+<section id="hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count">
+<h5><cite>HMF02</cite> - Skip terms if no genotype group has more than one count<a class="headerlink" href="#hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count" title="Link to this heading"></a></h5>
+<p>In a related heuristic, we skip terms if no genotype group has more
 than one count. This is not completely redundant with the previous condition,
-because some terms may have a small number of total observations.</p></td>
-</tr>
-<tr class="row-even"><td><p><cite>HMF03</cite></p></td>
-<td><p>Skip terms if
-all counts are
-identical
-to counts
-for a child
-term</p></td>
-<td><p>Let’s say a term such as
+because some terms may have a small number of total observations.</p>
+</section>
+<section id="hmf03-skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term">
+<h5><cite>HMF03</cite> - Skip terms if all counts are identical to counts for a child term<a class="headerlink" href="#hmf03-skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term" title="Link to this heading"></a></h5>
+<p>Let’s say a term such as
 <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001115">Posterior polar cataract (HP:0001115)</a>
 was observed in 7 of 11 individuals with MISSENSE variants
 and in 3 of 8 individuals with NONSENSE variants.
@@ -324,71 +310,47 @@ then we choose to not test the parent term.</p>
 the more information it has (the more interesting the correlation would be if it exists),
 and the result of a test, such as the Fisher Exact test, would be exactly the same
 for <em>Polar cataract</em> as for <em>Posterior polar cataract</em>.</p>
-</td>
-</tr>
-<tr class="row-odd"><td><p><cite>HMF04</cite></p></td>
-<td><p>Skip terms if
-genotypes have
-same HPO
-proportions</p></td>
-<td><p>If both (or all) of the genotype groups have the same proportion of individuals
+</section>
+<section id="hmf04-skip-terms-if-genotypes-have-same-hpo-proportions">
+<h5><cite>HMF04</cite> - Skip terms if genotypes have same HPO proportions<a class="headerlink" href="#hmf04-skip-terms-if-genotypes-have-same-hpo-proportions" title="Link to this heading"></a></h5>
+<p>If both (or all) of the genotype groups have the same proportion of individuals
 observed to be annotated to an HPO term, e.g., both are 50%, then skip the term,
-because it is not possible that the Fisher exact test will return a significant result.</p></td>
-</tr>
-<tr class="row-even"><td><p><cite>HMF05</cite></p></td>
-<td><p>Skip terms if
-there are no
-HPO observations
-in a group</p></td>
-<td><p>If one of the genotype groups has neither observed nor excluded observations
-for an HPO term, skip it.</p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>HMF06</cite></p></td>
-<td><p>Skip term if
-underpowered
-for 2x2 or 2x3
-analysis</p></td>
-<td><p>If the individuals are binned into 2 phenotype groups and 2 genotype groups  (2x2)
+because it is not possible that the Fisher exact test will return a significant result.</p>
+</section>
+<section id="hmf05-skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations">
+<h5><cite>HMF05</cite> - Skip term if one of the genotype groups has neither observed nor excluded observations<a class="headerlink" href="#hmf05-skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations" title="Link to this heading"></a></h5>
+<p>Skip terms if there are no HPO observations in a group.</p>
+</section>
+<section id="hmf06-skip-term-if-underpowered-for-2x2-or-2x3-analysis">
+<h5><cite>HMF06</cite> - Skip term if underpowered for 2x2 or 2x3 analysis<a class="headerlink" href="#hmf06-skip-term-if-underpowered-for-2x2-or-2x3-analysis" title="Link to this heading"></a></h5>
+<p>If the individuals are binned into 2 phenotype groups and 2 genotype groups (2x2)
 and the total count of patients in all genotype-phenotype groups is less than 7,
 or into 2 phenotype groups and 3 genotype groups (2x3) and the total count of patients
 is less than 6, then there is a lack even of the nominal statistical power
-and the counts can never be significant.</p></td>
-</tr>
-<tr class="row-even"><td><p><cite>HMF07</cite></p></td>
-<td><p>Skipping terms
-that are not
-descendents of
-<em>Phenotypic</em>
-<em>abnormality</em></p></td>
-<td><p>The HPO has a number of other branches that describe modes of inheritance,
+and the counts can never be significant.</p>
+</section>
+<section id="hmf07-skipping-terms-that-are-not-descendents-of-phenotypic-abnormality">
+<h5><cite>HMF07</cite> - Skipping terms that are not descendents of <em>Phenotypic abnormality</em><a class="headerlink" href="#hmf07-skipping-terms-that-are-not-descendents-of-phenotypic-abnormality" title="Link to this heading"></a></h5>
+<p>The HPO has a number of other branches that describe modes of inheritance,
 past medical history, and clinical modifiers.
 We do not think it makes much sense to test for enrichment of these terms,
 so, all terms that are not descendants of
-<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality</a> are filtered out.</p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>HMF08</cite></p></td>
-<td><p>Skipping
-“general”
-level terms</p></td>
-<td><blockquote>
-<div><p>All the direct children of the root phenotype term
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality</a> are filtered out.</p>
+</section>
+<section id="hmf08-skipping-general-level-terms">
+<h5><cite>HMF08</cite> - Skipping “general” level terms<a class="headerlink" href="#hmf08-skipping-general-level-terms" title="Link to this heading"></a></h5>
+<p>All the direct children of the root phenotype term
 <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality (HP:0000118)</a>
 are skipped, because of the assumption that if there is a valid signal,
 it will derive from one of the more specific descendents.</p>
-<p>For instance,</p>
-</div></blockquote>
-<dl>
-<dt><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000707">Abnormality of the nervous system</a></dt><dd><p>(HP:0000707) is a child of <em>Phenotypic abnormality</em>, and this assumption implies
+<p>For instance,
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000707">Abnormality of the nervous system</a>
+(HP:0000707) is a child of <em>Phenotypic abnormality</em>, and this assumption implies
 that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 <em>Abnormality of the nervous system</em> being significant.</p>
 <p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> section for details.</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
+</section>
 </section>
 </section>
 </section>
