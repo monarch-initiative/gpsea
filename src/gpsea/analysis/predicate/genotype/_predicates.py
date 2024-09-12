@@ -359,20 +359,20 @@ class StructuralTypePredicate(VariantPredicate):
 
 
 def _decode_operator(op: str) -> typing.Callable[[int, int], bool]:
-        if op == '<':
-            return operator.lt
-        elif op == '<=':
-            return operator.le
-        elif op == '==':
-            return operator.eq
-        elif op == '!=':
-            return operator.ne
-        elif op == '>=':
-            return operator.ge
-        elif op == '>':
-            return operator.gt
-        else:
-            raise ValueError(f'Unsupported operator {op}')
+    if op == '<':
+        return operator.lt
+    elif op == '<=':
+        return operator.le
+    elif op == '==':
+        return operator.eq
+    elif op == '!=':
+        return operator.ne
+    elif op == '>=':
+        return operator.ge
+    elif op == '>':
+        return operator.gt
+    else:
+        raise ValueError(f'Unsupported operator {op}')
 
 
 class ChangeLengthPredicate(VariantPredicate):
@@ -416,7 +416,7 @@ class ChangeLengthPredicate(VariantPredicate):
 
 class RefAlleleLengthPredicate(VariantPredicate):
     """
-    `RefAlleleLengthPredicate` tests if the length of the variant's reference allele 
+    `RefAlleleLengthPredicate` tests if the length of the variant's reference allele
     is greater than, equal, or less than certain value.
     """
 
