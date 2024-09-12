@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import hpotk
 
+from gpsea.analysis.predicate.genotype._variant import VariantPredicates
 from gpsea.model import Patient, Sex
 
 from .._api import Categorization, PatientCategory
@@ -397,7 +398,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
     @staticmethod
     def autosomal_dominant(
-        variant_predicate: VariantPredicate,
+        variant_predicate: typing.Optional[VariantPredicate] = None,
     ) -> "ModeOfInheritancePredicate":
         """
         Create a predicate that assigns the patient either
@@ -406,6 +407,9 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
+        if variant_predicate is None:
+            variant_predicate = VariantPredicates.true()
+
         return ModeOfInheritancePredicate._from_moi_info(
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
@@ -413,7 +417,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
     @staticmethod
     def autosomal_recessive(
-        variant_predicate: VariantPredicate,
+        variant_predicate: typing.Optional[VariantPredicate] = None,
     ) -> "ModeOfInheritancePredicate":
         """
         Create a predicate that assigns the patient either into
@@ -423,6 +427,9 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
+        if variant_predicate is None:
+            variant_predicate = VariantPredicates.true()
+
         return ModeOfInheritancePredicate._from_moi_info(
             variant_predicate=variant_predicate,
             mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),

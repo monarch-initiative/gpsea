@@ -113,6 +113,29 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
+            ("adam", "HET"),  # 0/0 & 0/1
+            ("eve", "HET"),  # 0/1 & 0/0
+            ("cain", "HET"),  # 0/1 & 0/0
+        ],
+    )
+    def test_autosomal_dominant__with_default_predicate(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.autosomal_dominant()
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
             ("walt", "HET"),
             ("skyler", "HET"),
             ("flynn", "BIALLELIC_ALT"),
@@ -128,6 +151,31 @@ class TestModeOfInheritancePredicate:
     ):
         patient = request.getfixturevalue(patient_name)
         predicate = ModeOfInheritancePredicate.autosomal_recessive(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            # The White family has two variants:
+            ("walt", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("skyler", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("flynn", "BIALLELIC_ALT"),  # 1/1 & 0/0
+            ("holly", "BIALLELIC_ALT"),  # 0/0 & 1/1
+        ],
+    )
+    def test_autosomal_recessive__with_default_predicate(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = ModeOfInheritancePredicate.autosomal_recessive()
 
         categorization = predicate.test(patient)
 
