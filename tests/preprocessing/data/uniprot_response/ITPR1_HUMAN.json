@@ -1,0 +1,446 @@
+{
+  "results": [
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "Q14643",
+      "uniProtkbId": "ITPR1_HUMAN",
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000305"
+              }
+            ],
+            "value": "Inositol 1,4,5-trisphosphate-gated calcium channel ITPR1"
+          }
+        },
+        "alternativeNames": [
+          {
+            "fullName": {
+              "value": "IP3 receptor isoform 1"
+            },
+            "shortNames": [
+              {
+                "value": "IP3R 1"
+              },
+              {
+                "evidences": [
+                  {
+                    "evidenceCode": "ECO:0000303",
+                    "source": "PubMed",
+                    "id": "7945203"
+                  }
+                ],
+                "value": "InsP3R1"
+              }
+            ]
+          },
+          {
+            "fullName": {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000303",
+                  "source": "PubMed",
+                  "id": "8648241"
+                }
+              ],
+              "value": "Inositol 1,4,5 trisphosphate receptor"
+            }
+          },
+          {
+            "fullName": {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000303",
+                  "source": "PubMed",
+                  "id": "7500840"
+                }
+              ],
+              "value": "Inositol 1,4,5-trisphosphate receptor type 1"
+            }
+          },
+          {
+            "fullName": {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000303",
+                  "source": "PubMed",
+                  "id": "7852357"
+                },
+                {
+                  "evidenceCode": "ECO:0000303",
+                  "source": "PubMed",
+                  "id": "7945203"
+                }
+              ],
+              "value": "Type 1 inositol 1,4,5-trisphosphate receptor"
+            },
+            "shortNames": [
+              {
+                "value": "Type 1 InsP3 receptor"
+              }
+            ]
+          }
+        ]
+      },
+      "genes": [
+        {
+          "geneName": {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000303",
+                "source": "PubMed",
+                "id": "7852357"
+              },
+              {
+                "evidenceCode": "ECO:0000312",
+                "source": "HGNC",
+                "id": "HGNC:6180"
+              }
+            ],
+            "value": "ITPR1"
+          },
+          "synonyms": [
+            {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000303",
+                  "source": "PubMed",
+                  "id": "7945203"
+                }
+              ],
+              "value": "INSP3R1"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "type": "Domain",
+          "location": {
+            "start": {
+              "value": 112,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 166,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "MIR 1",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000255",
+              "source": "PROSITE-ProRule",
+              "id": "PRU00131"
+            }
+          ]
+        },
+        {
+          "type": "Domain",
+          "location": {
+            "start": {
+              "value": 173,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 223,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "MIR 2",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000255",
+              "source": "PROSITE-ProRule",
+              "id": "PRU00131"
+            }
+          ]
+        },
+        {
+          "type": "Domain",
+          "location": {
+            "start": {
+              "value": 231,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 287,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "MIR 3",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000255",
+              "source": "PROSITE-ProRule",
+              "id": "PRU00131"
+            }
+          ]
+        },
+        {
+          "type": "Domain",
+          "location": {
+            "start": {
+              "value": 294,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 373,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "MIR 4",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000255",
+              "source": "PROSITE-ProRule",
+              "id": "PRU00131"
+            }
+          ]
+        },
+        {
+          "type": "Domain",
+          "location": {
+            "start": {
+              "value": 379,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 435,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "MIR 5",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000255",
+              "source": "PROSITE-ProRule",
+              "id": "PRU00131"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1015,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1036,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1146,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1178,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1708,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1740,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1760,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1796,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1890,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1915,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 1939,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 1960,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 2472,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 2537,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Interaction with ERP44",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000250",
+              "source": "UniProtKB",
+              "id": "P11881"
+            }
+          ]
+        },
+        {
+          "type": "Region",
+          "location": {
+            "start": {
+              "value": 2729,
+              "modifier": "EXACT"
+            },
+            "end": {
+              "value": 2758,
+              "modifier": "EXACT"
+            }
+          },
+          "description": "Disordered",
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000256",
+              "source": "SAM",
+              "id": "MobiDB-lite"
+            }
+          ]
+        }
+      ],
+      "uniProtKBCrossReferences": [
+        {
+          "database": "RefSeq",
+          "id": "NP_001093422.2",
+          "properties": [
+            {
+              "key": "NucleotideSequenceId",
+              "value": "NM_001099952.2"
+            }
+          ],
+          "isoformId": "Q14643-3"
+        },
+        {
+          "database": "RefSeq",
+          "id": "NP_001161744.1",
+          "properties": [
+            {
+              "key": "NucleotideSequenceId",
+              "value": "NM_001168272.1"
+            }
+          ],
+          "isoformId": "Q14643-2"
+        },
+        {
+          "database": "RefSeq",
+          "id": "NP_002213.5",
+          "properties": [
+            {
+              "key": "NucleotideSequenceId",
+              "value": "NM_002222.5"
+            }
+          ],
+          "isoformId": "Q14643-4"
+        },
+        {
+          "database": "RefSeq",
+          "id": "XP_011531985.1",
+          "properties": [
+            {
+              "key": "NucleotideSequenceId",
+              "value": "XM_011533683.2"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "length": 2758
+      },
+      "extraAttributes": {
+        "uniParcId": "UPI00015E0851"
+      }
+    }
+  ]
+}
