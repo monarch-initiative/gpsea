@@ -214,19 +214,32 @@ def monoallelic_predicate(
     names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
+    The predicate bins patient into one of two groups, `A` and `B`,
+    based on presence of *exactly* one allele of a variant
+    that meets the predicate criteria.
+
+    The number of alleles :math:`count_{A}` and :math:`count_{B}`
+    is computed using `a_predicate` and `b_predicate`
+    and the individual is assigned into a group
+    based on the following table:
     
-    The predicate bins patient into one of two groups: `A` and `B`:
+    +-----------+-------------------+-------------------+
+    | Group     | :math:`count_{A}` | :math:`count_{B}` |
+    +===========+===================+===================+
+    | A         | 1                 | 0                 |
+    +-----------+-------------------+-------------------+
+    | B         | 0                 | 1                 |
+    +-----------+-------------------+-------------------+
 
-    +-----------+------------+------------+
-    | Group     | `A` count  | `B` count  |
-    +===========+============+============+
-    | A         | 1          | 0          |
-    +-----------+------------+------------+
-    | B         | 0          | 1          |
-    +-----------+------------+------------+
+    The individuals with different allele counts
+    (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)
+    are assigned into the ``None`` group and, thus, omitted from the analysis.
 
-    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)
-    are assigned the ``None`` group and, thus, omitted from the analysis.
+    :param a_predicate: predicate to test if the variants
+        meet the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants
+        meet the criteria of the second group (named `B` by default).
+    :param names: group names (default ``('A', 'B')``).
     """
     return PolyCountingGenotypePredicate.monoallelic(
         a_predicate=a_predicate,
@@ -241,24 +254,36 @@ def biallelic_predicate(
     names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
-    Get a predicate for binning the individuals into groups,
-    with respect to allele counts of variants selected by `a_predicate` and `b_predicate`.
+    The predicate bins patient into one of the three groups,
+    `AA`, `AB`, and `BB`,
+    based on presence of one or two variant alleles
+    that meet the predicate criteria.
 
-    The predicate bins patient into one of three groups: `AA`, `AB` and `BB`:
+    The number of alleles :math:`count_{A}` and :math:`count_{B}`
+    is computed using `a_predicate` and `b_predicate`
+    and the individual is assigned into a group
+    based on the following table:
+    
+    +-----------+-------------------+-------------------+
+    | Group     | :math:`count_{A}` | :math:`count_{B}` |
+    +===========+===================+===================+
+    | AA        | 2                 | 0                 |
+    +-----------+-------------------+-------------------+
+    | AB        | 1                 | 1                 |
+    +-----------+-------------------+-------------------+
+    | AA        | 0                 | 2                 |
+    +-----------+-------------------+-------------------+
 
-    +-----------+------------------+------------------+
-    | Group     | `A` allele count | `B` allele count |
-    +===========+==================+==================+
-    | AA        | 2                | 0                |
-    +-----------+------------------+------------------+
-    | AB        | 1                | 1                |
-    +-----------+------------------+------------------+
-    | AA        | 0                | 2                |
-    +-----------+------------------+------------------+
+    The individuals with different allele counts
+    (e.g. :math:`count_{A} = 1` and :math:`count_{B} = 2`)
+    are assigned into the ``None`` group and will be, thus,
+    omitted from the analysis.
 
-    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)
-    are assigned the ``None`` group and, thus, omitted from the analysis.
-
+    :param a_predicate: predicate to test if the variants
+        meet the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants
+        meet the criteria of the second group (named `B` by default).
+    :param names: group names (default ``('A', 'B')``).
     """
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
