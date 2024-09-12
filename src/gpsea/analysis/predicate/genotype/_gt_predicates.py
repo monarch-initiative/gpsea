@@ -1,19 +1,18 @@
 import dataclasses
 import typing
+import warnings
 
 from collections import defaultdict
 
 import hpotk
 
-from gpsea.analysis.predicate.genotype._variant import VariantPredicates
 from gpsea.model import Patient, Sex
 
 from .._api import Categorization, PatientCategory
 from ._api import GenotypePolyPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
-
-# TODO: implement __hash__, __eq__ on predicates
+from ._variant import VariantPredicates
 
 
 class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
@@ -313,6 +312,47 @@ def biallelic_predicate(
     )
 
 
+def autosomal_dominant(
+    variant_predicate: typing.Optional[VariantPredicate] = None,
+) -> GenotypePolyPredicate:
+    """
+    Create a predicate that assigns the patient either
+    into homozygous reference or heterozygous
+    group in line with the autosomal dominant mode of inheritance.
+
+    :param variant_predicate: a predicate for choosing the variants for testing
+        or `None` if all variants should be used.
+    """
+    if variant_predicate is None:
+        variant_predicate = VariantPredicates.true()
+
+    return ModeOfInheritancePredicate._from_moi_info(
+        variant_predicate=variant_predicate,
+        mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
+    )
+
+
+def autosomal_recessive(
+    variant_predicate: typing.Optional[VariantPredicate] = None,
+) -> GenotypePolyPredicate:
+    """
+    Create a predicate that assigns the patient either into
+    homozygous reference, heterozygous, or biallelic alternative allele
+    (homozygous alternative or compound heterozygous)
+    group in line with the autosomal recessive mode of inheritance.
+
+    :param variant_predicate: a predicate for choosing the variants for testing
+        or `None` if all variants should be used
+    """
+    if variant_predicate is None:
+        variant_predicate = VariantPredicates.true()
+
+    return ModeOfInheritancePredicate._from_moi_info(
+        variant_predicate=variant_predicate,
+        mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
+    )
+
+
 @dataclasses.dataclass(eq=True, frozen=True)
 class GenotypeGroup:
     allele_count: int
@@ -445,7 +485,7 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
     @staticmethod
     def autosomal_dominant(
         variant_predicate: typing.Optional[VariantPredicate] = None,
-    ) -> "ModeOfInheritancePredicate":
+    ) -> GenotypePolyPredicate:
         """
         Create a predicate that assigns the patient either
         into homozygous reference or heterozygous
@@ -453,18 +493,18 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        if variant_predicate is None:
-            variant_predicate = VariantPredicates.true()
-
-        return ModeOfInheritancePredicate._from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
+        # TODO: remove before 1.0.0
+        warnings.warn(
+            "Use `gpsea.analysis.predicate.genotype.autosomal_dominant` instead",
+            DeprecationWarning, stacklevel=2,
         )
+
+        return autosomal_dominant(variant_predicate)
 
     @staticmethod
     def autosomal_recessive(
         variant_predicate: typing.Optional[VariantPredicate] = None,
-    ) -> "ModeOfInheritancePredicate":
+    ) -> GenotypePolyPredicate:
         """
         Create a predicate that assigns the patient either into
         homozygous reference, heterozygous, or biallelic alternative allele
@@ -473,13 +513,13 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        if variant_predicate is None:
-            variant_predicate = VariantPredicates.true()
-
-        return ModeOfInheritancePredicate._from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
+        # TODO: remove before 1.0.0
+        warnings.warn(
+            "Use `gpsea.analysis.predicate.genotype.autosomal_recessive` instead",
+            DeprecationWarning, stacklevel=2,
         )
+
+        return autosomal_recessive(variant_predicate)
 
     @staticmethod
     def _from_moi_info(
@@ -599,6 +639,12 @@ class SexGenotypePredicate(GenotypePolyPredicate):
         else:
             return None
 
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, SexGenotypePredicate)
+
+    def __hash__(self) -> int:
+        return 31
+
 
 INSTANCE = SexGenotypePredicate()
 
@@ -662,6 +708,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         self._categorizations = tuple(
             sorted(categorizations.values(), key=lambda c: c.category.cat_id)
         )
+        self._hash = hash(tuple(categorizations.items()))
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -686,6 +733,13 @@ class DiagnosisPredicate(GenotypePolyPredicate):
                 return None
 
         return categorization
+    
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, DiagnosisPredicate) \
+            and self._id2cat == value._id2cat
+    
+    def __hash__(self) -> int:
+        return self._hash
 
 
 def diagnosis_predicate(
