@@ -88,6 +88,7 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
+<span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype._variant</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span>
 
 <span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">Categorization</span><span class="p">,</span> <span class="n">PatientCategory</span>
@@ -493,7 +494,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">autosomal_dominant</span><span class="p">(</span>
-        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a predicate that assigns the patient either</span>
@@ -502,6 +503,9 @@
 
 <span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
             <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
             <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_dominant</span><span class="p">(),</span>
@@ -512,7 +516,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">autosomal_recessive</span><span class="p">(</span>
-        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
+        <span class="n">variant_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModeOfInheritancePredicate&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a predicate that assigns the patient either into</span>
@@ -522,6 +526,9 @@
 
 <span class="sd">        :param variant_predicate: a predicate for choosing the variants for testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">variant_predicate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">variant_predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">true</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">_from_moi_info</span><span class="p">(</span>
             <span class="n">variant_predicate</span><span class="o">=</span><span class="n">variant_predicate</span><span class="p">,</span>
             <span class="n">mode_of_inheritance_data</span><span class="o">=</span><span class="n">ModeOfInheritanceInfo</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(),</span>

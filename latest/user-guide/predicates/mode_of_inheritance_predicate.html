@@ -112,8 +112,9 @@
              
   <section id="mode-of-inheritance-predicates">
 <span id="mode-of-inheritance-predicate"></span><h1>Mode of Inheritance Predicates<a class="headerlink" href="#mode-of-inheritance-predicates" title="Link to this heading"></a></h1>
-<p>There are five basic modes of inheritance for single-gene diseases: autosomal dominant, autosomal recessive, X-linked dominant, X-linked recessive, and mitochondrial (See
-<a class="reference external" href="https://www.ncbi.nlm.nih.gov/books/NBK132145/">Understanding Genetics, Appendix B</a>).</p>
+<p>There are five basic modes of inheritance for single-gene diseases: autosomal dominant,
+autosomal recessive, X-linked dominant, X-linked recessive, and mitochondrial
+(See <a class="reference external" href="https://www.ncbi.nlm.nih.gov/books/NBK132145/">Understanding Genetics, Appendix B</a>).</p>
 <p>The <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a>
 assigns the individual into a group based on the number of alleles
 that match a condition specified by a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>.
@@ -122,75 +123,32 @@ the following Mendelian modes of inheritance (MoI):</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Mode of inheritance</p></th>
-<th class="head"><p>Sex</p></th>
 <th class="head"><p>Allele count</p></th>
 <th class="head"><p>Genotype category</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td rowspan="3"><p>Autosomal dominant</p></td>
-<td><p><cite>*</cite></p></td>
 <td><p>0</p></td>
 <td><p><cite>HOM_REF</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
+<tr class="row-odd"><td><p>1</p></td>
 <td><p><cite>HET</cite></p></td>
 </tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
 <tr class="row-odd"><td rowspan="4"><p>Autosomal recessive</p></td>
-<td><p><cite>*</cite></p></td>
 <td><p>0</p></td>
 <td><p><cite>HOM_REF</cite></p></td>
 </tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
+<tr class="row-even"><td><p>1</p></td>
 <td><p><cite>HET</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p>2</p></td>
+<tr class="row-odd"><td><p>2</p></td>
 <td><p><cite>BIALLELIC_ALT</cite></p></td>
 </tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td rowspan="3"><p>X-linked dominant</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-even"><td><p><cite>*</cite></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><cite>*</cite></p></td>
-<td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td rowspan="6"><p>X-linked recessive</p></td>
-<td><p><cite>*</cite></p></td>
-<td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
-</tr>
-<tr class="row-odd"><td rowspan="3"><p><a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Sex.FEMALE" title="gpsea.model.Sex.FEMALE"><code class="xref py py-class docutils literal notranslate"><span class="pre">FEMALE</span></code></a></p></td>
-<td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p><cite>BIALLELIC_ALT</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td rowspan="2"><p><a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Sex.MALE" title="gpsea.model.Sex.MALE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MALE</span></code></a></p></td>
-<td><p>1</p></td>
-<td><p><cite>HEMI</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
 </tbody>
@@ -205,36 +163,47 @@ Then a predicate for the desired MoI can be created by one of
 <ul class="simple">
 <li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant"><code class="xref py py-func docutils literal notranslate"><span class="pre">autosomal_dominant()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-func docutils literal notranslate"><span class="pre">autosomal_recessive()</span></code></a></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">x_dominant()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">x_recessive()</span></code></p></li>
 </ul>
-<p>All constructors take an instance
-of <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> as an argument.</p>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<p>Here we show seting up a predicate for grouping individuals based on
-having a variant that leads to a frameshift or to a stop gain to a fictional transcript <code class="docutils literal notranslate"><span class="pre">NM_1234.5</span></code>
-to test differences between the genotypes of a disease with an autosomal recessive MoI.</p>
-<p>First, we set up a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
-for testing if a variant meets the condition:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_1234.5&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> \
-<span class="gp">... </span>    <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift_or_stop_gain</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;(FRAMESHIFT_VARIANT on NM_1234.5 OR STOP_GAINED on NM_1234.5)&#39;</span>
-</pre></div>
-</div>
-<p>Next, we use <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-class docutils literal notranslate"><span class="pre">autosomal_recessive</span></code></a>
-for assigning a patient into a genotype group:</p>
+<p>By default, the MoI predicates will use <em>all</em> variants recorded in the individual.
+However, a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+can be provided to select a variant subset, if necessary.</p>
+<section id="assign-individuals-into-genotype-groups">
+<h2>Assign individuals into genotype groups<a class="headerlink" href="#assign-individuals-into-genotype-groups" title="Link to this heading"></a></h2>
+<p>Here we show seting up a predicate for grouping individuals for differences
+between genotypes of a disease with an autosomal recessive MoI.</p>
+<p>We use <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive"><code class="xref py py-class docutils literal notranslate"><span class="pre">autosomal_recessive</span></code></a>
+to create the predicate:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">ModeOfInheritancePredicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">is_frameshift_or_stop_gain</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;What is the genotype group: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
 </pre></div>
 </div>
-<p>The <cite>gt_predicate</cite> can be used in downstream analysis, such as in <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>.</p>
+<p>The predicate will use <em>all</em> recorded variants to determine if the individual belongs into
+homozygous reference (<cite>HOM_REF</cite>), heterozygous (<cite>HET</cite>), or biallelic alternative (<cite>BIALLELIC_ALT</cite>)
+category.</p>
+</section>
+<section id="use-a-subset-of-variants-for-choosing-the-genotype-group">
+<h2>Use a subset of variants for choosing the genotype group<a class="headerlink" href="#use-a-subset-of-variants-for-choosing-the-genotype-group" title="Link to this heading"></a></h2>
+<p>To select specific variants, a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+can be registered with the MoI predicate.
+For instance, the following can be done to only consider the variants that lead
+to a missense change on a fictional transcript <code class="docutils literal notranslate"><span class="pre">NM_1234.5</span></code>
+when assigning the genotype group. We set up the variant predicate:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_1234.5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;MISSENSE_VARIANT on NM_1234.5&#39;</span>
+</pre></div>
+</div>
+<p>and we use it to create the MoI predicate:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">ModeOfInheritancePredicate</span><span class="o">.</span><span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">is_missense</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
+<span class="go">&#39;What is the genotype group: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
+</pre></div>
+</div>
 </section>
 </section>
 

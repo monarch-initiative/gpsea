@@ -93,13 +93,14 @@
 
 <span class="sd">    :param predicate: a :class:`VariantPredicate` for selecting the target variants.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: this class should probably be an implementation detail, </span>
+    <span class="c1"># TODO: this class should probably be an implementation detail,</span>
     <span class="c1">#   and not a public member of the package.</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">VariantPredicate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_predicate</span> <span class="o">=</span> <span class="n">predicate</span>
 
 <div class="viewcode-block" id="AlleleCounter.get_question">
