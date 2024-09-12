@@ -189,7 +189,21 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         self._categorizations = tuple(count2cat.values())
         self._a_counter = a_counter
         self._b_counter = b_counter
+        self._hash = self._compute_hash()
     
+    def _compute_hash(self) -> int:
+        hash_value = 17
+
+        self._groups = defaultdict(list)
+        for count, cat in self._count2cat.items():
+            hash_value += 13 * hash(count)
+            hash_value += 13 * hash(cat)
+
+        hash_value += 23 * hash(self._a_counter)
+        hash_value += 23 * hash(self._b_counter)
+
+        return hash_value
+
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
@@ -205,7 +219,14 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         
         return self._count2cat.get(counts, None)
 
-    # TODO: implement __hash__, __eq__
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, PolyCountingGenotypePredicate) \
+            and self._count2cat == value._count2cat \
+            and self._a_counter == value._a_counter \
+            and self._b_counter == value._b_counter
+    
+    def __hash__(self) -> int:
+        return self._hash
 
 
 def monoallelic_predicate(
