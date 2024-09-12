@@ -8,13 +8,14 @@ class AlleleCounter:
 
     :param predicate: a :class:`VariantPredicate` for selecting the target variants.
     """
-    # TODO: this class should probably be an implementation detail, 
+    # TODO: this class should probably be an implementation detail,
     #   and not a public member of the package.
 
     def __init__(
         self,
         predicate: VariantPredicate,
     ):
+        assert isinstance(predicate, VariantPredicate)
         self._predicate = predicate
 
     def get_question(self) -> str:
