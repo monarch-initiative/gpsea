@@ -60,7 +60,7 @@ and we will convert the phenopacket into a :class:`~gpsea.model.Cohort`:
 
 >>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 
 To demonstrate the predicate API, we will use the variant ``1_8358231_8358231_T_C`` that corresponds 
 to a pathogenic variant `VCV000522858.5 <https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/>`_ 
