@@ -19,6 +19,14 @@ class VariantPredicates:
     """
 
     @staticmethod
+    def true() -> VariantPredicate:
+        """
+        Prepare an absolutely inclusive :class:`VariantPredicate` - a predicate that returns `True`
+        for any variant whatsoever.
+        """
+        return AlwaysTrueVariantPredicate.get_instance()
+
+    @staticmethod
     def all(predicates: typing.Iterable[VariantPredicate]) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that returns `True` if ALL `predicates` evaluate to `True`.
@@ -139,6 +147,21 @@ class VariantPredicates:
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.
+
+        .. warning::
+
+            We use 1-based numbering to number the exons,
+            not the usual 0-based numbering of the computer science.
+            Therefore, the first exon of the transcript
+            has ``exon_number==1``, the second exon is ``2``, and so on ...
+
+        .. warning::
+
+            We do not check if the `exon_number` spans
+            beyond the number of exons of the given `transcript_id`!
+            Therefore, ``exon_number==10,000`` will effectively return `False`
+            for *all* variants!!! 😱
+            Well, at least the genome variants of the *Homo sapiens sapiens* taxon...
 
         Args:
             exon: a non-negative `int` with the index of the target exon

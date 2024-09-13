@@ -136,8 +136,8 @@ to test if the variant leads to a frameshift (in this case):
 and then we choose the expected mode of inheritance to test. In case of *TBX5*,
 we expect the autosomal dominant mode of inheritance:
 
->>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
->>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
+>>> from gpsea.analysis.predicate.genotype import autosomal_dominant
+>>> gt_predicate = autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
 'What is the genotype group: HOM_REF, HET'
 

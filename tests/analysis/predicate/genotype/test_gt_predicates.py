@@ -7,9 +7,10 @@ from gpsea.analysis.predicate.genotype import (
     sex_predicate,
     monoallelic_predicate,
     biallelic_predicate,
+    autosomal_dominant,
+    autosomal_recessive,
     VariantPredicates,
     VariantPredicate,
-    ModeOfInheritancePredicate,
 )
 
 
@@ -102,7 +103,30 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_dominant(variant_predicate)
+        predicate = autosomal_dominant(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("adam", "HET"),  # 0/0 & 0/1
+            ("eve", "HET"),  # 0/1 & 0/0
+            ("cain", "HET"),  # 0/1 & 0/0
+        ],
+    )
+    def test_autosomal_dominant__with_default_predicate(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = autosomal_dominant()
 
         categorization = predicate.test(patient)
 
@@ -127,7 +151,32 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_recessive(variant_predicate)
+        predicate = autosomal_recessive(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            # The White family has two variants:
+            ("walt", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("skyler", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("flynn", "BIALLELIC_ALT"),  # 1/1 & 0/0
+            ("holly", "BIALLELIC_ALT"),  # 0/0 & 1/1
+        ],
+    )
+    def test_autosomal_recessive__with_default_predicate(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = autosomal_recessive()
 
         categorization = predicate.test(patient)
 

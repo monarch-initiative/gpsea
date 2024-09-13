@@ -1,5 +1,6 @@
 import dataclasses
 import typing
+import warnings
 
 from collections import defaultdict
 
@@ -11,8 +12,7 @@ from .._api import Categorization, PatientCategory
 from ._api import GenotypePolyPredicate
 from ._api import VariantPredicate
 from ._counter import AlleleCounter
-
-# TODO: implement __hash__, __eq__ on predicates
+from ._variant import VariantPredicates
 
 
 class AlleleCountingGroupsPredicate(GenotypePolyPredicate):
@@ -188,7 +188,21 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         self._categorizations = tuple(count2cat.values())
         self._a_counter = a_counter
         self._b_counter = b_counter
+        self._hash = self._compute_hash()
     
+    def _compute_hash(self) -> int:
+        hash_value = 17
+
+        self._groups = defaultdict(list)
+        for count, cat in self._count2cat.items():
+            hash_value += 13 * hash(count)
+            hash_value += 13 * hash(cat)
+
+        hash_value += 23 * hash(self._a_counter)
+        hash_value += 23 * hash(self._b_counter)
+
+        return hash_value
+
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
@@ -204,7 +218,14 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         
         return self._count2cat.get(counts, None)
 
-    # TODO: implement __hash__, __eq__
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, PolyCountingGenotypePredicate) \
+            and self._count2cat == value._count2cat \
+            and self._a_counter == value._a_counter \
+            and self._b_counter == value._b_counter
+    
+    def __hash__(self) -> int:
+        return self._hash
 
 
 def monoallelic_predicate(
@@ -213,19 +234,32 @@ def monoallelic_predicate(
     names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
+    The predicate bins patient into one of two groups, `A` and `B`,
+    based on presence of *exactly* one allele of a variant
+    that meets the predicate criteria.
+
+    The number of alleles :math:`count_{A}` and :math:`count_{B}`
+    is computed using `a_predicate` and `b_predicate`
+    and the individual is assigned into a group
+    based on the following table:
     
-    The predicate bins patient into one of two groups: `A` and `B`:
+    +-----------+-------------------+-------------------+
+    | Group     | :math:`count_{A}` | :math:`count_{B}` |
+    +===========+===================+===================+
+    | A         | 1                 | 0                 |
+    +-----------+-------------------+-------------------+
+    | B         | 0                 | 1                 |
+    +-----------+-------------------+-------------------+
 
-    +-----------+------------+------------+
-    | Group     | `A` count  | `B` count  |
-    +===========+============+============+
-    | A         | 1          | 0          |
-    +-----------+------------+------------+
-    | B         | 0          | 1          |
-    +-----------+------------+------------+
+    The individuals with different allele counts
+    (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)
+    are assigned into the ``None`` group and, thus, omitted from the analysis.
 
-    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 2`)
-    are assigned the ``None`` group and, thus, omitted from the analysis.
+    :param a_predicate: predicate to test if the variants
+        meet the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants
+        meet the criteria of the second group (named `B` by default).
+    :param names: group names (default ``('A', 'B')``).
     """
     return PolyCountingGenotypePredicate.monoallelic(
         a_predicate=a_predicate,
@@ -240,29 +274,82 @@ def biallelic_predicate(
     names: typing.Tuple[str, str] = ('A', 'B'),
 ) -> GenotypePolyPredicate:
     """
-    Get a predicate for binning the individuals into groups,
-    with respect to allele counts of variants selected by `a_predicate` and `b_predicate`.
+    The predicate bins patient into one of the three groups,
+    `AA`, `AB`, and `BB`,
+    based on presence of one or two variant alleles
+    that meet the predicate criteria.
 
-    The predicate bins patient into one of three groups: `AA`, `AB` and `BB`:
+    The number of alleles :math:`count_{A}` and :math:`count_{B}`
+    is computed using `a_predicate` and `b_predicate`
+    and the individual is assigned into a group
+    based on the following table:
+    
+    +-----------+-------------------+-------------------+
+    | Group     | :math:`count_{A}` | :math:`count_{B}` |
+    +===========+===================+===================+
+    | AA        | 2                 | 0                 |
+    +-----------+-------------------+-------------------+
+    | AB        | 1                 | 1                 |
+    +-----------+-------------------+-------------------+
+    | AA        | 0                 | 2                 |
+    +-----------+-------------------+-------------------+
 
-    +-----------+------------------+------------------+
-    | Group     | `A` allele count | `B` allele count |
-    +===========+==================+==================+
-    | AA        | 2                | 0                |
-    +-----------+------------------+------------------+
-    | AB        | 1                | 1                |
-    +-----------+------------------+------------------+
-    | AA        | 0                | 2                |
-    +-----------+------------------+------------------+
+    The individuals with different allele counts
+    (e.g. :math:`count_{A} = 1` and :math:`count_{B} = 2`)
+    are assigned into the ``None`` group and will be, thus,
+    omitted from the analysis.
 
-    Individuals with different allele counts (e.g. :math:`count_{A} = 0` and :math:`count_{B} = 1`)
-    are assigned the ``None`` group and, thus, omitted from the analysis.
-
+    :param a_predicate: predicate to test if the variants
+        meet the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants
+        meet the criteria of the second group (named `B` by default).
+    :param names: group names (default ``('A', 'B')``).
     """
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
         names=names,
+    )
+
+
+def autosomal_dominant(
+    variant_predicate: typing.Optional[VariantPredicate] = None,
+) -> GenotypePolyPredicate:
+    """
+    Create a predicate that assigns the patient either
+    into homozygous reference or heterozygous
+    group in line with the autosomal dominant mode of inheritance.
+
+    :param variant_predicate: a predicate for choosing the variants for testing
+        or `None` if all variants should be used.
+    """
+    if variant_predicate is None:
+        variant_predicate = VariantPredicates.true()
+
+    return ModeOfInheritancePredicate._from_moi_info(
+        variant_predicate=variant_predicate,
+        mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
+    )
+
+
+def autosomal_recessive(
+    variant_predicate: typing.Optional[VariantPredicate] = None,
+) -> GenotypePolyPredicate:
+    """
+    Create a predicate that assigns the patient either into
+    homozygous reference, heterozygous, or biallelic alternative allele
+    (homozygous alternative or compound heterozygous)
+    group in line with the autosomal recessive mode of inheritance.
+
+    :param variant_predicate: a predicate for choosing the variants for testing
+        or `None` if all variants should be used
+    """
+    if variant_predicate is None:
+        variant_predicate = VariantPredicates.true()
+
+    return ModeOfInheritancePredicate._from_moi_info(
+        variant_predicate=variant_predicate,
+        mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
     )
 
 
@@ -397,8 +484,8 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
     @staticmethod
     def autosomal_dominant(
-        variant_predicate: VariantPredicate,
-    ) -> "ModeOfInheritancePredicate":
+        variant_predicate: typing.Optional[VariantPredicate] = None,
+    ) -> GenotypePolyPredicate:
         """
         Create a predicate that assigns the patient either
         into homozygous reference or heterozygous
@@ -406,15 +493,18 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        return ModeOfInheritancePredicate._from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
+        # TODO: remove before 1.0.0
+        warnings.warn(
+            "Use `gpsea.analysis.predicate.genotype.autosomal_dominant` instead",
+            DeprecationWarning, stacklevel=2,
         )
+
+        return autosomal_dominant(variant_predicate)
 
     @staticmethod
     def autosomal_recessive(
-        variant_predicate: VariantPredicate,
-    ) -> "ModeOfInheritancePredicate":
+        variant_predicate: typing.Optional[VariantPredicate] = None,
+    ) -> GenotypePolyPredicate:
         """
         Create a predicate that assigns the patient either into
         homozygous reference, heterozygous, or biallelic alternative allele
@@ -423,10 +513,13 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
 
         :param variant_predicate: a predicate for choosing the variants for testing.
         """
-        return ModeOfInheritancePredicate._from_moi_info(
-            variant_predicate=variant_predicate,
-            mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
+        # TODO: remove before 1.0.0
+        warnings.warn(
+            "Use `gpsea.analysis.predicate.genotype.autosomal_recessive` instead",
+            DeprecationWarning, stacklevel=2,
         )
+
+        return autosomal_recessive(variant_predicate)
 
     @staticmethod
     def _from_moi_info(
@@ -546,6 +639,12 @@ class SexGenotypePredicate(GenotypePolyPredicate):
         else:
             return None
 
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, SexGenotypePredicate)
+
+    def __hash__(self) -> int:
+        return 31
+
 
 INSTANCE = SexGenotypePredicate()
 
@@ -609,6 +708,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         self._categorizations = tuple(
             sorted(categorizations.values(), key=lambda c: c.category.cat_id)
         )
+        self._hash = hash(tuple(categorizations.items()))
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -633,6 +733,13 @@ class DiagnosisPredicate(GenotypePolyPredicate):
                 return None
 
         return categorization
+    
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, DiagnosisPredicate) \
+            and self._id2cat == value._id2cat
+    
+    def __hash__(self) -> int:
+        return self._hash
 
 
 def diagnosis_predicate(
