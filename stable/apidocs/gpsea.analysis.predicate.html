@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.3.0 documentation</title>
+  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,11 +17,13 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../_static/documentation_options.js?v=6c02275b"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -41,7 +43,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +62,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="gpsea.html">gpsea package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="gpsea.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="gpsea.analysis.html">gpsea.analysis package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gpsea.data.html">gpsea.data package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.model.html">gpsea.model package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.preprocessing.html">gpsea.preprocessing package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.view.html">gpsea.view package</a></li>
@@ -256,11 +257,13 @@ As a rule of thumb, returning <cite>None</cite> will exclude the patient from th
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html">gpsea.analysis.predicate.genotype package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.boolean_predicate"><code class="docutils literal notranslate"><span class="pre">boolean_predicate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.groups_predicate"><code class="docutils literal notranslate"><span class="pre">groups_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.filtering_predicate"><code class="docutils literal notranslate"><span class="pre">filtering_predicate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate"><code class="docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.autosomal_dominant"><code class="docutils literal notranslate"><span class="pre">autosomal_dominant()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.autosomal_recessive"><code class="docutils literal notranslate"><span class="pre">autosomal_recessive()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="docutils literal notranslate"><span class="pre">monoallelic_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate"><code class="docutils literal notranslate"><span class="pre">biallelic_predicate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate"><code class="docutils literal notranslate"><span class="pre">ModeOfInheritancePredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter"><code class="docutils literal notranslate"><span class="pre">AlleleCounter</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate"><code class="docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a></li>
@@ -270,7 +273,7 @@ As a rule of thumb, returning <cite>None</cite> will exclude the patient from th
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html">gpsea.analysis.predicate.phenotype package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate"><code class="docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate"><code class="docutils literal notranslate"><span class="pre">PropagatingPhenotypePredicate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate"><code class="docutils literal notranslate"><span class="pre">HpoPredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate"><code class="docutils literal notranslate"><span class="pre">DiseasePresencePredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypeCategorization"><code class="docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a></li>

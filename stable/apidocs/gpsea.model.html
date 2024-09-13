@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model package &mdash; GPSEA 0.3.0 documentation</title>
+  <title>gpsea.model package &mdash; GPSEA 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,7 +17,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../_static/documentation_options.js?v=6c02275b"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="gpsea.model.genome package" href="gpsea.model.genome.html" />
-    <link rel="prev" title="gpsea.data package" href="gpsea.data.html" /> 
+    <link rel="prev" title="gpsea.analysis.pscore.stats package" href="gpsea.analysis.pscore.stats.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="gpsea.html">gpsea package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="gpsea.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="gpsea.analysis.html">gpsea.analysis package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gpsea.data.html">gpsea.data package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">gpsea.model package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.preprocessing.html">gpsea.preprocessing package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.view.html">gpsea.view package</a></li>
@@ -1237,7 +1236,7 @@ affected by the variant.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gpsea.model.VariantEffect.NMD_TRANSCRIPT_VARIANT">
-<span class="sig-name descname"><span class="pre">NMD_TRANSCRIPT_VARIANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('SO:0001621',)</span></em><a class="headerlink" href="#gpsea.model.VariantEffect.NMD_TRANSCRIPT_VARIANT" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NMD_TRANSCRIPT_VARIANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SO:0001621'</span></em><a class="headerlink" href="#gpsea.model.VariantEffect.NMD_TRANSCRIPT_VARIANT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1304,6 +1303,45 @@ affected by the variant.</p>
 <dt class="sig sig-object py" id="gpsea.model.VariantEffect.SEQUENCE_VARIANT">
 <span class="sig-name descname"><span class="pre">SEQUENCE_VARIANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SO:0001060'</span></em><a class="headerlink" href="#gpsea.model.VariantEffect.SEQUENCE_VARIANT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.VariantEffect.to_display">
+<span class="sig-name descname"><span class="pre">to_display</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_variant_effects.html#VariantEffect.to_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.VariantEffect.to_display" title="Link to this definition"></a></dt>
+<dd><p>Get a concise name of the variant effect that is suitable for showing to humans.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="o">.</span><span class="n">to_display</span><span class="p">()</span>
+<span class="go">&#39;missense&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_5TH_BASE_VARIANT</span><span class="o">.</span><span class="n">to_display</span><span class="p">()</span>
+<span class="go">&#39;splice donor 5th base&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a <cite>str</cite> with the name or <cite>‘n/a’</cite> if the variant effect was not assigned a concise name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.VariantEffect.structural_so_id_to_display">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">structural_so_id_to_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">so_term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_variant_effects.html#VariantEffect.structural_so_id_to_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.VariantEffect.structural_so_id_to_display" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with a concise name for representing a Sequence Ontology (SO) term identifier.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">structural_so_id_to_display</span><span class="p">(</span><span class="s1">&#39;SO:1000029&#39;</span><span class="p">)</span>
+<span class="go">&#39;chromosomal deletion&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>so_term</strong> – a CURIE <cite>str</cite> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code> with the query SO term.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a <cite>str</cite> with the concise name for the SO term or <cite>‘n/a’</cite> if a name has not been assigned yet.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.VariantEffect.curie">
@@ -1649,7 +1687,7 @@ Region: a protein region spanned by the feature.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gpsea.data.html" class="btn btn-neutral float-left" title="gpsea.data package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gpsea.analysis.pscore.stats.html" class="btn btn-neutral float-left" title="gpsea.analysis.pscore.stats package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gpsea.model.genome.html" class="btn btn-neutral float-right" title="gpsea.model.genome package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view package &mdash; GPSEA 0.3.0 documentation</title>
+  <title>gpsea.view package &mdash; GPSEA 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -17,7 +17,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../_static/documentation_options.js?v=6c02275b"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -41,7 +41,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="gpsea.html">gpsea package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="gpsea.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="gpsea.analysis.html">gpsea.analysis package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gpsea.data.html">gpsea.data package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.model.html">gpsea.model package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpsea.preprocessing.html">gpsea.preprocessing package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">gpsea.view package</a></li>
@@ -101,6 +100,35 @@
              
   <section id="module-gpsea.view">
 <span id="gpsea-view-package"></span><h1>gpsea.view package<a class="headerlink" href="#module-gpsea.view" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.view.CohortVariantViewer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.view.</span></span><span class="sig-name descname"><span class="pre">CohortVariantViewer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/view/_cohort_variant_viewer.html#CohortVariantViewer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.CohortVariantViewer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>CohortVariantViewer</cite> creates an HTML report with the cohort variants.</p>
+<p>The report can be either written into an HTML file or displayed in a Jupyter notebook.</p>
+<p>See :ref:show-cohort-variants: for an example usage.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.view.CohortVariantViewer.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Cohort" title="gpsea.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_hgvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/view/_cohort_variant_viewer.html#CohortVariantViewer.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.CohortVariantViewer.process" title="Link to this definition"></a></dt>
+<dd><p>Create an HTML that should be shown with <code class="docutils literal notranslate"><span class="pre">display(HTML(..))</span></code> of the ipython package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cohort</strong> (<a class="reference internal" href="gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><em>Cohort</em></a>) – The cohort being analyzed in the current notebook.</p></li>
+<li><p><strong>only_hgvs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Do not show the transcript ID part of the HGVS annotation, just the annotation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an HTML string with parameterized template for rendering</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.view.CohortViewable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.view.</span></span><span class="sig-name descname"><span class="pre">CohortViewable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_phenotype_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_variant_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/view/_cohort.html#CohortViewable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.CohortViewable" title="Link to this definition"></a></dt>
@@ -303,6 +331,21 @@ or for writing into a standalone HTML file.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.view.summarize_hpo_analysis">
+<span class="sig-prename descclassname"><span class="pre">gpsea.view.</span></span><span class="sig-name descname"><span class="pre">summarize_hpo_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysisResult" title="gpsea.analysis.pcats._impl.HpoTermAnalysisResult"><span class="pre">HpoTermAnalysisResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../_modules/gpsea/view/_phenotype_analysis.html#summarize_hpo_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.summarize_hpo_analysis" title="Link to this definition"></a></dt>
+<dd><p>Create a dataframe with counts, frequencies, and p values for the tested HPO terms.</p>
+<p>The HPO terms that were not tested will <em>not</em> be included in the frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hpo</strong> – HPO data.</p></li>
+<li><p><strong>result</strong> – the HPO term analysis results to show.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">

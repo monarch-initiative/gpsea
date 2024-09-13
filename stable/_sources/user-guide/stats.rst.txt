@@ -102,7 +102,7 @@ with the default cohort creator:
 >>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 >>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 >>> qc_results.summarize()  # doctest: +SKIP
 Validated under none policy
 No errors or warnings were found
@@ -127,7 +127,7 @@ First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
 to test if the variant leads to a frameshift (in this case):
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> tx_id = 'NM_181486.4'
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
 >>> is_frameshift.get_question()
@@ -136,10 +136,10 @@ to test if the variant leads to a frameshift (in this case):
 and then we choose the expected mode of inheritance to test. In case of *TBX5*,
 we expect the autosomal dominant mode of inheritance:
 
->>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
->>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
+>>> from gpsea.analysis.predicate.genotype import autosomal_dominant
+>>> gt_predicate = autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
-'Which genotype group does the patient fit in: HOM_REF, HET'
+'What is the genotype group: HOM_REF, HET'
 
 `gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
 and the patients with one frameshift allele will be assigned into `HET` group.
@@ -230,10 +230,10 @@ We can now execute the analysis:
 >>> len(result.phenotypes)
 260
 >>> result.total_tests
-17
+16
 
 
-Thanks to Phenotype MTC filter, we only tested 17 out of 260 terms.
+Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -251,12 +251,11 @@ Genotype phenotype associations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Last, let's explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR).
-Here we show the top 20 table rows:
+ordered by the corrected p value (Benjamini-Hochberg FDR):
 
->>> from gpsea.analysis.predicate import PatientCategories
->>> summary_df = result.summarize(hpo, PatientCategories.YES)
->>> summary_df.head(20).to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
+>>> from gpsea.view import summarize_hpo_analysis
+>>> summary_df = summarize_hpo_analysis(hpo, result)
+>>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
@@ -270,7 +269,7 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00411`.
+is `~0.00387`.
 
 The table includes all HPO terms of the cohort, including the terms that were not selected for testing
 and thus have no associated p value.
@@ -345,7 +344,7 @@ which we will use to preprocess the cohort
 
 >>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 
 
 resulting in a cohort consisting of 19 individuals

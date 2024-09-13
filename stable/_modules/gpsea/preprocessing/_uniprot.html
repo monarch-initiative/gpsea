@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._uniprot &mdash; GPSEA 0.3.0 documentation</title>
+  <title>gpsea.preprocessing._uniprot &mdash; GPSEA 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../../../_static/documentation_options.js?v=6c02275b"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -95,10 +95,8 @@
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.UniprotProteinMetadataService">[docs]</a>
 <span class="k">class</span> <span class="nc">UniprotProteinMetadataService</span><span class="p">(</span><span class="n">ProteinMetadataService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that creates ProteinMetadata objects from data found with the Uniprot REST API.</span>
-<span class="sd">    More info on the Uniprot REST API here - https://www.uniprot.org/help/programmatic_access</span>
-
-<span class="sd">    Methods:</span>
-<span class="sd">        annotate(protein_id:str): Gets metadata and creates ProteinMetadata for given protein ID</span>
+<span class="sd">    More info on the Uniprot REST API are</span>
+<span class="sd">    in the `Programmatic access &lt;https://www.uniprot.org/help/programmatic_access&gt;`_ section.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -114,8 +112,8 @@
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.UniprotProteinMetadataService.parse_uniprot_json">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parse_uniprot_json</span><span class="p">(</span>
-            <span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
-            <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Try to extract `ProteinMetadata` corresponding to `protein_id` from the Uniprot JSON `payload`.</span>
@@ -131,40 +129,53 @@
         <span class="n">results</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No proteins found for ID </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">. Please verify refseq ID.&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">uni</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">protein_id</span> <span class="k">for</span> <span class="n">uni</span> <span class="ow">in</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;uniProtKBCrossReferences&#39;</span><span class="p">]):</span>
-                <span class="c1"># `protein` has a cross-reference to the `protein_id` of interest</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">protein_name</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;proteinDescription&#39;</span><span class="p">][</span><span class="s1">&#39;recommendedName&#39;</span><span class="p">][</span><span class="s1">&#39;fullName&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">protein_name</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;proteinDescription&#39;</span><span class="p">][</span><span class="s1">&#39;submissionNames&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fullName&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-
-                <span class="n">all_features_list</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]:</span>
-                        <span class="n">feature_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-                        <span class="n">feature_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-                        <span class="n">feature_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
-                        <span class="n">feature_info</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
-                            <span class="n">feature_name</span><span class="p">,</span>
-                            <span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">feature_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">feature_end</span><span class="p">),</span>
-                        <span class="p">)</span>
-                        <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="p">[</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
-                        <span class="n">protein_feature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">feature_info</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">)</span>
-                        <span class="n">all_features_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">protein_feature</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No features for </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">protein_length</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-                <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="n">protein_name</span><span class="p">,</span> <span class="n">all_features_list</span><span class="p">,</span> <span class="n">protein_length</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># In case we get only one result, let&#39;s use it!</span>
+            <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">_extract_metadata</span><span class="p">(</span>
+                <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">uni</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">protein_id</span> <span class="k">for</span> <span class="n">uni</span> <span class="ow">in</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;uniProtKBCrossReferences&#39;</span><span class="p">]):</span>
+                    <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">_extract_metadata</span><span class="p">(</span>
+                        <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">protein</span><span class="p">,</span>
+                    <span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find an entry for </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s1"> in Uniprot response&#39;</span><span class="p">)</span></div>
 
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_extract_metadata</span><span class="p">(</span><span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
+        <span class="c1"># `protein` has a cross-reference to the `protein_id` of interest</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">protein_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;proteinDescription&#39;</span><span class="p">][</span><span class="s1">&#39;recommendedName&#39;</span><span class="p">][</span><span class="s1">&#39;fullName&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">protein_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;proteinDescription&#39;</span><span class="p">][</span><span class="s1">&#39;submissionNames&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fullName&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+
+        <span class="n">all_features_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]:</span>
+                <span class="n">feature_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+                <span class="n">feature_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+                <span class="n">feature_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+                <span class="n">feature_info</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                    <span class="n">feature_name</span><span class="p">,</span>
+                    <span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">feature_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">feature_end</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="p">[</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+                <span class="n">protein_feature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">feature_info</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">)</span>
+                <span class="n">all_features_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">protein_feature</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No features for </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">protein_length</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="n">protein_name</span><span class="p">,</span> <span class="n">all_features_list</span><span class="p">,</span> <span class="n">protein_length</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UniprotProteinMetadataService.annotate">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.UniprotProteinMetadataService.annotate">[docs]</a>
@@ -186,6 +197,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only works with a RefSeq database ID (e.g. NP_037407.4), but we got </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="n">protein_id</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">parse_uniprot_json</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">)</span></div>
 </div>
 

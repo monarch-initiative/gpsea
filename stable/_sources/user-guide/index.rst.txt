@@ -4,7 +4,13 @@
 User guide
 ==========
 
-TODO - write high level overview and bridge to individual sections.
+GPSEA allows users to perform many different kinds of genotype-phenotype correlation (GPCs) analysis. See the :ref:`tutorial` for an introduction.
+In general, the analysis will include steps for data input, exploration of the cohort to assist in generating hypotheses about potential GPCs to test, 
+corresponding choice of genotype and phenotype predicates to perform the test, choice of statistical test, and approach to multiple-testing correction (mtc).
+The pages shown in the table of contents provide more information about each step.
+
+
+
 
 .. toctree::
   :maxdepth: 1
@@ -13,7 +19,6 @@ TODO - write high level overview and bridge to individual sections.
   input-data
   exploratory
   predicates
-  phenotype_predicates
   stats
   mtc
   glossary

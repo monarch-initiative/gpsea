@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.3.0 documentation</title>
+  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../../_static/documentation_options.js?v=e259d695"></script>
+        <script src="../../../../../_static/documentation_options.js?v=6c02275b"></script>
         <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -38,7 +38,7 @@
             GPSEA
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
@@ -181,15 +181,17 @@
 
 
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate">[docs]</a>
-<span class="k">class</span> <span class="nc">PropagatingPhenotypePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
+<div class="viewcode-block" id="HpoPredicate">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate">[docs]</a>
+<span class="k">class</span> <span class="nc">HpoPredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `PropagatingPhenotypePredicate` tests if a patient is annotated with an HPO term.</span>
+<span class="sd">    `HpoPredicate` tests if a patient is annotated with an HPO term.</span>
 
 <span class="sd">    Note, `query` must be a term of the provided `hpo`!</span>
 
-<span class="sd">    :param hpo: HPO object</span>
+<span class="sd">    See :ref:`hpo-predicate` section for an example usage.</span>
+
+<span class="sd">    :param hpo: HPO ontology</span>
 <span class="sd">    :param query: the HPO term to test</span>
 <span class="sd">    :param missing_implies_phenotype_excluded: `True` if lack of an explicit annotation implies term&#39;s absence`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -222,8 +224,8 @@
         <span class="c1"># Some tests depend on the order of `self._categorizations`.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_question_base">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_question_base">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.get_question_base">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_question_base">[docs]</a>
     <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> present in the patient&quot;</span></div>
 
@@ -236,16 +238,16 @@
     <span class="k">def</span> <span class="nf">present_phenotype_categorization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span>
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.get_categorizations">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.get_categorizations">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.get_categorizations">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_categorizations">[docs]</a>
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span></div>
 
 
-<div class="viewcode-block" id="PropagatingPhenotypePredicate.test">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PropagatingPhenotypePredicate.test">[docs]</a>
+<div class="viewcode-block" id="HpoPredicate.test">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.test">[docs]</a>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
@@ -295,8 +297,17 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">HpoPredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_query</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_implies_phenotype_excluded</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PropagatingPhenotypeBooleanPredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;HpoPredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 
 
@@ -373,6 +384,13 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_excluded</span></div>
 
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DiseasePresencePredicate</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_query</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,))</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;DiseasePresencePredicate(query=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2">)&quot;</span></div>
