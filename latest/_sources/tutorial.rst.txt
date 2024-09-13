@@ -84,7 +84,7 @@ a :class:`~gpsea.model.Cohort`:
 ...     phenopackets=phenopackets,
 ...     cohort_creator=cohort_creator,
 ... )
-Patients Created: ...
+Individuals Processed: ...
 
 and we will check that there are no Q/C issues:
 

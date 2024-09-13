@@ -183,7 +183,7 @@ with the default cohort creator:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span><span class="p">,</span> <span class="n">load_phenopackets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
-<span class="go">Patients Created: ...</span>
+<span class="go">Individuals Processed: ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
 <span class="go">Validated under none policy</span>
 <span class="go">No errors or warnings were found</span>
@@ -638,7 +638,7 @@ as described in the <a class="reference internal" href="input-data.html#input-da
 <p>which we will use to preprocess the cohort</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopackets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
-<span class="go">Patients Created: ...</span>
+<span class="go">Individuals Processed: ...</span>
 </pre></div>
 </div>
 <p>resulting in a cohort consisting of 19 individuals</p>

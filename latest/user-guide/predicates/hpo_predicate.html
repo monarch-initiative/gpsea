@@ -165,7 +165,7 @@ function cuts down the tedium.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span><span class="p">,</span> <span class="n">load_phenopackets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
-<span class="go">Patients Created: ...</span>
+<span class="go">Individuals Processed: ...</span>
 </pre></div>
 </div>
 <p>we can create HPO predicates for testing all 260 HPO terms used in the cohort</p>
