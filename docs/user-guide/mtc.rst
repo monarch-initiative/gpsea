@@ -192,62 +192,96 @@ We use static constructor :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default
 for creating :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
 The constructor takes a threshold as an argument (e.g. 20% in the example above) 
 and the method's logic is made up of 8 individual heuristics 
-designed to skip testing the HPO terms that are unlikely to yield significant or interesting results:
+designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.
 
-#. Skip terms that occur very rarely
-    The ``term_frequency_threshold`` determines the mininum proportion of individuals 
-    with direct or indirect annotation by the HPO term to test. 
-    We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE), and we only retain a term for testing 
-    if the proportion of individuals in at least one genotype group is greater than or equal to ``term_frequency_threshold``. 
-    
-    This is because of our assumption that even if there is statistical significance, 
-    if a term is only seen in (for example) 7% of individuals in the MISSENSE group and 2% in the not-MISSENSE group, 
-    the term is unlikely to be of great interest because it is rare.
 
-#. Skip terms if no cell has more than one count
-    In a related heuristic, we skip terms if no genotype group has more than one count. 
-    This is not completely redundant with the previous condition, 
-    because some terms may have a small number of total observations.
+`HMF01` - Skip terms that occur very rarely
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. Skip terms if all counts are identical to counts for a child term
-    Let's say a term such as 
-    `Posterior polar cataract (HP:0001115) <https://hpo.jax.org/browse/term/HP:0001115>`_ 
-    was observed in 7 of 11 individuals with MISSENSE variants
-    and in 3 of 8 individuals with NONSENSE variants. 
-    If we find the same patient counts (7 of 11 and 3 of 8) in the parent term 
-    `Polar cataract HP:0010696 <https://hpo.jax.org/browse/term/HP:0010696>`_, 
-    then we choose to not test the parent term. 
-    
-    This is because the more specific an HPO term is, 
-    the more information it has (the more interesting the correlation would be if it exists), 
-    and the result of the Fisher Exact test for *Polar cataract* 
-    would be exactly the same as for *Posterior polar cataract*.
+The ``term_frequency_threshold`` determines the mininum proportion of individuals
+with direct or indirect annotation by the HPO term to test.
+We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE),
+and we only retain a term for testing if the proportion of individuals
+in at least one genotype group is greater than
+or equal to ``term_frequency_threshold``.
+This is because of our assumption that even if there is statistical significance,
+if a term is only seen in (for example) 7% of individuals
+in the MISSENSE group and 2% in the not-MISSENSE group,
+the term is unlikely to be of great interest because it is rare.
 
-#. Skip terms if genotypes have same HPO proportions
-    If both (or all) of the genotype groups have the same proportion of individuals 
-    observed to be annotated to an HPO term, e.g., both are 50%, then skip the term, 
-    because it is not possible that the Fisher exact test will return a significant result.
 
-#. Skip terms if there are no HPO observations in a group
-    If one of the genotype groups has neither observed nor excluded observations for an HPO term, skip it.
+`HMF02` - Skip terms if no genotype group has more than one count
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. Skipping terms that are not descendents of `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_
-    The HPO has a number of other branches that describe modes of inheritance, 
-    past medical history, and clinical modifiers. 
-    We do not think it makes much sense to test for enrichment of these terms, 
-    and so they are filtered out.
+In a related heuristic, we skip terms if no genotype group has more 
+than one count. This is not completely redundant with the previous condition,
+because some terms may have a small number of total observations.
 
-#. Skipping "general" level terms 
-    All the direct children of the root phenotype term 
-    `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_ are skipped, 
-    because of the assumption that if there is a valid signal, 
-    it will derive from one of the more specific descendents. 
-    
-    For instance, `Abnormality of the nervous system (HP:0000707) <https://hpo.jax.org/browse/term/HP:0000707>`_
-    is a child of *Phenotypic abnormality*, and this assumption implies 
-    that if there is a signal from the nervous system, 
-    it will lead to at least one of the descendents of 
-    *Abnormality of the nervous system* being significant.
 
-    See :ref:`general-hpo-terms` section for details.
+`HMF03` - Skip terms if all counts are identical to counts for a child term
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Let's say a term such as    
+`Posterior polar cataract (HP:0001115) <https://hpo.jax.org/browse/term/HP:0001115>`_
+was observed in 7 of 11 individuals with MISSENSE variants
+and in 3 of 8 individuals with NONSENSE variants.
+If we find the same patient counts (7 of 11 and 3 of 8) in the parent term
+`Polar cataract HP:0010696 <https://hpo.jax.org/browse/term/HP:0010696>`_,
+then we choose to not test the parent term.
+                                                                                         
+This is because the more specific an HPO term is,
+the more information it has (the more interesting the correlation would be if it exists),
+and the result of a test, such as the Fisher Exact test, would be exactly the same
+for *Polar cataract* as for *Posterior polar cataract*.
+
+
+`HMF04` - Skip terms if genotypes have same HPO proportions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If both (or all) of the genotype groups have the same proportion of individuals
+observed to be annotated to an HPO term, e.g., both are 50%, then skip the term,
+because it is not possible that the Fisher exact test will return a significant result.
+
+
+`HMF05` - Skip term if one of the genotype groups has neither observed nor excluded observations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Skip terms if there are no HPO observations in a group.
+
+
+`HMF06` - Skip term if underpowered for 2x2 or 2x3 analysis
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the individuals are binned into 2 phenotype groups and 2 genotype groups (2x2)
+and the total count of patients in all genotype-phenotype groups is less than 7,
+or into 2 phenotype groups and 3 genotype groups (2x3) and the total count of patients
+is less than 6, then there is a lack even of the nominal statistical power
+and the counts can never be significant.
+
+
+`HMF07` - Skipping terms that are not descendents of *Phenotypic abnormality*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The HPO has a number of other branches that describe modes of inheritance,
+past medical history, and clinical modifiers.
+We do not think it makes much sense to test for enrichment of these terms,
+so, all terms that are not descendants of
+`Phenotypic abnormality <https://hpo.jax.org/browse/term/HP:0000118>`_ are filtered out.
+
+
+`HMF08` - Skipping "general" level terms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All the direct children of the root phenotype term
+`Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_
+are skipped, because of the assumption that if there is a valid signal, 
+it will derive from one of the more specific descendents.
+
+For instance,
+`Abnormality of the nervous system <https://hpo.jax.org/browse/term/HP:0000707>`_
+(HP:0000707) is a child of *Phenotypic abnormality*, and this assumption implies
+that if there is a signal from the nervous system,
+it will lead to at least one of the descendents of
+*Abnormality of the nervous system* being significant.
+
+See :ref:`general-hpo-terms` section for details.

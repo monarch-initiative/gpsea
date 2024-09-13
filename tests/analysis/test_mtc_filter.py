@@ -1,4 +1,3 @@
-from itertools import count
 import typing
 
 import hpotk
@@ -8,7 +7,7 @@ import pytest
 
 from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
 from gpsea.analysis.pcats import apply_predicates_on_patients
 from gpsea.model import Cohort
 
@@ -55,7 +54,7 @@ class TestHpoMtcFilter:
         For the purpose of testing counts, let's pretend the counts
         were created by this predicate.
         """
-        return PropagatingPhenotypePredicate(
+        return HpoPredicate(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
             missing_implies_phenotype_excluded=False,
@@ -68,8 +67,8 @@ class TestHpoMtcFilter:
         ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
     ):
         values = np.array(counts).reshape((2, 2))
-        index = pd.Index(gt_predicate.get_categories())
-        columns = pd.Index(ph_predicate.get_categories())
+        index = pd.Index(ph_predicate.get_categories())
+        columns = pd.Index(gt_predicate.get_categories())
         return pd.DataFrame(data=values, index=index, columns=columns)
 
     @pytest.mark.parametrize(
@@ -83,7 +82,7 @@ class TestHpoMtcFilter:
     )
     def test_one_genotype_has_zero_hpo_observations(
         self,
-        counts: typing.Tuple[int],
+        counts: typing.Sequence[int],
         expected: bool,
         gt_predicate: GenotypePolyPredicate,
         ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
@@ -201,7 +200,7 @@ class TestHpoMtcFilter:
         reasons = [r.reason for r in mtc_report]
         assert reasons == [
             None, None,
-            'Skipping term because all genotypes have same HPO observed proportions',
+            'Skipping term with less than 7 observations (not powered for 2x2)',
             None, None,
         ]
 
@@ -264,7 +263,7 @@ class TestHpoMtcFilter:
             for i, p
             in enumerate(suox_pheno_predicates)
         }
-        # Ectopia lentis HP:0001083  (6 9  1 2), freqs are 6/15=0.4 and 1/3=0.33
+        # Ectopia lentis HP:0001083  (1 2  3 1), freqs are 1/4=0.25 and 3/4=0.75
         idx = curie2idx["HP:0001083"]
         ectopia = patient_counts[idx]
         ectopia_predicate = suox_pheno_predicates[idx]
@@ -272,9 +271,9 @@ class TestHpoMtcFilter:
             ectopia,
             ph_predicate=ectopia_predicate,
         )
-        assert max_f == pytest.approx(0.4, abs=EPSILON)
+        assert max_f == pytest.approx(0.75, abs=EPSILON)
         
-        # Seizure HP:0001250 (17 7 11 0), freqs are 17/24=0.7083 and 11/11=1
+        # Seizure HP:0001250 (11 5 0 1), freqs are 11/11=1.0 and 5/6=0.8333333
         idx = curie2idx["HP:0001250"]
         seizure = patient_counts[idx]
         seizure_predicate = suox_pheno_predicates[idx]
@@ -284,7 +283,7 @@ class TestHpoMtcFilter:
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
         
-        # Sulfocysteinuria HP:0032350 (11 0 2 0), freqs are both 1
+        # Sulfocysteinuria HP:0032350 (2 3 0 0), freqs are both 1
         idx = curie2idx["HP:0032350"]
         sulfocysteinuria = patient_counts[idx]
         sulfocysteinuria_predicate = suox_pheno_predicates[idx]
@@ -294,7 +293,7 @@ class TestHpoMtcFilter:
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
         
-        # Neurodevelopmental delay HP:0012758 (4 13 4 4), freqs are 4/17 = 0.235 and 4/8=0.5
+        # Neurodevelopmental delay HP:0012758 (4 0 4 5), freqs are 4/8 = 0.5 and 0/5=0.0
         idx = curie2idx["HP:0012758"]
         ndelay = patient_counts[idx]
         ndelay_predicate = suox_pheno_predicates[idx]
@@ -304,7 +303,7 @@ class TestHpoMtcFilter:
         )
         assert max_f == pytest.approx(0.5, abs=EPSILON)
         
-        # Hypertonia HP:0001276 (7 9 4 3) fresa are 7/16=0.4375 and 4/7=0.5714
+        # Hypertonia HP:0001276 (4 2 3 3) freqs are 4/7=0.4375 and 2/5=0.5714
         idx = curie2idx["HP:0001276"]
         hypertonia = patient_counts[idx]
         hypertonia_predicate = suox_pheno_predicates[idx]

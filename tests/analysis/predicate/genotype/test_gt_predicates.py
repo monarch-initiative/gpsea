@@ -1,16 +1,16 @@
-import typing
-
 import pytest
 
 from gpsea.model import *
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
-    filtering_predicate,
     sex_predicate,
+    monoallelic_predicate,
+    biallelic_predicate,
+    autosomal_dominant,
+    autosomal_recessive,
     VariantPredicates,
     VariantPredicate,
-    ModeOfInheritancePredicate,
 )
 
 
@@ -103,7 +103,30 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_dominant(variant_predicate)
+        predicate = autosomal_dominant(variant_predicate)
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("adam", "HET"),  # 0/0 & 0/1
+            ("eve", "HET"),  # 0/1 & 0/0
+            ("cain", "HET"),  # 0/1 & 0/0
+        ],
+    )
+    def test_autosomal_dominant__with_default_predicate(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = autosomal_dominant()
 
         categorization = predicate.test(patient)
 
@@ -128,7 +151,7 @@ class TestModeOfInheritancePredicate:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.autosomal_recessive(variant_predicate)
+        predicate = autosomal_recessive(variant_predicate)
 
         categorization = predicate.test(patient)
 
@@ -139,45 +162,21 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "HOM_REF"),
-            ("eve", "HET"),
-            ("cain", "HET"),
+            # The White family has two variants:
+            ("walt", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("skyler", "BIALLELIC_ALT"),  # 0/1 & 0/1
+            ("flynn", "BIALLELIC_ALT"),  # 1/1 & 0/0
+            ("holly", "BIALLELIC_ALT"),  # 0/0 & 1/1
         ],
     )
-    def test_x_dominant(
+    def test_autosomal_recessive__with_default_predicate(
         self,
         patient_name: str,
         name: str,
-        variant_predicate: VariantPredicate,
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.x_dominant(variant_predicate)
-
-        categorization = predicate.test(patient)
-
-        assert categorization is not None
-
-        assert categorization.category.name == name
-
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            ("anakin", "HOM_REF"),
-            ("padme", "HET"),
-            ("luke", "HEMI"),
-            ("leia", "HET"),
-        ],
-    )
-    def test_x_recessive(
-        self,
-        patient_name: str,
-        name: str,
-        variant_predicate: VariantPredicate,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = ModeOfInheritancePredicate.x_recessive(variant_predicate)
+        predicate = autosomal_recessive()
 
         categorization = predicate.test(patient)
 
@@ -186,84 +185,76 @@ class TestModeOfInheritancePredicate:
         assert categorization.category.name == name
 
 
-class TestFilteringPredicate:
-
-    @pytest.fixture(scope="class")
-    def x_recessive_gt_predicate(self) -> GenotypePolyPredicate:
-        affects_suox = VariantPredicates.gene("SUOX")
-        return ModeOfInheritancePredicate.x_recessive(
-            variant_predicate=affects_suox,
-        )
+class TestAllelePredicates:
 
     @pytest.mark.parametrize(
-        "indices, expected",
+        "individual_name,expected_name",
         [
-            ((0, 1), 2),
-            ((1, 0), 2),
-            ((1, 2), 2),
+            ("adam", "B"),  # 0/0 & 0/1
+            ("eve", "A"),  # 0/1 & 0/0
+            ("cain", "A"),  # 0/1 & 0/0
         ],
     )
-    def test_filtering_predicate(
+    def test_monoallelic_predicate_ad_family(
         self,
-        indices: typing.Sequence[int],
-        expected: int,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
+        individual_name: str,
+        expected_name: str,
+        request: pytest.FixtureRequest,
     ):
-        cats = x_recessive_gt_predicate.get_categorizations()
-        targets = [cats[i] for i in indices]
-        predicate = filtering_predicate(
-            predicate=x_recessive_gt_predicate,
-            targets=targets,
-        )
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
+        individual = request.getfixturevalue(individual_name)
 
-        actual = len(predicate.get_categorizations())
+        actual_cat = gt_predicate.test(individual)
 
-        assert actual == expected
+        assert actual_cat is not None
+        assert actual_cat.category.name == expected_name
 
-    def test_filtering_predicate__explodes_when_not_subsetting(
+    def test_monoallelic_predicate__general_stuff(
         self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=x_recessive_gt_predicate.get_categorizations(),
-            )
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        
+        gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
+        
+        assert gt_predicate.display_question() == 'Allele group: A, B'
 
-        assert (
-            ve.value.args[0]
-            == "It makes no sense to subset the a predicate with 4 categorizations with the same number (4) of targets"
-        )
-
-    def test_filtering_predicate__explodes_when_using_random_junk(
+    @pytest.mark.parametrize(
+        "individual_name,expected_name",
+        [
+            ("walt", "A/B"),  # 0/1 & 0/1
+            ("skyler", "A/B"),  # 0/1 & 0/1
+            ("flynn", "A/A"),  # 1/1 & 0/0
+            ("holly", "B/B"),  # 0/0 & 1/1
+        ],
+    )
+    def test_biallelic_predicate(
         self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
+        individual_name: str,
+        expected_name: str,
+        request: pytest.FixtureRequest,
     ):
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=(0, 1),
-            )
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        gt_predicate = biallelic_predicate(is_missense, is_synonymous)
+        individual = request.getfixturevalue(individual_name)
 
-        assert (
-            ve.value.args[0]
-            == "The targets at following indices are not categorizations: [0, 1]"
-        )
+        actual_cat = gt_predicate.test(individual)
 
-    def test_filtering_predicate__explodes_when_using_one_category(
+        assert actual_cat is not None
+        assert actual_cat.category.name == expected_name
+
+    def test_biallelic_predicate__general_stuff(
         self,
-        x_recessive_gt_predicate: GenotypePolyPredicate,
     ):
-        with pytest.raises(ValueError) as ve:
-            filtering_predicate(
-                predicate=x_recessive_gt_predicate,
-                targets=(x_recessive_gt_predicate.get_categorizations()[0],),
-            )
-
-        assert (
-            ve.value.args[0]
-            == "At least 2 target categorizations must be provided but got 1"
-        )
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        
+        gt_predicate = biallelic_predicate(is_missense, is_synonymous)
+        
+        assert gt_predicate.display_question() == 'Allele group: A/A, A/B, B/B'
 
 
 class TestSexPredicate:

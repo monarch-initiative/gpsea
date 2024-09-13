@@ -7,6 +7,7 @@ import pandas as pd
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.predicate import PatientCategories
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
+from gpsea.analysis.predicate.phenotype import HpoPredicate
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.view import MtcStatsViewer
 
@@ -16,12 +17,19 @@ class TestStatsViewable:
     @pytest.fixture(scope='class')
     def hpo_term_analysis_result(
         self,
+        hpo: hpotk.MinimalOntology,
         suox_gt_predicate: GenotypePolyPredicate,
     ) -> HpoTermAnalysisResult:
         return HpoTermAnalysisResult(
-            phenotypes=(
-                hpotk.TermId.from_curie('HP:0001166'),  # Arachnodactyly
-                hpotk.TermId.from_curie('HP:0001250'),  # Seizure
+            pheno_predicates=(
+                HpoPredicate(
+                    hpo=hpo,
+                    query=hpotk.TermId.from_curie('HP:0001166'),  # Arachnodactyly
+                ),
+                HpoPredicate(
+                    hpo=hpo,
+                    query=hpotk.TermId.from_curie('HP:0001250'),  # Seizure
+                ),
             ),
             n_usable=(40, 20),
             all_counts=(
@@ -41,7 +49,7 @@ class TestStatsViewable:
             gt_predicate=suox_gt_predicate,
             mtc_filter_name='Random MTC filter',
             mtc_filter_results=(
-                PhenotypeMtcResult.fail("Not too interesting"),
+                PhenotypeMtcResult.fail("RMF01", "Not too interesting"),
                 PhenotypeMtcResult.ok(),
             ),
             mtc_name='fdr_bh',

@@ -10,10 +10,41 @@ from gpsea.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate
 
 
+class AlwaysTrueVariantPredicate(VariantPredicate):
+    """
+    `AlwaysTrueVariantPredicate` returns `True` for any variant.
+    """
+
+    @staticmethod
+    def get_instance() -> "AlwaysTrueVariantPredicate":
+        return ALWAYS_TRUE
+
+    def get_question(self) -> str:
+        return ""
+
+    def test(self, variant: Variant) -> bool:
+        return True
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AlwaysTrueVariantPredicate)
+    
+    def __hash__(self) -> int:
+        return 17
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return 'AlwaysTrueVariantPredicate()'
+
+
+ALWAYS_TRUE = AlwaysTrueVariantPredicate()
+
+
 class VariantEffectPredicate(VariantPredicate):
     """
     `VariantEffectPredicate` is a `VariantPredicate` that sets up testing
-    for a specific `VariantEffect` on a given transcript ID. 
+    for a specific `VariantEffect` on a given transcript ID.
     
     Args:
         effect (VariantEffect): the variant effect to search for
@@ -28,16 +59,6 @@ class VariantEffectPredicate(VariantPredicate):
         return f'{self._effect.name} on {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
-        """Tests if the `Variant` causes the specified `VariantEffect`
-        on the given transcript. 
-
-        Args:
-            variant (Variant): a 
-
-        Returns:
-            bool: _description_
-        """
-        
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
         if tx_anno is None:
             return False
@@ -98,7 +119,7 @@ class VariantKeyPredicate(VariantPredicate):
 
 class VariantGenePredicate(VariantPredicate):
     """
-    `VariantGenePredicate` tests if the variant 
+    `VariantGenePredicate` tests if the variant
     is annotated to affect a gene denoted by a `symbol`.
 
     Args:
@@ -134,7 +155,7 @@ class VariantGenePredicate(VariantPredicate):
 
 class VariantTranscriptPredicate(VariantPredicate):
     """
-    `VariantTranscriptPredicate` tests if the variant 
+    `VariantTranscriptPredicate` tests if the variant
     is annotated to affect a transcript with `tx_id` accession.
 
     Args:
@@ -170,24 +191,23 @@ class VariantTranscriptPredicate(VariantPredicate):
     
 class VariantExonPredicate(VariantPredicate):
     """
-    `VariantExonPredicate` tests if the variant affects 
+    `VariantExonPredicate` tests if the variant affects
     *n*-th exon of the transcript of interest.
 
     .. warning::
 
-      We use 1-based numbering to number the exons, 
+      We use 1-based numbering to number the exons,
       not the usual 0-based numbering of the computer science.
-      Therefore, the first exon of the transcript 
+      Therefore, the first exon of the transcript
       has ``exon_number==1``, the second exon is ``2``, and so on ...
 
     .. warning::
 
-      We do not check if the `exon_number` spans 
+      We do not check if the `exon_number` spans
       beyond the number of exons of the given `transcript_id`!
-      Therefore, ``exon_number==10,000`` will effectively 
-      return :attr:`GenotypeBooleanPredicate.FALSE`
-      for *all* patients!!! 😱
-      Well, at least the patients of the *Homo sapiens sapiens* taxon...
+      Therefore, ``exon_number==10,000`` will effectively
+      return `False` for *all* variants!!! 😱
+      Well, at least the genomic variants of the *Homo sapiens sapiens* taxon...
 
     :param exon: a positive `int` of the target exon
     :param tx_id: the accession of the transcript of interest, e.g. `NM_123456.7`
@@ -195,10 +215,12 @@ class VariantExonPredicate(VariantPredicate):
     
     def __init__(
         self,
-        exon: int, 
+        exon: int,
         tx_id: str,
     ):
+        assert isinstance(exon, int) and exon > 0, '`exon` must be a positive `int`'
         self._exon = exon
+        assert isinstance(tx_id, str)
         self._tx_id = tx_id
         
     def get_question(self) -> str:
@@ -337,20 +359,20 @@ class StructuralTypePredicate(VariantPredicate):
 
 
 def _decode_operator(op: str) -> typing.Callable[[int, int], bool]:
-        if op == '<':
-            return operator.lt
-        elif op == '<=':
-            return operator.le
-        elif op == '==':
-            return operator.eq
-        elif op == '!=':
-            return operator.ne
-        elif op == '>=':
-            return operator.ge
-        elif op == '>':
-            return operator.gt
-        else:
-            raise ValueError(f'Unsupported operator {op}')
+    if op == '<':
+        return operator.lt
+    elif op == '<=':
+        return operator.le
+    elif op == '==':
+        return operator.eq
+    elif op == '!=':
+        return operator.ne
+    elif op == '>=':
+        return operator.ge
+    elif op == '>':
+        return operator.gt
+    else:
+        raise ValueError(f'Unsupported operator {op}')
 
 
 class ChangeLengthPredicate(VariantPredicate):
@@ -394,7 +416,7 @@ class ChangeLengthPredicate(VariantPredicate):
 
 class RefAlleleLengthPredicate(VariantPredicate):
     """
-    `RefAlleleLengthPredicate` tests if the length of the variant's reference allele 
+    `RefAlleleLengthPredicate` tests if the length of the variant's reference allele
     is greater than, equal, or less than certain value.
     """
 
@@ -455,7 +477,8 @@ class ProteinRegionPredicate(VariantPredicate):
         self._tx_id = tx_id
         
     def get_question(self) -> str:
-        return f'variant affects aminoacid(s) between {self._region.start} and {self._region.end} on protein encoded by transcript {self._tx_id}'
+        return f'variant affects aminoacid(s) between {self._region.start} and {self._region.end} ' \
+            f'on protein encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
@@ -494,9 +517,9 @@ class ProteinFeatureTypePredicate(VariantPredicate):
     """
     
     def __init__(
-        self, 
-        feature_type: FeatureType, 
-        tx_id: str, 
+        self,
+        feature_type: FeatureType,
+        tx_id: str,
         protein_metadata_service: ProteinMetadataService,
     ):
         self._feature_type = feature_type
@@ -504,7 +527,8 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         self._prot_service = protein_metadata_service
         
     def get_question(self) -> str:
-        return f'variant affects {self._feature_type.name} feature type on the protein encoded by transcript {self._tx_id}'
+        return f'variant affects {self._feature_type.name} feature type on the protein ' \
+            f'encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
@@ -519,7 +543,7 @@ class ProteinFeatureTypePredicate(VariantPredicate):
             return False
         
         protein_meta = self._prot_service.annotate(protein_id)
-        for feat in protein_meta.protein_features:    
+        for feat in protein_meta.protein_features:
             if feat.feature_type == self._feature_type and location.overlaps_with(feat.info.region):
                 return True
         return False
@@ -538,7 +562,11 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProteinFeatureTypePredicate(feature_type={self._feature_type}, tx_id={self._tx_id}, protein_metadata_service={self._prot_service})'
+        return 'ProteinFeatureTypePredicate(' \
+            f'feature_type={self._feature_type}, ' \
+            f'tx_id={self._tx_id}, ' \
+            f'protein_metadata_service={self._prot_service}' \
+            ')'
 
 
 class ProteinFeaturePredicate(VariantPredicate):
@@ -574,7 +602,7 @@ class ProteinFeaturePredicate(VariantPredicate):
             return False
 
         protein = self._prot_service.annotate(protein_id)
-        for feat in protein.protein_features:    
+        for feat in protein.protein_features:
             if feat.info.name == self._feature_name and location.overlaps_with(feat.info.region):
                 return True
         return False
@@ -593,4 +621,7 @@ class ProteinFeaturePredicate(VariantPredicate):
         return repr(self)
 
     def __repr__(self):
-        return f'ProteinFeaturePredicate(feature_name={self._feature_name}, tx_id={self._tx_id}, protein_metadata_service={self._prot_service})'
+        return f'ProteinFeaturePredicate(' \
+            f'feature_name={self._feature_name}, ' \
+            f'tx_id={self._tx_id}, ' \
+            f'protein_metadata_service={self._prot_service})'

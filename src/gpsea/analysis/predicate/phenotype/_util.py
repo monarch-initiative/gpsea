@@ -4,7 +4,7 @@ from collections import Counter
 
 import hpotk
 
-from ._pheno import PhenotypePolyPredicate, PropagatingPhenotypePredicate
+from ._pheno import PhenotypePolyPredicate, HpoPredicate
 
 from gpsea.model import Patient
 
@@ -26,7 +26,7 @@ def prepare_predicates_for_terms_of_interest(
         (either directly or indirectly) for the term to be included in the analysis.
     """
     return tuple(
-        PropagatingPhenotypePredicate(
+        HpoPredicate(
             hpo=hpo,
             query=term,
             missing_implies_phenotype_excluded=missing_implies_excluded,

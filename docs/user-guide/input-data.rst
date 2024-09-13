@@ -80,7 +80,7 @@ loader function:
 
 >>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 >>> len(cohort)
 19
 
