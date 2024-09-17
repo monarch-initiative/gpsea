@@ -191,6 +191,7 @@ def patient_w_missense(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(missense_variant,),
     )
@@ -205,6 +206,7 @@ def patient_w_frameshift(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(frameshift_variant,),
     )
@@ -331,6 +333,7 @@ def adam(
         adam_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             genesis_missense_mutation,
@@ -354,6 +357,7 @@ def eve(
         eve_label,
         sex=Sex.FEMALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             genesis_missense_mutation,
@@ -377,6 +381,7 @@ def cain(
         cain_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             genesis_missense_mutation,
@@ -511,6 +516,7 @@ def walt(
         walt_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             white_missense_mutation,
@@ -534,6 +540,7 @@ def skyler(
         skyler_label,
         sex=Sex.FEMALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             white_missense_mutation,
@@ -557,6 +564,7 @@ def flynn(
         flynn_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             white_missense_mutation,
@@ -580,6 +588,7 @@ def holly(
         holly_label,
         sex=Sex.FEMALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(
             white_missense_mutation,
@@ -663,6 +672,7 @@ def anakin(
         anakin_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(skywalker_mutation,),
     )
@@ -682,6 +692,7 @@ def padme(
         padme_label,
         sex=Sex.FEMALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(skywalker_mutation,),
     )
@@ -701,6 +712,7 @@ def luke(
         luke_label,
         sex=Sex.MALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(skywalker_mutation,),
     )
@@ -720,6 +732,7 @@ def leia(
         leia_label,
         sex=Sex.FEMALE,
         phenotypes=(),
+        measurements=(),
         diseases=(),
         variants=(skywalker_mutation,),
     )

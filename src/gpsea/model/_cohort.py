@@ -6,7 +6,7 @@ from collections import Counter
 import hpotk
 
 from ._base import SampleLabels, Sex
-from ._phenotype import Phenotype, Disease
+from ._phenotype import Phenotype, Disease, Measurement
 from ._variant import Variant
 
 
@@ -25,6 +25,7 @@ class Patient:
         labels: SampleLabels,
         sex: typing.Optional[Sex],
         phenotypes: typing.Iterable[Phenotype],
+        measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
         variants: typing.Iterable[Variant]
     ) -> "Patient":
@@ -38,6 +39,7 @@ class Patient:
             labels=labels,
             sex=sex,
             phenotypes=phenotypes,
+            measurements=measurements,
             diseases=diseases,
             variants=variants,
         )
@@ -47,6 +49,7 @@ class Patient:
         labels: SampleLabels,
         sex: Sex,
         phenotypes: typing.Iterable[Phenotype],
+        measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
         variants: typing.Iterable[Variant]
     ):
@@ -57,6 +60,7 @@ class Patient:
         self._sex = sex
 
         self._phenotypes = tuple(phenotypes)
+        self._measurements = tuple(measurements)
         self._diseases = tuple(diseases)
         self._variants = tuple(variants)
 
@@ -87,6 +91,13 @@ class Patient:
         Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
+    
+    @property
+    def measurements(self) -> typing.Sequence[Measurement]:
+        """
+        Get the measurements in the patient.
+        """
+        return self._measurements
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:
@@ -132,6 +143,7 @@ class Patient:
                 f"sex:{self._sex}, "
                 f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
+                f"measurements:{[m.name for m in self.measurements]}, "
                 f"diseases:{[dis.identifier for dis in self.diseases]}")
 
     def __repr__(self) -> str:
@@ -143,10 +155,11 @@ class Patient:
                 and self._sex == other._sex
                 and self._variants == other._variants
                 and self._phenotypes == other._phenotypes
+                and self._measurements == other._measurements
                 and self._diseases == other._diseases)
 
     def __hash__(self) -> int:
-        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._diseases))
+        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._measurements, self._diseases))
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):

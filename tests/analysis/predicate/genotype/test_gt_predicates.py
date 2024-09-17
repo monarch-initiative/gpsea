@@ -283,6 +283,7 @@ class TestSexPredicate:
             SampleLabels(label),
             sex,
             phenotypes=(),
+            measurements=(),
             diseases=(),
             variants=(),
         )

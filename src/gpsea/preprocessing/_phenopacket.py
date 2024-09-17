@@ -6,11 +6,12 @@ import hpotk
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
+from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 from phenopackets.vrsatile.v1.vrsatile_pb2 import VcfRecord, VariationDescriptor
 from phenopackets.vrs.v1.vrs_pb2 import Variation
 
-from gpsea.model import SampleLabels, Patient, Sex, Disease
+from gpsea.model import SampleLabels, Patient, Sex, Disease, Measurement
 from gpsea.model import (
     VariantClass,
     VariantCoordinates,
@@ -304,6 +305,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         dip = notepad.add_subsection("diseases")
         diseases = self._add_diseases(pp.diseases, dip)
 
+        mip = notepad.add_subsection("measurements")
+        measurements = self._add_measurements(pp.measurements, mip)
+
         # Check variants
         vs = notepad.add_subsection("variants")
         variants = self._add_variants(sample_id, pp, vs)
@@ -312,6 +316,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             sample_id,
             sex=sex,
             phenotypes=phenotypes,
+            measurements=measurements,
             variants=variants,
             diseases=diseases,
         )
@@ -322,7 +327,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """Creates a list of Disease objects from the data in a given Phenopacket
 
         Args:
-            diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects
+            diseases (Sequence[PPDisease]): A sequence of Phenopacket Disease objects
             notepad (Notepad): notepad to write down the issues
         Returns:
             Sequence[Dis]: A list of Disease objects
@@ -343,6 +348,49 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             final_diseases.append(Disease(term_id, dis.term.label, not dis.excluded))
 
         return final_diseases
+    
+    def _add_measurements(
+            self,
+            measurements: typing.Sequence[PPMeasurement], notepad: Notepad
+    ) -> typing.Sequence[Measurement]:
+        """
+         Args:
+            measurements (Sequence[PPMeasurement]): A sequence of Phenopacket Measurement objects
+            notepad (Notepad): notepad to write down the issues
+        Returns:
+            Sequence[Measurement]: A list of internal Measurement objects
+        """
+        if len(measurements) == 0:
+            return ()
+
+        final_measurements = []
+        for i, msrm in enumerate(measurements):
+            keeper = True
+            if not msrm.HasField("assay"):
+                notepad.add_error(f"#{i} has no `assay`")
+                keeper = False
+            else:
+                test_term_id = hpotk.TermId.from_curie(msrm.assay.id)
+                test_name = msrm.assay.label
+            if not msrm.HasField("value"):
+                notepad.add_error(f"#{i} has no `value`")
+                keeper = False
+            val = msrm.value 
+            if not val.HasField("quantity"):
+                notepad.add_error(f"#{i} has no `quantity`")
+                keeper = False
+            if not val.quantity.HasField("unit"):
+                notepad.add_error(f"#{i} has no `unit`")
+                keeper = False
+            try:
+                unit = hpotk.TermId.from_curie(val.quantity.unit.id)
+            except ValueError as e:
+                notepad.add_error(f"#{i} has an invalid unit (should be a CURIE) `{e.args[0]}`")
+                keeper = False
+            test_result = val.quantity.value
+            if keeper:
+                final_measurements.append(Measurement(test_term_id, test_name, test_result, unit))
+        return final_measurements
 
     def _extract_sex(
         self,
