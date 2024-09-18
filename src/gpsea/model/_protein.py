@@ -3,9 +3,9 @@ import enum
 import typing
 
 import hpotk
+import pandas as pd
 
 from .genome import Region
-
 
 class FeatureInfo:
     """
@@ -91,6 +91,19 @@ class FeatureType(enum.Enum):
     """
     A region of interest that cannot be described in other subsections.
     """
+
+    @staticmethod
+    def from_string(category: str) -> "FeatureType":
+        if category.lower() == "repeat":
+            return FeatureType.REGION
+        elif category.lower() == "motif":
+            return FeatureType.MOTIF
+        elif category.lower() == "domain":
+            return FeatureType.DOMAIN
+        elif category.lower() == "region":
+            return FeatureType.REGION
+        else:
+            raise ValueError(f"Unrecognized protein feature type: \”{category}\"")
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
@@ -282,3 +295,38 @@ class ProteinMetadata:
 
     def __repr__(self) -> str:
         return str(self)
+    
+    @staticmethod
+    def from_feature_frame(
+        protein_id: str,
+        label: str,
+        features: pd.DataFrame,
+        length: int,
+) -> "ProteinMetadata":
+        """
+        A class for obtaining annotations about a protein from a user-supplied pandas DataFrame.
+        We expect to obtain the gene symbol, protein identifier, and regions
+        The structure of the DataFrame should include the following columns and column headers
+        +------------------+----------------+----------+
+        | region           | start  | end   | category |  
+        +------------------+--------+-------+----------+
+        | Suppresor domain | 1      | 223   |domain    |
+        +------------------+--------+-------+----------+
+        | IP3 binding      | 224    | 578   |region    |
+        +------------------+--------+-------+----------+
+        """
+        expected_headers = ["region", "start", "end", "category"]
+        allowed_region_categories = ["REPEAT", "MOTIF", "DOMAIN", "REGION"]
+        if expected_headers != list(features):
+            raise ValueError(f"Got unexpected DataFrame headers: {list(features)}")
+        region_list = list()
+        for _, row in features.iterrows():
+            region_name = row["region"]
+            region_start = row["start"]
+            region_end = row["end"]
+            region_category = row["category"]
+            feature_type = FeatureType.from_string(region_category)
+            finfo = FeatureInfo(name=region_name, region=Region(start=region_start, end=region_end))
+            pfeature = SimpleProteinFeature(info=finfo, feature_type=feature_type)
+            region_list.append(pfeature)
+        return ProteinMetadata(protein_id=protein_id, label=label, protein_features=region_list, protein_length=length)

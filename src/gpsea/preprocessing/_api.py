@@ -11,10 +11,6 @@ from gpsea.model import (
     TranscriptCoordinates,
     TranscriptAnnotation,
     ImpreciseSvInfo,
-    FeatureInfo,
-    FeatureType,
-    Region,
-    SimpleProteinFeature
 )
 
 from ._audit import NotepadTree
@@ -136,65 +132,6 @@ class ProteinMetadataService(metaclass=abc.ABCMeta):
             `ValueError` if the metadata cannot be generated for *any* reason.
         """
         pass
-
-
-class DataFrameProteinMetadataService(ProteinMetadataService):
-    """
-    A class for obtaining annotations about a protein from a user-supplied pandas DataFrame.
-    We expect to obtain the gene symbol, protein identifier, and regions
-    The structure of the DataFrame should include the following columns and column headers
-    +---------+----------------+------------------+--------+-------+-------+
-    | symbol  | identifier     | region           | start  | end   | length|  
-    +---------+----------------+------------------+--------+-------+-------+
-    | ITPR1   | NP_001365381.1 | Suppresor domain | 1      | 223   |2758   |
-    +---------+----------------+------------------+--------+-------+-------+
-    | ITPR1   | NP_001365381.1 | IP3 binding      | 224    | 578   |2758   |
-    +---------+----------------+------------------+--------+-------+-------+
-
-    TODO ALSO ALLOW REGION TYPES -- FOR NOW JUST REGION
-
-    """
-    import pandas as pd
-    def __init__(self, df: pd.DataFrame) -> None:
-        super().__init__()
-        self._df = df
-
-    def annotate(self, protein_id: str) -> ProteinMetadata:
-        """
-        Prepare `ProteinMetadata` for a protein with given `protein_id` accession ID.
-
-        Args:
-            protein_id (string): A accession ID `str` (e.g. `NP_001027558.1`)
-        Returns:
-            ProteinMetadata: a `ProteinMetadata` container with the protein metadata
-        Raises:
-            `ValueError` if the metadata cannot be generated for *any* reason.
-        """
-        expected_headers = ["symbol", "identifier", "region", "start", "end", "length"]
-        if expected_headers != list(self._df):
-            raise ValueError(f"Got unexpected DataFrame headers: {list(self._df)}")
-        symbols = self._df['symbol'].unique()
-        if len(symbols) != 1:
-            raise ValueError(f"Expected a single gene symbol but got {self._df['symbol'].unique()}")
-        gene_symbol = symbols[0]
-        identifiers = self._df['identifier'].unique()
-        if len(identifiers) != 1:
-            raise ValueError(f"Expected a single identifier but got {self._df['identifier'].unique()}")
-        identifier = identifiers[0]
-        lengths = self._df['length'].unique()
-        if len(lengths) != 1:
-            raise ValueError(f"Expected a single length but got {self._df['length'].unique()}")
-        length = lengths[0]
-        region_list = list()
-        for _, row in self._df.iterrows():
-            region_name = row["region"]
-            region_start = row["start"]
-            region_end = row["end"]
-            finfo = FeatureInfo(name=region_name, region=Region(region_start=region_start, region_name=region_name))
-            ## TODO allow all RegionTypes, extend Pandas
-            pfeature = SimpleProteinFeature(info=finfo, feature_type=FeatureType.REGION)
-            region_list.append(pfeature)
-        return ProteinMetadata(protein_id=identifier, label=gene_symbol, protein_features=region_list, protein_length=length)
 
 
 class PreprocessingValidationResult:
