@@ -7,6 +7,7 @@ import pandas as pd
 
 from .genome import Region
 
+
 class FeatureInfo:
     """
     `FeatureInfo` represents a protein feature
@@ -94,22 +95,26 @@ class FeatureType(enum.Enum):
 
     @staticmethod
     def from_string(category: str) -> "FeatureType":
-        if category.lower() == "repeat":
+        cat_lover = category.lower()
+        if cat_lover == "repeat":
             return FeatureType.REGION
-        elif category.lower() == "motif":
+        elif cat_lover == "motif":
             return FeatureType.MOTIF
-        elif category.lower() == "domain":
+        elif cat_lover == "domain":
             return FeatureType.DOMAIN
-        elif category.lower() == "region":
+        elif cat_lover == "region":
             return FeatureType.REGION
         else:
-            raise ValueError(f"Unrecognized protein feature type: \”{category}\"")
+            raise ValueError(f"Unrecognized protein feature type: \"{category}\"")
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
 
     @staticmethod
-    def create(info: FeatureInfo, feature_type: FeatureType):
+    def create(
+        info: FeatureInfo,
+        feature_type: FeatureType,
+    ) -> "ProteinFeature":
         return SimpleProteinFeature(info, feature_type)
 
     @property
@@ -182,25 +187,79 @@ class ProteinMetadata:
     """
     An info regarding a protein sequence, including an ID, a label,
     and location of protein features, such as motifs, domains, or other regions.
+
+    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotMetadataService`,
+    but it can also be created manually using :meth:`~gpsea.model.ProteinMetadata.from_feature_frame` function.
     """
+
+    @staticmethod
+    def from_feature_frame(
+        protein_id: str,
+        label: str,
+        features: pd.DataFrame,
+        length: int,
+    ) -> "ProteinMetadata":
+        """
+        Create `ProteinMetadata` from a user-supplied pandas DataFrame.
+        We expect to obtain the gene symbol, protein identifier, and regions
+        
+        The DataFrame should include the following columns:
+
+        +------------------+----------+----------------+
+        | region           | category | start  | end   |
+        +------------------+----------+--------+-------+
+        | Suppresor domain | domain   | 1      | 223   |
+        +------------------+----------+--------+-------+
+        | IP3 binding      | region   | 224    | 578   |
+        +------------------+----------+--------+-------+
+
+        The `region` column includes the protein feature name.
+        The category must be one of `'repeat'`, `'motif'`, `'domain'`, or `'region'`.
+        Use `region` if no other option fits. Last, `start` and `end` denote 1-based start and end coordinates
+        of the aminoacid sequence region described by the feature.
+        For instance, `[1, 10]` for the first ten aminoacids of the protein.
+        
+        :param protein_id: the accession id of the protein, e.g. `NP_000129.3`.
+        :param label: human-readable label, e.g. `fibrillin-1 isoform a preproprotein`.
+        :param features: a dataframe with of the protein features.
+        :param length: a positive `int` representing the number of aminoacids included in the protein sequence.
+        :raises ValueError: if case of issues during parsing the provided data.
+        """
+        expected_headers = ("region", "start", "end", "category")
+        if any(col_name not in features.columns for col_name in expected_headers):
+            missing_cols = ', '.join(set(expected_headers).difference(features.columns))
+            raise ValueError(
+                f"The column(s) {{{missing_cols}}} are missing from the `features` DataFrame: "
+                f"{tuple(features.columns)}"
+            )
+        region_list = list()
+        for _, row in features.iterrows():
+            region_name = row["region"]
+            region_start = row["start"] - 1  # convert to 0-based coordinates
+            region_end = row["end"]
+            region_category = row["category"]
+            feature_type = FeatureType.from_string(region_category)
+            finfo = FeatureInfo(name=region_name, region=Region(start=region_start, end=region_end))
+            pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
+            region_list.append(pfeature)
+        
+        return ProteinMetadata(protein_id=protein_id, label=label, protein_features=region_list, protein_length=length)
 
     def __init__(
         self,
         protein_id: str,
         label: str,
-        protein_features: typing.Sequence[ProteinFeature],
-        protein_length: int = 0,
+        protein_features: typing.Iterable[ProteinFeature],
+        protein_length: int,
     ):
-        if not isinstance(protein_id, str):
-            raise ValueError(f"Protein ID must be type string but is type {type(protein_id)}")
+        assert isinstance(protein_id, str)
         self._id = protein_id
-        if not isinstance(label, str):
-            raise ValueError(f"Protein label must be type string but is type {type(label)}")
+        assert isinstance(label, str)
         self._label = label
-        if not all(isinstance(x, ProteinFeature) for x in protein_features):
-            raise ValueError(
-                f"Protein Features must be a list of type ProteinFeature but is type {type(protein_features)}")
+
+        assert all(isinstance(x, ProteinFeature) for x in protein_features)
         self._features = tuple(protein_features)
+        assert isinstance(protein_length, int) and protein_length > 0
         self._protein_length = protein_length
 
     @property
@@ -238,32 +297,35 @@ class ProteinMetadata:
     def domains(self) -> typing.Iterable[ProteinFeature]:
         """
         Returns:
-            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "DOMAIN"
+            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to protein domains.
         """
         return filter(lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features)
 
     def repeats(self) -> typing.Iterable[ProteinFeature]:
         """
         Returns:
-            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "REPEAT"
+            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to repeat regions.
         """
         return filter(lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features)
 
     def regions(self) -> typing.Iterable[ProteinFeature]:
         """
         Returns:
-            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "REGIONS"
+            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to generic regions.
         """
         return filter(lambda f: f.feature_type == FeatureType.REGION, self.protein_features)
 
     def motifs(self) -> typing.Iterable[ProteinFeature]:
         """
         Returns:
-            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to "MOTIF"
+            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to motifs.
         """
         return filter(lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features)
 
-    def get_features_variant_overlaps(self, region: Region) -> typing.Collection[ProteinFeature]:
+    def get_features_variant_overlaps(
+        self,
+        region: Region,
+    ) -> typing.Collection[ProteinFeature]:
         """
         Get a collection of protein features that overlap with the `region`.
         Args:
@@ -272,12 +334,10 @@ class ProteinMetadata:
         Returns:
             Collection[ProteinFeature]: a collection of overlapping protein features.
         """
-        affected_features = set()
-        for feat in self.protein_features:
-            if feat.info.region.overlaps_with(region):
-                affected_features.add(feat)
-
-        return affected_features
+        return [
+            feature for feature in self._features 
+            if feature.info.region.overlaps_with(region)
+        ]        
 
     def __str__(self) -> str:
         return f"ProteinMetadata(id={self.protein_id}, " \
@@ -295,38 +355,3 @@ class ProteinMetadata:
 
     def __repr__(self) -> str:
         return str(self)
-    
-    @staticmethod
-    def from_feature_frame(
-        protein_id: str,
-        label: str,
-        features: pd.DataFrame,
-        length: int,
-) -> "ProteinMetadata":
-        """
-        A class for obtaining annotations about a protein from a user-supplied pandas DataFrame.
-        We expect to obtain the gene symbol, protein identifier, and regions
-        The structure of the DataFrame should include the following columns and column headers
-        +------------------+----------------+----------+
-        | region           | start  | end   | category |  
-        +------------------+--------+-------+----------+
-        | Suppresor domain | 1      | 223   |domain    |
-        +------------------+--------+-------+----------+
-        | IP3 binding      | 224    | 578   |region    |
-        +------------------+--------+-------+----------+
-        """
-        expected_headers = ["region", "start", "end", "category"]
-        allowed_region_categories = ["REPEAT", "MOTIF", "DOMAIN", "REGION"]
-        if expected_headers != list(features):
-            raise ValueError(f"Got unexpected DataFrame headers: {list(features)}")
-        region_list = list()
-        for _, row in features.iterrows():
-            region_name = row["region"]
-            region_start = row["start"]
-            region_end = row["end"]
-            region_category = row["category"]
-            feature_type = FeatureType.from_string(region_category)
-            finfo = FeatureInfo(name=region_name, region=Region(start=region_start, end=region_end))
-            pfeature = SimpleProteinFeature(info=finfo, feature_type=feature_type)
-            region_list.append(pfeature)
-        return ProteinMetadata(protein_id=protein_id, label=label, protein_features=region_list, protein_length=length)
