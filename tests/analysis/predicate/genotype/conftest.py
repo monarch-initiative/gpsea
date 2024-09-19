@@ -24,6 +24,7 @@ def protein_metadata_service() -> ProteinMetadataService:
                 FeatureType.DOMAIN,
             ),
         ),
+        protein_length=100,
     )
     return MockProteinMetadataService(response)
 
