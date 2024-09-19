@@ -32,7 +32,7 @@ class TestProteinMetadata:
             protein_id=ITPR1_protein_id,
             label=ITPR1_protein_id,
             features=df,
-            length=ITPR1_protein_len,
+            protein_length=ITPR1_protein_len,
         )
 
     def test_general_info(self, itpr1_protein_metadata: ProteinMetadata):
@@ -78,7 +78,7 @@ class TestProteinMetadata:
                 protein_id=ITPR1_protein_id,
                 label=ITPR1_protein_id,
                 features=df,
-                length=ITPR1_protein_len,
+                protein_length=ITPR1_protein_len,
             )
         
         assert e.value.args[0] == "The column(s) {category} are missing from the `features` DataFrame: ('region', 'start', 'end')"
