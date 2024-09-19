@@ -1468,36 +1468,124 @@ This usually means that the transcript was chosen by the MANE project or similar
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">ProteinMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">ProteinMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>An info regarding a protein sequence, including an ID, a label,
 and location of protein features, such as motifs, domains, or other regions.</p>
+<p>The information is usually retrieved from a resource such as <code class="xref py py-class docutils literal notranslate"><span class="pre">UniprotMetadataService</span></code>,
+but it can also be created manually using <a class="reference internal" href="#gpsea.model.ProteinMetadata.from_feature_frame" title="gpsea.model.ProteinMetadata.from_feature_frame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_feature_frame()</span></code></a> function.</p>
+<p class="rubric">Example</p>
+<p>Let’s create a protein info with a domain and a region. We must provide protein accession ID,
+a label, a data frame with protein features, and the number of aminoacids of the protein sequence:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">protein_id</span> <span class="o">=</span> <span class="s1">&#39;NP_000129.3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;fibrillin-1 isoform a preproprotein&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_length</span> <span class="o">=</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<p>Now let’s prepare a data frame with the protein features. We will prepare a domain and a region:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">features</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="s2">&quot;Suppresor domain&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="mi">223</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="s2">&quot;IP3 binding&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;region&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="mi">224</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="mi">578</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>last, we can put the protein info together:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">ProteinMetadata</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">ProteinMetadata</span><span class="o">.</span><span class="n">from_feature_frame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">features</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_length</span><span class="o">=</span><span class="n">protein_length</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and get the expected protein info:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_id</span>
+<span class="go">&#39;NP_000129.3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span><span class="o">.</span><span class="n">label</span>
+<span class="go">&#39;fibrillin-1 isoform a preproprotein&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">protein_meta</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.from_feature_frame">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_feature_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.ProteinMetadata" title="gpsea.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.from_feature_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.from_feature_frame" title="Link to this definition"></a></dt>
+<dd><p>Create <cite>ProteinMetadata</cite> from a user-supplied pandas DataFrame.
+We expect to obtain the gene symbol, protein identifier, and regions</p>
+<p>The DataFrame should include the following columns:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>region</p></td>
+<td><p>category</p></td>
+<td colspan="2"><p>start  | end</p></td>
+</tr>
+<tr class="row-even"><td><p>Suppresor domain</p></td>
+<td><p>domain</p></td>
+<td><p>1</p></td>
+<td><p>223</p></td>
+</tr>
+<tr class="row-odd"><td><p>IP3 binding</p></td>
+<td><p>region</p></td>
+<td><p>224</p></td>
+<td><p>578</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <cite>region</cite> column includes the protein feature name.
+The category must be one of <cite>‘repeat’</cite>, <cite>‘motif’</cite>, <cite>‘domain’</cite>, or <cite>‘region’</cite>.
+Use <cite>region</cite> if no other option fits. Last, <cite>start</cite> and <cite>end</cite> denote 1-based start and end coordinates
+of the aminoacid sequence region described by the feature.
+For instance, <cite>[1, 10]</cite> for the first ten aminoacids of the protein.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protein_id</strong> – the accession id of the protein, e.g. <cite>‘NP_000129.3’</cite>.</p></li>
+<li><p><strong>label</strong> – human-readable label, e.g. <cite>‘fibrillin-1 isoform a preproprotein’</cite>.</p></li>
+<li><p><strong>features</strong> – a dataframe with of the protein features.</p></li>
+<li><p><strong>protein_length</strong> – a positive <cite>int</cite> representing the number of aminoacids included in the protein sequence.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if case of issues during parsing the provided data.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.protein_id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.ProteinMetadata.protein_id" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-string: A string unique to this protein</p>
+<dd><p>Get the protein’s accession ID, e.g. <cite>NP_000129.3</cite>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.label">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.ProteinMetadata.label" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-string: The full name of the protein</p>
+<dd><p>Get the protein label, e.g. <cite>fibrillin-1 isoform a preproprotein</cite>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.protein_features">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.ProteinMetadata.protein_features" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</p>
+<dd><p>Get a sequence of protein features.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.protein_length">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.model.ProteinMetadata.protein_length" title="Link to this definition"></a></dt>
-<dd><p>Returns:
-int: length of protein</p>
+<dd><p>Get the number of aminoacids of the protein sequence.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1505,7 +1593,7 @@ int: length of protein</p>
 <span class="sig-name descname"><span class="pre">domains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.domains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.domains" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “DOMAIN”</p>
+<dd class="field-odd"><p>A subgroup of the protein features that correspond to protein domains.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Iterable[<a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model.ProteinFeature">ProteinFeature</a>]</p>
@@ -1518,7 +1606,7 @@ int: length of protein</p>
 <span class="sig-name descname"><span class="pre">repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.repeats" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “REPEAT”</p>
+<dd class="field-odd"><p>A subgroup of the protein features that correspond to repeat regions.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Iterable[<a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model.ProteinFeature">ProteinFeature</a>]</p>
@@ -1531,7 +1619,7 @@ int: length of protein</p>
 <span class="sig-name descname"><span class="pre">regions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.regions" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “REGIONS”</p>
+<dd class="field-odd"><p>A subgroup of the protein features that correspond to generic regions.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Iterable[<a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model.ProteinFeature">ProteinFeature</a>]</p>
@@ -1544,7 +1632,7 @@ int: length of protein</p>
 <span class="sig-name descname"><span class="pre">motifs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.motifs" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to “MOTIF”</p>
+<dd class="field-odd"><p>A subgroup of the protein features that correspond to motifs.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Iterable[<a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model.ProteinFeature">ProteinFeature</a>]</p>
@@ -1575,7 +1663,7 @@ int: length of protein</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.ProteinFeature.create">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.FeatureInfo" title="gpsea.model._protein.FeatureInfo"><span class="pre">FeatureInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinFeature.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinFeature.create" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.FeatureInfo" title="gpsea.model._protein.FeatureInfo"><span class="pre">FeatureInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.ProteinFeature" title="gpsea.model._protein.ProteinFeature"><span class="pre">ProteinFeature</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinFeature.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinFeature.create" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -1659,6 +1747,11 @@ Region: a protein region spanned by the feature.</p>
 <span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#gpsea.model.FeatureType.REGION" title="Link to this definition"></a></dt>
 <dd><p>A region of interest that cannot be described in other subsections.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.FeatureType.from_string">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#FeatureType.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.FeatureType.from_string" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
