@@ -1,11 +1,18 @@
 import pytest
 
-from gpsea.analysis.predicate.genotype import VariantPredicates, ProteinPredicates, VariantPredicate
+from gpsea.analysis.predicate.genotype import VariantPredicates, ProteinPredicates
 from gpsea.model import *
 from gpsea.model.genome import *
 
 
 class TestVariantPredicates:
+
+    def test_always_true_predicate(
+        self,
+        suox_cohort: Cohort,
+    ):
+        predicate = VariantPredicates.true()
+        assert all(predicate.test(v) for v in suox_cohort.all_variants())
 
     @pytest.mark.parametrize(
         'effect, expected',
@@ -46,7 +53,7 @@ class TestVariantPredicates:
     @pytest.mark.parametrize(
         'exon, expected',
         [
-            (0, False),
+            (1, False),
             (4, True),
             (5, False),
         ]
@@ -60,6 +67,11 @@ class TestVariantPredicates:
         predicate = VariantPredicates.exon(exon, tx_id='tx:xyz')
 
         assert predicate.test(missense_variant) == expected
+
+    def test_exon_predicate_fails_on_invalid_exon(self):
+        with pytest.raises(AssertionError) as e:
+            VariantPredicates.exon(0, tx_id='tx:xyz')
+        assert e.value.args[0] == '`exon` must be a positive `int`'
 
     @pytest.mark.parametrize(
         'tx_id, expected',
@@ -303,3 +315,16 @@ class TestLogicalVariantPredicate:
             empty = ()
             VariantPredicates.any(empty)
         assert e.value.args[0] == 'Predicates must not be empty!'
+
+    def test_logical_predicates_are_hashable(self):
+        a = VariantPredicates.gene(symbol='A')
+        b = VariantPredicates.gene(symbol='B')
+
+        a_and_b = a & b
+        assert isinstance(hash(a_and_b), int)
+
+        a_or_b = a | b
+        assert isinstance(hash(a_or_b), int)
+
+        inv_a = ~a
+        assert isinstance(hash(inv_a), int)

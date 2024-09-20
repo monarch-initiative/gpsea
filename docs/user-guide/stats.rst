@@ -102,7 +102,7 @@ with the default cohort creator:
 >>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 >>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 >>> qc_results.summarize()  # doctest: +SKIP
 Validated under none policy
 No errors or warnings were found
@@ -127,7 +127,7 @@ First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
 to test if the variant leads to a frameshift (in this case):
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates, boolean_predicate
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> tx_id = 'NM_181486.4'
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
 >>> is_frameshift.get_question()
@@ -136,8 +136,8 @@ to test if the variant leads to a frameshift (in this case):
 and then we choose the expected mode of inheritance to test. In case of *TBX5*,
 we expect the autosomal dominant mode of inheritance:
 
->>> from gpsea.analysis.predicate.genotype import ModeOfInheritancePredicate
->>> gt_predicate = ModeOfInheritancePredicate.autosomal_dominant(is_frameshift)
+>>> from gpsea.analysis.predicate.genotype import autosomal_dominant
+>>> gt_predicate = autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
 'What is the genotype group: HOM_REF, HET'
 
@@ -344,7 +344,7 @@ which we will use to preprocess the cohort
 
 >>> from gpsea.preprocessing import load_phenopackets
 >>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Patients Created: ...
+Individuals Processed: ...
 
 
 resulting in a cohort consisting of 19 individuals

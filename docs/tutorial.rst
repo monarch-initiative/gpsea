@@ -84,7 +84,7 @@ a :class:`~gpsea.model.Cohort`:
 ...     phenopackets=phenopackets,
 ...     cohort_creator=cohort_creator,
 ... )
-Patients Created: ...
+Individuals Processed: ...
 
 and we will check that there are no Q/C issues:
 
@@ -189,21 +189,19 @@ Prepare genotype and phenotype predicates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We will create a predicate to bin patients into group
-depending on presence of a missense and frameshift variant to test
+depending on presence of a single allele of a missense or frameshift variant to test
 if there is a difference between frameshift and non-frameshift variants
 in the individuals of the *TBX5* cohort.
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates, groups_predicate
->>> gt_predicate = groups_predicate(
-...     predicates=(
-...         VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
-...         VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
-...     ),
-...     group_names=('Missense', 'Frameshift'),
+>>> from gpsea.analysis.predicate.genotype import VariantPredicates, monoallelic_predicate
+>>> gt_predicate = monoallelic_predicate(
+...     a_predicate=VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
+...     b_predicate=VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id),
+...     names=('Missense', 'Frameshift')
 ... )
 >>> gt_predicate.display_question()
-'Genotype group: Missense, Frameshift'
+'Allele group: Missense, Frameshift'
 
 .. note::
 

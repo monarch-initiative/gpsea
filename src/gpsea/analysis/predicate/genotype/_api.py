@@ -103,12 +103,6 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
     def predicates(self) -> typing.Sequence[VariantPredicate]:
         return self._predicates
 
-    def __hash__(self) -> int:
-        # Per Python's doc at https://docs.python.org/3/reference/datamodel.html#object.__hash__
-        # "The only required property is that objects which compare equal have the same hash value".
-        # Both `AnyVariantPredicate` and `AllVariantPredicate` will meet this requirement.
-        return hash(self._predicates)
-
 
 class AnyVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
@@ -123,6 +117,9 @@ class AnyVariantPredicate(LogicalVariantPredicate):
         if isinstance(value, AnyVariantPredicate):
             return self._predicates == value._predicates
         return False
+    
+    def __hash__(self) -> int:
+        return 17 * hash(self._predicates)
     
     def __str__(self) -> str:
         return '(' + ' OR '.join(str(p) for p in self._predicates) + ')'
@@ -144,6 +141,9 @@ class AllVariantPredicate(LogicalVariantPredicate):
         if isinstance(value, AllVariantPredicate):
             return self._predicates == value._predicates
         return False
+    
+    def __hash__(self) -> int:
+        return 31 * hash(self._predicates)
 
     def __str__(self) -> str:
         return '(' + ' AND '.join(str(p) for p in self._predicates) + ')'
@@ -171,6 +171,9 @@ class InvVariantPredicate(VariantPredicate):
         if isinstance(value, InvVariantPredicate):
             return self._inner == value._inner
         return False
+
+    def __hash__(self) -> int:
+        return -hash(self._inner)
 
     def __str__(self) -> str:
         return f'NOT {self._inner}'

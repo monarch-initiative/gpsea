@@ -15,6 +15,11 @@ def fpath_uniprot_response_dir(
     return os.path.join(fpath_preprocessing_data_dir, "uniprot_response")
 
 
+def read_json_payload(path: str) -> typing.Mapping[str, typing.Any]:
+    with open(path) as fh:
+        return json.load(fh)
+
+
 class TestUniprotProteinMetadataService:
 
     @pytest.fixture
@@ -27,8 +32,7 @@ class TestUniprotProteinMetadataService:
         fpath_uniprot_response_dir: str,
     ) -> typing.Mapping[str, typing.Any]:
         fpath_zn462_human = os.path.join(fpath_uniprot_response_dir, "ZN462_HUMAN.json")
-        with open(fpath_zn462_human) as f:
-            return json.load(f)
+        return read_json_payload(fpath_zn462_human)
 
     def test_zn462(
         self,
@@ -44,6 +48,24 @@ class TestUniprotProteinMetadataService:
         assert protein_metadata.label == "Ankyrin repeat domain-containing protein 11"
         assert len(protein_metadata.protein_features) == 16
         assert protein_metadata.protein_length == 2663
+    
+    def test_itpr1(
+        self,
+        fpath_uniprot_response_dir: str,
+    ):
+        response_json_path = os.path.join(fpath_uniprot_response_dir, 'ITPR1_HUMAN.json')
+        response_json = read_json_payload(response_json_path)
+
+        protein_id = "NP_001365381.1"
+        protein_metadata = UniprotProteinMetadataService.parse_uniprot_json(
+            payload=response_json,
+            protein_id=protein_id,
+        )
+
+        assert protein_metadata.protein_id == protein_id
+        assert protein_metadata.label == "Inositol 1,4,5-trisphosphate-gated calcium channel ITPR1"
+        assert len(protein_metadata.protein_features) == 13
+        assert protein_metadata.protein_length == 2758
 
     @pytest.mark.skip("Run manually to regenerate SUOX `NP_001027558.1` metadata")
     def test_fetch_suox_protein_metadata(
