@@ -91,7 +91,7 @@
 
 
 <span class="c1"># We do not need more than just one instance of these predicates.</span>
-<span class="n">IS_BND</span> <span class="o">=</span> <span class="n">VariantClassPredicate</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">BND</span><span class="p">)</span>
+<span class="n">IS_TRANSLOCATION</span> <span class="o">=</span> <span class="n">VariantClassPredicate</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">TRANSLOCATION</span><span class="p">)</span>
 <span class="n">IS_LARGE_IMPRECISE_SV</span> <span class="o">=</span> <span class="n">IsLargeImpreciseStructuralVariantPredicate</span><span class="p">()</span>
 
 
@@ -318,7 +318,7 @@
 <span class="sd">        The thresholds vary in the literature, but here we use 50bp as a default.</span>
 
 <span class="sd">        Any variant that affects at least `threshold` base pairs is considered an SV.</span>
-<span class="sd">        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`)</span>
+<span class="sd">        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.TRANSLOCATION`)</span>
 <span class="sd">        are always considered as an SV.</span>
 
 <span class="sd">        Args:</span>
@@ -329,7 +329,7 @@
             <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="o">-</span><span class="n">threshold</span><span class="p">)</span>
             <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
             <span class="o">|</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">is_large_imprecise_sv</span><span class="p">()</span>
-            <span class="o">|</span> <span class="n">IS_BND</span>
+            <span class="o">|</span> <span class="n">IS_TRANSLOCATION</span>
         <span class="p">)</span></div>
 
 
