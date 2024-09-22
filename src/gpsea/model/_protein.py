@@ -91,6 +91,19 @@ class FeatureType(enum.Enum):
     A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.
     """
 
+    COILED_COIL = enum.auto()
+    """
+    a structural motif in proteins, characterized by two or more α-helices wrapped around each other in a supercoil.
+    This structure is often involved in protein-protein interactions
+    """
+
+    COMPOSITIONAL_BIAS = enum.auto()
+    """
+    Compositional bias refers to a  region in a protein where certain amino acids are overrepresented compared to
+    the rest of the protein or compared to typical protein composition. These regions tend to have a non-random
+    distribution of amino acids, often leading to specific structural or functional properties.
+    """
+
     REGION = enum.auto()
     """
     A region of interest that cannot be described in other subsections.
@@ -107,6 +120,10 @@ class FeatureType(enum.Enum):
             return FeatureType.DOMAIN
         elif cat_lover == "region":
             return FeatureType.REGION
+        elif cat_lover == "coiled coil":
+            return FeatureType.REGION
+        elif cat_lover == "compositional bias":
+            return FeatureType.COMPOSITIONAL_BIAS
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
@@ -306,9 +323,9 @@ class ProteinMetadata:
             protein_features=region_list,
             protein_length=protein_length,
         )
-    
 
-       
+
+
 
     @staticmethod
     def from_uniprot_json(protein_id: str,
@@ -342,7 +359,7 @@ class ProteinMetadata:
                 start_obj = locus["start"]
                 region_start = int(start_obj["value"]) - 1 # convert to 0-based coordinates
                 end_obj = locus["end"]
-                region_end = int(end_obj["value"]) 
+                region_end = int(end_obj["value"])
                 region_category = feature["type"]
                 feature_type = FeatureType.from_string(region_category)
                 finfo = FeatureInfo(
@@ -352,14 +369,14 @@ class ProteinMetadata:
                 region_list.append(pfeature)
             except Exception as feature_exception:
                 print(f"Could not parse feature: {str(feature_exception)} (skipping)")
-        
+
         return ProteinMetadata(
             protein_id=protein_id,
             label=label,
             protein_features=region_list,
             protein_length=protein_length,
         )
-        
+
 
     def __init__(
         self,
