@@ -1565,6 +1565,31 @@ For instance, <cite>[1, 10]</cite> for the first ten aminoacids of the protein.<
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.from_uniprot_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_uniprot_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniprot_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/io.html#io.IOBase" title="(in Python v3.12)"><span class="pre">IOBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.ProteinMetadata" title="gpsea.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_protein.html#ProteinMetadata.from_uniprot_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.ProteinMetadata.from_uniprot_json" title="Link to this definition"></a></dt>
+<dd><p>Create <cite>ProteinMetadata</cite> from a json file that has been downloaded from UniProt.</p>
+<p>Go to the UniProt page for the protein of interest, then go to the section “Family &amp; Domains”, and the
+subsection “Features”. Click on the <em>Download</em> symbol. You will be presented with a JSON file for download.
+From this, we extract information about the gene symbol, protein identifier, and regions.
+This method is intended to be a backup if the API call to UniProt fails; the same information should be
+retrieved.
+See the test file “test_uniprot_json.py” for details about the JSON parsing etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protein_id</strong> – the accession id of the protein, e.g. <cite>‘NP_000129.3’</cite>.</p></li>
+<li><p><strong>label</strong> – human-readable label, e.g. <cite>‘fibrillin-1 isoform a preproprotein’</cite>.</p></li>
+<li><p><strong>uniprot_json</strong> – a <cite>str</cite> with the path or an IO object with the Uniprot JSON data.</p></li>
+<li><p><strong>protein_length</strong> – a positive <cite>int</cite> representing the number of aminoacids included in the protein sequence.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if case of issues during parsing the provided data.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.ProteinMetadata.protein_id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protein_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.ProteinMetadata.protein_id" title="Link to this definition"></a></dt>
@@ -1744,8 +1769,23 @@ Region: a protein region spanned by the feature.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.model.FeatureType.COILED_COIL">
+<span class="sig-name descname"><span class="pre">COILED_COIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#gpsea.model.FeatureType.COILED_COIL" title="Link to this definition"></a></dt>
+<dd><p>a structural motif in proteins, characterized by two or more α-helices wrapped around each other in a supercoil.
+This structure is often involved in protein-protein interactions</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.model.FeatureType.COMPOSITIONAL_BIAS">
+<span class="sig-name descname"><span class="pre">COMPOSITIONAL_BIAS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#gpsea.model.FeatureType.COMPOSITIONAL_BIAS" title="Link to this definition"></a></dt>
+<dd><p>Compositional bias refers to a  region in a protein where certain amino acids are overrepresented compared to
+the rest of the protein or compared to typical protein composition. These regions tend to have a non-random
+distribution of amino acids, often leading to specific structural or functional properties.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="gpsea.model.FeatureType.REGION">
-<span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#gpsea.model.FeatureType.REGION" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#gpsea.model.FeatureType.REGION" title="Link to this definition"></a></dt>
 <dd><p>A region of interest that cannot be described in other subsections.</p>
 </dd></dl>
 

@@ -83,10 +83,14 @@
   <h1>Source code for gpsea.model._protein</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.util</span> <span class="kn">import</span> <span class="n">open_text_io_handle_for_reading</span>
 
 <span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 
@@ -178,6 +182,19 @@
 <span class="sd">    A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">COILED_COIL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a structural motif in proteins, characterized by two or more α-helices wrapped around each other in a supercoil.</span>
+<span class="sd">    This structure is often involved in protein-protein interactions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">COMPOSITIONAL_BIAS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compositional bias refers to a  region in a protein where certain amino acids are overrepresented compared to</span>
+<span class="sd">    the rest of the protein or compared to typical protein composition. These regions tend to have a non-random</span>
+<span class="sd">    distribution of amino acids, often leading to specific structural or functional properties.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">REGION</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A region of interest that cannot be described in other subsections.</span>
@@ -196,6 +213,10 @@
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">DOMAIN</span>
         <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;region&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;coiled coil&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;compositional bias&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">COMPOSITIONAL_BIAS</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized protein feature type: &quot;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
 </div>
@@ -408,6 +429,58 @@
             <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
             <span class="n">protein_features</span><span class="o">=</span><span class="n">region_list</span><span class="p">,</span>
+            <span class="n">protein_length</span><span class="o">=</span><span class="n">protein_length</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProteinMetadata.from_uniprot_json">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.ProteinMetadata.from_uniprot_json">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_uniprot_json</span><span class="p">(</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">uniprot_json</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ProteinMetadata&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `ProteinMetadata` from a json file that has been downloaded from UniProt.</span>
+
+<span class="sd">        Go to the UniProt page for the protein of interest, then go to the section &quot;Family &amp; Domains&quot;, and the</span>
+<span class="sd">        subsection &quot;Features&quot;. Click on the *Download* symbol. You will be presented with a JSON file for download.</span>
+<span class="sd">        From this, we extract information about the gene symbol, protein identifier, and regions.</span>
+<span class="sd">        This method is intended to be a backup if the API call to UniProt fails; the same information should be</span>
+<span class="sd">        retrieved.</span>
+<span class="sd">        See the test file &quot;test_uniprot_json.py&quot; for details about the JSON parsing etc.</span>
+
+<span class="sd">        :param protein_id: the accession id of the protein, e.g. `&#39;NP_000129.3&#39;`.</span>
+<span class="sd">        :param label: human-readable label, e.g. `&#39;fibrillin-1 isoform a preproprotein&#39;`.</span>
+<span class="sd">        :param uniprot_json: a `str` with the path or an IO object with the Uniprot JSON data.</span>
+<span class="sd">        :param protein_length: a positive `int` representing the number of aminoacids included in the protein sequence.</span>
+<span class="sd">        :raises ValueError: if case of issues during parsing the provided data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">open_text_io_handle_for_reading</span><span class="p">(</span><span class="n">uniprot_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        
+        <span class="n">regions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">region_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+                <span class="n">locus</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+                <span class="n">region_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># convert to 0-based coordinates</span>
+                <span class="n">region_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+                <span class="n">finfo</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">region_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">region_end</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">pfeature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">finfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">)</span>
+                <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfeature</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">feature_exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse feature: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">feature_exception</span><span class="p">)</span><span class="si">}</span><span class="s2"> (skipping)&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
+            <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">protein_features</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span>
             <span class="n">protein_length</span><span class="o">=</span><span class="n">protein_length</span><span class="p">,</span>
         <span class="p">)</span></div>
 
