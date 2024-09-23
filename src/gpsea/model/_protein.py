@@ -1,9 +1,13 @@
 import abc
 import enum
+import io
+import json
 import typing
 
 import hpotk
 import pandas as pd
+
+from gpsea.util import open_text_io_handle_for_reading
 
 from .genome import Region
 
@@ -90,6 +94,19 @@ class FeatureType(enum.Enum):
     A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.
     """
 
+    COILED_COIL = enum.auto()
+    """
+    a structural motif in proteins, characterized by two or more α-helices wrapped around each other in a supercoil.
+    This structure is often involved in protein-protein interactions
+    """
+
+    COMPOSITIONAL_BIAS = enum.auto()
+    """
+    Compositional bias refers to a  region in a protein where certain amino acids are overrepresented compared to
+    the rest of the protein or compared to typical protein composition. These regions tend to have a non-random
+    distribution of amino acids, often leading to specific structural or functional properties.
+    """
+
     REGION = enum.auto()
     """
     A region of interest that cannot be described in other subsections.
@@ -106,6 +123,10 @@ class FeatureType(enum.Enum):
             return FeatureType.DOMAIN
         elif cat_lover == "region":
             return FeatureType.REGION
+        elif cat_lover == "coiled coil":
+            return FeatureType.REGION
+        elif cat_lover == "compositional bias":
+            return FeatureType.COMPOSITIONAL_BIAS
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
@@ -303,6 +324,55 @@ class ProteinMetadata:
             protein_id=protein_id,
             label=label,
             protein_features=region_list,
+            protein_length=protein_length,
+        )
+
+    @staticmethod
+    def from_uniprot_json(
+        protein_id: str,
+        label: str,
+        uniprot_json: typing.Union[io.IOBase, str],
+        protein_length: int,
+    ) -> "ProteinMetadata":
+        """
+        Create `ProteinMetadata` from a json file that has been downloaded from UniProt.
+
+        Go to the UniProt page for the protein of interest, then go to the section "Family & Domains", and the
+        subsection "Features". Click on the *Download* symbol. You will be presented with a JSON file for download.
+        From this, we extract information about the gene symbol, protein identifier, and regions.
+        This method is intended to be a backup if the API call to UniProt fails; the same information should be
+        retrieved.
+        See the test file "test_uniprot_json.py" for details about the JSON parsing etc.
+
+        :param protein_id: the accession id of the protein, e.g. `'NP_000129.3'`.
+        :param label: human-readable label, e.g. `'fibrillin-1 isoform a preproprotein'`.
+        :param uniprot_json: a `str` with the path or an IO object with the Uniprot JSON data.
+        :param protein_length: a positive `int` representing the number of aminoacids included in the protein sequence.
+        :raises ValueError: if case of issues during parsing the provided data.
+        """
+        with open_text_io_handle_for_reading(uniprot_json) as fh:
+            data = json.load(fh)
+        
+        regions = list()
+        for feature in data["features"]:
+            try:
+                region_name = feature["description"]
+                locus = feature["location"]
+                region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
+                region_end = int(locus["end"]["value"])
+                feature_type = FeatureType.from_string(feature["type"])
+                finfo = FeatureInfo(
+                    name=region_name, region=Region(start=region_start, end=region_end)
+                )
+                pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
+                regions.append(pfeature)
+            except Exception as feature_exception:
+                print(f"Could not parse feature: {str(feature_exception)} (skipping)")
+
+        return ProteinMetadata(
+            protein_id=protein_id,
+            label=label,
+            protein_features=regions,
             protein_length=protein_length,
         )
 
