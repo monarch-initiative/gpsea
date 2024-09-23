@@ -515,25 +515,26 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             ph_predicates=pheno_predicates,
             counts=all_counts,
         )
-        mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
-        if not mtc_mask.any():
-            raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
-        # 3 - Compute nominal p values
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)
-        pvals[mtc_mask] = self._compute_nominal_pvals(
-            n_usable=slice_list_in_numpy_style(n_usable, mtc_mask),
-            all_counts=slice_list_in_numpy_style(all_counts, mtc_mask),
-        )
+        corrected_pvals = None
 
-        # 4 - Apply Multiple Testing Correction
-        if self._mtc_correction is None:
-            corrected_pvals = None
-        else:
-            corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
-            # Do not test the p values that have been filtered out.
-            corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
+        mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
+        if mtc_mask.any():
+            # We have at least one HPO term to test.
 
+            # 3 - Compute nominal p values
+            pvals[mtc_mask] = self._compute_nominal_pvals(
+                n_usable=slice_list_in_numpy_style(n_usable, mtc_mask),
+                all_counts=slice_list_in_numpy_style(all_counts, mtc_mask),
+            )
+
+            # 4 - Apply Multiple Testing Correction
+            if self._mtc_correction is not None:
+                corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
+                # Do not test the p values that have been filtered out.
+                corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
+            
         return HpoTermAnalysisResult(
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
