@@ -95,7 +95,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         self,
         protein_id: str,
     ) -> typing.Mapping[str, typing.Any]:
-        api_url = self._url.format(protein_id)
+        api_url = self._url % protein_id
         return requests.get(
             api_url,
             headers=self._headers,
