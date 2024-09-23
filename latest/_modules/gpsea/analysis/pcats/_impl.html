@@ -404,8 +404,37 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span> <span class="k">if</span> <span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">corrected_pvals</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">GenotypePolyPredicate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span> <span class="o">=</span> <span class="n">gt_predicate</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_sanity</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+        
+    <span class="k">def</span> <span class="nf">_check_sanity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># All sequences must have the same lengths ...</span>
+        <span class="k">for</span> <span class="n">seq</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="p">,</span> <span class="s1">&#39;n_usable&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">,</span> <span class="s1">&#39;all_counts&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">,</span> <span class="s1">&#39;pvals&#39;</span><span class="p">),</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`len(pheno_predicates)` must be the same as `len(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)` but &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        
+        <span class="c1"># ... including the optional corrected p values</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="p">,</span> <span class="n">GenotypePolyPredicate</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">&quot;`gt_predicate` must be an instance of `GenotypePolyPredicate`&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">errors</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gt_predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
@@ -528,6 +557,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_name</span> <span class="o">=</span> <span class="n">mtc_filter_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mtc_filter_results</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_name</span> <span class="o">=</span> <span class="n">mtc_name</span>
+        
+        <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_hpo_result_sanity</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_check_hpo_result_sanity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_results</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`len(pheno_predicates)` must be the same as `len(mtc_filter_results)` but &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">errors</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_filter_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -618,25 +660,26 @@
             <span class="n">ph_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
             <span class="n">counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">mtc_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">is_passed</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">mtc_filter_results</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">mtc_mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No phenotypes are left for the analysis after MTC filtering step&quot;</span><span class="p">)</span>
 
-        <span class="c1"># 3 - Compute nominal p values</span>
         <span class="n">pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_usable</span><span class="p">),),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_pvals</span><span class="p">(</span>
-            <span class="n">n_usable</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
-            <span class="n">all_counts</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">all_counts</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># 4 - Apply Multiple Testing Correction</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">pvals</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-            <span class="c1"># Do not test the p values that have been filtered out.</span>
-            <span class="n">corrected_pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">])</span>
+        <span class="n">mtc_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">is_passed</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">mtc_filter_results</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">mtc_mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="c1"># We have at least one HPO term to test.</span>
 
+            <span class="c1"># 3 - Compute nominal p values</span>
+            <span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_pvals</span><span class="p">(</span>
+                <span class="n">n_usable</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
+                <span class="n">all_counts</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">all_counts</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="c1"># 4 - Apply Multiple Testing Correction</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">pvals</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="c1"># Do not test the p values that have been filtered out.</span>
+                <span class="n">corrected_pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">])</span>
+            
         <span class="k">return</span> <span class="n">HpoTermAnalysisResult</span><span class="p">(</span>
             <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
             <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span>
