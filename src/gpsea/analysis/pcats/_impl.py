@@ -309,8 +309,37 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         self._corrected_pvals = (
             None if corrected_pvals is None else tuple(corrected_pvals)
         )
-        assert isinstance(gt_predicate, GenotypePolyPredicate)
         self._gt_predicate = gt_predicate
+        errors = self._check_sanity()
+        if errors:
+            raise ValueError(os.linesep.join(errors))
+        
+    def _check_sanity(self) -> typing.Sequence[str]:
+        errors = []
+        # All sequences must have the same lengths ...
+        for seq, name in (
+            (self._n_usable, 'n_usable'),
+            (self._all_counts, 'all_counts'),
+            (self._pvals, 'pvals'),
+        ):
+            if len(self._pheno_predicates) != len(seq):
+                errors.append(
+                    f"`len(pheno_predicates)` must be the same as `len({name})` but "
+                    f"{len(self._pheno_predicates)}!={len(seq)}"
+                )
+        
+        # ... including the optional corrected p values
+        if self._corrected_pvals is not None and len(self._pheno_predicates) != len(self._corrected_pvals):
+            errors.append(
+                f"`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but "
+                f"{len(self._pheno_predicates)}!={len(self._corrected_pvals)}"
+            )
+
+        if not isinstance(self._gt_predicate, GenotypePolyPredicate):
+            errors.append(
+                "`gt_predicate` must be an instance of `GenotypePolyPredicate`"
+            )
+        return errors
 
     @property
     def gt_predicate(self) -> GenotypePolyPredicate:
@@ -428,6 +457,19 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
         self._mtc_name = mtc_name
+        
+        errors = self._check_hpo_result_sanity()
+        if errors:
+            raise ValueError(os.linesep.join(errors))
+
+    def _check_hpo_result_sanity(self) -> typing.Sequence[str]:
+        errors = []
+        if len(self._pheno_predicates) != len(self._mtc_filter_results):
+            errors.append(
+                f"`len(pheno_predicates)` must be the same as `len(mtc_filter_results)` but "
+                f"{len(self._pheno_predicates)}!={len(self._mtc_filter_results)}"
+            )
+        return errors
 
     @property
     def mtc_filter_name(self) -> str:
