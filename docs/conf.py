@@ -85,6 +85,9 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# If `True`, warnings for broken cross-references will be reported
+# during documentation build.
+nitpicky = True
 
 # -- Options for HTML output ----------------------------------------------
 
