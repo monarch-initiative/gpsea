@@ -145,8 +145,8 @@ Get the transcript data
 Besides the transcript accession ID, the downstream analysis may need more information
 about the "anatomy" of the transcript of interest, such as the coordinates of the exons
 or the untranslated regions. The coordinates can be
-represented either in :class:`~gpsea.model.genome.GRCh37`
-or :class:`~gpsea.model.genome.GRCh38` (recommended) reference genomes.
+represented either in :obj:`~gpsea.model.genome.GRCh37`
+or :data:`~gpsea.model.genome.GRCh38` (recommended) reference genomes.
 
 GPSEA models the transcript anatomy with
 :class:`~gpsea.model.TranscriptCoordinates` class, and there are several ways

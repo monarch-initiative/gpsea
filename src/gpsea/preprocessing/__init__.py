@@ -1,3 +1,4 @@
+from ._api import PreprocessingValidationResult
 from ._api import TranscriptCoordinateService, GeneCoordinateService
 from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, ProteinMetadataService
 from ._audit import Auditor, DataSanityIssue, Level, Notepad, NotepadTree
@@ -23,6 +24,7 @@ __all__ = [
     'PatientCreator', 'CohortCreator',
     'PhenopacketVariantCoordinateFinder', 'PhenopacketPatientCreator',
     'load_phenopacket_folder', 'load_phenopacket_files', 'load_phenopackets',
+    'PreprocessingValidationResult',
     'TranscriptCoordinateService', 'GeneCoordinateService',
     'PhenotypeCreator',
     'ProteinAnnotationCache', 'ProtCachingMetadataService',
