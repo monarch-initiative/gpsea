@@ -1,6 +1,7 @@
 import typing
 
 import hpotk
+import numpy as np
 import pytest
 
 from gpsea.model import Cohort
@@ -64,7 +65,7 @@ class TestHpoTermAnalysis:
                 0.48571428571428565,
                 float("nan"),
                 0.1048951048951049,
-                1.,
+                1.0,
             ],
             nan_ok=True,
         )
@@ -80,21 +81,21 @@ class TestHpoTermAnalysis:
             nan_ok=True,
         )
 
-    def test_compare_genotype_vs_phenotypes_explodes_if_no_phenotypes_are_left_after_mtc_filter(
+    def test_compare_genotype_vs_phenotypes_can_handle_if_no_phenotypes_are_left_after_mtc_filter(
         self,
         analysis: HpoTermAnalysis,
         degenerated_cohort: Cohort,
         suox_gt_predicate: GenotypePolyPredicate,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
     ):
-        with pytest.raises(ValueError) as e:
-            analysis.compare_genotype_vs_phenotypes(
-                cohort=degenerated_cohort,
-                gt_predicate=suox_gt_predicate,
-                pheno_predicates=suox_pheno_predicates,
-            )
+        result = analysis.compare_genotype_vs_phenotypes(
+            cohort=degenerated_cohort,
+            gt_predicate=suox_gt_predicate,
+            pheno_predicates=suox_pheno_predicates,
+        )
 
         assert (
-            e.value.args[0]
-            == "No phenotypes are left for the analysis after MTC filtering step"
-        )
+            result.total_tests == 0
+        ), "No tests should have been done due to MTC filtering"
+        assert np.all(np.isnan(result.pvals)), "All p values should be NaN"
+        assert result.corrected_pvals is None

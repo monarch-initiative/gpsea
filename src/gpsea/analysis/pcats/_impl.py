@@ -309,8 +309,37 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         self._corrected_pvals = (
             None if corrected_pvals is None else tuple(corrected_pvals)
         )
-        assert isinstance(gt_predicate, GenotypePolyPredicate)
         self._gt_predicate = gt_predicate
+        errors = self._check_sanity()
+        if errors:
+            raise ValueError(os.linesep.join(errors))
+        
+    def _check_sanity(self) -> typing.Sequence[str]:
+        errors = []
+        # All sequences must have the same lengths ...
+        for seq, name in (
+            (self._n_usable, 'n_usable'),
+            (self._all_counts, 'all_counts'),
+            (self._pvals, 'pvals'),
+        ):
+            if len(self._pheno_predicates) != len(seq):
+                errors.append(
+                    f"`len(pheno_predicates)` must be the same as `len({name})` but "
+                    f"{len(self._pheno_predicates)}!={len(seq)}"
+                )
+        
+        # ... including the optional corrected p values
+        if self._corrected_pvals is not None and len(self._pheno_predicates) != len(self._corrected_pvals):
+            errors.append(
+                f"`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but "
+                f"{len(self._pheno_predicates)}!={len(self._corrected_pvals)}"
+            )
+
+        if not isinstance(self._gt_predicate, GenotypePolyPredicate):
+            errors.append(
+                "`gt_predicate` must be an instance of `GenotypePolyPredicate`"
+            )
+        return errors
 
     @property
     def gt_predicate(self) -> GenotypePolyPredicate:
@@ -428,6 +457,19 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
         self._mtc_name = mtc_name
+        
+        errors = self._check_hpo_result_sanity()
+        if errors:
+            raise ValueError(os.linesep.join(errors))
+
+    def _check_hpo_result_sanity(self) -> typing.Sequence[str]:
+        errors = []
+        if len(self._pheno_predicates) != len(self._mtc_filter_results):
+            errors.append(
+                f"`len(pheno_predicates)` must be the same as `len(mtc_filter_results)` but "
+                f"{len(self._pheno_predicates)}!={len(self._mtc_filter_results)}"
+            )
+        return errors
 
     @property
     def mtc_filter_name(self) -> str:
@@ -515,25 +557,26 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             ph_predicates=pheno_predicates,
             counts=all_counts,
         )
-        mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
-        if not mtc_mask.any():
-            raise ValueError("No phenotypes are left for the analysis after MTC filtering step")
 
-        # 3 - Compute nominal p values
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)
-        pvals[mtc_mask] = self._compute_nominal_pvals(
-            n_usable=slice_list_in_numpy_style(n_usable, mtc_mask),
-            all_counts=slice_list_in_numpy_style(all_counts, mtc_mask),
-        )
+        corrected_pvals = None
 
-        # 4 - Apply Multiple Testing Correction
-        if self._mtc_correction is None:
-            corrected_pvals = None
-        else:
-            corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
-            # Do not test the p values that have been filtered out.
-            corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
+        mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
+        if mtc_mask.any():
+            # We have at least one HPO term to test.
 
+            # 3 - Compute nominal p values
+            pvals[mtc_mask] = self._compute_nominal_pvals(
+                n_usable=slice_list_in_numpy_style(n_usable, mtc_mask),
+                all_counts=slice_list_in_numpy_style(all_counts, mtc_mask),
+            )
+
+            # 4 - Apply Multiple Testing Correction
+            if self._mtc_correction is not None:
+                corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
+                # Do not test the p values that have been filtered out.
+                corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
+            
         return HpoTermAnalysisResult(
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,

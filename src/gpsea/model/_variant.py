@@ -237,9 +237,10 @@ class VariantClass(enum.Enum):
     Single nucleotide variant.
     """
 
-    BND = 6
+    TRANSLOCATION = 6
     """
-    A breakend.
+    A chromosomal translocation, which occurs when a chromosome breaks
+    and the (typically two) fragmented pieces re-attach to different chromosomes.
     """
 
 

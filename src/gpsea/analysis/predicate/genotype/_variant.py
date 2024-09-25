@@ -8,7 +8,7 @@ from ._predicates import *
 
 
 # We do not need more than just one instance of these predicates.
-IS_BND = VariantClassPredicate(VariantClass.BND)
+IS_TRANSLOCATION = VariantClassPredicate(VariantClass.TRANSLOCATION)
 IS_LARGE_IMPRECISE_SV = IsLargeImpreciseStructuralVariantPredicate()
 
 
@@ -201,7 +201,7 @@ class VariantPredicates:
         The thresholds vary in the literature, but here we use 50bp as a default.
 
         Any variant that affects at least `threshold` base pairs is considered an SV.
-        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.BND`)
+        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.TRANSLOCATION`)
         are always considered as an SV.
 
         Args:
@@ -212,7 +212,7 @@ class VariantPredicates:
             VariantPredicates.change_length("<=", -threshold)
             | VariantPredicates.change_length(">=", threshold)
             | VariantPredicates.is_large_imprecise_sv()
-            | IS_BND
+            | IS_TRANSLOCATION
         )
 
     @staticmethod

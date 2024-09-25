@@ -19,8 +19,10 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         timeout: float = 30.,
     ):
         self._logger = logging.getLogger(__name__)
-        self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&fields=accession,id,' \
-                    'gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,xref_refseq,length'
+        self._headers = {'Content-type': 'application/json'}
+        self._url = 'https://rest.uniprot.org/uniprotkb/search?query=(%s)AND(reviewed:true)&(organism_id:9606)' \
+            '&fields=accession,id,gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,' \
+            'xref_refseq,length'
         self._timeout = timeout
 
     @staticmethod
@@ -89,6 +91,17 @@ class UniprotProteinMetadataService(ProteinMetadataService):
 
         return ProteinMetadata(protein_id, protein_name, all_features_list, protein_length)
 
+    def _fetch_uniprot_response(
+        self,
+        protein_id: str,
+    ) -> typing.Mapping[str, typing.Any]:
+        api_url = self._url % protein_id
+        return requests.get(
+            api_url,
+            headers=self._headers,
+            timeout=self._timeout,
+        ).json()
+
     def annotate(self, protein_id: str) -> ProteinMetadata:
         """
         Get metadata for given protein ID.
@@ -105,7 +118,6 @@ class UniprotProteinMetadataService(ProteinMetadataService):
             raise ValueError(f"Please remove whitespace from protein id: \"{protein_id}\" and try again!")
         if not protein_id.startswith("NP_"):
             raise ValueError(f"only works with a RefSeq database ID (e.g. NP_037407.4), but we got {protein_id}")
-        api_url = self._url % protein_id
-        response = requests.get(api_url, timeout=self._timeout).json()
 
+        response = self._fetch_uniprot_response(protein_id)
         return UniprotProteinMetadataService.parse_uniprot_json(response, protein_id)

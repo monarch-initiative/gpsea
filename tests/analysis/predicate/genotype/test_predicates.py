@@ -315,3 +315,16 @@ class TestLogicalVariantPredicate:
             empty = ()
             VariantPredicates.any(empty)
         assert e.value.args[0] == 'Predicates must not be empty!'
+
+    def test_logical_predicates_are_hashable(self):
+        a = VariantPredicates.gene(symbol='A')
+        b = VariantPredicates.gene(symbol='B')
+
+        a_and_b = a & b
+        assert isinstance(hash(a_and_b), int)
+
+        a_or_b = a | b
+        assert isinstance(hash(a_or_b), int)
+
+        inv_a = ~a
+        assert isinstance(hash(inv_a), int)
