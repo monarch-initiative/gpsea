@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._protein &mdash; GPSEA 0.4.0 documentation</title>
+  <title>gpsea.model._protein &mdash; GPSEA 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=6c02275b"></script>
+        <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -83,9 +83,14 @@
   <h1>Source code for gpsea.model._protein</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.util</span> <span class="kn">import</span> <span class="n">open_text_io_handle_for_reading</span>
 
 <span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 
@@ -96,11 +101,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `FeatureInfo` represents a protein feature</span>
 <span class="sd">    (e.g. a repeated sequence given the name &quot;ANK 1&quot; in protein &quot;Ankyrin repeat domain-containing protein 11&quot;)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span> <span class="s2">&quot;region&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -138,9 +143,11 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FeatureInfo</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> \
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">FeatureInfo</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">region</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">))</span>
@@ -159,12 +166,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enum representing the protein feature types supported in GPSEA.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">REPEAT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A repeated sequence motif or repeated domain within the protein.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">MOTIF</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A short (usually not more than 20 amino acids) conserved sequence motif of biological significance.</span>
@@ -175,10 +182,44 @@
 <span class="sd">    A specific combination of secondary structures organized into a characteristic three-dimensional structure or fold.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">COILED_COIL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a structural motif in proteins, characterized by two or more α-helices wrapped around each other in a supercoil.</span>
+<span class="sd">    This structure is often involved in protein-protein interactions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">COMPOSITIONAL_BIAS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compositional bias refers to a  region in a protein where certain amino acids are overrepresented compared to</span>
+<span class="sd">    the rest of the protein or compared to typical protein composition. These regions tend to have a non-random</span>
+<span class="sd">    distribution of amino acids, often leading to specific structural or functional properties.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">REGION</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A region of interest that cannot be described in other subsections.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FeatureType.from_string">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FeatureType.from_string">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FeatureType&quot;</span><span class="p">:</span>
+        <span class="n">cat_lover</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;motif&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">MOTIF</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">DOMAIN</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;region&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;coiled coil&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
+        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;compositional bias&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">COMPOSITIONAL_BIAS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized protein feature type: &quot;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -189,7 +230,10 @@
 <div class="viewcode-block" id="ProteinFeature.create">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.ProteinFeature.create">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">FeatureInfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">FeatureInfo</span><span class="p">,</span>
+        <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ProteinFeature&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">SimpleProteinFeature</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">)</span></div>
 
 
@@ -215,6 +259,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An implementation of a `ProteinFeature`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Not part of the public API.</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FeatureInfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">):</span>
@@ -228,7 +273,9 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;info must be type FeatureInfo but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">info</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;feature_type must be type FeatureType but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">feature_type</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;feature_type must be type FeatureType but was type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">feature_type</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">feature_type</span>
 
     <span class="nd">@property</span>
@@ -248,16 +295,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;SimpleProteinFeature(type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;SimpleProteinFeature(type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="sa">f</span><span class="s2">&quot;info=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SimpleProteinFeature</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_type</span> \
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SimpleProteinFeature</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_type</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_info</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">))</span>
@@ -269,56 +317,216 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An info regarding a protein sequence, including an ID, a label,</span>
 <span class="sd">    and location of protein features, such as motifs, domains, or other regions.</span>
+
+<span class="sd">    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotMetadataService`,</span>
+<span class="sd">    but it can also be created manually using :meth:`~gpsea.model.ProteinMetadata.from_feature_frame` function.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    Let&#39;s create a protein info with a domain and a region. We must provide protein accession ID,</span>
+<span class="sd">    a label, a data frame with protein features, and the number of aminoacids of the protein sequence:</span>
+
+<span class="sd">    &gt;&gt;&gt; protein_id = &#39;NP_000129.3&#39;</span>
+<span class="sd">    &gt;&gt;&gt; label = &#39;fibrillin-1 isoform a preproprotein&#39;</span>
+<span class="sd">    &gt;&gt;&gt; protein_length = 1000</span>
+
+<span class="sd">    Now let&#39;s prepare a data frame with the protein features. We will prepare a domain and a region:</span>
+
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; features = [</span>
+<span class="sd">    ...     {</span>
+<span class="sd">    ...         &quot;region&quot;: &quot;Suppresor domain&quot;,</span>
+<span class="sd">    ...         &quot;category&quot;: &quot;domain&quot;,</span>
+<span class="sd">    ...         &quot;start&quot;: 1,</span>
+<span class="sd">    ...         &quot;end&quot;: 223,</span>
+<span class="sd">    ...     },</span>
+<span class="sd">    ...     {</span>
+<span class="sd">    ...         &quot;region&quot;: &quot;IP3 binding&quot;,</span>
+<span class="sd">    ...         &quot;category&quot;: &quot;region&quot;,</span>
+<span class="sd">    ...         &quot;start&quot;: 224,</span>
+<span class="sd">    ...         &quot;end&quot;: 578,</span>
+<span class="sd">    ...     },</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(features)</span>
+
+<span class="sd">    last, we can put the protein info together:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.model import ProteinMetadata</span>
+<span class="sd">    &gt;&gt;&gt; protein_meta = ProteinMetadata.from_feature_frame(</span>
+<span class="sd">    ...     protein_id=protein_id,</span>
+<span class="sd">    ...     label=label,</span>
+<span class="sd">    ...     features=df,</span>
+<span class="sd">    ...     protein_length=protein_length,</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    and get the expected protein info:</span>
+
+<span class="sd">    &gt;&gt;&gt; protein_meta.protein_id</span>
+<span class="sd">    &#39;NP_000129.3&#39;</span>
+<span class="sd">    &gt;&gt;&gt; protein_meta.label</span>
+<span class="sd">    &#39;fibrillin-1 isoform a preproprotein&#39;</span>
+<span class="sd">    &gt;&gt;&gt; len(protein_meta.protein_features)</span>
+<span class="sd">    2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProteinMetadata.from_feature_frame">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.ProteinMetadata.from_feature_frame">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_feature_frame</span><span class="p">(</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">features</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ProteinMetadata&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `ProteinMetadata` from a user-supplied pandas DataFrame.</span>
+<span class="sd">        We expect to obtain the gene symbol, protein identifier, and regions</span>
+
+<span class="sd">        The DataFrame should include the following columns:</span>
+
+<span class="sd">        +------------------+----------+----------------+</span>
+<span class="sd">        | region           | category | start  | end   |</span>
+<span class="sd">        +------------------+----------+--------+-------+</span>
+<span class="sd">        | Suppresor domain | domain   | 1      | 223   |</span>
+<span class="sd">        +------------------+----------+--------+-------+</span>
+<span class="sd">        | IP3 binding      | region   | 224    | 578   |</span>
+<span class="sd">        +------------------+----------+--------+-------+</span>
+
+<span class="sd">        The `region` column includes the protein feature name.</span>
+<span class="sd">        The category must be one of `&#39;repeat&#39;`, `&#39;motif&#39;`, `&#39;domain&#39;`, or `&#39;region&#39;`.</span>
+<span class="sd">        Use `region` if no other option fits. Last, `start` and `end` denote 1-based start and end coordinates</span>
+<span class="sd">        of the aminoacid sequence region described by the feature.</span>
+<span class="sd">        For instance, `[1, 10]` for the first ten aminoacids of the protein.</span>
+
+<span class="sd">        :param protein_id: the accession id of the protein, e.g. `&#39;NP_000129.3&#39;`.</span>
+<span class="sd">        :param label: human-readable label, e.g. `&#39;fibrillin-1 isoform a preproprotein&#39;`.</span>
+<span class="sd">        :param features: a dataframe with of the protein features.</span>
+<span class="sd">        :param protein_length: a positive `int` representing the number of aminoacids included in the protein sequence.</span>
+<span class="sd">        :raises ValueError: if case of issues during parsing the provided data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expected_headers</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;region&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">expected_headers</span><span class="p">):</span>
+            <span class="n">missing_cols</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">expected_headers</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The column(s) </span><span class="se">{{</span><span class="si">{</span><span class="n">missing_cols</span><span class="si">}</span><span class="se">}}</span><span class="s2"> are missing from the `features` DataFrame: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">region_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">region_name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;region&quot;</span><span class="p">]</span>
+            <span class="n">region_start</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># convert to 0-based coordinates</span>
+            <span class="n">region_end</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span>
+            <span class="n">region_category</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span>
+            <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">region_category</span><span class="p">)</span>
+            <span class="n">finfo</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">region_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">region_end</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">pfeature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">finfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">)</span>
+            <span class="n">region_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfeature</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
+            <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">protein_features</span><span class="o">=</span><span class="n">region_list</span><span class="p">,</span>
+            <span class="n">protein_length</span><span class="o">=</span><span class="n">protein_length</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProteinMetadata.from_uniprot_json">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.ProteinMetadata.from_uniprot_json">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_uniprot_json</span><span class="p">(</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">uniprot_json</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ProteinMetadata&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `ProteinMetadata` from a json file that has been downloaded from UniProt.</span>
+
+<span class="sd">        Go to the UniProt page for the protein of interest, then go to the section &quot;Family &amp; Domains&quot;, and the</span>
+<span class="sd">        subsection &quot;Features&quot;. Click on the *Download* symbol. You will be presented with a JSON file for download.</span>
+<span class="sd">        From this, we extract information about the gene symbol, protein identifier, and regions.</span>
+<span class="sd">        This method is intended to be a backup if the API call to UniProt fails; the same information should be</span>
+<span class="sd">        retrieved.</span>
+<span class="sd">        See the test file &quot;test_uniprot_json.py&quot; for details about the JSON parsing etc.</span>
+
+<span class="sd">        :param protein_id: the accession id of the protein, e.g. `&#39;NP_000129.3&#39;`.</span>
+<span class="sd">        :param label: human-readable label, e.g. `&#39;fibrillin-1 isoform a preproprotein&#39;`.</span>
+<span class="sd">        :param uniprot_json: a `str` with the path or an IO object with the Uniprot JSON data.</span>
+<span class="sd">        :param protein_length: a positive `int` representing the number of aminoacids included in the protein sequence.</span>
+<span class="sd">        :raises ValueError: if case of issues during parsing the provided data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">open_text_io_handle_for_reading</span><span class="p">(</span><span class="n">uniprot_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        
+        <span class="n">regions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">region_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+                <span class="n">locus</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+                <span class="n">region_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># convert to 0-based coordinates</span>
+                <span class="n">region_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+                <span class="n">finfo</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">region_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">region_end</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">pfeature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">finfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">)</span>
+                <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfeature</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">feature_exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse feature: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">feature_exception</span><span class="p">)</span><span class="si">}</span><span class="s2"> (skipping)&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
+            <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">protein_features</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span>
+            <span class="n">protein_length</span><span class="o">=</span><span class="n">protein_length</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">],</span>
-        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">protein_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">],</span>
+        <span class="n">protein_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Protein ID must be type string but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">protein_id</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Protein label must be type string but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">label</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">protein_features</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Protein Features must be a list of type ProteinFeature but is type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_features</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">protein_features</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">protein_features</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_length</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">protein_length</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span> <span class="o">=</span> <span class="n">protein_length</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: A string unique to this protein</span>
+<span class="sd">        Get the protein&#39;s accession ID, e.g. `NP_000129.3`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            string: The full name of the protein</span>
+<span class="sd">        Get the protein label, e.g. `fibrillin-1 isoform a preproprotein`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Sequence[ProteinFeature]: A sequence of ProteinFeatures objects</span>
+<span class="sd">        Get a sequence of protein features.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protein_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            int: length of protein</span>
+<span class="sd">        Get the number of aminoacids of the protein sequence.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_length</span>
 
@@ -327,9 +535,11 @@
     <span class="k">def</span> <span class="nf">domains</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;DOMAIN&quot;</span>
+<span class="sd">            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to protein domains.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">DOMAIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">DOMAIN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProteinMetadata.repeats">
@@ -337,9 +547,11 @@
     <span class="k">def</span> <span class="nf">repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;REPEAT&quot;</span>
+<span class="sd">            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to repeat regions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REPEAT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REPEAT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProteinMetadata.regions">
@@ -347,9 +559,11 @@
     <span class="k">def</span> <span class="nf">regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;REGIONS&quot;</span>
+<span class="sd">            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to generic regions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProteinMetadata.motifs">
@@ -357,14 +571,19 @@
     <span class="k">def</span> <span class="nf">motifs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Iterable[ProteinFeature]: A subgroup of protein_features, where the ProteinFeature object has a FeatureType equal to &quot;MOTIF&quot;</span>
+<span class="sd">            Iterable[ProteinFeature]: A subgroup of the protein features that correspond to motifs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">MOTIF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">==</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">MOTIF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProteinMetadata.get_features_variant_overlaps">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.ProteinMetadata.get_features_variant_overlaps">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_features_variant_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_features_variant_overlaps</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">ProteinFeature</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a collection of protein features that overlap with the `region`.</span>
 <span class="sd">        Args:</span>
@@ -373,24 +592,27 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Collection[ProteinFeature]: a collection of overlapping protein features.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">affected_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">feat</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
-                <span class="n">affected_features</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">affected_features</span></div>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">feature</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span>
+            <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ProteinMetadata(id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;label=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;features=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ProteinMetadata(id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;label=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;features=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">label</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_features</span> \
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">label</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_features</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_features</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">protein_id</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">))</span>
