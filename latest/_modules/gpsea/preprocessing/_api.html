@@ -253,6 +253,8 @@
 
 
 
+<div class="viewcode-block" id="PreprocessingValidationResult">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult">[docs]</a>
 <span class="k">class</span> <span class="nc">PreprocessingValidationResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The result of input validation of patient data.</span>
@@ -273,6 +275,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policy</span>
 
+<div class="viewcode-block" id="PreprocessingValidationResult.is_ok">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.is_ok">[docs]</a>
     <span class="k">def</span> <span class="nf">is_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the result is OK considering the used validation policy.</span>
@@ -290,8 +294,11 @@
             <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_notepad</span><span class="o">.</span><span class="n">has_errors_or_warnings</span><span class="p">(</span><span class="n">include_subsections</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Bug, please report to the developers.</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unexpected policy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_policy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unexpected policy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_policy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="PreprocessingValidationResult.summarize">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize">[docs]</a>
     <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">file</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
@@ -343,7 +350,9 @@
                             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;No errors or warnings were found&quot;</span><span class="p">)</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>
