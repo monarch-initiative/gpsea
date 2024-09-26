@@ -83,12 +83,10 @@ class PhenopacketVariantCoordinateFinder(
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
     ):
         self._logger = logging.getLogger(__name__)
-        self._build = hpotk.util.validate_instance(build, GenomeBuild, "build")
-        self._hgvs_finder = hpotk.util.validate_instance(
-            hgvs_coordinate_finder,
-            VariantCoordinateFinder,
-            "hgvs_coordinate_finder",
-        )
+        assert isinstance(build, GenomeBuild)
+        self._build = build
+        assert isinstance(hgvs_coordinate_finder, VariantCoordinateFinder)
+        self._hgvs_finder = hgvs_coordinate_finder
 
     def find_coordinates(
         self,
@@ -356,8 +354,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return final_diseases
     
     def _add_measurements(
-            self,
-            measurements: typing.Sequence[PPMeasurement], notepad: Notepad
+        self,
+        measurements: typing.Sequence[PPMeasurement],
+        notepad: Notepad,
     ) -> typing.Sequence[Measurement]:
         """
          Args:
@@ -381,7 +380,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             if not msrm.HasField("value"):
                 notepad.add_error(f"#{i} has no `value`")
                 keeper = False
-            val = msrm.value 
+            val = msrm.value
             if not val.HasField("quantity"):
                 notepad.add_error(f"#{i} has no `quantity`")
                 keeper = False

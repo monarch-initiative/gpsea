@@ -53,9 +53,15 @@ def fpath_test_dir() -> str:
     """
     return os.path.dirname(os.path.abspath(__file__))
 
+
 @pytest.fixture(scope='session')
 def fpath_test_data_dir(fpath_test_dir: str) -> str:
     return os.path.join(fpath_test_dir, 'test_data')
+
+
+@pytest.fixture(scope='session')
+def fpath_phenopacket_dir(fpath_test_data_dir: str) -> str:
+    return os.path.join(fpath_test_data_dir, 'phenopackets')
 
 
 @pytest.fixture(scope='session')
