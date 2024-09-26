@@ -29,8 +29,8 @@ The easiest way to input data into `gpsea` is to use the
 `gpsea` provides an out-of-the-box solution for loading a cohort from a folder of phenopacket JSON files.
 
 
-Create cohort creator
-^^^^^^^^^^^^^^^^^^^^^
+Configure a cohort creator
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Next, let's prepare a :class:`~gpsea.preprocessing.CohortCreator` that will turn a phenopacket collection
 into a :class:`~gpsea.model.Cohort`. The cohort creator also performs an input validation.
@@ -88,13 +88,6 @@ Individuals Processed: ...
 19
 
 The cohort includes all 19 individuals. 
-On top of the ``cohort``, the loader function also provides Q/C results  ``qc_results``.
-We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
-to display the Q/C summary:
-
->>> qc_results.summarize()  # doctest: +SKIP
-Validated under none policy
-No errors or warnings were found
 
 
 Alternative phenopacket sources
@@ -103,19 +96,78 @@ Alternative phenopacket sources
 In case you do not already have a `Phenopacket` collection at your fingertips,
 GPSEA provides a few other convenience functions for loading phenopackets from JSON files.
 
-The :func:`~gpsea.preprocessing.load_phenopacket_files` function can be used to load
-a bunch of phenopacket JSON files:
+The :func:`~gpsea.preprocessing.load_phenopacket_files` function loads
+phenopackets from one or more paths that point to phenopacket JSON files:
 
 >>> from gpsea.preprocessing import load_phenopacket_files
->>> pp_files = ('path/to/phenopacket1.json', 'path/to/phenopacket2.json')
->>> cohort, qc_results = load_phenopacket_files(pp_files, cohort_creator)  # doctest: +SKIP
+>>> pp_file_paths = ('path/to/phenopacket1.json', 'path/to/phenopacket2.json')
+>>> cohort, qc_results = load_phenopacket_files(pp_file_paths, cohort_creator)  # doctest: +SKIP
 
-or you can load an entire directory of JSON files with :func:`~gpsea.preprocessing.load_phenopacket_folder`:
+Alternatively, you can load an entire directory of phenopackets
+with the :func:`~gpsea.preprocessing.load_phenopacket_folder` loader function.
+The function expects a `str` with path to a directory that contains one or more phenopackets
+stored as JSON files. The loader includes all files that end with ``*.json`` suffix
+and ignores any other files or sub-directories:
 
 >>> from gpsea.preprocessing import load_phenopacket_folder
 >>> pp_dir = 'path/to/folder/with/many/phenopacket/json/files'
 >>> cohort, qc_results = load_phenopacket_folder(pp_dir, cohort_creator)  # doctest: +SKIP
 
+
+.. _quality-control
+
+Quality control
+^^^^^^^^^^^^^^^
+
+Besides the :class:`~gpsea.model.Cohort`, the loader functions also provide Q/C results (``qc_results``)
+as :class:`~gpsea.preprocessing.PreprocessingValidationResult`.
+The Q/C checker points out as many issues as possible (not just the first one),
+to allow fixing all issues at once. 
+The issues can be explored programmaticaly
+through the :class:`~gpsea.preprocessing.PreprocessingValidationResult` API,
+or we can display a summary with the
+:meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize` method:
+
+>>> qc_results.summarize()  # doctest: +SKIP
+Validated under permissive policy
+No errors or warnings were found
+
+In this case, no Q/C issues were found.
+
+
+.. _cohort-persistence
+
+****************************
+Persist the cohort for later
+****************************
+
+The preprocessing of a cohort can take some time even if we cache the responses from remote resources,
+such as Variant Effect Predictor, Variant Validator, or Uniprot.
+GPSEA ships with a custom encoder and decoder
+designed to be integrated with Python's built-in :mod:`json` module to 
+persist a :class:`~gpsea.model.Cohort` to a JSON file and load it back.
+
+
+Example
+-------
+
+We can dump the :class:`~gpsea.model.Cohort` into JSON
+by providing :class:`~gpsea.io.GpseaJSONEncoder` via `cls` option to the `json` module functions,
+such as the :func:`json.dumps` which encodes an object into a JSON `str`:
+
+>>> import json
+>>> from gpsea.io import GpseaJSONEncoder
+>>> encoded = json.dumps(cohort, cls=GpseaJSONEncoder)
+>>> encoded[:80]
+'{"members": [{"labels": {"label": "Subject 1", "meta_label": "PMID_27087320_Subj'
+
+
+We can decode the JSON `str` with :class:`~gpsea.io.GpseaJSONDecoder` to get the same cohort back:
+
+>>> from gpsea.io import GpseaJSONDecoder
+>>> decoded = json.loads(encoded, cls=GpseaJSONDecoder)
+>>> cohort == decoded
+True
 
 
 ***************************************************
