@@ -233,7 +233,7 @@ Testing multiple hypothesis on the same dataset increases the chance of receivin
 However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
 For general use, we recommend using a combination
-of a *Phenotype MTC filter* (:class:`~gpsea.analysis.PhenotypeMtcFilter`) with a *multiple testing correction*.
+of a *Phenotype MTC filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
 Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
 on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).

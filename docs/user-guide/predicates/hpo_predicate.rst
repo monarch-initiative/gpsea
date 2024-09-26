@@ -21,7 +21,7 @@ Example
 Here we show how to set up :class:`~gpsea.analysis.predicate.phenotype.HpoPredicate`
 to test for a presence of `Abnormal lens morphology <https://hpo.jax.org/browse/term/HP:0000517>`_.
 
-We need to load :class:`~hpotk.MinimalOntology` with HPO data to access the HPO hierarchy:
+We need to load :class:`~hpotk.ontology.MinimalOntology` with HPO data to access the HPO hierarchy:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()

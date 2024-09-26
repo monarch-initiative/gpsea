@@ -275,6 +275,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._so_duplications = {
             "1000037",  # chromosomal_duplication
         }
+        self._so_inversions = {
+            "1000030",  # chromosomal_inversion
+        }
+        self._so_translocations = {
+            "1000044",  # chromosomal_translocation
+        }
         self._assume_karyotypic_sex = assume_karyotypic_sex
 
     def process(self, pp: Phenopacket, notepad: Notepad) -> Patient:
@@ -576,6 +582,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 return VariantClass.DEL
             elif structural_type.id in self._so_duplications:
                 return VariantClass.DUP
+            elif structural_type.id in self._so_translocations:
+                return VariantClass.TRANSLOCATION
+            elif structural_type.id in self._so_inversions:
+                return VariantClass.INV
             else:
                 raise ValueError(f"Unknown structural type {structural_type}")
         else:
