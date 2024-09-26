@@ -155,7 +155,8 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
 class Measurement(hpotk.model.Identified, hpotk.model.Named):
     """
     Representation of a GA4GH Phenopacket Measurement (numerical test result).
-    An intended use case would be to perform a Student's t test on numerical measurements in individuals with two difference genotype classes.
+    An intended use case would be to perform a Student's t test on numerical measurements in individuals
+    with two difference genotype classes.
     """
 
     def __init__(
@@ -165,9 +166,13 @@ class Measurement(hpotk.model.Identified, hpotk.model.Named):
         test_result: float,
         unit: hpotk.TermId,
     ):
-        self._term_id = hpotk.util.validate_instance(test_term_id, hpotk.TermId, 'test_term_id')
-        self._name = hpotk.util.validate_instance(test_name, str, 'test_name')
-        self._test_result = hpotk.util.validate_instance(test_result, float, 'test_result')
+        assert isinstance(test_term_id, hpotk.TermId)
+        self._term_id = test_term_id
+        assert isinstance(test_name, str)
+        self._name = test_name
+        assert isinstance(test_result, float)
+        self._test_result = test_result
+        assert isinstance(unit, hpotk.TermId)
         self._unit = unit
 
     @property
@@ -199,7 +204,7 @@ class Measurement(hpotk.model.Identified, hpotk.model.Named):
         return self._unit
 
     def __eq__(self, other):
-        return isinstance(other, Disease) \
+        return isinstance(other, Measurement) \
             and self._term_id == other._term_id \
             and self._name == other._name \
             and self._test_result == other._test_result \
@@ -209,12 +214,11 @@ class Measurement(hpotk.model.Identified, hpotk.model.Named):
         return hash((self._term_id, self._name, self._test_result, self._unit))
 
     def __str__(self):
-        return f"Measurement(" \
+        return "Measurement(" \
                f"identifier={self._term_id}, " \
                f"name={self._name}, " \
                f"test_result={self._test_result}), " \
-               f"unit={self._unit}"
+               f"unit={self._unit})"
 
     def __repr__(self):
         return str(self)
-
