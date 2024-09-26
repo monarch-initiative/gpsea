@@ -230,10 +230,10 @@ We can now execute the analysis:
 >>> len(result.phenotypes)
 260
 >>> result.total_tests
-16
+63
 
 
-Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
+Thanks to Phenotype MTC filter, we only tested 63 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -269,7 +269,7 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00387`.
+is `~0.01524`.
 
 The table includes all HPO terms of the cohort, including the terms that were not selected for testing
 and thus have no associated p value.

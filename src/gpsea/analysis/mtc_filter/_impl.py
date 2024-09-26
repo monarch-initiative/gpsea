@@ -236,10 +236,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
         "HMF03", "Skipping term because of a child term with the same individual counts",
     )
-    SKIPPING_SAME_OBSERVED_PROPORTIONS = PhenotypeMtcResult.fail(
-        "HMF04",
-        "Skipping term because all genotypes have same HPO observed proportions",
-    )
     SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS = PhenotypeMtcResult.fail(
         "HMF05", "Skipping term because one genotype had zero observations"
     )
@@ -412,14 +408,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             ):
                 results[idx] = HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
                 continue
-            
-            elif HpoMtcFilter.genotypes_have_same_hpo_proportions(
-                contingency_matrix,
-                gt_predicate=gt_predicate,
-                ph_predicate=ph_predicate,
-            ):
-                results[idx] = HpoMtcFilter.SKIPPING_SAME_OBSERVED_PROPORTIONS
-                continue
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
                 counts=contingency_matrix,
@@ -475,7 +463,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             self._below_frequency_threshold,
             self._not_powered_for_2_by_2,
             HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,
-            HpoMtcFilter.SKIPPING_SAME_OBSERVED_PROPORTIONS,
             HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,
         )
 
@@ -530,38 +517,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
         """
         return (counts.loc[ph_predicate.present_phenotype_category] > 1).any()
-
-    @staticmethod
-    def genotypes_have_same_hpo_proportions(
-        counts: pd.DataFrame,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
-        delta: float = 5e-4,
-    ) -> bool:
-        """
-        If each genotype has the same proportion of observed HPOs, then we do not want to do a test.
-        For instance, if MISSENSE has 5/5 observed HPOs and NOT MISSENSE has 7/7 it makes not sense
-        to do a statistical test.
-        Args:
-            counts: pandas DataFrame with counts
-            delta: a `float` for tolerance comparing the proportion tolerance
-
-        Returns: true if the genotypes differ by more than `delta`
-        """
-        numerators = np.array([
-            counts.loc[ph_predicate.present_phenotype_category, c] for c in gt_predicate.get_categories()
-        ])
-        denominators = np.array([
-            counts.loc[:, c].sum() for c in gt_predicate.get_categories()
-        ])
-        
-        if np.any(denominators == 0):
-            return False
-
-        ratios = numerators / denominators
-        mean_ratio = np.mean(ratios)
-        abs_diff = np.abs(ratios - mean_ratio)
-        return bool(np.all(abs_diff < delta))
 
     def _get_ordered_terms(
         self,

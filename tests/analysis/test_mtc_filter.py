@@ -128,34 +128,6 @@ class TestHpoMtcFilter:
     @pytest.mark.parametrize(
         "counts, expected",
         [
-            ((10, 100, 50, 500), True),
-            ((0, 0, 100, 100), True),
-            ((10, 100, 50, 500), True),
-            ((10, 100, 10, 105), False),
-            ((95, 60, 144 - 95, 71 - 60), False),
-            ((40, 15, 18, 15), False),
-        ]
-    )
-    def test_genotypes_have_same_hpo_proportions(
-        self,
-        counts: typing.Tuple[int],
-        expected: bool,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
-    ):
-        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_predicate, ph_predicate)
-
-        actual = HpoMtcFilter.genotypes_have_same_hpo_proportions(
-            counts=counts_df,
-            gt_predicate=gt_predicate,
-            ph_predicate=ph_predicate,
-        )
-
-        assert actual == expected
-
-    @pytest.mark.parametrize(
-        "counts, expected",
-        [
             ((1, 2, 99, 198), .01),
             ((1, 3, 99, 197), .015),
             ((0, 0, 100, 200), 0.),
