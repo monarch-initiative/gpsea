@@ -98,6 +98,30 @@ class Patient:
         Get the measurements in the patient.
         """
         return self._measurements
+    
+    def measurement_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Measurement]:
+        """
+        Get a measurement with an identifier or `None` if the individual has no such measurement.
+
+        :param term_id: a `str` with CURIE or a :class:`~hpotk.TermId`
+            representing the term ID of a measurement (e.g. `LOINC:2986-8` for *Testosterone[Mass/Vol]*).
+        :returns: the corresponding :class:`Measurement` or `None` if not found in the patient.
+        """
+        if isinstance(term_id, str):
+            pass
+        elif isinstance(term_id, hpotk.TermId):
+            term_id = term_id.value
+        else:
+            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
+
+        for m in self._measurements:
+            if m.identifier.value == term_id:
+                return m
+        
+        return None
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:

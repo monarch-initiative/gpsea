@@ -208,8 +208,8 @@ class PhenotypeScoreAnalysis:
         # Sort by PatientCategory.cat_id and unpack.
         # For now, we only allow to have up to 2 groups.
         x_key, y_key = sorted(data["genotype"].dropna().unique())
-        x = data.loc[data["genotype"] == x_key, "phenotype"].to_numpy(dtype=float)
-        y = data.loc[data["genotype"] == y_key, "phenotype"].to_numpy(dtype=float)
+        x = data.loc[data["genotype"] == x_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
+        y = data.loc[data["genotype"] == y_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
         pval = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(
