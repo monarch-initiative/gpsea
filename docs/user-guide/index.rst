@@ -1,4 +1,4 @@
-.. _rstuser-guide:
+.. _user-guide:
 
 ==========
 User guide
@@ -10,8 +10,6 @@ corresponding choice of genotype and phenotype predicates to perform the test, c
 The pages shown in the table of contents provide more information about each step.
 
 
-
-
 .. toctree::
   :maxdepth: 1
   :caption: Contents:
@@ -19,7 +17,7 @@ The pages shown in the table of contents provide more information about each ste
   input-data
   exploratory
   predicates
-  stats
+  analyses
   mtc
   glossary
   autosomal_recessive
