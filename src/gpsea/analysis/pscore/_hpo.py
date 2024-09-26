@@ -5,6 +5,10 @@ import hpotk
 from gpsea.model import Patient
 from ._api import PhenotypeScorer
 
+"""
+A module with HPO-driven phenotype scores. The score generally work with the phenotypes of an individual
+"""
+
 
 class CountingPhenotypeScorer(PhenotypeScorer):
     """
