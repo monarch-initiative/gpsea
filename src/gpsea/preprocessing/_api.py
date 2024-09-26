@@ -162,7 +162,7 @@ class PreprocessingValidationResult:
 
         :returns: `True` if the analysis can proceed or `False` if errors/warnings were found.
         """
-        if self._policy == 'none':
+        if self._policy == 'permissive':
             # No validation
             return True
         elif self._policy == 'lenient':
