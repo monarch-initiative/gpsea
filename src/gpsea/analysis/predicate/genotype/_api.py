@@ -17,8 +17,8 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
 
-    The subclasses are expected to implement all abstract methods of this class
-    *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.
+    The subclasses *MUST* implement all abstract methods of this class
+    *plus* ``__eq__`` and ``__hash__``, to support building the compound predicates.
 
     We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.
     """
