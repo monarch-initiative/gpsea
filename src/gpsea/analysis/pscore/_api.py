@@ -40,6 +40,7 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
         """
         return FunctionPhenotypeScorer(func=func)
 
+    @abc.abstractmethod
     def score(self, patient: Patient) -> float:
         """
         Compute the score for the `patient`.
@@ -114,10 +115,14 @@ class PhenotypeScoreAnalysisResult:
         self,
         gt_predicate: GenotypePolyPredicate,
         ax,
-        colors=["darksalmon", "honeydew"],
+        colors=("darksalmon", "honeydew"),
     ):
         """
-        Draw box plots with distributions of phenotype scores for genotype groups
+        Draw box plot with distributions of phenotype scores for the genotype groups.
+
+        :param gt_predicate: the genotype predicate used to produce the genotype groups.
+        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
+        :param colors: a tuple with colors to use for coloring the box patches of the box plot.
         """
         # skip the patients with unassigned genotype group
         not_na_gts = self._genotype_phenotype_scores["genotype"].notna()
