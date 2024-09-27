@@ -12,7 +12,7 @@ from ._phenotype import Phenotype, Disease, Measurement
 from ._protein import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
 from ._tx import TranscriptCoordinates
 from ._variant import VariantCoordinates, ImpreciseSvInfo, VariantInfo, VariantInfoAware, VariantClass, Variant
-from ._variant import TranscriptAnnotation, TranscriptInfoAware
+from ._variant import TranscriptAnnotation, TranscriptInfoAware, FunctionalAnnotationAware
 from ._variant_effects import VariantEffect
 
 __all__ = [
@@ -20,6 +20,7 @@ __all__ = [
     'Phenotype', 'Disease', 'Measurement',
     'Variant', 'VariantClass', 'VariantCoordinates', 'ImpreciseSvInfo', 'VariantInfo', 'VariantInfoAware',
     'Genotype', 'Genotypes', 'Genotyped',
-    'TranscriptAnnotation', 'VariantEffect', 'TranscriptInfoAware', 'TranscriptCoordinates',
+    'TranscriptAnnotation', 'VariantEffect', 'TranscriptInfoAware',
+    'FunctionalAnnotationAware', 'TranscriptCoordinates',
     'ProteinMetadata', 'ProteinFeature', 'FeatureInfo', 'FeatureType',
 ]

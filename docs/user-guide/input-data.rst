@@ -72,7 +72,7 @@ We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopa
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> registry = configure_phenopacket_registry()
->>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+>>> with registry.open_phenopacket_store(release="0.1.19") as ps:
 ...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
 >>> len(phenopackets)
 19
@@ -114,7 +114,7 @@ and ignores any other files or sub-directories:
 >>> cohort, qc_results = load_phenopacket_folder(pp_dir, cohort_creator)  # doctest: +SKIP
 
 
-.. _quality-control
+.. _quality-control:
 
 Quality control
 ^^^^^^^^^^^^^^^
@@ -135,7 +135,7 @@ No errors or warnings were found
 In this case, no Q/C issues were found.
 
 
-.. _cohort-persistence
+.. _cohort-persistence:
 
 ****************************
 Persist the cohort for later
@@ -411,7 +411,7 @@ to get insights into the cohort and to formulate genotype-phenotype association 
 
 
 Example
-=======
+-------
 
 Let's plot a distribution of the variants found in *TBX5* cohort of Phenopacket Store.
 First, some boiler-plate code is needed to load HPO and the 156 phenopackets

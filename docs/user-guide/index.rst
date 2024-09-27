@@ -11,13 +11,13 @@ The pages shown in the table of contents provide more information about each ste
 
 
 .. toctree::
-  :maxdepth: 1
+  :maxdepth: 3
   :caption: Contents:
 
   input-data
   exploratory
-  predicates
-  analyses
+  predicates/index
+  analyses/index
   mtc
+  general_hpo_terms
   glossary
-  autosomal_recessive

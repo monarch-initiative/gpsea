@@ -65,7 +65,7 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
         """Returns a boolean for whether the phenotype is observed.
 
         Returns:
-            boolean: True if this phenotype was observed in the respective patient.
+            bool: `True` if this phenotype was observed in the respective patient.
         """
         warnings.warn('`observed` property was deprecated and will be removed in `v0.3.0`. '
                       'Use `is_present` instead', DeprecationWarning, stacklevel=2)
@@ -178,14 +178,14 @@ class Measurement(hpotk.model.Identified, hpotk.model.Named):
     @property
     def identifier(self) -> hpotk.TermId:
         """
-        Get the test ID, e.g., `LOINC:2986-8`
+        Get the test ID, e.g. ``LOINC:2986-8``.
         """
         return self._term_id
 
     @property
     def name(self):
         """
-        Get the test label (e.g. `Testosterone [Mass/volume] in Serum or Plasma` for LOINC 2986-8).
+        Get the test label (e.g. *Testosterone [Mass/volume] in Serum or Plasma* for ``LOINC 2986-8``).
         """
         return self._name
 
@@ -199,7 +199,7 @@ class Measurement(hpotk.model.Identified, hpotk.model.Named):
     @property
     def unit(self) -> hpotk.TermId:
         """
-        Return the unit for the test result encoded as a TermId, e.g., `UCUM:ng/dL` for nanogram per deciliter.
+        Return the unit for the test result encoded as a TermId, e.g., ``UCUM:ng/dL`` for *nanogram per deciliter*.
         """
         return self._unit
 

@@ -276,7 +276,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
         
         Args:
-            top typing.Optional[int]: If not given, lists all present phenotypes.
+            typing.Optional[int]: If not given, lists all present phenotypes.
                 Otherwise, lists only the `top` highest counts
         
         Returns:
@@ -303,7 +303,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
+            typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
         
         Returns:
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
@@ -319,7 +319,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
+            typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
         
         Returns:
             list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)
@@ -341,7 +341,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
               or `None` if all transcripts should be listed.
         
         Returns:
-            mapping: Each transcript ID references a Counter(), with the variant effect as the key
+            typing.Mapping[str, typing.Mapping[str, int]]: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.
         """
         counters = {}

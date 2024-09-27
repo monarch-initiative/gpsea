@@ -7,7 +7,7 @@ from .._api import PolyPredicate, Categorization
 
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
     """
-    `GenotypePolyPredicate` is a base class for all :class:`PolyPredicate`
+    `GenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`
     that test the genotype axis.
     """
     pass
@@ -36,7 +36,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         Test if the `variant` meets a criterion.
         
         Args:
-            variant: an instance of :class:`Variant` to test.
+            variant: an instance of :class:`~gpsea.model.Variant` to test.
 
         Returns:
             bool: `True` if the variant meets the criterion and `False` otherwise.

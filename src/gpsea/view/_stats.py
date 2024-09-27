@@ -22,7 +22,7 @@ class MtcStatsViewer:
         result: HpoTermAnalysisResult,
     ) -> str:
         """
-        Create an HTML to present MTC part of the :class:`HpoTermAnalysisResult`.
+        Create an HTML to present MTC part of the :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`.
 
         Use the `display(HTML(..))` functions of the IPython package.
 

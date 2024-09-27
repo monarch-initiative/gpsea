@@ -108,7 +108,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         This class specifically only works with a RefSeq database ID (e.g. NP_037407.4).
 
         Args:
-            protein_id (string): A protein ID
+            protein_id (str): A protein ID
         Returns:
             Sequence[ProteinMetadata]: A sequence of ProteinMetadata objects, or an empty sequence if no data was found.
         """

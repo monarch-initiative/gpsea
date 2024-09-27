@@ -12,7 +12,7 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
     """
     `PhenotypeScorer` assigns the patient with a phenotype score.
 
-    The score can be :attr:`math.nan` if it is not possible to compute the score for a patient.
+    The score can be `math.nan` if it is not possible to compute the score for a patient.
 
     The scorer can be created by wrapping a scoring function (see :func:`~PhenotypeScorer.wrap_scoring_function`).
     """
@@ -160,7 +160,7 @@ class PhenotypeScoreAnalysis:
     The genotype groups are created by a :class:`~gpsea.analysis.predicate.genotype.GenotypePolyPredicate`
     and the phenotype score is computed with :class:`~gpsea.analysis.pscore.PhenotypeScorer`.
 
-    The association is tested with a :class:`~gpsea.analysis.pscore.PhenotypeScoreStatistic`
+    The association is tested with a :class:`~gpsea.analysis.pscore.stats.PhenotypeScoreStatistic`
     and the results are reported as a :class:`PhenotypeScoreAnalysisResult`.
     """
 
