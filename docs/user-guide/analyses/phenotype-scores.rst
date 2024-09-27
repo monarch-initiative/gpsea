@@ -38,47 +38,37 @@ Example analysis
 ****************
 
 
-Create cohort
-=============
+Load HPO
+========
 
-Let's now analyze the subjects reported in *Jordan et al*.
-We will load 19 phenopackets that represent individuals with mutations in *RERE*
-whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
-The phenopackets will be processed into :class:`~gpsea.model.Cohort`
-as described in the :ref:`input-data` section.
-
-Briefly, we will first load 19 phenopackets
-
->>> from ppktstore.registry import configure_phenopacket_registry
->>> registry = configure_phenopacket_registry()
->>> with registry.open_phenopacket_store(release='0.1.18') as ps:
-...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
->>> len(phenopackets)
-19
-
-
-and load HPO (version `v2024-07-01`)
+We will start the analysis with loading HPO `v2024-07-01`:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+>>> hpo.version
+'2024-07-01'
 
 
-to create a :class:`~gpsea.preprocessing.CohortCreator`
+Load cohort
+===========
 
->>> from gpsea.preprocessing import configure_caching_cohort_creator
->>> cohort_creator = configure_caching_cohort_creator(hpo)
+Let's now analyze the subjects reported in *Jordan et al*.
+We will load 19 phenopackets that represent individuals with mutations in *RERE*
+whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
+We will load the :class:`~gpsea.model.Cohort`
+from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.19.json>`_.
+The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
+.. 
+   Prepare the JSON file by running the tests in `tests/tests/test_generate_doc_cohorts.py`.
 
-which we will use to preprocess the cohort
-
->>> from gpsea.preprocessing import load_phenopackets
->>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Individuals Processed: ...
-
-
-resulting in a cohort consisting of 19 individuals
-
+>>> import json
+>>> from gpsea.io import GpseaJSONDecoder
+>>> fpath_cohort_json = 'docs/cohort-data/RERE.0.1.19.json'
+>>> with open(fpath_cohort_json) as fh:
+...     cohort = json.load(fh, cls=GpseaJSONDecoder)
 >>> len(cohort)
 19
 

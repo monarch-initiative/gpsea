@@ -2,6 +2,1310 @@
   "members": [
     {
       "labels": {
+        "label": "Subject 8",
+        "meta_label": "PMID_29330883_Subject_8"
+      },
+      "sex": "FEMALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0011240",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001561",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001511",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004322",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004384",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8358215,
+                "end": 8358216,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "T",
+              "alt": "TGGTGGA",
+              "change_length": 6
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
+              "is_preferred": true,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                20
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
+              "protein_effect_location": {
+                "start": 885,
+                "end": 886
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 8",
+                "meta_label": "PMID_29330883_Subject_8"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 9",
+        "meta_label": "PMID_27087320_Subject_9"
+      },
+      "sex": "MALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0000256",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002188",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000729",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001629",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002033",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000028",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000047",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002247",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001511",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004322",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000568",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000659",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0034295",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002119",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0030303",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012110",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001320",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0007018",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001260",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0033725",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002384",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001285",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001643",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0010772",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001655",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000369",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000358",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000107",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004209",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0006097",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001734",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000954",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011304",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012168",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002938",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0003186",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8361235,
+                "end": 8361236,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "C",
+              "alt": "CCCTGGAGGAGCTGAGGAGGGAG",
+              "change_length": 22
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.2249_2270dup",
+              "is_preferred": true,
+              "variant_effects": [
+                "FRAMESHIFT_VARIANT"
+              ],
+              "overlapping_exons": [
+                18
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.Thr758SerfsTer36",
+              "protein_effect_location": {
+                "start": 756,
+                "end": 757
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.587_608dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "FRAMESHIFT_VARIANT"
+              ],
+              "overlapping_exons": [
+                8
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.Thr204SerfsTer36",
+              "protein_effect_location": {
+                "start": 202,
+                "end": 203
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.2249_2270dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "FRAMESHIFT_VARIANT"
+              ],
+              "overlapping_exons": [
+                19
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.Thr758SerfsTer36",
+              "protein_effect_location": {
+                "start": 756,
+                "end": 757
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 9",
+                "meta_label": "PMID_27087320_Subject_9"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 7",
+        "meta_label": "PMID_29330883_Subject_7"
+      },
+      "sex": "MALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0011220",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000047",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002119",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0009879",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001655",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001629",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000369",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0005989",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0006610",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8358215,
+                "end": 8358216,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "T",
+              "alt": "TGGTGGA",
+              "change_length": 6
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
+              "is_preferred": true,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                20
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
+              "protein_effect_location": {
+                "start": 885,
+                "end": 886
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 7",
+                "meta_label": "PMID_29330883_Subject_7"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 6",
+        "meta_label": "PMID_29330883_Subject_6"
+      },
+      "sex": "MALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0010945",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000486",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000729",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004209",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000957",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004684",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8358230,
+                "end": 8358231,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "T",
+              "alt": "A",
+              "change_length": 0
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4304A>T",
+              "is_preferred": true,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                20
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.His1435Leu",
+              "protein_effect_location": {
+                "start": 1434,
+                "end": 1435
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2642A>T",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.His881Leu",
+              "protein_effect_location": {
+                "start": 880,
+                "end": 881
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4304A>T",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.His1435Leu",
+              "protein_effect_location": {
+                "start": 1434,
+                "end": 1435
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 6",
+                "meta_label": "PMID_29330883_Subject_6"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
         "label": "Subject 1",
         "meta_label": "PMID_27087320_Subject_1"
       },
@@ -895,798 +2199,6 @@
     },
     {
       "labels": {
-        "label": "Subject 10",
-        "meta_label": "PMID_27087320_Subject_10"
-      },
-      "sex": "FEMALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002247",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001511",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000568",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000659",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001320",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0007018",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001260",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002384",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001285",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001643",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0010772",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001655",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001629",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000369",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000358",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000107",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004209",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0006097",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001734",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000954",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011304",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012168",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002938",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002033",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0003186",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8361228,
-                "end": 8361229,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "G",
-              "alt": "A",
-              "change_length": 0
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.2278C>T",
-              "is_preferred": true,
-              "variant_effects": [
-                "STOP_GAINED"
-              ],
-              "overlapping_exons": [
-                18
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Gln760Ter",
-              "protein_effect_location": {
-                "start": 759,
-                "end": 760
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.616C>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "STOP_GAINED"
-              ],
-              "overlapping_exons": [
-                8
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Gln206Ter",
-              "protein_effect_location": {
-                "start": 205,
-                "end": 206
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.2278C>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "STOP_GAINED"
-              ],
-              "overlapping_exons": [
-                19
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Gln760Ter",
-              "protein_effect_location": {
-                "start": 759,
-                "end": 760
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 10",
-                "meta_label": "PMID_27087320_Subject_10"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 2",
-        "meta_label": "PMID_27087320_Subject_2"
-      },
-      "sex": "MALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0000453",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001511",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000028",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004322",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0034295",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002119",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0033725",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001643",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0010772",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001629",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000107",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004209",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000047",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002247",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000568",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000659",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002188",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0030303",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012110",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001320",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0007018",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001260",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002384",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001285",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001655",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000369",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000358",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0006097",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001734",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000954",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011304",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012168",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002938",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002033",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0003186",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8358215,
-                "end": 8358216,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "T",
-              "alt": "TGGTGGA",
-              "change_length": 6
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
-              "is_preferred": true,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                20
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
-              "protein_effect_location": {
-                "start": 885,
-                "end": 886
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                21
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 2",
-                "meta_label": "PMID_27087320_Subject_2"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
         "label": "Subject 2",
         "meta_label": "PMID_29330883_Subject_2"
       },
@@ -1957,53 +2469,37 @@
     },
     {
       "labels": {
-        "label": "Subject 3",
-        "meta_label": "PMID_27087320_Subject_3"
+        "label": "Subject 5",
+        "meta_label": "PMID_27087320_Subject_5"
       },
       "sex": "MALE",
       "phenotypes": [
         {
-          "term_id": "HP:0000089",
+          "term_id": "HP:0002384",
           "is_present": true
         },
         {
-          "term_id": "HP:0002247",
+          "term_id": "HP:0000414",
           "is_present": true
         },
         {
-          "term_id": "HP:0001561",
+          "term_id": "HP:0000187",
           "is_present": true
         },
         {
-          "term_id": "HP:0006097",
+          "term_id": "HP:0000218",
           "is_present": true
         },
         {
-          "term_id": "HP:0011240",
+          "term_id": "HP:0000581",
           "is_present": true
         },
         {
-          "term_id": "HP:0004467",
+          "term_id": "HP:0002007",
           "is_present": true
         },
         {
-          "term_id": "HP:0009908",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000601",
+          "term_id": "HP:0000490",
           "is_present": true
         },
         {
@@ -2011,15 +2507,23 @@
           "is_present": true
         },
         {
-          "term_id": "HP:0004322",
+          "term_id": "HP:0002020",
           "is_present": true
         },
         {
-          "term_id": "HP:0000568",
+          "term_id": "HP:0011968",
           "is_present": true
         },
         {
-          "term_id": "HP:0000659",
+          "term_id": "HP:0000648",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000486",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0100704",
           "is_present": true
         },
         {
@@ -2028,6 +2532,10 @@
         },
         {
           "term_id": "HP:0002119",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001320",
           "is_present": true
         },
         {
@@ -2044,14 +2552,6 @@
         },
         {
           "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001629",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001734",
           "is_present": true
         },
         {
@@ -2083,10 +2583,6 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0000256",
           "is_present": false
         },
@@ -2103,27 +2599,7 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
           "is_present": false
         },
         {
@@ -2131,7 +2607,15 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
           "is_present": false
         },
         {
@@ -2143,11 +2627,31 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000664",
           "is_present": false
         },
         {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
           "is_present": false
         },
         {
@@ -2171,11 +2675,27 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0002247",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0001511",
           "is_present": false
         },
         {
+          "term_id": "HP:0004322",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000568",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000659",
           "is_present": false
         },
         {
@@ -2195,19 +2715,11 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0001320",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0007018",
           "is_present": false
         },
         {
           "term_id": "HP:0001260",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002384",
           "is_present": false
         },
         {
@@ -2231,6 +2743,10 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0001629",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000369",
           "is_present": false
         },
@@ -2248,6 +2764,14 @@
         },
         {
           "term_id": "HP:0004209",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0006097",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001734",
           "is_present": false
         },
         {
@@ -2292,8 +2816,8 @@
           "variant_info": {
             "variant_coordinates": {
               "region": {
-                "start": 8358749,
-                "end": 8358750,
+                "start": 8358241,
+                "end": 8358242,
                 "contig": {
                   "name": "1",
                   "genbank_acc": "CM000663.2",
@@ -2304,7 +2828,7 @@
                 "strand": "POSITIVE"
               },
               "ref": "G",
-              "alt": "C",
+              "alt": "T",
               "change_length": 0
             },
             "sv_info": null
@@ -2313,7 +2837,7 @@
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.3785C>G",
+              "hgvs_cdna": "NM_001042681.2:c.4293C>A",
               "is_preferred": true,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -2322,16 +2846,16 @@
                 20
               ],
               "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Pro1262Arg",
+              "hgvsp": "NP_001036146.1:p.His1431Gln",
               "protein_effect_location": {
-                "start": 1261,
-                "end": 1262
+                "start": 1430,
+                "end": 1431
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2123C>G",
+              "hgvs_cdna": "NM_001042682.2:c.2631C>A",
               "is_preferred": false,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -2340,16 +2864,16 @@
                 10
               ],
               "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Pro708Arg",
+              "hgvsp": "NP_001036147.1:p.His877Gln",
               "protein_effect_location": {
-                "start": 707,
-                "end": 708
+                "start": 876,
+                "end": 877
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.3785C>G",
+              "hgvs_cdna": "NM_012102.4:c.4293C>A",
               "is_preferred": false,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -2358,18 +2882,18 @@
                 21
               ],
               "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Pro1262Arg",
+              "hgvsp": "NP_036234.3:p.His1431Gln",
               "protein_effect_location": {
-                "start": 1261,
-                "end": 1262
+                "start": 1430,
+                "end": 1431
               }
             }
           ],
           "genotypes": {
             "samples": [
               {
-                "label": "Subject 3",
-                "meta_label": "PMID_27087320_Subject_3"
+                "label": "Subject 5",
+                "meta_label": "PMID_27087320_Subject_5"
               }
             ],
             "genotypes": [
@@ -3093,341 +3617,33 @@
     },
     {
       "labels": {
-        "label": "Subject 4",
-        "meta_label": "PMID_29330883_Subject_4"
-      },
-      "sex": "FEMALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0007033",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8358231,
-                "end": 8358232,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "G",
-              "alt": "A",
-              "change_length": 0
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4303C>T",
-              "is_preferred": true,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                20
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.His1435Tyr",
-              "protein_effect_location": {
-                "start": 1434,
-                "end": 1435
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2641C>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.His881Tyr",
-              "protein_effect_location": {
-                "start": 880,
-                "end": 881
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4303C>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                21
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.His1435Tyr",
-              "protein_effect_location": {
-                "start": 1434,
-                "end": 1435
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 4",
-                "meta_label": "PMID_29330883_Subject_4"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 5",
-        "meta_label": "PMID_27087320_Subject_5"
+        "label": "Subject 2",
+        "meta_label": "PMID_27087320_Subject_2"
       },
       "sex": "MALE",
       "phenotypes": [
         {
-          "term_id": "HP:0002384",
+          "term_id": "HP:0000453",
           "is_present": true
         },
         {
-          "term_id": "HP:0000414",
+          "term_id": "HP:0000589",
           "is_present": true
         },
         {
-          "term_id": "HP:0000187",
+          "term_id": "HP:0001511",
           "is_present": true
         },
         {
-          "term_id": "HP:0000218",
+          "term_id": "HP:0020206",
           "is_present": true
         },
         {
-          "term_id": "HP:0000581",
+          "term_id": "HP:0000028",
           "is_present": true
         },
         {
-          "term_id": "HP:0002007",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002020",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0011968",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000648",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000486",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0100704",
+          "term_id": "HP:0004322",
           "is_present": true
         },
         {
@@ -3436,10 +3652,6 @@
         },
         {
           "term_id": "HP:0002119",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001320",
           "is_present": true
         },
         {
@@ -3459,6 +3671,26 @@
           "is_present": true
         },
         {
+          "term_id": "HP:0001643",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0010772",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001629",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000107",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004209",
+          "is_present": true
+        },
+        {
           "term_id": "HP:0000463",
           "is_present": false
         },
@@ -3487,6 +3719,10 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000256",
           "is_present": false
         },
@@ -3503,7 +3739,27 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
           "is_present": false
         },
         {
@@ -3563,15 +3819,7 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000028",
+          "term_id": "HP:0000076",
           "is_present": false
         },
         {
@@ -3580,14 +3828,6 @@
         },
         {
           "term_id": "HP:0002247",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001511",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004322",
           "is_present": false
         },
         {
@@ -3603,10 +3843,6 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0002188",
           "is_present": false
         },
@@ -3619,11 +3855,19 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0001320",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0007018",
           "is_present": false
         },
         {
           "term_id": "HP:0001260",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002384",
           "is_present": false
         },
         {
@@ -3635,19 +3879,7 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0001643",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0010772",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0001655",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001629",
           "is_present": false
         },
         {
@@ -3660,14 +3892,6 @@
         },
         {
           "term_id": "HP:0000407",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000107",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004209",
           "is_present": false
         },
         {
@@ -3720,8 +3944,1124 @@
           "variant_info": {
             "variant_coordinates": {
               "region": {
-                "start": 8358241,
-                "end": 8358242,
+                "start": 8358215,
+                "end": 8358216,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "T",
+              "alt": "TGGTGGA",
+              "change_length": 6
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
+              "is_preferred": true,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                20
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
+              "protein_effect_location": {
+                "start": 885,
+                "end": 886
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
+              "is_preferred": false,
+              "variant_effects": [
+                "INFRAME_INSERTION"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
+              "protein_effect_location": {
+                "start": 1439,
+                "end": 1440
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 2",
+                "meta_label": "PMID_27087320_Subject_2"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 9",
+        "meta_label": "PMID_29330883_Subject_9"
+      },
+      "sex": "FEMALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0000463",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000729",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000722",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8356194,
+                "end": 8356195,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "T",
+              "alt": "C",
+              "change_length": 0
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4391A>G",
+              "is_preferred": true,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.His1464Arg",
+              "protein_effect_location": {
+                "start": 1463,
+                "end": 1464
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2729A>G",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                11
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.His910Arg",
+              "protein_effect_location": {
+                "start": 909,
+                "end": 910
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4391A>G",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                22
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.His1464Arg",
+              "protein_effect_location": {
+                "start": 1463,
+                "end": 1464
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 9",
+                "meta_label": "PMID_29330883_Subject_9"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 8",
+        "meta_label": "PMID_27087320_Subject_8"
+      },
+      "sex": "MALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0000347",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002020",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000483",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000729",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0007018",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004209",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002033",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0003186",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000028",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000047",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002247",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001511",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004322",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000568",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000659",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0034295",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002119",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002188",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0030303",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012110",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001320",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001260",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0033725",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002384",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001285",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001643",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0010772",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001655",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001629",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000369",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000358",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000107",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0006097",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001734",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000954",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011304",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012168",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002938",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8495061,
+                "end": 8495063,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "CT",
+              "alt": "C",
+              "change_length": -1
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.1104del",
+              "is_preferred": true,
+              "variant_effects": [
+                "FRAMESHIFT_VARIANT",
+                "SPLICE_REGION_VARIANT"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.Leu369CysfsTer16",
+              "protein_effect_location": {
+                "start": 367,
+                "end": 368
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.1104del",
+              "is_preferred": false,
+              "variant_effects": [
+                "FRAMESHIFT_VARIANT",
+                "SPLICE_REGION_VARIANT"
+              ],
+              "overlapping_exons": [
+                11
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.Leu369CysfsTer16",
+              "protein_effect_location": {
+                "start": 367,
+                "end": 368
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 8",
+                "meta_label": "PMID_27087320_Subject_8"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 3",
+        "meta_label": "PMID_27087320_Subject_3"
+      },
+      "sex": "MALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0000089",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002247",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001561",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0006097",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0004322",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000568",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000659",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0034295",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0002119",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000729",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0033725",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001629",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001734",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000028",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000047",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001511",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002188",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0030303",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012110",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001320",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0007018",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001260",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002384",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001285",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001643",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0010772",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001655",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000369",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000358",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000107",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004209",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000954",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011304",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0012168",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002938",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002033",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0003186",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8358749,
+                "end": 8358750,
                 "contig": {
                   "name": "1",
                   "genbank_acc": "CM000663.2",
@@ -3732,7 +5072,7 @@
                 "strand": "POSITIVE"
               },
               "ref": "G",
-              "alt": "T",
+              "alt": "C",
               "change_length": 0
             },
             "sv_info": null
@@ -3741,7 +5081,7 @@
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4293C>A",
+              "hgvs_cdna": "NM_001042681.2:c.3785C>G",
               "is_preferred": true,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -3750,16 +5090,16 @@
                 20
               ],
               "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.His1431Gln",
+              "hgvsp": "NP_001036146.1:p.Pro1262Arg",
               "protein_effect_location": {
-                "start": 1430,
-                "end": 1431
+                "start": 1261,
+                "end": 1262
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2631C>A",
+              "hgvs_cdna": "NM_001042682.2:c.2123C>G",
               "is_preferred": false,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -3768,16 +5108,16 @@
                 10
               ],
               "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.His877Gln",
+              "hgvsp": "NP_001036147.1:p.Pro708Arg",
               "protein_effect_location": {
-                "start": 876,
-                "end": 877
+                "start": 707,
+                "end": 708
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4293C>A",
+              "hgvs_cdna": "NM_012102.4:c.3785C>G",
               "is_preferred": false,
               "variant_effects": [
                 "MISSENSE_VARIANT"
@@ -3786,18 +5126,18 @@
                 21
               ],
               "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.His1431Gln",
+              "hgvsp": "NP_036234.3:p.Pro1262Arg",
               "protein_effect_location": {
-                "start": 1430,
-                "end": 1431
+                "start": 1261,
+                "end": 1262
               }
             }
           ],
           "genotypes": {
             "samples": [
               {
-                "label": "Subject 5",
-                "meta_label": "PMID_27087320_Subject_5"
+                "label": "Subject 3",
+                "meta_label": "PMID_27087320_Subject_3"
               }
             ],
             "genotypes": [
@@ -4493,306 +5833,6 @@
     },
     {
       "labels": {
-        "label": "Subject 6",
-        "meta_label": "PMID_29330883_Subject_6"
-      },
-      "sex": "MALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0010945",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000486",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004209",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000957",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004684",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8358230,
-                "end": 8358231,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "T",
-              "alt": "A",
-              "change_length": 0
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4304A>T",
-              "is_preferred": true,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                20
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.His1435Leu",
-              "protein_effect_location": {
-                "start": 1434,
-                "end": 1435
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2642A>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.His881Leu",
-              "protein_effect_location": {
-                "start": 880,
-                "end": 881
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4304A>T",
-              "is_preferred": false,
-              "variant_effects": [
-                "MISSENSE_VARIANT"
-              ],
-              "overlapping_exons": [
-                21
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.His1435Leu",
-              "protein_effect_location": {
-                "start": 1434,
-                "end": 1435
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 6",
-                "meta_label": "PMID_29330883_Subject_6"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
         "label": "Subject 7",
         "meta_label": "PMID_27087320_Subject_7"
       },
@@ -5210,329 +6250,13 @@
     },
     {
       "labels": {
-        "label": "Subject 7",
-        "meta_label": "PMID_29330883_Subject_7"
+        "label": "Subject 10",
+        "meta_label": "PMID_27087320_Subject_10"
       },
-      "sex": "MALE",
+      "sex": "FEMALE",
       "phenotypes": [
-        {
-          "term_id": "HP:0011220",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000047",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002119",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0009879",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001655",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001629",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000369",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0005989",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0006610",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8358215,
-                "end": 8358216,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "T",
-              "alt": "TGGTGGA",
-              "change_length": 6
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
-              "is_preferred": true,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                20
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
-              "protein_effect_location": {
-                "start": 885,
-                "end": 886
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                21
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 7",
-                "meta_label": "PMID_29330883_Subject_7"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 8",
-        "meta_label": "PMID_27087320_Subject_8"
-      },
-      "sex": "MALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0000347",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002020",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000483",
-          "is_present": true
-        },
         {
           "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0007018",
           "is_present": true
         },
         {
@@ -5544,18 +6268,6 @@
           "is_present": true
         },
         {
-          "term_id": "HP:0004209",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002033",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0003186",
-          "is_present": true
-        },
-        {
           "term_id": "HP:0000463",
           "is_present": false
         },
@@ -5585,10 +6297,6 @@
         },
         {
           "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
           "is_present": false
         },
         {
@@ -5660,11 +6368,19 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0000664",
           "is_present": false
         },
         {
           "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
           "is_present": false
         },
         {
@@ -5688,23 +6404,11 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0000028",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000047",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0002247",
           "is_present": false
         },
         {
           "term_id": "HP:0001511",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004322",
           "is_present": false
         },
         {
@@ -5724,35 +6428,15 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0034295",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002119",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002188",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0030303",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012110",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0001320",
           "is_present": false
         },
         {
-          "term_id": "HP:0001260",
+          "term_id": "HP:0007018",
           "is_present": false
         },
         {
-          "term_id": "HP:0033725",
+          "term_id": "HP:0001260",
           "is_present": false
         },
         {
@@ -5800,694 +6484,6 @@
           "is_present": false
         },
         {
-          "term_id": "HP:0006097",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001734",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000954",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011304",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012168",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002938",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8495061,
-                "end": 8495063,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "CT",
-              "alt": "C",
-              "change_length": -1
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.1104del",
-              "is_preferred": true,
-              "variant_effects": [
-                "FRAMESHIFT_VARIANT",
-                "SPLICE_REGION_VARIANT"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Leu369CysfsTer16",
-              "protein_effect_location": {
-                "start": 367,
-                "end": 368
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.1104del",
-              "is_preferred": false,
-              "variant_effects": [
-                "FRAMESHIFT_VARIANT",
-                "SPLICE_REGION_VARIANT"
-              ],
-              "overlapping_exons": [
-                11
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Leu369CysfsTer16",
-              "protein_effect_location": {
-                "start": 367,
-                "end": 368
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 8",
-                "meta_label": "PMID_27087320_Subject_8"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 8",
-        "meta_label": "PMID_29330883_Subject_8"
-      },
-      "sex": "FEMALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0011240",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001561",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001511",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004322",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0004384",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8358215,
-                "end": 8358216,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "T",
-              "alt": "TGGTGGA",
-              "change_length": 6
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4313_4318dup",
-              "is_preferred": true,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                20
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2651_2656dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                10
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Leu884_His885dup",
-              "protein_effect_location": {
-                "start": 885,
-                "end": 886
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4313_4318dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "INFRAME_INSERTION"
-              ],
-              "overlapping_exons": [
-                21
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Leu1438_His1439dup",
-              "protein_effect_location": {
-                "start": 1439,
-                "end": 1440
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 8",
-                "meta_label": "PMID_29330883_Subject_8"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 9",
-        "meta_label": "PMID_27087320_Subject_9"
-      },
-      "sex": "MALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0000256",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002188",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001629",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002033",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0002650",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000463",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000028",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000047",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002247",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001511",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004322",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000568",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000659",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0034295",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002119",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0030303",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0012110",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001320",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0007018",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001260",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0033725",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002384",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001285",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001643",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0010772",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001655",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000369",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000358",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000407",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000107",
-          "is_present": false
-        },
-        {
           "term_id": "HP:0004209",
           "is_present": false
         },
@@ -6516,287 +6512,11 @@
           "is_present": false
         },
         {
+          "term_id": "HP:0002033",
+          "is_present": false
+        },
+        {
           "term_id": "HP:0003186",
-          "is_present": false
-        }
-      ],
-      "measurements": [],
-      "diseases": [
-        {
-          "term_id": "OMIM:616975",
-          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
-          "is_observed": true
-        }
-      ],
-      "variants": [
-        {
-          "variant_info": {
-            "variant_coordinates": {
-              "region": {
-                "start": 8361235,
-                "end": 8361236,
-                "contig": {
-                  "name": "1",
-                  "genbank_acc": "CM000663.2",
-                  "refseq_name": "NC_000001.11",
-                  "ucsc_name": "chr1",
-                  "length": 248956422
-                },
-                "strand": "POSITIVE"
-              },
-              "ref": "C",
-              "alt": "CCCTGGAGGAGCTGAGGAGGGAG",
-              "change_length": 22
-            },
-            "sv_info": null
-          },
-          "tx_annotations": [
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.2249_2270dup",
-              "is_preferred": true,
-              "variant_effects": [
-                "FRAMESHIFT_VARIANT"
-              ],
-              "overlapping_exons": [
-                18
-              ],
-              "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.Thr758SerfsTer36",
-              "protein_effect_location": {
-                "start": 756,
-                "end": 757
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.587_608dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "FRAMESHIFT_VARIANT"
-              ],
-              "overlapping_exons": [
-                8
-              ],
-              "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.Thr204SerfsTer36",
-              "protein_effect_location": {
-                "start": 202,
-                "end": 203
-              }
-            },
-            {
-              "gene_id": "RERE",
-              "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.2249_2270dup",
-              "is_preferred": false,
-              "variant_effects": [
-                "FRAMESHIFT_VARIANT"
-              ],
-              "overlapping_exons": [
-                19
-              ],
-              "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.Thr758SerfsTer36",
-              "protein_effect_location": {
-                "start": 756,
-                "end": 757
-              }
-            }
-          ],
-          "genotypes": {
-            "samples": [
-              {
-                "label": "Subject 9",
-                "meta_label": "PMID_27087320_Subject_9"
-              }
-            ],
-            "genotypes": [
-              "HETEROZYGOUS"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "labels": {
-        "label": "Subject 9",
-        "meta_label": "PMID_29330883_Subject_9"
-      },
-      "sex": "FEMALE",
-      "phenotypes": [
-        {
-          "term_id": "HP:0000463",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000154",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000664",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000316",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000729",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0000722",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001252",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001263",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0001249",
-          "is_present": true
-        },
-        {
-          "term_id": "HP:0410030",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000319",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000294",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000341",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011220",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000414",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000256",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0001357",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011800",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000325",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000187",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000218",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000581",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0002007",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011229",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000490",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0005280",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0011240",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0008589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0004467",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000378",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000396",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0009908",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000286",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000347",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000582",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000494",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000601",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0020206",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000453",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000076",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000508",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000589",
-          "is_present": false
-        },
-        {
-          "term_id": "HP:0000407",
           "is_present": false
         },
         {
@@ -6817,8 +6537,8 @@
           "variant_info": {
             "variant_coordinates": {
               "region": {
-                "start": 8356194,
-                "end": 8356195,
+                "start": 8361228,
+                "end": 8361229,
                 "contig": {
                   "name": "1",
                   "genbank_acc": "CM000663.2",
@@ -6828,8 +6548,8 @@
                 },
                 "strand": "POSITIVE"
               },
-              "ref": "T",
-              "alt": "C",
+              "ref": "G",
+              "alt": "A",
               "change_length": 0
             },
             "sv_info": null
@@ -6838,63 +6558,343 @@
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042681.2",
-              "hgvs_cdna": "NM_001042681.2:c.4391A>G",
+              "hgvs_cdna": "NM_001042681.2:c.2278C>T",
               "is_preferred": true,
               "variant_effects": [
-                "MISSENSE_VARIANT"
+                "STOP_GAINED"
               ],
               "overlapping_exons": [
-                21
+                18
               ],
               "protein_id": "NP_001036146.1",
-              "hgvsp": "NP_001036146.1:p.His1464Arg",
+              "hgvsp": "NP_001036146.1:p.Gln760Ter",
               "protein_effect_location": {
-                "start": 1463,
-                "end": 1464
+                "start": 759,
+                "end": 760
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_001042682.2",
-              "hgvs_cdna": "NM_001042682.2:c.2729A>G",
+              "hgvs_cdna": "NM_001042682.2:c.616C>T",
               "is_preferred": false,
               "variant_effects": [
-                "MISSENSE_VARIANT"
+                "STOP_GAINED"
               ],
               "overlapping_exons": [
-                11
+                8
               ],
               "protein_id": "NP_001036147.1",
-              "hgvsp": "NP_001036147.1:p.His910Arg",
+              "hgvsp": "NP_001036147.1:p.Gln206Ter",
               "protein_effect_location": {
-                "start": 909,
-                "end": 910
+                "start": 205,
+                "end": 206
               }
             },
             {
               "gene_id": "RERE",
               "transcript_id": "NM_012102.4",
-              "hgvs_cdna": "NM_012102.4:c.4391A>G",
+              "hgvs_cdna": "NM_012102.4:c.2278C>T",
               "is_preferred": false,
               "variant_effects": [
-                "MISSENSE_VARIANT"
+                "STOP_GAINED"
               ],
               "overlapping_exons": [
-                22
+                19
               ],
               "protein_id": "NP_036234.3",
-              "hgvsp": "NP_036234.3:p.His1464Arg",
+              "hgvsp": "NP_036234.3:p.Gln760Ter",
               "protein_effect_location": {
-                "start": 1463,
-                "end": 1464
+                "start": 759,
+                "end": 760
               }
             }
           ],
           "genotypes": {
             "samples": [
               {
-                "label": "Subject 9",
-                "meta_label": "PMID_29330883_Subject_9"
+                "label": "Subject 10",
+                "meta_label": "PMID_27087320_Subject_10"
+              }
+            ],
+            "genotypes": [
+              "HETEROZYGOUS"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "labels": {
+        "label": "Subject 4",
+        "meta_label": "PMID_29330883_Subject_4"
+      },
+      "sex": "FEMALE",
+      "phenotypes": [
+        {
+          "term_id": "HP:0007033",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001252",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001263",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0001249",
+          "is_present": true
+        },
+        {
+          "term_id": "HP:0000463",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000154",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0410030",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000319",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000294",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000341",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011220",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000414",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000256",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0001357",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011800",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000325",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000187",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000218",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000581",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002007",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011229",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000490",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0005280",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0011240",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0008589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0004467",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000378",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000396",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0009908",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000286",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000347",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000664",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000582",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000494",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000601",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000316",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0020206",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000453",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000076",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000508",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000589",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0000407",
+          "is_present": false
+        },
+        {
+          "term_id": "HP:0002650",
+          "is_present": false
+        }
+      ],
+      "measurements": [],
+      "diseases": [
+        {
+          "term_id": "OMIM:616975",
+          "name": "Neurodevelopmental disorder with or without anomalies of the brain, eye, or heart",
+          "is_observed": true
+        }
+      ],
+      "variants": [
+        {
+          "variant_info": {
+            "variant_coordinates": {
+              "region": {
+                "start": 8358231,
+                "end": 8358232,
+                "contig": {
+                  "name": "1",
+                  "genbank_acc": "CM000663.2",
+                  "refseq_name": "NC_000001.11",
+                  "ucsc_name": "chr1",
+                  "length": 248956422
+                },
+                "strand": "POSITIVE"
+              },
+              "ref": "G",
+              "alt": "A",
+              "change_length": 0
+            },
+            "sv_info": null
+          },
+          "tx_annotations": [
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042681.2",
+              "hgvs_cdna": "NM_001042681.2:c.4303C>T",
+              "is_preferred": true,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                20
+              ],
+              "protein_id": "NP_001036146.1",
+              "hgvsp": "NP_001036146.1:p.His1435Tyr",
+              "protein_effect_location": {
+                "start": 1434,
+                "end": 1435
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_001042682.2",
+              "hgvs_cdna": "NM_001042682.2:c.2641C>T",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                10
+              ],
+              "protein_id": "NP_001036147.1",
+              "hgvsp": "NP_001036147.1:p.His881Tyr",
+              "protein_effect_location": {
+                "start": 880,
+                "end": 881
+              }
+            },
+            {
+              "gene_id": "RERE",
+              "transcript_id": "NM_012102.4",
+              "hgvs_cdna": "NM_012102.4:c.4303C>T",
+              "is_preferred": false,
+              "variant_effects": [
+                "MISSENSE_VARIANT"
+              ],
+              "overlapping_exons": [
+                21
+              ],
+              "protein_id": "NP_036234.3",
+              "hgvsp": "NP_036234.3:p.His1435Tyr",
+              "protein_effect_location": {
+                "start": 1434,
+                "end": 1435
+              }
+            }
+          ],
+          "genotypes": {
+            "samples": [
+              {
+                "label": "Subject 4",
+                "meta_label": "PMID_29330883_Subject_4"
               }
             ],
             "genotypes": [

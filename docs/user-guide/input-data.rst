@@ -20,6 +20,7 @@ Standardize genotype and phenotype data
 The first step of the `gpsea` analysis involves standardization of the genotype and phenotype data
 and performing functional annotation of the variants.
 
+.. _create-cohort-from-phenopackets:
 
 Create a cohort from GA4GH phenopackets
 ---------------------------------------

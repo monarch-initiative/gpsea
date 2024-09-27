@@ -73,35 +73,36 @@ and deposited in `Phenopacket Store <https://github.com/monarch-initiative/pheno
    The shorter version of the same analysis has been presented in the :ref:`tutorial`.
 
 
-Create cohort
-=============
+Load HPO
+========
 
-We will load and transform the phenopackets into a :class:`~gpsea.model.Cohort`,
-as described in :ref:`input-data` section. Briefly, we will load the phenopackets:
-
->>> from ppktstore.registry import configure_phenopacket_registry
->>> registry = configure_phenopacket_registry()
->>> with registry.open_phenopacket_store(release='0.1.18') as ps:
-...     phenopackets = tuple(ps.iter_cohort_phenopackets('TBX5'))
->>> len(phenopackets)
-156
-
-followed by loading HPO release `v2024-07-01`:
+We will start with loading HPO `v2024-07-01`:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+>>> hpo.version
+'2024-07-01'
 
-and we will perform Q/C and functional annotations for the mutations
-with the default cohort creator:
 
->>> from gpsea.preprocessing import configure_caching_cohort_creator, load_phenopackets
->>> cohort_creator = configure_caching_cohort_creator(hpo)
->>> cohort, qc_results = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Individuals Processed: ...
->>> qc_results.summarize()  # doctest: +SKIP
-Validated under none policy
-No errors or warnings were found
+Load cohort
+===========
+
+For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
+from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.19.json>`_.
+The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
+
+.. 
+   Prepare the JSON file by running the tests in `tests/tests/test_generate_doc_cohorts.py`.
+
+>>> import json
+>>> from gpsea.io import GpseaJSONDecoder
+>>> fpath_cohort_json = 'docs/cohort-data/TBX5.0.1.19.json'
+>>> with open(fpath_cohort_json) as fh:
+...     cohort = json.load(fh, cls=GpseaJSONDecoder)
+>>> len(cohort)
+156
 
 
 Configure analysis
