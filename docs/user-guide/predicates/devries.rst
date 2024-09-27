@@ -158,8 +158,8 @@ Using the De Vries scorer in code
 *********************************
 
 GPSEA implements the score in :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` that can be used
-as a part of the :ref:`phenotype-score-stats` analysis, where it is used
-in the role of a :class:`~gpsea.analysis.pscore.PhenotypeScorer`.
+as a part of the :ref:`Phenotype score <phenotype-score-stats>` analysis, where it is used
+as a :ref:`phenotype scorer <phenotype-score>`.
 
 A De Vries scorer uses HPO hierarchy as a prerequisite.
 We can load HPO using HPO toolkit:
@@ -168,11 +168,9 @@ We can load HPO using HPO toolkit:
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
-and use it to create :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`:
+and use it to create :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`
 
->>> from gpsea.analysis.pscore.DeVriesPhenotypeScorer
+>>> from gpsea.analysis.pscore import DeVriesPhenotypeScorer
 >>> pheno_scorer = DeVriesPhenotypeScorer(hpo)
 
-for using as a :ref:`phenotype-score`
-
-
+which we can use as a phenotype scorer.
