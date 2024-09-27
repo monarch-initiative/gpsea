@@ -220,7 +220,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         members: typing.Iterable[Patient],
         excluded_member_count: int,
     ):
-        self._members = tuple(set(members))
+        self._members = tuple(members)
         self._excluded_count = excluded_member_count
 
     @property

@@ -159,15 +159,18 @@ such as the :func:`json.dumps` which encodes an object into a JSON `str`:
 >>> from gpsea.io import GpseaJSONEncoder
 >>> encoded = json.dumps(cohort, cls=GpseaJSONEncoder)
 >>> encoded[:80]
-'{"members": [{"labels": {"label": "Subject 1", "meta_label": "PMID_27087320_Subj'
+'{"members": [{"labels": {"label": "Subject 8", "meta_label": "PMID_29330883_Subj'
 
+Here we see the first 80 letters of the JSON object.
 
-We can decode the JSON `str` with :class:`~gpsea.io.GpseaJSONDecoder` to get the same cohort back:
+We can decode the JSON object with :class:`~gpsea.io.GpseaJSONDecoder` to get the same cohort back:
 
 >>> from gpsea.io import GpseaJSONDecoder
 >>> decoded = json.loads(encoded, cls=GpseaJSONDecoder)
 >>> cohort == decoded
 True
+
+We will leave persisting the cohort into an actual file or another data store as an exercise for the interested readers.
 
 
 ***************************************************
