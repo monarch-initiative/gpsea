@@ -10,10 +10,12 @@ Compare measurement values
 Example analysis
 ****************
 
-We will analyze 69 individuals with mutations in *CYP21A2* reported in
-`<https://pubmed.ncbi.nlm.nih.gov/30968594/>`_ 
-clinical signs and symptoms were encoded in HPO terms.
-The individuals also and the measurements 
+We will analyze 69 individuals reported by
+`Xu et al. (2019) <https://pubmed.ncbi.nlm.nih.gov/30968594/>`_.
+The reported data includes the *CYP21A2* mutations, the lab measurement,
+and other clinical signs and symptoms encoded as HPO terms.
+
+TODO: wordsmith
 
 
 Load cohort
@@ -48,6 +50,8 @@ Genotype predicate
 ------------------
 
 For now, just Missense vs rest.
+Nonsense variants + big SVs,
+Missense should *NOT* be severe.
 TODO - create real predicate.
 
 >>> from gpsea.model import VariantEffect
@@ -135,5 +139,5 @@ Prepare genotype category legend:
 >>> gt_id_to_name
 {0: 'Missense/Missense', 1: 'Missense/Other', 2: 'Other/Other'}
 
-TODO: finish!
+TODO: wordsmith & finish!
 
