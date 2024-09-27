@@ -1,4 +1,4 @@
-.. _devries:
+.. _devries-scorer:
 
 ==============
 De Vries Score
@@ -12,11 +12,16 @@ growth abnormalities (prenatal and postnatal), facial dysmorphisms,
 nonfacial dysmorphisms, and other congenital anomalies
 (`Dingemans et al. (2022) <https://pubmed.ncbi.nlm.nih.gov/36182950/>`_).
 Statistical significance of a difference in the De Vries score between groups can be
-determined using the Mann–Whitney-U test.
+determined using the Mann-Whitney-U test.
 
 We refer to `Feenstra et al. (2011) <https://pubmed.ncbi.nlm.nih.gov/21712853/>`_ for
 the original description of the adjusted De Vries score. Here we offer a version of the
 score that leverages the structure of the Human Phenotype Ontology to assess the phenotype.
+
+
+*************************
+The sections of the score
+*************************
 
 The De Vries score has several sections, each of which is scored on a point system. The
 final score is obtained as the sum of the points of each of the sections.
@@ -140,6 +145,7 @@ corresponding HPO terms or any of their descendents up to a maximum of two point
 | `Hypospadias (HP:0000047) <https://hpo.jax.org/browse/term/HP:0000047>`_                                 | 1         |
 +----------------------------------------------------------------------------------------------------------+-----------+
 
+
 Final score
 ~~~~~~~~~~~
 
@@ -147,9 +153,26 @@ The final score is obtained by summing the scores from each of the sections. The
 higher scores being considered a proxy for higher clinical severity.
 
 
-Using the De Vries Scorer in code
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*********************************
+Using the De Vries scorer in code
+*********************************
 
-TODO
+GPSEA implements the score in :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` that can be used
+as a part of the :ref:`phenotype-score-stats` analysis, where it is used
+in the role of a :class:`~gpsea.analysis.pscore.PhenotypeScorer`.
+
+A De Vries scorer uses HPO hierarchy as a prerequisite.
+We can load HPO using HPO toolkit:
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+and use it to create :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`:
+
+>>> from gpsea.analysis.pscore.DeVriesPhenotypeScorer
+>>> pheno_scorer = DeVriesPhenotypeScorer(hpo)
+
+for using as a :ref:`phenotype-score`
 
 

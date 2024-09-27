@@ -16,7 +16,7 @@ from gpsea.preprocessing import CohortCreator, configure_caching_cohort_creator
 @pytest.mark.skip("Run only to update cohorts")
 class TestGenerateCohortsForDocumentation:
 
-    PHENOPACKET_STORE_VERSION = "0.1.19"
+    PHENOPACKET_STORE_VERSION = "0.1.20"
 
     @pytest.fixture
     def cohort_creator(

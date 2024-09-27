@@ -69,7 +69,7 @@ and stored in `Phenopacket Store <https://github.com/monarch-initiative/phenopac
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> phenopacket_registry = configure_phenopacket_registry()
->>> with phenopacket_registry.open_phenopacket_store("0.1.19") as ps:
+>>> with phenopacket_registry.open_phenopacket_store("0.1.20") as ps:
 ...     phenopackets = tuple(ps.iter_cohort_phenopackets(cohort_name))
 >>> len(phenopackets)
 156

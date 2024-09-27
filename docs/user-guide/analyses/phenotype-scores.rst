@@ -1,9 +1,9 @@
 .. _phenotype-score-stats:
 
 
-===============
-Phenotype score
-===============
+===========================================
+Compare phenotype scores in genotype groups
+===========================================
 
 
 .. _mann-whitney-u-test:
@@ -57,7 +57,7 @@ Let's now analyze the subjects reported in *Jordan et al*.
 We will load 19 phenopackets that represent individuals with mutations in *RERE*
 whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
 We will load the :class:`~gpsea.model.Cohort`
-from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.19.json>`_.
+from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_.
 The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
@@ -66,7 +66,7 @@ and then serialized as a JSON file following the instructions in :ref:`cohort-pe
 
 >>> import json
 >>> from gpsea.io import GpseaJSONDecoder
->>> fpath_cohort_json = 'docs/cohort-data/RERE.0.1.19.json'
+>>> fpath_cohort_json = 'docs/cohort-data/RERE.0.1.20.json'
 >>> with open(fpath_cohort_json) as fh:
 ...     cohort = json.load(fh, cls=GpseaJSONDecoder)
 >>> len(cohort)
@@ -133,10 +133,25 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 'Genotype group: Point, LoF'
 
 
+.. _phenotype-score:
+
 Phenotype score
 ---------------
 
-The authors score the individuals based on the number of structural defects
+This component is responsible for computing a phenotype score for an individual.
+As far as GPSEA framework is concerned, the phenotype score must be a floating point number
+or a `NaN` value if the score cannot be computed for an individual.
+
+Several out-of-shelf examples include:
+
+* :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` to count the number of abnormalities 
+  in organ groups described by top-level HPO terms (*Abnormal brain morphology*, *Abnormal heart morphology*, ...)
+* :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` for assessment of the severity of intellectual disability
+* :class:`~gpsea.analysis.pscore.MeasurementPhenotypeScorer` that uses a laboratory test measurement, 
+  such as `Testosterone [Mass/volume] in Serum or Plasma <https://loinc.org/2986-8/>`_, as the score
+
+Here we use :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
+the individuals based on the number of structural defects
 from the following 5 categories:
 
 * Brain anomalies
@@ -145,12 +160,12 @@ from the following 5 categories:
 * Renal anomalies
 * Sensorineural hearing loss
 
-and they assign each individual a score based on the number structural defects.
 For example, an individual with a congenital heart defect would be assigned a score of `1`,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of `2`,
 and so on.
 
-We automatize this scoring method by encoding the categories into HPO terms
+The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` automatizes this scoring method
+by encoding the categories into HPO terms:
 
 >>> structural_defects = (
 ...     'HP:0012443',  # Abnormal brain morphology (Brain anomalies)
@@ -161,13 +176,14 @@ We automatize this scoring method by encoding the categories into HPO terms
 ... )
 
 
-and then test the individuals for presence of at least one HPO term
-that corresponds to the structural defect category
-(e.g. `Abnormal brain morphology <https://hpo.jax.org/browse/term/HP:0012443>`_)
+and then tests the individuals for presence of at least one HPO term
+that corresponds to the structural defect
+(e.g. `Abnormal brain morphology <https://hpo.jax.org/browse/term/HP:0012443>`_, exact match)
 or that is its descendant
 (e.g. `Cerebellar atrophy <https://hpo.jax.org/browse/term/HP:0001272>`_).
 
-GPSEA implements this scoring method in :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer`.
+We construct the scorer with
+:func:`~gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies` function:
 
 >>> from gpsea.analysis.pscore import CountingPhenotypeScorer
 >>> pheno_scorer = CountingPhenotypeScorer.from_query_curies(
@@ -179,7 +195,8 @@ GPSEA implements this scoring method in :class:`~gpsea.analysis.pscore.CountingP
 Statistical test
 ----------------
 
-We will use :ref:`mann-whitney-u-test` as described above.
+We will use :ref:`mann-whitney-u-test` to test for differences between scores
+of the different genotype groups
 
 >>> from gpsea.analysis.pscore.stats import MannWhitneyStatistic
 >>> score_statistic = MannWhitneyStatistic()
@@ -214,8 +231,9 @@ We execute the analysis by running
 ... )
 
 
-The analysis shows a significant difference between the number of structural defects
-in individuals with point vs. loss-of-function mutations.
+In case of the *RERE* cohort, the analysis shows a significant difference
+between the number of structural defects in individuals
+with point vs. loss-of-function mutations.
 
 >>> result.pval
 0.012074957610483744
@@ -246,7 +264,7 @@ The genotype code `0` is assigned to patients with a point mutation, `1` corresp
 and `None` is assigned to patients who cannot be assigned into any of the groups.
 
 Last, let's use :meth:`~gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots` method
-to show a box plot of the phenotype score distributions:
+to visualize the phenotype score distributions:
 
 >>> import matplotlib.pyplot as plt
 >>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)

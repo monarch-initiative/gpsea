@@ -110,6 +110,8 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     """
     `DeVriesPhenotypeScorer` computes "adapted De Vries Score"
     as described in `Feenstra et al. <https://pubmed.ncbi.nlm.nih.gov/21712853>`_.
+
+    See more in :ref:`devries-scorer` section.
     """
 
     def __init__(

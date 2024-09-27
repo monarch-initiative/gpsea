@@ -66,7 +66,7 @@ Example analysis
 Let's illustrate this in a real-life example of the analysis of the association between frameshift variants in *TBX5* gene
 and congenital heart defects in the dataset of 156 individuals with mutations in *TBX5* whose signs and symptoms were
 encoded into HPO terms, stored as phenopackets of the `GA4GH Phenopacket Schema <https://pubmed.ncbi.nlm.nih.gov/35705716>`_,
-and deposited in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_ (version `0.1.18`).
+and deposited in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
 
 .. note::
 
@@ -89,7 +89,7 @@ Load cohort
 ===========
 
 For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
-from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.19.json>`_.
+from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_.
 The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
@@ -98,7 +98,7 @@ and then serialized as a JSON file following the instructions in :ref:`cohort-pe
 
 >>> import json
 >>> from gpsea.io import GpseaJSONDecoder
->>> fpath_cohort_json = 'docs/cohort-data/TBX5.0.1.19.json'
+>>> fpath_cohort_json = 'docs/cohort-data/TBX5.0.1.20.json'
 >>> with open(fpath_cohort_json) as fh:
 ...     cohort = json.load(fh, cls=GpseaJSONDecoder)
 >>> len(cohort)
