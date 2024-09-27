@@ -77,7 +77,7 @@ class TestGenerateCohortsForDocumentation:
     @pytest.mark.parametrize(
         "cohort_name",
         [
-            # "CYP21A2",
+            "CYP21A2",
             "RERE",
             "TBX5",
         ]
