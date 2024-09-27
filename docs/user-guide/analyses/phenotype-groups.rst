@@ -73,18 +73,6 @@ and deposited in `Phenopacket Store <https://github.com/monarch-initiative/pheno
    The shorter version of the same analysis has been presented in the :ref:`tutorial`.
 
 
-Load HPO
-========
-
-We will start with loading HPO `v2024-07-01`:
-
->>> import hpotk
->>> store = hpotk.configure_ontology_store()
->>> hpo = store.load_minimal_hpo(release='v2024-07-01')
->>> hpo.version
-'2024-07-01'
-
-
 Load cohort
 ===========
 
@@ -156,7 +144,16 @@ Phenotype predicates
 We recommend testing the genotype phenotype association for all HPO terms that are present in 2 or more cohort members,
 while taking advantage of the HPO graph structure and of the :ref:`true-path-rule`.
 We will use the :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
-utility function to generate phenotype predicates for all HPO terms:
+utility function to generate phenotype predicates for all HPO terms.
+
+The function needs HPO to prepare predicates, hence we need to load HPO:
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+
+and then we can create the predicates
 
 >>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(

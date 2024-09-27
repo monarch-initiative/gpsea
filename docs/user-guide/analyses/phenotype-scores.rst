@@ -124,13 +124,14 @@ For the loss of function predicate, the following variant effects are considered
 
 The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:
 
->>> from gpsea.analysis.predicate.genotype import groups_predicate
->>> gt_predicate = groups_predicate(
-...     predicates=(point_mutation, lof_mutation),
-...     group_names=('Point', 'LoF'),
+>>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
+>>> gt_predicate = monoallelic_predicate(
+...     a_predicate=point_mutation,
+...     b_predicate=lof_mutation,
+...     names=('Point', 'LoF'),
 ... )
 >>> gt_predicate.display_question()
-'Genotype group: Point, LoF'
+'Allele group: Point, LoF'
 
 
 .. _phenotype-score:
@@ -188,7 +189,7 @@ We construct the scorer with
 >>> from gpsea.analysis.pscore import CountingPhenotypeScorer
 >>> pheno_scorer = CountingPhenotypeScorer.from_query_curies(
 ...     hpo=hpo,
-...     query=structural_defects,   
+...     query=structural_defects,
 ... )
 
 
