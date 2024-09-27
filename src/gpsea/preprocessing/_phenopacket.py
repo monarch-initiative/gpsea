@@ -497,7 +497,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                     )
 
         if len(variants) == 0:
-            notepad.add_warning(f"Patient {pp.id} has no variants to work with")
+            notepad.add_error(f"Patient {pp.id} has no variants to work with")
 
         return variants
 
@@ -523,7 +523,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return None
 
         if variant_coordinates is None:
-            sv_info = self._map_to_imprecise_sv(genomic_interpretation)
+            sv_info = self._map_to_imprecise_sv(
+                genomic_interpretation,
+                notepad,
+            )
             if sv_info is None:
                 notepad.add_warning(
                     "Could not extract the information for large SV annotation",
@@ -539,6 +542,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     def _map_to_imprecise_sv(
         self,
         genomic_interpretation: GenomicInterpretation,
+        notepad: Notepad,
     ) -> typing.Optional[ImpreciseSvInfo]:
         if genomic_interpretation.HasField("variant_interpretation"):
             variant_interpretation = genomic_interpretation.variant_interpretation
@@ -559,19 +563,27 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 if structural_type is not None and gene_context is not None:
                     st = hpotk.TermId.from_curie(curie=structural_type.id)
                     variant_class = self._map_structural_type_to_variant_class(st)
-                    return ImpreciseSvInfo(
-                        structural_type=st,
-                        variant_class=variant_class,
-                        gene_id=gene_context.value_id,
-                        gene_symbol=gene_context.symbol,
-                    )
+                    if variant_class is None:
+                        notepad.add_warning(f'Unknown structural type {structural_type.id}')
+                    else:
+                        return ImpreciseSvInfo(
+                            structural_type=st,
+                            variant_class=variant_class,
+                            gene_id=gene_context.value_id,
+                            gene_symbol=gene_context.symbol,
+                        )
+                else:
+                    if structural_type is None:
+                        notepad.add_warning('Missing required `structural_type` field')
+                    if gene_context is None:
+                        notepad.add_warning('Missing required `gene_context` field')
 
         return None
 
     def _map_structural_type_to_variant_class(
         self,
         structural_type: hpotk.TermId,
-    ) -> VariantClass:
+    ) -> typing.Optional[VariantClass]:
         # This method is most likely incomplete.
         # Please open a ticket if you receive a `ValueError`
         # for a structural type, that is not mapped at the moment,
@@ -586,6 +598,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             elif structural_type.id in self._so_inversions:
                 return VariantClass.INV
             else:
-                raise ValueError(f"Unknown structural type {structural_type}")
+                return None
         else:
             raise ValueError(f"Unknown structural type {structural_type}")
