@@ -46,16 +46,16 @@ the standard `gpsea` installation:
 The easiest way to get the `CohortCreator` is to use the
 :func:`~gpsea.preprocessing.configure_caching_cohort_creator` convenience method:
 
-.. doctest:: input-data 
+.. doctest:: input-data
 
   >>> from gpsea.preprocessing import configure_caching_cohort_creator
 
-  >>> cohort_creator = configure_caching_cohort_creator(hpo) 
+  >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
 .. note::
 
   The default `CohortCreator` will call Variant Effect Predictor and Uniprot APIs
-  to perform the functional annotation and protein annotation, 
+  to perform the functional annotation and protein annotation,
   and the responses will be cached in the current working directory to reduce the network bandwidth.
   See the :func:`~gpsea.preprocessing.configure_caching_cohort_creator` pydoc for more options.
 
@@ -87,7 +87,7 @@ Individuals Processed: ...
 >>> len(cohort)
 19
 
-The cohort includes all 19 individuals. 
+The cohort includes all 19 individuals.
 On top of the ``cohort``, the loader function also provides Q/C results  ``qc_results``.
 We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
 to display the Q/C summary:
@@ -159,7 +159,7 @@ Fetch transcript coordinates from Variant Validator REST API
 
 Undoubtedly, the most convenient way for getting the transcript coordinates is to use
 the REST API of the amazing `Variant Validator <https://variantvalidator.org/>`_.
-GPSEA wraps the boiler-plate associated with querying the API and parsing the response into 
+GPSEA wraps the boiler-plate associated with querying the API and parsing the response into
 :class:`~gpsea.preprocessing.VVMultiCoordinateService`.
 
 
@@ -234,13 +234,14 @@ and the coding sequence includes 1554 coding bases and 518 codons:
 518
 
 
+.. _fetch-protein-data:
 
-Get the protein data
---------------------
+Fetch protein data
+-------------------
 
 
-Specific domains of a protein may be associated with genotype-phenotype correlations. 
-For instance, variants in the pore domain of *PIEZO1* are associated with more severe clinical 
+Specific domains of a protein may be associated with genotype-phenotype correlations.
+For instance, variants in the pore domain of *PIEZO1* are associated with more severe clinical
 manifestions in dehydrated hereditary stomatocytosis `Andolfo et al.,  2018 <https://pubmed.ncbi.nlm.nih.gov/30187933>`_.
 
 GPSEA uses the protein data in several places: to show distribution of variants with respect to the protein domains
@@ -291,8 +292,8 @@ which we can see on the following screenshot of the UniProt entry for *TBX5*:
 
 UniProt shows four protein features:
 
-- the Disordered region (1-46) 
-- the Disordered region (250-356) 
+- the Disordered region (1-46)
+- the Disordered region (250-356)
 - presence of Polar residues (263-299)
 - presence of Basic and acidic residues (320-346).
 
@@ -305,7 +306,7 @@ we can download a JSON file representing the protein features manually,
 and load the file into :class:`~gpsea.model.ProteinMetadata`.
 
 To do this, click on the *Download* symbol (see the UniProt screenshot figure above). This will open a dialog
-that allows the user to choose the contents of the JSON file. 
+that allows the user to choose the contents of the JSON file.
 Do not change the default option (Features - Domain, Region).
 Provided that the file has been saved as `docs/user-guide/data/Q99593.json`,
 the ``ProteinMetadata`` can be loaded using :func:`~gpsea.model.ProteinMetadata.from_uniprot_json` function.
@@ -325,8 +326,8 @@ and `protein_length`, but these are shown in the UniProt entry:
 Enter features manually
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The information about protein features provided by UniProt entries may not always be complete. 
-Here we show how to enter the same information manually, in a custom protein dataframe. 
+The information about protein features provided by UniProt entries may not always be complete.
+Here we show how to enter the same information manually, in a custom protein dataframe.
 
 The frame can be created e.g. by running:
 

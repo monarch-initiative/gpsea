@@ -54,6 +54,12 @@ class FeatureInfo:
         """
         return self._region
 
+    def overlaps_with(self, region: Region) -> bool:
+        """
+        Covenience function to check whether a region overlaps with a protein feature.
+        """
+        return self._region.overlaps_with(region)
+
     def __len__(self):
         return len(self._region)
 
@@ -352,7 +358,7 @@ class ProteinMetadata:
         """
         with open_text_io_handle_for_reading(uniprot_json) as fh:
             data = json.load(fh)
-        
+
         regions = list()
         for feature in data["features"]:
             try:
