@@ -5,6 +5,7 @@ from collections import Counter
 from jinja2 import Environment, PackageLoader
 
 from gpsea.analysis.pcats import HpoTermAnalysisResult
+from gpsea.view._report import GpseaReport, HtmlGpseaReport
 
 
 class MtcStatsViewer:
@@ -20,7 +21,7 @@ class MtcStatsViewer:
     def process(
         self,
         result: HpoTermAnalysisResult,
-    ) -> str:
+    ) -> GpseaReport:
         """
         Create an HTML to present MTC part of the :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`.
 
@@ -30,11 +31,13 @@ class MtcStatsViewer:
             result (HpoTermAnalysisResult): the result to show
 
         Returns:
-            str: an HTML string with parameterized template for rendering or writing into a standalone HTML file.
+            GpseaReport: a report that can be stored to a path or displayed in
+                interactive environment such as Jupyter notebook.
         """
         assert isinstance(result, HpoTermAnalysisResult)
         context = self._prepare_context(result)
-        return self._cohort_template.render(context)
+        html = self._cohort_template.render(context)
+        return HtmlGpseaReport(html=html)
 
     @staticmethod
     def _prepare_context(
