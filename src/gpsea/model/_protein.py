@@ -221,7 +221,7 @@ class ProteinMetadata:
     An info regarding a protein sequence, including an ID, a label,
     and location of protein features, such as motifs, domains, or other regions.
 
-    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotMetadataService`,
+    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotProteinMetadataService`,
     but it can also be created manually using :meth:`~gpsea.model.ProteinMetadata.from_feature_frame` function.
 
     Example

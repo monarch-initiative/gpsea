@@ -152,7 +152,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         """
         Get a `dict` with the response from the VEP REST API.
         Args:
-            variant_coordinates: a query :class:`VariantCoordinates`.
+            variant_coordinates: a query :class:`~gpsea.model.VariantCoordinates`.
         """
         api_url = self._url % (VepFunctionalAnnotator.format_coordinates_for_vep_query(variant_coordinates))
         r = requests.get(api_url, headers={'Accept': 'application/json'}, timeout=self._timeout)
@@ -188,7 +188,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         Args:
             vc (VariantCoordinates): A VariantCoordinates object
         Returns:
-            string: The variant coordinates formatted to work with VEP
+            str: The variant coordinates formatted to work with VEP
         """
 
         chrom = vc.chrom

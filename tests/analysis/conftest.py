@@ -44,6 +44,7 @@ def degenerated_cohort(
                         is_observed=True,
                     ),
                 ),
+                measurements=(),
                 diseases=(),
                 variants=(
                     Variant.create_variant_from_scratch(
@@ -79,6 +80,7 @@ def degenerated_cohort(
                         is_observed=True,
                     ),
                 ),
+                measurements=(),
                 diseases=(),
                 variants=(
                     Variant.create_variant_from_scratch(

@@ -295,7 +295,7 @@ class VariantCoordinates:
         (1000, 1001, 'C', 'T', 1, 0)
 
         Args:
-            contig: a :class:`Contig` for the chromosome
+            contig: a :class:`~gpsea.model.genome.Contig` for the chromosome
             pos: a 1-based coordinate of the first base of the reference allele, as described in VCF standard
             ref: a `str` with the REF allele. Should meet the requirements of the VCF standard.
             alt: a `str` with the ALT allele. Should meet the requirements of the VCF standard.
@@ -359,7 +359,7 @@ class VariantCoordinates:
         (321681, 321887, 'T', '<DEL>', 206, -205)
 
         Args:
-            contig: a :class:`Contig` for the chromosome
+            contig: a :class:`~gpsea.model.genome.Contig` for the chromosome
             pos: a 1-based coordinate of the first base of the affected reference allele region
             end: a 1-based coordinate of the last base of the affected reference allele region
             ref: a `str` with the REF allele. Most of the time, it is one of `{'N', 'A', 'C', 'G', 'T'}`

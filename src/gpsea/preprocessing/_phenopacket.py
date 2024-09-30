@@ -6,11 +6,12 @@ import hpotk
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
+from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 from phenopackets.vrsatile.v1.vrsatile_pb2 import VcfRecord, VariationDescriptor
 from phenopackets.vrs.v1.vrs_pb2 import Variation
 
-from gpsea.model import SampleLabels, Patient, Sex, Disease
+from gpsea.model import SampleLabels, Patient, Sex, Disease, Measurement
 from gpsea.model import (
     VariantClass,
     VariantCoordinates,
@@ -82,12 +83,10 @@ class PhenopacketVariantCoordinateFinder(
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
     ):
         self._logger = logging.getLogger(__name__)
-        self._build = hpotk.util.validate_instance(build, GenomeBuild, "build")
-        self._hgvs_finder = hpotk.util.validate_instance(
-            hgvs_coordinate_finder,
-            VariantCoordinateFinder,
-            "hgvs_coordinate_finder",
-        )
+        assert isinstance(build, GenomeBuild)
+        self._build = build
+        assert isinstance(hgvs_coordinate_finder, VariantCoordinateFinder)
+        self._hgvs_finder = hgvs_coordinate_finder
 
     def find_coordinates(
         self,
@@ -310,6 +309,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         dip = notepad.add_subsection("diseases")
         diseases = self._add_diseases(pp.diseases, dip)
 
+        mip = notepad.add_subsection("measurements")
+        measurements = self._add_measurements(pp.measurements, mip)
+
         # Check variants
         vs = notepad.add_subsection("variants")
         variants = self._add_variants(sample_id, pp, vs)
@@ -318,6 +320,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             sample_id,
             sex=sex,
             phenotypes=phenotypes,
+            measurements=measurements,
             variants=variants,
             diseases=diseases,
         )
@@ -328,7 +331,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         """Creates a list of Disease objects from the data in a given Phenopacket
 
         Args:
-            diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects
+            diseases (Sequence[PPDisease]): A sequence of Phenopacket Disease objects
             notepad (Notepad): notepad to write down the issues
         Returns:
             Sequence[Dis]: A list of Disease objects
@@ -349,6 +352,50 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             final_diseases.append(Disease(term_id, dis.term.label, not dis.excluded))
 
         return final_diseases
+    
+    def _add_measurements(
+        self,
+        measurements: typing.Sequence[PPMeasurement],
+        notepad: Notepad,
+    ) -> typing.Sequence[Measurement]:
+        """
+         Args:
+            measurements (Sequence[PPMeasurement]): A sequence of Phenopacket Measurement objects
+            notepad (Notepad): notepad to write down the issues
+        Returns:
+            Sequence[Measurement]: A list of internal Measurement objects
+        """
+        if len(measurements) == 0:
+            return ()
+
+        final_measurements = []
+        for i, msrm in enumerate(measurements):
+            keeper = True
+            if not msrm.HasField("assay"):
+                notepad.add_error(f"#{i} has no `assay`")
+                keeper = False
+            else:
+                test_term_id = hpotk.TermId.from_curie(msrm.assay.id)
+                test_name = msrm.assay.label
+            if not msrm.HasField("value"):
+                notepad.add_error(f"#{i} has no `value`")
+                keeper = False
+            val = msrm.value
+            if not val.HasField("quantity"):
+                notepad.add_error(f"#{i} has no `quantity`")
+                keeper = False
+            if not val.quantity.HasField("unit"):
+                notepad.add_error(f"#{i} has no `unit`")
+                keeper = False
+            try:
+                unit = hpotk.TermId.from_curie(val.quantity.unit.id)
+            except ValueError as e:
+                notepad.add_error(f"#{i} has an invalid unit (should be a CURIE) `{e.args[0]}`")
+                keeper = False
+            test_result = val.quantity.value
+            if keeper:
+                final_measurements.append(Measurement(test_term_id, test_name, test_result, unit))
+        return final_measurements
 
     def _extract_sex(
         self,
@@ -450,7 +497,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                     )
 
         if len(variants) == 0:
-            notepad.add_warning(f"Patient {pp.id} has no variants to work with")
+            notepad.add_error(f"Patient {pp.id} has no variants to work with")
 
         return variants
 
@@ -476,7 +523,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return None
 
         if variant_coordinates is None:
-            sv_info = self._map_to_imprecise_sv(genomic_interpretation)
+            sv_info = self._map_to_imprecise_sv(
+                genomic_interpretation,
+                notepad,
+            )
             if sv_info is None:
                 notepad.add_warning(
                     "Could not extract the information for large SV annotation",
@@ -492,6 +542,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     def _map_to_imprecise_sv(
         self,
         genomic_interpretation: GenomicInterpretation,
+        notepad: Notepad,
     ) -> typing.Optional[ImpreciseSvInfo]:
         if genomic_interpretation.HasField("variant_interpretation"):
             variant_interpretation = genomic_interpretation.variant_interpretation
@@ -512,19 +563,27 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 if structural_type is not None and gene_context is not None:
                     st = hpotk.TermId.from_curie(curie=structural_type.id)
                     variant_class = self._map_structural_type_to_variant_class(st)
-                    return ImpreciseSvInfo(
-                        structural_type=st,
-                        variant_class=variant_class,
-                        gene_id=gene_context.value_id,
-                        gene_symbol=gene_context.symbol,
-                    )
+                    if variant_class is None:
+                        notepad.add_warning(f'Unknown structural type {structural_type.id}')
+                    else:
+                        return ImpreciseSvInfo(
+                            structural_type=st,
+                            variant_class=variant_class,
+                            gene_id=gene_context.value_id,
+                            gene_symbol=gene_context.symbol,
+                        )
+                else:
+                    if structural_type is None:
+                        notepad.add_warning('Missing required `structural_type` field')
+                    if gene_context is None:
+                        notepad.add_warning('Missing required `gene_context` field')
 
         return None
 
     def _map_structural_type_to_variant_class(
         self,
         structural_type: hpotk.TermId,
-    ) -> VariantClass:
+    ) -> typing.Optional[VariantClass]:
         # This method is most likely incomplete.
         # Please open a ticket if you receive a `ValueError`
         # for a structural type, that is not mapped at the moment,
@@ -539,6 +598,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             elif structural_type.id in self._so_inversions:
                 return VariantClass.INV
             else:
-                raise ValueError(f"Unknown structural type {structural_type}")
+                return None
         else:
             raise ValueError(f"Unknown structural type {structural_type}")
