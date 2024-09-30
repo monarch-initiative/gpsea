@@ -9,8 +9,9 @@ these in a targeted way. Performing numerous tests without any specific plan com
 danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
 available).
 
+*************************
 Types of statistical test
-^^^^^^^^^^^^^^^^^^^^^^^^^
+*************************
 
 GPSEA offers four statistical tests.
 
@@ -22,8 +23,10 @@ GPSEA offers four statistical tests.
 Please consult the documentation pages for each of these tests if you are unsure which to use.
 
 
+*****
 Power
-^^^^^
+*****
+
 Two things must be true to identify a valid genotype-phenotype correlation. First, and obviously,
 the correlation must actually exist in the dataset being analyzed. Second, there must be statistical power to
 identify the effect.
@@ -34,11 +37,29 @@ It will generally not be possible to perform a formal power calculation because 
 most genotype-phenotype correlations is not well known. But, for instance it would not
 make much sense to test for correlation with a specific variant that occurs in only one of 50 individuals in a cohort.
 
-Exploration
-===========
 
-The purpose of the exploratory analysis is thus to decide which tests to perform. GPSEA provides tables and graphics
-that visualize some of the salient aspects of the cohort and the distribution of the identified variants.
+***********
+Exploration
+***********
+
+The purpose of the exploratory analysis is thus to decide which tests to perform.
+GPSEA provides tables and graphics that visualize some of the salient aspects
+of the cohort and the distribution of the identified variants.
+We exemplify the exploratory analysis on a cohort of 156 individuals with mutations
+in *TBX5* from Phenopacket Store *0.1.18*. The cohort was preprocessed as described
+in the :ref:`input-data` section.
+
+
+We start by loading the cohort from a JSON file at `bla <https://github.com/>`_:
+
+>>> import json
+>>> from gpsea.io import GpseaJSONDecoder
+>>> fpath_cohort = ''
+>>> with open(fpath_cohort) as fh:
+...     cohort = json.load(fh, cls=GpseaJSONDecoder)
+>>> len(cohort)
+156
+
 
 We recommend that users start be generating a cohort summary (see :ref:`tutorial` for a fuller example). ::
 
