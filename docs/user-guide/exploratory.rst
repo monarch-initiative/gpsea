@@ -46,68 +46,135 @@ The purpose of the exploratory analysis is thus to decide which tests to perform
 GPSEA provides tables and graphics that visualize some of the salient aspects
 of the cohort and the distribution of the identified variants.
 We exemplify the exploratory analysis on a cohort of 156 individuals with mutations
-in *TBX5* from Phenopacket Store *0.1.18*. The cohort was preprocessed as described
-in the :ref:`input-data` section.
+in *TBX5* from Phenopacket Store *0.1.20*. The cohort was preprocessed as described
+in the :ref:`input-data` section and stored
+at `docs/cohort-data/TBX5.0.1.20.json <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_
+in JSON format.
 
 
-We start by loading the cohort from a JSON file at `bla <https://github.com/>`_:
+We start by loading the cohort from the JSON file:
 
 >>> import json
 >>> from gpsea.io import GpseaJSONDecoder
->>> fpath_cohort = ''
+>>> fpath_cohort = 'docs/cohort-data/TBX5.0.1.20.json'
 >>> with open(fpath_cohort) as fh:
 ...     cohort = json.load(fh, cls=GpseaJSONDecoder)
 >>> len(cohort)
 156
 
 
-We recommend that users start be generating a cohort summary (see :ref:`tutorial` for a fuller example). ::
+then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
+(see :ref:`choose-tx-and-protein` for more info):
 
-    from gpsea.view import CohortViewable
-    viewer = CohortViewable(hpo)
-    report = viewer.process(cohort=cohort, transcript_id=tx_id)
-    from IPython.display import HTML, display
-    display(HTML(report))
+>>> from gpsea.model.genome import GRCh38
+>>> from gpsea.preprocessing import VVMultiCoordinateService, configure_default_protein_metadata_service
+>>> tx_id = "NM_181486.4"
+>>> pt_id = "NP_852259.1"
+>>> tx_service = VVMultiCoordinateService(genome_build=GRCh38)
+>>> tx_coordinates = tx_service.fetch(tx_id)
+>>> pm_service = configure_default_protein_metadata_service()
+>>> protein_meta = pm_service.annotate(pt_id)
 
-See also on the tutorial page code for viewing the distribution of variants on the protein structure and for
-generating a table with all identified variants. The following text presents some additional functionality for
-creating exploratory tables and graphics.
+
+and we will load HPO `v2024-07-01` for using in the exploratory analysis:
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+
+Interactive exploration
+-----------------------
+
+We designed GPSEA to integrate with interactive Python with a widespread use
+in contemporary scientific workflows.
+
+The code for exploration is located in :mod:`gpsea.view` module. 
+As a rule of thumb, the reports are provided as :class:`~gpsea.view.GpseaReport`
+which leverages IPython's "magic" to integrate with environments such as Jupyter notebook.
+
+
+Cohort summary
+--------------
+
+We recommend that users start be generating a cohort summary
+with an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:
+
+>>> from gpsea.view import CohortViewable
+>>> viewer = CohortViewable(hpo)
+>>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
+>>> report  # doctest: +SKIP
+
+.. raw:: html
+  :file: reports/tbx5_cohort_info.html
+
+.. doctest:: exploratory
+    :hide:
+
+    >>> report.write('docs/user-guide/reports/tbx5_cohort_INFO.html')  # doctest: +SKIP
 
 
 Distribution of variants across protein domains
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------------------
 
 GPSEA gathers information about protein domains from the UniProt API, and alternatively allows users to
 enter domain information manually (See :ref:`fetch-protein-data`).
 Protein domains are  distinct functional or structural units in a protein. For instance, the following graphic shows domains of
-the PLD1 protein. The HKD domains contribute to the catalytic activity of the protein whereas the PX and PH domains
+the *PLD1* protein. The HKD domains contribute to the catalytic activity of the protein whereas the PX and PH domains
 regulation PLD1 localization within the cell. Observations such as this may suggest testable hypotheses.
 
-.. figure:: ./img/PLD1a.png
-   :alt: PLD1a
+.. figure:: img/PLD1.png
+   :alt: PLD1
    :align: center
    :width: 600px
 
-   Human PLD1a with PX, PH, and two HKD domains.
+   Human *PLD1* with PX, PH, and two HKD domains.
 
 
-Users can create a table to
-display the protein domains and the variants located in them in order to decide whether it might be
-sensible to test for correlation between variants located in one or more protein domains and a certain phenotype. ::
-
-
-    from gpsea.view import ProteinVariantViewer
-    from gpsea.preprocessing import configure_default_protein_metadata_service
-    pms = configure_default_protein_metadata_service()
-    protein_meta = pms.annotate(mane_protein_id)
-    cpd_viewer = ProteinVariantViewer(tx_id=mane_tx_id, protein_metadata=protein_meta)
+Users can create a table to display the protein domains and the variants
+located in them in order to decide whether it might be sensible to test for correlation between variants
+located in one or more protein domains and a certain phenotype.
 
 This code will produce the following table on the basis of a cohort of individuals
-with variants in the MAPK8IP3 gene.
+with variants in the *TBX5* gene:
 
-.. figure:: ./img/MAPK8IP3_table.png
-   :alt: PLD1a
+>>> from gpsea.view import ProteinVariantViewer
+>>> cpd_viewer = ProteinVariantViewer(tx_id=tx_id, protein_metadata=protein_meta)
+>>> report = cpd_viewer.process(cohort)
+>>> report  # doctest: +SKIP
+
+.. raw:: html
+  :file: reports/tbx5_protein_info.html
+
+.. doctest:: exploratory
+    :hide:
+
+    >>> report.write('docs/user-guide/reports/tbx5_protein_info.html')  # doctest: +SKIP
+
+
+Plot distribution of variants with respect to the protein sequence
+------------------------------------------------------------------
+
+We use Matplotlib to plot the distribution of variants on a protein diagram:
+
+>>> import matplotlib.pyplot as plt
+>>> from gpsea.view import ProteinVisualizer
+>>> fig, ax = plt.subplots(figsize=(15, 8))
+>>> visualizer = ProteinVisualizer()
+>>> visualizer.draw_protein_diagram(
+...     tx_coordinates,
+...     protein_meta,
+...     cohort,
+...     ax=ax,
+... )
+
+.. image:: img/TBX5_protein_diagram.png
+   :alt: TBX5 protein diagram
    :align: center
-   :width: 800px
+   :width: 600px
 
-   Distrivution of MAPK8IP3 variants across the domains of the protein.
+.. doctest:: exploratory
+    :hide:
+
+    >>> fig.tight_layout()
+    >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP

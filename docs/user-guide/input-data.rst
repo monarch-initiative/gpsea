@@ -181,9 +181,11 @@ True
 We will leave persisting the cohort into an actual file or another data store as an exercise for the interested readers.
 
 
-***************************************************
-Get data for the transcript and protein of interest
-***************************************************
+.. _choose-tx-and-protein:
+
+*********************************************
+Choose the transcript and protein of interest
+*********************************************
 
 
 Choose the transcript

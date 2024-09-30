@@ -8,6 +8,8 @@ from collections import defaultdict
 from gpsea.model import Cohort, ProteinMetadata
 from gpsea.model.genome import Region
 
+from ._report import GpseaReport, HtmlGpseaReport
+
 
 @dataclass(frozen=False)
 class Feature:
@@ -34,7 +36,7 @@ class ProteinVariantViewer:
         self._protein_meta = protein_metadata
         self._tx_id = tx_id
 
-    def process(self, cohort: Cohort) -> str:
+    def process(self, cohort: Cohort) -> GpseaReport:
         """
         Summarize the data regarding the protein into a HTML table.
 
@@ -42,10 +44,12 @@ class ProteinVariantViewer:
             cohort (Cohort): the cohort of patients being analyzed
 
         Returns:
-            str: an HTML document for showing in Jupyter notebook
+            GpseaReport: a report that can be stored to a path or displayed in
+                interactive environment such as Jupyter notebook.
         """
         context = self._prepare_context(cohort)
-        return self._cohort_template.render(context)
+        html = self._cohort_template.render(context)
+        return HtmlGpseaReport(html=html)
 
     def _prepare_context(self, cohort: Cohort) -> typing.Mapping[str, typing.Any]:
         protein_id = self._protein_meta.protein_id
@@ -67,11 +71,12 @@ class ProteinVariantViewer:
                 # that here in this visualization function
                 continue
             hgvs_p = target_annot.hgvsp
-            # hgvs_p is now a string such as NP_001305781.1:p.Tyr15Ter. We remove the accession number, which
-            # is shown in the title and caption and is redundant here
-            fields = hgvs_p.split(":")
-            if len(fields) == 2:
-                hgvs_p = fields[1]
+            if hgvs_p is not None:
+                # hgvs_p is now a string such as NP_001305781.1:p.Tyr15Ter. We remove the accession id, which
+                # is shown in the title and caption and is redundant here
+                fields = hgvs_p.split(":")
+                if len(fields) == 2:
+                    hgvs_p = fields[1]
             target_region = target_annot.protein_effect_location
             if target_region is None:
                 # can happen for certain variant classes such as splice variant. Not an error
@@ -81,6 +86,7 @@ class ProteinVariantViewer:
                 if feature.info.region.overlaps_with(target_region):
                     found_overlap = True
                     feature_to_variant_list_d[feature].append(hgvs_p)
+            
             if found_overlap:
                 n_variants_in_features += 1
             else:
