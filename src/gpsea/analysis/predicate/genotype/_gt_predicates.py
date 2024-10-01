@@ -2,7 +2,7 @@ import dataclasses
 import typing
 import warnings
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 import hpotk
 
@@ -117,20 +117,89 @@ def groups_predicate(
     )
 
 
+def qc_partitions(
+    partitions: typing.Collection[typing.Collection[int]],
+):
+    # NOT PART OF THE PUBLIC API
+
+    # Outer element is a collection
+    if not isinstance(partitions, typing.Collection):
+        raise ValueError("Partitions must be a collection")
+    # Inner elements are all collections ...
+    if not all(isinstance(partition, typing.Collection) for partition in partitions):
+        raise ValueError("Each partition must be a collection")
+    # ... we must have at least 2 partitions ...
+    if not len(partitions) >= 2:
+        raise ValueError("At least 2 partitions must be provided")
+    # ... and the inner collection elements are all ints
+    if not all(isinstance(e, int) and e >= 0 for partition in partitions for e in partition):
+        raise ValueError("Each partition index must be a non-negative int")
+    
+    # Each partition must be unique ...
+    partition_counter = Counter(partitions)
+    errors = []
+    for partition, count in partition_counter.items():
+        if count > 1:
+            errors.append(f"partition {partition} was present {count}!=1 times")
+    if len(errors) > 0:
+        raise ValueError(", ".join(errors))
+
+    # ... and each index/element must be unique as well
+    element_counter = Counter(e for partition in partitions for e in partition)
+    errors = []
+    for element, count in element_counter.items():
+        if count > 1:
+            errors.append(f"element {element} was present {count}!=1 times")
+    if len(errors) > 0:
+        raise ValueError(", ".join(errors))
+
+
+def build_count_to_cat(
+    names: typing.Tuple[str, str],
+    partitions: typing.Iterable[typing.Iterable[int]],
+) -> typing.Mapping[typing.Tuple[int, int], Categorization]:
+    # NOT PART OF THE PUBLIC API
+    partition2ac = (
+        (2, 0),
+        (1, 1),
+        (0, 2),
+    )
+
+    partition2label = (
+        f"{names[0]}/{names[0]}",
+        f"{names[0]}/{names[1]}",
+        f"{names[1]}/{names[1]}",
+    )
+
+    ac2cat = {}
+    for i, partition in enumerate(partitions):
+        label = ' OR '.join(partition2label[j] for j in partition)
+
+        cat = Categorization(
+            PatientCategory(cat_id=i, name=label, description=label),
+        )
+        for id in partition:
+            ac = partition2ac[id]
+            ac2cat[ac] = cat
+
+    return ac2cat
+
+
 class PolyCountingGenotypePredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API
 
     @staticmethod
     def monoallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
         names: typing.Tuple[str, str],
-    ):
+    ) -> "PolyCountingGenotypePredicate":
         count2cat = {
             (1, 0): Categorization(PatientCategory(cat_id=0, name=names[0], description=f"Monoallelic {names[0]}")),
             (0, 1): Categorization(PatientCategory(cat_id=1, name=names[1], description=f"Monoallelic {names[1]}")),
         }
 
-        return PolyCountingGenotypePredicate._for_predicates_and_categories(
+        return PolyCountingGenotypePredicate.for_predicates_and_categories(
             count2cat=count2cat,
             a_predicate=a_predicate,
             b_predicate=b_predicate,
@@ -141,33 +210,18 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
         names: typing.Tuple[str, str],
-    ):
-        count2cat = {
-            (2, 0): Categorization(
-                PatientCategory(
-                    cat_id=0, name=f'{names[0]}/{names[0]}', description=f"Biallelic {names[0]}",
-                )
-            ),
-            (1, 1): Categorization(
-                PatientCategory(
-                    cat_id=1, name=f'{names[0]}/{names[1]}', description=f"{names[0]}/{names[1]}",
-                ),
-            ),
-            (0, 2): Categorization(
-                PatientCategory(
-                    cat_id=2, name=f'{names[1]}/{names[1]}', description=f"Biallelic {names[1]}"
-                ),
-            ),
-        }
+        partitions: typing.Iterable[typing.Iterable[int]],
+    ) -> "PolyCountingGenotypePredicate":
+        count2cat = build_count_to_cat(names, partitions=partitions)
 
-        return PolyCountingGenotypePredicate._for_predicates_and_categories(
+        return PolyCountingGenotypePredicate.for_predicates_and_categories(
             count2cat=count2cat,
             a_predicate=a_predicate,
             b_predicate=b_predicate,
         )
     
     @staticmethod
-    def _for_predicates_and_categories(
+    def for_predicates_and_categories(
         count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
@@ -272,43 +326,99 @@ def biallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: VariantPredicate,
     names: typing.Tuple[str, str] = ('A', 'B'),
+    partitions: typing.Collection[typing.Collection[int]] = ((0,), (1,), (2,)),
 ) -> GenotypePolyPredicate:
     """
     The predicate bins patient into one of the three groups,
     `AA`, `AB`, and `BB`,
-    based on presence of one or two variant alleles
+    based on presence of *two* variant alleles
     that meet the predicate criteria.
 
-    The number of alleles :math:`count_{A}` and :math:`count_{B}`
-    is computed using `a_predicate` and `b_predicate`
+    The allele counts :math:`count_{A}` and :math:`count_{B}`
+    are computed using `a_predicate` and `b_predicate`
     and the individual is assigned into a group
     based on the following table:
     
-    +-----------+-------------------+-------------------+
-    | Group     | :math:`count_{A}` | :math:`count_{B}` |
-    +===========+===================+===================+
-    | AA        | 2                 | 0                 |
-    +-----------+-------------------+-------------------+
-    | AB        | 1                 | 1                 |
-    +-----------+-------------------+-------------------+
-    | AA        | 0                 | 2                 |
-    +-----------+-------------------+-------------------+
+    +-------------------+-------------------+-----------+--------------+
+    | :math:`count_{A}` | :math:`count_{B}` | Group     | Group index  |
+    +===================+===================+===========+==============+
+    | 2                 | 0                 | A/A       | 0            |
+    +-------------------+-------------------+-----------+--------------+
+    | 1                 | 1                 | A/B       | 1            |
+    +-------------------+-------------------+-----------+--------------+
+    | 0                 | 2                 | B/B       | 2            |
+    +-------------------+-------------------+-----------+--------------+
+    | other             | other             | ``None``  |              |
+    +-------------------+-------------------+-----------+--------------+
 
-    The individuals with different allele counts
+    The individuals with a different allele count combination
     (e.g. :math:`count_{A} = 1` and :math:`count_{B} = 2`)
     are assigned into the ``None`` group and will be, thus,
     omitted from the analysis.
 
-    :param a_predicate: predicate to test if the variants
-        meet the criteria of the first group (named `A` by default).
-    :param b_predicate: predicate to test if the variants
-        meet the criteria of the second group (named `B` by default).
+    
+    Partitions
+    ==========
+
+    By default, biallelic predicate assigns the individual into one of three
+    genotype groups listed in the group table. However, sometimes it is useful
+    to treat several genotype groups as a top-level group. For instance,
+    for comparing the individuals harboring at least one loss-of-function mutation
+    with individuals with no such mutation. This can be achieved by providing
+    partitions with custom genotype group subsets.
+
+    The partitions are provided via `partitions` option as a sequence of `int` subsets
+    where the `int` values correspond to group indices (see table above).
+    The properties of the `partitions of a set <https://en.wikipedia.org/wiki/Partition_of_a_set>`_
+    must be upheld:
+
+    * no subset is empty
+    * the union of the subsets include all group indices
+    * the intersection of any subsets is empty
+
+    
+    Examples
+    ^^^^^^^^
+
+    Let `A` and `B` correspond to the variant predicates that select *MISSENSE* and *STOP_GAIN* variants.
+    
+    Example 1
+    ---------
+
+    Using the partitions ``((0,), (1,), (2,))`` will assign each individual
+    into one of the following three groups:
+
+    * `A/A` - individual with two missense alleles
+    * `A/B` - individual with one missense allele and one stop gain allele
+    * `B/B` - individual with two stop gain alleles
+
+
+    Example 2
+    ---------
+
+    The partitions ``((0, 1), (2,))`` will assign each individual
+    into one of the following *two* groups:
+
+    * `A/A` or `A/B` - individual with either two missense alleles,
+      or with one missense allele and one stop gain allele.
+    * `B/B` - individual with two stop gain alleles.
+    
+
+    :param a_predicate: predicate to test if the variants meet the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants meet the criteria of the second group (named `B` by default).
     :param names: group names (default ``('A', 'B')``).
+    :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
     """
+    # Q/C
+    assert len(names) == 2
+
+    qc_partitions(partitions)
+
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
         names=names,
+        partitions=partitions,
     )
 
 
