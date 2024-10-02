@@ -77,6 +77,8 @@ class ProteinVariantViewer:
                 fields = hgvs_p.split(":")
                 if len(fields) == 2:
                     hgvs_p = fields[1]
+            else:
+                continue
             target_region = target_annot.protein_effect_location
             if target_region is None:
                 # can happen for certain variant classes such as splice variant. Not an error
@@ -105,7 +107,7 @@ class ProteinVariantViewer:
                     'variants': variant_list,
                 }
             )
-
+            
         non_feature_count = len(non_feature_to_variant_list)
         non_feature_variants = "; ".join(set(non_feature_to_variant_list))
 
