@@ -23,6 +23,7 @@ the :class:`~gpsea.analysis.predicate.genotype.VariantPredicate` is all about.
   :caption: Contents:
 
   variant_predicates
+  allele_count_predicates
   mode_of_inheritance_predicate
   male_female_predicate
   diagnosis_predicate
