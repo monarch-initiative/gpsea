@@ -67,9 +67,10 @@ Assuming AR inheritance, we compare missense vs. rest:
 ...     a_predicate=is_missense,
 ...     b_predicate=~is_missense,
 ...     names=('Missense', 'Other'),
+...     partitions=({0,}, {1, 2}),
 ... )
 >>> gt_predicate.display_question()
-'Allele group: Missense/Missense, Missense/Other, Other/Other'
+'Allele group: Missense/Missense, Missense/Other OR Other/Other'
 
 Phenotype score
 ---------------
@@ -119,25 +120,26 @@ We execute the analysis by running
 ... )
 
 >>> result.pval
+nan
 
 Show data frame with scores
 
 >>> scores = result.genotype_phenotype_scores.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
                                      genotype phenotype
-patient_id
-Subject 10[PMID_27087320_Subject_10]        1         0
-Subject 1[PMID_27087320_Subject_1]          0         4
-Subject 1[PMID_29330883_Subject_1]          1         0
-Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]          1         1
+patient_id                                                   
+individual 10[PMID_30968594_individual_10]        1     614.0
+individual 11[PMID_30968594_individual_11]        1     630.0
+individual 12[PMID_30968594_individual_12]        1       NaN
+individual 13[PMID_30968594_individual_13]        1     303.0
+individual 14[PMID_30968594_individual_14]        1     664.0
 
 
 Prepare genotype category legend:
 
 >>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_predicate.get_categorizations()}
 >>> gt_id_to_name
-{0: 'Missense/Missense', 1: 'Missense/Other', 2: 'Other/Other'}
+{0: 'Missense/Missense', 1: 'Missense/Other OR Other/Other'}
 
 TODO: wordsmith & finish!
 
