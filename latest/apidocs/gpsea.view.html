@@ -316,7 +316,7 @@ or for writing into a standalone HTML file.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.view.MtcStatsViewer.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysisResult" title="gpsea.analysis.pcats._impl.HpoTermAnalysisResult"><span class="pre">HpoTermAnalysisResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/view/_stats.html#MtcStatsViewer.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.MtcStatsViewer.process" title="Link to this definition"></a></dt>
-<dd><p>Create an HTML to present MTC part of the <code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysisResult</span></code>.</p>
+<dd><p>Create an HTML to present MTC part of the <a class="reference internal" href="gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysisResult" title="gpsea.analysis.pcats.HpoTermAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysisResult</span></code></a>.</p>
 <p>Use the <cite>display(HTML(..))</cite> functions of the IPython package.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -362,9 +362,33 @@ and its protein product.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="gpsea.view.Formatter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.view.</span></span><span class="sig-name descname"><span class="pre">Formatter</span></span><a class="reference internal" href="../_modules/gpsea/view/_formatter.html#Formatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.Formatter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.view.Formatter.format_as_string">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">format_as_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/view/_formatter.html#Formatter.format_as_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.Formatter.format_as_string" title="Link to this definition"></a></dt>
+<dd><p>Inputs an item and outputs a human readable string that can be used
+to more easily read the item in tables or other visualizers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>T</em>) – an element to be formatted</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a human readable string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="gpsea.view.VariantFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.view.</span></span><span class="sig-name descname"><span class="pre">VariantFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/view/_formatter.html#VariantFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.view.VariantFormatter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code>[<a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model._variant.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a>]</p>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.view.Formatter" title="gpsea.view._formatter.Formatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></a>[<a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model._variant.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a>]</p>
 <p>A class that can be used to format a <cite>Variant</cite> to a human readable string</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.view.VariantFormatter.format_as_string">

@@ -245,7 +245,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a `dict` with the response from the VEP REST API.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            variant_coordinates: a query :class:`VariantCoordinates`.</span>
+<span class="sd">            variant_coordinates: a query :class:`~gpsea.model.VariantCoordinates`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="p">(</span><span class="n">VepFunctionalAnnotator</span><span class="o">.</span><span class="n">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">))</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
@@ -284,7 +284,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            vc (VariantCoordinates): A VariantCoordinates object</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            string: The variant coordinates formatted to work with VEP</span>
+<span class="sd">            str: The variant coordinates formatted to work with VEP</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">chrom</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">chrom</span>

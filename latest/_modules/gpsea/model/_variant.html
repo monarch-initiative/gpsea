@@ -391,7 +391,7 @@
 <span class="sd">        (1000, 1001, &#39;C&#39;, &#39;T&#39;, 1, 0)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            contig: a :class:`Contig` for the chromosome</span>
+<span class="sd">            contig: a :class:`~gpsea.model.genome.Contig` for the chromosome</span>
 <span class="sd">            pos: a 1-based coordinate of the first base of the reference allele, as described in VCF standard</span>
 <span class="sd">            ref: a `str` with the REF allele. Should meet the requirements of the VCF standard.</span>
 <span class="sd">            alt: a `str` with the ALT allele. Should meet the requirements of the VCF standard.</span>
@@ -458,7 +458,7 @@
 <span class="sd">        (321681, 321887, &#39;T&#39;, &#39;&lt;DEL&gt;&#39;, 206, -205)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            contig: a :class:`Contig` for the chromosome</span>
+<span class="sd">            contig: a :class:`~gpsea.model.genome.Contig` for the chromosome</span>
 <span class="sd">            pos: a 1-based coordinate of the first base of the affected reference allele region</span>
 <span class="sd">            end: a 1-based coordinate of the last base of the affected reference allele region</span>
 <span class="sd">            ref: a `str` with the REF allele. Most of the time, it is one of `{&#39;N&#39;, &#39;A&#39;, &#39;C&#39;, &#39;G&#39;, &#39;T&#39;}`</span>
@@ -882,6 +882,8 @@
 
 
 
+<div class="viewcode-block" id="FunctionalAnnotationAware">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FunctionalAnnotationAware">[docs]</a>
 <span class="k">class</span> <span class="nc">FunctionalAnnotationAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 
     <span class="nd">@property</span>
@@ -889,6 +891,8 @@
     <span class="k">def</span> <span class="nf">tx_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
         <span class="k">pass</span>
 
+<div class="viewcode-block" id="FunctionalAnnotationAware.get_tx_anno_by_tx_id">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FunctionalAnnotationAware.get_tx_anno_by_tx_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_tx_anno_by_tx_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
@@ -904,8 +908,11 @@
         <span class="k">for</span> <span class="n">tx_ann</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tx_ann</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
+
+<div class="viewcode-block" id="FunctionalAnnotationAware.get_hgvs_cdna_by_tx_id">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FunctionalAnnotationAware.get_hgvs_cdna_by_tx_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_hgvs_cdna_by_tx_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a transcript ID, will return the hgvs cdna string associated with that variant and transcript.</span>
 
@@ -918,8 +925,11 @@
         <span class="k">for</span> <span class="n">tx_ann</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="n">transcript_id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">hgvs_cdna</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
+
+<div class="viewcode-block" id="FunctionalAnnotationAware.get_preferred_tx_annotation">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FunctionalAnnotationAware.get_preferred_tx_annotation">[docs]</a>
     <span class="k">def</span> <span class="nf">get_preferred_tx_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the `TranscriptAnnotation` that represents the result of the functional annotation</span>
 <span class="sd">        with respect to the preferred transcript of a gene.</span>
@@ -934,7 +944,9 @@
         <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">is_preferred</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tx</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="Variant">

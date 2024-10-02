@@ -201,7 +201,7 @@
 <span class="sd">        &#39;MISSENSE_VARIANT on NM_123.4&#39;</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            effect: the target :class:`VariantEffect`</span>
+<span class="sd">            effect: the target :class:`~gpsea.model.VariantEffect`</span>
 <span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">VariantEffectPredicate</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
@@ -288,7 +288,7 @@
 <span class="sd">        overlaps with a region on a protein of a specific transcript.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            region: a :class:`Region` that gives the start and end coordinate</span>
+<span class="sd">            region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate</span>
 <span class="sd">                of the region of interest on a protein strand.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinRegionPredicate</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
@@ -318,8 +318,8 @@
 <span class="sd">        The thresholds vary in the literature, but here we use 50bp as a default.</span>
 
 <span class="sd">        Any variant that affects at least `threshold` base pairs is considered an SV.</span>
-<span class="sd">        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.TRANSLOCATION`)</span>
-<span class="sd">        are always considered as an SV.</span>
+<span class="sd">        Large SVs with unknown breakpoint coordinates or translocations</span>
+<span class="sd">        (:class:`~gpsea.model.VariantClass.TRANSLOCATION`) are always considered as an SV.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            threshold: a non-negative `int` with the number of base pairs that must be affected</span>
@@ -368,7 +368,7 @@
         <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`VariantClass`.</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.</span>
 
 <span class="sd">        **Example**</span>
 
@@ -496,8 +496,9 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates">[docs]</a>
 <span class="k">class</span> <span class="nc">ProteinPredicates</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ProteinPredicates` prepares variant predicates that need to consult :class:`ProteinMetadataService`</span>
-<span class="sd">    to categorize a :class:`Variant`.</span>
+<span class="sd">    `ProteinPredicates` prepares variant predicates that need to consult </span>
+<span class="sd">    :class:`~gpsea.preprocessing.ProteinMetadataService`</span>
+<span class="sd">    to categorize a :class:`~gpsea.model.Variant`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -515,7 +516,8 @@
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            feature_type: the target protein :class:`FeatureType` (e.g. :class:`FeatureType.DOMAIN`)</span>
+<span class="sd">            feature_type: the target protein :class:`~gpsea.model.FeatureType`</span>
+<span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
             <span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>

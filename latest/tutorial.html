@@ -101,7 +101,7 @@
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
 <p>Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
 The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
-The <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/user-guide/index.html#user-guide" title="(in hpo-toolkit)"><span>User guide</span></a> contains details about additional methods and functionalities.</p>
+The <a class="reference internal" href="user-guide/index.html#user-guide"><span class="std std-ref">User guide</span></a> contains details about additional methods and functionalities.</p>
 <p>The tutorial presents an analysis of a cohort of individuals with pathogenic variants in <em>TBX5</em> leading to
 <a class="reference external" href="https://omim.org/entry/142900">Holt-Oram syndrome MIM:142900</a>.</p>
 <p>Holt-Oram syndrome is an autosomal dominant disorder characterized by
@@ -150,7 +150,7 @@ whose clinical signs and symptoms were encoded into HPO terms
 and stored in <a class="reference external" href="https://github.com/monarch-initiative/phenopacket-store">Phenopacket Store</a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">phenopacket_registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">phenopacket_registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">phenopacket_registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="s2">&quot;0.1.20&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="n">cohort_name</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
 <span class="go">156</span>
@@ -1188,7 +1188,7 @@ in the individuals of the <em>TBX5</em> cohort.</p>
 <p class="admonition-title">Note</p>
 <p>There are many other ways to set up a predicate for testing
 for a GP correlation.
-See the <a class="reference internal" href="user-guide/predicates.html#predicates"><span class="std std-ref">Predicates</span></a> section to learn more about building
+See the <a class="reference internal" href="user-guide/predicates/index.html#predicates"><span class="std std-ref">Predicates</span></a> section to learn more about building
 a predicate of interest.</p>
 </div>
 <p>The phenotype grouping is based on presence or absence of an HPO term.

@@ -92,7 +92,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">GenotypePolyPredicate</span><span class="p">(</span><span class="n">PolyPredicate</span><span class="p">[</span><span class="n">Categorization</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `GenotypePolyPredicate` is a base class for all :class:`PolyPredicate`</span>
+<span class="sd">    `GenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`</span>
 <span class="sd">    that test the genotype axis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
@@ -105,8 +105,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantPredicate` tests if a variant meets a certain criterion.</span>
 
-<span class="sd">    The subclasses are expected to implement all abstract methods of this class</span>
-<span class="sd">    *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.</span>
+<span class="sd">    The subclasses *MUST* implement all abstract methods of this class</span>
+<span class="sd">    *plus* ``__eq__`` and ``__hash__``, to support building the compound predicates.</span>
 
 <span class="sd">    We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -129,7 +129,7 @@
 <span class="sd">        Test if the `variant` meets a criterion.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
-<span class="sd">            variant: an instance of :class:`Variant` to test.</span>
+<span class="sd">            variant: an instance of :class:`~gpsea.model.Variant` to test.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: `True` if the variant meets the criterion and `False` otherwise.</span>

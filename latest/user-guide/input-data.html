@@ -61,21 +61,28 @@
 <li class="toctree-l4"><a class="reference internal" href="#create-a-cohort-from-ga4gh-phenopackets">Create a cohort from GA4GH phenopackets</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#persist-the-cohort-for-later">Persist the cohort for later</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#get-data-for-the-transcript-and-protein-of-interest">Get data for the transcript and protein of interest</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#choose-the-transcript">Choose the transcript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#get-the-transcript-data">Get the transcript data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#get-the-protein-data">Get the protein data</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#plot-distribution-of-cohort-variants-on-the-protein">Plot distribution of cohort variants on the protein</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-distribution-of-cohort-variants-on-the-protein">Plot distribution of cohort variants on the protein</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="stats.html">Statistical tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates/index.html">Predicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyses/index.html">Statistical analyses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
@@ -120,12 +127,12 @@ and how to prepare the transcript and protein information for the subsequent ana
 <p>The first step of the <cite>gpsea</cite> analysis involves standardization of the genotype and phenotype data
 and performing functional annotation of the variants.</p>
 <section id="create-a-cohort-from-ga4gh-phenopackets">
-<h3>Create a cohort from GA4GH phenopackets<a class="headerlink" href="#create-a-cohort-from-ga4gh-phenopackets" title="Link to this heading"></a></h3>
+<span id="create-cohort-from-phenopackets"></span><h3>Create a cohort from GA4GH phenopackets<a class="headerlink" href="#create-a-cohort-from-ga4gh-phenopackets" title="Link to this heading"></a></h3>
 <p>The easiest way to input data into <cite>gpsea</cite> is to use the
 <a class="reference external" href="https://phenopacket-schema.readthedocs.io/en/latest">GA4GH Phenopacket Schema</a> phenopackets.
 <cite>gpsea</cite> provides an out-of-the-box solution for loading a cohort from a folder of phenopacket JSON files.</p>
-<section id="create-cohort-creator">
-<h4>Create cohort creator<a class="headerlink" href="#create-cohort-creator" title="Link to this heading"></a></h4>
+<section id="configure-a-cohort-creator">
+<h4>Configure a cohort creator<a class="headerlink" href="#configure-a-cohort-creator" title="Link to this heading"></a></h4>
 <p>Next, let’s prepare a <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.CohortCreator" title="gpsea.preprocessing.CohortCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohortCreator</span></code></a> that will turn a phenopacket collection
 into a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>. The cohort creator also performs an input validation.
 The validation needs Human Phenotype Ontology data.
@@ -162,7 +169,7 @@ We use <a class="reference external" href="https://github.com/monarch-initiative
 (<code class="docutils literal notranslate"><span class="pre">ppktstore</span></code> in the code) to reduce the boilerplate code needed to load the phenopackets:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s2">&quot;0.1.19&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="s1">&#39;RERE&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
 <span class="go">19</span>
@@ -178,34 +185,77 @@ loader function:</p>
 <span class="go">19</span>
 </pre></div>
 </div>
-<p>The cohort includes all 19 individuals.
-On top of the <code class="docutils literal notranslate"><span class="pre">cohort</span></code>, the loader function also provides Q/C results  <code class="docutils literal notranslate"><span class="pre">qc_results</span></code>.
-We call <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="gpsea.preprocessing.PreprocessingValidationResult.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a>
-to display the Q/C summary:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
-<span class="go">Validated under none policy</span>
-<span class="go">No errors or warnings were found</span>
-</pre></div>
-</div>
+<p>The cohort includes all 19 individuals.</p>
 </section>
 <section id="alternative-phenopacket-sources">
 <h4>Alternative phenopacket sources<a class="headerlink" href="#alternative-phenopacket-sources" title="Link to this heading"></a></h4>
 <p>In case you do not already have a <cite>Phenopacket</cite> collection at your fingertips,
 GPSEA provides a few other convenience functions for loading phenopackets from JSON files.</p>
-<p>The <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_files" title="gpsea.preprocessing.load_phenopacket_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_phenopacket_files()</span></code></a> function can be used to load
-a bunch of phenopacket JSON files:</p>
+<p>The <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_files" title="gpsea.preprocessing.load_phenopacket_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_phenopacket_files()</span></code></a> function loads
+phenopackets from one or more paths that point to phenopacket JSON files:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopacket_files</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_files</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;path/to/phenopacket1.json&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/phenopacket2.json&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_files</span><span class="p">(</span><span class="n">pp_files</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_file_paths</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;path/to/phenopacket1.json&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/phenopacket2.json&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_files</span><span class="p">(</span><span class="n">pp_file_paths</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
 </pre></div>
 </div>
-<p>or you can load an entire directory of JSON files with <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_folder" title="gpsea.preprocessing.load_phenopacket_folder"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_phenopacket_folder()</span></code></a>:</p>
+<p>Alternatively, you can load an entire directory of phenopackets
+with the <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_folder" title="gpsea.preprocessing.load_phenopacket_folder"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_phenopacket_folder()</span></code></a> loader function.
+The function expects a <cite>str</cite> with path to a directory that contains one or more phenopackets
+stored as JSON files. The loader includes all files that end with <code class="docutils literal notranslate"><span class="pre">*.json</span></code> suffix
+and ignores any other files or sub-directories:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">load_phenopacket_folder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pp_dir</span> <span class="o">=</span> <span class="s1">&#39;path/to/folder/with/many/phenopacket/json/files&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
 </pre></div>
 </div>
 </section>
+<section id="quality-control">
+<span id="id2"></span><h4>Quality control<a class="headerlink" href="#quality-control" title="Link to this heading"></a></h4>
+<p>Besides the <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>, the loader functions also provide Q/C results (<code class="docutils literal notranslate"><span class="pre">qc_results</span></code>)
+as <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult" title="gpsea.preprocessing.PreprocessingValidationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreprocessingValidationResult</span></code></a>.
+The Q/C checker points out as many issues as possible (not just the first one),
+to allow fixing all issues at once.
+The issues can be explored programmaticaly
+through the <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult" title="gpsea.preprocessing.PreprocessingValidationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreprocessingValidationResult</span></code></a> API,
+or we can display a summary with the
+<a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="gpsea.preprocessing.PreprocessingValidationResult.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a> method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<span class="go">Validated under permissive policy</span>
+<span class="go">No errors or warnings were found</span>
+</pre></div>
+</div>
+<p>In this case, no Q/C issues were found.</p>
+</section>
+</section>
+</section>
+<section id="persist-the-cohort-for-later">
+<span id="cohort-persistence"></span><h2>Persist the cohort for later<a class="headerlink" href="#persist-the-cohort-for-later" title="Link to this heading"></a></h2>
+<p>The preprocessing of a cohort can take some time even if we cache the responses from remote resources,
+such as Variant Effect Predictor, Variant Validator, or Uniprot.
+GPSEA ships with a custom encoder and decoder
+designed to be integrated with Python’s built-in <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> module to
+persist a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> to a JSON file and load it back.</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<p>We can dump the <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> into JSON
+by providing <a class="reference internal" href="../apidocs/gpsea.io.html#gpsea.io.GpseaJSONEncoder" title="gpsea.io.GpseaJSONEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">GpseaJSONEncoder</span></code></a> via <cite>cls</cite> option to the <cite>json</cite> module functions,
+such as the <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a> which encodes an object into a JSON <cite>str</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONEncoder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONEncoder</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span><span class="p">[:</span><span class="mi">80</span><span class="p">]</span>
+<span class="go">&#39;{&quot;members&quot;: [{&quot;labels&quot;: {&quot;label&quot;: &quot;Subject 8&quot;, &quot;meta_label&quot;: &quot;PMID_29330883_Subj&#39;</span>
+</pre></div>
+</div>
+<p>Here we see the first 80 letters of the JSON object.</p>
+<p>We can decode the JSON object with <a class="reference internal" href="../apidocs/gpsea.io.html#gpsea.io.GpseaJSONDecoder" title="gpsea.io.GpseaJSONDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">GpseaJSONDecoder</span></code></a> to get the same cohort back:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span> <span class="o">==</span> <span class="n">decoded</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>We will leave persisting the cohort into an actual file or another data store as an exercise for the interested readers.</p>
 </section>
 </section>
 <section id="get-data-for-the-transcript-and-protein-of-interest">
@@ -346,10 +396,10 @@ is as simple as running:</p>
 </div>
 <p>The <cite>protein_meta</cite> represents the <em>TBX5</em> isoform that includes 518 aminoacids and two features of interest,
 which we can see on the following screenshot of the UniProt entry for <em>TBX5</em>:</p>
-<figure class="align-center" id="id2">
+<figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="../_images/TBX5_uniprot_features.png"><img alt="*TBX5* (P37173, UniProt entry)" src="../_images/TBX5_uniprot_features.png" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-text">Protein features of <em>TBX5</em> (Q99593, UniProt entry)</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+<p><span class="caption-text">Protein features of <em>TBX5</em> (Q99593, UniProt entry)</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>UniProt shows four protein features:</p>
@@ -415,6 +465,8 @@ Here we show how to enter the same information manually, in a custom protein dat
 <p>Having the transcript and protein data on hand, we can plot the distribution of the variants found in the cohort members.
 GPSEA leverages Matplotlib to create a diagram with variants and protein features,
 to get insights into the cohort and to formulate genotype-phenotype association hypotheses.</p>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>Let’s plot a distribution of the variants found in <em>TBX5</em> cohort of Phenopacket Store.
 First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
@@ -449,10 +501,10 @@ First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/img/TBX5_gpsea_with_uniprot_domains.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<figure class="align-center" id="id3">
+<figure class="align-center" id="id5">
 <a class="reference internal image-reference" href="../_images/TBX5_gpsea_with_uniprot_domains.png"><img alt="TBX5 (Q99593, UniProt entry)" src="../_images/TBX5_gpsea_with_uniprot_domains.png" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-text">GPSEA display of variants and protein features of <em>TBX5</em></span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+<p><span class="caption-text">GPSEA display of variants and protein features of <em>TBX5</em></span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -460,6 +512,7 @@ First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <p>We use <cite>fig.savefig</cite> to save the diagram for the purpose of showing it in the user guide.
 You certainly do not need to do it as part of your analysis, unless you really want to.. 😼</p>
 </div>
+</section>
 </section>
 </section>
 

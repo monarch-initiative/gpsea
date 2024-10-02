@@ -156,7 +156,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a boolean for whether the phenotype is observed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            boolean: True if this phenotype was observed in the respective patient.</span>
+<span class="sd">            bool: `True` if this phenotype was observed in the respective patient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`observed` property was deprecated and will be removed in `v0.3.0`. &#39;</span>
                       <span class="s1">&#39;Use `is_present` instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -241,6 +241,81 @@
                <span class="sa">f</span><span class="s2">&quot;identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="si">}</span><span class="s2">, &quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, &quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    
+
+<div class="viewcode-block" id="Measurement">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Measurement">[docs]</a>
+<span class="k">class</span> <span class="nc">Measurement</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Named</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representation of a GA4GH Phenopacket Measurement (numerical test result).</span>
+<span class="sd">    An intended use case would be to perform a Student&#39;s t test on numerical measurements in individuals</span>
+<span class="sd">    with two difference genotype classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">test_term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
+        <span class="n">test_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">test_result</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">=</span> <span class="n">test_term_id</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">test_name</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_result</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span> <span class="o">=</span> <span class="n">test_result</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">=</span> <span class="n">unit</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the test ID, e.g. ``LOINC:2986-8``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the test label (e.g. *Testosterone [Mass/volume] in Serum or Plasma* for ``LOINC 2986-8``).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">test_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the disease was diagnosed in the individual or `False` if it was excluded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the unit for the test result encoded as a TermId, e.g., ``UCUM:ng/dL`` for *nanogram per deciliter*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_term_id</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_name</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_test_result</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_unit</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Measurement(&quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;test_result=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span><span class="si">}</span><span class="s2">), &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;unit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_unit</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>

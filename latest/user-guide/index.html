@@ -60,11 +60,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="predicates.html">Predicates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="stats.html">Statistical tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates/index.html">Predicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyses/index.html">Statistical analyses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
@@ -95,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="user-guide">
-<span id="rstuser-guide"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
 <p>GPSEA allows users to perform many different kinds of genotype-phenotype correlation (GPCs) analysis. See the <a class="reference internal" href="../tutorial.html#tutorial"><span class="std std-ref">Tutorial</span></a> for an introduction.
 In general, the analysis will include steps for data input, exploration of the cohort to assist in generating hypotheses about potential GPCs to test,
 corresponding choice of genotype and phenotype predicates to perform the test, choice of statistical test, and approach to multiple-testing correction (mtc).
@@ -103,13 +103,81 @@ The pages shown in the table of contents provide more information about each ste
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="input-data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input-data.html">Input data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="input-data.html#standardize-genotype-and-phenotype-data">Standardize genotype and phenotype data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#create-a-cohort-from-ga4gh-phenopackets">Create a cohort from GA4GH phenopackets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input-data.html#persist-the-cohort-for-later">Persist the cohort for later</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input-data.html#get-data-for-the-transcript-and-protein-of-interest">Get data for the transcript and protein of interest</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#choose-the-transcript">Choose the transcript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#get-the-transcript-data">Get the transcript data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#get-the-protein-data">Get the protein data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input-data.html#plot-distribution-of-cohort-variants-on-the-protein">Plot distribution of cohort variants on the protein</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="input-data.html#id3">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="predicates.html">Predicates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stats.html">Statistical tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predicates/index.html">Predicates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="predicates/genotype_predicates.html">Genotype Predicates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="predicates/variant_predicates.html">Variant Predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/allele_count_predicates.html">Allele count predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/mode_of_inheritance_predicate.html">Mode of Inheritance Predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/male_female_predicate.html">Partition by the sex of the individual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/diagnosis_predicate.html">Partition by a diagnosis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/groups_predicate.html">Groups Predicate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="predicates/phenotype_predicates.html">Phenotype Predicates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="predicates/hpo_predicate.html">HPO predicate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/hpo_predicate.html#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates/devries.html">De Vries Score</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="predicates/index.html#gallery">Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predicates/index.html#need-more">Need more?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyses/index.html">Statistical analyses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analyses/phenotype-groups.html">Compare genotype and phenotype groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analyses/phenotype-groups.html#fisher-exact-test-fet">Fisher exact test (FET)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analyses/phenotype-groups.html#example-analysis">Example analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analyses/phenotype-scores.html">Compare phenotype scores in genotype groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analyses/phenotype-scores.html#mann-whitney-u-test">Mann-Whitney U Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analyses/phenotype-scores.html#example-analysis">Example analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analyses/measurements.html">Compare measurement values</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analyses/measurements.html#example-analysis">Example analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mtc.html">Multiple-testing correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mtc.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtc.html#implementation-in-gpsea">Implementation in GPSEA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html#multiple-testing-correction-procedures">Multiple-testing correction procedures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html#mtc-filters-choosing-which-terms-to-test">MTC filters: Choosing which terms to test</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general_hpo_terms.html">General HPO terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html#true-path-rule">True path rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html#length-of-the-reference-allele">Length of the reference allele</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html#change-length-of-an-allele">Change length of an allele</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

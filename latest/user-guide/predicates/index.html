@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phenotype Predicates &mdash; GPSEA 0.4.2.dev0 documentation</title>
+  <title>Predicates &mdash; GPSEA 0.4.2.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -22,11 +22,13 @@
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
+        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="HPO predicate" href="hpo_predicate.html" />
-    <link rel="prev" title="Groups Predicate" href="groups_predicate.html" /> 
+    <link rel="next" title="Genotype Predicates" href="genotype_predicates.html" />
+    <link rel="prev" title="Cohort exploratory analysis" href="../exploratory.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,16 +60,11 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">Predicates</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Predicates</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Phenotype Predicates</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="hpo_predicate.html">HPO predicate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hpo_predicate.html#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="devries.html">De Vries Score</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#gallery">Gallery</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#need-more">Need more?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gallery">Gallery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#need-more">Need more?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../analyses/index.html">Statistical analyses</a></li>
@@ -94,10 +91,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Predicates</a></li>
-      <li class="breadcrumb-item active">Phenotype Predicates</li>
+      <li class="breadcrumb-item active">Predicates</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/user-guide/predicates/phenotype_predicates.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/user-guide/predicates/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -105,26 +101,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="phenotype-predicates">
-<span id="id1"></span><h1>Phenotype Predicates<a class="headerlink" href="#phenotype-predicates" title="Link to this heading"></a></h1>
-<p>GPSEA offers several phenotype predicates.</p>
-<p>TODO – separate explanations for HPO (Fisher), scores (Mann Whitney) and survival (log rank test).</p>
+  <section id="predicates">
+<span id="id1"></span><h1>Predicates<a class="headerlink" href="#predicates" title="Link to this heading"></a></h1>
+<p>Searching for genotype-phenotype associations usually requires that
+the individuals are partitioned into two or more discrete groups to allow testing for the inter-group differences.
+GPSEA reflects these requirements with its predicate API.</p>
+<p>A <strong>predicate</strong> must be capable of partitioning the individuals into two or more groups.
+The groups must be <em>exclusive</em> - each individual must be assigned at most into one group.
+In general, it is desirable that the groups cover all or at least the majority of the cohort being analyzed to maximize statistical power.
+However, the predicate is allowed to return <cite>None</cite> if the individual cannot be assigned.
+As a result, the individual will be omitted from the downstream analysis.</p>
+<p>Predicates serve both the <em>genotype</em> and <em>phenotype</em> prongs of the analysis.
+Genotype predicates (<a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a>)
+assign the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>
+into a group (mostly) based on the variant information, while the
+phenotype predicates (<a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a>)
+use the HPO terms to assign a group.</p>
+<p>All GPSEA analyses need at least one predicate (typically a <em>genotype</em> predicate) and many require both <em>genotype</em> and <em>phenotype</em> predicates.
+The following pages provide more information.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html">HPO predicate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devries.html">De Vries Score</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a></li>
 </ul>
 </div>
+<section id="gallery">
+<h2>Gallery<a class="headerlink" href="#gallery" title="Link to this heading"></a></h2>
+<p>Here we show examples of predicates used in some of our analyses.</p>
+<p>TODO</p>
+</section>
+<section id="need-more">
+<h2>Need more?<a class="headerlink" href="#need-more" title="Link to this heading"></a></h2>
+<p>Please see <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates" title="gpsea.analysis.predicate.genotype.VariantPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicates</span></code></a>
+and <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates" title="gpsea.analysis.predicate.genotype.ProteinPredicates"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinPredicates</span></code></a>
+for a list of the predicates available off the shelf.</p>
+<p>However, feel free to open an issue on our <a class="reference external" href="https://github.com/monarch-initiative/gpsea/issues">GitHub tracker</a>
+if a predicate seems to be missing.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="groups_predicate.html" class="btn btn-neutral float-left" title="Groups Predicate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hpo_predicate.html" class="btn btn-neutral float-right" title="HPO predicate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../exploratory.html" class="btn btn-neutral float-left" title="Cohort exploratory analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genotype_predicates.html" class="btn btn-neutral float-right" title="Genotype Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

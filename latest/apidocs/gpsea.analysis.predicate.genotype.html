@@ -106,7 +106,7 @@
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.GenotypePolyPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">GenotypePolyPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#GenotypePolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>]</p>
-<p><cite>GenotypePolyPredicate</cite> is a base class for all <code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code>
+<p><cite>GenotypePolyPredicate</cite> is a base class for all <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>
 that test the genotype axis.</p>
 </dd></dl>
 
@@ -274,8 +274,8 @@ that meet the predicate criteria.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">VariantPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#VariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><cite>VariantPredicate</cite> tests if a variant meets a certain criterion.</p>
-<p>The subclasses are expected to implement all abstract methods of this class
-<em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building of compound predicates.</p>
+<p>The subclasses <em>MUST</em> implement all abstract methods of this class
+<em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building the compound predicates.</p>
 <p>We <em>strongly</em> recommend implementing <code class="docutils literal notranslate"><span class="pre">__str__</span></code> and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> as well.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicate.get_question">
@@ -289,7 +289,7 @@ that meet the predicate criteria.</p>
 <dd><p>Test if the <cite>variant</cite> meets a criterion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code> to test.</p>
+<dd class="field-odd"><p><strong>variant</strong> – an instance of <a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a> to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>True</cite> if the variant meets the criterion and <cite>False</cite> otherwise.</p>
@@ -381,7 +381,7 @@ a certain variant effect.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>effect</strong> – the target <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></p></li>
+<li><p><strong>effect</strong> – the target <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantEffect" title="gpsea.model.VariantEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></a></p></li>
 <li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
 </ul>
 </dd>
@@ -458,7 +458,7 @@ Well, at least the genome variants of the <em>Homo sapiens sapiens</em> taxon…
 overlaps with a region on a protein of a specific transcript.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>region</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> that gives the start and end coordinate
+<dd class="field-odd"><p><strong>region</strong> – a <a class="reference internal" href="gpsea.model.genome.html#gpsea.model.genome.Region" title="gpsea.model.genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that gives the start and end coordinate
 of the region of interest on a protein strand.</p>
 </dd>
 </dl>
@@ -478,8 +478,8 @@ without exact breakpoint coordinates.</p>
 <p>SVs are usually defined as variant affecting more than a certain number of base pairs.
 The thresholds vary in the literature, but here we use 50bp as a default.</p>
 <p>Any variant that affects at least <cite>threshold</cite> base pairs is considered an SV.
-Large SVs with unknown breakpoint coordinates or translocations (<code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass.TRANSLOCATION</span></code>)
-are always considered as an SV.</p>
+Large SVs with unknown breakpoint coordinates or translocations
+(<a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass.TRANSLOCATION" title="gpsea.model.VariantClass.TRANSLOCATION"><code class="xref py py-class docutils literal notranslate"><span class="pre">TRANSLOCATION</span></code></a>) are always considered as an SV.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>threshold</strong> – a non-negative <cite>int</cite> with the number of base pairs that must be affected</p>
@@ -512,7 +512,7 @@ as the structural type.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicates.variant_class">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model._variant.VariantClass"><span class="pre">VariantClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#VariantPredicates.variant_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicates.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is of a certain <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code>.</p>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is of a certain <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a>.</p>
 <p><strong>Example</strong></p>
 <p>Make a predicate to test if the variant is a deletion:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
@@ -619,15 +619,17 @@ is shorter than the reference allele. See <a class="reference internal" href="..
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ProteinPredicates">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ProteinPredicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_metadata_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProteinMetadataService" title="gpsea.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#ProteinPredicates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ProteinPredicates" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>ProteinPredicates</cite> prepares variant predicates that need to consult <code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadataService</span></code>
-to categorize a <code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code>.</p>
+<p><cite>ProteinPredicates</cite> prepares variant predicates that need to consult
+<a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProteinMetadataService" title="gpsea.preprocessing.ProteinMetadataService"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadataService</span></code></a>
+to categorize a <a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">
 <span class="sig-name descname"><span class="pre">protein_feature_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#ProteinPredicates.protein_feature_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a protein feature type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code> (e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType.DOMAIN</span></code>)</p>
+<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model.FeatureType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code></a>
+(e.g. <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType.DOMAIN" title="gpsea.model.FeatureType.DOMAIN"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMAIN</span></code></a>)</p>
 </dd>
 </dl>
 </dd></dl>
