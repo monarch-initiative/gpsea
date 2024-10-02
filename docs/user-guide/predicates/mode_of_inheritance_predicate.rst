@@ -9,8 +9,8 @@ autosomal recessive, X-linked dominant, X-linked recessive, and mitochondrial
 (See `Understanding Genetics, Appendix B <https://www.ncbi.nlm.nih.gov/books/NBK132145/>`_).
 
 
-The :class:`~gpsea.analysis.predicate.genotype.autosomal_dominant`
-and :class:`~gpsea.analysis.predicate.genotype.autosomal_recessive`
+The :func:`~gpsea.analysis.predicate.genotype.autosomal_dominant`
+and :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive`
 assigns the individual into a group based on the number of the alleles
 observed in the individual.
 GPSEA supports the following Mendelian modes of inheritance (MoI):
