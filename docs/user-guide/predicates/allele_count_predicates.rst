@@ -93,7 +93,7 @@ The functionality is very similar to that of monoallelic predicate, with two dif
 
 
 Categories
-----------
+==========
 
 A biallelic locus can be present in one of three genotypes.
 For example, using the predicates `A` and `B` for the missense vs. frameshift comparison as in the monoallelic case,
@@ -119,10 +119,10 @@ are assigned into the ``None`` group and will be, thus, omitted from the analysi
 
     
 Partitions
-----------
+==========
 
 Sometimes we are interested in lumping several genotype categories into a group and then comparing the groups.
-For instance, we may want to to compare phenotype of the individuals with *at least one* frameshift allele
+For instance, we may want to compare phenotype of the individuals with *at least one* frameshift allele
 with those with *no* frameshift allele.
 
 The `partitions` option dictates form of the genotype categories.
@@ -137,7 +137,7 @@ as in `partitions of a set <https://en.wikipedia.org/wiki/Partition_of_a_set>`_.
 
 
 Examples
-^^^^^^^^
+========
 
 Let `A` and `B` correspond to the variant predicates that select *MISSENSE* and *FRAMESHIFT* variants,
 and let's reuse the variant predicates ``is_missense`` and ``is_frameshift`` from the previous section.
@@ -172,8 +172,8 @@ The predicate will assign the individuals into one of three genotype groups:
         partitions = ({0,}, {1,}, {2,})
 
 
-Compare missense vs. frameshift
--------------------------------
+Compare missense vs. at least one frameshift allele
+---------------------------------------------------
 
 Here we compare individuals with at least one frameshift allele with those with only missense variants.
 We can achieve this by providing the `partitions` option:
