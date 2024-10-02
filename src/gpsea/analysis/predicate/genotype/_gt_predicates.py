@@ -1,6 +1,5 @@
 import dataclasses
 import typing
-import warnings
 
 from collections import defaultdict, Counter
 
@@ -436,14 +435,16 @@ def autosomal_dominant(
     if variant_predicate is None:
         variant_predicate = VariantPredicates.true()
 
-    return ModeOfInheritancePredicate._from_moi_info(
+    return ModeOfInheritancePredicate.from_moi_info(
         variant_predicate=variant_predicate,
         mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_dominant(),
+        partitions=((0,), (1,)),
     )
 
 
 def autosomal_recessive(
     variant_predicate: typing.Optional[VariantPredicate] = None,
+    partitions: typing.Collection[typing.Collection[int]] = ((0,), (1,), (2,)),
 ) -> GenotypePolyPredicate:
     """
     Create a predicate that assigns the patient either into
@@ -451,19 +452,29 @@ def autosomal_recessive(
     (homozygous alternative or compound heterozygous)
     group in line with the autosomal recessive mode of inheritance.
 
+    
+    Partition indices
+    ^^^^^^^^^^^^^^^^^
+
+    * `0` - homozygous reference
+    * `1` - heterozygous
+    * `2` - biallelic alternative allele (hom alt + comp het)
+
     :param variant_predicate: a predicate for choosing the variants for testing
         or `None` if all variants should be used
+    :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
     """
     if variant_predicate is None:
         variant_predicate = VariantPredicates.true()
 
-    return ModeOfInheritancePredicate._from_moi_info(
+    return ModeOfInheritancePredicate.from_moi_info(
         variant_predicate=variant_predicate,
         mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
+        partitions=partitions,
     )
 
 
-@dataclasses.dataclass(eq=True, frozen=True)
+@dataclasses.dataclass(frozen=True)
 class GenotypeGroup:
     allele_count: int
     sex: typing.Optional[Sex]
@@ -587,84 +598,85 @@ class ModeOfInheritanceInfo:
 
 
 class ModeOfInheritancePredicate(GenotypePolyPredicate):
+    # NOT PART OF THE PUBLIC API!!!
     """
     `ModeOfInheritancePredicate` assigns an individual into a group based on compatibility with
     the selected mode of inheritance.
     """
 
     @staticmethod
-    def autosomal_dominant(
-        variant_predicate: typing.Optional[VariantPredicate] = None,
-    ) -> GenotypePolyPredicate:
-        """
-        Create a predicate that assigns the patient either
-        into homozygous reference or heterozygous
-        group in line with the autosomal dominant mode of inheritance.
-
-        :param variant_predicate: a predicate for choosing the variants for testing.
-        """
-        # TODO: remove before 1.0.0
-        warnings.warn(
-            "Use `gpsea.analysis.predicate.genotype.autosomal_dominant` instead",
-            DeprecationWarning, stacklevel=2,
-        )
-
-        return autosomal_dominant(variant_predicate)
-
-    @staticmethod
-    def autosomal_recessive(
-        variant_predicate: typing.Optional[VariantPredicate] = None,
-    ) -> GenotypePolyPredicate:
-        """
-        Create a predicate that assigns the patient either into
-        homozygous reference, heterozygous, or biallelic alternative allele
-        (homozygous alternative or compound heterozygous)
-        group in line with the autosomal recessive mode of inheritance.
-
-        :param variant_predicate: a predicate for choosing the variants for testing.
-        """
-        # TODO: remove before 1.0.0
-        warnings.warn(
-            "Use `gpsea.analysis.predicate.genotype.autosomal_recessive` instead",
-            DeprecationWarning, stacklevel=2,
-        )
-
-        return autosomal_recessive(variant_predicate)
-
-    @staticmethod
-    def _from_moi_info(
+    def from_moi_info(
         variant_predicate: VariantPredicate,
         mode_of_inheritance_data: ModeOfInheritanceInfo,
+        partitions: typing.Collection[typing.Collection[int]],
     ) -> "ModeOfInheritancePredicate":
         """
         Create a predicate for specified mode of inheritance data.
         """
+        qc_partitions(partitions=partitions)
+
         allele_counter = AlleleCounter(predicate=variant_predicate)
+        count2cat = ModeOfInheritancePredicate.prepare_count2cat(
+            mode_of_inheritance_data=mode_of_inheritance_data,
+            partitions=partitions,
+        )
         return ModeOfInheritancePredicate(
             allele_counter=allele_counter,
-            mode_of_inheritance_info=mode_of_inheritance_data,
+            count2cat=count2cat,
         )
+    
+    @staticmethod
+    def prepare_count2cat(
+        mode_of_inheritance_data: ModeOfInheritanceInfo,
+        partitions: typing.Collection[typing.Collection[int]],
+    ) -> typing.Mapping[int, Categorization]:
+        groups = tuple(mode_of_inheritance_data.groups)
+        partition_to_allele_count = tuple(range(len(groups)))
+        partition_to_label = tuple(
+            group.categorization.category.name
+            for group in groups
+        )
+
+        count2cat = {}
+        for i, partition in enumerate(partitions):
+            label = ' OR '.join(partition_to_label[j] for j in partition)
+
+            cat = Categorization(
+                PatientCategory(
+                    cat_id=i, name=label, description=label,
+                )
+            )
+            for p in partition:
+                allele_count = partition_to_allele_count[p]
+                count2cat[allele_count] = cat
+
+        return count2cat
 
     def __init__(
         self,
         allele_counter: AlleleCounter,
-        mode_of_inheritance_info: ModeOfInheritanceInfo,
+        count2cat: typing.Mapping[int, Categorization],
     ):
         assert isinstance(allele_counter, AlleleCounter)
         self._allele_counter = allele_counter
 
-        assert isinstance(mode_of_inheritance_info, ModeOfInheritanceInfo)
-        self._moi_info = mode_of_inheritance_info
+        self._count2cat = dict(count2cat)
+        self._categorizations = tuple(count2cat.values())
 
-        self._categorizations = tuple(
-            group.categorization for group in mode_of_inheritance_info.groups
-        )
-        issues = ModeOfInheritancePredicate._check_categorizations(
-            self._categorizations
-        )
-        if issues:
-            raise ValueError("Cannot create predicate: {}".format(", ".join(issues)))
         self._question = "What is the genotype group"
+        self._hash = self._compute_hash()
+
+    def _compute_hash(self) -> int:
+        hash_value = 17
+
+        self._groups = defaultdict(list)
+        for count, cat in self._count2cat.items():
+            hash_value += 13 * hash(count)
+            hash_value += 13 * hash(cat)
+
+        hash_value += 23 * hash(self._allele_counter)
+
+        return hash_value
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
@@ -679,32 +691,21 @@ class ModeOfInheritancePredicate(GenotypePolyPredicate):
         self._check_patient(patient)
 
         allele_count = self._allele_counter.count(patient)
-        groups = self._moi_info.get_groups_for_allele_count(allele_count)
-        if len(groups) == 1:
-            return groups[0].categorization
-        else:
-            return None
+        return self._count2cat.get(allele_count, None)
 
     def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, ModeOfInheritancePredicate)
-            and self._allele_counter == value._allele_counter
-            and self._moi_info == value._moi_info
-        )
+        return isinstance(value, ModeOfInheritancePredicate) \
+            and self._allele_counter == value._allele_counter \
+            and self._count2cat == value._count2cat
 
     def __hash__(self) -> int:
-        return hash(
-            (
-                self._allele_counter,
-                self._moi_info,
-            )
-        )
+        return self._hash
 
     def __str__(self) -> str:
         return (
             "ModeOfInheritancePredicate("
             f"allele_counter={self._allele_counter}, "
-            f"moi_info={self._moi_info})"
+            f"count2cat={self._count2cat})"
         )
 
     def __repr__(self) -> str:
