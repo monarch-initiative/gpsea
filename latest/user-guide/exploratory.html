@@ -57,7 +57,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Cohort exploratory analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Cohort exploratory analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#types-of-statistical-test">Types of statistical test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#power">Power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exploration">Exploration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#interactive-exploration">Interactive exploration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cohort-summary">Cohort summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distribution-of-variants-across-protein-domains">Distribution of variants across protein domains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence">Plot distribution of variants with respect to the protein sequence</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="predicates/index.html">Predicates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analyses/index.html">Statistical analyses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
@@ -95,9 +106,563 @@
              
   <section id="cohort-exploratory-analysis">
 <span id="exploratory"></span><h1>Cohort exploratory analysis<a class="headerlink" href="#cohort-exploratory-analysis" title="Link to this heading"></a></h1>
-<p>TODO - write about exploratory analysis of the cohort. Here we describe what we can learn about the cohort
-and the members.</p>
-<p>How many variants? Distribution of the variant counts? Variant effects? Plots with phenotypic feature counts?</p>
+<p>As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
+these in a targeted way. Performing numerous tests without any specific plan comes with an increased
+danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
+available).</p>
+<section id="types-of-statistical-test">
+<h2>Types of statistical test<a class="headerlink" href="#types-of-statistical-test" title="Link to this heading"></a></h2>
+<p>GPSEA offers four statistical tests.</p>
+<ul class="simple">
+<li><p>Fisher Exact Test (FET): Association between two categorical variables. In this case, the first categorical variable is presence/absense of a genotype and the second is presence/absense of annotation to an HPO term.</p></li>
+<li><p>Mann Whitney U test: Association between presence/absence of a genotype with a phenotype score (e.g., <span class="xref std std-ref">devries</span>).</p></li>
+<li><p>t test: Association between presence/absence of a genotype with a numerical test result (e.g., potassium level)</p></li>
+<li><p>log rank score: Association between presence/absence of a genotype with age-of-onset of disease or of an HPO feature or with mortality</p></li>
+</ul>
+<p>Please consult the documentation pages for each of these tests if you are unsure which to use.</p>
+</section>
+<section id="power">
+<h2>Power<a class="headerlink" href="#power" title="Link to this heading"></a></h2>
+<p>Two things must be true to identify a valid genotype-phenotype correlation. First, and obviously,
+the correlation must actually exist in the dataset being analyzed. Second, there must be statistical power to
+identify the effect.
+Power is a measure of the ability of an experimental design and hypothesis testing setup to detect a
+particular effect if it is truly present (<a class="reference external" href="https://en.wikipedia.org/wiki/Power_(statistics)">Wikipedia</a>).</p>
+<p>It will generally not be possible to perform a formal power calculation because the effect size of
+most genotype-phenotype correlations is not well known. But, for instance it would not
+make much sense to test for correlation with a specific variant that occurs in only one of 50 individuals in a cohort.</p>
+</section>
+<section id="exploration">
+<h2>Exploration<a class="headerlink" href="#exploration" title="Link to this heading"></a></h2>
+<p>The purpose of the exploratory analysis is thus to decide which tests to perform.
+GPSEA provides tables and graphics that visualize some of the salient aspects
+of the cohort and the distribution of the identified variants.
+We exemplify the exploratory analysis on a cohort of 156 individuals with mutations
+in <em>TBX5</em> from Phenopacket Store <em>0.1.20</em>. The cohort was preprocessed as described
+in the <a class="reference internal" href="input-data.html#input-data"><span class="std std-ref">Input data</span></a> section and stored
+at <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json">docs/cohort-data/TBX5.0.1.20.json</a>
+in JSON format.</p>
+<p>We start by loading the cohort from the JSON file:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/TBX5.0.1.20.json&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="go">156</span>
+</pre></div>
+</div>
+<p>then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
+(see <a class="reference internal" href="input-data.html#choose-tx-and-protein"><span class="std std-ref">Choose the transcript and protein of interest</span></a> for more info):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">VVMultiCoordinateService</span><span class="p">,</span> <span class="n">configure_default_protein_metadata_service</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_181486.4&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pt_id</span> <span class="o">=</span> <span class="s2">&quot;NP_852259.1&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_service</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="n">GRCh38</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">tx_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pm_service</span> <span class="o">=</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pm_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pt_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and we will load HPO <cite>v2024-07-01</cite> for using in the exploratory analysis:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="interactive-exploration">
+<h3>Interactive exploration<a class="headerlink" href="#interactive-exploration" title="Link to this heading"></a></h3>
+<p>We designed GPSEA to integrate with interactive Python with a widespread use
+in contemporary scientific workflows.</p>
+<p>The code for exploration is located in <a class="reference internal" href="../apidocs/gpsea.view.html#module-gpsea.view" title="gpsea.view"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.view</span></code></a> module.
+As a rule of thumb, the reports are provided as <a class="reference internal" href="../apidocs/gpsea.view.html#gpsea.view.GpseaReport" title="gpsea.view.GpseaReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">GpseaReport</span></code></a>
+which leverages IPython’s “magic” to integrate with environments such as Jupyter notebook.</p>
+</section>
+<section id="cohort-summary">
+<h3>Cohort summary<a class="headerlink" href="#cohort-summary" title="Link to this heading"></a></h3>
+<p>We recommend that users start be generating a cohort summary
+with an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
+</pre></div>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+    <style>
+    table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .table .column-1 {
+      text-align: left;
+    }
+    th {
+      background-color: LightSkyBlue;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 2px;
+      font-weight: bold;
+      font-size: 120%;
+    }
+
+    tr {
+      border: 1px solid #dddddd;
+    }
+
+    td {
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .table td, tr {
+      text-align: right;
+    }
+
+    .lft {
+      text-align: left;
+    }
+
+    div {
+      display: block;
+      width: 100%;
+      padding-right: 1%;
+      margin-bottom: 20px; /* Add margin to separate divs */
+    }
+
+    caption {
+      caption-side: top;
+      text-align: left;
+      padding-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GPSEA cohort analysis</h1>
+  <p>Successfully loaded 156 individuals.</p>
+  
+  <p>No errors encountered.</p>
+  
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top 10 HPO Terms</h3>
+        A total of 116 HPO terms were used to annotated the cohort.
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">HPO Term</th>
+                <th>ID</th>
+                <th>Seen in <em>n</em> individuals</th>
+            </tr>
+            
+            <tr>
+                <td class="lft">Atrial septal defect</td>
+                <td>HP:0001631</td>
+                <td>50</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Ventricular septal defect</td>
+                <td>HP:0001629</td>
+                <td>41</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Hypoplasia of the radius</td>
+                <td>HP:0002984</td>
+                <td>40</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Triphalangeal thumb</td>
+                <td>HP:0001199</td>
+                <td>36</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Short thumb</td>
+                <td>HP:0009778</td>
+                <td>32</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Absent thumb</td>
+                <td>HP:0009777</td>
+                <td>32</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Abnormal carpal morphology</td>
+                <td>HP:0001191</td>
+                <td>30</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Secundum atrial septal defect</td>
+                <td>HP:0001684</td>
+                <td>27</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Absent radius</td>
+                <td>HP:0003974</td>
+                <td>15</td>
+                </tr>
+            
+            <tr>
+                <td class="lft">Cardiac conduction abnormality</td>
+                <td>HP:0031546</td>
+                <td>14</td>
+                </tr>
+            
+                </tbody>
+    </table>
+
+    <table>
+    <caption style="color: black;">
+        <h3>Top 10 Variants</h3>
+        Variants are shown according to NM_181486.4. A total of 156 unique variants were identified in the cohort.
+    </caption>
+            <tbody>
+                <tr class="strng">
+                    <th>Count</th>
+                    <th class="lft">Variant key</th>
+                    <th>Variant Name</th>
+                    <th>Protein Variant</th>
+                    <th>Variant Class</th>
+                </tr>
+                
+                <tr>
+                    <td>22</td>
+                    <td class="lft">12_114385521_114385521_C_T</td>
+                    <td>c.710G>A</td>
+                    <td>p.Arg237Gln</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>20</td>
+                    <td class="lft">12_114401830_114401830_C_T</td>
+                    <td>c.238G>A</td>
+                    <td>p.Gly80Arg</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>8</td>
+                    <td class="lft">12_114385563_114385563_G_A</td>
+                    <td>c.668C>T</td>
+                    <td>p.Thr223Met</td>
+                    <td>MISSENSE_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>6</td>
+                    <td class="lft">12_114398675_114398675_G_T</td>
+                    <td>c.408C>A</td>
+                    <td>p.Tyr136Ter</td>
+                    <td>STOP_GAINED</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114399514_114399514_A_C</td>
+                    <td>c.361T>G</td>
+                    <td>p.Trp121Gly</td>
+                    <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114398682_114398682_C_CG</td>
+                    <td>c.400dup</td>
+                    <td>p.Arg134ProfsTer49</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td class="lft">12_114403792_114403792_C_CG</td>
+                    <td>c.106_107insC</td>
+                    <td>p.Ser36ThrfsTer25</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114385474_114385474_A_G</td>
+                    <td>c.755+2T>C</td>
+                    <td>None</td>
+                    <td>SPLICE_DONOR_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114398656_114398656_C_CG</td>
+                    <td>c.426dup</td>
+                    <td>p.Ala143ArgfsTer40</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="lft">12_114403798_114403798_G_GC</td>
+                    <td>c.100dup</td>
+                    <td>p.Ala34GlyfsTer27</td>
+                    <td>FRAMESHIFT_VARIANT</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    <table>
+    <caption style="color: black;">
+        <h3>Diseases</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Disease Name</th>
+                <th >Disease ID</th>
+                <th>Annotation Count</th>
+              </tr>
+              
+              <tr>
+                <td class="lft">Holt-Oram syndrome</td>
+                <td>OMIM:142900</td>
+                <td>156</td>
+                </tr>
+            
+           </tbody>
+    </table>
+    
+    <table>
+    <caption style="color: black;">
+        <h3>Variant categories for NM_181486.4</h3>
+    </caption>
+        <tbody>
+            <tr class="strng">
+                <th class="lft">Variant effect</th>
+                <th>Annotation Count</th>
+              </tr>
+              
+              <tr>
+                <td class="lft">MISSENSE_VARIANT</td>
+                <td>85</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">FRAMESHIFT_VARIANT</td>
+                <td>38</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_REGION_VARIANT</td>
+                <td>10</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INFRAME_DELETION</td>
+                <td>1</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INFRAME_INSERTION</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">STOP_RETAINED_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">STOP_GAINED</td>
+                <td>19</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_DONOR_VARIANT</td>
+                <td>7</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INTRON_VARIANT</td>
+                <td>2</td>
+                </tr>
+            
+           </tbody>
+    </table>
+  
+
+
+</body>
+</html>
+</section>
+<section id="distribution-of-variants-across-protein-domains">
+<h3>Distribution of variants across protein domains<a class="headerlink" href="#distribution-of-variants-across-protein-domains" title="Link to this heading"></a></h3>
+<p>GPSEA gathers information about protein domains from the UniProt API, and alternatively allows users to
+enter domain information manually (See <a class="reference internal" href="input-data.html#fetch-protein-data"><span class="std std-ref">Fetch protein data</span></a>).
+Protein domains are  distinct functional or structural units in a protein. For instance, the following graphic shows domains of
+the <em>PLD1</em> protein. The HKD domains contribute to the catalytic activity of the protein whereas the PX and PH domains
+regulation PLD1 localization within the cell. Observations such as this may suggest testable hypotheses.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/PLD1.png"><img alt="PLD1" src="../_images/PLD1.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Human <em>PLD1</em> with PX, PH, and two HKD domains.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Users can create a table to display the protein domains and the variants
+located in them in order to decide whether it might be sensible to test for correlation between variants
+located in one or more protein domains and a certain phenotype.</p>
+<p>This code will produce the following table on the basis of a cohort of individuals
+with variants in the <em>TBX5</em> gene:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">ProteinVariantViewer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">cpd_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
+</pre></div>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cohort</title>
+  <style>table {
+    border-collapse: collapse;
+    margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+
+  .table .column-1 {
+      text-align: left;
+  }
+  th {
+    background-color: LightSkyBlue;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 5px;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+
+  tr {
+    border: 1px solid #dddddd;
+  }
+
+  td {
+    padding: 5px;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table td,tr {
+    text-align: left;
+}
+
+.table td:first-child, tr:first-child {
+    text-align: left;
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 10px;
+  font-weight: bold;
+}
+
+</style>
+</head>
+
+<body>
+  <h1>T-box transcription factor TBX5:  NP_852259.1</h1>
+    <table>
+        <caption style="color:black;">
+           T-box transcription factor TBX5 (NP_852259.1) has 2 annotated protein features.
+            32 were found to be located within these features, and
+            113 were located elsewhere. The total length of the protein is
+            518 amino acid residues.
+        </caption>
+        <tbody>
+            <tr class="strng">
+                <th>Name</th>
+                <th>Type</th>
+                <th>Coordinates</th>
+                <th>Count</th>
+                <th>Variants</th>
+            </tr>
+            
+            <tr>
+                <td>Disordered</td>
+                <td>REGION</td>
+                <td>1 - 46</td>
+                <td>13</td>
+                <td>p.Ala34GlyfsTer27; p.Ala34ProfsTer32; p.Ser36ThrfsTer25; p.Pro14Thr</td>
+            </tr>
+            
+            <tr>
+                <td>Disordered</td>
+                <td>REGION</td>
+                <td>250 - 356</td>
+                <td>19</td>
+                <td>p.Gln302ArgfsTer92; p.Gln315ArgfsTer79; p.Arg279Ter; p.Tyr342ThrfsTer52; p.Val263Met; p.Ser261Cys; p.Val267TrpfsTer127; p.Tyr291Ter; p.Glu294Ter</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</body>
+</html>
+</section>
+<section id="plot-distribution-of-variants-with-respect-to-the-protein-sequence">
+<h3>Plot distribution of variants with respect to the protein sequence<a class="headerlink" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence" title="Link to this heading"></a></h3>
+<p>We use Matplotlib to plot the distribution of variants on a protein diagram:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">ProteinVisualizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein_diagram</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">tx_coordinates</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_meta</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/TBX5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="../_images/TBX5_protein_diagram.png" style="width: 600px;" /></a>
+</section>
+</section>
 </section>
 
 

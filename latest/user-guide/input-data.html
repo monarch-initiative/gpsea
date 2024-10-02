@@ -65,14 +65,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#get-data-for-the-transcript-and-protein-of-interest">Get data for the transcript and protein of interest</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#choose-the-transcript-and-protein-of-interest">Choose the transcript and protein of interest</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#choose-the-transcript">Choose the transcript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#get-the-transcript-data">Get the transcript data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#get-the-protein-data">Get the protein data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fetch-protein-data">Fetch protein data</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#plot-distribution-of-cohort-variants-on-the-protein">Plot distribution of cohort variants on the protein</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Example</a></li>
 </ul>
 </li>
 </ul>
@@ -185,7 +185,15 @@ loader function:</p>
 <span class="go">19</span>
 </pre></div>
 </div>
-<p>The cohort includes all 19 individuals.</p>
+<p>The cohort includes all 19 individuals.
+On top of the <code class="docutils literal notranslate"><span class="pre">cohort</span></code>, the loader function also provides Q/C results  <code class="docutils literal notranslate"><span class="pre">qc_results</span></code>.
+We call <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="gpsea.preprocessing.PreprocessingValidationResult.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a>
+to display the Q/C summary:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<span class="go">Validated under none policy</span>
+<span class="go">No errors or warnings were found</span>
+</pre></div>
+</div>
 </section>
 <section id="alternative-phenopacket-sources">
 <h4>Alternative phenopacket sources<a class="headerlink" href="#alternative-phenopacket-sources" title="Link to this heading"></a></h4>
@@ -258,8 +266,8 @@ such as the <a class="reference external" href="https://docs.python.org/3/librar
 <p>We will leave persisting the cohort into an actual file or another data store as an exercise for the interested readers.</p>
 </section>
 </section>
-<section id="get-data-for-the-transcript-and-protein-of-interest">
-<h2>Get data for the transcript and protein of interest<a class="headerlink" href="#get-data-for-the-transcript-and-protein-of-interest" title="Link to this heading"></a></h2>
+<section id="choose-the-transcript-and-protein-of-interest">
+<span id="choose-tx-and-protein"></span><h2>Choose the transcript and protein of interest<a class="headerlink" href="#choose-the-transcript-and-protein-of-interest" title="Link to this heading"></a></h2>
 <section id="choose-the-transcript">
 <h3>Choose the transcript<a class="headerlink" href="#choose-the-transcript" title="Link to this heading"></a></h3>
 <p>For the analysis, the <a class="reference external" href="https://www.ncbi.nlm.nih.gov/refseq/MANE/">MANE</a> transcript
@@ -357,8 +365,8 @@ or a <a class="reference internal" href="../apidocs/gpsea.model.genome.html#gpse
 </div>
 </section>
 </section>
-<section id="get-the-protein-data">
-<h3>Get the protein data<a class="headerlink" href="#get-the-protein-data" title="Link to this heading"></a></h3>
+<section id="fetch-protein-data">
+<span id="id3"></span><h3>Fetch protein data<a class="headerlink" href="#fetch-protein-data" title="Link to this heading"></a></h3>
 <p>Specific domains of a protein may be associated with genotype-phenotype correlations.
 For instance, variants in the pore domain of <em>PIEZO1</em> are associated with more severe clinical
 manifestions in dehydrated hereditary stomatocytosis <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/30187933">Andolfo et al.,  2018</a>.</p>
@@ -396,10 +404,10 @@ is as simple as running:</p>
 </div>
 <p>The <cite>protein_meta</cite> represents the <em>TBX5</em> isoform that includes 518 aminoacids and two features of interest,
 which we can see on the following screenshot of the UniProt entry for <em>TBX5</em>:</p>
-<figure class="align-center" id="id4">
+<figure class="align-center" id="id5">
 <a class="reference internal image-reference" href="../_images/TBX5_uniprot_features.png"><img alt="*TBX5* (P37173, UniProt entry)" src="../_images/TBX5_uniprot_features.png" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-text">Protein features of <em>TBX5</em> (Q99593, UniProt entry)</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+<p><span class="caption-text">Protein features of <em>TBX5</em> (Q99593, UniProt entry)</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>UniProt shows four protein features:</p>
@@ -465,8 +473,8 @@ Here we show how to enter the same information manually, in a custom protein dat
 <p>Having the transcript and protein data on hand, we can plot the distribution of the variants found in the cohort members.
 GPSEA leverages Matplotlib to create a diagram with variants and protein features,
 to get insights into the cohort and to formulate genotype-phenotype association hypotheses.</p>
-<section id="id3">
-<h3>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>Example<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>Let’s plot a distribution of the variants found in <em>TBX5</em> cohort of Phenopacket Store.
 First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
@@ -501,10 +509,10 @@ First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/img/TBX5_gpsea_with_uniprot_domains.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<figure class="align-center" id="id5">
+<figure class="align-center" id="id6">
 <a class="reference internal image-reference" href="../_images/TBX5_gpsea_with_uniprot_domains.png"><img alt="TBX5 (Q99593, UniProt entry)" src="../_images/TBX5_gpsea_with_uniprot_domains.png" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-text">GPSEA display of variants and protein features of <em>TBX5</em></span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+<p><span class="caption-text">GPSEA display of variants and protein features of <em>TBX5</em></span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition note">

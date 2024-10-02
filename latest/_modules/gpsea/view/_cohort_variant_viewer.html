@@ -88,6 +88,7 @@
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantEffect</span>
 <span class="kn">from</span> <span class="nn">._formatter</span> <span class="kn">import</span> <span class="n">VariantFormatter</span>
+<span class="kn">from</span> <span class="nn">._report</span> <span class="kn">import</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
 
 
 <span class="n">ToDisplay</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ToDisplay&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hgvs_cdna&#39;</span><span class="p">,</span> <span class="s1">&#39;hgvsp&#39;</span><span class="p">,</span> <span class="s1">&#39;variant_effects&#39;</span><span class="p">])</span>
@@ -127,19 +128,21 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create an HTML that should be shown with ``display(HTML(..))`` of the ipython package.</span>
+<span class="sd">        Generate the variant report.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cohort (Cohort): The cohort being analyzed in the current notebook.</span>
 <span class="sd">            only_hgvs (bool): Do not show the transcript ID part of the HGVS annotation, just the annotation.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: an HTML string with parameterized template for rendering</span>
+<span class="sd">            GpseaReport: a report that can be stored to a path or displayed in</span>
+<span class="sd">                interactive environment such as Jupyter notebook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">only_hgvs</span><span class="o">=</span><span class="n">only_hgvs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+        <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>

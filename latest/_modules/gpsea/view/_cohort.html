@@ -88,6 +88,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">._report</span> <span class="kn">import</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
 <span class="kn">from</span> <span class="nn">._formatter</span> <span class="kn">import</span> <span class="n">VariantFormatter</span>
 
 
@@ -125,7 +126,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an HTML that should be shown with display(HTML(..)) of the ipython package.</span>
 
@@ -134,10 +135,12 @@
 <span class="sd">            transcript_id (str): the transcript that we map variants onto</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: an HTML string with parameterized template for rendering</span>
+<span class="sd">            GpseaReport: a report that can be stored to a path or displayed in</span>
+<span class="sd">                interactive environment such as Jupyter notebook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">transcript_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+        <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">report</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
@@ -152,11 +155,11 @@
             <span class="n">individual_count</span> <span class="o">=</span> <span class="n">hpo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">hpo_label</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
             <span class="k">if</span> <span class="n">hpo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="p">:</span>
-                <span class="n">hpo_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">hpo_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span>
             <span class="n">hpo_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;HPO&quot;</span><span class="p">:</span> <span class="n">hpo_label</span><span class="p">,</span> 
-                    <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">hpo_id</span><span class="p">,</span> 
+                    <span class="s2">&quot;HPO&quot;</span><span class="p">:</span> <span class="n">hpo_label</span><span class="p">,</span>
+                    <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">hpo_id</span><span class="p">,</span>
                     <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">individual_count</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
@@ -178,9 +181,9 @@
             
             <span class="n">variant_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;variant&quot;</span><span class="p">:</span> <span class="n">variant_key</span><span class="p">,</span> 
+                    <span class="s2">&quot;variant&quot;</span><span class="p">:</span> <span class="n">variant_key</span><span class="p">,</span>
                     <span class="s2">&quot;variant_name&quot;</span><span class="p">:</span> <span class="n">hgvs_cdna</span><span class="p">,</span>
-                    <span class="s2">&quot;protein_name&quot;</span><span class="p">:</span> <span class="n">protein_name</span><span class="p">,</span> 
+                    <span class="s2">&quot;protein_name&quot;</span><span class="p">:</span> <span class="n">protein_name</span><span class="p">,</span>
                     <span class="s2">&quot;variant_effects&quot;</span><span class="p">:</span> <span class="n">effects</span><span class="p">,</span>
                     <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span>
                 <span class="p">}</span>
@@ -194,8 +197,8 @@
                     <span class="n">disease_name</span> <span class="o">=</span> <span class="n">disease</span><span class="o">.</span><span class="n">name</span>
             <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">disease_id</span><span class="p">,</span> 
-                    <span class="s2">&quot;disease_name&quot;</span><span class="p">:</span> <span class="n">disease_name</span><span class="p">,</span> 
+                    <span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">disease_id</span><span class="p">,</span>
+                    <span class="s2">&quot;disease_name&quot;</span><span class="p">:</span> <span class="n">disease_name</span><span class="p">,</span>
                     <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">disease_count</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
