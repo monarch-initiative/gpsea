@@ -1,3 +1,5 @@
+import io
+
 import hpotk
 import pytest
 
@@ -9,21 +11,27 @@ class TestCohortViewable:
 
     @pytest.fixture
     def cohort_viewable(
-            self,
-            hpo: hpotk.MinimalOntology,
+        self,
+        hpo: hpotk.MinimalOntology,
     ) -> CohortViewable:
         return CohortViewable(
             hpo=hpo,
         )
 
     def test_process(
-            self,
-            cohort_viewable: CohortViewable,
-            toy_cohort: Cohort,
+        self,
+        cohort_viewable: CohortViewable,
+        toy_cohort: Cohort,
     ):
         toy_transcript_id = "NM_123.1"
-        html = cohort_viewable.process(cohort=toy_cohort, transcript_id=toy_transcript_id)
+
+        report = cohort_viewable.process(
+            cohort=toy_cohort, transcript_id=toy_transcript_id
+        )
+
+        buf = io.StringIO()
+        report.write(buf)
+        html = buf.getvalue()
 
         # A dummy test for now.
         assert len(html) != 0
-

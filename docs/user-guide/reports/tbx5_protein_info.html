@@ -58,13 +58,13 @@ caption {
 </head>
 
 <body>
-  <h1>{{ protein_label }}:  {{ protein_id }}</h1>
+  <h1>T-box transcription factor TBX5:  NP_852259.1</h1>
     <table>
         <caption style="color:black;">
-           {{ protein_label }} ({{ protein_id }}) has {{ n_features }} annotated protein features.
-            {{ n_variants_in_features }} were found to be located within these features, and
-            {{ non_feature_count }} were located elsewhere. The total length of the protein is
-            {{ protein_length }} amino acid residues.
+           T-box transcription factor TBX5 (NP_852259.1) has 2 annotated protein features.
+            32 were found to be located within these features, and
+            113 were located elsewhere. The total length of the protein is
+            518 amino acid residues.
         </caption>
         <tbody>
             <tr class="strng">
@@ -74,15 +74,23 @@ caption {
                 <th>Count</th>
                 <th>Variants</th>
             </tr>
-            {% for feat in feature_list %}
+            
             <tr>
-                <td>{{ feat.name }}</td>
-                <td>{{ feat.type }}</td>
-                <td>{{ feat.start }} - {{ feat.end }}</td>
-                <td>{{ feat.count }}</td>
-                <td>{{ feat.variants }}</td>
+                <td>Disordered</td>
+                <td>REGION</td>
+                <td>1 - 46</td>
+                <td>13</td>
+                <td>p.Ala34GlyfsTer27; p.Ala34ProfsTer32; p.Ser36ThrfsTer25; p.Pro14Thr</td>
             </tr>
-            {% endfor %}
+            
+            <tr>
+                <td>Disordered</td>
+                <td>REGION</td>
+                <td>250 - 356</td>
+                <td>19</td>
+                <td>p.Gln302ArgfsTer92; p.Gln315ArgfsTer79; p.Arg279Ter; p.Tyr342ThrfsTer52; p.Val263Met; p.Ser261Cys; p.Val267TrpfsTer127; p.Tyr291Ter; p.Glu294Ter</td>
+            </tr>
+            
         </tbody>
     </table>
 </body>
