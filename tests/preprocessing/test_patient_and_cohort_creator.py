@@ -62,34 +62,40 @@ class TestPhenopacketCohortCreator:
         )
 
     @pytest.fixture
-    def phenopacket_cohort_creator(
+    def patient_creator(
         self,
         genome_build: GenomeBuild,
         phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         variant_coordinate_finder: VariantCoordinateFinder,
-    ) -> CohortCreator:
-        patient_creator = PhenopacketPatientCreator(
+    ) -> PhenopacketPatientCreator:
+        return PhenopacketPatientCreator(
             build=genome_build,
             phenotype_creator=phenotype_creator,
             functional_annotator=functional_annotator,
             imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
             hgvs_coordinate_finder=variant_coordinate_finder,
         )
+
+    @pytest.fixture
+    def phenopacket_cohort_creator(
+        self,
+        patient_creator: PhenopacketPatientCreator,
+    ) -> CohortCreator:
         return CohortCreator(
             patient_creator=patient_creator,
         )
 
     @pytest.mark.skip('Skipping online test')
     def test_load_phenopacket(
-        self, 
+        self,
         fpath_project_dir: str,
         phenopacket_cohort_creator: CohortCreator,
     ):
         fpath_test_cohort = os.path.join(fpath_project_dir, 'docs', 'data', 'simple_cohort')
         cohort = load_phenopacket_folder(
-            pp_directory=fpath_test_cohort, 
+            pp_directory=fpath_test_cohort,
             cohort_creator=phenopacket_cohort_creator,
         )
         print(cohort)

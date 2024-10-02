@@ -7,7 +7,7 @@ from ._protein_visualizable import ProteinVisualizable
 from ._stats import MtcStatsViewer
 from ._txp import VariantTranscriptVisualizer
 from ._protein_visualizer import ProteinVisualizer
-from ._formatter import VariantFormatter
+from ._formatter import Formatter, VariantFormatter
 
 __all__ = [
     'CohortVariantViewer',
@@ -17,5 +17,5 @@ __all__ = [
     'MtcStatsViewer',
     'summarize_hpo_analysis',
     'VariantTranscriptVisualizer',
-    'VariantFormatter',
+    'Formatter', 'VariantFormatter',
 ]

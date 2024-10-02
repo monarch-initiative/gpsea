@@ -60,6 +60,7 @@ class TestCountingPhenotypeScorer:
                 )
                 for curie in curies
             ),
+            measurements=(),
             diseases=(),
             variants=(),
         )

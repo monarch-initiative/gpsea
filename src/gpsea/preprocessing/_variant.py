@@ -21,7 +21,7 @@ class VariantAnnotationCache:
         """Constructs all necessary attributes for a VariantAnnotationCache object
 
         Args:
-            datadir (string): A string that references an existing directory that does or will contain all pickle files being stored
+            datadir (str): A string that references an existing directory that does or will contain all pickle files being stored
         """
         if not os.path.isdir(datadir):
             raise ValueError(f'datadir {datadir} must be an existing directory')

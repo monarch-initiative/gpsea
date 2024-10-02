@@ -20,7 +20,7 @@ class ProteinAnnotationCache:
         """Constructs all necessary attributes for a ProteinAnnotationCache object
 
         Args:
-            datadir (string): A string that references an existing directory that does or will contain all pickle files being stored
+            datadir (str): A string that references an existing directory that does or will contain all pickle files being stored
         """
         if not os.path.isdir(datadir):
             raise ValueError(f'datadir {datadir} must be an existing directory')
@@ -30,7 +30,7 @@ class ProteinAnnotationCache:
         """Searches a given data directory for a pickle file with given ID and returns ProteinMetadata from file. Returns None if no file is found.
 
         Args:
-            protein_id (string): The protein_id associated with the desired ProteinMetadata
+            protein_id (str): The protein_id associated with the desired ProteinMetadata
         """
         fpath = self._create_file_name(protein_id)
         if os.path.isfile(fpath):
@@ -43,7 +43,7 @@ class ProteinAnnotationCache:
         """Creates a pickle file with the given protein id in the file name. Loads the ProteinMetadata given into the file for storage.
 
         Args:
-            protein_id (string): The protein_id associated with the ProteinMetadata
+            protein_id (str): The protein_id associated with the ProteinMetadata
             annotation (Sequence[ProteinMetadata]): A sequence of ProteinMetadata objects that will be stored under the given protein id
         """
         fpath = self._create_file_name(protein_id)
@@ -54,7 +54,7 @@ class ProteinAnnotationCache:
         """Creates a file name with full location and the protein id (e.g. "/path/to/desired/directory/NP_037407.4.pickle")
 
         Args:
-            prot_id (string): The protein_id associated with the ProteinMetadata
+            prot_id (str): The protein_id associated with the ProteinMetadata
         """
         fname = f'{prot_id}.pickle'
         return os.path.join(self._datadir, fname)
@@ -81,7 +81,7 @@ class ProtCachingMetadataService(ProteinMetadataService):
         """Gets metadata for given protein ID
 
         Args:
-            protein_id (string): A protein ID
+            protein_id (str): A protein ID
         Returns:
             ProteinMetadata: A ProteinMetadata object
         """
