@@ -165,6 +165,8 @@
                 <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvs_p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="n">hgvs_p</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="n">target_region</span> <span class="o">=</span> <span class="n">target_annot</span><span class="o">.</span><span class="n">protein_effect_location</span>
             <span class="k">if</span> <span class="n">target_region</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># can happen for certain variant classes such as splice variant. Not an error</span>
@@ -193,7 +195,7 @@
                     <span class="s1">&#39;variants&#39;</span><span class="p">:</span> <span class="n">variant_list</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
-
+            
         <span class="n">non_feature_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_feature_to_variant_list</span><span class="p">)</span>
         <span class="n">non_feature_variants</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">non_feature_to_variant_list</span><span class="p">))</span>
 
