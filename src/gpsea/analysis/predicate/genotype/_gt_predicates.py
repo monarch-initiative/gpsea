@@ -433,21 +433,21 @@ class ModeOfInheritanceInfo:
     HOM_REF = Categorization(
         PatientCategory(
             cat_id=0,
-            name="HOM_REF",
-            description="Homozygous reference",
+            name="No allele",
+            description="No allele",
         ),
     )
     HET = Categorization(
         PatientCategory(
             cat_id=1,
-            name="HET",
-            description="Heterozygous",
+            name="Monoallelic",
+            description="Monoallelic",
         ),
     )
     BIALLELIC_ALT = Categorization(
         PatientCategory(
             cat_id=2,
-            name="BIALLELIC_ALT",
+            name="Biallelic",
             description="Homozygous alternate or compound heterozygous",
         ),
     )
