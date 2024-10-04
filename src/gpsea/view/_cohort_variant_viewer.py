@@ -10,7 +10,7 @@ from ._report import GpseaReport, HtmlGpseaReport
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
-VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'variant_effects'])
+VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'variant_effects', 'exons'])
 
 
 class CohortVariantViewer:
@@ -83,6 +83,7 @@ class CohortVariantViewer:
                     "variant_name": var_data.hgvs_cdna,
                     "protein_name": var_data.hgvsp,
                     "variant_effects": ", ".join(var_data.variant_effects),
+                    "exons": ", ".join(map(str, var_data.exons)) if var_data.exons is not None else None,
                     "count": count,
                 }
             )
@@ -129,6 +130,7 @@ class CohortVariantViewer:
                 hgvs_cdna=display,
                 hgvsp="p.?",
                 variant_effects=[effect],
+                exons=[]
             )
         else:
             variant_key = variant.variant_info.variant_key
@@ -137,9 +139,11 @@ class CohortVariantViewer:
             if tx_annotation is not None:
                 hgvsp = tx_annotation.hgvsp
                 var_effects = [var_eff.to_display() for var_eff in tx_annotation.variant_effects]
+                exons=tx_annotation.overlapping_exons
             else:
                 hgvsp = None
                 var_effects = []
+                exons = []
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
@@ -158,4 +162,5 @@ class CohortVariantViewer:
                 hgvs_cdna=display_hgvs_cDNA,
                 hgvsp=hgvsp,
                 variant_effects=var_effects,
+                exons=exons
             )
