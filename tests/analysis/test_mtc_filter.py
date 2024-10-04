@@ -157,11 +157,13 @@ class TestHpoMtcFilter:
         suox_gt_predicate: GenotypePolyPredicate,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
         patient_counts: typing.Sequence[pd.DataFrame],
+        suox_cohort: Cohort,
     ):
         mtc_report = mtc_filter.filter(
             gt_predicate=suox_gt_predicate,
             ph_predicates=suox_pheno_predicates,
             counts=patient_counts,
+            cohort_size=len(suox_cohort),
         )
 
         assert isinstance(mtc_report, typing.Sequence)
@@ -182,6 +184,7 @@ class TestHpoMtcFilter:
         suox_gt_predicate: GenotypePolyPredicate,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
         patient_counts: typing.Sequence[pd.DataFrame],
+        suox_cohort: Cohort,
     ):
         """
         The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
@@ -192,11 +195,12 @@ class TestHpoMtcFilter:
         specified_filter = SpecifiedTermsMtcFilter(
             terms_to_test=(hpotk.TermId.from_curie("HP:0032350"),),
         )
-        
+
         mtc_report = specified_filter.filter(
             gt_predicate=suox_gt_predicate,
             ph_predicates=suox_pheno_predicates,
             counts=patient_counts,
+            cohort_size=len(suox_cohort),
         )
         assert isinstance(mtc_report, typing.Sequence)
         assert len(mtc_report) == 5
@@ -245,7 +249,7 @@ class TestHpoMtcFilter:
             ph_predicate=ectopia_predicate,
         )
         assert max_f == pytest.approx(0.75, abs=EPSILON)
-        
+
         # Seizure HP:0001250 (11 5 0 1), freqs are 11/11=1.0 and 5/6=0.8333333
         idx = curie2idx["HP:0001250"]
         seizure = patient_counts[idx]
@@ -255,7 +259,7 @@ class TestHpoMtcFilter:
             ph_predicate=seizure_predicate
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
-        
+
         # Sulfocysteinuria HP:0032350 (2 3 0 0), freqs are both 1
         idx = curie2idx["HP:0032350"]
         sulfocysteinuria = patient_counts[idx]
@@ -265,7 +269,7 @@ class TestHpoMtcFilter:
             ph_predicate=sulfocysteinuria_predicate,
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
-        
+
         # Neurodevelopmental delay HP:0012758 (4 0 4 5), freqs are 4/8 = 0.5 and 0/5=0.0
         idx = curie2idx["HP:0012758"]
         ndelay = patient_counts[idx]
@@ -275,7 +279,7 @@ class TestHpoMtcFilter:
             ph_predicate=ndelay_predicate,
         )
         assert max_f == pytest.approx(0.5, abs=EPSILON)
-        
+
         # Hypertonia HP:0001276 (4 2 3 3) freqs are 4/7=0.4375 and 2/5=0.5714
         idx = curie2idx["HP:0001276"]
         hypertonia = patient_counts[idx]

@@ -123,6 +123,7 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
             gt_predicate: GenotypePolyPredicate,
             ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
             counts: typing.Sequence[pd.DataFrame],
+            cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         """
         Test if the phenotype with given counts should be included in the downstream analysis.
@@ -130,7 +131,8 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
         :param gt_predicate: the predicate that produced the columns of the `count` data frame.
         :param ph_predicates: the phenotype predicates that produced the rows of the `counts` data frames.
         :param counts: a sequence of 2D data frames for the tested phenotypes.
-            Each data frame corrresponds to a genotype/phenotype contingency matrix.
+            Each data frame corresponds to a genotype/phenotype contingency matrix.
+        :param cohort_size: the size of the cohort.
         :returns: a sequence of filter results for the input `phenotypes`.
         """
         pass
@@ -162,6 +164,7 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
             gt_predicate: GenotypePolyPredicate,
             ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
             counts: typing.Sequence[pd.DataFrame],
+            cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         # Always OK! 😏
         return tuple(PhenotypeMtcFilter.OK for _ in ph_predicates)
@@ -205,6 +208,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             gt_predicate: GenotypePolyPredicate,
             ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
             counts: typing.Sequence[pd.DataFrame],
+            cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         results = []
         for predicate in ph_predicates:
@@ -320,7 +324,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             hpo: hpotk.MinimalOntology,
             term_frequency_threshold: float,
             annotation_frequency_threshold: float,
-            cohort_size: int,
             general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         """
@@ -335,7 +338,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         self._hpo = hpo
         self._hpo_term_frequency_filter = term_frequency_threshold
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold
-        self._cohort_size = cohort_size
 
         self._general_hpo_terms = set(general_hpo_terms)
 
@@ -382,9 +384,12 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             gt_predicate: GenotypePolyPredicate,
             ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
             counts: typing.Sequence[pd.DataFrame],
+            cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         phenotypes = [p.phenotype for p in ph_predicates]
         p_to_idx = {p: i for i, p in enumerate(phenotypes)}
+
+        annotation_count_thr = self._hpo_annotation_frequency_threshold * cohort_size
 
         results: typing.MutableSequence[typing.Optional[PhenotypeMtcResult]] = [None for _ in range(len(phenotypes))]
         for term_id in self._get_ordered_terms(phenotypes):
@@ -418,14 +423,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 continue
 
             total_count = contingency_matrix.sum().sum()
+            if total_count < annotation_count_thr:
+                results[idx] = self._below_annotation_frequency_threshold
+                continue
+
             if contingency_matrix.shape == (2, 2) and total_count < self._min_observations_for_2_by_2:
                 results[idx] = self._not_powered_for_2_by_2
                 continue
             elif contingency_matrix.shape == (2, 3) and total_count < self._min_observations_for_2_by_3:
                 results[idx] = self._not_powered_for_2_by_3
-                continue
-            if total_count / self._cohort_size < self._hpo_annotation_frequency_threshold:
-                results[idx] = self._below_annotation_frequency_threshold
                 continue
 
             if not HpoMtcFilter.some_cell_has_greater_than_one_count(
