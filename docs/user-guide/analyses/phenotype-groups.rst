@@ -126,10 +126,10 @@ we expect the autosomal dominant mode of inheritance:
 >>> from gpsea.analysis.predicate.genotype import autosomal_dominant
 >>> gt_predicate = autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
-'What is the genotype group: HOM_REF, HET'
+'What is the genotype group: No allele, Monoallelic'
 
-`gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
-and the patients with one frameshift allele will be assigned into `HET` group.
+`gt_predicate` will assign the patients with no frameshift variant allele into `No allele` group
+and the patients with one frameshift allele will be assigned into `Monoallelic` group.
 Note, any patient with 2 or more alleles will be *omitted* from the analysis.
 
 .. note::
@@ -230,21 +230,24 @@ We can now execute the analysis:
 >>> len(result.phenotypes)
 260
 >>> result.total_tests
-16
+38
 
 
-Thanks to Phenotype MTC filter, we only tested 16 out of 260 terms.
+Thanks to phenotype MTC filter, we only tested 38 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()
 >>> mtc_report = mtc_viewer.process(result)
->>> with open('docs/user-guide/report/tbx5_frameshift.mtc_report.html', 'w') as fh:  # doctest: +SKIP
-...     _ = fh.write(mtc_report)
-
+>>> mtc_report  # doctest: +SKIP
 
 .. raw:: html
   :file: report/tbx5_frameshift.mtc_report.html
+
+.. doctest:: phenotype-groups
+   :hide:
+
+   >>> mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')  # doctest: +SKIP
 
 
 Genotype phenotype associations
@@ -255,22 +258,24 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
->>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
+>>> summary_df  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
    :header-rows: 2
 
+.. doctest:: phenotype-groups
+   :hide:
+
+   >>> summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')  # doctest: +SKIP
+
 
 The table shows that several HPO terms are significantly associated
-with presence of a heterozygous (`HET`) frameshift variant in *TBX5*.
+with presence of a heterozygous (`Monoallelic`) frameshift variant in *TBX5*.
 For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
-was observed in 31/60 (52%) patients with a missense variant
+was observed in 42/71 (59%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00387`.
-
-The table includes all HPO terms of the cohort, including the terms that were not selected for testing
-and thus have no associated p value.
+is `~0.00919`.
 
