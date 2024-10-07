@@ -1,5 +1,6 @@
 import dataclasses
 import typing
+import warnings
 
 from collections import defaultdict, Counter
 
@@ -313,12 +314,12 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
 def monoallelic_predicate(
     a_predicate: VariantPredicate,
-    b_predicate: VariantPredicate,
+    b_predicate: typing.Optional[VariantPredicate] = None,
     names: typing.Tuple[str, str] = ("A", "B"),
 ) -> GenotypePolyPredicate:
     """
     The predicate bins patient into one of two groups, `A` and `B`,
-    based on presence of *exactly* one allele of a variant
+    based on presence of *exactly one* allele of a variant
     that meets the predicate criteria.
 
     See :ref:`monoallelic-predicate` for more information and an example usage.
@@ -326,9 +327,13 @@ def monoallelic_predicate(
     :param a_predicate: predicate to test if the variants
         meet the criteria of the first group (named `A` by default).
     :param b_predicate: predicate to test if the variants
-        meet the criteria of the second group (named `B` by default).
+        meet the criteria of the second group (named `B` by default) or `None`
+        if the inverse of `a_predicate` should be used.
     :param names: group names (default ``('A', 'B')``).
     """
+    if b_predicate is None:
+        b_predicate = ~a_predicate
+
     return PolyCountingGenotypePredicate.monoallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
@@ -338,7 +343,7 @@ def monoallelic_predicate(
 
 def biallelic_predicate(
     a_predicate: VariantPredicate,
-    b_predicate: VariantPredicate,
+    b_predicate: typing.Optional[VariantPredicate] = None,
     names: typing.Tuple[str, str] = ("A", "B"),
     partitions: typing.Collection[typing.Collection[int]] = ((0,), (1,), (2,)),
 ) -> GenotypePolyPredicate:
@@ -350,8 +355,11 @@ def biallelic_predicate(
 
     See :ref:`biallelic-predicate` for more information and an example usage.
 
-    :param a_predicate: predicate to test if the variants meet the criteria of the first group (named `A` by default).
-    :param b_predicate: predicate to test if the variants meet the criteria of the second group (named `B` by default).
+    :param a_predicate: predicate to test if the variants meet
+        the criteria of the first group (named `A` by default).
+    :param b_predicate: predicate to test if the variants meet
+        the criteria of the second group (named `B` by default)
+        or `None` if an inverse of `a_predicate` should be used.
     :param names: group names (default ``('A', 'B')``).
     :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
     """
@@ -359,6 +367,9 @@ def biallelic_predicate(
     assert len(names) == 2
     partitions = fixate_partitions(partitions)
     qc_partitions(partitions)
+
+    if b_predicate is None:
+        b_predicate = ~a_predicate
 
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
@@ -381,6 +392,11 @@ def autosomal_dominant(
     :param variant_predicate: a predicate for choosing the variants for testing
         or `None` if all variants should be used.
     """
+    warnings.warn(
+        "`autosomal_dominant` will be removed. Use `monoallelic_predicate` instead.",
+        DeprecationWarning, stacklevel=2,
+    )
+
     if variant_predicate is None:
         variant_predicate = VariantPredicates.true()
 
@@ -407,6 +423,11 @@ def autosomal_recessive(
         or `None` if all variants should be used
     :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
     """
+    warnings.warn(
+        "`autosomal_recessive` will be removed. Use `allele_counting` instead.",
+        DeprecationWarning, stacklevel=2,
+    )
+
     if variant_predicate is None:
         variant_predicate = VariantPredicates.true()
 
@@ -416,6 +437,19 @@ def autosomal_recessive(
         variant_predicate=variant_predicate,
         mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
         partitions=partitions,
+    )
+
+
+def allele_counting() -> GenotypePolyPredicate:
+    """
+    Create a predicate that assigns the patient either into
+    monoallelic, or biallelic (homozygous alternative or compound heterozygous) group.
+    """
+    # TODO: link to an example usage in the documentation.
+    return ModeOfInheritancePredicate.from_moi_info(
+        variant_predicate=VariantPredicates.true(),
+        mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
+        partitions=((1,), (2,)),
     )
 
 
