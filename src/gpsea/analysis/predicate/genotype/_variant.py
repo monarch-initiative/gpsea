@@ -171,15 +171,27 @@ class VariantPredicates:
         return VariantExonPredicate(exon, tx_id)
 
     @staticmethod
-    def region(region: Region, tx_id: str) -> VariantPredicate:
+    def region(
+        region: typing.Union[Region, typing.Tuple[int, int]],
+        tx_id: str,
+    ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant
         overlaps with a region on a protein of a specific transcript.
 
         Args:
             region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate
-                of the region of interest on a protein strand.
+                of the region of interest on a protein strand or a tuple with 1-based coordinates.
         """
+        if isinstance(region, Region):
+            pass
+        elif isinstance(region, tuple) and len(region) == 2 and all(isinstance(c, int) for c in region):
+            start = region[0] - 1  # Convert to 0-based
+            end = region[1]
+            region = Region(start=start, end=end)
+        else:
+            raise ValueError(f'region must be a `Region` or a tuple with two integers, but got {region}')
+
         return ProteinRegionPredicate(region, tx_id)
 
     @staticmethod

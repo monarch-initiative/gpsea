@@ -4,66 +4,65 @@
 Mode of Inheritance Predicates
 ==============================
 
-There are five basic modes of inheritance for single-gene diseases: autosomal dominant, 
+There are five basic modes of inheritance (MoI) for single-gene diseases: autosomal dominant, 
 autosomal recessive, X-linked dominant, X-linked recessive, and mitochondrial 
 (See `Understanding Genetics, Appendix B <https://www.ncbi.nlm.nih.gov/books/NBK132145/>`_).
 
-GPSEA provides Mode of Inheritance predicates that categorize individuals
+GPSEA enables testing aligned with an expected MoI, and to categorize individuals
 based on the number of variant alleles. Clinical judgment should be used to choose the MoI
 for the cohort analysis.
 
-By default, MoI predicates use *all* variants recorded in the individual.
-However, a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-can be provided to select the variants of interest. For instance, missense variants
-or the variants that overlap with a specific protein domain.
+.. 
+
+    By default, MoI predicates use *all* variants recorded in the individual.
+    However, a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+    can be provided to select the variants of interest. For instance, missense variants
+    or the variants that overlap with a specific protein domain.
 
 
-.. _autosomal-dominant-predicate:
+.. _autosomal-dominant-moi:
 
-****************************
-Autosomal dominant predicate
-****************************
+******************
+Autosomal dominant
+******************
 
-Autosomal dominant predicate counts the alleles of variants of interest
-to assign an individual into one of the following categories:
-
-.. table:: Autosomal dominant predicate categories
-
-    +------------------+----------------+
-    |   Allele count   |  Category      |
-    +==================+================+
-    |   0              |  `No allele`   |
-    +------------------+----------------+
-    |   1              |  `Monoallelic` |
-    +------------------+----------------+
-    |   :math:`\ge 2`  |  ``None``      |
-    +------------------+----------------+
-
-Examples
-========
-
-Use all variants
-----------------
-
-We can create the predicate with the :func:`~gpsea.analysis.predicate.genotype.autosomal_dominant` function:
-
->>> from gpsea.analysis.predicate.genotype import autosomal_dominant
->>> gt_predicate = autosomal_dominant()
->>> gt_predicate.display_question()
-'What is the genotype group: No allele, Monoallelic'
+In case of diseases with the autosomal dominant MoI, we typically assemble a cohort of individuals
+harboring one pathogenic variant allele and we analyze the phenotypic differences between variant qualities
+(e.g. missense vs. loss-of-function). As pointed out in the :ref:`monoallelic-predicate` section,
+we use :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate`.
+However, we can also use the predicate to compare the phenotype of the individuals with an allele
+with those without the allele, and assign the individuals into the respective groups.
 
 
-Use a variant subset
---------------------
+Example
+=======
 
-To only consider a subset of variants, a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate` can be provided,
-to, for example, only include the missense variants on transcript ``NM_1234.5``:
+We may want to compare the individuals with a missense variant on a fictional transcript ``NM_1234.5``
+which are predicted to affect one of the ten aminoacid residues :math:`[31, 40]` of a protein domain of interest:
+
+We start by creating the variant predicate, which needs a variant to be both a missense variant
+and overlap with the selected aminoacid residues:
 
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_missense = VariantPredicates.variant_effect(effect=VariantEffect.MISSENSE_VARIANT, tx_id="NM_1234.5")
->>> is_missense.get_question()
-'MISSENSE_VARIANT on NM_1234.5'
+>>> overlaps_domain = VariantPredicates.region(region=(31, 40), tx_id="NM_1234.5")
+>>> var_predicate = is_missense & overlaps_domain
+>>> var_predicate.get_question()
+'(MISSENSE_VARIANT on NM_1234.5 AND variant affects aminoacid(s) between 31 and 40 on protein encoded by transcript NM_1234.5)'
+
+
+and we use the variant predicate to create a genotype predicate for comparing the individuals with the
+missense variant in the domain (`Missense in domain`) with those with no such variant (`Other`):
+
+>>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
+>>> gt_predicate = monoallelic_predicate(
+...     var_predicate,
+...     names=("Missense in domain", "Other"),
+... )
+>>> gt_predicate.display_question()
+'Allele group: Missense in domain, Other'
+
 
 
 .. _autosomal-recessive-predicate:
