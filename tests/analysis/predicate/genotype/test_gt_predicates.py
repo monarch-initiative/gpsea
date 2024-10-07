@@ -91,9 +91,9 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "HOM_REF"),
-            ("eve", "HET"),
-            ("cain", "HET"),
+            ("adam", "No allele"),
+            ("eve", "Monoallelic"),
+            ("cain", "Monoallelic"),
         ],
     )
     def test_autosomal_dominant(
@@ -115,9 +115,9 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "HET"),  # 0/0 & 0/1
-            ("eve", "HET"),  # 0/1 & 0/0
-            ("cain", "HET"),  # 0/1 & 0/0
+            ("adam", "Monoallelic"),  # 0/0 & 0/1
+            ("eve", "Monoallelic"),  # 0/1 & 0/0
+            ("cain", "Monoallelic"),  # 0/1 & 0/0
         ],
     )
     def test_autosomal_dominant__with_default_predicate(
@@ -138,10 +138,10 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("walt", "HET"),
-            ("skyler", "HET"),
-            ("flynn", "BIALLELIC_ALT"),
-            ("holly", "HOM_REF"),
+            ("walt", "Monoallelic"),
+            ("skyler", "Monoallelic"),
+            ("flynn", "Biallelic"),
+            ("holly", "No allele"),
         ],
     )
     def test_autosomal_recessive(
@@ -164,10 +164,10 @@ class TestModeOfInheritancePredicate:
         "patient_name,name",
         [
             # The White family has two variants:
-            ("walt", "BIALLELIC_ALT"),  # 0/1 & 0/1
-            ("skyler", "BIALLELIC_ALT"),  # 0/1 & 0/1
-            ("flynn", "BIALLELIC_ALT"),  # 1/1 & 0/0
-            ("holly", "BIALLELIC_ALT"),  # 0/0 & 1/1
+            ("walt", "Biallelic"),  # 0/1 & 0/1
+            ("skyler", "Biallelic"),  # 0/1 & 0/1
+            ("flynn", "Biallelic"),  # 1/1 & 0/0
+            ("holly", "Biallelic"),  # 0/0 & 1/1
         ],
     )
     def test_autosomal_recessive__with_default_predicate(
