@@ -66,25 +66,25 @@ def test_build_count_to_cat(
             [(0,), (1,)],
             ModeOfInheritanceInfo.autosomal_dominant(),
             {
-                0: "HOM_REF",
-                1: "HET",
+                0: "No allele",
+                1: "Monoallelic",
             },
         ),
         (
             [(0,), (1,), (2,)],
             ModeOfInheritanceInfo.autosomal_recessive(),
             {
-                0: "HOM_REF",
-                1: "HET",
-                2: "BIALLELIC_ALT",
+                0: "No allele",
+                1: "Monoallelic",
+                2: "Biallelic",
             },
         ),
         (
             [(1,), (2,)],
             ModeOfInheritanceInfo.autosomal_recessive(),
             {
-                1: "HET",
-                2: "BIALLELIC_ALT",
+                1: "Monoallelic",
+                2: "Biallelic",
             },
         ),
     ],

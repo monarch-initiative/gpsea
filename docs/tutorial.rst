@@ -315,10 +315,10 @@ and these are the tested HPO terms ordered by the p value corrected with the Ben
    :file: report/tbx5_frameshift_vs_missense.csv
    :header-rows: 2
 
-  .. doctest:: tutorial
-    :hide:
+.. doctest:: tutorial
+  :hide:
 
-    >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+  >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 We see that several HPO terms are significantly associated
 with presence of a frameshift variant in *TBX5*.
