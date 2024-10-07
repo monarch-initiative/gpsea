@@ -120,7 +120,7 @@ We execute the analysis by running
 ... )
 
 >>> result.pval
-nan
+0.741216622359659
 
 Show data frame with scores
 
