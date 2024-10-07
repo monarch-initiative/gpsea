@@ -105,7 +105,7 @@ class VariantPredicates:
         'MISSENSE_VARIANT on NM_123.4'
 
         Args:
-            effect: the target :class:`VariantEffect`
+            effect: the target :class:`~gpsea.model.VariantEffect`
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
         """
         return VariantEffectPredicate(effect, tx_id)
@@ -177,7 +177,7 @@ class VariantPredicates:
         overlaps with a region on a protein of a specific transcript.
 
         Args:
-            region: a :class:`Region` that gives the start and end coordinate
+            region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate
                 of the region of interest on a protein strand.
         """
         return ProteinRegionPredicate(region, tx_id)
@@ -201,8 +201,8 @@ class VariantPredicates:
         The thresholds vary in the literature, but here we use 50bp as a default.
 
         Any variant that affects at least `threshold` base pairs is considered an SV.
-        Large SVs with unknown breakpoint coordinates or translocations (:class:`VariantClass.TRANSLOCATION`)
-        are always considered as an SV.
+        Large SVs with unknown breakpoint coordinates or translocations
+        (:class:`~gpsea.model.VariantClass.TRANSLOCATION`) are always considered as an SV.
 
         Args:
             threshold: a non-negative `int` with the number of base pairs that must be affected
@@ -245,7 +245,7 @@ class VariantPredicates:
         variant_class: VariantClass,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`VariantClass`.
+        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.
 
         **Example**
 
@@ -360,8 +360,9 @@ class VariantPredicates:
 
 class ProteinPredicates:
     """
-    `ProteinPredicates` prepares variant predicates that need to consult :class:`ProteinMetadataService`
-    to categorize a :class:`Variant`.
+    `ProteinPredicates` prepares variant predicates that need to consult 
+    :class:`~gpsea.preprocessing.ProteinMetadataService`
+    to categorize a :class:`~gpsea.model.Variant`.
     """
 
     def __init__(
@@ -377,7 +378,8 @@ class ProteinPredicates:
         Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
 
         Args:
-            feature_type: the target protein :class:`FeatureType` (e.g. :class:`FeatureType.DOMAIN`)
+            feature_type: the target protein :class:`~gpsea.model.FeatureType`
+                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)
         """
         return ProteinFeatureTypePredicate(
             feature_type, tx_id, self._protein_metadata_service

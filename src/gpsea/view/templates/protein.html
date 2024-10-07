@@ -45,7 +45,7 @@
 
 .table td:first-child, tr:first-child {
     text-align: left;
-}​
+}
 
 caption {
   caption-side: top;
@@ -58,26 +58,29 @@ caption {
 </head>
 
 <body>
-  <h1>GPSEA protein analysis</h1>
-    <p>The UniProt API successfully returned protein information for ID: {{ protein_id }}</p>
-    <p>Protein Name: {{ protein_label }}</p>
+  <h1>{{ protein_label }}:  {{ protein_id }}</h1>
     <table>
         <caption style="color:black;">
-            <h3>Protein Features</h3>
+           {{ protein_label }} ({{ protein_id }}) has {{ n_features }} annotated protein features.
+            {{ n_variants_in_features }} were found to be located within these features, and
+            {{ non_feature_count }} were located elsewhere. The total length of the protein is
+            {{ protein_length }} amino acid residues.
         </caption>
         <tbody>
             <tr class="strng">
-                <th>Feature Name</th>
-                <th>Feature Type</th>
-                <th>Feature Coordinates</th>
-                <th>Variants in Feature</th>
-            </tr> 
-            {% for feat in protein_features %}
+                <th>Name</th>
+                <th>Type</th>
+                <th>Coordinates</th>
+                <th>Count</th>
+                <th>Variants</th>
+            </tr>
+            {% for feat in feature_list %}
             <tr>
                 <td>{{ feat.name }}</td>
                 <td>{{ feat.type }}</td>
-                <td>{{ feat.region.start }} - {{ feat.region.end }}</td>
-                <td>{{ feat.variant_count }}</td>
+                <td>{{ feat.start }} - {{ feat.end }}</td>
+                <td>{{ feat.count }}</td>
+                <td>{{ feat.variants }}</td>
             </tr>
             {% endfor %}
         </tbody>

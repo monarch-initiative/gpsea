@@ -4,20 +4,27 @@ from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 from collections import Counter, defaultdict
 
+from ._report import GpseaReport, HtmlGpseaReport
+
 
 class DiseaseViewable:
     """
     TODO
     """
-    def __init__(self, hpo: MinimalOntology, transcript_id: str = None, ) -> None:
+    def __init__(
+        self,
+        hpo: MinimalOntology,
+        transcript_id: typing.Optional[str] = None
+    ):
         self._hpo = hpo
         self._tx_id = transcript_id
         environment = Environment(loader=(PackageLoader('gpsea.view', 'templates')))
         self._cohort_template = environment.get_template("disease.html")
         
-    def process(self, cohort) -> str:
+    def process(self, cohort) -> GpseaReport:
         context = self._prepare_context(cohort)
-        return self._cohort_template.render(context)
+        html = self._cohort_template.render(context)
+        return HtmlGpseaReport(html=html)
     
     def _prepare_context(self, cohort) -> typing.Mapping[str, typing.Any]:
         diseases = cohort.list_all_diseases()

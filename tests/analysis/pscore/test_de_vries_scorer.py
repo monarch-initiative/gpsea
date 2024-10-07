@@ -77,6 +77,7 @@ class TestDeVriesScorer:
                 )
                 for curie in term_set
             ),
+            measurements=(),
             diseases=(),
             variants=(),
         )

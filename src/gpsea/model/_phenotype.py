@@ -65,7 +65,7 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
         """Returns a boolean for whether the phenotype is observed.
 
         Returns:
-            boolean: True if this phenotype was observed in the respective patient.
+            bool: `True` if this phenotype was observed in the respective patient.
         """
         warnings.warn('`observed` property was deprecated and will be removed in `v0.3.0`. '
                       'Use `is_present` instead', DeprecationWarning, stacklevel=2)
@@ -147,6 +147,78 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
                f"identifier={self._term_id}, " \
                f"name={self._name}, " \
                f"is_present={self._observed})"
+
+    def __repr__(self):
+        return str(self)
+    
+
+class Measurement(hpotk.model.Identified, hpotk.model.Named):
+    """
+    Representation of a GA4GH Phenopacket Measurement (numerical test result).
+    An intended use case would be to perform a Student's t test on numerical measurements in individuals
+    with two difference genotype classes.
+    """
+
+    def __init__(
+        self,
+        test_term_id: hpotk.TermId,
+        test_name: str,
+        test_result: float,
+        unit: hpotk.TermId,
+    ):
+        assert isinstance(test_term_id, hpotk.TermId)
+        self._term_id = test_term_id
+        assert isinstance(test_name, str)
+        self._name = test_name
+        assert isinstance(test_result, float)
+        self._test_result = test_result
+        assert isinstance(unit, hpotk.TermId)
+        self._unit = unit
+
+    @property
+    def identifier(self) -> hpotk.TermId:
+        """
+        Get the test ID, e.g. ``LOINC:2986-8``.
+        """
+        return self._term_id
+
+    @property
+    def name(self):
+        """
+        Get the test label (e.g. *Testosterone [Mass/volume] in Serum or Plasma* for ``LOINC 2986-8``).
+        """
+        return self._name
+
+    @property
+    def test_result(self) -> float:
+        """
+        Return `True` if the disease was diagnosed in the individual or `False` if it was excluded.
+        """
+        return self._test_result
+    
+    @property
+    def unit(self) -> hpotk.TermId:
+        """
+        Return the unit for the test result encoded as a TermId, e.g., ``UCUM:ng/dL`` for *nanogram per deciliter*.
+        """
+        return self._unit
+
+    def __eq__(self, other):
+        return isinstance(other, Measurement) \
+            and self._term_id == other._term_id \
+            and self._name == other._name \
+            and self._test_result == other._test_result \
+            and self._unit == other._unit
+
+    def __hash__(self):
+        return hash((self._term_id, self._name, self._test_result, self._unit))
+
+    def __str__(self):
+        return "Measurement(" \
+               f"identifier={self._term_id}, " \
+               f"name={self._name}, " \
+               f"test_result={self._test_result}), " \
+               f"unit={self._unit})"
 
     def __repr__(self):
         return str(self)
