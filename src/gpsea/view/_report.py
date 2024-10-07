@@ -43,11 +43,12 @@ class HtmlGpseaReport(GpseaReport):
 
     def write(self, fh: typing.Union[io.IOBase, str]):
         should_close = isinstance(fh, str)
+        fout = None
         try:
             fout = open_text_io_handle_for_writing(fh)
             fout.write(self._html)
         except Exception:
-            if should_close:
+            if should_close and fout is not None:
                 fout.close()
 
     def _repr_html_(self) -> str:

@@ -430,7 +430,7 @@ def load_phenopacket_files(
 
 
 def load_phenopackets(
-    phenopackets: typing.Iterator[Phenopacket],
+    phenopackets: typing.Iterable[Phenopacket],
     cohort_creator: CohortCreator[Phenopacket],
     validation_policy: typing.Literal["permissive", "lenient", "strict"] = "permissive",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
