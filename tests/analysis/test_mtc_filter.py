@@ -22,6 +22,7 @@ class TestHpoMtcFilter:
         return HpoMtcFilter.default_filter(
             hpo=hpo,
             term_frequency_threshold=0.2,
+            annotation_frequency_threshold=.1,
         )
 
     @pytest.fixture(scope='class')
