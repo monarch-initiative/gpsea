@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; GPSEA 0.4.1 documentation</title>
+  <title>Tutorial &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=c87aa342"></script>
+      <script src="_static/documentation_options.js?v=1dd76d02"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -96,7 +96,7 @@
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
 <p>Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
 The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
-The <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/user-guide/index.html#user-guide" title="(in hpo-toolkit)"><span>User guide</span></a> contains details about additional methods and functionalities.</p>
+The <a class="reference internal" href="user-guide/index.html#user-guide"><span class="std std-ref">User guide</span></a> contains details about additional methods and functionalities.</p>
 <p>The tutorial presents an analysis of a cohort of individuals with pathogenic variants in <em>TBX5</em> leading to
 <a class="reference external" href="https://omim.org/entry/142900">Holt-Oram syndrome MIM:142900</a>.</p>
 <p>Holt-Oram syndrome is an autosomal dominant disorder characterized by
@@ -145,7 +145,7 @@ whose clinical signs and symptoms were encoded into HPO terms
 and stored in <a class="reference external" href="https://github.com/monarch-initiative/phenopacket-store">Phenopacket Store</a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">phenopacket_registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">phenopacket_registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">phenopacket_registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="s2">&quot;0.1.20&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">phenopackets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">iter_cohort_phenopackets</span><span class="p">(</span><span class="n">cohort_name</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">phenopackets</span><span class="p">)</span>
 <span class="go">156</span>
@@ -185,8 +185,7 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewable</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_cohort_info.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
 </pre></div>
 </div>
 <!DOCTYPE html>
@@ -522,15 +521,7 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
 
 
 </body>
-</html><div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The report can also be displayed directly in a Jupyter notebook by running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-<span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">report</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</section>
+</html></section>
 <section id="plot-distribution-of-variants-with-respect-to-the-protein-sequence">
 <h4>Plot distribution of variants with respect to the protein sequence<a class="headerlink" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence" title="Link to this heading"></a></h4>
 <p>Now we can show the distribution of variants with respect to the encoded protein.
@@ -556,8 +547,6 @@ with information about the transcript and protein “anatomy”:</p>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/img/tutorial/tbx5_protein_diagram.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/tbx5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="_images/tbx5_protein_diagram.png" style="width: 600px;" />
@@ -573,8 +562,7 @@ with one or more variant alleles (<em>Count</em>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortVariantViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortVariantViewer</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_all_variants.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
 </pre></div>
 </div>
 <!DOCTYPE html>
@@ -1182,7 +1170,7 @@ in the individuals of the <em>TBX5</em> cohort.</p>
 <p class="admonition-title">Note</p>
 <p>There are many other ways to set up a predicate for testing
 for a GP correlation.
-See the <a class="reference internal" href="user-guide/predicates.html#predicates"><span class="std std-ref">Predicates</span></a> section to learn more about building
+See the <a class="reference internal" href="user-guide/predicates/index.html#predicates"><span class="std std-ref">Predicates</span></a> section to learn more about building
 a predicate of interest.</p>
 </div>
 <p>The phenotype grouping is based on presence or absence of an HPO term.
@@ -1247,22 +1235,21 @@ into <a class="reference internal" href="apidocs/gpsea.analysis.pcats.html#gpsea
 <span class="gp">... </span>    <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
-<span class="go">16</span>
+<span class="go">34</span>
 </pre></div>
 </div>
-<p>We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+<p>We only tested 34 HPO terms. This is despite the individuals being collectively annotated with
 260 direct and indirect HPO terms</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
 <span class="go">260</span>
 </pre></div>
 </div>
-<p>We can show the reasoning behind <em>not</em> testing 244 (<cite>260 - 16</cite>) HPO terms
+<p>We can show the reasoning behind <em>not</em> testing 226 (<cite>260 - 34</cite>) HPO terms
 by exploring the phenotype MTC filtering report.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_frameshift_vs_missense.mtc_report.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mtc_report</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span>  
 </pre></div>
 </div>
 <!DOCTYPE html>
@@ -1315,9 +1302,9 @@ by exploring the phenotype MTC filtering report.</p>
   <h1>Phenotype testing report</h1>
   <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
   <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 16 out of the total of 260 HPO terms.</p>
+  <p>Performed statistical tests for 34 out of the total of 260 HPO terms.</p>
     <table>
-      <caption>Using <em>HPO MTC filter</em>, 244 term(s) were omitted from statistical analysis.</caption>
+      <caption>Using <em>HPO MTC filter</em>, 226 term(s) were omitted from statistical analysis.</caption>
         <tbody>
           <tr>
             <th>Code</th>
@@ -1332,33 +1319,9 @@ by exploring the phenotype MTC filtering report.</p>
           </tr>
           
           <tr>
-            <td>HMF02</td>
-            <td>Skipping term because no genotype has more than one observed HPO count</td>
-            <td>3</td>
-          </tr>
-          
-          <tr>
             <td>HMF03</td>
             <td>Skipping term because of a child term with the same individual counts</td>
-            <td>1</td>
-          </tr>
-          
-          <tr>
-            <td>HMF04</td>
-            <td>Skipping term because all genotypes have same HPO observed proportions</td>
-            <td>41</td>
-          </tr>
-          
-          <tr>
-            <td>HMF05</td>
-            <td>Skipping term because one genotype had zero observations</td>
             <td>2</td>
-          </tr>
-          
-          <tr>
-            <td>HMF06</td>
-            <td>Skipping term with less than 7 observations (not powered for 2x2)</td>
-            <td>102</td>
           </tr>
           
           <tr>
@@ -1367,13 +1330,19 @@ by exploring the phenotype MTC filtering report.</p>
             <td>44</td>
           </tr>
           
+          <tr>
+            <td>HMF09</td>
+            <td>Skipping term with maximum annotation frequency that was less than threshold 0.25</td>
+            <td>129</td>
+          </tr>
+          
         </tbody>
     </table>
 </body>
 </html><p>and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_frameshift_vs_missense.csv&#39;</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  
 </pre></div>
 </div>
 <table class="docutils align-default" id="id5">
@@ -1402,31 +1371,15 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>52%</p></td>
 <td><p>19/19</p></td>
 <td><p>100%</p></td>
-<td><p>0.0008990549794102921</p></td>
+<td><p>0.0019104918312468707</p></td>
 <td><p>5.6190936213143254e-05</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal atrioventricular conduction [HP:0005150]</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0.003478260869565217</p></td>
-<td><p>0.00043478260869565214</p></td>
-</tr>
-<tr class="row-odd"><td><p>Atrioventricular block [HP:0001678]</p></td>
-<td><p>0/22</p></td>
-<td><p>0%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0.01932367149758454</p></td>
-<td><p>0.0036231884057971015</p></td>
 </tr>
 <tr class="row-even"><td><p>Absent thumb [HP:0009777]</p></td>
 <td><p>12/71</p></td>
 <td><p>17%</p></td>
 <td><p>14/31</p></td>
 <td><p>45%</p></td>
-<td><p>0.022514040627000236</p></td>
+<td><p>0.095684672664751</p></td>
 <td><p>0.005628510156750059</p></td>
 </tr>
 <tr class="row-odd"><td><p>Patent ductus arteriosus [HP:0001643]</p></td>
@@ -1434,7 +1387,7 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>8%</p></td>
 <td><p>2/2</p></td>
 <td><p>100%</p></td>
-<td><p>0.04318488529014845</p></td>
+<td><p>0.15294646873594242</p></td>
 <td><p>0.01349527665317139</p></td>
 </tr>
 <tr class="row-even"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
@@ -1442,7 +1395,7 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>18%</p></td>
 <td><p>13/32</p></td>
 <td><p>41%</p></td>
-<td><p>0.06827099717235872</p></td>
+<td><p>0.2176138034868934</p></td>
 <td><p>0.02560162393963452</p></td>
 </tr>
 <tr class="row-odd"><td><p>Cardiac conduction abnormality [HP:0031546]</p></td>
@@ -1450,7 +1403,7 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>39%</p></td>
 <td><p>3/3</p></td>
 <td><p>100%</p></td>
-<td><p>0.17007174901911745</p></td>
+<td><p>0.5059634533318744</p></td>
 <td><p>0.07440639019586388</p></td>
 </tr>
 <tr class="row-even"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
@@ -1458,7 +1411,7 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>40%</p></td>
 <td><p>4/22</p></td>
 <td><p>18%</p></td>
-<td><p>0.2849045166157176</p></td>
+<td><p>0.8072294637445331</p></td>
 <td><p>0.1424522583078588</p></td>
 </tr>
 <tr class="row-odd"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
@@ -1466,24 +1419,8 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>10%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
-<td><p>0.29999225997208373</p></td>
+<td><p>0.8196217102808717</p></td>
 <td><p>0.1687456462342971</p></td>
-</tr>
-<tr class="row-even"><td><p>Pulmonary arterial hypertension [HP:0002092]</p></td>
-<td><p>4/6</p></td>
-<td><p>67%</p></td>
-<td><p>0/2</p></td>
-<td><p>0%</p></td>
-<td><p>0.6857142857142857</p></td>
-<td><p>0.42857142857142855</p></td>
-</tr>
-<tr class="row-odd"><td><p>Hypoplasia of the ulna [HP:0003022]</p></td>
-<td><p>1/12</p></td>
-<td><p>8%</p></td>
-<td><p>2/10</p></td>
-<td><p>20%</p></td>
-<td><p>0.831168831168831</p></td>
-<td><p>0.5714285714285713</p></td>
 </tr>
 <tr class="row-even"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
 <td><p>30/62</p></td>
@@ -1493,11 +1430,27 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>0.7735491022101784</p></td>
 </tr>
-<tr class="row-odd"><td><p>Short thumb [HP:0009778]</p></td>
-<td><p>11/41</p></td>
-<td><p>27%</p></td>
-<td><p>8/30</p></td>
-<td><p>27%</p></td>
+<tr class="row-odd"><td><p>Abnormal ventricular septum morphology [HP:0010438]</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<td><p>62/62</p></td>
+<td><p>100%</p></td>
+<td><p>28/28</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
+<td><p>53/53</p></td>
+<td><p>100%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
@@ -1509,19 +1462,179 @@ by exploring the phenotype MTC filtering report.</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
+<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<td><p>43/43</p></td>
+<td><p>100%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<td><p>43/43</p></td>
+<td><p>100%</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal appendicular skeleton morphology [HP:0011844]</p></td>
+<td><p>64/64</p></td>
+<td><p>100%</p></td>
+<td><p>34/34</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Upper limb undergrowth [HP:0009824]</p></td>
+<td><p>33/33</p></td>
+<td><p>100%</p></td>
+<td><p>7/7</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
+<td><p>55/55</p></td>
+<td><p>100%</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<td><p>56/56</p></td>
+<td><p>100%</p></td>
+<td><p>23/23</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
+<td><p>55/55</p></td>
+<td><p>100%</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
+<td><p>55/55</p></td>
+<td><p>100%</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving forearm bones [HP:0006503]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>12/12</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal forearm bone morphology [HP:0040072]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>14/14</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Short long bone [HP:0003026]</p></td>
+<td><p>35/35</p></td>
+<td><p>100%</p></td>
+<td><p>9/9</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
+<td><p>44/44</p></td>
+<td><p>100%</p></td>
+<td><p>13/13</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of the radius [HP:0006501]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>11/11</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal morphology of the radius [HP:0002818]</p></td>
+<td><p>37/37</p></td>
+<td><p>100%</p></td>
+<td><p>13/13</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Short thumb [HP:0009778]</p></td>
+<td><p>11/41</p></td>
+<td><p>27%</p></td>
+<td><p>8/30</p></td>
+<td><p>27%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of the thumb [HP:0009601]</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
+<td><p>36/36</p></td>
+<td><p>100%</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
+<td><p>38/38</p></td>
+<td><p>100%</p></td>
+<td><p>33/33</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
+<td><p>30/30</p></td>
+<td><p>100%</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
 <td><p>7/32</p></td>
 <td><p>22%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Short humerus [HP:0005792]</p></td>
-<td><p>7/17</p></td>
-<td><p>41%</p></td>
-<td><p>4/9</p></td>
-<td><p>44%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
@@ -1534,7 +1647,7 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of <cite>~0.0000562</cite>
 and the p value corrected by Benjamini-Hochberg procedure
-is <cite>~0.000899</cite>.</p>
+is <cite>~0.001910</cite>.</p>
 </section>
 </section>
 </section>

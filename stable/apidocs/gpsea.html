@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea package &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea package &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Sex"><code class="docutils literal notranslate"><span class="pre">Sex</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Phenotype"><code class="docutils literal notranslate"><span class="pre">Phenotype</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Disease"><code class="docutils literal notranslate"><span class="pre">Disease</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Variant"><code class="docutils literal notranslate"><span class="pre">Variant</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass"><code class="docutils literal notranslate"><span class="pre">VariantClass</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantCoordinates"><code class="docutils literal notranslate"><span class="pre">VariantCoordinates</span></code></a></li>
@@ -129,6 +130,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptAnnotation"><code class="docutils literal notranslate"><span class="pre">TranscriptAnnotation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantEffect"><code class="docutils literal notranslate"><span class="pre">VariantEffect</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptInfoAware"><code class="docutils literal notranslate"><span class="pre">TranscriptInfoAware</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.FunctionalAnnotationAware"><code class="docutils literal notranslate"><span class="pre">FunctionalAnnotationAware</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptCoordinates"><code class="docutils literal notranslate"><span class="pre">TranscriptCoordinates</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata"><code class="docutils literal notranslate"><span class="pre">ProteinMetadata</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinFeature"><code class="docutils literal notranslate"><span class="pre">ProteinFeature</span></code></a></li>
@@ -176,15 +178,17 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.view.html">gpsea.view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.GpseaReport"><code class="docutils literal notranslate"><span class="pre">GpseaReport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.CohortVariantViewer"><code class="docutils literal notranslate"><span class="pre">CohortVariantViewer</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.CohortViewable"><code class="docutils literal notranslate"><span class="pre">CohortViewable</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.ProteinVisualizer"><code class="docutils literal notranslate"><span class="pre">ProteinVisualizer</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.ProteinVisualizable"><code class="docutils literal notranslate"><span class="pre">ProteinVisualizable</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.ProteinViewable"><code class="docutils literal notranslate"><span class="pre">ProteinViewable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.ProteinVariantViewer"><code class="docutils literal notranslate"><span class="pre">ProteinVariantViewer</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.DiseaseViewable"><code class="docutils literal notranslate"><span class="pre">DiseaseViewable</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.MtcStatsViewer"><code class="docutils literal notranslate"><span class="pre">MtcStatsViewer</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.summarize_hpo_analysis"><code class="docutils literal notranslate"><span class="pre">summarize_hpo_analysis()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.VariantTranscriptVisualizer"><code class="docutils literal notranslate"><span class="pre">VariantTranscriptVisualizer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.Formatter"><code class="docutils literal notranslate"><span class="pre">Formatter</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.VariantFormatter"><code class="docutils literal notranslate"><span class="pre">VariantFormatter</span></code></a></li>
 </ul>
 </li>
@@ -208,6 +212,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.util.html">gpsea.util module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.util.html#gpsea.util.open_text_io_handle_for_reading"><code class="docutils literal notranslate"><span class="pre">open_text_io_handle_for_reading()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.util.html#gpsea.util.open_text_io_handle_for_writing"><code class="docutils literal notranslate"><span class="pre">open_text_io_handle_for_writing()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._formatter &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.view._formatter &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -83,8 +83,13 @@
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
 
+
+<div class="viewcode-block" id="Formatter">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.Formatter">[docs]</a>
 <span class="k">class</span> <span class="nc">Formatter</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
     
+<div class="viewcode-block" id="Formatter.format_as_string">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.Formatter.format_as_string">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">format_as_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Inputs an item and outputs a human readable string that can be used</span>
@@ -94,10 +99,13 @@
 <span class="sd">            item (T): an element to be formatted</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: a human readable string </span>
+<span class="sd">            str: a human readable string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-    
+        <span class="k">pass</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="VariantFormatter">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.VariantFormatter">[docs]</a>
 <span class="k">class</span> <span class="nc">VariantFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">[</span><span class="n">Variant</span><span class="p">]):</span>
@@ -110,7 +118,7 @@
 <div class="viewcode-block" id="VariantFormatter.format_as_string">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.VariantFormatter.format_as_string">[docs]</a>
     <span class="k">def</span> <span class="nf">format_as_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Variant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            item (Variant): An object of class `Variant` representing a variant.</span>
 

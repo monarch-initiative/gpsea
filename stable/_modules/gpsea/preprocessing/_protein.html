@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._protein &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.preprocessing._protein &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -100,7 +100,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs all necessary attributes for a ProteinAnnotationCache object</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            datadir (string): A string that references an existing directory that does or will contain all pickle files being stored</span>
+<span class="sd">            datadir (str): A string that references an existing directory that does or will contain all pickle files being stored</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">datadir</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;datadir </span><span class="si">{</span><span class="n">datadir</span><span class="si">}</span><span class="s1"> must be an existing directory&#39;</span><span class="p">)</span>
@@ -112,7 +112,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches a given data directory for a pickle file with given ID and returns ProteinMetadata from file. Returns None if no file is found.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): The protein_id associated with the desired ProteinMetadata</span>
+<span class="sd">            protein_id (str): The protein_id associated with the desired ProteinMetadata</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_file_name</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
@@ -128,7 +128,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a pickle file with the given protein id in the file name. Loads the ProteinMetadata given into the file for storage.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): The protein_id associated with the ProteinMetadata</span>
+<span class="sd">            protein_id (str): The protein_id associated with the ProteinMetadata</span>
 <span class="sd">            annotation (Sequence[ProteinMetadata]): A sequence of ProteinMetadata objects that will be stored under the given protein id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_file_name</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span>
@@ -140,7 +140,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a file name with full location and the protein id (e.g. &quot;/path/to/desired/directory/NP_037407.4.pickle&quot;)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            prot_id (string): The protein_id associated with the ProteinMetadata</span>
+<span class="sd">            prot_id (str): The protein_id associated with the ProteinMetadata</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prot_id</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datadir</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span></div>
@@ -172,7 +172,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets metadata for given protein ID</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protein_id (string): A protein ID</span>
+<span class="sd">            protein_id (str): A protein ID</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            ProteinMetadata: A ProteinMetadata object</span>
 <span class="sd">        &quot;&quot;&quot;</span>

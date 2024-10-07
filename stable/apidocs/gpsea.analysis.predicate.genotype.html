@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.genotype package &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.analysis.predicate.genotype package &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,13 +15,11 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=6dbb43f8"></script>
-      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -103,7 +101,7 @@
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.GenotypePolyPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">GenotypePolyPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#GenotypePolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>]</p>
-<p><cite>GenotypePolyPredicate</cite> is a base class for all <code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code>
+<p><cite>GenotypePolyPredicate</cite> is a base class for all <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>
 that test the genotype axis.</p>
 </dd></dl>
 
@@ -157,6 +155,7 @@ The number of labels must match the number of predicates.</p></li>
 <dd><p>Create a predicate that assigns the patient either
 into homozygous reference or heterozygous
 group in line with the autosomal dominant mode of inheritance.</p>
+<p>See <a class="reference internal" href="../user-guide/predicates/mode_of_inheritance_predicate.html#mode-of-inheritance-predicate"><span class="std std-ref">Mode of Inheritance Predicates</span></a> for more info and an example usage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>variant_predicate</strong> – a predicate for choosing the variants for testing
@@ -167,15 +166,19 @@ or <cite>None</cite> if all variants should be used.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.autosomal_recessive">
-<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">autosomal_recessive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#autosomal_recessive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.autosomal_recessive" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">autosomal_recessive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.12)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.12)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">((0,),</span> <span class="pre">(1,),</span> <span class="pre">(2,))</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#autosomal_recessive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.autosomal_recessive" title="Link to this definition"></a></dt>
 <dd><p>Create a predicate that assigns the patient either into
 homozygous reference, heterozygous, or biallelic alternative allele
 (homozygous alternative or compound heterozygous)
 group in line with the autosomal recessive mode of inheritance.</p>
+<p>See <a class="reference internal" href="../user-guide/predicates/mode_of_inheritance_predicate.html#mode-of-inheritance-predicate"><span class="std std-ref">Mode of Inheritance Predicates</span></a> for more info and an example usage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant_predicate</strong> – a predicate for choosing the variants for testing
-or <cite>None</cite> if all variants should be used</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variant_predicate</strong> – a predicate for choosing the variants for testing
+or <cite>None</cite> if all variants should be used</p></li>
+<li><p><strong>partitions</strong> – a sequence with partition identifiers (default <code class="docutils literal notranslate"><span class="pre">((0,),</span> <span class="pre">(1,),</span> <span class="pre">(2,))</span></code>).</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -186,31 +189,7 @@ or <cite>None</cite> if all variants should be used</p>
 <dd><p>The predicate bins patient into one of two groups, <cite>A</cite> and <cite>B</cite>,
 based on presence of <em>exactly</em> one allele of a variant
 that meets the predicate criteria.</p>
-<p>The number of alleles <span class="math notranslate nohighlight">\(count_{A}\)</span> and <span class="math notranslate nohighlight">\(count_{B}\)</span>
-is computed using <cite>a_predicate</cite> and <cite>b_predicate</cite>
-and the individual is assigned into a group
-based on the following table:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Group</p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(count_{A}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(count_{B}\)</span></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>A</p></td>
-<td><p>1</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td><p>B</p></td>
-<td><p>0</p></td>
-<td><p>1</p></td>
-</tr>
-</tbody>
-</table>
-<p>The individuals with different allele counts
-(e.g. <span class="math notranslate nohighlight">\(count_{A} = 0\)</span> and <span class="math notranslate nohighlight">\(count_{B} = 2\)</span>)
-are assigned into the <code class="docutils literal notranslate"><span class="pre">None</span></code> group and, thus, omitted from the analysis.</p>
+<p>See <a class="reference internal" href="../user-guide/predicates/allele_count_predicates.html#monoallelic-predicate"><span class="std std-ref">Monoallelic predicate</span></a> for more information and an example usage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -226,106 +205,22 @@ meet the criteria of the second group (named <cite>B</cite> by default).</p></li
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.biallelic_predicate">
-<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">biallelic_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('A',</span> <span class="pre">'B')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#biallelic_predicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.biallelic_predicate" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">biallelic_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('A',</span> <span class="pre">'B')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.12)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.12)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">((0,),</span> <span class="pre">(1,),</span> <span class="pre">(2,))</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#biallelic_predicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.biallelic_predicate" title="Link to this definition"></a></dt>
 <dd><p>The predicate bins patient into one of the three groups,
 <cite>AA</cite>, <cite>AB</cite>, and <cite>BB</cite>,
-based on presence of one or two variant alleles
+based on presence of <em>two</em> variant alleles
 that meet the predicate criteria.</p>
-<p>The number of alleles <span class="math notranslate nohighlight">\(count_{A}\)</span> and <span class="math notranslate nohighlight">\(count_{B}\)</span>
-is computed using <cite>a_predicate</cite> and <cite>b_predicate</cite>
-and the individual is assigned into a group
-based on the following table:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Group</p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(count_{A}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(count_{B}\)</span></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>AA</p></td>
-<td><p>2</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td><p>AB</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p>AA</p></td>
-<td><p>0</p></td>
-<td><p>2</p></td>
-</tr>
-</tbody>
-</table>
-<p>The individuals with different allele counts
-(e.g. <span class="math notranslate nohighlight">\(count_{A} = 1\)</span> and <span class="math notranslate nohighlight">\(count_{B} = 2\)</span>)
-are assigned into the <code class="docutils literal notranslate"><span class="pre">None</span></code> group and will be, thus,
-omitted from the analysis.</p>
+<p>See <a class="reference internal" href="../user-guide/predicates/allele_count_predicates.html#biallelic-predicate"><span class="std std-ref">Biallelic predicate</span></a> for more information and an example usage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a_predicate</strong> – predicate to test if the variants
-meet the criteria of the first group (named <cite>A</cite> by default).</p></li>
-<li><p><strong>b_predicate</strong> – predicate to test if the variants
-meet the criteria of the second group (named <cite>B</cite> by default).</p></li>
+<li><p><strong>a_predicate</strong> – predicate to test if the variants meet the criteria of the first group (named <cite>A</cite> by default).</p></li>
+<li><p><strong>b_predicate</strong> – predicate to test if the variants meet the criteria of the second group (named <cite>B</cite> by default).</p></li>
 <li><p><strong>names</strong> – group names (default <code class="docutils literal notranslate"><span class="pre">('A',</span> <span class="pre">'B')</span></code>).</p></li>
+<li><p><strong>partitions</strong> – a sequence with partition identifiers (default <code class="docutils literal notranslate"><span class="pre">((0,),</span> <span class="pre">(1,),</span> <span class="pre">(2,))</span></code>).</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ModeOfInheritancePredicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">allele_counter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.AlleleCounter" title="gpsea.analysis.predicate.genotype._counter.AlleleCounter"><span class="pre">AlleleCounter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_of_inheritance_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModeOfInheritanceInfo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a></p>
-<p><cite>ModeOfInheritancePredicate</cite> assigns an individual into a group based on compatibility with
-the selected mode of inheritance.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">autosomal_dominant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate.autosomal_dominant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_dominant" title="Link to this definition"></a></dt>
-<dd><p>Create a predicate that assigns the patient either
-into homozygous reference or heterozygous
-group in line with the autosomal dominant mode of inheritance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant_predicate</strong> – a predicate for choosing the variants for testing.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">autosomal_recessive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate.autosomal_recessive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.autosomal_recessive" title="Link to this definition"></a></dt>
-<dd><p>Create a predicate that assigns the patient either into
-homozygous reference, heterozygous, or biallelic alternative allele
-(homozygous alternative or compound heterozygous)
-group in line with the autosomal recessive mode of inheritance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant_predicate</strong> – a predicate for choosing the variants for testing.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_categorizations">
-<span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_categorizations" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_question_base">
-<span class="sig-name descname"><span class="pre">get_question_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate.get_question_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.get_question_base" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><span class="pre">Categorization</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_gt_predicates.html#ModeOfInheritancePredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ModeOfInheritancePredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a categorization.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -374,8 +269,8 @@ group in line with the autosomal recessive mode of inheritance.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">VariantPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#VariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><cite>VariantPredicate</cite> tests if a variant meets a certain criterion.</p>
-<p>The subclasses are expected to implement all abstract methods of this class
-<em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building of compound predicates.</p>
+<p>The subclasses <em>MUST</em> implement all abstract methods of this class
+<em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building the compound predicates.</p>
 <p>We <em>strongly</em> recommend implementing <code class="docutils literal notranslate"><span class="pre">__str__</span></code> and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> as well.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicate.get_question">
@@ -389,7 +284,7 @@ group in line with the autosomal recessive mode of inheritance.</p>
 <dd><p>Test if the <cite>variant</cite> meets a criterion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code> to test.</p>
+<dd class="field-odd"><p><strong>variant</strong> – an instance of <a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a> to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>True</cite> if the variant meets the criterion and <cite>False</cite> otherwise.</p>
@@ -481,7 +376,7 @@ a certain variant effect.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>effect</strong> – the target <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></p></li>
+<li><p><strong>effect</strong> – the target <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantEffect" title="gpsea.model.VariantEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></a></p></li>
 <li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
 </ul>
 </dd>
@@ -558,7 +453,7 @@ Well, at least the genome variants of the <em>Homo sapiens sapiens</em> taxon…
 overlaps with a region on a protein of a specific transcript.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>region</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> that gives the start and end coordinate
+<dd class="field-odd"><p><strong>region</strong> – a <a class="reference internal" href="gpsea.model.genome.html#gpsea.model.genome.Region" title="gpsea.model.genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that gives the start and end coordinate
 of the region of interest on a protein strand.</p>
 </dd>
 </dl>
@@ -578,8 +473,8 @@ without exact breakpoint coordinates.</p>
 <p>SVs are usually defined as variant affecting more than a certain number of base pairs.
 The thresholds vary in the literature, but here we use 50bp as a default.</p>
 <p>Any variant that affects at least <cite>threshold</cite> base pairs is considered an SV.
-Large SVs with unknown breakpoint coordinates or translocations (<code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass.TRANSLOCATION</span></code>)
-are always considered as an SV.</p>
+Large SVs with unknown breakpoint coordinates or translocations
+(<a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass.TRANSLOCATION" title="gpsea.model.VariantClass.TRANSLOCATION"><code class="xref py py-class docutils literal notranslate"><span class="pre">TRANSLOCATION</span></code></a>) are always considered as an SV.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>threshold</strong> – a non-negative <cite>int</cite> with the number of base pairs that must be affected</p>
@@ -612,7 +507,7 @@ as the structural type.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicates.variant_class">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variant_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model._variant.VariantClass"><span class="pre">VariantClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#VariantPredicates.variant_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicates.variant_class" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is of a certain <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code>.</p>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is of a certain <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a>.</p>
 <p><strong>Example</strong></p>
 <p>Make a predicate to test if the variant is a deletion:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
@@ -719,15 +614,17 @@ is shorter than the reference allele. See <a class="reference internal" href="..
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ProteinPredicates">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">ProteinPredicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_metadata_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProteinMetadataService" title="gpsea.preprocessing._api.ProteinMetadataService"><span class="pre">ProteinMetadataService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#ProteinPredicates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ProteinPredicates" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>ProteinPredicates</cite> prepares variant predicates that need to consult <code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadataService</span></code>
-to categorize a <code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code>.</p>
+<p><cite>ProteinPredicates</cite> prepares variant predicates that need to consult
+<a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProteinMetadataService" title="gpsea.preprocessing.ProteinMetadataService"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadataService</span></code></a>
+to categorize a <a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">
 <span class="sig-name descname"><span class="pre">protein_feature_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_variant.html#ProteinPredicates.protein_feature_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a protein feature type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code> (e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType.DOMAIN</span></code>)</p>
+<dd class="field-odd"><p><strong>feature_type</strong> – the target protein <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model.FeatureType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code></a>
+(e.g. <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType.DOMAIN" title="gpsea.model.FeatureType.DOMAIN"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMAIN</span></code></a>)</p>
 </dd>
 </dl>
 </dd></dl>

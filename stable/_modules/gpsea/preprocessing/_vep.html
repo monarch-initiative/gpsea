@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._vep &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.preprocessing._vep &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -240,7 +240,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a `dict` with the response from the VEP REST API.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            variant_coordinates: a query :class:`VariantCoordinates`.</span>
+<span class="sd">            variant_coordinates: a query :class:`~gpsea.model.VariantCoordinates`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">%</span> <span class="p">(</span><span class="n">VepFunctionalAnnotator</span><span class="o">.</span><span class="n">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">))</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
@@ -279,7 +279,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            vc (VariantCoordinates): A VariantCoordinates object</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            string: The variant coordinates formatted to work with VEP</span>
+<span class="sd">            str: The variant coordinates formatted to work with VEP</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">chrom</span> <span class="o">=</span> <span class="n">vc</span><span class="o">.</span><span class="n">chrom</span>

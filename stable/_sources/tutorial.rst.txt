@@ -60,6 +60,7 @@ We use HPO toolkit to load HPO version `v2024-07-01`:
 
   Use the latest HPO release by omitting the `release` option.
 
+
 Prepare cohort
 ^^^^^^^^^^^^^^
 
@@ -69,7 +70,7 @@ and stored in `Phenopacket Store <https://github.com/monarch-initiative/phenopac
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> phenopacket_registry = configure_phenopacket_registry()
->>> with phenopacket_registry.open_phenopacket_store('0.1.18') as ps:
+>>> with phenopacket_registry.open_phenopacket_store("0.1.20") as ps:
 ...     phenopackets = tuple(ps.iter_cohort_phenopackets(cohort_name))
 >>> len(phenopackets)
 156
@@ -114,18 +115,15 @@ The summary report provides an overview about the HPO terms, variants, diseases,
 >>> from gpsea.view import CohortViewable
 >>> viewer = CohortViewable(hpo)
 >>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
->>> with open('docs/report/tbx5_cohort_info.html', 'w') as fh:  # doctest: +SKIP
-...     _ = fh.write(report)
+>>> report  # doctest: +SKIP
 
 .. raw:: html
   :file: report/tbx5_cohort_info.html
 
-.. note::
+.. doctest:: tutorial
+  :hide:
 
-  The report can also be displayed directly in a Jupyter notebook by running::
-
-    from IPython.display import HTML, display
-    display(HTML(report))
+  >>> report.write('docs/report/tbx5_cohort_info.html')  # doctest: +SKIP
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -155,13 +153,17 @@ and we follow with plotting the diagram of the mutations on the protein:
 ...     cohort,
 ...     ax=ax,
 ... )
->>> fig.tight_layout()
->>> fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')  # doctest: +SKIP
 
 .. image:: /img/tutorial/tbx5_protein_diagram.png
    :alt: TBX5 protein diagram
    :align: center
    :width: 600px
+
+.. doctest:: tutorial
+  :hide:
+
+  >>> fig.tight_layout()
+  >>> fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')  # doctest: +SKIP
 
 
 .. _show-cohort-variants:
@@ -178,11 +180,15 @@ with one or more variant alleles (*Count*):
 >>> from gpsea.view import CohortVariantViewer
 >>> viewer = CohortVariantViewer(tx_id=tx_id)
 >>> report = viewer.process(cohort=cohort)
->>> with open('docs/report/tbx5_all_variants.html', 'w') as fh:  # doctest: +SKIP
-...     _ = fh.write(report)
+>>> report  # doctest: +SKIP
 
 .. raw:: html
   :file: report/tbx5_all_variants.html
+
+.. doctest:: tutorial
+  :hide:
+
+  >>> report.write('docs/report/tbx5_all_variants.html')  # doctest: +SKIP
 
 
 Prepare genotype and phenotype predicates
@@ -275,35 +281,45 @@ Now we can perform the analysis and investigate the results.
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> result.total_tests
-16
+34
 
-We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+We only tested 34 HPO terms. This is despite the individuals being collectively annotated with
 260 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
 260
 
-We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
+We can show the reasoning behind *not* testing 226 (`260 - 34`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()
 >>> mtc_report = mtc_viewer.process(result)
->>> with open('docs/report/tbx5_frameshift_vs_missense.mtc_report.html', 'w') as fh:  # doctest: +SKIP
-...     _ = fh.write(mtc_report)
+>>> mtc_report  # doctest: +SKIP
 
 .. raw:: html
   :file: report/tbx5_frameshift_vs_missense.mtc_report.html
+
+.. doctest:: tutorial
+  :hide:
+
+  >>> mtc_report.write('docs/report/tbx5_frameshift_vs_missense.mtc_report.html')  # doctest: +SKIP
+
 
 and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
->>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+>>> summary_df  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs missense
    :file: report/tbx5_frameshift_vs_missense.csv
    :header-rows: 2
+
+.. doctest:: tutorial
+  :hide:
+
+  >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
 
 We see that several HPO terms are significantly associated
 with presence of a frameshift variant in *TBX5*.
@@ -312,4 +328,4 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.0000562`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.000899`.
+is `~0.001910`.

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._phenopacket &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.preprocessing._phenopacket &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -84,11 +84,12 @@
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
 <span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
+<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.measurement_pb2</span> <span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span>
 <span class="kn">from</span> <span class="nn">phenopackets.vrsatile.v1.vrsatile_pb2</span> <span class="kn">import</span> <span class="n">VcfRecord</span><span class="p">,</span> <span class="n">VariationDescriptor</span>
 <span class="kn">from</span> <span class="nn">phenopackets.vrs.v1.vrs_pb2</span> <span class="kn">import</span> <span class="n">Variation</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span><span class="p">,</span> <span class="n">Disease</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span><span class="p">,</span> <span class="n">Disease</span><span class="p">,</span> <span class="n">Measurement</span>
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">VariantClass</span><span class="p">,</span>
     <span class="n">VariantCoordinates</span><span class="p">,</span>
@@ -162,12 +163,10 @@
         <span class="n">hgvs_coordinate_finder</span><span class="p">:</span> <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="s2">&quot;build&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_finder</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
-            <span class="n">hgvs_coordinate_finder</span><span class="p">,</span>
-            <span class="n">VariantCoordinateFinder</span><span class="p">,</span>
-            <span class="s2">&quot;hgvs_coordinate_finder&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">GenomeBuild</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">build</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hgvs_coordinate_finder</span><span class="p">,</span> <span class="n">VariantCoordinateFinder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hgvs_finder</span> <span class="o">=</span> <span class="n">hgvs_coordinate_finder</span>
 
 <div class="viewcode-block" id="PhenopacketVariantCoordinateFinder.find_coordinates">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">[docs]</a>
@@ -398,6 +397,9 @@
         <span class="n">dip</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;diseases&quot;</span><span class="p">)</span>
         <span class="n">diseases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_diseases</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">diseases</span><span class="p">,</span> <span class="n">dip</span><span class="p">)</span>
 
+        <span class="n">mip</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;measurements&quot;</span><span class="p">)</span>
+        <span class="n">measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_measurements</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">measurements</span><span class="p">,</span> <span class="n">mip</span><span class="p">)</span>
+
         <span class="c1"># Check variants</span>
         <span class="n">vs</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;variants&quot;</span><span class="p">)</span>
         <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">vs</span><span class="p">)</span>
@@ -406,6 +408,7 @@
             <span class="n">sample_id</span><span class="p">,</span>
             <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">,</span>
             <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span>
+            <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
             <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span>
             <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -417,7 +420,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Disease objects from the data in a given Phenopacket</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            diseases (Sequence[Disease]): A sequence of Phenopacket Disease objects</span>
+<span class="sd">            diseases (Sequence[PPDisease]): A sequence of Phenopacket Disease objects</span>
 <span class="sd">            notepad (Notepad): notepad to write down the issues</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            Sequence[Dis]: A list of Disease objects</span>
@@ -438,6 +441,50 @@
             <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Disease</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">final_diseases</span>
+    
+    <span class="k">def</span> <span class="nf">_add_measurements</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">measurements</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPMeasurement</span><span class="p">],</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Measurement</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Args:</span>
+<span class="sd">            measurements (Sequence[PPMeasurement]): A sequence of Phenopacket Measurement objects</span>
+<span class="sd">            notepad (Notepad): notepad to write down the issues</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Sequence[Measurement]: A list of internal Measurement objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">()</span>
+
+        <span class="n">final_measurements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msrm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">measurements</span><span class="p">):</span>
+            <span class="n">keeper</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msrm</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;assay&quot;</span><span class="p">):</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `assay`&quot;</span><span class="p">)</span>
+                <span class="n">keeper</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test_term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">msrm</span><span class="o">.</span><span class="n">assay</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">test_name</span> <span class="o">=</span> <span class="n">msrm</span><span class="o">.</span><span class="n">assay</span><span class="o">.</span><span class="n">label</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msrm</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `value`&quot;</span><span class="p">)</span>
+                <span class="n">keeper</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">msrm</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">):</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `quantity`&quot;</span><span class="p">)</span>
+                <span class="n">keeper</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">):</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `unit`&quot;</span><span class="p">)</span>
+                <span class="n">keeper</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has an invalid unit (should be a CURIE) `</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+                <span class="n">keeper</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">test_result</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">keeper</span><span class="p">:</span>
+                <span class="n">final_measurements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Measurement</span><span class="p">(</span><span class="n">test_term_id</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_result</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">final_measurements</span>
 
     <span class="k">def</span> <span class="nf">_extract_sex</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -539,7 +586,7 @@
                     <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no variants to work with&quot;</span><span class="p">)</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no variants to work with&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">variants</span>
 
@@ -565,7 +612,10 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">variant_coordinates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sv_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_imprecise_sv</span><span class="p">(</span><span class="n">genomic_interpretation</span><span class="p">)</span>
+            <span class="n">sv_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_imprecise_sv</span><span class="p">(</span>
+                <span class="n">genomic_interpretation</span><span class="p">,</span>
+                <span class="n">notepad</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">sv_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                     <span class="s2">&quot;Could not extract the information for large SV annotation&quot;</span><span class="p">,</span>
@@ -581,6 +631,7 @@
     <span class="k">def</span> <span class="nf">_map_to_imprecise_sv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">genomic_interpretation</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ImpreciseSvInfo</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">genomic_interpretation</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;variant_interpretation&quot;</span><span class="p">):</span>
             <span class="n">variant_interpretation</span> <span class="o">=</span> <span class="n">genomic_interpretation</span><span class="o">.</span><span class="n">variant_interpretation</span>
@@ -601,19 +652,27 @@
                 <span class="k">if</span> <span class="n">structural_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gene_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">st</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="o">=</span><span class="n">structural_type</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                     <span class="n">variant_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_structural_type_to_variant_class</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">ImpreciseSvInfo</span><span class="p">(</span>
-                        <span class="n">structural_type</span><span class="o">=</span><span class="n">st</span><span class="p">,</span>
-                        <span class="n">variant_class</span><span class="o">=</span><span class="n">variant_class</span><span class="p">,</span>
-                        <span class="n">gene_id</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">value_id</span><span class="p">,</span>
-                        <span class="n">gene_symbol</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">variant_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">ImpreciseSvInfo</span><span class="p">(</span>
+                            <span class="n">structural_type</span><span class="o">=</span><span class="n">st</span><span class="p">,</span>
+                            <span class="n">variant_class</span><span class="o">=</span><span class="n">variant_class</span><span class="p">,</span>
+                            <span class="n">gene_id</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">value_id</span><span class="p">,</span>
+                            <span class="n">gene_symbol</span><span class="o">=</span><span class="n">gene_context</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">structural_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="s1">&#39;Missing required `structural_type` field&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">gene_context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="s1">&#39;Missing required `gene_context` field&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_map_structural_type_to_variant_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">structural_type</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantClass</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantClass</span><span class="p">]:</span>
         <span class="c1"># This method is most likely incomplete.</span>
         <span class="c1"># Please open a ticket if you receive a `ValueError`</span>
         <span class="c1"># for a structural type, that is not mapped at the moment,</span>
@@ -628,7 +687,7 @@
             <span class="k">elif</span> <span class="n">structural_type</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_so_inversions</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">INV</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 

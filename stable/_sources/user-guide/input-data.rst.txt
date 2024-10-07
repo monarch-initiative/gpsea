@@ -20,6 +20,7 @@ Standardize genotype and phenotype data
 The first step of the `gpsea` analysis involves standardization of the genotype and phenotype data
 and performing functional annotation of the variants.
 
+.. _create-cohort-from-phenopackets:
 
 Create a cohort from GA4GH phenopackets
 ---------------------------------------
@@ -29,8 +30,8 @@ The easiest way to input data into `gpsea` is to use the
 `gpsea` provides an out-of-the-box solution for loading a cohort from a folder of phenopacket JSON files.
 
 
-Create cohort creator
-^^^^^^^^^^^^^^^^^^^^^
+Configure a cohort creator
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Next, let's prepare a :class:`~gpsea.preprocessing.CohortCreator` that will turn a phenopacket collection
 into a :class:`~gpsea.model.Cohort`. The cohort creator also performs an input validation.
@@ -46,16 +47,16 @@ the standard `gpsea` installation:
 The easiest way to get the `CohortCreator` is to use the
 :func:`~gpsea.preprocessing.configure_caching_cohort_creator` convenience method:
 
-.. doctest:: input-data 
+.. doctest:: input-data
 
   >>> from gpsea.preprocessing import configure_caching_cohort_creator
 
-  >>> cohort_creator = configure_caching_cohort_creator(hpo) 
+  >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
 .. note::
 
   The default `CohortCreator` will call Variant Effect Predictor and Uniprot APIs
-  to perform the functional annotation and protein annotation, 
+  to perform the functional annotation and protein annotation,
   and the responses will be cached in the current working directory to reduce the network bandwidth.
   See the :func:`~gpsea.preprocessing.configure_caching_cohort_creator` pydoc for more options.
 
@@ -72,7 +73,7 @@ We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopa
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> registry = configure_phenopacket_registry()
->>> with registry.open_phenopacket_store(release='0.1.18') as ps:
+>>> with registry.open_phenopacket_store(release="0.1.19") as ps:
 ...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
 >>> len(phenopackets)
 19
@@ -87,7 +88,7 @@ Individuals Processed: ...
 >>> len(cohort)
 19
 
-The cohort includes all 19 individuals. 
+The cohort includes all 19 individuals.
 On top of the ``cohort``, the loader function also provides Q/C results  ``qc_results``.
 We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
 to display the Q/C summary:
@@ -103,24 +104,88 @@ Alternative phenopacket sources
 In case you do not already have a `Phenopacket` collection at your fingertips,
 GPSEA provides a few other convenience functions for loading phenopackets from JSON files.
 
-The :func:`~gpsea.preprocessing.load_phenopacket_files` function can be used to load
-a bunch of phenopacket JSON files:
+The :func:`~gpsea.preprocessing.load_phenopacket_files` function loads
+phenopackets from one or more paths that point to phenopacket JSON files:
 
 >>> from gpsea.preprocessing import load_phenopacket_files
->>> pp_files = ('path/to/phenopacket1.json', 'path/to/phenopacket2.json')
->>> cohort, qc_results = load_phenopacket_files(pp_files, cohort_creator)  # doctest: +SKIP
+>>> pp_file_paths = ('path/to/phenopacket1.json', 'path/to/phenopacket2.json')
+>>> cohort, qc_results = load_phenopacket_files(pp_file_paths, cohort_creator)  # doctest: +SKIP
 
-or you can load an entire directory of JSON files with :func:`~gpsea.preprocessing.load_phenopacket_folder`:
+Alternatively, you can load an entire directory of phenopackets
+with the :func:`~gpsea.preprocessing.load_phenopacket_folder` loader function.
+The function expects a `str` with path to a directory that contains one or more phenopackets
+stored as JSON files. The loader includes all files that end with ``*.json`` suffix
+and ignores any other files or sub-directories:
 
 >>> from gpsea.preprocessing import load_phenopacket_folder
 >>> pp_dir = 'path/to/folder/with/many/phenopacket/json/files'
 >>> cohort, qc_results = load_phenopacket_folder(pp_dir, cohort_creator)  # doctest: +SKIP
 
 
+.. _quality-control:
 
-***************************************************
-Get data for the transcript and protein of interest
-***************************************************
+Quality control
+^^^^^^^^^^^^^^^
+
+Besides the :class:`~gpsea.model.Cohort`, the loader functions also provide Q/C results (``qc_results``)
+as :class:`~gpsea.preprocessing.PreprocessingValidationResult`.
+The Q/C checker points out as many issues as possible (not just the first one),
+to allow fixing all issues at once. 
+The issues can be explored programmaticaly
+through the :class:`~gpsea.preprocessing.PreprocessingValidationResult` API,
+or we can display a summary with the
+:meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize` method:
+
+>>> qc_results.summarize()  # doctest: +SKIP
+Validated under permissive policy
+No errors or warnings were found
+
+In this case, no Q/C issues were found.
+
+
+.. _cohort-persistence:
+
+****************************
+Persist the cohort for later
+****************************
+
+The preprocessing of a cohort can take some time even if we cache the responses from remote resources,
+such as Variant Effect Predictor, Variant Validator, or Uniprot.
+GPSEA ships with a custom encoder and decoder
+designed to be integrated with Python's built-in :mod:`json` module to 
+persist a :class:`~gpsea.model.Cohort` to a JSON file and load it back.
+
+
+Example
+-------
+
+We can dump the :class:`~gpsea.model.Cohort` into JSON
+by providing :class:`~gpsea.io.GpseaJSONEncoder` via `cls` option to the `json` module functions,
+such as the :func:`json.dumps` which encodes an object into a JSON `str`:
+
+>>> import json
+>>> from gpsea.io import GpseaJSONEncoder
+>>> encoded = json.dumps(cohort, cls=GpseaJSONEncoder)
+>>> encoded[:80]
+'{"members": [{"labels": {"label": "Subject 8", "meta_label": "PMID_29330883_Subj'
+
+Here we see the first 80 letters of the JSON object.
+
+We can decode the JSON object with :class:`~gpsea.io.GpseaJSONDecoder` to get the same cohort back:
+
+>>> from gpsea.io import GpseaJSONDecoder
+>>> decoded = json.loads(encoded, cls=GpseaJSONDecoder)
+>>> cohort == decoded
+True
+
+We will leave persisting the cohort into an actual file or another data store as an exercise for the interested readers.
+
+
+.. _choose-tx-and-protein:
+
+*********************************************
+Choose the transcript and protein of interest
+*********************************************
 
 
 Choose the transcript
@@ -159,7 +224,7 @@ Fetch transcript coordinates from Variant Validator REST API
 
 Undoubtedly, the most convenient way for getting the transcript coordinates is to use
 the REST API of the amazing `Variant Validator <https://variantvalidator.org/>`_.
-GPSEA wraps the boiler-plate associated with querying the API and parsing the response into 
+GPSEA wraps the boiler-plate associated with querying the API and parsing the response into
 :class:`~gpsea.preprocessing.VVMultiCoordinateService`.
 
 
@@ -234,13 +299,14 @@ and the coding sequence includes 1554 coding bases and 518 codons:
 518
 
 
+.. _fetch-protein-data:
 
-Get the protein data
---------------------
+Fetch protein data
+-------------------
 
 
-Specific domains of a protein may be associated with genotype-phenotype correlations. 
-For instance, variants in the pore domain of *PIEZO1* are associated with more severe clinical 
+Specific domains of a protein may be associated with genotype-phenotype correlations.
+For instance, variants in the pore domain of *PIEZO1* are associated with more severe clinical
 manifestions in dehydrated hereditary stomatocytosis `Andolfo et al.,  2018 <https://pubmed.ncbi.nlm.nih.gov/30187933>`_.
 
 GPSEA uses the protein data in several places: to show distribution of variants with respect to the protein domains
@@ -291,8 +357,8 @@ which we can see on the following screenshot of the UniProt entry for *TBX5*:
 
 UniProt shows four protein features:
 
-- the Disordered region (1-46) 
-- the Disordered region (250-356) 
+- the Disordered region (1-46)
+- the Disordered region (250-356)
 - presence of Polar residues (263-299)
 - presence of Basic and acidic residues (320-346).
 
@@ -305,7 +371,7 @@ we can download a JSON file representing the protein features manually,
 and load the file into :class:`~gpsea.model.ProteinMetadata`.
 
 To do this, click on the *Download* symbol (see the UniProt screenshot figure above). This will open a dialog
-that allows the user to choose the contents of the JSON file. 
+that allows the user to choose the contents of the JSON file.
 Do not change the default option (Features - Domain, Region).
 Provided that the file has been saved as `docs/user-guide/data/Q99593.json`,
 the ``ProteinMetadata`` can be loaded using :func:`~gpsea.model.ProteinMetadata.from_uniprot_json` function.
@@ -325,8 +391,8 @@ and `protein_length`, but these are shown in the UniProt entry:
 Enter features manually
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The information about protein features provided by UniProt entries may not always be complete. 
-Here we show how to enter the same information manually, in a custom protein dataframe. 
+The information about protein features provided by UniProt entries may not always be complete.
+Here we show how to enter the same information manually, in a custom protein dataframe.
 
 The frame can be created e.g. by running:
 
@@ -359,7 +425,7 @@ to get insights into the cohort and to formulate genotype-phenotype association 
 
 
 Example
-=======
+-------
 
 Let's plot a distribution of the variants found in *TBX5* cohort of Phenopacket Store.
 First, some boiler-plate code is needed to load HPO and the 156 phenopackets

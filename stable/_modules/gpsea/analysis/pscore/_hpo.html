@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore._impl &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.analysis.pscore._hpo &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">gpsea.analysis.pscore._impl</li>
+      <li class="breadcrumb-item active">gpsea.analysis.pscore._hpo</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,13 +75,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for gpsea.analysis.pscore._impl</h1><div class="highlight"><pre>
+  <h1>Source code for gpsea.analysis.pscore._hpo</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">PhenotypeScorer</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module with HPO-driven phenotype scores. The score generally work with the phenotypes of an individual</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="CountingPhenotypeScorer">
@@ -198,6 +202,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `DeVriesPhenotypeScorer` computes &quot;adapted De Vries Score&quot;</span>
 <span class="sd">    as described in `Feenstra et al. &lt;https://pubmed.ncbi.nlm.nih.gov/21712853&gt;`_.</span>
+
+<span class="sd">    See more in :ref:`devries-scorer` section.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

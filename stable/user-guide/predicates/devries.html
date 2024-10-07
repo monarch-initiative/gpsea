@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>De Vries Score &mdash; GPSEA 0.4.1 documentation</title>
+  <title>De Vries Score &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Genotype Predicates" href="genotype_predicates.html" />
+    <link rel="next" title="Statistical analyses" href="../analyses/index.html" />
     <link rel="prev" title="HPO predicate" href="hpo_predicate.html" /> 
 </head>
 
@@ -53,22 +53,22 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../predicates.html">Predicates</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Predicates</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="hpo_predicate.html">HPO predicate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="hpo_predicate.html#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">De Vries Score</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../predicates.html#gallery">Gallery</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../predicates.html#need-more">Need more?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#gallery">Gallery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#need-more">Need more?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../stats.html">Statistical tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analyses/index.html">Statistical analyses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../autosomal_recessive.html">Genotype-Phenotype Correlations in Autosomal Recessive Diseases</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../apidocs/modules.html">API reference</a></li>
@@ -89,7 +89,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
-          <li class="breadcrumb-item"><a href="../predicates.html">Predicates</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Predicates</a></li>
           <li class="breadcrumb-item"><a href="phenotype_predicates.html">Phenotype Predicates</a></li>
       <li class="breadcrumb-item active">De Vries Score</li>
       <li class="wy-breadcrumbs-aside">
@@ -102,7 +102,7 @@
            <div itemprop="articleBody">
              
   <section id="de-vries-score">
-<span id="devries"></span><h1>De Vries Score<a class="headerlink" href="#de-vries-score" title="Link to this heading"></a></h1>
+<span id="devries-scorer"></span><h1>De Vries Score<a class="headerlink" href="#de-vries-score" title="Link to this heading"></a></h1>
 <p>The De Vries score was developed as a relatively simple phenotypic severity
 score for individuals with intellectual disability in which points are given
 for (severity of) intellectual disability,
@@ -110,14 +110,16 @@ growth abnormalities (prenatal and postnatal), facial dysmorphisms,
 nonfacial dysmorphisms, and other congenital anomalies
 (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/36182950/">Dingemans et al. (2022)</a>).
 Statistical significance of a difference in the De Vries score between groups can be
-determined using the Mann–Whitney-U test.</p>
+determined using the Mann-Whitney-U test.</p>
 <p>We refer to <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/21712853/">Feenstra et al. (2011)</a> for
 the original description of the adjusted De Vries score. Here we offer a version of the
 score that leverages the structure of the Human Phenotype Ontology to assess the phenotype.</p>
+<section id="the-sections-of-the-score">
+<h2>The sections of the score<a class="headerlink" href="#the-sections-of-the-score" title="Link to this heading"></a></h2>
 <p>The De Vries score has several sections, each of which is scored on a point system. The
 final score is obtained as the sum of the points of each of the sections.</p>
 <section id="developmental-delay">
-<h2>Developmental delay<a class="headerlink" href="#developmental-delay" title="Link to this heading"></a></h2>
+<h3>Developmental delay<a class="headerlink" href="#developmental-delay" title="Link to this heading"></a></h3>
 <p>The original score assigns one point for mild or moderate developmental delay
 and two points for severe developmental delay.</p>
 <table class="docutils align-default">
@@ -177,7 +179,7 @@ parent of the other terms, because no information was provided about the degree 
 <p>If none of these terms is found, a score of zero is assigned for this section.</p>
 </section>
 <section id="prenatal-onset-growth-retardation">
-<h2>Prenatal-onset growth retardation<a class="headerlink" href="#prenatal-onset-growth-retardation" title="Link to this heading"></a></h2>
+<h3>Prenatal-onset growth retardation<a class="headerlink" href="#prenatal-onset-growth-retardation" title="Link to this heading"></a></h3>
 <p>In the original score, two points are assigned if Prenatal-onset growth retardation is present. In our implementation,
 we assign two points if either of the following terms is present (the score is thus either zero or two).</p>
 <table class="docutils align-default">
@@ -197,7 +199,7 @@ we assign two points if either of the following terms is present (the score is t
 </table>
 </section>
 <section id="postnatal-growth-abnormalities">
-<h2>Postnatal growth abnormalities<a class="headerlink" href="#postnatal-growth-abnormalities" title="Link to this heading"></a></h2>
+<h3>Postnatal growth abnormalities<a class="headerlink" href="#postnatal-growth-abnormalities" title="Link to this heading"></a></h3>
 <p>In the original score, one point is assigned for each of Microcephaly, Short stature, Macrocephaly, and Tall stature,
 with the maximum score for the section being limited to 2 points. We implement this as adding one point for either the
 corresponding HPO terms or any of their descendents (for instance, <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0003498">Disproportionate short stature (HP:0003498)</a> would
@@ -227,7 +229,7 @@ be counted for <a class="reference external" href="https://hpo.jax.org/browse/te
 is 2 because the same individual cannot have both tall and short stature or both micro- and macrocephaly.</p>
 </section>
 <section id="facial-dysmorphic-features">
-<h2>Facial dysmorphic features<a class="headerlink" href="#facial-dysmorphic-features" title="Link to this heading"></a></h2>
+<h3>Facial dysmorphic features<a class="headerlink" href="#facial-dysmorphic-features" title="Link to this heading"></a></h3>
 <p>This section assigns two points if two or more anomalies are identified in the following
 categories: hypertelorism, nasal anomalies and ear anomalies. Our implementation of this feature counts the total
 number of terms or descendents of the following HPO terms.</p>
@@ -252,7 +254,7 @@ number of terms or descendents of the following HPO terms.</p>
 <p>If two or more terms are found, the score is 2, otherwise a score of zero is assigned.</p>
 </section>
 <section id="non-facial-dysmorphism-and-congenital-abnormalities">
-<h2>Non-facial dysmorphism and congenital abnormalities<a class="headerlink" href="#non-facial-dysmorphism-and-congenital-abnormalities" title="Link to this heading"></a></h2>
+<h3>Non-facial dysmorphism and congenital abnormalities<a class="headerlink" href="#non-facial-dysmorphism-and-congenital-abnormalities" title="Link to this heading"></a></h3>
 <p>One point is assigned for either the
 corresponding HPO terms or any of their descendents up to a maximum of two points.</p>
 <table class="docutils align-default">
@@ -275,13 +277,29 @@ corresponding HPO terms or any of their descendents up to a maximum of two point
 </table>
 </section>
 <section id="final-score">
-<h2>Final score<a class="headerlink" href="#final-score" title="Link to this heading"></a></h2>
+<h3>Final score<a class="headerlink" href="#final-score" title="Link to this heading"></a></h3>
 <p>The final score is obtained by summing the scores from each of the sections. The final score ranges from 0 to 10, with
 higher scores being considered a proxy for higher clinical severity.</p>
 </section>
+</section>
 <section id="using-the-de-vries-scorer-in-code">
-<h2>Using the De Vries Scorer in code<a class="headerlink" href="#using-the-de-vries-scorer-in-code" title="Link to this heading"></a></h2>
-<p>TODO</p>
+<h2>Using the De Vries scorer in code<a class="headerlink" href="#using-the-de-vries-scorer-in-code" title="Link to this heading"></a></h2>
+<p>GPSEA implements the score in <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="gpsea.analysis.pscore.DeVriesPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeVriesPhenotypeScorer</span></code></a> that can be used
+as a part of the <a class="reference internal" href="../analyses/phenotype-scores.html#phenotype-score-stats"><span class="std std-ref">Phenotype score</span></a> analysis, where it is used
+as a <a class="reference internal" href="../analyses/phenotype-scores.html#phenotype-score"><span class="std std-ref">phenotype scorer</span></a>.</p>
+<p>A De Vries scorer uses HPO hierarchy as a prerequisite.
+We can load HPO using HPO toolkit:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and use it to create <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="gpsea.analysis.pscore.DeVriesPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeVriesPhenotypeScorer</span></code></a></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">DeVriesPhenotypeScorer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">DeVriesPhenotypeScorer</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which we can use as a phenotype scorer.</p>
 </section>
 </section>
 
@@ -290,7 +308,7 @@ higher scores being considered a proxy for higher clinical severity.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="hpo_predicate.html" class="btn btn-neutral float-left" title="HPO predicate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="genotype_predicates.html" class="btn btn-neutral float-right" title="Genotype Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../analyses/index.html" class="btn btn-neutral float-right" title="Statistical analyses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

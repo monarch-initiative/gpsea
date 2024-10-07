@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._protein_viewer &mdash; GPSEA 0.4.1 documentation</title>
+  <title>gpsea.view._protein_viewer &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,11 +81,13 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">._protein_visualizable</span> <span class="kn">import</span> <span class="n">ProteinVisualizable</span>
+
+<span class="kn">from</span> <span class="nn">._report</span> <span class="kn">import</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
+
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Feature</span><span class="p">:</span>
@@ -100,67 +102,110 @@
     <span class="n">variant_count</span><span class="p">:</span> <span class="nb">int</span>
 
 
-<div class="viewcode-block" id="ProteinViewable">
-<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinViewable">[docs]</a>
-<span class="k">class</span> <span class="nc">ProteinViewable</span><span class="p">:</span>
+<div class="viewcode-block" id="ProteinVariantViewer">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVariantViewer">[docs]</a>
+<span class="k">class</span> <span class="nc">ProteinVariantViewer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to create a pretty HTML table to display the protein information in the Jupyter notebook.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+                 <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="p">(</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;gpsea.view&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;protein.html&quot;</span><span class="p">)</span>
-        
-<div class="viewcode-block" id="ProteinViewable.process">
-<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinViewable.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span> <span class="o">=</span> <span class="n">protein_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">tx_id</span>
+
+<div class="viewcode-block" id="ProteinVariantViewer.process">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVariantViewer.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize the data regarding the protein into a HTML table.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cohort (Cohort): the cohort of patients being analyzed</span>
-<span class="sd">            pvis (ProteinVisualizable): The class that collects data from the UniProt API for a given protein ID</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: an HTML document for showing in Jupyter notebook</span>
+<span class="sd">            GpseaReport: a report that can be stored to a path or displayed in</span>
+<span class="sd">                interactive environment such as Jupyter notebook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">pvis</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
-    
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="n">protein_id</span> <span class="o">=</span> <span class="n">pvis</span><span class="o">.</span><span class="n">protein_id</span>
-        
-        <span class="n">protein_features</span> <span class="o">=</span> <span class="p">[]</span>
-        
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">)):</span>
-            <span class="n">feature</span> <span class="o">=</span> <span class="n">Feature</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
-                <span class="nb">type</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_types</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
-                <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_starts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_ends</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> 
-                <span class="n">variant_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">protein_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="n">protein_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_id</span>
+        <span class="n">protein_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">label</span>
+        <span class="n">protein_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_features</span>
+        <span class="n">protein_features</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">protein_features</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">protein_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_length</span>
+        <span class="c1"># collect variants that are located in the protein features as well as other variants that are located</span>
+        <span class="c1"># &quot;in-between&quot; the features</span>
+        <span class="n">feature_to_variant_list_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">non_feature_to_variant_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">n_variants_in_features</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
+            <span class="n">target_annot</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">target_annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># structural variants do not have a transcript id, and we skip them</span>
+                <span class="c1"># It should never happen that HGVS variants do not have the proper transcript id but we do not check</span>
+                <span class="c1"># that here in this visualization function</span>
+                <span class="k">continue</span>
+            <span class="n">hgvs_p</span> <span class="o">=</span> <span class="n">target_annot</span><span class="o">.</span><span class="n">hgvsp</span>
+            <span class="k">if</span> <span class="n">hgvs_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># hgvs_p is now a string such as NP_001305781.1:p.Tyr15Ter. We remove the accession id, which</span>
+                <span class="c1"># is shown in the title and caption and is redundant here</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="n">hgvs_p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">hgvs_p</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">target_region</span> <span class="o">=</span> <span class="n">target_annot</span><span class="o">.</span><span class="n">protein_effect_location</span>
+            <span class="k">if</span> <span class="n">target_region</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># can happen for certain variant classes such as splice variant. Not an error</span>
+                <span class="k">continue</span>
+            <span class="n">found_overlap</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein_features</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">target_region</span><span class="p">):</span>
+                    <span class="n">found_overlap</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">feature_to_variant_list_d</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hgvs_p</span><span class="p">)</span>
             
+            <span class="k">if</span> <span class="n">found_overlap</span><span class="p">:</span>
+                <span class="n">n_variants_in_features</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">non_feature_to_variant_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hgvs_p</span><span class="p">)</span>
+
+        <span class="n">feature_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein_features</span><span class="p">:</span>
-            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
-                <span class="n">tx_anno</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">get_tx_anno_by_tx_id</span><span class="p">(</span><span class="n">pvis</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">tx_anno</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">location</span> <span class="o">=</span> <span class="n">tx_anno</span><span class="o">.</span><span class="n">protein_effect_location</span>
-                    <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">location</span><span class="o">.</span><span class="n">overlaps_with</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">region</span><span class="p">):</span>
-                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">variant_list</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">feature_to_variant_list_d</span><span class="p">[</span><span class="n">feature</span><span class="p">]))</span>
+            <span class="n">feature_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">feature_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                    <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+                    <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_to_variant_list_d</span><span class="p">[</span><span class="n">feature</span><span class="p">]),</span>
+                    <span class="s1">&#39;variants&#39;</span><span class="p">:</span> <span class="n">variant_list</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
             
-            <span class="n">feature</span><span class="o">.</span><span class="n">variant_count</span> <span class="o">=</span> <span class="n">count</span>
-            
-        <span class="n">final_protein_features</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">protein_features</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">non_feature_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_feature_to_variant_list</span><span class="p">)</span>
+        <span class="n">non_feature_variants</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">non_feature_to_variant_list</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;protein_id&#39;</span><span class="p">:</span> <span class="n">protein_id</span><span class="p">,</span>
-            <span class="s1">&#39;protein_label&#39;</span><span class="p">:</span> <span class="n">pvis</span><span class="o">.</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-            <span class="s1">&#39;protein_features&#39;</span><span class="p">:</span> <span class="n">final_protein_features</span>
+            <span class="s1">&#39;protein_length&#39;</span><span class="p">:</span> <span class="n">protein_length</span><span class="p">,</span>
+            <span class="s1">&#39;protein_label&#39;</span><span class="p">:</span> <span class="n">protein_label</span><span class="p">,</span>
+            <span class="s1">&#39;feature_list&#39;</span><span class="p">:</span> <span class="n">feature_list</span><span class="p">,</span>
+            <span class="s1">&#39;n_variants_in_features&#39;</span><span class="p">:</span> <span class="n">n_variants_in_features</span><span class="p">,</span>
+            <span class="s1">&#39;n_features&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_list</span><span class="p">),</span>
+            <span class="s1">&#39;non_feature_count&#39;</span><span class="p">:</span> <span class="n">non_feature_count</span><span class="p">,</span>
+            <span class="s1">&#39;non_feature_variants&#39;</span><span class="p">:</span> <span class="n">non_feature_variants</span><span class="p">,</span>
         <span class="p">}</span></div>
 
-    
+
 </pre></div>
 
            </div>
