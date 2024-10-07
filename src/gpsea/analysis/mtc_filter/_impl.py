@@ -53,9 +53,9 @@ class PhenotypeMtcResult:
         return PhenotypeMtcResult(status=False, issue=issue)
 
     def __init__(
-            self,
-            status: bool,
-            issue: typing.Optional[PhenotypeMtcIssue],
+        self,
+        status: bool,
+        issue: typing.Optional[PhenotypeMtcIssue],
     ):
         assert isinstance(status, bool)
         if status:
@@ -119,11 +119,11 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def filter(
-            self,
-            gt_predicate: GenotypePolyPredicate,
-            ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
-            counts: typing.Sequence[pd.DataFrame],
-            cohort_size: int,
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        counts: typing.Sequence[pd.DataFrame],
+        cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         """
         Test if the phenotype with given counts should be included in the downstream analysis.
@@ -160,11 +160,11 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
     """
 
     def filter(
-            self,
-            gt_predicate: GenotypePolyPredicate,
-            ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
-            counts: typing.Sequence[pd.DataFrame],
-            cohort_size: int,
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        counts: typing.Sequence[pd.DataFrame],
+        cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         # Always OK! 😏
         return tuple(PhenotypeMtcFilter.OK for _ in ph_predicates)
@@ -194,8 +194,8 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     """
 
     def __init__(
-            self,
-            terms_to_test: typing.Iterable[hpotk.TermId],
+        self,
+        terms_to_test: typing.Iterable[hpotk.TermId],
     ):
         """
         Args:
@@ -204,11 +204,11 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         self._terms_to_test_set = set(terms_to_test)
 
     def filter(
-            self,
-            gt_predicate: GenotypePolyPredicate,
-            ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
-            counts: typing.Sequence[pd.DataFrame],
-            cohort_size: int,
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        counts: typing.Sequence[pd.DataFrame],
+        cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         results = []
         for predicate in ph_predicates:
@@ -250,13 +250,12 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail("HMF07", "Skipping non phenotype term")
     SKIPPING_GENERAL_TERM = PhenotypeMtcResult.fail("HMF08", "Skipping general term")
 
-
     @staticmethod
     def default_filter(
-            hpo: hpotk.MinimalOntology,
-            term_frequency_threshold: float = 0.2,
-            annotation_frequency_threshold: float = 0.25,
-            phenotypic_abnormality: hpotk.TermId = hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY,
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float = 0.2,
+        annotation_frequency_threshold: float = 0.25,
+        phenotypic_abnormality: hpotk.TermId = hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY,
     ):
         """
         Args:
@@ -320,11 +319,11 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         )
 
     def __init__(
-            self,
-            hpo: hpotk.MinimalOntology,
-            term_frequency_threshold: float,
-            annotation_frequency_threshold: float,
-            general_hpo_terms: typing.Iterable[hpotk.TermId],
+        self,
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float,
+        annotation_frequency_threshold: float,
+        general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         """
         Args:
@@ -380,11 +379,11 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         )
 
     def filter(
-            self,
-            gt_predicate: GenotypePolyPredicate,
-            ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
-            counts: typing.Sequence[pd.DataFrame],
-            cohort_size: int,
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        counts: typing.Sequence[pd.DataFrame],
+        cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         phenotypes = [p.phenotype for p in ph_predicates]
         p_to_idx = {p: i for i, p in enumerate(phenotypes)}
@@ -435,15 +434,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 continue
 
             if not HpoMtcFilter.some_cell_has_greater_than_one_count(
-                    counts=contingency_matrix,
-                    ph_predicate=ph_predicate,
+                counts=contingency_matrix,
+                ph_predicate=ph_predicate,
             ):
                 results[idx] = HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
                 continue
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
-                    counts=contingency_matrix,
-                    gt_predicate=gt_predicate,
+                counts=contingency_matrix,
+                gt_predicate=gt_predicate,
             ):
                 results[idx] = HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
                 continue
@@ -503,15 +502,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     @staticmethod
     def get_number_of_observed_hpo_observations(
-            counts_frame: pd.DataFrame,
-            ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        counts_frame: pd.DataFrame,
+        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
     ) -> int:
         return counts_frame.loc[ph_predicate.present_phenotype_category].sum()
 
     @staticmethod
     def get_maximum_group_observed_HPO_frequency(
-            counts_frame: pd.DataFrame,
-            ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        counts_frame: pd.DataFrame,
+        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
     ) -> float:
         """
         Returns:
@@ -527,15 +526,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     @staticmethod
     def one_genotype_has_zero_hpo_observations(
-            counts: pd.DataFrame,
-            gt_predicate: GenotypePolyPredicate,
+        counts: pd.DataFrame,
+        gt_predicate: GenotypePolyPredicate,
     ):
         return any(counts.loc[:, c].sum() == 0 for c in gt_predicate.get_categories())
 
     @staticmethod
     def some_cell_has_greater_than_one_count(
-            counts: pd.DataFrame,
-            ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        counts: pd.DataFrame,
+        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
     ) -> bool:
         """
         If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one
@@ -551,8 +550,8 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         return (counts.loc[ph_predicate.present_phenotype_category] > 1).any()
 
     def _get_ordered_terms(
-            self,
-            term_ids: typing.Iterable[hpotk.TermId],
+        self,
+        term_ids: typing.Iterable[hpotk.TermId],
     ) -> typing.Sequence[hpotk.TermId]:
         """
         We want to order the terms that were observed in a cohort from the most specific terms
@@ -573,8 +572,8 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             # TODO: would just children work here too?
             # if no descendant is in the set of annotated terms, then the term must be a leaf term
             if not any(
-                    descendant in all_term_ids
-                    for descendant in self._hpo.graph.get_descendants(term_id)
+                descendant in all_term_ids
+                for descendant in self._hpo.graph.get_descendants(term_id)
             ):
                 hpo_leaf_term_id_set.add(term_id)
 
