@@ -22,6 +22,7 @@ class TestHpoMtcFilter:
         return HpoMtcFilter.default_filter(
             hpo=hpo,
             term_frequency_threshold=0.2,
+            annotation_frequency_threshold=.1,
         )
 
     @pytest.fixture(scope='class')
@@ -128,37 +129,10 @@ class TestHpoMtcFilter:
     @pytest.mark.parametrize(
         "counts, expected",
         [
-            ((10, 100, 50, 500), True),
-            ((0, 0, 100, 100), True),
-            ((10, 100, 50, 500), True),
-            ((10, 100, 10, 105), False),
-            ((95, 60, 144 - 95, 71 - 60), False),
-            ((40, 15, 18, 15), False),
-        ]
-    )
-    def test_genotypes_have_same_hpo_proportions(
-        self,
-        counts: typing.Tuple[int],
-        expected: bool,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
-    ):
-        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_predicate, ph_predicate)
-
-        actual = HpoMtcFilter.genotypes_have_same_hpo_proportions(
-            counts=counts_df,
-            gt_predicate=gt_predicate,
-            ph_predicate=ph_predicate,
-        )
-
-        assert actual == expected
-
-    @pytest.mark.parametrize(
-        "counts, expected",
-        [
             ((1, 2, 99, 198), .01),
             ((1, 3, 99, 197), .015),
             ((0, 0, 100, 200), 0.),
+            ((0, 0, 0, 200), 0.),
             ((0, 0, 0, 0), 0.),
         ]
     )
@@ -184,11 +158,13 @@ class TestHpoMtcFilter:
         suox_gt_predicate: GenotypePolyPredicate,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
         patient_counts: typing.Sequence[pd.DataFrame],
+        suox_cohort: Cohort,
     ):
         mtc_report = mtc_filter.filter(
             gt_predicate=suox_gt_predicate,
             ph_predicates=suox_pheno_predicates,
             counts=patient_counts,
+            cohort_size=len(suox_cohort),
         )
 
         assert isinstance(mtc_report, typing.Sequence)
@@ -209,6 +185,7 @@ class TestHpoMtcFilter:
         suox_gt_predicate: GenotypePolyPredicate,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
         patient_counts: typing.Sequence[pd.DataFrame],
+        suox_cohort: Cohort,
     ):
         """
         The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
@@ -219,11 +196,12 @@ class TestHpoMtcFilter:
         specified_filter = SpecifiedTermsMtcFilter(
             terms_to_test=(hpotk.TermId.from_curie("HP:0032350"),),
         )
-        
+
         mtc_report = specified_filter.filter(
             gt_predicate=suox_gt_predicate,
             ph_predicates=suox_pheno_predicates,
             counts=patient_counts,
+            cohort_size=len(suox_cohort),
         )
         assert isinstance(mtc_report, typing.Sequence)
         assert len(mtc_report) == 5
@@ -272,7 +250,7 @@ class TestHpoMtcFilter:
             ph_predicate=ectopia_predicate,
         )
         assert max_f == pytest.approx(0.75, abs=EPSILON)
-        
+
         # Seizure HP:0001250 (11 5 0 1), freqs are 11/11=1.0 and 5/6=0.8333333
         idx = curie2idx["HP:0001250"]
         seizure = patient_counts[idx]
@@ -282,7 +260,7 @@ class TestHpoMtcFilter:
             ph_predicate=seizure_predicate
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
-        
+
         # Sulfocysteinuria HP:0032350 (2 3 0 0), freqs are both 1
         idx = curie2idx["HP:0032350"]
         sulfocysteinuria = patient_counts[idx]
@@ -292,7 +270,7 @@ class TestHpoMtcFilter:
             ph_predicate=sulfocysteinuria_predicate,
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
-        
+
         # Neurodevelopmental delay HP:0012758 (4 0 4 5), freqs are 4/8 = 0.5 and 0/5=0.0
         idx = curie2idx["HP:0012758"]
         ndelay = patient_counts[idx]
@@ -302,7 +280,7 @@ class TestHpoMtcFilter:
             ph_predicate=ndelay_predicate,
         )
         assert max_f == pytest.approx(0.5, abs=EPSILON)
-        
+
         # Hypertonia HP:0001276 (4 2 3 3) freqs are 4/7=0.4375 and 2/5=0.5714
         idx = curie2idx["HP:0001276"]
         hypertonia = patient_counts[idx]

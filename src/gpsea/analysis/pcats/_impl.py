@@ -251,10 +251,10 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
             raise ValueError('Cannot use a count statistic that does not check genotypes')
         else:
             raise ValueError(f'Cannot use a count statistic that supports shape {pheno, geno}')
-        
+
         if gt_predicate.n_categorizations() not in geno_accepted:
             issues.append('Genotype predicate is incompatible with the count statistic')
-        
+
         return issues
 
     def _compute_nominal_pvals(
@@ -313,7 +313,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         errors = self._check_sanity()
         if errors:
             raise ValueError(os.linesep.join(errors))
-        
+
     def _check_sanity(self) -> typing.Sequence[str]:
         errors = []
         # All sequences must have the same lengths ...
@@ -327,7 +327,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
                     f"`len(pheno_predicates)` must be the same as `len({name})` but "
                     f"{len(self._pheno_predicates)}!={len(seq)}"
                 )
-        
+
         # ... including the optional corrected p values
         if self._corrected_pvals is not None and len(self._pheno_predicates) != len(self._corrected_pvals):
             errors.append(
@@ -457,7 +457,7 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
         self._mtc_name = mtc_name
-        
+
         errors = self._check_hpo_result_sanity()
         if errors:
             raise ValueError(os.linesep.join(errors))
@@ -556,6 +556,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             gt_predicate=gt_predicate,
             ph_predicates=pheno_predicates,
             counts=all_counts,
+            cohort_size=len(cohort),
         )
 
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)
@@ -576,7 +577,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
                 corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
                 # Do not test the p values that have been filtered out.
                 corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
-            
+
         return HpoTermAnalysisResult(
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
