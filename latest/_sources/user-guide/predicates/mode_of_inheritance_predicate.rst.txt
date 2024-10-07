@@ -29,15 +29,15 @@ to assign an individual into one of the following categories:
 
 .. table:: Autosomal dominant predicate categories
 
-    +------------------+-------------+
-    |   Allele count   |  Category   |
-    +==================+=============+
-    |   0              |  `HOM_REF`  |
-    +------------------+-------------+
-    |   1              |  `HET`      |
-    +------------------+-------------+
-    |   :math:`\ge 2`  |  ``None``   |
-    +------------------+-------------+
+    +------------------+----------------+
+    |   Allele count   |  Category      |
+    +==================+================+
+    |   0              |  `No allele`   |
+    +------------------+----------------+
+    |   1              |  `Monoallelic` |
+    +------------------+----------------+
+    |   :math:`\ge 2`  |  ``None``      |
+    +------------------+----------------+
 
 Examples
 ========
@@ -50,7 +50,7 @@ We can create the predicate with the :func:`~gpsea.analysis.predicate.genotype.a
 >>> from gpsea.analysis.predicate.genotype import autosomal_dominant
 >>> gt_predicate = autosomal_dominant()
 >>> gt_predicate.display_question()
-'What is the genotype group: HOM_REF, HET'
+'What is the genotype group: No allele, Monoallelic'
 
 
 Use a variant subset
@@ -80,18 +80,18 @@ an individual into one of the genotype categories:
     +------------------+-------------------+----------------+
     |   Allele count   |  Category         | Category index |
     +==================+===================+================+
-    |   0              |  `HOM_REF`        | 0              |
+    |   0              |  `No allele`      | 0              |
     +------------------+-------------------+----------------+
-    |   1              |  `HET`            | 1              |
+    |   1              |  `Monoallelic`    | 1              |
     +------------------+-------------------+----------------+
-    |   2              |  `BIALLELIC_ALT`  | 2              |
+    |   2              |  `Biallelic`      | 2              |
     +------------------+-------------------+----------------+
     |   :math:`\ge 3`  |  ``None``         |                |
     +------------------+-------------------+----------------+
 
 .. note::
 
-    `BIALLELIC_ALT` includes both homozygous and compound heterozygous genotypes.
+    `Biallelic` includes both homozygous and compound heterozygous genotypes.
 
 
 Partitions
@@ -100,7 +100,7 @@ Partitions
 Sometimes we are interested in lumping several genotype categories into a group or and then comparing the groups.
 For instance, to compare phenotype of the individuals with *at least one* frameshift allele
 with those with *no* frameshift allele. Alternatively, we may only want to analyze a subset of the genotype categories,
-such as `HET` vs. `BIALLELIC_ALT`.
+such as `Monoallelic` vs. `Biallelic`.
 
 The `partitions` option of the :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive` function
 lets us do this.
@@ -127,7 +127,7 @@ with the :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive` function
 >>> from gpsea.analysis.predicate.genotype import autosomal_recessive
 >>> gt_predicate = autosomal_recessive()
 >>> gt_predicate.display_question()
-'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
+'What is the genotype group: No allele, Monoallelic, Biallelic'
 
 
 Use a variant subset
@@ -148,14 +148,14 @@ and then use it to create the autosomal recessive predicate:
 
 >>> gt_predicate = autosomal_recessive(is_missense)
 >>> gt_predicate.display_question()
-'What is the genotype group: HOM_REF, HET, BIALLELIC_ALT'
+'What is the genotype group: No allele, Monoallelic, Biallelic'
 
 This predicate will assign the individuals into one of the listed genotype categories
 based on the allele counts of the missense variants.
 
 
-Compare `HET` vs. `BIALLELIC_ALT`
----------------------------------
+Compare `Monoallelic` vs. `Biallelic`
+-------------------------------------
 
 We can provide ``partitions`` to only compare the heterozygotes with those carrying
 biallelic alt mutations (homozygous alternate or compound heterozygous):
@@ -163,7 +163,7 @@ biallelic alt mutations (homozygous alternate or compound heterozygous):
 We consult the *Autosomal recessive predicate categories* table for the category indices
 and we create the genotype group partitions:
 
->>> # `1` for `HET` and `2` for `BIALLELIC_ALT`
+>>> # `1` for `Monoallelic` and `2` for `Biallelic`
 >>> partitions = ({1,}, {2,})
 
 which we use to create the autosomal recessive predicate:
@@ -172,4 +172,4 @@ which we use to create the autosomal recessive predicate:
 ...     partitions=partitions,    
 ... )
 >>> gt_predicate.display_question()
-'What is the genotype group: HET, BIALLELIC_ALT'
+'What is the genotype group: Monoallelic, Biallelic'

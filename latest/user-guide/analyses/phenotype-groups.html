@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -6,24 +8,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compare genotype and phenotype groups &mdash; GPSEA 0.4.2.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=272485b7"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
-        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=272485b7"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
+      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             GPSEA
           </a>
-              <div class="version">
-                0.4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -120,7 +115,8 @@ Two groups are considered statistically significant if the P-value is less
 than the chosen significance level (usually <span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>).</p>
 <p>The following graphic shows an example contingency table that is used to conduct a Fisher exact test.
 We are comparing the frequency of <em>strabismus</em> in individuals with missense and nonsense variants:</p>
-<a class="reference internal image-reference" href="../../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../../_images/fisher.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../../_images/fisher.png" style="width: 600px;" />
+</a>
 <p>To perform the corresponding test in Python, we would use the following code.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">contingency_table</span> <span class="o">=</span> <span class="p">[</span>
@@ -198,11 +194,11 @@ we expect the autosomal dominant mode of inheritance:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">autosomal_dominant</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">autosomal_dominant</span><span class="p">(</span><span class="n">is_frameshift</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: HOM_REF, HET&#39;</span>
+<span class="go">&#39;What is the genotype group: No allele, Monoallelic&#39;</span>
 </pre></div>
 </div>
-<p><cite>gt_predicate</cite> will assign the patients with no frameshift variant allele into <cite>HOM_REF</cite> group
-and the patients with one frameshift allele will be assigned into <cite>HET</cite> group.
+<p><cite>gt_predicate</cite> will assign the patients with no frameshift variant allele into <cite>No allele</cite> group
+and the patients with one frameshift allele will be assigned into <cite>Monoallelic</cite> group.
 Note, any patient with 2 or more alleles will be <em>omitted</em> from the analysis.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -300,8 +296,7 @@ We can learn more by showing the MTC filter report:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/report/tbx5_frameshift.mtc_report.html&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mtc_report</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span>  
 </pre></div>
 </div>
 <!DOCTYPE html>
@@ -409,25 +404,24 @@ We can learn more by showing the MTC filter report:</p>
         </tbody>
     </table>
 </body>
-</html>
-</section>
+</html></section>
 <section id="genotype-phenotype-associations">
 <h3>Genotype phenotype associations<a class="headerlink" href="#genotype-phenotype-associations" title="Link to this heading"></a></h3>
 <p>Last, let’s explore the associations. The results include a table with all tested HPO terms
 ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/report/tbx5_frameshift.csv&#39;</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  
 </pre></div>
 </div>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text"><em>TBX5</em> frameshift vs rest</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>What is the genotype group</p></th>
-<th class="head"><p>HOM_REF</p></th>
-<th class="head"><p>HOM_REF</p></th>
-<th class="head"><p>HET</p></th>
-<th class="head"><p>HET</p></th>
+<th class="head"><p>No allele</p></th>
+<th class="head"><p>No allele</p></th>
+<th class="head"><p>Monoallelic</p></th>
+<th class="head"><p>Monoallelic</p></th>
 <th class="head"></th>
 <th class="head"></th>
 </tr>

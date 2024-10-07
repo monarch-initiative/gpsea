@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,24 +8,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Statistical tests &mdash; GPSEA 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=c87aa342"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../_static/copybutton.js?v=6dbb43f8"></script>
-        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -42,9 +40,6 @@
           <a href="../index.html" class="icon icon-home">
             GPSEA
           </a>
-              <div class="version">
-                0.4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -126,7 +121,8 @@ Two groups are considered statistically significant if the P-value is less
 than the chosen significance level (usually <span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>).</p>
 <p>The following graphic shows an example contingency table that is used to conduct a Fisher exact test.
 We are comparing the frequency of <em>strabismus</em> in individuals with missense and nonsense variants:</p>
-<a class="reference internal image-reference" href="../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../_images/fisher.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../_images/fisher.png" style="width: 600px;" />
+</a>
 <p>To perform the corresponding test in Python, we would use the following code.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">contingency_table</span> <span class="o">=</span> <span class="p">[</span>
@@ -411,8 +407,7 @@ We can learn more by showing the MTC filter report:</p>
         </tbody>
     </table>
 </body>
-</html>
-</section>
+</html></section>
 <section id="genotype-phenotype-associations">
 <h5>Genotype phenotype associations<a class="headerlink" href="#genotype-phenotype-associations" title="Link to this heading"></a></h5>
 <p>Last, let’s explore the associations. The results include a table with all tested HPO terms
@@ -808,7 +803,8 @@ to show a box plot of the phenotype score distributions:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/img/rere_phenotype_score_boxplot.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="../_images/rere_phenotype_score_boxplot.png"><img alt="Phenotype score distribution" class="align-center" src="../_images/rere_phenotype_score_boxplot.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/rere_phenotype_score_boxplot.png"><img alt="Phenotype score distribution" class="align-center" src="../_images/rere_phenotype_score_boxplot.png" style="width: 600px;" />
+</a>
 <p>We see that the individuals with the point mutations feature structural defects
 than the individuals with the loss-of-function mutations.</p>
 <p>The box extends from the first quartile (Q1) to the third quartile (Q3) of the data,

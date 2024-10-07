@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -6,24 +8,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mode of Inheritance Predicates &mdash; GPSEA 0.4.2.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=272485b7"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
-        <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=272485b7"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
+      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             GPSEA
           </a>
-              <div class="version">
-                0.4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -136,10 +131,10 @@ to assign an individual into one of the following categories:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
+<td><p><cite>No allele</cite></p></td>
 </tr>
 <tr class="row-odd"><td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
+<td><p><cite>Monoallelic</cite></p></td>
 </tr>
 <tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\ge 2\)</span></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
@@ -154,7 +149,7 @@ to assign an individual into one of the following categories:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">autosomal_dominant</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">autosomal_dominant</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: HOM_REF, HET&#39;</span>
+<span class="go">&#39;What is the genotype group: No allele, Monoallelic&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -186,15 +181,15 @@ an individual into one of the genotype categories:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>0</p></td>
-<td><p><cite>HOM_REF</cite></p></td>
+<td><p><cite>No allele</cite></p></td>
 <td><p>0</p></td>
 </tr>
 <tr class="row-odd"><td><p>1</p></td>
-<td><p><cite>HET</cite></p></td>
+<td><p><cite>Monoallelic</cite></p></td>
 <td><p>1</p></td>
 </tr>
 <tr class="row-even"><td><p>2</p></td>
-<td><p><cite>BIALLELIC_ALT</cite></p></td>
+<td><p><cite>Biallelic</cite></p></td>
 <td><p>2</p></td>
 </tr>
 <tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ge 3\)</span></p></td>
@@ -205,14 +200,14 @@ an individual into one of the genotype categories:</p>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><cite>BIALLELIC_ALT</cite> includes both homozygous and compound heterozygous genotypes.</p>
+<p><cite>Biallelic</cite> includes both homozygous and compound heterozygous genotypes.</p>
 </div>
 <section id="partitions">
 <h3>Partitions<a class="headerlink" href="#partitions" title="Link to this heading"></a></h3>
 <p>Sometimes we are interested in lumping several genotype categories into a group or and then comparing the groups.
 For instance, to compare phenotype of the individuals with <em>at least one</em> frameshift allele
 with those with <em>no</em> frameshift allele. Alternatively, we may only want to analyze a subset of the genotype categories,
-such as <cite>HET</cite> vs. <cite>BIALLELIC_ALT</cite>.</p>
+such as <cite>Monoallelic</cite> vs. <cite>Biallelic</cite>.</p>
 <p>The <cite>partitions</cite> option of the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.autosomal_recessive" title="gpsea.analysis.predicate.genotype.autosomal_recessive"><code class="xref py py-func docutils literal notranslate"><span class="pre">autosomal_recessive()</span></code></a> function
 lets us do this.
 The option needs a set of sets of category indices (see table above).
@@ -233,7 +228,7 @@ with the <a class="reference internal" href="../../apidocs/gpsea.analysis.predic
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">autosomal_recessive</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">autosomal_recessive</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
+<span class="go">&#39;What is the genotype group: No allele, Monoallelic, Biallelic&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -253,19 +248,19 @@ of a fictional transcript <code class="docutils literal notranslate"><span class
 <p>and then use it to create the autosomal recessive predicate:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">autosomal_recessive</span><span class="p">(</span><span class="n">is_missense</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: HOM_REF, HET, BIALLELIC_ALT&#39;</span>
+<span class="go">&#39;What is the genotype group: No allele, Monoallelic, Biallelic&#39;</span>
 </pre></div>
 </div>
 <p>This predicate will assign the individuals into one of the listed genotype categories
 based on the allele counts of the missense variants.</p>
 </section>
-<section id="compare-het-vs-biallelic-alt">
-<h4>Compare <cite>HET</cite> vs. <cite>BIALLELIC_ALT</cite><a class="headerlink" href="#compare-het-vs-biallelic-alt" title="Link to this heading"></a></h4>
+<section id="compare-monoallelic-vs-biallelic">
+<h4>Compare <cite>Monoallelic</cite> vs. <cite>Biallelic</cite><a class="headerlink" href="#compare-monoallelic-vs-biallelic" title="Link to this heading"></a></h4>
 <p>We can provide <code class="docutils literal notranslate"><span class="pre">partitions</span></code> to only compare the heterozygotes with those carrying
 biallelic alt mutations (homozygous alternate or compound heterozygous):</p>
 <p>We consult the <em>Autosomal recessive predicate categories</em> table for the category indices
 and we create the genotype group partitions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># `1` for `HET` and `2` for `BIALLELIC_ALT`</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># `1` for `Monoallelic` and `2` for `Biallelic`</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">partitions</span> <span class="o">=</span> <span class="p">({</span><span class="mi">1</span><span class="p">,},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,})</span>
 </pre></div>
 </div>
@@ -274,7 +269,7 @@ and we create the genotype group partitions:</p>
 <span class="gp">... </span>    <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: HET, BIALLELIC_ALT&#39;</span>
+<span class="go">&#39;What is the genotype group: Monoallelic, Biallelic&#39;</span>
 </pre></div>
 </div>
 </section>

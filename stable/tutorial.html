@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,22 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorial &mdash; GPSEA 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/gpsea.css?v=547657ed" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c87aa342"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=6dbb43f8"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c87aa342"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=6dbb43f8"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -40,9 +38,6 @@
           <a href="index.html" class="icon icon-home">
             GPSEA
           </a>
-              <div class="version">
-                0.4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -527,8 +522,7 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
 
 
 </body>
-</html>
-<div class="admonition note">
+</html><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The report can also be displayed directly in a Jupyter notebook by running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
@@ -566,7 +560,8 @@ with information about the transcript and protein “anatomy”:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/img/tutorial/tbx5_protein_diagram.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/tbx5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="_images/tbx5_protein_diagram.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/tbx5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="_images/tbx5_protein_diagram.png" style="width: 600px;" />
+</a>
 </section>
 <section id="summarize-all-variant-alleles">
 <span id="show-cohort-variants"></span><h4>Summarize all variant alleles<a class="headerlink" href="#summarize-all-variant-alleles" title="Link to this heading"></a></h4>
@@ -1164,8 +1159,7 @@ with one or more variant alleles (<em>Count</em>):</p>
 
 
 </body>
-</html>
-</section>
+</html></section>
 </section>
 <section id="prepare-genotype-and-phenotype-predicates">
 <h3>Prepare genotype and phenotype predicates<a class="headerlink" href="#prepare-genotype-and-phenotype-predicates" title="Link to this heading"></a></h3>
@@ -1376,8 +1370,7 @@ by exploring the phenotype MTC filtering report.</p>
         </tbody>
     </table>
 </body>
-</html>
-<p>and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
+</html><p>and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;docs/report/tbx5_frameshift_vs_missense.csv&#39;</span><span class="p">)</span>  
