@@ -26,13 +26,13 @@ All GPSEA analyses need at least one predicate (typically a *genotype* predicate
 The following pages provide more information.
 
 
-
 .. toctree::
   :maxdepth: 1
   :caption: Contents:
 
-  predicates/phenotype_predicates
-  predicates/genotype_predicates
+  genotype_predicates
+  phenotype_predicates
+
 
 
 *******

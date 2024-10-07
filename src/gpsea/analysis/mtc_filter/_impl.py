@@ -104,7 +104,7 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
     are not worth testing in order to reduce the multiple testing burden.
 
     Note, the filter works only when using the HPO term to represent the phenotype.
-    Therefore, the expected input asks for :class:`hpotk.TermId` items.
+    Therefore, the expected input asks for :class:`~hpotk.TermId` items.
     For instance, `n_usable` is a mapping from an *HPO term* to an `int` with the count of the patients
     categorized according to the HPO term.
 

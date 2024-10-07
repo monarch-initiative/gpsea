@@ -5,6 +5,7 @@ from gpsea.model import Variant
 
 T = typing.TypeVar('T')
 
+
 class Formatter(typing.Generic[T], metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
@@ -16,10 +17,11 @@ class Formatter(typing.Generic[T], metaclass=abc.ABCMeta):
             item (T): an element to be formatted
 
         Returns:
-            str: a human readable string 
+            str: a human readable string
         """
         pass
-    
+
+
 class VariantFormatter(Formatter[Variant]):
     """
     A class that can be used to format a `Variant` to a human readable string
@@ -28,7 +30,7 @@ class VariantFormatter(Formatter[Variant]):
         self._tx_id = tx_id
         
     def format_as_string(self, item: Variant) -> str:
-        """ 
+        """
         Args:
             item (Variant): An object of class `Variant` representing a variant.
 

@@ -34,12 +34,12 @@ def fetch_response(
 
 class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
     """
-    `VVHgvsVariantCoordinateFinder` uses Variant Validator's REST API to build :class:`VariantCoordinates`
+    `VVHgvsVariantCoordinateFinder` uses Variant Validator's REST API to build :class:`~gpsea.model.VariantCoordinates`
     from an HGVS string.
 
     The finder takes an HGVS `str` (e.g. `NM_005912.3:c.253A>G`) and extracts the variant coordinates from the response.
 
-    :param genome_build: the genome build to use to construct :class:`VariantCoordinates`
+    :param genome_build: the genome build to use to construct :class:`~gpsea.model.VariantCoordinates`
     :param timeout: the REST API request timeout
     """
 

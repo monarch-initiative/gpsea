@@ -53,9 +53,15 @@ def fpath_test_dir() -> str:
     """
     return os.path.dirname(os.path.abspath(__file__))
 
+
 @pytest.fixture(scope='session')
 def fpath_test_data_dir(fpath_test_dir: str) -> str:
     return os.path.join(fpath_test_dir, 'test_data')
+
+
+@pytest.fixture(scope='session')
+def fpath_phenopacket_dir(fpath_test_data_dir: str) -> str:
+    return os.path.join(fpath_test_data_dir, 'phenopackets')
 
 
 @pytest.fixture(scope='session')
@@ -337,6 +343,7 @@ def toy_cohort(
                 test_phenotypes['spasticity_F'],
                 test_phenotypes['focal_clonic_seizure_T']
             ),
+            measurements=(),
             variants=(dup,),
             diseases=(test_diseases['KBG_T'],)
         ),
@@ -346,6 +353,7 @@ def toy_cohort(
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['seizure_T'], test_phenotypes['spasticity_T'],
             ),
+            measurements=(),
             variants=(indel, snv_stop_gain),
             diseases=(test_diseases['KBG_T'],)
         ),
@@ -355,6 +363,7 @@ def toy_cohort(
             phenotypes=(
                 test_phenotypes['arachnodactyly_F'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
+            measurements=(),
             variants=(snv_missense, del_frameshift),
             diseases=(test_diseases['KBG_T'],)
         ),
@@ -364,6 +373,7 @@ def toy_cohort(
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
+            measurements=(),
             variants=(del_small,),
             diseases=()
         ),
@@ -373,6 +383,7 @@ def toy_cohort(
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_F'],
             ),
+            measurements=(),
             variants=(del_large,),
             diseases=()
         ),

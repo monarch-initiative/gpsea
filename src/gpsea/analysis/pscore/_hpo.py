@@ -5,6 +5,10 @@ import hpotk
 from gpsea.model import Patient
 from ._api import PhenotypeScorer
 
+"""
+A module with HPO-driven phenotype scores. The score generally work with the phenotypes of an individual
+"""
+
 
 class CountingPhenotypeScorer(PhenotypeScorer):
     """
@@ -106,6 +110,8 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     """
     `DeVriesPhenotypeScorer` computes "adapted De Vries Score"
     as described in `Feenstra et al. <https://pubmed.ncbi.nlm.nih.gov/21712853>`_.
+
+    See more in :ref:`devries-scorer` section.
     """
 
     def __init__(

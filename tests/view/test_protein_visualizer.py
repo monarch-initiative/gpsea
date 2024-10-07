@@ -1,8 +1,14 @@
+import io
 import matplotlib.pyplot as plt
 import pytest
 
 from gpsea.model import TranscriptCoordinates, ProteinMetadata, Cohort
-from gpsea.view import ProteinVisualizer, ProteinVisualizable, ProteinViewable
+from gpsea.view import (
+    GpseaReport,
+    ProteinVisualizer,
+    ProteinVisualizable,
+    ProteinVariantViewer,
+)
 
 
 class TestProteinVisualizer:
@@ -13,10 +19,10 @@ class TestProteinVisualizer:
 
     @pytest.fixture
     def visualizable(
-            self,
-            suox_mane_tx_coordinates: TranscriptCoordinates,
-            suox_protein_metadata: ProteinMetadata,
-            suox_cohort: Cohort,
+        self,
+        suox_mane_tx_coordinates: TranscriptCoordinates,
+        suox_protein_metadata: ProteinMetadata,
+        suox_cohort: Cohort,
     ) -> ProteinVisualizable:
         return ProteinVisualizable(
             tx_coordinates=suox_mane_tx_coordinates,
@@ -24,11 +30,11 @@ class TestProteinVisualizer:
             cohort=suox_cohort,
         )
 
-    @pytest.mark.skip('Run manually on demand')
+    @pytest.mark.skip("Run manually on demand")
     def test_protein_visualizer(
-            self,
-            visualizer: ProteinVisualizer,
-            visualizable: ProteinVisualizable,
+        self,
+        visualizer: ProteinVisualizer,
+        visualizable: ProteinVisualizable,
     ):
         fig, ax = plt.subplots(figsize=(20, 20))
         visualizer.draw_fig(
@@ -36,15 +42,22 @@ class TestProteinVisualizer:
             ax=ax,
         )
 
-        fig.savefig('protein.png')
+        fig.savefig("protein.png")
 
-    @pytest.mark.skip('Run manually on demand')
     def test_protein_viewable(
-        self, 
+        self,
         suox_cohort: Cohort,
-        visualizable: ProteinVisualizable,
+        suox_protein_metadata: ProteinMetadata,
+        suox_mane_tx_id: str,
     ):
-        protein_viewable = ProteinViewable()
-        view = protein_viewable.process(suox_cohort, visualizable)
-        with open('protein_viewable.html', 'w') as fh:
-            fh.write(view)        
+        protein_viewable = ProteinVariantViewer(
+            protein_metadata=suox_protein_metadata, tx_id=suox_mane_tx_id
+        )
+        report = protein_viewable.process(suox_cohort)
+        assert isinstance(report, GpseaReport)
+
+        buf = io.StringIO()
+        report.write(buf)
+        val = buf.getvalue()
+
+        assert "html lang" in val

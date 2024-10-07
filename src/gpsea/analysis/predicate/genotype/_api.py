@@ -7,7 +7,7 @@ from .._api import PolyPredicate, Categorization
 
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
     """
-    `GenotypePolyPredicate` is a base class for all :class:`PolyPredicate`
+    `GenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`
     that test the genotype axis.
     """
     pass
@@ -17,8 +17,8 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
 
-    The subclasses are expected to implement all abstract methods of this class
-    *plus* ``__eq__`` and ``__hash__``, to support building of compound predicates.
+    The subclasses *MUST* implement all abstract methods of this class
+    *plus* ``__eq__`` and ``__hash__``, to support building the compound predicates.
 
     We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.
     """
@@ -36,7 +36,7 @@ class VariantPredicate(metaclass=abc.ABCMeta):
         Test if the `variant` meets a criterion.
         
         Args:
-            variant: an instance of :class:`Variant` to test.
+            variant: an instance of :class:`~gpsea.model.Variant` to test.
 
         Returns:
             bool: `True` if the variant meets the criterion and `False` otherwise.

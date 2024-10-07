@@ -54,6 +54,12 @@ class FeatureInfo:
         """
         return self._region
 
+    def overlaps_with(self, region: Region) -> bool:
+        """
+        Covenience function to check whether a region overlaps with a protein feature.
+        """
+        return self._region.overlaps_with(region)
+
     def __len__(self):
         return len(self._region)
 
@@ -215,7 +221,7 @@ class ProteinMetadata:
     An info regarding a protein sequence, including an ID, a label,
     and location of protein features, such as motifs, domains, or other regions.
 
-    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotMetadataService`,
+    The information is usually retrieved from a resource such as :class:`~gpsea.preprocessing.UniprotProteinMetadataService`,
     but it can also be created manually using :meth:`~gpsea.model.ProteinMetadata.from_feature_frame` function.
 
     Example
@@ -352,7 +358,7 @@ class ProteinMetadata:
         """
         with open_text_io_handle_for_reading(uniprot_json) as fh:
             data = json.load(fh)
-        
+
         regions = list()
         for feature in data["features"]:
             try:

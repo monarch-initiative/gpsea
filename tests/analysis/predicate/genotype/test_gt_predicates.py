@@ -1,6 +1,7 @@
+import typing
 import pytest
 
-from gpsea.model import *
+from gpsea.model import Patient, Sex, SampleLabels, VariantEffect
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     groups_predicate,
@@ -90,9 +91,9 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "HOM_REF"),
-            ("eve", "HET"),
-            ("cain", "HET"),
+            ("adam", "No allele"),
+            ("eve", "Monoallelic"),
+            ("cain", "Monoallelic"),
         ],
     )
     def test_autosomal_dominant(
@@ -114,9 +115,9 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "HET"),  # 0/0 & 0/1
-            ("eve", "HET"),  # 0/1 & 0/0
-            ("cain", "HET"),  # 0/1 & 0/0
+            ("adam", "Monoallelic"),  # 0/0 & 0/1
+            ("eve", "Monoallelic"),  # 0/1 & 0/0
+            ("cain", "Monoallelic"),  # 0/1 & 0/0
         ],
     )
     def test_autosomal_dominant__with_default_predicate(
@@ -137,10 +138,10 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("walt", "HET"),
-            ("skyler", "HET"),
-            ("flynn", "BIALLELIC_ALT"),
-            ("holly", "HOM_REF"),
+            ("walt", "Monoallelic"),
+            ("skyler", "Monoallelic"),
+            ("flynn", "Biallelic"),
+            ("holly", "No allele"),
         ],
     )
     def test_autosomal_recessive(
@@ -163,10 +164,10 @@ class TestModeOfInheritancePredicate:
         "patient_name,name",
         [
             # The White family has two variants:
-            ("walt", "BIALLELIC_ALT"),  # 0/1 & 0/1
-            ("skyler", "BIALLELIC_ALT"),  # 0/1 & 0/1
-            ("flynn", "BIALLELIC_ALT"),  # 1/1 & 0/0
-            ("holly", "BIALLELIC_ALT"),  # 0/0 & 1/1
+            ("walt", "Biallelic"),  # 0/1 & 0/1
+            ("skyler", "Biallelic"),  # 0/1 & 0/1
+            ("flynn", "Biallelic"),  # 1/1 & 0/0
+            ("holly", "Biallelic"),  # 0/0 & 1/1
         ],
     )
     def test_autosomal_recessive__with_default_predicate(
@@ -256,6 +257,35 @@ class TestAllelePredicates:
         
         assert gt_predicate.display_question() == 'Allele group: A/A, A/B, B/B'
 
+    @pytest.mark.parametrize(
+        "partitions, msg",
+        [
+            (((0,), (0,), (2,)), "partition (0,) was present 2!=1 times"),
+            (((0, 1), (1, 2,)), "element 1 was present 2!=1 times"),
+            (((0, 1), (1, 0)), "element 0 was present 2!=1 times, element 1 was present 2!=1 times"),
+            (((0, 1, 1), (1, 1, 2,)), "element 1 was present 4!=1 times"),
+            (((0.1,), (1,), (2,)), "Each partition index must be a non-negative int"),
+            (((0, 1, 2),), "At least 2 partitions must be provided"),
+        ]
+    )
+    def test_biallelic_predicate__invalid_partitions(
+        self,
+        partitions: typing.Sequence[typing.Sequence[int]],
+        msg: str,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        
+        with pytest.raises(ValueError) as e:
+            biallelic_predicate(
+                a_predicate=is_missense,
+                b_predicate=is_synonymous,
+                names=("A", "B"),
+                partitions=partitions
+            )
+
+        assert e.value.args == (msg,)
+
 
 class TestSexPredicate:
 
@@ -283,6 +313,7 @@ class TestSexPredicate:
             SampleLabels(label),
             sex,
             phenotypes=(),
+            measurements=(),
             diseases=(),
             variants=(),
         )
