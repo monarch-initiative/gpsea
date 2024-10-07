@@ -23,7 +23,7 @@ class VariantCoordinateFinder(typing.Generic[T], metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def find_coordinates(self, item: T) -> typing.Optional[VariantCoordinates]:
         """
-        Try to find :class:`VariantCoordinates` from an `item` of some sort.
+        Try to find :class:`~gpsea.model.VariantCoordinates` from an `item` of some sort.
 
         The variant coordinates may not be available all the time,
         and `None` may be returned.
@@ -116,7 +116,7 @@ class ProteinMetadataService(metaclass=abc.ABCMeta):
     """
     A service for obtaining annotations for a given protein accession ID.
 
-    The annotations include elements of the :class:`ProteinMetadata` class.
+    The annotations include elements of the :class:`~gpsea.model.ProteinMetadata` class.
     """
 
     @abc.abstractmethod
@@ -125,7 +125,7 @@ class ProteinMetadataService(metaclass=abc.ABCMeta):
         Prepare `ProteinMetadata` for a protein with given `protein_id` accession ID.
 
         Args:
-            protein_id (string): A accession ID `str` (e.g. `NP_001027558.1`)
+            protein_id (str): A accession ID `str` (e.g. `NP_001027558.1`)
         Returns:
             ProteinMetadata: a `ProteinMetadata` container with the protein metadata
         Raises:
@@ -162,7 +162,7 @@ class PreprocessingValidationResult:
 
         :returns: `True` if the analysis can proceed or `False` if errors/warnings were found.
         """
-        if self._policy == 'none':
+        if self._policy == 'permissive':
             # No validation
             return True
         elif self._policy == 'lenient':

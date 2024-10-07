@@ -5,6 +5,7 @@ from jinja2 import Environment, PackageLoader
 from collections import namedtuple
 
 from gpsea.model import Cohort
+from ._report import GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
 
 
@@ -38,7 +39,7 @@ class CohortViewable:
         self,
         cohort: Cohort,
         transcript_id: typing.Optional[str] = None,
-    ) -> str:
+    ) -> GpseaReport:
         """
         Create an HTML that should be shown with display(HTML(..)) of the ipython package.
 
@@ -47,10 +48,12 @@ class CohortViewable:
             transcript_id (str): the transcript that we map variants onto
 
         Returns:
-            str: an HTML string with parameterized template for rendering
+            GpseaReport: a report that can be stored to a path or displayed in
+                interactive environment such as Jupyter notebook.
         """
         context = self._prepare_context(cohort, transcript_id=transcript_id)
-        return self._cohort_template.render(context)
+        report = self._cohort_template.render(context)
+        return HtmlGpseaReport(html=report)
 
     def _prepare_context(
         self,
@@ -64,11 +67,11 @@ class CohortViewable:
             individual_count = hpo[1]
             hpo_label = "n/a"
             if hpo_id in self._hpo:
-                hpo_label = self._hpo.get_term(hpo_id).name
+                hpo_label = self._hpo.get_term_name(hpo_id)
             hpo_counts.append(
                 {
-                    "HPO": hpo_label, 
-                    "ID": hpo_id, 
+                    "HPO": hpo_label,
+                    "ID": hpo_id,
                     "Count": individual_count,
                 }
             )
@@ -90,9 +93,9 @@ class CohortViewable:
             
             variant_counts.append(
                 {
-                    "variant": variant_key, 
+                    "variant": variant_key,
                     "variant_name": hgvs_cdna,
-                    "protein_name": protein_name, 
+                    "protein_name": protein_name,
                     "variant_effects": effects,
                     "Count": count,
                 }
@@ -106,8 +109,8 @@ class CohortViewable:
                     disease_name = disease.name
             disease_counts.append(
                 {
-                    "disease_id": disease_id, 
-                    "disease_name": disease_name, 
+                    "disease_id": disease_id,
+                    "disease_name": disease_name,
                     "count": disease_count,
                 }
             )

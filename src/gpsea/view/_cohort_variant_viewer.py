@@ -5,6 +5,7 @@ from collections import namedtuple, defaultdict
 
 from gpsea.model import Cohort, Variant, VariantEffect
 from ._formatter import VariantFormatter
+from ._report import GpseaReport, HtmlGpseaReport
 
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
@@ -40,19 +41,21 @@ class CohortVariantViewer:
         self,
         cohort: Cohort,
         only_hgvs: bool = True
-    ) -> str:
+    ) -> GpseaReport:
         """
-        Create an HTML that should be shown with ``display(HTML(..))`` of the ipython package.
+        Generate the variant report.
 
         Args:
             cohort (Cohort): The cohort being analyzed in the current notebook.
             only_hgvs (bool): Do not show the transcript ID part of the HGVS annotation, just the annotation.
 
         Returns:
-            str: an HTML string with parameterized template for rendering
+            GpseaReport: a report that can be stored to a path or displayed in
+                interactive environment such as Jupyter notebook.
         """
         context = self._prepare_context(cohort, only_hgvs=only_hgvs)
-        return self._cohort_template.render(context)
+        html = self._cohort_template.render(context)
+        return HtmlGpseaReport(html=html)
 
     def _prepare_context(
         self,

@@ -12,7 +12,7 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
     """
     `PhenotypeScorer` assigns the patient with a phenotype score.
 
-    The score can be :attr:`math.nan` if it is not possible to compute the score for a patient.
+    The score can be `math.nan` if it is not possible to compute the score for a patient.
 
     The scorer can be created by wrapping a scoring function (see :func:`~PhenotypeScorer.wrap_scoring_function`).
     """
@@ -40,6 +40,7 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
         """
         return FunctionPhenotypeScorer(func=func)
 
+    @abc.abstractmethod
     def score(self, patient: Patient) -> float:
         """
         Compute the score for the `patient`.
@@ -114,10 +115,14 @@ class PhenotypeScoreAnalysisResult:
         self,
         gt_predicate: GenotypePolyPredicate,
         ax,
-        colors=["darksalmon", "honeydew"],
+        colors=("darksalmon", "honeydew"),
     ):
         """
-        Draw box plots with distributions of phenotype scores for genotype groups
+        Draw box plot with distributions of phenotype scores for the genotype groups.
+
+        :param gt_predicate: the genotype predicate used to produce the genotype groups.
+        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
+        :param colors: a tuple with colors to use for coloring the box patches of the box plot.
         """
         # skip the patients with unassigned genotype group
         not_na_gts = self._genotype_phenotype_scores["genotype"].notna()
@@ -155,7 +160,7 @@ class PhenotypeScoreAnalysis:
     The genotype groups are created by a :class:`~gpsea.analysis.predicate.genotype.GenotypePolyPredicate`
     and the phenotype score is computed with :class:`~gpsea.analysis.pscore.PhenotypeScorer`.
 
-    The association is tested with a :class:`~gpsea.analysis.pscore.PhenotypeScoreStatistic`
+    The association is tested with a :class:`~gpsea.analysis.pscore.stats.PhenotypeScoreStatistic`
     and the results are reported as a :class:`PhenotypeScoreAnalysisResult`.
     """
 
@@ -203,8 +208,8 @@ class PhenotypeScoreAnalysis:
         # Sort by PatientCategory.cat_id and unpack.
         # For now, we only allow to have up to 2 groups.
         x_key, y_key = sorted(data["genotype"].dropna().unique())
-        x = data.loc[data["genotype"] == x_key, "phenotype"].to_numpy(dtype=float)
-        y = data.loc[data["genotype"] == y_key, "phenotype"].to_numpy(dtype=float)
+        x = data.loc[data["genotype"] == x_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
+        y = data.loc[data["genotype"] == y_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
         pval = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(

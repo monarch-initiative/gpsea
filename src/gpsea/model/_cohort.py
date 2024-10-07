@@ -6,7 +6,7 @@ from collections import Counter
 import hpotk
 
 from ._base import SampleLabels, Sex
-from ._phenotype import Phenotype, Disease
+from ._phenotype import Phenotype, Disease, Measurement
 from ._variant import Variant
 
 
@@ -25,6 +25,7 @@ class Patient:
         labels: SampleLabels,
         sex: typing.Optional[Sex],
         phenotypes: typing.Iterable[Phenotype],
+        measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
         variants: typing.Iterable[Variant]
     ) -> "Patient":
@@ -38,6 +39,7 @@ class Patient:
             labels=labels,
             sex=sex,
             phenotypes=phenotypes,
+            measurements=measurements,
             diseases=diseases,
             variants=variants,
         )
@@ -47,6 +49,7 @@ class Patient:
         labels: SampleLabels,
         sex: Sex,
         phenotypes: typing.Iterable[Phenotype],
+        measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
         variants: typing.Iterable[Variant]
     ):
@@ -57,6 +60,7 @@ class Patient:
         self._sex = sex
 
         self._phenotypes = tuple(phenotypes)
+        self._measurements = tuple(measurements)
         self._diseases = tuple(diseases)
         self._variants = tuple(variants)
 
@@ -87,6 +91,37 @@ class Patient:
         Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
+    
+    @property
+    def measurements(self) -> typing.Sequence[Measurement]:
+        """
+        Get the measurements in the patient.
+        """
+        return self._measurements
+    
+    def measurement_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Measurement]:
+        """
+        Get a measurement with an identifier or `None` if the individual has no such measurement.
+
+        :param term_id: a `str` with CURIE or a :class:`~hpotk.TermId`
+            representing the term ID of a measurement (e.g. `LOINC:2986-8` for *Testosterone[Mass/Vol]*).
+        :returns: the corresponding :class:`Measurement` or `None` if not found in the patient.
+        """
+        if isinstance(term_id, str):
+            pass
+        elif isinstance(term_id, hpotk.TermId):
+            term_id = term_id.value
+        else:
+            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
+
+        for m in self._measurements:
+            if m.identifier.value == term_id:
+                return m
+        
+        return None
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:
@@ -132,6 +167,7 @@ class Patient:
                 f"sex:{self._sex}, "
                 f"variants:{self.variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
+                f"measurements:{[m.name for m in self.measurements]}, "
                 f"diseases:{[dis.identifier for dis in self.diseases]}")
 
     def __repr__(self) -> str:
@@ -143,10 +179,11 @@ class Patient:
                 and self._sex == other._sex
                 and self._variants == other._variants
                 and self._phenotypes == other._phenotypes
+                and self._measurements == other._measurements
                 and self._diseases == other._diseases)
 
     def __hash__(self) -> int:
-        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._diseases))
+        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._measurements, self._diseases))
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):
@@ -183,7 +220,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         members: typing.Iterable[Patient],
         excluded_member_count: int,
     ):
-        self._members = tuple(set(members))
+        self._members = tuple(members)
         self._excluded_count = excluded_member_count
 
     @property
@@ -239,7 +276,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
         
         Args:
-            top typing.Optional[int]: If not given, lists all present phenotypes.
+            typing.Optional[int]: If not given, lists all present phenotypes.
                 Otherwise, lists only the `top` highest counts
         
         Returns:
@@ -266,7 +303,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
+            typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
         
         Returns:
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
@@ -282,7 +319,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
-            top typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
+            typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
         
         Returns:
             list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)
@@ -304,7 +341,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
               or `None` if all transcripts should be listed.
         
         Returns:
-            mapping: Each transcript ID references a Counter(), with the variant effect as the key
+            typing.Mapping[str, typing.Mapping[str, int]]: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.
         """
         counters = {}

@@ -1,6 +1,8 @@
 import typing
 import pytest
 
+import numpy as np
+
 from gpsea.analysis.pscore.stats import MannWhitneyStatistic, TTestStatistic
 
 
@@ -28,6 +30,17 @@ class TestMannWhitneyStatistic:
 
         assert actual == pytest.approx(expected)
 
+    def test_compute_pval__with_nan(
+        self,
+        statistic: MannWhitneyStatistic,
+    ):
+        x = (1., 2., 3., np.nan)
+        y = (1., 2., 3., float("nan"))
+
+        actual = statistic.compute_pval((x, y))
+
+        assert actual == pytest.approx(1.)
+
 
 class TestTTestStatistic:
 
@@ -52,3 +65,14 @@ class TestTTestStatistic:
         actual = statistic.compute_pval((x, y))
 
         assert actual == pytest.approx(expected)
+
+    def test_compute_pval__with_nan(
+        self,
+        statistic: TTestStatistic,
+    ):
+        x = (1., 2., 3., np.nan, np.nan)
+        y = (1., 2., 3., float("nan"))
+
+        actual = statistic.compute_pval((x, y))
+
+        assert actual == pytest.approx(1.)

@@ -28,7 +28,7 @@ from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
 from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService
 
-VALIDATION_POLICIES = {"none", "lenient", "strict"}
+VALIDATION_POLICIES = {"permissive", "lenient", "strict"}
 
 
 def configure_caching_cohort_creator(
@@ -378,7 +378,7 @@ def _configure_imprecise_sv_annotator(
 def load_phenopacket_folder(
     pp_directory: str,
     cohort_creator: CohortCreator[Phenopacket],
-    validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
+    validation_policy: typing.Literal["permissive", "lenient", "strict"] = "permissive",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
     Load phenopacket JSON files from a directory, validate the patient data, and assemble the patients into a cohort.
@@ -391,7 +391,7 @@ def load_phenopacket_folder(
     :param cohort_creator: cohort creator for turning a sequence of phenopacket
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
-      The value must be one of `{'none', 'lenient', 'strict'}`
+      The value must be one of `{'permissive', 'lenient', 'strict'}`
     :return: a tuple with the cohort and the validation result.
     """
     # Load phenopackets
@@ -408,7 +408,7 @@ def load_phenopacket_folder(
 def load_phenopacket_files(
     pp_files: typing.Iterator[str],
     cohort_creator: CohortCreator[Phenopacket],
-    validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
+    validation_policy: typing.Literal["permissive", "lenient", "strict"] = "permissive",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
     Load phenopacket JSON files, validate the data, and assemble into a :class:`~gpsea.model.Cohort`.
@@ -419,7 +419,7 @@ def load_phenopacket_files(
     :param cohort_creator: cohort creator for turning a phenopacket collection
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
-      The value must be one of `{'none', 'lenient', 'strict'}`
+      The value must be one of `{'permissive', 'lenient', 'strict'}`
     :return: a tuple with the cohort and the validation result.
     """
     return load_phenopackets(
@@ -430,9 +430,9 @@ def load_phenopacket_files(
 
 
 def load_phenopackets(
-    phenopackets: typing.Iterator[Phenopacket],
+    phenopackets: typing.Iterable[Phenopacket],
     cohort_creator: CohortCreator[Phenopacket],
-    validation_policy: typing.Literal["none", "lenient", "strict"] = "none",
+    validation_policy: typing.Literal["permissive", "lenient", "strict"] = "permissive",
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
     Validate the phenopackets and assemble into a :class:`~gpsea.model.Cohort`.
@@ -444,7 +444,7 @@ def load_phenopackets(
     :param cohort_creator: cohort creator for turning a sequence of phenopacket
       into a :class:`~gpsea.model.Cohort`.
     :param validation_policy: a `str` with the validation policy.
-      The value must be one of `{'none', 'lenient', 'strict'}`
+      The value must be one of `{'permissive', 'lenient', 'strict'}`
     :return: a tuple with the cohort and the validation result.
     """
     # Check inputs before doing anything
