@@ -126,10 +126,10 @@ we expect the autosomal dominant mode of inheritance:
 >>> from gpsea.analysis.predicate.genotype import autosomal_dominant
 >>> gt_predicate = autosomal_dominant(is_frameshift)
 >>> gt_predicate.display_question()
-'What is the genotype group: HOM_REF, HET'
+'What is the genotype group: No allele, Monoallelic'
 
-`gt_predicate` will assign the patients with no frameshift variant allele into `HOM_REF` group
-and the patients with one frameshift allele will be assigned into `HET` group.
+`gt_predicate` will assign the patients with no frameshift variant allele into `No allele` group
+and the patients with one frameshift allele will be assigned into `Monoallelic` group.
 Note, any patient with 2 or more alleles will be *omitted* from the analysis.
 
 .. note::
@@ -239,12 +239,15 @@ We can learn more by showing the MTC filter report:
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()
 >>> mtc_report = mtc_viewer.process(result)
->>> with open('docs/user-guide/report/tbx5_frameshift.mtc_report.html', 'w') as fh:  # doctest: +SKIP
-...     _ = fh.write(mtc_report)
-
+>>> mtc_report  # doctest: +SKIP
 
 .. raw:: html
   :file: report/tbx5_frameshift.mtc_report.html
+
+.. doctest:: phenotype-groups
+   :hide:
+
+   >>> mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')  # doctest: +SKIP
 
 
 Genotype phenotype associations
@@ -255,11 +258,16 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
->>> summary_df.to_csv('docs/user-guide/report/tbx5_frameshift.csv')  # doctest: +SKIP
+>>> summary_df  # doctest: +SKIP
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
    :header-rows: 2
+
+.. doctest:: phenotype-groups
+   :hide:
+
+   >>> summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')  # doctest: +SKIP
 
 
 The table shows that several HPO terms are significantly associated
