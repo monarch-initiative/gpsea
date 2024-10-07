@@ -60,6 +60,7 @@ We use HPO toolkit to load HPO version `v2024-07-01`:
 
   Use the latest HPO release by omitting the `release` option.
 
+
 Prepare cohort
 ^^^^^^^^^^^^^^
 
@@ -280,15 +281,15 @@ Now we can perform the analysis and investigate the results.
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> result.total_tests
-16
+34
 
-We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+We only tested 34 HPO terms. This is despite the individuals being collectively annotated with
 260 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
 260
 
-We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
+We can show the reasoning behind *not* testing 226 (`260 - 34`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
@@ -327,4 +328,4 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.0000562`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.000899`.
+is `~0.001910`.
