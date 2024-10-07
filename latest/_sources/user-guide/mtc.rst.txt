@@ -235,14 +235,6 @@ and the result of a test, such as the Fisher Exact test, would be exactly the sa
 for *Polar cataract* as for *Posterior polar cataract*.
 
 
-`HMF04` - Skip terms if genotypes have same HPO proportions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If both (or all) of the genotype groups have the same proportion of individuals
-observed to be annotated to an HPO term, e.g., both are 50%, then skip the term,
-because it is not possible that the Fisher exact test will return a significant result.
-
-
 `HMF05` - Skip term if one of the genotype groups has neither observed nor excluded observations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
