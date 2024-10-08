@@ -12,12 +12,9 @@ GPSEA enables testing aligned with an expected MoI, and to categorize individual
 based on the number of variant alleles. Clinical judgment should be used to choose the MoI
 for the cohort analysis.
 
-.. 
-
-    By default, MoI predicates use *all* variants recorded in the individual.
-    However, a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-    can be provided to select the variants of interest. For instance, missense variants
-    or the variants that overlap with a specific protein domain.
+Note, the MoI analysis differs from the analysis based on :ref:`allele-count-predicates`;
+the former compares phenotypes of individuals with different counts of the same variant category,
+while the latter compares the individuals with the same allele count (e.g. 1, 2) of variants of different categories.
 
 
 .. _autosomal-dominant-moi:
@@ -26,91 +23,92 @@ for the cohort analysis.
 Autosomal dominant
 ******************
 
-In case of diseases with the autosomal dominant MoI, we typically assemble a cohort of individuals
-harboring one pathogenic variant allele and we analyze the phenotypic differences between variant qualities
-(e.g. missense vs. loss-of-function). As pointed out in the :ref:`monoallelic-predicate` section,
-we use :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate`.
-However, we can also use the predicate to compare the phenotype of the individuals with an allele
-with those without the allele, and assign the individuals into the respective groups.
+Sometimes we want to compare phenotypes of individuals with one variant allele
+with those harboring no such allele.
+In GPSEA, this can be done using
+:func:`~gpsea.analysis.predicate.genotype.monoallelic_predicate`
 
 
 Example
 =======
 
-We may want to compare the individuals with a missense variant on a fictional transcript ``NM_1234.5``
-which are predicted to affect one of the ten aminoacid residues :math:`[31, 40]` of a protein domain of interest:
+For instance, we may want to compare the individuals with one variant allele that overlaps with
+the 6th exon of the fictional transcript `NM_1234.5` with those with no such allele.
+We construct the corresponding genotype predicate in two steps.
+First, we prepare a variant predicate for choosing the variants affecting exon 6:
 
-We start by creating the variant predicate, which needs a variant to be both a missense variant
-and overlap with the selected aminoacid residues:
-
->>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> is_missense = VariantPredicates.variant_effect(effect=VariantEffect.MISSENSE_VARIANT, tx_id="NM_1234.5")
->>> overlaps_domain = VariantPredicates.region(region=(31, 40), tx_id="NM_1234.5")
->>> var_predicate = is_missense & overlaps_domain
->>> var_predicate.get_question()
-'(MISSENSE_VARIANT on NM_1234.5 AND variant affects aminoacid(s) between 31 and 40 on protein encoded by transcript NM_1234.5)'
+>>> in_exon_6 = VariantPredicates.exon(exon=6, tx_id="NM_1234.5")
+>>> in_exon_6.get_question()
+'variant affects exon 6 on NM_1234.5'
 
-
-and we use the variant predicate to create a genotype predicate for comparing the individuals with the
-missense variant in the domain (`Missense in domain`) with those with no such variant (`Other`):
+Second, by wrapping the `in_exon_6` predicate in :func:`~gpsea.analysis.predicate.genotype.monoallelic_predicate`,
+we will partition the individuals into those with one variant allele (`Monoallelic`)
+and those with no alleles (`No allele`), while omitting the individuals with 2 or more alleles:
 
 >>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
 >>> gt_predicate = monoallelic_predicate(
-...     var_predicate,
-...     names=("Missense in domain", "Other"),
+...     a_predicate=in_exon_6,
+...     names=("Monoallelic", "No allele"),
 ... )
 >>> gt_predicate.display_question()
-'Allele group: Missense in domain, Other'
+'Allele group: Monoallelic, No allele'
+
+.. note::
+    
+    Under the hood, `monoallelic_predicate` creates the inverse of `in_exon_6`,
+    to capture all variants outside exon 6.
 
 
+.. _autosomal-recessive-moi:
 
-.. _autosomal-recessive-predicate:
+*******************
+Autosomal recessive
+*******************
 
-*****************************
-Autosomal recessive predicate
-*****************************
+In case of autosomal recessive diseases, where biallelic mutations are needed for disease manifestation,
+we can either compare the individuals with biallelic variants of different categories
+(described in :ref:`biallelic-predicate`),
+or the individuals with different allele counts of the same variant category (described here).
 
-The autosomal recessive predicate uses the allele count to assign
-an individual into one of the genotype categories:
+In theory, a biallelic locus can exist in one of the three states ``{"A/A", "A/B", "B/B"}``,
+where `A` and `B` denote variant categories and, 
+for instance, `A/A` represents a locus with two alleles of the `A` category,
+`A/B` represents a locus with one allele each category.
+In contrast to the analysis described in :ref:`biallelic-predicate` section,
+the focus of autosomal recessive analysis is to compare the individuals
+with different allele counts of the same variant category (e.g. `B`).
+Despite the possibility of three states, most of the time, we are only interested in
+comparing `A/B` with `B/B`.
 
-.. table:: Autosomal recessive predicate categories
+GPSEA implements the allele counting with
+:func:`~gpsea.analysis.predicate.genotype.allele_counting` predicate
+which assigns individuals into one of the following genotype categories:
 
-    +------------------+-------------------+----------------+
-    |   Allele count   |  Category         | Category index |
-    +==================+===================+================+
-    |   0              |  `No allele`      | 0              |
-    +------------------+-------------------+----------------+
-    |   1              |  `Monoallelic`    | 1              |
-    +------------------+-------------------+----------------+
-    |   2              |  `Biallelic`      | 2              |
-    +------------------+-------------------+----------------+
-    |   :math:`\ge 3`  |  ``None``         |                |
-    +------------------+-------------------+----------------+
+
+.. table:: Autosomal recessive categories
+
+    +--------------------------+--------------------+
+    |   Allele count           | Genotype category  |
+    +==========================+====================+
+    |   1                      |  `Monoallelic`     |
+    +--------------------------+--------------------+
+    |   2                      |  `Biallelic`       |
+    +--------------------------+--------------------+
+    |   :math:`\notin {1, 2}`  |  ``None``          |
+    +--------------------------+--------------------+
 
 .. note::
 
     `Biallelic` includes both homozygous and compound heterozygous genotypes.
 
 
-Partitions
-==========
-
-Sometimes we are interested in lumping several genotype categories into a group or and then comparing the groups.
-For instance, to compare phenotype of the individuals with *at least one* frameshift allele
-with those with *no* frameshift allele. Alternatively, we may only want to analyze a subset of the genotype categories,
-such as `Monoallelic` vs. `Biallelic`.
-
-The `partitions` option of the :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive` function
-lets us do this.
-The option needs a set of sets of category indices (see table above).
-The set is a partition of a set with the following properties:
-
-* no subset is empty
-* the intersection of any subsets is empty
-
-These rules are very much alike the properties of the `partitions of a set <https://en.wikipedia.org/wiki/Partition_of_a_set>`_,
-with the exception that adherence to *the union of the subsets include all group indices* rule is *NOT* required.
+Last, a :class:`~gpsea.model.Patient` can include variants unrelated to the "current" analysis.
+These may include variants in a different gene, or variants that are otherwise unlikely to be relevant
+to the analysis, and we may not want to include these in the allele counting. One way to solve this issue
+is to ensure the phenopackets/individuals only include the relevant variants to start with.
+However, as a convenience, :func:`~gpsea.analysis.predicate.genotype.allele_counting` takes an optional
+:class:`~gpsea.analysis.predicate.genotype.VariantPredicate` to select a subset of variants of interest.
 
 
 Examples
@@ -120,55 +118,33 @@ Examples
 Use all variants
 ----------------
 
-We create the predicate
-with the :func:`~gpsea.analysis.predicate.genotype.autosomal_recessive` function:
+We can create a predicate to group individuals based on one or two variant alleles,
+while considering all variants:
 
->>> from gpsea.analysis.predicate.genotype import autosomal_recessive
->>> gt_predicate = autosomal_recessive()
+>>> from gpsea.analysis.predicate.genotype import allele_counting
+>>> gt_predicate = allele_counting()
 >>> gt_predicate.display_question()
-'What is the genotype group: No allele, Monoallelic, Biallelic'
+'What is the genotype group: Monoallelic, Biallelic'
 
 
 Use a variant subset
 --------------------
 
-Same as in the autosomal dominant version,
-we can use a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-to only count the alleles of the variants of interest, such as the missense variants
-of a fictional transcript ``NM_1234.5``:
+If the cohort members include variants that are likely unrelated to the analysis, we can subset the variants
+with a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`.
+Here we will include the variants that have a functional annotation to a fictional transcript `NM_1234.5`:
 
->>> from gpsea.model import VariantEffect
+First, we create the variant predicate:
+
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> is_missense = VariantPredicates.variant_effect(effect=VariantEffect.MISSENSE_VARIANT, tx_id="NM_1234.5")
->>> is_missense.get_question()
-'MISSENSE_VARIANT on NM_1234.5'
+>>> affects_tx = VariantPredicates.transcript(tx_id="NM_1234.5")
+>>> affects_tx.get_question()
+'variant affects transcript NM_1234.5'
 
-and then use it to create the autosomal recessive predicate:
+and then we wrap `affects_tx` with allele count predicate, to partition individuals
+based on presence of one or two alleles that affect `NM_1234.5`:
 
->>> gt_predicate = autosomal_recessive(is_missense)
->>> gt_predicate.display_question()
-'What is the genotype group: No allele, Monoallelic, Biallelic'
-
-This predicate will assign the individuals into one of the listed genotype categories
-based on the allele counts of the missense variants.
-
-
-Compare `Monoallelic` vs. `Biallelic`
--------------------------------------
-
-We can provide ``partitions`` to only compare the heterozygotes with those carrying
-biallelic alt mutations (homozygous alternate or compound heterozygous):
-
-We consult the *Autosomal recessive predicate categories* table for the category indices
-and we create the genotype group partitions:
-
->>> # `1` for `Monoallelic` and `2` for `Biallelic`
->>> partitions = ({1,}, {2,})
-
-which we use to create the autosomal recessive predicate:
-
->>> gt_predicate = autosomal_recessive(
-...     partitions=partitions,    
-... )
+>>> from gpsea.analysis.predicate.genotype import allele_counting
+>>> gt_predicate = allele_counting(variant_predicate=affects_tx)
 >>> gt_predicate.display_question()
 'What is the genotype group: Monoallelic, Biallelic'

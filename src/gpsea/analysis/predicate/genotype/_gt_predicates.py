@@ -440,14 +440,23 @@ def autosomal_recessive(
     )
 
 
-def allele_counting() -> GenotypePolyPredicate:
+def allele_counting(
+    variant_predicate: typing.Optional[VariantPredicate] = None,
+) -> GenotypePolyPredicate:
     """
     Create a predicate that assigns the patient either into
     monoallelic, or biallelic (homozygous alternative or compound heterozygous) group.
+
+    See :ref:`autosomal-recessive-moi` for a usage example.
+
+    :param variant_predicate: a predicate for choosing the variants for testing
+        or `None` if the allele count of all variants of an individual should be used.
     """
-    # TODO: link to an example usage in the documentation.
+    if variant_predicate is None:
+        variant_predicate = VariantPredicates.true()
+
     return ModeOfInheritancePredicate.from_moi_info(
-        variant_predicate=VariantPredicates.true(),
+        variant_predicate=variant_predicate,
         mode_of_inheritance_data=ModeOfInheritanceInfo.autosomal_recessive(),
         partitions=((1,), (2,)),
     )
