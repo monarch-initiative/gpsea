@@ -165,6 +165,8 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:
 ...         "HP:0002339",  # Abnormal caudate nucleus morphology
 ...     )
 ... )
+>>> len(specified_terms.terms_to_test)
+2
 
 
 .. _hpo-mtc-filter-strategy:
