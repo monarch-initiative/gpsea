@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Input data &mdash; GPSEA 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
 
@@ -236,13 +236,13 @@ or we can display a summary with the
 <p>The preprocessing of a cohort can take some time even if we cache the responses from remote resources,
 such as Variant Effect Predictor, Variant Validator, or Uniprot.
 GPSEA ships with a custom encoder and decoder
-designed to be integrated with Python’s built-in <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> module to
+designed to be integrated with Python’s built-in <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> module to
 persist a <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> to a JSON file and load it back.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
 <p>We can dump the <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a> into JSON
 by providing <a class="reference internal" href="../apidocs/gpsea.io.html#gpsea.io.GpseaJSONEncoder" title="gpsea.io.GpseaJSONEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">GpseaJSONEncoder</span></code></a> via <cite>cls</cite> option to the <cite>json</cite> module functions,
-such as the <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a> which encodes an object into a JSON <cite>str</cite>:</p>
+such as the <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a> which encodes an object into a JSON <cite>str</cite>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONEncoder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONEncoder</span><span class="p">)</span>
