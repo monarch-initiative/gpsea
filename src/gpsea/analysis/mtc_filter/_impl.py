@@ -5,7 +5,6 @@ import typing
 from collections import deque
 
 import hpotk
-import numpy as np
 import pandas as pd
 
 from ..predicate.genotype import GenotypePolyPredicate
@@ -191,17 +190,21 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(code="ST1", reason="Non-specified term")
     """
     The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.
+
+    :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.
     """
 
     def __init__(
         self,
-        terms_to_test: typing.Iterable[hpotk.TermId],
+        terms_to_test: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
-        """
-        Args:
-            terms_to_test: an iterable of TermIds representing the terms to test
-        """
-        self._terms_to_test_set = set(terms_to_test)
+        self._terms_to_test = tuple(
+            SpecifiedTermsMtcFilter.verify_term_id(val) for val in terms_to_test
+        )
+
+    @property
+    def terms_to_test(self) -> typing.Collection[hpotk.TermId]:
+        return self._terms_to_test
 
     def filter(
         self,
@@ -212,7 +215,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     ) -> typing.Sequence[PhenotypeMtcResult]:
         results = []
         for predicate in ph_predicates:
-            if predicate.phenotype in self._terms_to_test_set:
+            if predicate.phenotype in self._terms_to_test:
                 results.append(SpecifiedTermsMtcFilter.OK)
             else:
                 results.append(SpecifiedTermsMtcFilter.NON_SPECIFIED_TERM)
@@ -226,6 +229,15 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     def filter_method_name(self) -> str:
         return "Specified terms MTC filter"
+    
+    @staticmethod
+    def verify_term_id(val: typing.Union[str, hpotk.TermId]) -> hpotk.TermId:
+        if isinstance(val, str):
+            return hpotk.TermId.from_curie(val)
+        elif isinstance(val, hpotk.TermId):
+            return val
+        else:
+            raise ValueError(f"{val} is neither `str` nor `hpotk.TermId`")
 
 
 class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
