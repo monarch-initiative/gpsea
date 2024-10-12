@@ -10,6 +10,7 @@ from ._cohort import Cohort, Patient
 from ._gt import Genotype, Genotypes, Genotyped
 from ._phenotype import Phenotype, Disease, Measurement
 from ._protein import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
+from ._temporal import AgeKind, Age
 from ._tx import TranscriptCoordinates
 from ._variant import VariantCoordinates, ImpreciseSvInfo, VariantInfo, VariantInfoAware, VariantClass, Variant
 from ._variant import TranscriptAnnotation, TranscriptInfoAware, FunctionalAnnotationAware
@@ -17,6 +18,7 @@ from ._variant_effects import VariantEffect
 
 __all__ = [
     'Cohort', 'Patient', 'SampleLabels', 'Sex',
+    'AgeKind', 'Age',
     'Phenotype', 'Disease', 'Measurement',
     'Variant', 'VariantClass', 'VariantCoordinates', 'ImpreciseSvInfo', 'VariantInfo', 'VariantInfoAware',
     'Genotype', 'Genotypes', 'Genotyped',
