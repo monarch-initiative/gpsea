@@ -90,7 +90,7 @@ class CohortViewable:
                 hgvs_cdna = ''
                 protein_name = ''
                 effects = ''
-            
+
             variant_counts.append(
                 {
                     "variant": variant_key,
@@ -114,10 +114,11 @@ class CohortViewable:
                     "count": disease_count,
                 }
             )
-        
+
         n_diseases = len(disease_counts)
 
         var_effects_list = list()
+        var_effects_d = dict()
         if transcript_id is not None:
             has_transcript = True
             data_by_tx = cohort.variant_effect_count_by_tx(tx_id=transcript_id)
@@ -125,7 +126,13 @@ class CohortViewable:
             for tx_id, counter in data_by_tx.items():
                 if tx_id == transcript_id:
                     for effect, count in counter.items():
-                        var_effects_list.append({"effect": effect, "count": count})
+                        var_effects_d[effect] = count
+            total = sum(var_effects_d.values())
+            # Sort in descending order based on counts
+            sorted_counts_desc = dict(sorted(var_effects_d.items(), key=lambda item: item[1], reverse=True))
+            for effect, count in sorted_counts_desc.items():
+                percent = f"{round(count / total * 100)}%"
+                var_effects_list.append({"effect": effect, "count": count, "percent": percent})
         else:
             has_transcript = False
         if transcript_id is None:
@@ -165,7 +172,7 @@ class CohortViewable:
         """
         chrom_to_display = dict()
         var_formatter = VariantFormatter(transcript_id)
-        
+
         for var in cohort.all_variants():
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
