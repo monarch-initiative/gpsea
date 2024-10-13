@@ -144,11 +144,13 @@
             <tr class="strng">
                 <th class="lft">Variant effect</th>
                 <th>Annotation Count</th>
+                <th>Percent</th>
               </tr>
               {% for var_effect in var_effects_list %}
               <tr>
                 <td class="lft">{{ var_effect.effect }}</td>
                 <td>{{ var_effect.count }}</td>
+               <td>{{ var_effect.percent }}</td>
                 </tr>
             {% endfor %}
            </tbody>
