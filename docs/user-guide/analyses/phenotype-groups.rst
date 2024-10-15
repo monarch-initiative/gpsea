@@ -230,10 +230,10 @@ We can now execute the analysis:
 >>> len(result.phenotypes)
 260
 >>> result.total_tests
-38
+24
 
 
-Thanks to phenotype MTC filter, we only tested 38 out of 260 terms.
+Thanks to phenotype MTC filter, we only tested 24 out of 260 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -273,9 +273,9 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 The table shows that several HPO terms are significantly associated
 with presence of a heterozygous (`Monoallelic`) frameshift variant in *TBX5*.
 For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
-was observed in 42/71 (59%) patients with a missense variant
-but it was observed in 19/19 (100%) patients with a frameshift variant.
+was observed in 42/71 (59%) patients with no frameshift allele (`No allele`)
+but it was observed in 19/19 (100%) patients with a frameshift allele (`Monoallelic`).
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00919`.
+is `~0.005806`.
 

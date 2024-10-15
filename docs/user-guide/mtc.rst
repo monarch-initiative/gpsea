@@ -184,15 +184,12 @@ The strategy needs access to HPO:
 and it is implemented in the :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter` class:
 
 >>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> hpo_mtc = HpoMtcFilter.default_filter(
-...     hpo=hpo,
-...     term_frequency_threshold=0.2,
-... )
+>>> hpo_mtc = HpoMtcFilter.default_filter(hpo=hpo)
 
 
 We use static constructor :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter`
 for creating :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
-The constructor takes a threshold as an argument (e.g. 20% in the example above) 
+The constructor takes a ``term_frequency_threshold`` option (40% by default) 
 and the method's logic is made up of 8 individual heuristics 
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.
 
@@ -277,5 +274,22 @@ For instance,
 that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 *Abnormality of the nervous system* being significant.
+
+
+`HMF09` - Skipping terms that are rare on the cohort level 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We skip terms that occur in less than a certain percentage of cohort members.
+The purpose of this threshold is to omit terms for which we simply
+do not have much data overall.
+
+For instance, if the cohort consists of 100 individuals,
+and we have explicit observed observations for 20 and excluded for 10 individuals,
+then the annotation frequency is `0.3`. 
+
+The threshold is set as ``annotation_frequency_threshold`` option
+of the :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter` constructor,
+with the default value of `0.4` (40%).
+
 
 See :ref:`general-hpo-terms` section for details.
