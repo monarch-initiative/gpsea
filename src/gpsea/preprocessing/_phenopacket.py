@@ -459,7 +459,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                         except ValueError as error:
                             sub_note.add_warning(
                                 f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                f"Try again or remove variant form testing... {error}",
+                                f"Try again or remove variant from testing... {error}",
                             )
                             continue
                     elif variant_info.has_sv_info():
@@ -472,7 +472,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                         except ValueError as error:
                             sub_note.add_warning(
                                 f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                f"Try again or remove variant form testing... {error}",
+                                f"Try again or remove variant from testing... {error}",
                             )
                             continue
                     else:
