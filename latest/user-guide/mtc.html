@@ -16,7 +16,7 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=215e94d7"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=6dbb43f8"></script>
@@ -264,15 +264,12 @@ The strategy needs access to HPO:</p>
 </div>
 <p>and it is implemented in the <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a> class:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We use static constructor <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a>
 for creating <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.
-The constructor takes a threshold as an argument (e.g. 20% in the example above)
+The constructor takes a <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> option (40% by default)
 and the method’s logic is made up of 8 individual heuristics
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.</p>
 <section id="hmf01-skip-terms-that-occur-very-rarely">
@@ -340,6 +337,18 @@ it will derive from one of the more specific descendents.</p>
 that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 <em>Abnormality of the nervous system</em> being significant.</p>
+</section>
+<section id="hmf09-skipping-terms-that-are-rare-on-the-cohort-level">
+<h5><cite>HMF09</cite> - Skipping terms that are rare on the cohort level<a class="headerlink" href="#hmf09-skipping-terms-that-are-rare-on-the-cohort-level" title="Link to this heading"></a></h5>
+<p>We skip terms that occur in less than a certain percentage of cohort members.
+The purpose of this threshold is to omit terms for which we simply
+do not have much data overall.</p>
+<p>For instance, if the cohort consists of 100 individuals,
+and we have explicit observed observations for 20 and excluded for 10 individuals,
+then the annotation frequency is <cite>0.3</cite>.</p>
+<p>The threshold is set as <code class="docutils literal notranslate"><span class="pre">annotation_frequency_threshold</span></code> option
+of the <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a> constructor,
+with the default value of <cite>0.4</cite> (40%).</p>
 <p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> section for details.</p>
 </section>
 </section>

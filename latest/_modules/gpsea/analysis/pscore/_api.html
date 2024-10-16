@@ -15,7 +15,7 @@
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=215e94d7"></script>
-      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=6dbb43f8"></script>
@@ -216,7 +216,8 @@
 <span class="sd">        :param colors: a tuple with colors to use for coloring the box patches of the box plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># skip the patients with unassigned genotype group</span>
-        <span class="n">not_na_gts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="n">bla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="n">not_na_gts</span> <span class="o">=</span> <span class="n">bla</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">not_na_gts</span><span class="p">]</span>
         
         <span class="c1"># Check that the provided genotype predicate defines the same categories</span>

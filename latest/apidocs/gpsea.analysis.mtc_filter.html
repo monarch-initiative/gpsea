@@ -16,7 +16,7 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=215e94d7"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=6dbb43f8"></script>
@@ -352,7 +352,7 @@ See <a class="reference internal" href="../user-guide/mtc.html#hpo-mtc-filter-st
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo:</span> <span class="pre">~hpotk.ontology._api.MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_frequency_threshold:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_frequency_threshold:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypic_abnormality:</span> <span class="pre">~hpotk.model._term_id.TermId</span> <span class="pre">=</span> <span class="pre">DefaultTermId(idx=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value=HP:0000118)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/mtc_filter/_impl.html#HpoMtcFilter.default_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo:</span> <span class="pre">~hpotk.ontology._api.MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_frequency_threshold:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_frequency_threshold:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypic_abnormality:</span> <span class="pre">~hpotk.model._term_id.TermId</span> <span class="pre">=</span> <span class="pre">DefaultTermId(idx=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value=HP:0000118)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/mtc_filter/_impl.html#HpoMtcFilter.default_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -360,12 +360,13 @@ See <a class="reference internal" href="../user-guide/mtc.html#hpo-mtc-filter-st
 <li><p><strong>term_frequency_threshold</strong> – a <cite>float</cite> in range <span class="math notranslate nohighlight">\((0, 1]\)</span> with the minimum frequency
 for an HPO term to have in at least one of the genotype groups
 (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
-but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)</p></li>
-<li><p><strong>annotation_frequency_threshold</strong> – a <cite>float</cite> in range :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>(0, 1) with the minimum frequency of
+but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
+The default threshold is <cite>0.4</cite> (40%).</p></li>
+<li><p><strong>annotation_frequency_threshold</strong> – a <cite>float</cite> in range <span class="math notranslate nohighlight">\((0, 1) with the minimum frequency of
 annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
 we have explicit observed observations for 20 and excluded for 10 individuals, then the
-annotation frequency is 0.3. By default, we set a threshold of 25%. The purpose of this
-threshold is to omit terms for which we simply do not have much data overall.</p></li>
+annotation frequency is `0.3\)</span>. The purpose of this threshold is to omit terms for which
+we simply do not have much data overall. By default, we set a threshold to <cite>0.4</cite> (40%).</p></li>
 <li><p><strong>phenotypic_abnormality</strong> – a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a> corresponding to the root of HPO phenotype hierarchy.
 Having to specify this option should be very rarely, if ever.</p></li>
 </ul>

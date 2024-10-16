@@ -15,7 +15,7 @@
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=215e94d7"></script>
-      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
@@ -80,9 +80,10 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">from</span> <span class="nn">hpotk.util</span> <span class="kn">import</span> <span class="n">validate_instance</span>
 
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
 <span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
+<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.measurement_pb2</span> <span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span>
@@ -334,13 +335,13 @@
             <span class="n">build</span><span class="p">,</span> <span class="n">hgvs_coordinate_finder</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gt_parser</span> <span class="o">=</span> <span class="n">PhenopacketGenotypeParser</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
             <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">PhenotypeCreator</span><span class="p">,</span> <span class="s2">&quot;phenotype_creator&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
             <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s2">&quot;functional_annotator&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imprecise_sv_functional_annotator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
             <span class="n">imprecise_sv_functional_annotator</span><span class="p">,</span>
             <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
             <span class="s2">&quot;imprecise_sv_functional_annotator&quot;</span><span class="p">,</span>
@@ -403,6 +404,19 @@
         <span class="c1"># Check variants</span>
         <span class="n">vs</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;variants&quot;</span><span class="p">)</span>
         <span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_variants</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">vs</span><span class="p">)</span>
+
+        <span class="c1"># Complain if we have no genotype or phenotype data to work with</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Individual </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no genotype data (variants) to work with&quot;</span><span class="p">,</span>
+                <span class="n">solution</span><span class="o">=</span><span class="s2">&quot;Add variants or remove the individual from the analysis&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phenotype</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">phenotypes</span><span class="p">,</span> <span class="n">diseases</span><span class="p">,</span> <span class="n">measurements</span><span class="p">)):</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Individual </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no phenotype data (HPO, a diagnosis, measurement) to work with&quot;</span><span class="p">,</span>
+                <span class="n">solution</span><span class="o">=</span><span class="s2">&quot;Add HPO terms, a diagnosis, or measurements, or remove the individual from the analysis&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
             <span class="n">sample_id</span><span class="p">,</span>
@@ -547,8 +561,8 @@
                             <span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                             <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant form testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Individual </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant from testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="k">continue</span>
                     <span class="k">elif</span> <span class="n">variant_info</span><span class="o">.</span><span class="n">has_sv_info</span><span class="p">():</span>
@@ -560,8 +574,8 @@
                             <span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                             <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant form testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Individual </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s2">&quot;Try again or remove variant from testing... </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="k">continue</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -571,7 +585,7 @@
 
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">sub_note</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;Individual </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has an error with variant </span><span class="si">{</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="s2">&quot;Remove variant from testing... tx_anno == 0&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
@@ -584,9 +598,6 @@
                             <span class="n">genotypes</span><span class="o">=</span><span class="n">genotype</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variants</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no variants to work with&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">variants</span>
 
@@ -606,7 +617,7 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
                 <span class="s2">&quot;Expected a VCF record, a VRS CNV, or an expression with `hgvs.c`&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but had an error retrieving any from patient </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;but had an error retrieving any from individual </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Remove variant from testing&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
