@@ -159,13 +159,12 @@ and then we can create the predicates
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
-...     min_n_of_patients_with_term=2,
 ... )
 >>> len(pheno_predicates)
-260
+369
 
-The function finds all HPO terms that annotate at least *n* (``min_n_of_patients_with_term=2`` above) individuals,
-including the *indirect* annotations whose presence is implied by the true path rule.
+The function finds 369 HPO terms that annotate at least one individual,
+including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
 Statistical test
@@ -228,12 +227,12 @@ We can now execute the analysis:
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> len(result.phenotypes)
-260
+369
 >>> result.total_tests
-38
+24
 
 
-Thanks to phenotype MTC filter, we only tested 38 out of 260 terms.
+Thanks to phenotype MTC filter, we only tested 24 out of 369 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -273,9 +272,9 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 The table shows that several HPO terms are significantly associated
 with presence of a heterozygous (`Monoallelic`) frameshift variant in *TBX5*.
 For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
-was observed in 42/71 (59%) patients with a missense variant
-but it was observed in 19/19 (100%) patients with a frameshift variant.
+was observed in 42/71 (59%) patients with no frameshift allele (`No allele`)
+but it was observed in 19/19 (100%) patients with a frameshift allele (`Monoallelic`).
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.00919`.
+is `~0.005806`.
 

@@ -2,7 +2,8 @@ import hpotk
 import typing
 import logging
 
-from hpotk.validate import ValidationLevel
+from hpotk.validate import ValidationRunner, ValidationLevel
+from hpotk.util import validate_instance
 
 from gpsea.model import Phenotype
 
@@ -23,11 +24,11 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
     def __init__(
         self,
         hpo: hpotk.MinimalOntology,
-        validator: hpotk.validate.ValidationRunner,
+        validator: ValidationRunner,
     ):
         self._logger = logging.getLogger(__name__)
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
-        self._validator = hpotk.util.validate_instance(validator, hpotk.validate.ValidationRunner, 'validator')
+        self._hpo = validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
+        self._validator = validate_instance(validator, ValidationRunner, 'validator')
 
     def process(
         self,
@@ -38,7 +39,7 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
         Map CURIEs and observation states into phenotypes and validate the requirements.
 
         Args:
-            inputs (Iterable[Tuple[str, bool]]): 2-element tuples with a CURIE `str` and observation state as `bool` 
+            inputs (Iterable[Tuple[str, bool]]): 2-element tuples with a CURIE `str` and observation state as `bool`
               (`True` if phenotype was observed).
             notepad: Notepad
         Returns:
@@ -86,22 +87,16 @@ class PhenotypeCreator(Auditor[typing.Iterable[typing.Tuple[str, bool]], typing.
 
             phenotypes.append(Phenotype.from_term(term, is_observed))
 
-        # Check we have some phenotype terms to work with.
-        if len(phenotypes) == 0:
-            notepad.add_warning(
-                'No phenotype terms were left after the validation',
-                'Revise the phenotype terms and try again',
-            )
-        else:
-            vr = self._validator.validate_all(phenotypes)
-            for result in vr.results:
-                level = PhenotypeCreator._translate_level(result.level)
-                if level is None:
-                    # Should not happen. Please let the developers know about this issue!
-                    raise ValueError(f'Unknown result validation level {result.level}')
+        # We check
+        vr = self._validator.validate_all(phenotypes)
+        for result in vr.results:
+            level = PhenotypeCreator._translate_level(result.level)
+            if level is None:
+                # Should not happen. Please let the developers know about this issue!
+                raise ValueError(f'Unknown result validation level {result.level}')
 
-                notepad.add_issue(level, result.message)
-
+            notepad.add_issue(level, result.message)
+        
         return phenotypes
 
     @staticmethod

@@ -21,6 +21,7 @@ from gpsea.preprocessing import (
     ImpreciseSvFunctionalAnnotator,
     DefaultImpreciseSvFunctionalAnnotator,
 )
+from gpsea.preprocessing import Level
 from gpsea.preprocessing import PhenopacketPatientCreator, PhenotypeCreator
 from gpsea.preprocessing import VVMultiCoordinateService
 
@@ -271,4 +272,53 @@ class TestPhenopacketPatientCreator:
         values = tuple(m.test_result for m in patient.measurements)
         assert values == (800.0, 127.0, 180.2, 116.6, 52.93, 23.71)
 
-    # TODO: test disease and variants/interpretations
+    def test_individual_with_no_genotype(
+        self,
+        phenopacket: Phenopacket,
+        patient_creator: PhenopacketPatientCreator,
+    ):
+        """
+        Check if we get an error if no genotype info is available.
+        """
+        pp = Phenopacket()
+        pp.CopyFrom(phenopacket)
+        del pp.interpretations[:]  # clear variants
+
+        notepad = patient_creator.prepare_notepad("no-gt")
+        
+        _ = patient_creator.process(pp=pp, notepad=notepad)
+        
+        errors = tuple(notepad.errors())
+        
+        assert len(errors) == 1
+        error = errors[0]
+        assert error.level == Level.ERROR
+        assert error.message == "Individual PMID_30968594_individual_1 has no genotype data (variants) to work with"
+        assert error.solution == "Add variants or remove the individual from the analysis"
+
+    def test_individual_with_no_phenotype(
+        self,
+        phenopacket: Phenopacket,
+        patient_creator: PhenopacketPatientCreator,
+    ):
+        """
+        Check if we get an error if no phenotype info is available.
+        """
+        pp = Phenopacket()
+        pp.CopyFrom(phenopacket)
+        # clear phenotype
+        del pp.phenotypic_features[:]
+        del pp.diseases[:]
+        del pp.measurements[:]
+
+        notepad = patient_creator.prepare_notepad("no-gt")
+        
+        _ = patient_creator.process(pp=pp, notepad=notepad)
+        
+        errors = tuple(notepad.errors())
+        
+        assert len(errors) == 1
+        error = errors[0]
+        assert error.level == Level.ERROR
+        assert error.message == "Individual PMID_30968594_individual_1 has no phenotype data (HPO, a diagnosis, measurement) to work with"
+        assert error.solution == "Add HPO terms, a diagnosis, or measurements, or remove the individual from the analysis"
