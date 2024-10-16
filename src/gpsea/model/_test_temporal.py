@@ -1,6 +1,6 @@
 import pytest
 
-from ._temporal import AgeKind
+from ._temporal import AgeKind, Age
 
 
 class TestAgeKind:
@@ -40,3 +40,12 @@ class TestAgeKind:
     ):
         assert (left > right) == expected
         assert (left <= right) != expected
+
+
+class TestAge:
+
+    def test_fails_if_days_is_nan(self):
+        with pytest.raises(ValueError) as e:
+            Age(days=float('nan'), kind=AgeKind.POSTNATAL)
+        
+        assert e.value.args == ("`days` must be a non-negative `float` but was nan",)
