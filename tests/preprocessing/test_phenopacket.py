@@ -272,6 +272,17 @@ class TestPhenopacketPatientCreator:
         values = tuple(m.test_result for m in patient.measurements)
         assert values == (800.0, 127.0, 180.2, 116.6, 52.93, 23.71)
 
+        # a disease
+        assert len(patient.diseases) == 1
+        
+        disease = patient.diseases[0]
+        assert disease.identifier.value == "OMIM:201910"
+        assert disease.is_present is True
+        
+        assert disease.onset is not None
+        assert disease.onset.is_postnatal is True
+        assert disease.onset.days == pytest.approx(20.)
+
     def test_individual_with_no_genotype(
         self,
         phenopacket: Phenopacket,

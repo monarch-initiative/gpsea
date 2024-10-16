@@ -21,6 +21,7 @@ from gpsea.model import (
     Variant,
     Genotype,
     Genotypes,
+    Age,
 )
 from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import (
@@ -361,13 +362,28 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 continue
             else:
                 term_id = hpotk.TermId.from_curie(dis.term.id)
-
+            
+            if dis.HasField("onset"):
+                case = dis.onset.WhichOneof("element")
+                if case == "gestational_age":
+                    age = dis.onset.gestational_age
+                    onset = Age.gestational(weeks=age.weeks, days=age.days)
+                elif case == "age":
+                    age = dis.onset.age
+                    onset = Age.from_iso8601_period(value=age.iso8601duration)
+                else:
+                    notepad.add_warning(f"#{i} onset is in currently unsupported format `{case}`")
+                    onset = None
+            else:
+                onset = None
+            
             # Do not include excluded diseases if we decide to assume excluded if not included
             final_diseases.append(
                 Disease.from_raw_parts(
                     term_id=term_id,
                     name=dis.term.label,
                     is_observed=not dis.excluded,
+                    onset=onset,
                 ),
             )
 
