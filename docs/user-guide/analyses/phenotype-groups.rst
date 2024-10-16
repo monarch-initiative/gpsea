@@ -159,13 +159,12 @@ and then we can create the predicates
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
-...     min_n_of_patients_with_term=2,
 ... )
 >>> len(pheno_predicates)
-260
+369
 
-The function finds all HPO terms that annotate at least *n* (``min_n_of_patients_with_term=2`` above) individuals,
-including the *indirect* annotations whose presence is implied by the true path rule.
+The function finds 369 HPO terms that annotate at least one individual,
+including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
 Statistical test
@@ -228,12 +227,12 @@ We can now execute the analysis:
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> len(result.phenotypes)
-260
+369
 >>> result.total_tests
 24
 
 
-Thanks to phenotype MTC filter, we only tested 24 out of 260 terms.
+Thanks to phenotype MTC filter, we only tested 24 out of 369 terms.
 We can learn more by showing the MTC filter report:
 
 >>> from gpsea.view import MtcStatsViewer

@@ -230,11 +230,9 @@ was excluded):
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
-...     min_n_of_patients_with_term=2,
 ... )
 
-By default, GPSEA will perform one hypothesis test for each HPO term used to annotate two or more individuals in the cohort
-(see ``min_n_of_patients_with_term=2`` above).
+By default, GPSEA will perform one hypothesis test for each HPO term used to annotate at least one individual in the cohort.
 Testing multiple hypothesis on the same dataset increases the chance of receiving false positive result.
 However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
@@ -284,12 +282,12 @@ Now we can perform the analysis and investigate the results.
 16
 
 We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
-260 direct and indirect HPO terms
+369 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
-260
+369
 
-We can show the reasoning behind *not* testing 244 (`260 - 16`) HPO terms
+We can show the reasoning behind *not* testing 353 (`369 - 16`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
