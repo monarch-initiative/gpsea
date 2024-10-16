@@ -2,9 +2,10 @@ import logging
 import typing
 
 import hpotk
+from hpotk.util import validate_instance
 
-from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 import phenopackets.schema.v2.core.individual_pb2 as ppi
+from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
@@ -248,13 +249,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             build, hgvs_coordinate_finder
         )
         self._gt_parser = PhenopacketGenotypeParser()
-        self._phenotype_creator = hpotk.util.validate_instance(
+        self._phenotype_creator = validate_instance(
             phenotype_creator, PhenotypeCreator, "phenotype_creator"
         )
-        self._functional_annotator = hpotk.util.validate_instance(
+        self._functional_annotator = validate_instance(
             functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
-        self._imprecise_sv_functional_annotator = hpotk.util.validate_instance(
+        self._imprecise_sv_functional_annotator = validate_instance(
             imprecise_sv_functional_annotator,
             ImpreciseSvFunctionalAnnotator,
             "imprecise_sv_functional_annotator",
@@ -315,6 +316,19 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         # Check variants
         vs = notepad.add_subsection("variants")
         variants = self._add_variants(sample_id, pp, vs)
+
+        # Complain if we have no genotype or phenotype data to work with
+        if len(variants) == 0:
+            notepad.add_error(
+                f"Individual {pp.id} has no genotype data (variants) to work with",
+                solution="Add variants or remove the individual from the analysis",
+            )
+
+        if all(len(phenotype) == 0 for phenotype in (phenotypes, diseases, measurements)):
+            notepad.add_error(
+                f"Individual {pp.id} has no phenotype data (HPO, a diagnosis, measurement) to work with",
+                solution="Add HPO terms, a diagnosis, or measurements, or remove the individual from the analysis",
+            )
 
         return Patient.from_raw_parts(
             sample_id,
@@ -458,7 +472,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             )
                         except ValueError as error:
                             sub_note.add_warning(
-                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
+                                f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
                                 f"Try again or remove variant from testing... {error}",
                             )
                             continue
@@ -471,7 +485,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             )
                         except ValueError as error:
                             sub_note.add_warning(
-                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
+                                f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
                                 f"Try again or remove variant from testing... {error}",
                             )
                             continue
@@ -482,7 +496,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
-                            f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
+                            f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
                             "Remove variant from testing... tx_anno == 0",
                         )
                         continue
@@ -495,9 +509,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             genotypes=genotype,
                         )
                     )
-
-        if len(variants) == 0:
-            notepad.add_error(f"Patient {pp.id} has no variants to work with")
 
         return variants
 
@@ -517,7 +528,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         except ValueError:
             notepad.add_warning(
                 "Expected a VCF record, a VRS CNV, or an expression with `hgvs.c`"
-                f"but had an error retrieving any from patient {sample_id}",
+                f"but had an error retrieving any from individual {sample_id}",
                 "Remove variant from testing",
             )
             return None

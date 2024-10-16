@@ -1,6 +1,8 @@
 import hpotk
 import pytest
 
+from hpotk.validate import ValidationRunner
+
 from gpsea.preprocessing import PhenotypeCreator, Level
 
 
@@ -9,7 +11,7 @@ class TestPhenotypeCreator:
     @pytest.fixture
     def phenotype_creator(
             self, hpo: hpotk.MinimalOntology,
-            validation_runner: hpotk.validate.ValidationRunner,
+            validation_runner: ValidationRunner,
     ) -> PhenotypeCreator:
         return PhenotypeCreator(hpo, validation_runner)
 
@@ -47,7 +49,7 @@ class TestPhenotypeCreator:
         assert len(phenotypes) == 0
 
         issues = list(notepad.issues)
-        assert len(issues) == 2
+        assert len(issues) == 1
 
         first = issues[0]
         assert first.message == message
