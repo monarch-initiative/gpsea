@@ -130,6 +130,7 @@ class GpseaJSONEncoder(JSONEncoder):
                 "term_id": o.identifier.value,
                 "name": o.name,
                 "is_observed": o.is_present,
+                "onset": o.onset,
             }
         elif isinstance(o, Measurement):
             return {
@@ -211,7 +212,7 @@ _PROTEIN_FEATURE = ("info", "feature_type")
 _FEATURE_INFO = ("name", "region")
 _PHENOTYPE_FIELDS = ("term_id", "is_present", "onset")
 _AGE_FIELDS = ("days", "kind")
-_DISEASE_FIELDS = ("term_id", "name", "is_observed")
+_DISEASE_FIELDS = ("term_id", "name", "is_observed", "onset")
 _MEASUREMENT_FIELDS = ("test_term_id", "test_name", "test_result", "unit")
 _PATIENT_FIELDS = ("labels", "sex", "phenotypes", "diseases", "variants")
 _COHORT_FIELDS = ("members", "excluded_patient_count")
@@ -338,6 +339,7 @@ class GpseaJSONDecoder(JSONDecoder):
                 term_id=hpotk.TermId.from_curie(obj["term_id"]),
                 name=obj["name"],
                 is_observed=obj["is_observed"],
+                onset=obj["onset"],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _MEASUREMENT_FIELDS):
             return Measurement(

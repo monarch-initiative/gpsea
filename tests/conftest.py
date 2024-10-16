@@ -414,8 +414,8 @@ def test_phenotypes() -> typing.Mapping[str, Phenotype]:
 @pytest.fixture(scope='session')
 def test_diseases() -> typing.Mapping[str, Disease]:
     return {
-        'KBG_T': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
-        'KBG_F': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
+        'KBG_T': Disease.from_raw_parts(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
+        'KBG_F': Disease.from_raw_parts(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
     }
 
 

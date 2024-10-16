@@ -1,3 +1,4 @@
+import abc
 import typing
 import warnings
 
@@ -6,7 +7,23 @@ import hpotk
 from ._temporal import Age
 
 
-class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
+class OnsetAware(metaclass=abc.ABCMeta):
+    """
+    A mixin for classes which may know about their :class:`~gpsea.model.Age` or onset.
+
+    For instance, the onset of a phenotype or a disease in an individual.
+    """
+
+    @property
+    @abc.abstractmethod
+    def onset(self) -> typing.Optional[Age]:
+        """
+        Get the age of onset or `None` if unknown or otherwise not available.
+        """
+        pass
+
+
+class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, OnsetAware):
     """
     `Phenotype` represents a clinical sign or symptom represented as an HPO term.
     
@@ -82,7 +99,7 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
     @property
     def onset(self) -> typing.Optional[Age]:
         """
-        Get the onset of the phenotype or `None` if not available.
+        Get the age of onset of the phenotype or `None` if unknown or otherwise not available.
         """
         return self._onset
 
@@ -114,20 +131,36 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
         return str(self)
 
 
-class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model.Named):
+class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model.Named, OnsetAware):
     """
     Representation of a disease diagnosed (or excluded) in an investigated individual.
     """
+
+    @staticmethod
+    def from_raw_parts(
+        term_id: hpotk.TermId,
+        name: str,
+        is_observed: bool,
+        onset: typing.Optional[Age] = None,
+    ) -> "Disease":
+        return Disease(
+            term_id=term_id,
+            name=name,
+            is_observed=is_observed,
+            onset=onset,
+        )
 
     def __init__(
         self,
         term_id: hpotk.TermId,
         name: str,
         is_observed: bool,
+        onset: typing.Optional[Age],
     ):
         self._term_id = hpotk.util.validate_instance(term_id, hpotk.TermId, 'term_id')
         self._name = hpotk.util.validate_instance(name, str, 'name')
         self._observed = hpotk.util.validate_instance(is_observed, bool, 'is_observed')
+        self._onset = hpotk.util.validate_optional_instance(onset, Age, "onset")
 
     @property
     def identifier(self) -> hpotk.TermId:
@@ -149,21 +182,30 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
         Return `True` if the disease was diagnosed in the individual or `False` if it was excluded.
         """
         return self._observed
+    
+    @property
+    def onset(self) -> typing.Optional[Age]:
+        """
+        Get the age of onset of the disease or `None` if unknown or otherwise not available.
+        """
+        return self._onset
 
     def __eq__(self, other):
         return isinstance(other, Disease) \
             and self._term_id == other._term_id \
             and self._name == other._name \
-            and self._observed == other._observed
+            and self._observed == other._observed \
+            and self._onset == other._onset
 
     def __hash__(self):
-        return hash((self._term_id, self._name, self._observed))
+        return hash((self._term_id, self._name, self._observed, self._onset))
 
     def __str__(self):
         return f"Disease(" \
                f"identifier={self._term_id}, " \
                f"name={self._name}, " \
-               f"is_present={self._observed})"
+               f"is_present={self._observed}, " \
+               f"onset={self._onset})"
 
     def __repr__(self):
         return str(self)

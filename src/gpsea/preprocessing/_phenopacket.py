@@ -363,7 +363,13 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 term_id = hpotk.TermId.from_curie(dis.term.id)
 
             # Do not include excluded diseases if we decide to assume excluded if not included
-            final_diseases.append(Disease(term_id, dis.term.label, not dis.excluded))
+            final_diseases.append(
+                Disease.from_raw_parts(
+                    term_id=term_id,
+                    name=dis.term.label,
+                    is_observed=not dis.excluded,
+                ),
+            )
 
         return final_diseases
     
