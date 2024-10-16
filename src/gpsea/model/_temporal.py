@@ -1,6 +1,8 @@
 import enum
 import math
+import operator
 import re
+import typing
 
 
 class AgeKind(enum.Enum):
@@ -24,7 +26,7 @@ class AgeKind(enum.Enum):
             return self == AgeKind.POSTNATAL and value == AgeKind.GESTATIONAL
         else:
             return NotImplemented
-        
+
     def __ge__(self, value: object) -> bool:
         if isinstance(value, AgeKind):
             return self > value or self == value
@@ -34,7 +36,9 @@ class AgeKind(enum.Enum):
 
 class Age:
 
-    ISO8601PT = re.compile(r"^P(?P<year>\d+Y)?(?P<month>\d+M)?(?P<week>\d+W)?(?P<day>\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$")
+    ISO8601PT = re.compile(
+        r"^P(?P<year>\d+Y)?(?P<month>\d+M)?(?P<week>\d+W)?(?P<day>\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$"
+    )
     DAYS_IN_YEAR = 365.25
     DAYS_IN_MONTH = DAYS_IN_YEAR / 12
     DAYS_IN_WEEK = 7
@@ -66,7 +70,7 @@ class Age:
     @staticmethod
     def postnatal_days(days: int) -> "Age":
         return Age(days=float(days), kind=AgeKind.POSTNATAL)
-    
+
     @staticmethod
     def postnatal_years(
         years: int,
@@ -76,7 +80,7 @@ class Age:
             raise ValueError(f"`years` must be non-negative `int` but was {years}")
         days = years * days_in_year
         return Age(days=days, kind=AgeKind.POSTNATAL)
-    
+
     @staticmethod
     def from_iso8601_period(
         value: str,
@@ -88,25 +92,31 @@ class Age:
             week = matcher.group("week")
             day = matcher.group("day")
             if all(val is None for val in (year, month, week, day)):
-                raise ValueError("At least one of year, month, week or day fields must provided")
+                raise ValueError(
+                    "At least one of year, month, week or day fields must provided"
+                )
             if week is None:
                 # postnatal
                 if all(val is None for val in (year, month, day)):
-                    raise ValueError(f"Year, month or day must be provided for postnatal age: {value}")
+                    raise ValueError(
+                        f"Year, month or day must be provided for postnatal age: {value}"
+                    )
                 days = 0
                 days += 0 if year is None else float(year[:-1]) * Age.DAYS_IN_YEAR
                 days += 0 if month is None else float(month[:-1]) * Age.DAYS_IN_MONTH
                 days += 0 if day is None else float(day[:-1])
-                
+
                 return Age(days=days, kind=AgeKind.POSTNATAL)
             else:
                 # gestational
                 if any(val is not None for val in (year, month)):
-                    raise ValueError(f"Year and month must not be provided for gestational age: {value}")
+                    raise ValueError(
+                        f"Year and month must not be provided for gestational age: {value}"
+                    )
                 days = 0
                 days += 0 if week is None else float(week[:-1]) * Age.DAYS_IN_WEEK
                 days += 0 if day is None else float(day[:-1])
-                
+
                 return Age(days=days, kind=AgeKind.GESTATIONAL)
         else:
             raise ValueError(f"'{value}' did not match ISO8601 pattern")
@@ -134,48 +144,92 @@ class Age:
     @property
     def is_postnatal(self) -> bool:
         return self._kind == AgeKind.POSTNATAL
-    
+
     def __lt__(self, value: object) -> bool:
+        return self._compare(operator.lt, value)
+
+    def __le__(self, value: object) -> bool:
+        return self._compare(operator.le, value)
+
+    def __gt__(self, value: object) -> bool:
+        return self._compare(operator.gt, value)
+
+    def __ge__(self, value: object) -> bool:
+        return self._compare(operator.ge, value)
+
+    def _compare(
+        self,
+        op: typing.Callable[[typing.Any, typing.Any], bool],
+        value: object,
+    ) -> bool:
         if isinstance(value, Age):
-            if self._kind < value._kind:
+            if op(self._kind, value._kind):
                 return True
             elif self._kind == value._kind:
-                return self._days < value._days
+                return op(self._days, value._days)
             else:
                 return False
         else:
             return NotImplemented
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, Age) \
-            and self._days == value._days \
+        return (
+            isinstance(value, Age)
+            and self._days == value._days
             and self._kind == value._kind
+        )
 
     def __hash__(self) -> int:
         return hash((self._days, self._kind))
 
     def __repr__(self) -> str:
         return f"Age(days={self._days}, kind={self._kind})"
-    
+
     def __str__(self) -> str:
         return repr(self)
 
 
-BIRTH = Age(days=0., kind=AgeKind.POSTNATAL)
-POSTNATAL_FUTURE = Age(days=float('inf'), kind=AgeKind.POSTNATAL)
-GESTATIONAL_FUTURE = Age(days=float('inf'), kind=AgeKind.GESTATIONAL)
+BIRTH = Age(days=0.0, kind=AgeKind.POSTNATAL)
+POSTNATAL_FUTURE = Age(days=float("inf"), kind=AgeKind.POSTNATAL)
+GESTATIONAL_FUTURE = Age(days=float("inf"), kind=AgeKind.GESTATIONAL)
 
 
-# class TemporalRange:
+class TemporalRange:
 
-#     @property
-#     def start(self) -> Age:
-#         pass
+    def __init__(
+        self,
+        start: typing.Optional[Age],
+        end: typing.Optional[Age],
+    ):
+        if start is not None:
+            assert isinstance(start, Age)
+        if end is not None:
+            assert isinstance(end, Age)
+        if start is not None and end is not None:
+            assert start <= end, "Start must be at or before end"
+        
+        self._start = start
+        self._end = end
 
-#     @property
-#     def end(self) -> Age:
-#         pass
+    @property
+    def start(self) -> typing.Optional[Age]:
+        return self._start
 
+    @property
+    def end(self) -> typing.Optional[Age]:
+        return self._end
 
-# class TemporalAware(metaclass=abc.ABCMeta):
-#     pass
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, TemporalRange):
+            return self._start == value._start and self._end == value._end
+        else:
+            return False
+        
+    def __hash__(self) -> int:
+        return hash((self._start, self._end))
+    
+    def __str__(self) -> str:
+        return f"TemporalRange(start={self._start}, end={self._end})"
+
+    def __repr__(self) -> str:
+        return str(self)
