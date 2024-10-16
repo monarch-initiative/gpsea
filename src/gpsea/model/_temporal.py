@@ -1,5 +1,6 @@
 import enum
 import re
+import typing
 
 
 class AgeKind(enum.Enum):
@@ -37,6 +38,18 @@ class Age:
     DAYS_IN_YEAR = 365.25
     DAYS_IN_MONTH = DAYS_IN_YEAR / 12
     DAYS_IN_WEEK = 7
+
+    @staticmethod
+    def future_postnatal() -> "Age":
+        return POSTNATAL_FUTURE
+
+    @staticmethod
+    def future_gestational() -> "Age":
+        return GESTATIONAL_FUTURE
+
+    @staticmethod
+    def unknown() -> "Age":
+        return UNKNOWN_AGE
 
     @staticmethod
     def gestational(
@@ -101,12 +114,12 @@ class Age:
     def __init__(
         self,
         days: float,
-        kind: AgeKind,
-    ) -> None:
+        kind: typing.Optional[AgeKind],
+    ):
         if not isinstance(days, float) or days < 0:
             raise ValueError(f"`days` must be a non-negative `float` but was {days}")
         self._days = days
-        if not isinstance(kind, AgeKind):
+        if kind is not None and not isinstance(kind, AgeKind):
             raise ValueError(f"`kind` must be an instance of `AgeKind` but was {kind}")
         self._kind = kind
 
@@ -115,12 +128,22 @@ class Age:
         return self._days
 
     @property
-    def age_kind(self) -> AgeKind:
-        return self._kind
+    def is_unknown(self) -> bool:
+        return self._kind is None
+
+    @property
+    def is_gestational(self) -> bool:
+        return self._kind == AgeKind.GESTATIONAL
+
+    @property
+    def is_postnatal(self) -> bool:
+        return self._kind == AgeKind.POSTNATAL
     
     def __lt__(self, value: object) -> bool:
         if isinstance(value, Age):
-            if self._kind < value._kind:
+            if self._kind is None:
+                return NotImplemented
+            elif self._kind < value._kind:
                 return True
             elif self._kind == value._kind:
                 return self._days < value._days
@@ -142,3 +165,23 @@ class Age:
     
     def __str__(self) -> str:
         return repr(self)
+
+
+POSTNATAL_FUTURE = Age(days=float('inf'), kind=AgeKind.POSTNATAL)
+GESTATIONAL_FUTURE = Age(days=float('inf'), kind=AgeKind.GESTATIONAL)
+UNKNOWN_AGE = Age(days=float('nan'), kind=None)
+
+
+# class TemporalRange:
+
+#     @property
+#     def start(self) -> Age:
+#         pass
+
+#     @property
+#     def end(self) -> Age:
+#         pass
+
+
+# class TemporalAware(metaclass=abc.ABCMeta):
+#     pass

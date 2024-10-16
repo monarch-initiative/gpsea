@@ -1,44 +1,6 @@
 import pytest
-from gpsea.model import AgeKind, Age
 
-
-class TestAgeKind:
-
-    @pytest.mark.parametrize(
-        "left, right, expected",
-        [
-            (AgeKind.GESTATIONAL, AgeKind.GESTATIONAL, False),
-            (AgeKind.GESTATIONAL, AgeKind.POSTNATAL, True),
-            (AgeKind.POSTNATAL, AgeKind.GESTATIONAL, False),
-            (AgeKind.POSTNATAL, AgeKind.POSTNATAL, False),
-        ],
-    )
-    def test_age_kind_ordering_lt(
-        self,
-        left: AgeKind,
-        right: AgeKind,
-        expected: bool,
-    ):
-        assert (left < right) == expected
-        assert (left >= right) != expected
-
-    @pytest.mark.parametrize(
-        "left, right, expected",
-        [
-            (AgeKind.GESTATIONAL, AgeKind.GESTATIONAL, False),
-            (AgeKind.GESTATIONAL, AgeKind.POSTNATAL, False),
-            (AgeKind.POSTNATAL, AgeKind.GESTATIONAL, True),
-            (AgeKind.POSTNATAL, AgeKind.POSTNATAL, False),
-        ],
-    )
-    def test_age_kind_ordering_gt(
-        self,
-        left: AgeKind,
-        right: AgeKind,
-        expected: bool,
-    ):
-        assert (left > right) == expected
-        assert (left <= right) != expected
+from gpsea.model import Age
 
 
 class TestAge:
@@ -54,7 +16,7 @@ class TestAge:
     def test_gestational(self, weeks: int, days: int, expected: int):
         age = Age.gestational(weeks, days=days)
         assert age.days == expected
-        assert age.age_kind == AgeKind.GESTATIONAL
+        assert age.is_gestational
 
     @pytest.mark.parametrize(
         "years, expected",
@@ -89,22 +51,22 @@ class TestAge:
         assert age.days == pytest.approx(expected)
 
     @pytest.mark.parametrize(
-        "value, kind, days",
+        "value, is_postnatal, days",
         [
-            ("P1D", AgeKind.POSTNATAL, 1.),
-            ("P1Y", AgeKind.POSTNATAL, 365.25),
-            ("P0W6D", AgeKind.GESTATIONAL, 6.),
-            ("P4W2D", AgeKind.GESTATIONAL, 30.),
+            ("P1D", True, 1.),
+            ("P1Y", True, 365.25),
+            ("P0W6D", False, 6.),
+            ("P4W2D", False, 30.),
         ]
     )
     def test_from_iso8601_period(
         self,
         value: str,
-        kind: AgeKind,
+        is_postnatal: bool,
         days: float,
     ):
         age = Age.from_iso8601_period(value)
-        assert age.age_kind == kind
+        assert age.is_postnatal == is_postnatal
         assert age.days == pytest.approx(days)
 
     @pytest.mark.parametrize(
