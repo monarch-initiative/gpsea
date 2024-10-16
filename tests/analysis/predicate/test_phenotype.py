@@ -15,7 +15,7 @@ def test_prepare_hpo_terms_of_interest(
         hpo=hpo,
     )
 
-    assert len(terms) == 66
+    assert len(terms) == 71
 
 
 def test_prepare_predicates_for_terms_of_interest(
@@ -27,5 +27,5 @@ def test_prepare_predicates_for_terms_of_interest(
         hpo=hpo,
     )
 
-    assert len(predicates) == 66
+    assert len(predicates) == 71
     assert all(isinstance(p, PhenotypePolyPredicate) for p in predicates)
