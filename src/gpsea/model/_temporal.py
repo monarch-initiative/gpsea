@@ -138,6 +138,10 @@ class Age:
         return self._days
 
     @property
+    def kind(self) -> AgeKind:
+        return self._kind
+
+    @property
     def is_gestational(self) -> bool:
         return self._kind == AgeKind.GESTATIONAL
 

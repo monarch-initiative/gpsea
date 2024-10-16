@@ -54,7 +54,7 @@ class TestCountingPhenotypeScorer:
             labels=SampleLabels("test"),
             sex=Sex.UNKNOWN_SEX,
             phenotypes=(
-                Phenotype(
+                Phenotype.from_raw_parts(
                     hpotk.TermId.from_curie(curie),
                     is_observed=True,
                 )

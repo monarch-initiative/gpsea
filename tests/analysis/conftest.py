@@ -39,7 +39,7 @@ def degenerated_cohort(
                 labels=labels_a,
                 sex=Sex.UNKNOWN_SEX,
                 phenotypes=(
-                    Phenotype(
+                    Phenotype.from_raw_parts(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),
                         is_observed=True,
                     ),
@@ -75,7 +75,7 @@ def degenerated_cohort(
                 labels=labels_b,
                 sex=Sex.UNKNOWN_SEX,
                 phenotypes=(
-                    Phenotype(
+                    Phenotype.from_raw_parts(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),
                         is_observed=True,
                     ),

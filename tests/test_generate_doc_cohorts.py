@@ -47,7 +47,14 @@ class TestGenerateCohortsForDocumentation:
         with phenopacket_registry.open_phenopacket_store(
             TestGenerateCohortsForDocumentation.PHENOPACKET_STORE_VERSION,
         ) as ps:
-            phenopackets = tuple(ps.iter_cohort_phenopackets(cohort_name))
+            # Sort the phenopackets by ID to get deterministic behavior
+            # for testing.
+            phenopackets = tuple(
+                sorted(
+                    ps.iter_cohort_phenopackets(cohort_name),
+                    key=lambda pp: pp.id + pp.subject.id
+                )
+            )
 
         cohort, qc = load_phenopackets(
             phenopackets=iter(phenopackets),

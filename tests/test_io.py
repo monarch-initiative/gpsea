@@ -31,7 +31,14 @@ def test_regenerate_cohort(
 
     registry = configure_phenopacket_registry(store_dir=tmp_path)
     with registry.open_phenopacket_store('0.1.18') as ps:
-        phenopackets = tuple(ps.iter_cohort_phenopackets('SUOX'))
+        # Sort the phenopackets by ID to get deterministic behavior
+        # for testing.
+        phenopackets = tuple(
+            sorted(
+                ps.iter_cohort_phenopackets('SUOX'),
+                key=lambda pp: pp.id + pp.subject.id
+            )
+        )
     
     cohort_creator = configure_caching_cohort_creator(hpo, timeout=30.)
     cohort, validation = load_phenopackets(

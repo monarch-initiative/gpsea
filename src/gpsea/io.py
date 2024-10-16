@@ -25,6 +25,8 @@ from gpsea.model import (
     Measurement,
     Disease,
     Phenotype,
+    Age,
+    AgeKind,
     Sex,
 )
 from gpsea.model.genome import Contig, Region, GenomicRegion, Strand
@@ -109,13 +111,19 @@ class GpseaJSONEncoder(JSONEncoder):
                 "label": o.label,
                 "meta_label": o.meta_label,
             }
-        elif isinstance(o, (Sex, Genotype, VariantEffect, Strand, VariantClass)):
+        elif isinstance(o, (Sex, AgeKind, Genotype, VariantEffect, Strand, VariantClass)):
             # enums
             return o.name
         elif isinstance(o, Phenotype):
             return {
                 "term_id": o.identifier.value,
                 "is_present": o.is_present,
+                "onset": o.onset,
+            }
+        elif isinstance(o, Age):
+            return {
+                "days": o.days,
+                "kind": o.kind,
             }
         elif isinstance(o, Disease):
             return {
@@ -201,7 +209,8 @@ _TX_COORDINATES = ("identifier", "region", "exons", "cds_start", "cds_end")
 _PROTEIN_METADATA = ("protein_id", "label", "protein_features", "protein_length")
 _PROTEIN_FEATURE = ("info", "feature_type")
 _FEATURE_INFO = ("name", "region")
-_PHENOTYPE_FIELDS = ("term_id", "is_present")
+_PHENOTYPE_FIELDS = ("term_id", "is_present", "onset")
+_AGE_FIELDS = ("days", "kind")
 _DISEASE_FIELDS = ("term_id", "name", "is_observed")
 _MEASUREMENT_FIELDS = ("test_term_id", "test_name", "test_result", "unit")
 _PATIENT_FIELDS = ("labels", "sex", "phenotypes", "diseases", "variants")
@@ -317,6 +326,12 @@ class GpseaJSONDecoder(JSONDecoder):
             return Phenotype(
                 term_id=hpotk.TermId.from_curie(obj["term_id"]),
                 is_observed=obj["is_present"],
+                onset=obj["onset"],
+            )
+        elif GpseaJSONDecoder._has_all_fields(obj, _AGE_FIELDS):
+            return Age(
+                days=obj["days"],
+                kind=AgeKind[obj["kind"]],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _DISEASE_FIELDS):
             return Disease(

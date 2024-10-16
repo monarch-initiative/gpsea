@@ -3,6 +3,8 @@ import warnings
 
 import hpotk
 
+from ._temporal import Age
+
 
 class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
     """
@@ -19,12 +21,15 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
     def from_raw_parts(
         term_id: typing.Union[str, hpotk.TermId],
         is_observed: bool,
+        onset: typing.Optional[Age] = None,
     ) -> "Phenotype":
         """
         Create `Phenotype` from a term ID and observation state.
 
         :param term_id: a `str` with CURIE (e.g. `HP:0001250`) or a :class:`~hpotk.TermId`.
         :param is_observed: `True` if the term ID was observed in patient or `False` if it was explicitly excluded.
+        :param onset: the :class:`~gpsea.model.Age` when the phenotype was first observed in patient
+            or `None` if not available.
         """
         if isinstance(term_id, str):
             term_id = hpotk.TermId.from_curie(term_id)
@@ -35,16 +40,19 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
         
         return Phenotype(
             term_id,
-            is_observed,
+            is_observed=is_observed,
+            onset=onset,
         )
 
     def __init__(
         self,
         term_id: hpotk.TermId,
-        is_observed: bool
+        is_observed: bool,
+        onset: typing.Optional[Age],
     ):
         self._term_id = hpotk.util.validate_instance(term_id, hpotk.TermId, 'term_id')
         self._observed = hpotk.util.validate_instance(is_observed, bool, 'is_observed')
+        self._onset = hpotk.util.validate_optional_instance(onset, Age, "onset")
 
     @property
     def identifier(self) -> hpotk.TermId:
@@ -72,6 +80,13 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
         return self.is_present
 
     @property
+    def onset(self) -> typing.Optional[Age]:
+        """
+        Get the onset of the phenotype or `None` if not available.
+        """
+        return self._onset
+
+    @property
     def is_observed(self) -> bool:
         """
         Returns `True` if the phenotype was *present* in the respective patient.
@@ -83,15 +98,17 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature):
     def __eq__(self, other):
         return isinstance(other, Phenotype) \
             and self._term_id == other._term_id \
-            and self._observed == other._observed
+            and self._observed == other._observed \
+            and self._onset == other._onset
 
     def __hash__(self):
-        return hash((self._term_id, self._observed))
+        return hash((self._term_id, self._observed, self._onset))
 
     def __str__(self):
         return f"Phenotype(" \
                f"identifier={self._term_id}, " \
-               f"is_present={self._observed})"
+               f"is_present={self._observed}, " \
+               f"onset={self._onset})"
 
     def __repr__(self):
         return str(self)

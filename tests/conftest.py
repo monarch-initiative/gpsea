@@ -395,17 +395,17 @@ def toy_cohort(
 @pytest.fixture(scope='session')
 def test_phenotypes() -> typing.Mapping[str, Phenotype]:
     return {
-        'arachnodactyly_T': Phenotype(hpotk.TermId.from_curie('HP:0001166'), True),
-        'seizure_T': Phenotype(hpotk.TermId.from_curie('HP:0001250'), True),
-        'focal_clonic_seizure_T': Phenotype(
+        'arachnodactyly_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001166'), True),
+        'seizure_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001250'), True),
+        'focal_clonic_seizure_T': Phenotype.from_raw_parts(
             hpotk.TermId.from_curie('HP:0002266'), True,
         ),
-        'spasticity_T': Phenotype(hpotk.TermId.from_curie('HP:0001257'), True),
+        'spasticity_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001257'), True),
 
-        'arachnodactyly_F': Phenotype(hpotk.TermId.from_curie('HP:0001166'), False),
-        'seizure_F': Phenotype(hpotk.TermId.from_curie('HP:0001250'), False),
-        'spasticity_F': Phenotype(hpotk.TermId.from_curie('HP:0001257'), False),
-        'focal_clonic_seizure_F': Phenotype(
+        'arachnodactyly_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001166'), False),
+        'seizure_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001250'), False),
+        'spasticity_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001257'), False),
+        'focal_clonic_seizure_F': Phenotype.from_raw_parts(
             hpotk.TermId.from_curie('HP:0002266'), False,
         ),
     }
