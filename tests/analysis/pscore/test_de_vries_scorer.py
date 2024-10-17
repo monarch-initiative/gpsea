@@ -70,7 +70,8 @@ class TestDeVriesScorer:
         patient = Patient.from_raw_parts(
             labels=SampleLabels("test"),
             sex=Sex.UNKNOWN_SEX,
-            age_at_death=None,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 Phenotype.from_raw_parts(
                     term_id=curie,

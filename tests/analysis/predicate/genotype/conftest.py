@@ -191,7 +191,8 @@ def patient_w_missense(
     return Patient.from_raw_parts(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -207,7 +208,8 @@ def patient_w_frameshift(
     return Patient.from_raw_parts(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -335,7 +337,8 @@ def adam(
     return Patient.from_raw_parts(
         adam_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -360,7 +363,8 @@ def eve(
     return Patient.from_raw_parts(
         eve_label,
         sex=Sex.FEMALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -385,7 +389,8 @@ def cain(
     return Patient.from_raw_parts(
         cain_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -521,7 +526,8 @@ def walt(
     return Patient.from_raw_parts(
         walt_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -546,7 +552,8 @@ def skyler(
     return Patient.from_raw_parts(
         skyler_label,
         sex=Sex.FEMALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -571,7 +578,8 @@ def flynn(
     return Patient.from_raw_parts(
         flynn_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -596,7 +604,8 @@ def holly(
     return Patient.from_raw_parts(
         holly_label,
         sex=Sex.FEMALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -681,7 +690,8 @@ def anakin(
     return Patient.from_raw_parts(
         anakin_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -702,7 +712,8 @@ def padme(
     return Patient.from_raw_parts(
         padme_label,
         sex=Sex.FEMALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -723,7 +734,8 @@ def luke(
     return Patient.from_raw_parts(
         luke_label,
         sex=Sex.MALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -744,7 +756,8 @@ def leia(
     return Patient.from_raw_parts(
         leia_label,
         sex=Sex.FEMALE,
-        age_at_death=None,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),

@@ -13,9 +13,9 @@ class Death(Endpoint):
     ) -> typing.Optional[Survival]:
         # If the patient is alive we use the current age as `value` and `censored=True`
         # If the patient is deceased, we use the age at death as a `value` and `censored=False`
-        if patient.age_at_death is not None:
+        if patient.age is not None:
             return Survival(
-                value=patient.age_at_death.days,
+                value=patient.age.days,
                 is_censored=False,
             )
         raise NotImplementedError

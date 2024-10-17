@@ -22,11 +22,13 @@ from gpsea.model import (
     ImpreciseSvInfo,
     VariantInfo,
     Variant,
+    Phenotype,
     Genotype,
     Genotypes,
     Age,
+    VitalStatus,
+    Status,
 )
-from gpsea.model._phenotype import Phenotype
 from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import (
     VariantCoordinateFinder,
@@ -299,10 +301,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         # Extract karyotypic sex
         indi = notepad.add_subsection("individual")
-        sex = self._extract_sex(pp.subject, indi)
+        sex = PhenopacketPatientCreator._extract_sex(pp.subject, indi)
 
         # Date of death
-        dod = self._extract_date_of_death(pp.subject, indi)
+        age = PhenopacketPatientCreator._extract_age(pp.subject, indi)
+        vital_status = PhenopacketPatientCreator._extract_vital_status(pp.subject, indi)
 
         # Check phenotypes
         pfs = notepad.add_subsection("phenotype-features")
@@ -335,7 +338,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return Patient.from_raw_parts(
             sample_id,
             sex=sex,
-            age_at_death=dod,
+            age=age,
+            vital_status=vital_status,
             phenotypes=phenotypes,
             measurements=measurements,
             variants=variants,
@@ -474,8 +478,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 final_measurements.append(Measurement(test_term_id, test_name, test_result, unit))
         return final_measurements
 
+    @staticmethod
     def _extract_sex(
-        self,
         individual: ppi.Individual,
         notepad: Notepad,
     ) -> typing.Optional[Sex]:
@@ -491,20 +495,48 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             notepad.add_warning(f'Unknown sex type: {sex}')
             return Sex.UNKNOWN_SEX
 
-    def _extract_date_of_death(
-        self,
+    @staticmethod
+    def _extract_age(
         individual: ppi.Individual,
         notepad: Notepad,
     ) -> typing.Optional[Age]:
+        if individual.HasField("time_at_last_encounter"):
+            tale = individual.time_at_last_encounter
+            return PhenopacketPatientCreator._parse_time_element(tale, notepad)
+        return None
+
+    @staticmethod
+    def _extract_vital_status(
+        individual: ppi.Individual,
+        notepad: Notepad,
+    ) -> typing.Optional[VitalStatus]:
         if individual.HasField("vital_status"):
             vital_status = individual.vital_status
-            if vital_status.status == vital_status.DECEASED and vital_status.HasField("time_of_death"):
-                tod = vital_status.time_of_death
-                return PhenopacketPatientCreator._parse_time_element(
-                    time_element=tod,
+            
+            if vital_status.status == vital_status.UNKNOWN_STATUS:
+                status = Status.UNKNOWN
+            elif vital_status.status == vital_status.ALIVE:
+                status = Status.ALIVE
+            elif vital_status.status == vital_status.DECEASED:
+                status = Status.DECEASED
+            else:
+                notepad.add_warning(f"Unexpected vital status value {vital_status}")
+                status = Status.UNKNOWN
+            
+            if vital_status.HasField("time_of_death"):
+                age_of_death = PhenopacketPatientCreator._parse_time_element(
+                    time_element=vital_status.time_of_death,
                     notepad=notepad,
                 )
-        
+                if status == Status.ALIVE and age_of_death is not None:
+                    notepad.add_warning("Individual is ALIVE but has age of death")
+            else:
+                age_of_death = None
+            return VitalStatus(
+                status=status,
+                age_of_death=age_of_death,
+            )
+                
         return None
 
     def _add_variants(

@@ -38,7 +38,8 @@ def degenerated_cohort(
             Patient.from_raw_parts(
                 labels=labels_a,
                 sex=Sex.UNKNOWN_SEX,
-                age_at_death=None,
+                age=None,
+                vital_status=None,
                 phenotypes=(
                     Phenotype.from_raw_parts(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),
@@ -75,7 +76,8 @@ def degenerated_cohort(
             Patient.from_raw_parts(
                 labels=labels_b,
                 sex=Sex.UNKNOWN_SEX,
-                age_at_death=None,
+                age=None,
+                vital_status=None,
                 phenotypes=(
                     Phenotype.from_raw_parts(
                         term_id=hpotk.TermId.from_curie("HP:0000118"),

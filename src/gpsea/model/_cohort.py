@@ -1,7 +1,9 @@
+import enum
 import itertools
 import typing
 
 from collections import Counter
+from dataclasses import dataclass
 
 import hpotk
 
@@ -9,6 +11,30 @@ from ._base import SampleLabels, Sex
 from ._phenotype import Phenotype, Disease, Measurement
 from ._temporal import Age
 from ._variant import Variant
+
+
+class Status(enum.Enum):
+    UNKNOWN = 0
+    ALIVE = 1
+    DECEASED = 2
+
+
+@dataclass(frozen=True)
+class VitalStatus:
+    status: Status
+    age_of_death: typing.Optional[Age]
+
+    @property
+    def is_alive(self) -> bool:
+        return self.status == Status.ALIVE
+    
+    @property
+    def is_deceased(self) -> bool:
+        return self.status == Status.DECEASED
+    
+    @property
+    def is_unknown(self) -> bool:
+        return self.status == Status.UNKNOWN
 
 
 class Patient:
@@ -37,7 +63,8 @@ class Patient:
     def from_raw_parts(
         labels: SampleLabels,
         sex: typing.Optional[Sex],
-        age_at_death: typing.Optional[Age],
+        age: typing.Optional[Age],
+        vital_status: typing.Optional[VitalStatus],
         phenotypes: typing.Iterable[Phenotype],
         measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
@@ -52,7 +79,8 @@ class Patient:
         return Patient(
             labels=labels,
             sex=sex,
-            age_at_death=age_at_death,
+            age=age,
+            vital_status=vital_status,
             phenotypes=phenotypes,
             measurements=measurements,
             diseases=diseases,
@@ -63,7 +91,8 @@ class Patient:
         self,
         labels: SampleLabels,
         sex: Sex,
-        age_at_death: typing.Optional[Age],
+        age: typing.Optional[Age],
+        vital_status: typing.Optional[VitalStatus],
         phenotypes: typing.Iterable[Phenotype],
         measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
@@ -75,9 +104,13 @@ class Patient:
         assert isinstance(sex, Sex)
         self._sex = sex
         
-        if age_at_death is not None:
-            assert isinstance(age_at_death, Age)
-        self._aod = age_at_death
+        if age is not None:
+            assert isinstance(age, Age)
+        self._age = age
+        
+        if vital_status is not None:
+            assert isinstance(vital_status, VitalStatus)
+        self._vital_status = vital_status
 
         self._phenotypes = tuple(phenotypes)
         self._measurements = tuple(measurements)
@@ -106,11 +139,18 @@ class Patient:
         return self._sex
 
     @property
-    def age_at_death(self) -> typing.Optional[Age]:
+    def age(self) -> typing.Optional[Age]:
         """
-        Get age at death or `None` if not available.
+        Get age of the individual or `None` if not available.
         """
-        return self._aod
+        return self._age
+    
+    @property
+    def vital_status(self) -> typing.Optional[VitalStatus]:
+        """
+        Get the vital status information for the individual or `None` if not available.
+        """
+        return self._vital_status
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
@@ -192,7 +232,8 @@ class Patient:
         return (f"Patient("
                 f"labels:{self._labels}, "
                 f"sex:{self._sex}, "
-                f"age_at_death:{self._aod}, "
+                f"age:{self._age}, "
+                f"vital_status:{self._vital_status}, "
                 f"variants:{self._variants}, "
                 f"phenotypes:{[pheno.identifier for pheno in self._phenotypes]}, "
                 f"measurements:{[m.name for m in self._measurements]}, "
@@ -205,7 +246,8 @@ class Patient:
         return (isinstance(other, Patient)
                 and self._labels == other._labels
                 and self._sex == other._sex
-                and self._aod == other._aod
+                and self._age == other._age
+                and self._vital_status == other._vital_status
                 and self._variants == other._variants
                 and self._phenotypes == other._phenotypes
                 and self._measurements == other._measurements
@@ -213,7 +255,8 @@ class Patient:
 
     def __hash__(self) -> int:
         return hash((
-            self._labels, self._sex, self._aod,
+            self._labels, self._sex, self._age,
+            self._vital_status,
             self._variants, self._phenotypes,
             self._measurements, self._diseases,
         ))
