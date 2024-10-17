@@ -219,6 +219,9 @@ class TestPhenopacketPatientCreator:
             patient.labels.label_summary() == "individual 1[PMID_30968594_individual_1]"
         )
         assert patient.sex.is_male()
+        assert patient.age_at_death is not None
+        assert patient.age_at_death.days == pytest.approx(365.25)
+        assert patient.age_at_death.is_postnatal
 
         # 6 Phenotype features
         assert len(patient.phenotypes) == 6

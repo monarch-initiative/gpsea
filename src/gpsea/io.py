@@ -143,6 +143,7 @@ class GpseaJSONEncoder(JSONEncoder):
             return {
                 "labels": o.labels,
                 "sex": o.sex,
+                "age_at_death": o.age_at_death,
                 "phenotypes": o.phenotypes,
                 "measurements": o.measurements,
                 "diseases": o.diseases,
@@ -214,7 +215,7 @@ _PHENOTYPE_FIELDS = ("term_id", "is_present", "onset")
 _AGE_FIELDS = ("days", "kind")
 _DISEASE_FIELDS = ("term_id", "name", "is_observed", "onset")
 _MEASUREMENT_FIELDS = ("test_term_id", "test_name", "test_result", "unit")
-_PATIENT_FIELDS = ("labels", "sex", "phenotypes", "diseases", "variants")
+_PATIENT_FIELDS = ("labels", "sex", "age_at_death", "phenotypes", "diseases", "variants")
 _COHORT_FIELDS = ("members", "excluded_patient_count")
 
 
@@ -352,6 +353,7 @@ class GpseaJSONDecoder(JSONDecoder):
             return Patient(
                 labels=obj["labels"],
                 sex=Sex[obj["sex"]],
+                age_at_death=obj["age_at_death"],
                 phenotypes=obj["phenotypes"],
                 measurements=obj["measurements"],
                 diseases=obj["diseases"],

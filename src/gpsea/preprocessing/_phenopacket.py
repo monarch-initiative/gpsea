@@ -301,6 +301,9 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         indi = notepad.add_subsection("individual")
         sex = self._extract_sex(pp.subject, indi)
 
+        # Date of death
+        dod = self._extract_date_of_death(pp.subject, indi)
+
         # Check phenotypes
         pfs = notepad.add_subsection("phenotype-features")
         phenotypes = self._add_phenotypes(pp.phenotypic_features, pfs)
@@ -332,6 +335,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return Patient.from_raw_parts(
             sample_id,
             sex=sex,
+            age_at_death=dod,
             phenotypes=phenotypes,
             measurements=measurements,
             variants=variants,
@@ -391,8 +395,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 term_id = hpotk.TermId.from_curie(dis.term.id)
             
             if dis.HasField("onset"):
-                onset = PhenopacketPatientCreator._parse_onset(
-                    onset=dis.onset,
+                onset = PhenopacketPatientCreator._parse_time_element(
+                    time_element=dis.onset,
                     notepad=ith_disease_subsection,
                 )
             else:
@@ -411,19 +415,19 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         return final_diseases
     
     @staticmethod
-    def _parse_onset(
-        onset: PPTimeElement,
+    def _parse_time_element(
+        time_element: PPTimeElement,
         notepad: Notepad,
     ) -> typing.Optional[Age]:
-        case = onset.WhichOneof("element")
+        case = time_element.WhichOneof("element")
         if case == "gestational_age":
-            age = onset.gestational_age
+            age = time_element.gestational_age
             return Age.gestational(weeks=age.weeks, days=age.days)
         elif case == "age":
-            age = onset.age
+            age = time_element.age
             return Age.from_iso8601_period(value=age.iso8601duration)
         else:
-            notepad.add_warning(f"`onset` is in currently unsupported format `{case}`")
+            notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
             return None
 
     def _add_measurements(
@@ -486,6 +490,22 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         else:
             notepad.add_warning(f'Unknown sex type: {sex}')
             return Sex.UNKNOWN_SEX
+
+    def _extract_date_of_death(
+        self,
+        individual: ppi.Individual,
+        notepad: Notepad,
+    ) -> typing.Optional[Age]:
+        if individual.HasField("vital_status"):
+            vital_status = individual.vital_status
+            if vital_status.status == vital_status.DECEASED and vital_status.HasField("time_of_death"):
+                tod = vital_status.time_of_death
+                return PhenopacketPatientCreator._parse_time_element(
+                    time_element=tod,
+                    notepad=notepad,
+                )
+        
+        return None
 
     def _add_variants(
         self,
@@ -738,8 +758,8 @@ class PhenopacketPhenotypicFeatureCreator:
             )
         
         if pf.HasField("onset"):
-            onset = PhenopacketPatientCreator._parse_onset(
-                onset=pf.onset,
+            onset = PhenopacketPatientCreator._parse_time_element(
+                time_element=pf.onset,
                 notepad=notepad,
             )
         else:

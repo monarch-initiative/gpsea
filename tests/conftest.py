@@ -338,6 +338,7 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HetSingleVar'),
             sex=Sex.UNKNOWN_SEX,
+            age_at_death=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'],
                 test_phenotypes['spasticity_F'],
@@ -350,6 +351,7 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HetDoubleVar1'),
             sex=Sex.UNKNOWN_SEX,
+            age_at_death=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['seizure_T'], test_phenotypes['spasticity_T'],
             ),
@@ -359,7 +361,8 @@ def toy_cohort(
         ),
         Patient.from_raw_parts(
             SampleLabels('HetDoubleVar2'),
-            sex=Sex.UNKNOWN_SEX,        
+            sex=Sex.UNKNOWN_SEX,
+            age_at_death=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_F'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
@@ -370,6 +373,7 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HomoVar'),
             sex=Sex.UNKNOWN_SEX,
+            age_at_death=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
@@ -380,6 +384,7 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('LargeCNV'),
             sex=Sex.UNKNOWN_SEX,
+            age_at_death=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_F'],
             ),

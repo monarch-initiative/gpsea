@@ -2,7 +2,15 @@
   "id": "PMID_30968594_individual_1",
   "subject": {
     "id": "individual 1",
-    "sex": "MALE"
+    "sex": "MALE",
+    "vital_status": {
+      "status": "DECEASED",
+      "time_of_death": {
+        "age": {
+          "iso8601duration": "P1Y"
+        }
+      }
+    }
   },
   "phenotypicFeatures": [
     {

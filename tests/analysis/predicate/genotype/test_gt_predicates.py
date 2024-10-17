@@ -309,9 +309,10 @@ class TestSexPredicate:
 
     @staticmethod
     def make_patient(label: str, sex: Sex) -> Patient:
-        return Patient(
+        return Patient.from_raw_parts(
             SampleLabels(label),
             sex,
+            age_at_death=None,
             phenotypes=(),
             measurements=(),
             diseases=(),
