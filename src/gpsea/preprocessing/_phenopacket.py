@@ -7,6 +7,7 @@ from hpotk.validate import ValidationRunner, ValidationLevel
 
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
+from phenopackets.schema.v2.core.base_pb2 import TimeElement as PPTimeElement
 from phenopackets.schema.v2.core.phenotypic_feature_pb2 import PhenotypicFeature as PPPhenotypicFeature
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
@@ -346,16 +347,17 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         phenotypes = []
 
         for i, pf in enumerate(pfs):
+            ith_pf_notepad = notepad.add_subsection(f"#{i}")
             if not pf.HasField("type"):
-                notepad.add_error(f"#{i} has no `type`")
+                ith_pf_notepad.add_error("phenotypic feature has no `type`")
                 continue
 
             # Check the CURIE is well-formed
             try:
                 term_id = hpotk.TermId.from_curie(curie=pf.type.id)
             except ValueError as ve:
-                notepad.add_warning(
-                    f'#{i} {ve.args[0]}',
+                ith_pf_notepad.add_warning(
+                    f'{ve.args[0]}',
                     'Ensure the term ID consists of a prefix (e.g. `HP`) '
                     'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
                 )
@@ -363,8 +365,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
             # Check the term is an HPO concept
             if term_id.prefix != 'HP':
-                notepad.add_warning(
-                    f'#{i} {term_id} is not an HPO term',
+                ith_pf_notepad.add_warning(
+                    f'{term_id} is not an HPO term',
                     'Remove non-HPO concepts from the analysis input',
                 )
                 continue
@@ -372,8 +374,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             # Term must be present in HPO
             term = self._hpo.get_term(term_id)
             if term is None:
-                notepad.add_warning(
-                    f'#{i} {term_id} is not in HPO version `{self._hpo.version}`',
+                ith_pf_notepad.add_warning(
+                    f'{term_id} is not in HPO version `{self._hpo.version}`',
                     'Correct the HPO term or use the latest HPO for the analysis',
                 )
                 continue
@@ -382,11 +384,18 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             if term.identifier != term_id:
                 # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
                 # since `term.identifier` always returns the primary term ID.
-                notepad.add_warning(
-                    f'#{i} {term_id} is an obsolete identifier for {term.name}',
+                ith_pf_notepad.add_warning(
+                    f'{term_id} is an obsolete identifier for {term.name}',
                     f'Replace {term_id} with the primary term ID {term.identifier}',
                 )
-            onset = None
+            
+            if pf.HasField("onset"):
+                onset = PhenopacketPatientCreator._parse_onset(
+                    onset=pf.onset,
+                    notepad=ith_pf_notepad,
+                )
+            else:
+                onset = None
 
             phenotypes.append(
                 Phenotype.from_raw_parts(
@@ -425,23 +434,18 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         final_diseases = []
         for i, dis in enumerate(diseases):
+            ith_disease_subsection = notepad.add_subsection(f"#{i}")
             if not dis.HasField("term"):
-                notepad.add_error(f"#{i} has no `term`")
+                ith_disease_subsection.add_error("disease diagnosis has no `term`")
                 continue
             else:
                 term_id = hpotk.TermId.from_curie(dis.term.id)
             
             if dis.HasField("onset"):
-                case = dis.onset.WhichOneof("element")
-                if case == "gestational_age":
-                    age = dis.onset.gestational_age
-                    onset = Age.gestational(weeks=age.weeks, days=age.days)
-                elif case == "age":
-                    age = dis.onset.age
-                    onset = Age.from_iso8601_period(value=age.iso8601duration)
-                else:
-                    notepad.add_warning(f"#{i} onset is in currently unsupported format `{case}`")
-                    onset = None
+                onset = PhenopacketPatientCreator._parse_onset(
+                    onset=dis.onset,
+                    notepad=ith_disease_subsection,
+                )
             else:
                 onset = None
             
@@ -457,6 +461,22 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         return final_diseases
     
+    @staticmethod
+    def _parse_onset(
+        onset: PPTimeElement,
+        notepad: Notepad,
+    ) -> typing.Optional[Age]:
+        case = onset.WhichOneof("element")
+        if case == "gestational_age":
+            age = onset.gestational_age
+            return Age.gestational(weeks=age.weeks, days=age.days)
+        elif case == "age":
+            age = onset.age
+            return Age.from_iso8601_period(value=age.iso8601duration)
+        else:
+            notepad.add_warning(f"`onset` is in currently unsupported format `{case}`")
+            return None
+
     def _add_measurements(
         self,
         measurements: typing.Sequence[PPMeasurement],
