@@ -178,6 +178,8 @@ class TestAlleleCounter:
         return Patient.from_raw_parts(
             labels=sample_labels,
             sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(),
             measurements=(),
             diseases=(),
