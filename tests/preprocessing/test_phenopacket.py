@@ -22,7 +22,7 @@ from gpsea.preprocessing import (
     DefaultImpreciseSvFunctionalAnnotator,
 )
 from gpsea.preprocessing import Level
-from gpsea.preprocessing import PhenopacketPatientCreator, PhenotypeCreator
+from gpsea.preprocessing import PhenopacketPatientCreator
 from gpsea.preprocessing import VVMultiCoordinateService
 
 
@@ -137,17 +137,6 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
 class TestPhenopacketPatientCreator:
 
     @pytest.fixture
-    def phenotype_creator(
-        self,
-        hpo: hpotk.MinimalOntology,
-        validation_runner: hpotk.validate.ValidationRunner,
-    ) -> PhenotypeCreator:
-        return PhenotypeCreator(
-            hpo=hpo,
-            validator=validation_runner,
-        )
-
-    @pytest.fixture
     def functional_annotator(
         self,
         fpath_project_dir: str,
@@ -186,15 +175,17 @@ class TestPhenopacketPatientCreator:
     @pytest.fixture
     def patient_creator(
         self,
+        hpo: hpotk.MinimalOntology,
+        validation_runner: hpotk.validate.ValidationRunner,
         genome_build: GenomeBuild,
-        phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         variant_coordinate_finder: VariantCoordinateFinder,
     ) -> PhenopacketPatientCreator:
         return PhenopacketPatientCreator(
+            hpo=hpo,
+            validator=validation_runner,
             build=genome_build,
-            phenotype_creator=phenotype_creator,
             functional_annotator=functional_annotator,
             imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
             hgvs_coordinate_finder=variant_coordinate_finder,

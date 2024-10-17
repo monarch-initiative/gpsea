@@ -3,9 +3,11 @@ import typing
 
 import hpotk
 from hpotk.util import validate_instance
+from hpotk.validate import ValidationRunner, ValidationLevel
 
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
+from phenopackets.schema.v2.core.phenotypic_feature_pb2 import PhenotypicFeature as PPPhenotypicFeature
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
@@ -23,15 +25,15 @@ from gpsea.model import (
     Genotypes,
     Age,
 )
+from gpsea.model._phenotype import Phenotype
 from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import (
     VariantCoordinateFinder,
     FunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
 )
-from ._audit import Notepad
+from ._audit import Notepad, Level
 from ._patient import PatientCreator
-from ._phenotype import PhenotypeCreator
 
 
 class PhenopacketGenotypeParser:
@@ -226,23 +228,23 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
     def __init__(
         self,
+        hpo: hpotk.MinimalOntology,
+        validator: ValidationRunner,
         build: GenomeBuild,
-        phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
-        assume_karyotypic_sex: bool = True,
     ):
         """
         Create an instance.
 
+        :param hpo: HPO as :class:`~hpotk.MinimalOntology`.
+        :param validator: validation runner to check HPO terms.
         :param build: the genome build to use for variants.
         :param phenotype_creator: a phenotype creator for creating phenotypes.
         :param functional_annotator: for computing functional annotations.
         :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
         :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
-        :param assume_karyotypic_sex: `True` if it is OK to assume that `FEMALE` has the `XX` karyotype
-            and `MALE` has `XY`.
         """
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
@@ -250,9 +252,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             build, hgvs_coordinate_finder
         )
         self._gt_parser = PhenopacketGenotypeParser()
-        self._phenotype_creator = validate_instance(
-            phenotype_creator, PhenotypeCreator, "phenotype_creator"
-        )
+        self._hpo = validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
+        self._validator = validate_instance(validator, ValidationRunner, 'validator')
         self._functional_annotator = validate_instance(
             functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
@@ -281,7 +282,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._so_translocations = {
             "1000044",  # chromosomal_translocation
         }
-        self._assume_karyotypic_sex = assume_karyotypic_sex
 
     def process(self, pp: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
@@ -303,9 +303,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         # Check phenotypes
         pfs = notepad.add_subsection("phenotype-features")
-        phenotypes = self._phenotype_creator.process(
-            ((pf.type.id, not pf.excluded) for pf in pp.phenotypic_features), pfs
-        )
+        phenotypes = self._add_phenotypes(pp.phenotypic_features, pfs)
 
         # Check diseases
         dip = notepad.add_subsection("diseases")
@@ -339,6 +337,76 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             variants=variants,
             diseases=diseases,
         )
+    
+    def _add_phenotypes(
+        self,
+        pfs: typing.Iterable[PPPhenotypicFeature],
+        notepad: Notepad,
+    ) -> typing.Sequence[Phenotype]:
+        phenotypes = []
+
+        for i, pf in enumerate(pfs):
+            if not pf.HasField("type"):
+                notepad.add_error(f"#{i} has no `type`")
+                continue
+
+            # Check the CURIE is well-formed
+            try:
+                term_id = hpotk.TermId.from_curie(curie=pf.type.id)
+            except ValueError as ve:
+                notepad.add_warning(
+                    f'#{i} {ve.args[0]}',
+                    'Ensure the term ID consists of a prefix (e.g. `HP`) '
+                    'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
+                )
+                continue
+
+            # Check the term is an HPO concept
+            if term_id.prefix != 'HP':
+                notepad.add_warning(
+                    f'#{i} {term_id} is not an HPO term',
+                    'Remove non-HPO concepts from the analysis input',
+                )
+                continue
+
+            # Term must be present in HPO
+            term = self._hpo.get_term(term_id)
+            if term is None:
+                notepad.add_warning(
+                    f'#{i} {term_id} is not in HPO version `{self._hpo.version}`',
+                    'Correct the HPO term or use the latest HPO for the analysis',
+                )
+                continue
+            
+            assert term is not None
+            if term.identifier != term_id:
+                # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
+                # since `term.identifier` always returns the primary term ID.
+                notepad.add_warning(
+                    f'#{i} {term_id} is an obsolete identifier for {term.name}',
+                    f'Replace {term_id} with the primary term ID {term.identifier}',
+                )
+            onset = None
+
+            phenotypes.append(
+                Phenotype.from_raw_parts(
+                    term_id=term.identifier,
+                    is_observed=not pf.excluded,
+                    onset=onset,
+                )
+            )
+
+        # We check
+        vr = self._validator.validate_all(phenotypes)
+        for result in vr.results:
+            level = PhenopacketPatientCreator._translate_level(result.level)
+            if level is None:
+                # Should not happen. Please let the developers know about this issue!
+                raise ValueError(f'Unknown result validation level {result.level}')
+
+            notepad.add_issue(level, result.message)
+        
+        return phenotypes
 
     def _add_diseases(
         self, diseases: typing.Sequence[PPDisease], notepad: Notepad
@@ -634,3 +702,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 return None
         else:
             raise ValueError(f"Unknown structural type {structural_type}")
+
+    @staticmethod
+    def _translate_level(lvl: ValidationLevel) -> typing.Optional[Level]:
+        if lvl == ValidationLevel.WARNING:
+            return Level.WARN
+        elif lvl == ValidationLevel.ERROR:
+            return Level.ERROR
+        else:
+            return None
