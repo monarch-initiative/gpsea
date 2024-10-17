@@ -49,9 +49,22 @@ def fpath_project_dir(fpath_test_dir: str) -> str:
 @pytest.fixture(scope='session')
 def fpath_test_dir() -> str:
     """
-    Path to `tests` folder
+    Path to `tests` folder.
     """
     return os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope='session')
+def fpath_docs_dir(fpath_project_dir: str) -> str:
+    """
+    Path to `docs` folder.
+    """
+    return os.path.join(fpath_project_dir, "docs")
+
+
+@pytest.fixture(scope='session')
+def fpath_cohort_data_dir(fpath_docs_dir: str) -> str:
+    return os.path.join(fpath_docs_dir, "cohort-data")
 
 
 @pytest.fixture(scope='session')

@@ -193,10 +193,10 @@ class Patient:
                 f"labels:{self._labels}, "
                 f"sex:{self._sex}, "
                 f"age_at_death:{self._aod}, "
-                f"variants:{self.variants}, "
-                f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
-                f"measurements:{[m.name for m in self.measurements]}, "
-                f"diseases:{[dis.identifier for dis in self.diseases]}")
+                f"variants:{self._variants}, "
+                f"phenotypes:{[pheno.identifier for pheno in self._phenotypes]}, "
+                f"measurements:{[m.name for m in self._measurements]}, "
+                f"diseases:{[dis.identifier for dis in self._diseases]}")
 
     def __repr__(self) -> str:
         return str(self)
@@ -212,7 +212,11 @@ class Patient:
                 and self._diseases == other._diseases)
 
     def __hash__(self) -> int:
-        return hash((self._labels, self._sex, self._aod, self._variants, self._phenotypes, self._measurements, self._diseases))
+        return hash((
+            self._labels, self._sex, self._aod,
+            self._variants, self._phenotypes,
+            self._measurements, self._diseases,
+        ))
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):
