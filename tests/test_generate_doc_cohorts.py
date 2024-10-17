@@ -87,6 +87,7 @@ class TestGenerateCohortsForDocumentation:
             "CYP21A2",
             "RERE",
             "TBX5",
+            "UMOD",
         ]
     )
     def test_generate_cohorts(
