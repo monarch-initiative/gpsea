@@ -225,6 +225,14 @@ class PhenopacketVariantCoordinateFinder(
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     """
     `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`~gpsea.model.Patient`.
+
+    :param hpo: HPO as :class:`~hpotk.MinimalOntology`.
+    :param validator: validation runner to check HPO terms.
+    :param build: the genome build to use for variants.
+    :param phenotype_creator: a phenotype creator for creating phenotypes.
+    :param functional_annotator: for computing functional annotations.
+    :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
+    :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
     """
 
     def __init__(
@@ -236,25 +244,16 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
     ):
-        """
-        Create an instance.
-
-        :param hpo: HPO as :class:`~hpotk.MinimalOntology`.
-        :param validator: validation runner to check HPO terms.
-        :param build: the genome build to use for variants.
-        :param phenotype_creator: a phenotype creator for creating phenotypes.
-        :param functional_annotator: for computing functional annotations.
-        :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
-        :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
-        """
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder(
             build, hgvs_coordinate_finder
         )
         self._gt_parser = PhenopacketGenotypeParser()
-        self._hpo = validate_instance(hpo, hpotk.MinimalOntology, 'hpo')
         self._validator = validate_instance(validator, ValidationRunner, 'validator')
+        self._phenotype_creator = PhenopacketPhenotypicFeatureCreator(
+            hpo=validate_instance(hpo, hpotk.MinimalOntology, 'hpo'),
+        )
         self._functional_annotator = validate_instance(
             functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
@@ -348,62 +347,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         for i, pf in enumerate(pfs):
             ith_pf_notepad = notepad.add_subsection(f"#{i}")
-            if not pf.HasField("type"):
-                ith_pf_notepad.add_error("phenotypic feature has no `type`")
-                continue
-
-            # Check the CURIE is well-formed
-            try:
-                term_id = hpotk.TermId.from_curie(curie=pf.type.id)
-            except ValueError as ve:
-                ith_pf_notepad.add_warning(
-                    f'{ve.args[0]}',
-                    'Ensure the term ID consists of a prefix (e.g. `HP`) '
-                    'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
-                )
-                continue
-
-            # Check the term is an HPO concept
-            if term_id.prefix != 'HP':
-                ith_pf_notepad.add_warning(
-                    f'{term_id} is not an HPO term',
-                    'Remove non-HPO concepts from the analysis input',
-                )
-                continue
-
-            # Term must be present in HPO
-            term = self._hpo.get_term(term_id)
-            if term is None:
-                ith_pf_notepad.add_warning(
-                    f'{term_id} is not in HPO version `{self._hpo.version}`',
-                    'Correct the HPO term or use the latest HPO for the analysis',
-                )
-                continue
-            
-            assert term is not None
-            if term.identifier != term_id:
-                # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
-                # since `term.identifier` always returns the primary term ID.
-                ith_pf_notepad.add_warning(
-                    f'{term_id} is an obsolete identifier for {term.name}',
-                    f'Replace {term_id} with the primary term ID {term.identifier}',
-                )
-            
-            if pf.HasField("onset"):
-                onset = PhenopacketPatientCreator._parse_onset(
-                    onset=pf.onset,
-                    notepad=ith_pf_notepad,
-                )
-            else:
-                onset = None
-
-            phenotypes.append(
-                Phenotype.from_raw_parts(
-                    term_id=term.identifier,
-                    is_observed=not pf.excluded,
-                    onset=onset,
-                )
+            phenotype = self._phenotype_creator.process(
+                pf=pf,
+                notepad=ith_pf_notepad,
             )
+            if phenotype is not None:
+                phenotypes.append(phenotype)
 
         # We check
         vr = self._validator.validate_all(phenotypes)
@@ -731,3 +680,73 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             return Level.ERROR
         else:
             return None
+
+
+class PhenopacketPhenotypicFeatureCreator:
+    # NOT PART OF THE PUBLIC API
+    
+    def __init__(
+        self,
+        hpo: hpotk.MinimalOntology,
+    ):
+        self._hpo = hpo
+
+    def process(
+        self,
+        pf: PPPhenotypicFeature,
+        notepad: Notepad,
+    ) -> typing.Optional[Phenotype]:
+        if not pf.HasField("type"):
+            notepad.add_error("phenotypic feature has no `type`")
+            return None
+
+        # Check the CURIE is well-formed
+        try:
+            term_id = hpotk.TermId.from_curie(curie=pf.type.id)
+        except ValueError as ve:
+            notepad.add_warning(
+                f'{ve.args[0]}',
+                'Ensure the term ID consists of a prefix (e.g. `HP`) '
+                'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
+            )
+            return None
+
+        # Check the term is an HPO concept
+        if term_id.prefix != 'HP':
+            notepad.add_warning(
+                f'{term_id} is not an HPO term',
+                'Remove non-HPO concepts from the analysis input',
+            )
+            return None
+
+        # Term must be present in HPO
+        term = self._hpo.get_term(term_id)
+        if term is None:
+            notepad.add_warning(
+                f'{term_id} is not in HPO version `{self._hpo.version}`',
+                'Correct the HPO term or use the latest HPO for the analysis',
+            )
+            return None
+        
+        assert term is not None
+        if term.identifier != term_id:
+            # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
+            # since `term.identifier` always returns the primary term ID.
+            notepad.add_warning(
+                f'{term_id} is an obsolete identifier for {term.name}',
+                f'Replace {term_id} with the primary term ID {term.identifier}',
+            )
+        
+        if pf.HasField("onset"):
+            onset = PhenopacketPatientCreator._parse_onset(
+                onset=pf.onset,
+                notepad=notepad,
+            )
+        else:
+            onset = None
+
+        return Phenotype.from_raw_parts(
+            term_id=term.identifier,
+            is_observed=not pf.excluded,
+            onset=onset,
+        )
