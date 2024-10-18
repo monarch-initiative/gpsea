@@ -49,9 +49,10 @@ class SurvivalAnalysisResult:
         return self._gt_predicate
 
     @property
-    def survival(self) -> pd.DataFrame:
+    def data(self) -> pd.DataFrame:
         """
-        Get the data frame with the genotype group and the survival.
+        Get the data frame with the genotype group
+        and the corresponding :class:`~gpsea.analysis.tempo.Survival`.
 
         The DataFrame has the following structure:
 
@@ -74,6 +75,10 @@ class SurvivalAnalysisResult:
         the individual in question.
         """
         return self._survival
+    
+    def complete_rows(self) -> pd.DataFrame:
+        # TODO: add a convenience method for getting complete rows
+        return pd.DataFrame()
     
     @property
     def pval(self) -> float:

@@ -45,8 +45,9 @@ class Patient:
 
     * identifier(s) formatted as :class:`~gpsea.model.SampleLabels`
     * :class:`~gpsea.model.Sex`
-    * age at death (optional) formatted as :class:`~gpsea.model.Age` or `None` if the individual is alive
-      or if the age at death is not available.
+    * age of last clinical encounter (optional) formatted as :class:`~gpsea.model.Age` or `None` if not available.
+    * vital status (optional) formatted as :class:`~gpsea.model.VitalStatus`, which reports if the individual is alive
+      or deceased plus (optional) age of death
     * HPO terms to represent the phenotype information, each HPO formatted
       as an instance of :class:`~gpsea.model.Phenotype`
     * numerical measurements

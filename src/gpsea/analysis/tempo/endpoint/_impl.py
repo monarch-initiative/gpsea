@@ -42,19 +42,18 @@ class Death(EndpointBase):
             # Absence of the vital status prevents reasoning about death.
             return None
 
-        if patient.vital_status.is_alive:
-            return self._compute_survival(
-                age=patient.age,
-                is_censored=True,
-            )
-        elif patient.vital_status.is_deceased:
+        if patient.vital_status.is_deceased:
             return self._compute_survival(
                 age=patient.vital_status.age_of_death,
                 is_censored=False,
             )
         else:
-            # Most likely an unknown status
-            return None
+            # In absence of an explicit information regarding death,
+            # we assume the individual was alive at the reported age.
+            return self._compute_survival(
+                age=patient.age,
+                is_censored=True,
+            )
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, Death) and self._kind == value._kind
@@ -149,19 +148,19 @@ class DiseaseOnset(EndpointBase):
     def __init__(
         self,
         kind: AgeKind,
-        term_id: hpotk.TermId,
+        disease_id: hpotk.TermId,
     ):
         super().__init__(kind)
 
-        assert isinstance(term_id, hpotk.TermId)
-        self._term_id = term_id
+        assert isinstance(disease_id, hpotk.TermId)
+        self._disease_id = disease_id
 
     def compute_survival(
         self,
         patient: Patient,
     ) -> typing.Optional[Survival]:
         for disease in patient.present_diseases():
-            if disease.identifier == self._term_id:
+            if disease.identifier == self._disease_id:
                 return self._compute_survival(
                     age=disease.onset,
                     is_censored=False,
@@ -176,14 +175,16 @@ class DiseaseOnset(EndpointBase):
         return (
             isinstance(value, DiseaseOnset)
             and self._kind == value._kind
-            and self._term_id == value._term_id
+            and self._disease_id == value._disease_id
         )
 
     def __hash__(self) -> int:
-        return hash((self._kind, self._term_id))
+        return hash((self._kind, self._disease_id))
 
     def __str__(self) -> str:
-        return "DiseaseOnset(" f"kind={self._kind}, " f"onset={self._term_id})"
+        return "DiseaseOnset(" \
+            f"kind={self._kind}, " \
+            f"disease_id={self._disease_id})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -206,15 +207,15 @@ def death(
 
 
 def disease_onset(
-    term_id: typing.Union[str, hpotk.TermId],
+    disease_id: typing.Union[str, hpotk.TermId],
     kind: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
     age_kind = _decode_kind(kind)
-    term_id = _validate_term_id(term_id)
+    disease_id = _validate_term_id(disease_id)
 
     return DiseaseOnset(
         kind=age_kind,
-        term_id=term_id,
+        disease_id=disease_id,
     )
 
 

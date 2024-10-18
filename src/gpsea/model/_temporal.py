@@ -74,11 +74,10 @@ class Age:
     @staticmethod
     def postnatal_years(
         years: int,
-        days_in_year: float = 365.25,
     ) -> "Age":
         if not isinstance(years, int) or years < 0:
             raise ValueError(f"`years` must be non-negative `int` but was {years}")
-        days = years * days_in_year
+        days = years * Age.DAYS_IN_YEAR
         return Age(days=days, kind=AgeKind.POSTNATAL)
 
     @staticmethod
