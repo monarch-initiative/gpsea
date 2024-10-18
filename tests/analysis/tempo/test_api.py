@@ -50,4 +50,4 @@ class TestSurvivalAnalysis:
             endpoint=endpoint,
         )
 
-        print(result)
+        assert result.pval == pytest.approx(0.062004258)
