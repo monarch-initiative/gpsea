@@ -21,9 +21,9 @@ class LogRankTest(SurvivalStatistic):
         result = stats.logrank(
             x=xc,
             y=yc,
-            alternative='two-sided',
+            alternative="two-sided",
         )
-        
+
         return float(result.pvalue)
 
     @staticmethod
