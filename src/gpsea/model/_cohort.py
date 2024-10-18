@@ -21,6 +21,7 @@ class Status(enum.Enum):
 
 @dataclass(frozen=True)
 class VitalStatus:
+    # TODO: check consistency. age of death must not be set if the individual is alive.
     status: Status
     age_of_death: typing.Optional[Age]
 
@@ -62,18 +63,21 @@ class Patient:
 
     @staticmethod
     def from_raw_parts(
-        labels: SampleLabels,
-        sex: typing.Optional[Sex],
-        age: typing.Optional[Age],
-        vital_status: typing.Optional[VitalStatus],
-        phenotypes: typing.Iterable[Phenotype],
-        measurements: typing.Iterable[Measurement],
-        diseases: typing.Iterable[Disease],
-        variants: typing.Iterable[Variant]
+        labels: typing.Union[str, SampleLabels],
+        sex: typing.Optional[Sex] = None,
+        age: typing.Optional[Age] = None,
+        vital_status: typing.Optional[VitalStatus] = None,
+        phenotypes: typing.Iterable[Phenotype] = (),
+        measurements: typing.Iterable[Measurement] = (),
+        diseases: typing.Iterable[Disease] = (),
+        variants: typing.Iterable[Variant] = (),
     ) -> "Patient":
         """
         Create `Patient` from the primary data.
         """
+        if isinstance(labels, str):
+            labels = SampleLabels(label=labels)
+
         if sex is None:
             sex = Sex.UNKNOWN_SEX
         

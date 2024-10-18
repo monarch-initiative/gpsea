@@ -60,8 +60,8 @@ class Age:
             raise ValueError(f"`weeks` must be non-negative `int` but was {weeks}")
         if not isinstance(days, int) or 0 > days > 6:
             raise ValueError(f"`days` must be an `int` between [0,6] was {days}")
-        total_days = weeks * 7 + days
-        return Age(days=float(total_days), kind=AgeKind.GESTATIONAL)
+        total = weeks * Age.DAYS_IN_WEEK + days
+        return Age(days=float(total), kind=AgeKind.GESTATIONAL)
 
     @staticmethod
     def birth() -> "Age":
@@ -79,6 +79,24 @@ class Age:
             raise ValueError(f"`years` must be non-negative `int` but was {years}")
         days = years * Age.DAYS_IN_YEAR
         return Age(days=days, kind=AgeKind.POSTNATAL)
+
+    @staticmethod
+    def postnatal(
+        years: int,
+        months: int,
+        days: int,
+    ) -> "Age":
+        if all(isinstance(val, int) and val >= 0 for val in (years, months, days)):
+            total = 0.
+            total += years * Age.DAYS_IN_YEAR
+            total += months * Age.DAYS_IN_MONTH
+            total += days
+
+            return Age(days=total, kind=AgeKind.POSTNATAL)
+        else:
+            raise ValueError(
+                f"`years`, `months` and `days` must be non-negative `int`s but were {years}, {months}, and {days}"
+            )
 
     @staticmethod
     def from_iso8601_period(
@@ -100,23 +118,21 @@ class Age:
                     raise ValueError(
                         f"Year, month or day must be provided for postnatal age: {value}"
                     )
-                days = 0
-                days += 0 if year is None else float(year[:-1]) * Age.DAYS_IN_YEAR
-                days += 0 if month is None else float(month[:-1]) * Age.DAYS_IN_MONTH
-                days += 0 if day is None else float(day[:-1])
-
-                return Age(days=days, kind=AgeKind.POSTNATAL)
+                years = 0 if year is None else int(year[:-1])
+                months = 0 if month is None else int(month[:-1])
+                days = 0 if day is None else int(day[:-1])
+                
+                return Age.postnatal(years=years, months=months, days=days)
             else:
                 # gestational
                 if any(val is not None for val in (year, month)):
                     raise ValueError(
                         f"Year and month must not be provided for gestational age: {value}"
                     )
-                days = 0
-                days += 0 if week is None else float(week[:-1]) * Age.DAYS_IN_WEEK
-                days += 0 if day is None else float(day[:-1])
-
-                return Age(days=days, kind=AgeKind.GESTATIONAL)
+                weeks = 0 if week is None else int(week[:-1])
+                days = 0 if day is None else int(day[:-1])
+                
+                return Age.gestational(weeks=weeks, days=days)
         else:
             raise ValueError(f"'{value}' did not match ISO8601 pattern")
 

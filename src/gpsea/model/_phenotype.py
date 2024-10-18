@@ -138,11 +138,14 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
 
     @staticmethod
     def from_raw_parts(
-        term_id: hpotk.TermId,
+        term_id: typing.Union[str, hpotk.TermId],
         name: str,
         is_observed: bool,
         onset: typing.Optional[Age] = None,
     ) -> "Disease":
+        if isinstance(term_id, str):
+            term_id = hpotk.TermId.from_curie(term_id)
+        
         return Disease(
             term_id=term_id,
             name=name,
