@@ -164,8 +164,8 @@ class VariantPredicates:
             Well, at least the genome variants of the *Homo sapiens sapiens* taxon...
 
         Args:
-            exon: a non-negative `int` with the index of the target exon
-                (e.g. `0` for the 1st exon, `1` for the 2nd, ...)
+            exon: a positive `int` with the index of the target exon
+                (e.g. `1` for the 1st exon, `2` for the 2nd, ...)
             tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
         """
         return VariantExonPredicate(exon, tx_id)

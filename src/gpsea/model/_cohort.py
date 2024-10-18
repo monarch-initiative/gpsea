@@ -1,18 +1,58 @@
+import enum
 import itertools
 import typing
 
 from collections import Counter
+from dataclasses import dataclass
 
 import hpotk
 
 from ._base import SampleLabels, Sex
 from ._phenotype import Phenotype, Disease, Measurement
+from ._temporal import Age
 from ._variant import Variant
+
+
+class Status(enum.Enum):
+    UNKNOWN = 0
+    ALIVE = 1
+    DECEASED = 2
+
+
+@dataclass(frozen=True)
+class VitalStatus:
+    status: Status
+    age_of_death: typing.Optional[Age]
+
+    @property
+    def is_alive(self) -> bool:
+        return self.status == Status.ALIVE
+    
+    @property
+    def is_deceased(self) -> bool:
+        return self.status == Status.DECEASED
+    
+    @property
+    def is_unknown(self) -> bool:
+        return self.status == Status.UNKNOWN
 
 
 class Patient:
     """
     `Patient` represents a single investigated individual.
+
+    We need to know about the following attributes:
+
+    * identifier(s) formatted as :class:`~gpsea.model.SampleLabels`
+    * :class:`~gpsea.model.Sex`
+    * age of last clinical encounter (optional) formatted as :class:`~gpsea.model.Age` or `None` if not available.
+    * vital status (optional) formatted as :class:`~gpsea.model.VitalStatus`, which reports if the individual is alive
+      or deceased plus (optional) age of death
+    * HPO terms to represent the phenotype information, each HPO formatted
+      as an instance of :class:`~gpsea.model.Phenotype`
+    * numerical measurements
+    * disease diagnoses formatted as :class:`~gpsea.model.Disease`
+    * genotype information as one or more :class:`~gpsea.model.Variant`
 
     .. note::
     
@@ -24,6 +64,8 @@ class Patient:
     def from_raw_parts(
         labels: SampleLabels,
         sex: typing.Optional[Sex],
+        age: typing.Optional[Age],
+        vital_status: typing.Optional[VitalStatus],
         phenotypes: typing.Iterable[Phenotype],
         measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
@@ -38,6 +80,8 @@ class Patient:
         return Patient(
             labels=labels,
             sex=sex,
+            age=age,
+            vital_status=vital_status,
             phenotypes=phenotypes,
             measurements=measurements,
             diseases=diseases,
@@ -48,6 +92,8 @@ class Patient:
         self,
         labels: SampleLabels,
         sex: Sex,
+        age: typing.Optional[Age],
+        vital_status: typing.Optional[VitalStatus],
         phenotypes: typing.Iterable[Phenotype],
         measurements: typing.Iterable[Measurement],
         diseases: typing.Iterable[Disease],
@@ -58,6 +104,14 @@ class Patient:
         
         assert isinstance(sex, Sex)
         self._sex = sex
+        
+        if age is not None:
+            assert isinstance(age, Age)
+        self._age = age
+        
+        if vital_status is not None:
+            assert isinstance(vital_status, VitalStatus)
+        self._vital_status = vital_status
 
         self._phenotypes = tuple(phenotypes)
         self._measurements = tuple(measurements)
@@ -84,6 +138,20 @@ class Patient:
         Get the "phenotype sex" of the sample.
         """
         return self._sex
+
+    @property
+    def age(self) -> typing.Optional[Age]:
+        """
+        Get age of the individual or `None` if not available.
+        """
+        return self._age
+    
+    @property
+    def vital_status(self) -> typing.Optional[VitalStatus]:
+        """
+        Get the vital status information for the individual or `None` if not available.
+        """
+        return self._vital_status
 
     @property
     def phenotypes(self) -> typing.Sequence[Phenotype]:
@@ -165,10 +233,12 @@ class Patient:
         return (f"Patient("
                 f"labels:{self._labels}, "
                 f"sex:{self._sex}, "
-                f"variants:{self.variants}, "
-                f"phenotypes:{[pheno.identifier for pheno in self.phenotypes]}, "
-                f"measurements:{[m.name for m in self.measurements]}, "
-                f"diseases:{[dis.identifier for dis in self.diseases]}")
+                f"age:{self._age}, "
+                f"vital_status:{self._vital_status}, "
+                f"variants:{self._variants}, "
+                f"phenotypes:{[pheno.identifier for pheno in self._phenotypes]}, "
+                f"measurements:{[m.name for m in self._measurements]}, "
+                f"diseases:{[dis.identifier for dis in self._diseases]}")
 
     def __repr__(self) -> str:
         return str(self)
@@ -177,13 +247,20 @@ class Patient:
         return (isinstance(other, Patient)
                 and self._labels == other._labels
                 and self._sex == other._sex
+                and self._age == other._age
+                and self._vital_status == other._vital_status
                 and self._variants == other._variants
                 and self._phenotypes == other._phenotypes
                 and self._measurements == other._measurements
                 and self._diseases == other._diseases)
 
     def __hash__(self) -> int:
-        return hash((self._labels, self._sex, self._variants, self._phenotypes, self._measurements, self._diseases))
+        return hash((
+            self._labels, self._sex, self._age,
+            self._vital_status,
+            self._variants, self._phenotypes,
+            self._measurements, self._diseases,
+        ))
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):

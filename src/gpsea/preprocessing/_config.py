@@ -4,6 +4,12 @@ import typing
 import warnings
 
 import hpotk
+from hpotk.validate import (
+    ValidationRunner,
+    ObsoleteTermIdsValidator,
+    AnnotationPropagationValidator,
+    PhenotypicAbnormalityValidator,
+)
 
 # pyright: reportGeneralTypeIssues=false
 from google.protobuf.json_format import Parse
@@ -17,7 +23,7 @@ from ._api import FunctionalAnnotator, PreprocessingValidationResult
 from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
 from ._phenopacket import PhenopacketPatientCreator
-from ._phenotype import PhenotypeCreator
+
 from ._protein import (
     ProteinMetadataService,
     ProtCachingMetadataService,
@@ -34,7 +40,7 @@ VALIDATION_POLICIES = {"permissive", "lenient", "strict"}
 def configure_caching_cohort_creator(
     hpo: hpotk.MinimalOntology,
     genome_build: str = "GRCh38.p13",
-    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
+    validation_runner: typing.Optional[ValidationRunner] = None,
     cache_dir: typing.Optional[str] = None,
     variant_fallback: str = "VEP",
     timeout: float = 30.0,
@@ -57,7 +63,7 @@ def configure_caching_cohort_creator(
     cache_dir = _configure_cache_dir(cache_dir)
 
     build = _configure_build(genome_build)
-    phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
+    validator = _setup_hpo_validator(hpo, validation_runner)
     functional_annotator = _configure_functional_annotator(
         cache_dir, variant_fallback, timeout
     )
@@ -66,8 +72,9 @@ def configure_caching_cohort_creator(
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
     pc = PhenopacketPatientCreator(
+        hpo=hpo,
+        validator=validator,
         build=build,
-        phenotype_creator=phenotype_creator,
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
@@ -76,59 +83,10 @@ def configure_caching_cohort_creator(
     return CohortCreator(pc)
 
 
-def configure_caching_patient_creator(
-    hpo: hpotk.MinimalOntology,
-    genome_build: str = "GRCh38.p13",
-    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
-    cache_dir: typing.Optional[str] = None,
-    variant_fallback: str = "VEP",
-    timeout: float = 30.0,
-) -> PhenopacketPatientCreator:
-    """
-    A convenience function for configuring a caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.
-
-    To create the patient creator, we need hpo-toolkit's representation of HPO. Other options are optional.
-
-    :param hpo: a HPO instance.
-    :param genome_build: name of the genome build to use, choose from `{'GRCh37.p13', 'GRCh38.p13'}`.
-    :param validation_runner: an instance of the validation runner.
-    :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
-        if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.
-        In any case, the directory will be created if it does not exist (including non-existing parents).
-    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
-     Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
-    :param timeout: timeout in seconds for the REST APIs
-    """
-    warnings.warn(
-        "`configure_caching_patient_creator` was deprecated. "
-        "Use `configure_caching_cohort_creator` instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    cache_dir = _configure_cache_dir(cache_dir)
-
-    build = _configure_build(genome_build)
-    phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
-    functional_annotator = _configure_functional_annotator(
-        cache_dir, variant_fallback, timeout
-    )
-    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(
-        build, timeout
-    )
-    hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    return PhenopacketPatientCreator(
-        build=build,
-        phenotype_creator=phenotype_creator,
-        functional_annotator=functional_annotator,
-        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
-        hgvs_coordinate_finder=hgvs_annotator,
-    )
-
-
 def configure_cohort_creator(
     hpo: hpotk.MinimalOntology,
     genome_build: str = "GRCh38.p13",
-    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
+    validation_runner: typing.Optional[ValidationRunner] = None,
     variant_fallback: str = "VEP",
     timeout: float = 30.0,
 ) -> CohortCreator[Phenopacket]:
@@ -148,67 +106,24 @@ def configure_cohort_creator(
     """
     build = _configure_build(genome_build)
 
-    phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
+    validator = _setup_hpo_validator(hpo, validation_runner)
     functional_annotator = _configure_fallback_functional(variant_fallback, timeout)
     imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(
-        build, timeout
+        build,
+        cache_dir=None,
+        timeout=timeout,
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
     pc = PhenopacketPatientCreator(
+        hpo=hpo,
+        validator=validator,
         build=build,
-        phenotype_creator=phenotype_creator,
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
     )
 
     return CohortCreator(pc)
-
-
-def configure_patient_creator(
-    hpo: hpotk.MinimalOntology,
-    genome_build: str = "GRCh38.p13",
-    validation_runner: typing.Optional[hpotk.validate.ValidationRunner] = None,
-    variant_fallback: str = "VEP",
-    validation: str = "lenient",
-    timeout: float = 30.0,
-) -> PhenopacketPatientCreator:  # Rename to something more understandable by user
-    """
-    A convenience function for configuring a non-caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.
-
-    To create the patient creator, we need hpo-toolkit's representation of HPO. Other options are optional
-
-    :param hpo: a HPO instance.
-    :param genome_build: name of the genome build to use, choose from `{'GRCh37.p13', 'GRCh38.p13'}`.
-    :param validation_runner: an instance of the validation runner.
-     if the data should be cached in `.gpsea_cache` folder in the current working directory.
-     In any case, the directory will be created if it does not exist (including non-existing parents).
-    :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
-     Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
-    :param timeout: timeout in seconds for the REST APIs
-    """
-    warnings.warn(
-        "`configure_patient_creator` was deprecated. "
-        "Use `configure_cohort_creator` instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    build = _configure_build(genome_build)
-
-    phenotype_creator = _setup_phenotype_creator(hpo, validation_runner)
-    functional_annotator = _configure_fallback_functional(variant_fallback, timeout)
-    imprecise_sv_functional_annotator = _configure_imprecise_sv_annotator(
-        build, timeout
-    )
-    hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
-    return PhenopacketPatientCreator(
-        build=build,
-        phenotype_creator=phenotype_creator,
-        functional_annotator=functional_annotator,
-        imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
-        hgvs_coordinate_finder=hgvs_annotator,
-    )
 
 
 def configure_protein_metadata_service(
@@ -225,7 +140,11 @@ def configure_protein_metadata_service(
      In any case, the directory will be created if it does not exist (including any non-existing parents).
     :param timeout: timeout in seconds for the REST APIs.
     """
-    warnings.warn('Use `configure_default_protein_metadata_service` instead', DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "Use `configure_default_protein_metadata_service` instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return configure_default_protein_metadata_service(
         cache_dir=cache_dir,
         timeout=timeout,
@@ -233,9 +152,9 @@ def configure_protein_metadata_service(
 
 
 def configure_default_protein_metadata_service(
-    protein_source: typing.Literal['UNIPROT'] = 'UNIPROT',
+    protein_source: typing.Literal["UNIPROT"] = "UNIPROT",
     cache_dir: typing.Optional[str] = None,
-    timeout: float = 30.,
+    timeout: float = 30.0,
 ) -> ProteinMetadataService:
     """
     Create default protein metadata service that will cache the protein metadata
@@ -263,16 +182,16 @@ def _configure_protein_service(
 ) -> ProteinMetadataService:
     # (1) ProteinMetadataService
     # Setup fallback
-    protein_fallback = _configure_fallback_protein_service(
+    fallback_service = _configure_fallback_protein_service(
         protein_fallback,
         timeout,
     )
     # Setup protein metadata cache
-    prot_cache_dir = os.path.join(cache_dir, 'protein_cache')
+    prot_cache_dir = os.path.join(cache_dir, "protein_cache")
     os.makedirs(prot_cache_dir, exist_ok=True)
     prot_cache = ProteinAnnotationCache(prot_cache_dir)
     # Assemble the final protein metadata service
-    protein_metadata_service = ProtCachingMetadataService(prot_cache, protein_fallback)
+    protein_metadata_service = ProtCachingMetadataService(prot_cache, fallback_service)
     return protein_metadata_service
 
 
@@ -280,19 +199,19 @@ def _configure_fallback_protein_service(
     protein_fallback: str,
     timeout: float,
 ) -> ProteinMetadataService:
-    if protein_fallback == 'UNIPROT':
+    if protein_fallback == "UNIPROT":
         return UniprotProteinMetadataService(timeout)
     else:
-        raise ValueError(f'Unknown protein fallback annotator type {protein_fallback}')
+        raise ValueError(f"Unknown protein fallback annotator type {protein_fallback}")
 
 
 def _configure_cache_dir(
     cache_dir: typing.Optional[str] = None,
 ) -> str:
-    cache_dir = get_cache_dir_path(cache_dir)
-    os.makedirs(cache_dir, exist_ok=True)
+    cache_path = get_cache_dir_path(cache_dir)
+    os.makedirs(cache_path, exist_ok=True)
 
-    return str(cache_dir)
+    return str(cache_path)
 
 
 def _configure_build(genome_build: str) -> GenomeBuild:
@@ -306,24 +225,21 @@ def _configure_build(genome_build: str) -> GenomeBuild:
         )
 
 
-def _setup_phenotype_creator(
+def _setup_hpo_validator(
     hpo: hpotk.MinimalOntology,
-    validator: typing.Optional[hpotk.validate.ValidationRunner],
-) -> PhenotypeCreator:
+    validator: typing.Optional[ValidationRunner],
+) -> ValidationRunner:
     if validator is None:
         # This will be the default validator
-        validator = hpotk.validate.ValidationRunner(
+        return ValidationRunner(
             (
-                hpotk.validate.ObsoleteTermIdsValidator(hpo),
-                hpotk.validate.AnnotationPropagationValidator(hpo),
-                hpotk.validate.PhenotypicAbnormalityValidator(hpo),
+                ObsoleteTermIdsValidator(hpo),
+                AnnotationPropagationValidator(hpo),
+                PhenotypicAbnormalityValidator(hpo),
             )
         )
     else:
-        validator = hpotk.util.validate_instance(
-            validator, hpotk.validate.ValidationRunner, "validator"
-        )
-    return PhenotypeCreator(hpo, validator)
+        return hpotk.util.validate_instance(validator, ValidationRunner, "validator")
 
 
 def _configure_functional_annotator(
@@ -358,14 +274,15 @@ def _configure_fallback_functional(
 
 def _configure_imprecise_sv_annotator(
     genome_build: GenomeBuild,
-    cache_dir: str,
-    timeout: float,
+    cache_dir: typing.Optional[str] = None,
+    timeout: float = 30.0,
 ):
     # Setup cache for SVs
-    sv_cache_dir = os.path.join(cache_dir, "sv_cache")
-    # TODO: implement the cache.
-    # os.makedirs(sv_cache_dir, exist_ok=True)
-    # var_cache = VariantAnnotationCache(sv_cache_dir)
+    if cache_dir is not None:
+        sv_cache_dir = os.path.join(cache_dir, "sv_cache")
+        # TODO: implement the cache.
+        # os.makedirs(sv_cache_dir, exist_ok=True)
+        # var_cache = VariantAnnotationCache(sv_cache_dir)
 
     return DefaultImpreciseSvFunctionalAnnotator(
         gene_coordinate_service=VVMultiCoordinateService(
@@ -412,7 +329,7 @@ def load_phenopacket_files(
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
     Load phenopacket JSON files, validate the data, and assemble into a :class:`~gpsea.model.Cohort`.
-    
+
     Phenopackets are validated, assembled into a cohort, and the validation results are reported back.
 
     :param pp_files: an iterator with paths to phenopacket JSON files.
@@ -436,7 +353,7 @@ def load_phenopackets(
 ) -> typing.Tuple[Cohort, PreprocessingValidationResult]:
     """
     Validate the phenopackets and assemble into a :class:`~gpsea.model.Cohort`.
-    
+
     The results of the validation are reported back.
 
     :param phenopackets: path to a folder with phenopacket JSON files. An error is raised if the path does not point to
@@ -455,7 +372,9 @@ def load_phenopackets(
     # Turn phenopackets into a cohort using the cohort creator.
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
-    cohort_iter = tqdm(phenopackets, desc="Individuals Processed", file=sys.stdout, unit="individuals")
+    cohort_iter = tqdm(
+        phenopackets, desc="Individuals Processed", file=sys.stdout, unit="individuals"
+    )
     notepad = cohort_creator.prepare_notepad("Phenopackets")
     cohort = cohort_creator.process(cohort_iter, notepad)
 
@@ -473,7 +392,7 @@ def _find_phenopacket_files(
     fpath_pp_abs = os.path.abspath(pp_dir)
     if not os.path.isdir(fpath_pp_abs):
         raise ValueError(f"`{fpath_pp_abs}` does not point to a directory")
-    
+
     for patient_file in os.listdir(pp_dir):
         if patient_file.endswith(".json"):
             yield os.path.join(pp_dir, patient_file)

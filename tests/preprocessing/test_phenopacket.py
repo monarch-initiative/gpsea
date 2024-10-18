@@ -22,7 +22,7 @@ from gpsea.preprocessing import (
     DefaultImpreciseSvFunctionalAnnotator,
 )
 from gpsea.preprocessing import Level
-from gpsea.preprocessing import PhenopacketPatientCreator, PhenotypeCreator
+from gpsea.preprocessing import PhenopacketPatientCreator
 from gpsea.preprocessing import VVMultiCoordinateService
 
 
@@ -137,17 +137,6 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
 class TestPhenopacketPatientCreator:
 
     @pytest.fixture
-    def phenotype_creator(
-        self,
-        hpo: hpotk.MinimalOntology,
-        validation_runner: hpotk.validate.ValidationRunner,
-    ) -> PhenotypeCreator:
-        return PhenotypeCreator(
-            hpo=hpo,
-            validator=validation_runner,
-        )
-
-    @pytest.fixture
     def functional_annotator(
         self,
         fpath_project_dir: str,
@@ -186,15 +175,17 @@ class TestPhenopacketPatientCreator:
     @pytest.fixture
     def patient_creator(
         self,
+        hpo: hpotk.MinimalOntology,
+        validation_runner: hpotk.validate.ValidationRunner,
         genome_build: GenomeBuild,
-        phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         variant_coordinate_finder: VariantCoordinateFinder,
     ) -> PhenopacketPatientCreator:
         return PhenopacketPatientCreator(
+            hpo=hpo,
+            validator=validation_runner,
             build=genome_build,
-            phenotype_creator=phenotype_creator,
             functional_annotator=functional_annotator,
             imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
             hgvs_coordinate_finder=variant_coordinate_finder,
@@ -228,6 +219,15 @@ class TestPhenopacketPatientCreator:
             patient.labels.label_summary() == "individual 1[PMID_30968594_individual_1]"
         )
         assert patient.sex.is_male()
+        assert patient.age is not None
+        assert patient.age.days == pytest.approx(334.8125)
+        assert patient.age.is_postnatal
+
+        assert patient.vital_status is not None
+        assert patient.vital_status.is_deceased
+        assert patient.vital_status.age_of_death is not None
+        assert patient.vital_status.age_of_death.days == pytest.approx(365.25)
+        assert patient.vital_status.age_of_death.is_postnatal
 
         # 6 Phenotype features
         assert len(patient.phenotypes) == 6
@@ -271,6 +271,17 @@ class TestPhenopacketPatientCreator:
 
         values = tuple(m.test_result for m in patient.measurements)
         assert values == (800.0, 127.0, 180.2, 116.6, 52.93, 23.71)
+
+        # a disease
+        assert len(patient.diseases) == 1
+        
+        disease = patient.diseases[0]
+        assert disease.identifier.value == "OMIM:201910"
+        assert disease.is_present is True
+        
+        assert disease.onset is not None
+        assert disease.onset.is_postnatal is True
+        assert disease.onset.days == pytest.approx(20.)
 
     def test_individual_with_no_genotype(
         self,
