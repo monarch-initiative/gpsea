@@ -1,6 +1,6 @@
 import pytest
 
-from gpsea.analysis.tempo import Survival
+from gpsea.analysis.temporal import Survival
 
 
 class TestSurvival:

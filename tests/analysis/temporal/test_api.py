@@ -7,9 +7,9 @@ import pytest
 from gpsea.model import Cohort
 from gpsea.io import GpseaJSONDecoder
 from gpsea.analysis.predicate.genotype import VariantPredicates, monoallelic_predicate
-from gpsea.analysis.tempo import SurvivalAnalysis
-from gpsea.analysis.tempo.endpoint import hpo_onset
-from gpsea.analysis.tempo.stats import LogRankTest
+from gpsea.analysis.temporal import SurvivalAnalysis
+from gpsea.analysis.temporal.endpoint import hpo_onset
+from gpsea.analysis.temporal.stats import LogRankTest
 
 
 @pytest.fixture
