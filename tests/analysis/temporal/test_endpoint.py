@@ -73,6 +73,11 @@ class TestDeath:
 
         assert survival is None
 
+    def test_display_question(self):
+        endpoint = death(kind="postnatal")
+
+        assert endpoint.display_question() == "Compute time until postnatal death"
+
 
 class TestDiseaseOnset:
     
@@ -123,6 +128,11 @@ class TestDiseaseOnset:
         survival = endpoint.compute_survival(with_disease)
 
         assert survival is None
+
+    def test_display_question(self):
+        endpoint = disease_onset(disease_id="OMIM:100000")
+
+        assert endpoint.display_question() == "Compute time until postnatal diagnosis of OMIM:100000"
 
 
 class TestPhenotypeOnset:
@@ -177,3 +187,11 @@ class TestPhenotypeOnset:
         assert survival is not None
         assert not survival.is_censored
         assert survival.value == pytest.approx(20.)  # Focal-onset seizure has the earliest onset
+
+    def test_display_question(
+        self,
+        hpo: hpotk.MinimalOntology,
+    ):
+        endpoint = hpo_onset(hpo, term_id="HP:0001250")  # Seizure
+
+        assert endpoint.display_question() == "Compute time until postnatal onset of Seizure"

@@ -54,6 +54,9 @@ class Death(EndpointBase):
                 age=patient.age,
                 is_censored=True,
             )
+        
+    def display_question(self) -> str:
+        return f"Compute time until {self._kind.name.lower()} death"
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, Death) and self._kind == value._kind
@@ -83,6 +86,8 @@ class PhenotypicFeatureOnset(EndpointBase):
 
         assert isinstance(term_id, hpotk.TermId)
         self._term_id = term_id
+
+        assert term_id in hpo, f"`term_id` {term_id.value} is not in HPO {hpo.version}"
 
     def compute_survival(
         self,
@@ -119,6 +124,10 @@ class PhenotypicFeatureOnset(EndpointBase):
                 age=earliest_onset,
                 is_censored=False,
             )
+            
+    def display_question(self) -> str:
+        label = self._hpo.get_term_name(self._term_id)
+        return f"Compute time until {self._kind.name.lower()} onset of {label}"
 
     def __eq__(self, value: object) -> bool:
         return (
@@ -170,6 +179,9 @@ class DiseaseOnset(EndpointBase):
             age=patient.age,
             is_censored=True,
         )
+        
+    def display_question(self) -> str:
+        return f"Compute time until {self._kind.name.lower()} diagnosis of {self._disease_id.value}"
 
     def __eq__(self, value: object) -> bool:
         return (

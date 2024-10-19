@@ -22,6 +22,10 @@ class Endpoint(metaclass=abc.ABCMeta):
     ) -> typing.Optional[Survival]:
         pass
 
+    @abc.abstractmethod
+    def display_question(self) -> str:
+        pass
+
 
 class SurvivalAnalysisResult:
 
