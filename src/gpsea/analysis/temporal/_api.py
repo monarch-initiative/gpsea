@@ -14,12 +14,23 @@ from .stats import SurvivalStatistic
 
 
 class Endpoint(metaclass=abc.ABCMeta):
+    """
+    `Endpoint` computes survival for the analyzed individual.
+
+    An example endpoint includes :func:`~gpsea.analysis.survival.endpoint.death`,
+    :func:`~gpsea.analysis.survival.endpoint.disease_onset`,
+    or onset of a phenotypic feature (:func:`~gpsea.analysis.survival.endpoint.hpo_onset`).
+    """
 
     @abc.abstractmethod
     def compute_survival(
         self,
         patient: Patient,
     ) -> typing.Optional[Survival]:
+        """
+        Compute a survival for a given `patient` or `None` if the `patient` lacks the required
+        data (e.g. age of death or age at last investigation).
+        """
         pass
 
     @abc.abstractmethod
@@ -28,6 +39,9 @@ class Endpoint(metaclass=abc.ABCMeta):
 
 
 class SurvivalAnalysisResult:
+    """
+    `SurvivalAnalysisResult` includes the results of a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
+    """
 
     def __init__(
         self,
@@ -120,12 +134,20 @@ class SurvivalAnalysisResult:
             "data={self._data}, "
             "pval={self._pval})"
         )
-    
+
     def __repr__(self) -> str:
         return str(self)
 
 
 class SurvivalAnalysis:
+    """
+    `SurvivalAnalysis` compares the survivals of genotype groups with respect
+    to an endpoint.
+    
+    The cohort is partitioned into groups using a genotype predicate
+    and survival is computed for each cohort member. The difference between
+    survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.
+    """
 
     def __init__(
         self,
@@ -140,6 +162,10 @@ class SurvivalAnalysis:
         gt_predicate: GenotypePolyPredicate,
         endpoint: Endpoint,
     ) -> SurvivalAnalysisResult:
+        """
+        Execute the survival analysis on a given `cohort`.
+        """
+        
         idx = pd.Index((patient.patient_id for patient in cohort), name="patient_id")
         data = pd.DataFrame(
             None,
