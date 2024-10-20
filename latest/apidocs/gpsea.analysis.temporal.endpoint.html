@@ -1,0 +1,167 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.analysis.temporal.endpoint package &mdash; GPSEA 0.5.1.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=215e94d7"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">gpsea.analysis.temporal.endpoint package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/apidocs/gpsea.analysis.temporal.endpoint.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpsea.analysis.temporal.endpoint">
+<span id="gpsea-analysis-temporal-endpoint-package"></span><h1>gpsea.analysis.temporal.endpoint package<a class="headerlink" href="#module-gpsea.analysis.temporal.endpoint" title="Link to this heading"></a></h1>
+<p>The <cite>gpsea.analysis.temporal.endpoint</cite> package provides endpoints
+for comparing survivals between genotype groups.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.temporal.endpoint.death">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.endpoint.</span></span><span class="sig-name descname"><span class="pre">death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gestational'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'postnatal'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'postnatal'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal._api.Endpoint"><span class="pre">Endpoint</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/endpoint/_impl.html#death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.endpoint.death" title="Link to this definition"></a></dt>
+<dd><p>Get <a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a> for computing time
+until death of an individual or until the individual is lost from the study
+without knowing about the time of death.</p>
+<p>The time of death is computed from individual’s vital status with the following rules:</p>
+<ul class="simple">
+<li><p>If the individual is labeled as <a class="reference internal" href="gpsea.model.html#gpsea.model.Status.DECEASED" title="gpsea.model.Status.DECEASED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DECEASED</span></code></a>,
+we compute the survival from the age of death.</p></li>
+<li><p>If the individual is <a class="reference internal" href="gpsea.model.html#gpsea.model.Status.ALIVE" title="gpsea.model.Status.ALIVE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ALIVE</span></code></a> or the status is missing,
+we use the age at last encounter as the censored survival.</p></li>
+<li><p>If the age at last encounter is missing or if the age does not match the target timeline
+(e.g. <cite>timeline==postnatal</cite> but the individual has <cite>gestational</cite> age) then we cannot compute the survival
+and the endpoint returns <cite>None</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.temporal.endpoint.disease_onset">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.endpoint.</span></span><span class="sig-name descname"><span class="pre">disease_onset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disease_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gestational'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'postnatal'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'postnatal'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal._api.Endpoint"><span class="pre">Endpoint</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/endpoint/_impl.html#disease_onset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.endpoint.disease_onset" title="Link to this definition"></a></dt>
+<dd><p>Get <a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a> to compute time
+until onset of a disease or until the individual is lost from the study.</p>
+<p>The onset of diagnosis is computed from the onset field of
+a <a class="reference internal" href="gpsea.model.html#gpsea.model.Disease" title="gpsea.model.Disease"><code class="xref py py-class docutils literal notranslate"><span class="pre">Disease</span></code></a> with the following rules:</p>
+<ul class="simple">
+<li><p>If the individual is diagnosed with the target disease and its onset is known,
+then the survival is computed from the disease onset.</p></li>
+<li><p>If the individual is <em>not</em> diagnosed with the disease and the age at last encounter is known,
+this age is used as censored survival.</p></li>
+<li><p>If the age at last encounter is missing or if the age does not match the target timeline
+(e.g. <cite>timeline==postnatal</cite> but the individual’s age is on gestational timeline) then we cannot compute
+the time until disease onset and the endpoint returns <cite>None</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.temporal.endpoint.hpo_onset">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.endpoint.</span></span><span class="sig-name descname"><span class="pre">hpo_onset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gestational'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'postnatal'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'postnatal'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal._api.Endpoint"><span class="pre">Endpoint</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/endpoint/_impl.html#hpo_onset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.endpoint.hpo_onset" title="Link to this definition"></a></dt>
+<dd><p>Get <a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a> to compute time
+until onset of an HPO term or until the individual is lost from the study.</p>
+<p>The HPO term onset is computed from the onset field of
+a <a class="reference internal" href="gpsea.model.html#gpsea.model.Phenotype" title="gpsea.model.Phenotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">Phenotype</span></code></a> with the following rules:</p>
+<ul class="simple">
+<li><p>If the individual is annotated with the target HPO term and its onset is known,
+then the survival is computed from the term’s onset.</p></li>
+<li><p>If the individual is <em>not</em> diagnosed with the term and the age at last encounter is known,
+this age is used as censored survival.</p></li>
+<li><p>If the age at last encounter is missing or if the age does not match the target timeline
+(e.g. <cite>timeline==postnatal</cite> but the individual has <cite>gestational</cite> age) then we cannot compute
+time until phenotype onset and the endpoint returns <cite>None</cite>.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

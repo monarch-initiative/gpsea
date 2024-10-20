@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survival analysis &mdash; GPSEA 0.5.1.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=215e94d7"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Multiple-testing correction" href="../mtc.html" />
+    <link rel="prev" title="Compare measurement values" href="measurements.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../predicates/index.html">Predicates</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Survival analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Statistical analyses</a></li>
+      <li class="breadcrumb-item active">Survival analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/user-guide/analyses/survival.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="survival-analysis">
+<span id="survival"></span><h1>Survival analysis<a class="headerlink" href="#survival-analysis" title="Link to this heading"></a></h1>
+<section id="example-analysis">
+<h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
+<p>We will analyze the time until end stage renal disease in 207 individuals with mutations in <em>UMOD</em>.
+Specifically, we will test for difference between the onset of the end stage renal disease in the individuals with mutation
+in exon 3 of <em>UMOD</em> vs. individuals with other <em>UMOD</em> mutation.</p>
+<section id="load-cohort">
+<h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
+<p>For the purpose of this analysis, we will load the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
+from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/UMOD.0.1.20.json">JSON file</a>.
+The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-cohort-from-phenopackets"><span class="std std-ref">Create a cohort from GA4GH phenopackets</span></a> section,
+and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort_json</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/UMOD.0.1.20.json&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="go">207</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-analysis">
+<h3>Configure analysis<a class="headerlink" href="#configure-analysis" title="Link to this heading"></a></h3>
+<p><em>MANE</em> transcript of <em>UMOD</em>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_003361.4&#39;</span>
+</pre></div>
+</div>
+<section id="genotype-predicate">
+<h4>Genotype predicate<a class="headerlink" href="#genotype-predicate" title="Link to this heading"></a></h4>
+<p>One allele of exon 3 vs. one allele of elsewhere.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="go">&#39;variant affects exon 3 on NM_003361.4&#39;</span>
+</pre></div>
+</div>
+<p>Monoallelic predicate to compare one allele of <em>UMOD</em> exon 3 variant
+versus one allele of other <em>UMOD</em> variant:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_in_exon3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_in_exon3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Exon 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
+<span class="go">&#39;Allele group: Exon 3, Other&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="survival-endpoint">
+<h4>Survival endpoint<a class="headerlink" href="#survival-endpoint" title="Link to this heading"></a></h4>
+<p>The endpoint of our study is defined as development of end stage renal disease.
+In the <em>UMOD</em> cohort, this is encoded with
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0003774">Stage 5 chronic kidney disease</a>
+(<cite>HP:0003774</cite>) HPO term.
+We need to leverage the HPO hierarchy when computing
+the onset of an HPO term. Let’s load HPO:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and now we can create an <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a>
+to compute the time until an individual develops end stage renal disease:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal.endpoint</span> <span class="kn">import</span> <span class="n">hpo_onset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">term_id</span> <span class="o">=</span> <span class="s2">&quot;HP:0003774&quot;</span>  <span class="c1"># Stage 5 chronic kidney disease</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">hpo_onset</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="n">term_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
+<span class="go">&#39;Compute time until postnatal onset of Stage 5 chronic kidney disease&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="statistical-test">
+<h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
+<p>We will use Log rank test to compare the age until the endpoint between
+the genotype groups:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal.stats</span> <span class="kn">import</span> <span class="n">LogRankTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">survival_statistic</span> <span class="o">=</span> <span class="n">LogRankTest</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="final-analysis">
+<h4>Final analysis<a class="headerlink" href="#final-analysis" title="Link to this heading"></a></h4>
+<p>We will put the final analysis together into <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal</span> <span class="kn">import</span> <span class="n">SurvivalAnalysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">survival_analysis</span> <span class="o">=</span> <span class="n">SurvivalAnalysis</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">statistic</span><span class="o">=</span><span class="n">survival_statistic</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="analysis">
+<h3>Analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h3>
+<p>We execute the analysis by running</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">survival_analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_survival</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">pval</span>
+<span class="go">0.06200425830044376</span>
+</pre></div>
+</div>
+<section id="kaplan-meier-curves">
+<h4>Kaplan-Meier curves<a class="headerlink" href="#kaplan-meier-curves" title="Link to this heading"></a></h4>
+<p>We can plot Kaplan-Meier curves:</p>
+<p>TODO: implement!</p>
+</section>
+<section id="raw-data">
+<h4>Raw data<a class="headerlink" href="#raw-data" title="Link to this heading"></a></h4>
+<p>The <cite>result</cite> includes the survival values for all cohort members:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">survivals</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">survivals</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
+<span class="go">                          genotype    survival</span>
+<span class="go">patient_id</span>
+<span class="go">AII.1[PMID_22034507_AII_1]       0    Survival(value=18262.5, is_censored=True)</span>
+<span class="go">AII.2[PMID_22034507_AII_2]       0    None</span>
+<span class="go">AII.3[PMID_22034507_AII_3]       0    Survival(value=16436.25, is_censored=True)</span>
+<span class="go">AII.5[PMID_22034507_AII_5]       0    Survival(value=22280.25, is_censored=False)</span>
+<span class="go">AIII.4[PMID_22034507_AIII_4]     0    Survival(value=19723.5, is_censored=False)</span>
+</pre></div>
+</div>
+<p>Each line corresponeds to an individual and the dataframe is indexed by the individual’s identifier/label.
+The <cite>genotype</cite> column contains the genotype group code,
+and <cite>survival</cite> column includes a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a> value
+or <cite>None</cite> if computing the survival was impossible (see <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.hpo_onset" title="gpsea.analysis.temporal.endpoint.hpo_onset"><code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_onset()</span></code></a> for details).
+The <cite>Survival</cite> reports the number of days until attaining the endpoint,
+here defined as end stage renal disease (<cite>is_censored=False</cite>),
+or until the individual dropped out of the analysis (<cite>is_censored=True</cite>).</p>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="measurements.html" class="btn btn-neutral float-left" title="Compare measurement values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mtc.html" class="btn btn-neutral float-right" title="Multiple-testing correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

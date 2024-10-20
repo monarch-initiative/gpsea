@@ -81,9 +81,12 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="kn">from</span> <span class="nn">hpotk.util</span> <span class="kn">import</span> <span class="n">validate_instance</span>
+<span class="kn">from</span> <span class="nn">hpotk.validate</span> <span class="kn">import</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="n">ValidationLevel</span>
 
 <span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.base_pb2</span> <span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span>
+<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.phenotypic_feature_pb2</span> <span class="kn">import</span> <span class="n">PhenotypicFeature</span> <span class="k">as</span> <span class="n">PPPhenotypicFeature</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.measurement_pb2</span> <span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span>
@@ -97,8 +100,12 @@
     <span class="n">ImpreciseSvInfo</span><span class="p">,</span>
     <span class="n">VariantInfo</span><span class="p">,</span>
     <span class="n">Variant</span><span class="p">,</span>
+    <span class="n">Phenotype</span><span class="p">,</span>
     <span class="n">Genotype</span><span class="p">,</span>
     <span class="n">Genotypes</span><span class="p">,</span>
+    <span class="n">Age</span><span class="p">,</span>
+    <span class="n">VitalStatus</span><span class="p">,</span>
+    <span class="n">Status</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="p">(</span>
@@ -106,9 +113,8 @@
     <span class="n">FunctionalAnnotator</span><span class="p">,</span>
     <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Notepad</span>
+<span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Notepad</span><span class="p">,</span> <span class="n">Level</span>
 <span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
-<span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">PhenotypeCreator</span>
 
 
 <span class="k">class</span> <span class="nc">PhenopacketGenotypeParser</span><span class="p">:</span>
@@ -307,36 +313,34 @@
 <span class="k">class</span> <span class="nc">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">PatientCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`~gpsea.model.Patient`.</span>
+
+<span class="sd">    :param hpo: HPO as :class:`~hpotk.MinimalOntology`.</span>
+<span class="sd">    :param validator: validation runner to check HPO terms.</span>
+<span class="sd">    :param build: the genome build to use for variants.</span>
+<span class="sd">    :param phenotype_creator: a phenotype creator for creating phenotypes.</span>
+<span class="sd">    :param functional_annotator: for computing functional annotations.</span>
+<span class="sd">    :param imprecise_sv_functional_annotator: for getting info about imprecise variants.</span>
+<span class="sd">    :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">validator</span><span class="p">:</span> <span class="n">ValidationRunner</span><span class="p">,</span>
         <span class="n">build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
-        <span class="n">phenotype_creator</span><span class="p">:</span> <span class="n">PhenotypeCreator</span><span class="p">,</span>
         <span class="n">functional_annotator</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span>
         <span class="n">imprecise_sv_functional_annotator</span><span class="p">:</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
         <span class="n">hgvs_coordinate_finder</span><span class="p">:</span> <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">assume_karyotypic_sex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create an instance.</span>
-
-<span class="sd">        :param build: the genome build to use for variants.</span>
-<span class="sd">        :param phenotype_creator: a phenotype creator for creating phenotypes.</span>
-<span class="sd">        :param functional_annotator: for computing functional annotations.</span>
-<span class="sd">        :param imprecise_sv_functional_annotator: for getting info about imprecise variants.</span>
-<span class="sd">        :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.</span>
-<span class="sd">        :param assume_karyotypic_sex: `True` if it is OK to assume that `FEMALE` has the `XX` karyotype</span>
-<span class="sd">            and `MALE` has `XY`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="c1"># Violates DI, but it is specific to this class, so I&#39;ll leave it &quot;as is&quot;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_coord_finder</span> <span class="o">=</span> <span class="n">PhenopacketVariantCoordinateFinder</span><span class="p">(</span>
             <span class="n">build</span><span class="p">,</span> <span class="n">hgvs_coordinate_finder</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gt_parser</span> <span class="o">=</span> <span class="n">PhenopacketGenotypeParser</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
-            <span class="n">phenotype_creator</span><span class="p">,</span> <span class="n">PhenotypeCreator</span><span class="p">,</span> <span class="s2">&quot;phenotype_creator&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">PhenopacketPhenotypicFeatureCreator</span><span class="p">(</span>
+            <span class="n">hpo</span><span class="o">=</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span> <span class="s1">&#39;hpo&#39;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
             <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s2">&quot;functional_annotator&quot;</span>
@@ -366,7 +370,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_so_translocations</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;1000044&quot;</span><span class="p">,</span>  <span class="c1"># chromosomal_translocation</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assume_karyotypic_sex</span> <span class="o">=</span> <span class="n">assume_karyotypic_sex</span>
 
 <div class="viewcode-block" id="PhenopacketPatientCreator.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator.process">[docs]</a>
@@ -386,13 +389,15 @@
 
         <span class="c1"># Extract karyotypic sex</span>
         <span class="n">indi</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;individual&quot;</span><span class="p">)</span>
-        <span class="n">sex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_sex</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">indi</span><span class="p">)</span>
+        <span class="n">sex</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_extract_sex</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">indi</span><span class="p">)</span>
+
+        <span class="c1"># Date of death</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_extract_age</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">indi</span><span class="p">)</span>
+        <span class="n">vital_status</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_extract_vital_status</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">indi</span><span class="p">)</span>
 
         <span class="c1"># Check phenotypes</span>
         <span class="n">pfs</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;phenotype-features&quot;</span><span class="p">)</span>
-        <span class="n">phenotypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
-            <span class="p">((</span><span class="n">pf</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">excluded</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">pp</span><span class="o">.</span><span class="n">phenotypic_features</span><span class="p">),</span> <span class="n">pfs</span>
-        <span class="p">)</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_phenotypes</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">phenotypic_features</span><span class="p">,</span> <span class="n">pfs</span><span class="p">)</span>
 
         <span class="c1"># Check diseases</span>
         <span class="n">dip</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="s2">&quot;diseases&quot;</span><span class="p">)</span>
@@ -421,12 +426,42 @@
         <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
             <span class="n">sample_id</span><span class="p">,</span>
             <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">,</span>
+            <span class="n">age</span><span class="o">=</span><span class="n">age</span><span class="p">,</span>
+            <span class="n">vital_status</span><span class="o">=</span><span class="n">vital_status</span><span class="p">,</span>
             <span class="n">phenotypes</span><span class="o">=</span><span class="n">phenotypes</span><span class="p">,</span>
             <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
             <span class="n">variants</span><span class="o">=</span><span class="n">variants</span><span class="p">,</span>
             <span class="n">diseases</span><span class="o">=</span><span class="n">diseases</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+    
+    <span class="k">def</span> <span class="nf">_add_phenotypes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PPPhenotypicFeature</span><span class="p">],</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pfs</span><span class="p">):</span>
+            <span class="n">ith_pf_notepad</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">phenotype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+                <span class="n">pf</span><span class="o">=</span><span class="n">pf</span><span class="p">,</span>
+                <span class="n">notepad</span><span class="o">=</span><span class="n">ith_pf_notepad</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">phenotype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">phenotypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phenotype</span><span class="p">)</span>
+
+        <span class="c1"># We check</span>
+        <span class="n">vr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">validate_all</span><span class="p">(</span><span class="n">phenotypes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">vr</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_translate_level</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Should not happen. Please let the developers know about this issue!</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown result validation level </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_issue</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">phenotypes</span>
 
     <span class="k">def</span> <span class="nf">_add_diseases</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPDisease</span><span class="p">],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span>
@@ -445,17 +480,49 @@
 
         <span class="n">final_diseases</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">diseases</span><span class="p">):</span>
+            <span class="n">ith_disease_subsection</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">):</span>
-                <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has no `term`&quot;</span><span class="p">)</span>
+                <span class="n">ith_disease_subsection</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;disease diagnosis has no `term`&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
+            
+            <span class="k">if</span> <span class="n">dis</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;onset&quot;</span><span class="p">):</span>
+                <span class="n">onset</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+                    <span class="n">time_element</span><span class="o">=</span><span class="n">dis</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
+                    <span class="n">notepad</span><span class="o">=</span><span class="n">ith_disease_subsection</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">onset</span> <span class="o">=</span> <span class="kc">None</span>
+            
             <span class="c1"># Do not include excluded diseases if we decide to assume excluded if not included</span>
-            <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Disease</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">))</span>
+            <span class="n">final_diseases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Disease</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+                    <span class="n">term_id</span><span class="o">=</span><span class="n">term_id</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                    <span class="n">is_observed</span><span class="o">=</span><span class="ow">not</span> <span class="n">dis</span><span class="o">.</span><span class="n">excluded</span><span class="p">,</span>
+                    <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">final_diseases</span>
     
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_time_element</span><span class="p">(</span>
+        <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
     <span class="k">def</span> <span class="nf">_add_measurements</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">measurements</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPMeasurement</span><span class="p">],</span>
@@ -500,8 +567,8 @@
                 <span class="n">final_measurements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Measurement</span><span class="p">(</span><span class="n">test_term_id</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_result</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">final_measurements</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_extract_sex</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
         <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Sex</span><span class="p">]:</span>
@@ -516,6 +583,50 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown sex type: </span><span class="si">{</span><span class="n">sex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_extract_age</span><span class="p">(</span>
+        <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_at_last_encounter&quot;</span><span class="p">):</span>
+            <span class="n">tale</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">time_at_last_encounter</span>
+            <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span><span class="n">tale</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_extract_vital_status</span><span class="p">(</span>
+        <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VitalStatus</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;vital_status&quot;</span><span class="p">):</span>
+            <span class="n">vital_status</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">vital_status</span>
+            
+            <span class="k">if</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">UNKNOWN_STATUS</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="n">UNKNOWN</span>
+            <span class="k">elif</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">ALIVE</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="n">ALIVE</span>
+            <span class="k">elif</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">DECEASED</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="n">DECEASED</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected vital status value </span><span class="si">{</span><span class="n">vital_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="n">UNKNOWN</span>
+            
+            <span class="k">if</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_of_death&quot;</span><span class="p">):</span>
+                <span class="n">age_of_death</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+                    <span class="n">time_element</span><span class="o">=</span><span class="n">vital_status</span><span class="o">.</span><span class="n">time_of_death</span><span class="p">,</span>
+                    <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">Status</span><span class="o">.</span><span class="n">ALIVE</span> <span class="ow">and</span> <span class="n">age_of_death</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="s2">&quot;Individual is ALIVE but has age of death&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">age_of_death</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">VitalStatus</span><span class="p">(</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">age_of_death</span><span class="o">=</span><span class="n">age_of_death</span><span class="p">,</span>
+            <span class="p">)</span>
+                
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_add_variants</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -700,8 +811,87 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_translate_level</span><span class="p">(</span><span class="n">lvl</span><span class="p">:</span> <span class="n">ValidationLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Level</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Level</span><span class="o">.</span><span class="n">WARN</span>
+        <span class="k">elif</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Level</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">PhenopacketPhenotypicFeatureCreator</span><span class="p">:</span>
+    <span class="c1"># NOT PART OF THE PUBLIC API</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pf</span><span class="p">:</span> <span class="n">PPPhenotypicFeature</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">):</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;phenotypic feature has no `type`&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Check the CURIE is well-formed</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Ensure the term ID consists of a prefix (e.g. `HP`) &#39;</span>
+                <span class="s1">&#39;and id (e.g. `0001250`) joined by colon `:` or underscore `_`&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Check the term is an HPO concept</span>
+        <span class="k">if</span> <span class="n">term_id</span><span class="o">.</span><span class="n">prefix</span> <span class="o">!=</span> <span class="s1">&#39;HP&#39;</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is not an HPO term&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Remove non-HPO concepts from the analysis input&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Term must be present in HPO</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">term</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is not in HPO version `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Correct the HPO term or use the latest HPO for the analysis&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="k">assert</span> <span class="n">term</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">identifier</span> <span class="o">!=</span> <span class="n">term_id</span><span class="p">:</span>
+            <span class="c1"># Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,</span>
+            <span class="c1"># since `term.identifier` always returns the primary term ID.</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> is an obsolete identifier for </span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;Replace </span><span class="si">{</span><span class="n">term_id</span><span class="si">}</span><span class="s1"> with the primary term ID </span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">pf</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;onset&quot;</span><span class="p">):</span>
+            <span class="n">onset</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+                <span class="n">time_element</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
+                <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">onset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">Phenotype</span><span class="o">.</span><span class="n">from_raw_parts</span><span class="p">(</span>
+            <span class="n">term_id</span><span class="o">=</span><span class="n">term</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="n">is_observed</span><span class="o">=</span><span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">excluded</span><span class="p">,</span>
+            <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
+        <span class="p">)</span>
 </pre></div>
 
            </div>
