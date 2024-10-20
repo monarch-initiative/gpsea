@@ -78,7 +78,10 @@ class PhenotypeScoreAnalysisResult:
         pval: float,
     ):
         self._genotype_phenotype_scores = genotype_phenotype_scores
-        self._pval = float(pval)
+        if isinstance(pval, float) and 0. <= pval <= 1.:
+            self._pval = float(pval)
+        else:
+            raise ValueError(f"`p_val` must be a finite float in range [0, 1] but it was {pval}")
 
     @property
     def genotype_phenotype_scores(self) -> pd.DataFrame:
