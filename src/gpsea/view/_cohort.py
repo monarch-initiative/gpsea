@@ -11,6 +11,7 @@ from ._formatter import VariantFormatter
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
+
 class CohortViewable:
     """
     Class to create a viewable object that is uses a Jinja2 template to create an HTML element
@@ -90,7 +91,7 @@ class CohortViewable:
                 hgvs_cdna = ''
                 protein_name = ''
                 effects = ''
-            
+
             variant_counts.append(
                 {
                     "variant": variant_key,
@@ -114,10 +115,11 @@ class CohortViewable:
                     "count": disease_count,
                 }
             )
-        
+
         n_diseases = len(disease_counts)
 
         var_effects_list = list()
+        var_effects_d = dict()
         if transcript_id is not None:
             has_transcript = True
             data_by_tx = cohort.variant_effect_count_by_tx(tx_id=transcript_id)
@@ -125,11 +127,17 @@ class CohortViewable:
             for tx_id, counter in data_by_tx.items():
                 if tx_id == transcript_id:
                     for effect, count in counter.items():
-                        var_effects_list.append({"effect": effect, "count": count})
+                        var_effects_d[effect] = count
+            total = sum(var_effects_d.values())
+            # Sort in descending order based on counts
+            sorted_counts_desc = dict(sorted(var_effects_d.items(), key=lambda item: item[1], reverse=True))
+            for effect, count in sorted_counts_desc.items():
+                percent = f"{round(count / total * 100)}%"
+                var_effects_list.append({"effect": effect, "count": count, "percent": percent})
         else:
             has_transcript = False
-        if transcript_id is None:
             transcript_id = "MANE transcript ID"
+            
         # The following dictionary is used by the Jinja2 HTML template
         return {
             "n_individuals": len(cohort.all_patients),
@@ -165,17 +173,22 @@ class CohortViewable:
         """
         chrom_to_display = dict()
         var_formatter = VariantFormatter(transcript_id)
-        
+
         for var in cohort.all_variants():
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
-            tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
-            if tx_annotation is not None:
-                hgvsp = tx_annotation.hgvsp
-                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            if transcript_id is None:
+                tx_annotation = None
             else:
+                tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
+            
+            if tx_annotation is None:
                 hgvsp = None
                 var_effects = None
+            else:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+    
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
