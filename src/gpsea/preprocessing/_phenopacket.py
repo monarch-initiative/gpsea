@@ -2,9 +2,13 @@ import logging
 import typing
 
 import hpotk
+from hpotk.util import validate_instance
+from hpotk.validate import ValidationRunner, ValidationLevel
 
-from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 import phenopackets.schema.v2.core.individual_pb2 as ppi
+from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
+from phenopackets.schema.v2.core.base_pb2 import TimeElement as PPTimeElement
+from phenopackets.schema.v2.core.phenotypic_feature_pb2 import PhenotypicFeature as PPPhenotypicFeature
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
@@ -18,8 +22,12 @@ from gpsea.model import (
     ImpreciseSvInfo,
     VariantInfo,
     Variant,
+    Phenotype,
     Genotype,
     Genotypes,
+    Age,
+    VitalStatus,
+    Status,
 )
 from gpsea.model.genome import GenomeBuild, GenomicRegion, Strand
 from ._api import (
@@ -27,9 +35,8 @@ from ._api import (
     FunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
 )
-from ._audit import Notepad
+from ._audit import Notepad, Level
 from ._patient import PatientCreator
-from ._phenotype import PhenotypeCreator
 
 
 class PhenopacketGenotypeParser:
@@ -220,41 +227,39 @@ class PhenopacketVariantCoordinateFinder(
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     """
     `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`~gpsea.model.Patient`.
+
+    :param hpo: HPO as :class:`~hpotk.MinimalOntology`.
+    :param validator: validation runner to check HPO terms.
+    :param build: the genome build to use for variants.
+    :param phenotype_creator: a phenotype creator for creating phenotypes.
+    :param functional_annotator: for computing functional annotations.
+    :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
+    :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
     """
 
     def __init__(
         self,
+        hpo: hpotk.MinimalOntology,
+        validator: ValidationRunner,
         build: GenomeBuild,
-        phenotype_creator: PhenotypeCreator,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
-        assume_karyotypic_sex: bool = True,
     ):
-        """
-        Create an instance.
-
-        :param build: the genome build to use for variants.
-        :param phenotype_creator: a phenotype creator for creating phenotypes.
-        :param functional_annotator: for computing functional annotations.
-        :param imprecise_sv_functional_annotator: for getting info about imprecise variants.
-        :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.
-        :param assume_karyotypic_sex: `True` if it is OK to assume that `FEMALE` has the `XX` karyotype
-            and `MALE` has `XY`.
-        """
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
         self._coord_finder = PhenopacketVariantCoordinateFinder(
             build, hgvs_coordinate_finder
         )
         self._gt_parser = PhenopacketGenotypeParser()
-        self._phenotype_creator = hpotk.util.validate_instance(
-            phenotype_creator, PhenotypeCreator, "phenotype_creator"
+        self._validator = validate_instance(validator, ValidationRunner, 'validator')
+        self._phenotype_creator = PhenopacketPhenotypicFeatureCreator(
+            hpo=validate_instance(hpo, hpotk.MinimalOntology, 'hpo'),
         )
-        self._functional_annotator = hpotk.util.validate_instance(
+        self._functional_annotator = validate_instance(
             functional_annotator, FunctionalAnnotator, "functional_annotator"
         )
-        self._imprecise_sv_functional_annotator = hpotk.util.validate_instance(
+        self._imprecise_sv_functional_annotator = validate_instance(
             imprecise_sv_functional_annotator,
             ImpreciseSvFunctionalAnnotator,
             "imprecise_sv_functional_annotator",
@@ -279,7 +284,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         self._so_translocations = {
             "1000044",  # chromosomal_translocation
         }
-        self._assume_karyotypic_sex = assume_karyotypic_sex
 
     def process(self, pp: Phenopacket, notepad: Notepad) -> Patient:
         """Creates a Patient from the data in a given Phenopacket
@@ -297,13 +301,15 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         # Extract karyotypic sex
         indi = notepad.add_subsection("individual")
-        sex = self._extract_sex(pp.subject, indi)
+        sex = PhenopacketPatientCreator._extract_sex(pp.subject, indi)
+
+        # Date of death
+        age = PhenopacketPatientCreator._extract_age(pp.subject, indi)
+        vital_status = PhenopacketPatientCreator._extract_vital_status(pp.subject, indi)
 
         # Check phenotypes
         pfs = notepad.add_subsection("phenotype-features")
-        phenotypes = self._phenotype_creator.process(
-            ((pf.type.id, not pf.excluded) for pf in pp.phenotypic_features), pfs
-        )
+        phenotypes = self._add_phenotypes(pp.phenotypic_features, pfs)
 
         # Check diseases
         dip = notepad.add_subsection("diseases")
@@ -316,14 +322,57 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         vs = notepad.add_subsection("variants")
         variants = self._add_variants(sample_id, pp, vs)
 
+        # Complain if we have no genotype or phenotype data to work with
+        if len(variants) == 0:
+            notepad.add_error(
+                f"Individual {pp.id} has no genotype data (variants) to work with",
+                solution="Add variants or remove the individual from the analysis",
+            )
+
+        if all(len(phenotype) == 0 for phenotype in (phenotypes, diseases, measurements)):
+            notepad.add_error(
+                f"Individual {pp.id} has no phenotype data (HPO, a diagnosis, measurement) to work with",
+                solution="Add HPO terms, a diagnosis, or measurements, or remove the individual from the analysis",
+            )
+
         return Patient.from_raw_parts(
             sample_id,
             sex=sex,
+            age=age,
+            vital_status=vital_status,
             phenotypes=phenotypes,
             measurements=measurements,
             variants=variants,
             diseases=diseases,
         )
+    
+    def _add_phenotypes(
+        self,
+        pfs: typing.Iterable[PPPhenotypicFeature],
+        notepad: Notepad,
+    ) -> typing.Sequence[Phenotype]:
+        phenotypes = []
+
+        for i, pf in enumerate(pfs):
+            ith_pf_notepad = notepad.add_subsection(f"#{i}")
+            phenotype = self._phenotype_creator.process(
+                pf=pf,
+                notepad=ith_pf_notepad,
+            )
+            if phenotype is not None:
+                phenotypes.append(phenotype)
+
+        # We check
+        vr = self._validator.validate_all(phenotypes)
+        for result in vr.results:
+            level = PhenopacketPatientCreator._translate_level(result.level)
+            if level is None:
+                # Should not happen. Please let the developers know about this issue!
+                raise ValueError(f'Unknown result validation level {result.level}')
+
+            notepad.add_issue(level, result.message)
+        
+        return phenotypes
 
     def _add_diseases(
         self, diseases: typing.Sequence[PPDisease], notepad: Notepad
@@ -342,17 +391,49 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
         final_diseases = []
         for i, dis in enumerate(diseases):
+            ith_disease_subsection = notepad.add_subsection(f"#{i}")
             if not dis.HasField("term"):
-                notepad.add_error(f"#{i} has no `term`")
+                ith_disease_subsection.add_error("disease diagnosis has no `term`")
                 continue
             else:
                 term_id = hpotk.TermId.from_curie(dis.term.id)
-
+            
+            if dis.HasField("onset"):
+                onset = PhenopacketPatientCreator._parse_time_element(
+                    time_element=dis.onset,
+                    notepad=ith_disease_subsection,
+                )
+            else:
+                onset = None
+            
             # Do not include excluded diseases if we decide to assume excluded if not included
-            final_diseases.append(Disease(term_id, dis.term.label, not dis.excluded))
+            final_diseases.append(
+                Disease.from_raw_parts(
+                    term_id=term_id,
+                    name=dis.term.label,
+                    is_observed=not dis.excluded,
+                    onset=onset,
+                ),
+            )
 
         return final_diseases
     
+    @staticmethod
+    def _parse_time_element(
+        time_element: PPTimeElement,
+        notepad: Notepad,
+    ) -> typing.Optional[Age]:
+        case = time_element.WhichOneof("element")
+        if case == "gestational_age":
+            age = time_element.gestational_age
+            return Age.gestational(weeks=age.weeks, days=age.days)
+        elif case == "age":
+            age = time_element.age
+            return Age.from_iso8601_period(value=age.iso8601duration)
+        else:
+            notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
+            return None
+
     def _add_measurements(
         self,
         measurements: typing.Sequence[PPMeasurement],
@@ -397,8 +478,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 final_measurements.append(Measurement(test_term_id, test_name, test_result, unit))
         return final_measurements
 
+    @staticmethod
     def _extract_sex(
-        self,
         individual: ppi.Individual,
         notepad: Notepad,
     ) -> typing.Optional[Sex]:
@@ -413,6 +494,50 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         else:
             notepad.add_warning(f'Unknown sex type: {sex}')
             return Sex.UNKNOWN_SEX
+
+    @staticmethod
+    def _extract_age(
+        individual: ppi.Individual,
+        notepad: Notepad,
+    ) -> typing.Optional[Age]:
+        if individual.HasField("time_at_last_encounter"):
+            tale = individual.time_at_last_encounter
+            return PhenopacketPatientCreator._parse_time_element(tale, notepad)
+        return None
+
+    @staticmethod
+    def _extract_vital_status(
+        individual: ppi.Individual,
+        notepad: Notepad,
+    ) -> typing.Optional[VitalStatus]:
+        if individual.HasField("vital_status"):
+            vital_status = individual.vital_status
+            
+            if vital_status.status == vital_status.UNKNOWN_STATUS:
+                status = Status.UNKNOWN
+            elif vital_status.status == vital_status.ALIVE:
+                status = Status.ALIVE
+            elif vital_status.status == vital_status.DECEASED:
+                status = Status.DECEASED
+            else:
+                notepad.add_warning(f"Unexpected vital status value {vital_status}")
+                status = Status.UNKNOWN
+            
+            if vital_status.HasField("time_of_death"):
+                age_of_death = PhenopacketPatientCreator._parse_time_element(
+                    time_element=vital_status.time_of_death,
+                    notepad=notepad,
+                )
+                if status == Status.ALIVE and age_of_death is not None:
+                    notepad.add_warning("Individual is ALIVE but has age of death")
+            else:
+                age_of_death = None
+            return VitalStatus(
+                status=status,
+                age_of_death=age_of_death,
+            )
+                
+        return None
 
     def _add_variants(
         self,
@@ -458,8 +583,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             )
                         except ValueError as error:
                             sub_note.add_warning(
-                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                f"Try again or remove variant form testing... {error}",
+                                f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
+                                f"Try again or remove variant from testing... {error}",
                             )
                             continue
                     elif variant_info.has_sv_info():
@@ -471,8 +596,8 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             )
                         except ValueError as error:
                             sub_note.add_warning(
-                                f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
-                                f"Try again or remove variant form testing... {error}",
+                                f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
+                                f"Try again or remove variant from testing... {error}",
                             )
                             continue
                     else:
@@ -482,7 +607,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
 
                     if len(tx_annotations) == 0:
                         sub_note.add_warning(
-                            f"Patient {pp.id} has an error with variant {variant_info.variant_key}",
+                            f"Individual {pp.id} has an error with variant {variant_info.variant_key}",
                             "Remove variant from testing... tx_anno == 0",
                         )
                         continue
@@ -495,9 +620,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                             genotypes=genotype,
                         )
                     )
-
-        if len(variants) == 0:
-            notepad.add_error(f"Patient {pp.id} has no variants to work with")
 
         return variants
 
@@ -517,7 +639,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         except ValueError:
             notepad.add_warning(
                 "Expected a VCF record, a VRS CNV, or an expression with `hgvs.c`"
-                f"but had an error retrieving any from patient {sample_id}",
+                f"but had an error retrieving any from individual {sample_id}",
                 "Remove variant from testing",
             )
             return None
@@ -601,3 +723,82 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 return None
         else:
             raise ValueError(f"Unknown structural type {structural_type}")
+
+    @staticmethod
+    def _translate_level(lvl: ValidationLevel) -> typing.Optional[Level]:
+        if lvl == ValidationLevel.WARNING:
+            return Level.WARN
+        elif lvl == ValidationLevel.ERROR:
+            return Level.ERROR
+        else:
+            return None
+
+
+class PhenopacketPhenotypicFeatureCreator:
+    # NOT PART OF THE PUBLIC API
+    
+    def __init__(
+        self,
+        hpo: hpotk.MinimalOntology,
+    ):
+        self._hpo = hpo
+
+    def process(
+        self,
+        pf: PPPhenotypicFeature,
+        notepad: Notepad,
+    ) -> typing.Optional[Phenotype]:
+        if not pf.HasField("type"):
+            notepad.add_error("phenotypic feature has no `type`")
+            return None
+
+        # Check the CURIE is well-formed
+        try:
+            term_id = hpotk.TermId.from_curie(curie=pf.type.id)
+        except ValueError as ve:
+            notepad.add_warning(
+                f'{ve.args[0]}',
+                'Ensure the term ID consists of a prefix (e.g. `HP`) '
+                'and id (e.g. `0001250`) joined by colon `:` or underscore `_`',
+            )
+            return None
+
+        # Check the term is an HPO concept
+        if term_id.prefix != 'HP':
+            notepad.add_warning(
+                f'{term_id} is not an HPO term',
+                'Remove non-HPO concepts from the analysis input',
+            )
+            return None
+
+        # Term must be present in HPO
+        term = self._hpo.get_term(term_id)
+        if term is None:
+            notepad.add_warning(
+                f'{term_id} is not in HPO version `{self._hpo.version}`',
+                'Correct the HPO term or use the latest HPO for the analysis',
+            )
+            return None
+        
+        assert term is not None
+        if term.identifier != term_id:
+            # Input includes an obsolete term ID. We emit a warning and update the term ID behind the scenes,
+            # since `term.identifier` always returns the primary term ID.
+            notepad.add_warning(
+                f'{term_id} is an obsolete identifier for {term.name}',
+                f'Replace {term_id} with the primary term ID {term.identifier}',
+            )
+        
+        if pf.HasField("onset"):
+            onset = PhenopacketPatientCreator._parse_time_element(
+                time_element=pf.onset,
+                notepad=notepad,
+            )
+        else:
+            onset = None
+
+        return Phenotype.from_raw_parts(
+            term_id=term.identifier,
+            is_observed=not pf.excluded,
+            onset=onset,
+        )

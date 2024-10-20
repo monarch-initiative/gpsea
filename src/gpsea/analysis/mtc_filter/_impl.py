@@ -5,7 +5,6 @@ import typing
 from collections import deque
 
 import hpotk
-import numpy as np
 import pandas as pd
 
 from ..predicate.genotype import GenotypePolyPredicate
@@ -191,17 +190,21 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(code="ST1", reason="Non-specified term")
     """
     The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.
+
+    :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.
     """
 
     def __init__(
         self,
-        terms_to_test: typing.Iterable[hpotk.TermId],
+        terms_to_test: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
-        """
-        Args:
-            terms_to_test: an iterable of TermIds representing the terms to test
-        """
-        self._terms_to_test_set = set(terms_to_test)
+        self._terms_to_test = tuple(
+            SpecifiedTermsMtcFilter.verify_term_id(val) for val in terms_to_test
+        )
+
+    @property
+    def terms_to_test(self) -> typing.Collection[hpotk.TermId]:
+        return self._terms_to_test
 
     def filter(
         self,
@@ -212,7 +215,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     ) -> typing.Sequence[PhenotypeMtcResult]:
         results = []
         for predicate in ph_predicates:
-            if predicate.phenotype in self._terms_to_test_set:
+            if predicate.phenotype in self._terms_to_test:
                 results.append(SpecifiedTermsMtcFilter.OK)
             else:
                 results.append(SpecifiedTermsMtcFilter.NON_SPECIFIED_TERM)
@@ -226,6 +229,15 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     def filter_method_name(self) -> str:
         return "Specified terms MTC filter"
+    
+    @staticmethod
+    def verify_term_id(val: typing.Union[str, hpotk.TermId]) -> hpotk.TermId:
+        if isinstance(val, str):
+            return hpotk.TermId.from_curie(val)
+        elif isinstance(val, hpotk.TermId):
+            return val
+        else:
+            raise ValueError(f"{val} is neither `str` nor `hpotk.TermId`")
 
 
 class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
@@ -253,8 +265,8 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     @staticmethod
     def default_filter(
         hpo: hpotk.MinimalOntology,
-        term_frequency_threshold: float = 0.2,
-        annotation_frequency_threshold: float = 0.25,
+        term_frequency_threshold: float = 0.4,
+        annotation_frequency_threshold: float = 0.4,
         phenotypic_abnormality: hpotk.TermId = hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY,
     ):
         """
@@ -263,12 +275,13 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency
               for an HPO term to have in at least one of the genotype groups
               (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
-              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
+              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
+              The default threshold is `0.4` (40%).
             annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of
                 annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
                 we have explicit observed observations for 20 and excluded for 10 individuals, then the
-                annotation frequency is 0.3. By default, we set a threshold of 25%. The purpose of this
-                threshold is to omit terms for which we simply do not have much data overall.
+                annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which
+                we simply do not have much data overall. By default, we set a threshold to `0.4` (40%).
             phenotypic_abnormality: a :class:`~hpotk.TermId` corresponding to the root of HPO phenotype hierarchy.
               Having to specify this option should be very rarely, if ever.
         """
@@ -325,15 +338,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         annotation_frequency_threshold: float,
         general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
-        """
-        Args:
-            hpo: reference to HPO ontology object
-            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency
-              for an HPO term to have in at least one of the genotype groups
-              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
-              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
-            annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of annotation
-        """
         self._hpo = hpo
         self._hpo_term_frequency_filter = term_frequency_threshold
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold

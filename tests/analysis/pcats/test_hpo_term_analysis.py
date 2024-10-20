@@ -27,6 +27,7 @@ class TestHpoTermAnalysis:
         return HpoMtcFilter.default_filter(
             hpo=hpo,
             term_frequency_threshold=0.2,
+            annotation_frequency_threshold=0.25,
         )
 
     @pytest.fixture

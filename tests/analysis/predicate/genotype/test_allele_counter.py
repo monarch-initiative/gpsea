@@ -177,10 +177,6 @@ class TestAlleleCounter:
     ) -> Patient:
         return Patient.from_raw_parts(
             labels=sample_labels,
-            sex=Sex.UNKNOWN_SEX,
-            phenotypes=(),
-            measurements=(),
-            diseases=(),
             variants=(
                 het_lmna,
                 hom_alt_lmna,

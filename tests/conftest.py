@@ -49,9 +49,22 @@ def fpath_project_dir(fpath_test_dir: str) -> str:
 @pytest.fixture(scope='session')
 def fpath_test_dir() -> str:
     """
-    Path to `tests` folder
+    Path to `tests` folder.
     """
     return os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope='session')
+def fpath_docs_dir(fpath_project_dir: str) -> str:
+    """
+    Path to `docs` folder.
+    """
+    return os.path.join(fpath_project_dir, "docs")
+
+
+@pytest.fixture(scope='session')
+def fpath_cohort_data_dir(fpath_docs_dir: str) -> str:
+    return os.path.join(fpath_docs_dir, "cohort-data")
 
 
 @pytest.fixture(scope='session')
@@ -338,6 +351,8 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HetSingleVar'),
             sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'],
                 test_phenotypes['spasticity_F'],
@@ -350,6 +365,8 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HetDoubleVar1'),
             sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['seizure_T'], test_phenotypes['spasticity_T'],
             ),
@@ -359,7 +376,9 @@ def toy_cohort(
         ),
         Patient.from_raw_parts(
             SampleLabels('HetDoubleVar2'),
-            sex=Sex.UNKNOWN_SEX,        
+            sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_F'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
@@ -370,6 +389,8 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('HomoVar'),
             sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_T'],
             ),
@@ -380,6 +401,8 @@ def toy_cohort(
         Patient.from_raw_parts(
             SampleLabels('LargeCNV'),
             sex=Sex.UNKNOWN_SEX,
+            age=None,
+            vital_status=None,
             phenotypes=(
                 test_phenotypes['arachnodactyly_T'], test_phenotypes['spasticity_T'], test_phenotypes['seizure_F'],
             ),
@@ -395,17 +418,17 @@ def toy_cohort(
 @pytest.fixture(scope='session')
 def test_phenotypes() -> typing.Mapping[str, Phenotype]:
     return {
-        'arachnodactyly_T': Phenotype(hpotk.TermId.from_curie('HP:0001166'), True),
-        'seizure_T': Phenotype(hpotk.TermId.from_curie('HP:0001250'), True),
-        'focal_clonic_seizure_T': Phenotype(
+        'arachnodactyly_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001166'), True),
+        'seizure_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001250'), True),
+        'focal_clonic_seizure_T': Phenotype.from_raw_parts(
             hpotk.TermId.from_curie('HP:0002266'), True,
         ),
-        'spasticity_T': Phenotype(hpotk.TermId.from_curie('HP:0001257'), True),
+        'spasticity_T': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001257'), True),
 
-        'arachnodactyly_F': Phenotype(hpotk.TermId.from_curie('HP:0001166'), False),
-        'seizure_F': Phenotype(hpotk.TermId.from_curie('HP:0001250'), False),
-        'spasticity_F': Phenotype(hpotk.TermId.from_curie('HP:0001257'), False),
-        'focal_clonic_seizure_F': Phenotype(
+        'arachnodactyly_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001166'), False),
+        'seizure_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001250'), False),
+        'spasticity_F': Phenotype.from_raw_parts(hpotk.TermId.from_curie('HP:0001257'), False),
+        'focal_clonic_seizure_F': Phenotype.from_raw_parts(
             hpotk.TermId.from_curie('HP:0002266'), False,
         ),
     }
@@ -414,8 +437,8 @@ def test_phenotypes() -> typing.Mapping[str, Phenotype]:
 @pytest.fixture(scope='session')
 def test_diseases() -> typing.Mapping[str, Disease]:
     return {
-        'KBG_T': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
-        'KBG_F': Disease(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
+        'KBG_T': Disease.from_raw_parts(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", True),
+        'KBG_F': Disease.from_raw_parts(hpotk.TermId.from_curie("OMIM:148050"), "KBG syndrome", False),
     }
 
 

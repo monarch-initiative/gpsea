@@ -78,7 +78,10 @@ class PhenotypeScoreAnalysisResult:
         pval: float,
     ):
         self._genotype_phenotype_scores = genotype_phenotype_scores
-        self._pval = float(pval)
+        if isinstance(pval, float) and 0. <= pval <= 1.:
+            self._pval = float(pval)
+        else:
+            raise ValueError(f"`p_val` must be a finite float in range [0, 1] but it was {pval}")
 
     @property
     def genotype_phenotype_scores(self) -> pd.DataFrame:
@@ -125,7 +128,8 @@ class PhenotypeScoreAnalysisResult:
         :param colors: a tuple with colors to use for coloring the box patches of the box plot.
         """
         # skip the patients with unassigned genotype group
-        not_na_gts = self._genotype_phenotype_scores["genotype"].notna()
+        bla = self._genotype_phenotype_scores.notna()
+        not_na_gts = bla.all(axis='columns')
         data = self._genotype_phenotype_scores.loc[not_na_gts]
         
         # Check that the provided genotype predicate defines the same categories
