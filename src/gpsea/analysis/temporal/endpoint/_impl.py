@@ -3,7 +3,7 @@ import typing
 
 import hpotk
 
-from gpsea.model import Patient, Age, AgeKind
+from gpsea.model import Patient, Age, Timeline
 from .._api import Endpoint
 from .._base import Survival
 
@@ -12,16 +12,16 @@ class EndpointBase(Endpoint, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        kind: AgeKind,
+        timeline: Timeline,
     ):
-        self._kind = kind
+        self._timeline = timeline
 
     def _compute_survival(
         self,
         age: typing.Optional[Age],
         is_censored: bool,
     ) -> typing.Optional[Survival]:
-        if age is None or age.kind != self._kind:
+        if age is None or age.timeline != self._timeline:
             return None
         else:
             return Survival(
@@ -56,16 +56,16 @@ class Death(EndpointBase):
             )
         
     def display_question(self) -> str:
-        return f"Compute time until {self._kind.name.lower()} death"
+        return f"Compute time until {self._timeline.name.lower()} death"
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, Death) and self._kind == value._kind
+        return isinstance(value, Death) and self._timeline == value._timeline
 
     def __hash__(self) -> int:
-        return hash((self._kind,))
+        return hash((self._timeline,))
 
     def __str__(self) -> str:
-        return f"Death(kind={self._kind})"
+        return f"Death(timeline={self._timeline})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -75,11 +75,11 @@ class PhenotypicFeatureOnset(EndpointBase):
 
     def __init__(
         self,
-        kind: AgeKind,
+        timeline: Timeline,
         hpo: hpotk.MinimalOntology,
         term_id: hpotk.TermId,
     ):
-        super().__init__(kind)
+        super().__init__(timeline)
 
         assert isinstance(hpo, hpotk.MinimalOntology)
         self._hpo = hpo
@@ -101,7 +101,7 @@ class PhenotypicFeatureOnset(EndpointBase):
         earliest_onset = None
         for present in patient.present_phenotypes():
             # Check if the onset is available ...
-            if present.onset is not None and present.onset.kind == self._kind:
+            if present.onset is not None and present.onset.timeline == self._timeline:
                 # ... and if the individual is annotated with the target HPO or its descendant.
                 if present.identifier == self._term_id or any(
                     anc == self._term_id
@@ -127,23 +127,23 @@ class PhenotypicFeatureOnset(EndpointBase):
             
     def display_question(self) -> str:
         label = self._hpo.get_term_name(self._term_id)
-        return f"Compute time until {self._kind.name.lower()} onset of {label}"
+        return f"Compute time until {self._timeline.name.lower()} onset of {label}"
 
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, PhenotypicFeatureOnset)
-            and self._kind == value._kind
+            and self._timeline == value._timeline
             and self._term_id == value._term_id
             and self._hpo.version == value._hpo.version
         )
 
     def __hash__(self) -> int:
-        return hash((self._kind, self._term_id, self._hpo.version))
+        return hash((self._timeline, self._term_id, self._hpo.version))
 
     def __str__(self) -> str:
         return (
             "PhenotypicFeatureOnset("
-            f"kind={self._kind}, "
+            f"timeline={self._timeline}, "
             f"onset={self._term_id}, "
             f"hpo={self._hpo.version})"
         )
@@ -156,10 +156,10 @@ class DiseaseOnset(EndpointBase):
 
     def __init__(
         self,
-        kind: AgeKind,
+        timeline: Timeline,
         disease_id: hpotk.TermId,
     ):
-        super().__init__(kind)
+        super().__init__(timeline)
 
         assert isinstance(disease_id, hpotk.TermId)
         self._disease_id = disease_id
@@ -181,33 +181,33 @@ class DiseaseOnset(EndpointBase):
         )
         
     def display_question(self) -> str:
-        return f"Compute time until {self._kind.name.lower()} diagnosis of {self._disease_id.value}"
+        return f"Compute time until {self._timeline.name.lower()} diagnosis of {self._disease_id.value}"
 
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, DiseaseOnset)
-            and self._kind == value._kind
+            and self._timeline == value._timeline
             and self._disease_id == value._disease_id
         )
 
     def __hash__(self) -> int:
-        return hash((self._kind, self._disease_id))
+        return hash((self._timeline, self._disease_id))
 
     def __str__(self) -> str:
         return "DiseaseOnset(" \
-            f"kind={self._kind}, " \
+            f"timeline={self._timeline}, " \
             f"disease_id={self._disease_id})"
 
     def __repr__(self) -> str:
         return str(self)
 
 
-GESTATIONAL_DEATH = Death(kind=AgeKind.GESTATIONAL)
-POSTNATAL_DEATH = Death(kind=AgeKind.POSTNATAL)
+GESTATIONAL_DEATH = Death(timeline=Timeline.GESTATIONAL)
+POSTNATAL_DEATH = Death(timeline=Timeline.POSTNATAL)
 
 
 def death(
-    kind: typing.Literal["gestational", "postnatal"] = "postnatal",
+    timeline: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
     """
     Get :class:`~gpsea.analysis.temporal.Endpoint` for computing time
@@ -220,22 +220,22 @@ def death(
       we compute the survival from the age of death.
     * If the individual is :attr:`~gpsea.model.Status.ALIVE` or the status is missing,
       we use the age at last encounter as the censored survival.
-    * If the age at last encounter is missing or if the age does not match the target age `kind`
-      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute the survival
+    * If the age at last encounter is missing or if the age does not match the target timeline
+      (e.g. `timeline==postnatal` but the individual has `gestational` age) then we cannot compute the survival
       and the endpoint returns `None`.
     """
-    age_kind = _decode_kind(kind)
-    if age_kind == AgeKind.GESTATIONAL:
+    age_timeline = _decode_timeline(timeline)
+    if age_timeline == Timeline.GESTATIONAL:
         return GESTATIONAL_DEATH
-    elif age_kind == AgeKind.POSTNATAL:
+    elif age_timeline == Timeline.POSTNATAL:
         return POSTNATAL_DEATH
     else:
-        raise ValueError(f"Unsupported kind {kind}")
+        raise ValueError(f"Unsupported timeline {timeline}")
 
 
 def disease_onset(
     disease_id: typing.Union[str, hpotk.TermId],
-    kind: typing.Literal["gestational", "postnatal"] = "postnatal",
+    timeline: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
     """
     Get :class:`~gpsea.analysis.temporal.Endpoint` to compute time
@@ -248,15 +248,15 @@ def disease_onset(
       then the survival is computed from the disease onset.
     * If the individual is *not* diagnosed with the disease and the age at last encounter is known,
       this age is used as censored survival.
-    * If the age at last encounter is missing or if the age does not match the target age `kind`
-      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute
+    * If the age at last encounter is missing or if the age does not match the target timeline
+      (e.g. `timeline==postnatal` but the individual's age is on gestational timeline) then we cannot compute
       the time until disease onset and the endpoint returns `None`.
     """
-    age_kind = _decode_kind(kind)
+    age_timeline = _decode_timeline(timeline)
     disease_id = _validate_term_id(disease_id)
 
     return DiseaseOnset(
-        kind=age_kind,
+        timeline=age_timeline,
         disease_id=disease_id,
     )
 
@@ -264,7 +264,7 @@ def disease_onset(
 def hpo_onset(
     hpo: hpotk.MinimalOntology,
     term_id: typing.Union[str, hpotk.TermId],
-    kind: typing.Literal["gestational", "postnatal"] = "postnatal",
+    timeline: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
     """
     Get :class:`~gpsea.analysis.temporal.Endpoint` to compute time
@@ -277,29 +277,29 @@ def hpo_onset(
       then the survival is computed from the term's onset.
     * If the individual is *not* diagnosed with the term and the age at last encounter is known,
       this age is used as censored survival.
-    * If the age at last encounter is missing or if the age does not match the target age `kind`
-      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute
+    * If the age at last encounter is missing or if the age does not match the target timeline
+      (e.g. `timeline==postnatal` but the individual has `gestational` age) then we cannot compute
       time until phenotype onset and the endpoint returns `None`.
     """
-    age_kind = _decode_kind(kind)
+    age_timeline = _decode_timeline(timeline)
     term_id = _validate_term_id(term_id)
 
     return PhenotypicFeatureOnset(
-        kind=age_kind,
+        timeline=age_timeline,
         hpo=hpo,
         term_id=term_id,
     )
 
 
-def _decode_kind(
-    kind: typing.Literal["gestational", "postnatal"] = "postnatal",
-) -> AgeKind:
-    if kind == "gestational":
-        return AgeKind.GESTATIONAL
-    elif kind == "postnatal":
-        return AgeKind.POSTNATAL
+def _decode_timeline(
+    timeline: typing.Literal["gestational", "postnatal"] = "postnatal",
+) -> Timeline:
+    if timeline == "gestational":
+        return Timeline.GESTATIONAL
+    elif timeline == "postnatal":
+        return Timeline.POSTNATAL
     else:
-        raise ValueError(f"Unsupported kind {kind}")
+        raise ValueError(f"Unsupported timeline {timeline}")
 
 
 def _validate_term_id(

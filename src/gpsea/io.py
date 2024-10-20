@@ -26,7 +26,7 @@ from gpsea.model import (
     Disease,
     Phenotype,
     Age,
-    AgeKind,
+    Timeline,
     Sex,
     Status,
     VitalStatus,
@@ -113,7 +113,7 @@ class GpseaJSONEncoder(JSONEncoder):
                 "label": o.label,
                 "meta_label": o.meta_label,
             }
-        elif isinstance(o, (Sex, AgeKind, Genotype, VariantEffect, Strand, VariantClass, Status)):
+        elif isinstance(o, (Sex, Timeline, Genotype, VariantEffect, Strand, VariantClass, Status)):
             # enums
             return o.name
         elif isinstance(o, Phenotype):
@@ -125,7 +125,7 @@ class GpseaJSONEncoder(JSONEncoder):
         elif isinstance(o, Age):
             return {
                 "days": o.days,
-                "kind": o.kind,
+                "timeline": o.timeline,
             }
         elif isinstance(o, Disease):
             return {
@@ -220,7 +220,7 @@ _PROTEIN_METADATA = ("protein_id", "label", "protein_features", "protein_length"
 _PROTEIN_FEATURE = ("info", "feature_type")
 _FEATURE_INFO = ("name", "region")
 _PHENOTYPE_FIELDS = ("term_id", "is_present", "onset")
-_AGE_FIELDS = ("days", "kind")
+_AGE_FIELDS = ("days", "timeline")
 _DISEASE_FIELDS = ("term_id", "name", "is_observed", "onset")
 _MEASUREMENT_FIELDS = ("test_term_id", "test_name", "test_result", "unit")
 _PATIENT_FIELDS = ("labels", "sex", "age", "vital_status", "phenotypes", "diseases", "variants")
@@ -342,7 +342,7 @@ class GpseaJSONDecoder(JSONDecoder):
         elif GpseaJSONDecoder._has_all_fields(obj, _AGE_FIELDS):
             return Age(
                 days=obj["days"],
-                kind=AgeKind[obj["kind"]],
+                timeline=Timeline[obj["timeline"]],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _DISEASE_FIELDS):
             return Disease(

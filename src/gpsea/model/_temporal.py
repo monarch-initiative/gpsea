@@ -5,33 +5,48 @@ import re
 import typing
 
 
-class AgeKind(enum.Enum):
+class Timeline(enum.Enum):
     """
-    `AgeKind` determines if the :class:`~gpsea.model.Age` is gestational or postnatal.
+    `Timeline` represents the stage of temporal development of an organism.
+    
+    There are two stages: gestational and postnatal.
+    
+    Gestational timeline starts at the last menstrual period and ends at (but does not include) birth.
+    The postnatal timeline starts at birth and ends at death.
+
+    The `Timeline` overloads comparison operators. Gestational timeline is always before postnatal timeline.
     """
+    
     GESTATIONAL = enum.auto()
+    """
+    Gestational timeline starts at the last menstrual period and ends at birth (excluded).
+    """
+    
     POSTNATAL = enum.auto()
+    """
+    Postnatal timeline starts at birth and ends at death.
+    """
 
     def __lt__(self, value: object) -> bool:
-        if isinstance(value, AgeKind):
-            return self == AgeKind.GESTATIONAL and value == AgeKind.POSTNATAL
+        if isinstance(value, Timeline):
+            return self == Timeline.GESTATIONAL and value == Timeline.POSTNATAL
         else:
             return NotImplemented
 
     def __le__(self, value: object) -> bool:
-        if isinstance(value, AgeKind):
+        if isinstance(value, Timeline):
             return self < value or self == value
         else:
             return NotImplemented
 
     def __gt__(self, value: object) -> bool:
-        if isinstance(value, AgeKind):
-            return self == AgeKind.POSTNATAL and value == AgeKind.GESTATIONAL
+        if isinstance(value, Timeline):
+            return self == Timeline.POSTNATAL and value == Timeline.GESTATIONAL
         else:
             return NotImplemented
 
     def __ge__(self, value: object) -> bool:
-        if isinstance(value, AgeKind):
+        if isinstance(value, Timeline):
             return self > value or self == value
         else:
             return NotImplemented
@@ -64,23 +79,29 @@ class Age:
         weeks: int,
         days: int = 0,
     ) -> "Age":
+        """
+        Create age from the `weeks` and `days` on the gestational timeline.
+
+        :param weeks: a non-negative `int` with the number of completed weeks of gestation.
+        :param days: an `int` in range :math:`[0, 6]` representing the number of completed gestational days.
+        """
         if not isinstance(weeks, int) or weeks < 0:
             raise ValueError(f"`weeks` must be non-negative `int` but was {weeks}")
         if not isinstance(days, int) or 0 > days > 6:
             raise ValueError(f"`days` must be an `int` between [0,6] was {days}")
         total = weeks * Age.DAYS_IN_WEEK + days
-        return Age(days=float(total), kind=AgeKind.GESTATIONAL)
+        return Age(days=float(total), timeline=Timeline.GESTATIONAL)
 
     @staticmethod
     def birth() -> "Age":
         """
-        Age of an individual at birth
+        Age of an individual at birth.
         """
         return BIRTH
 
     @staticmethod
     def postnatal_days(days: int) -> "Age":
-        return Age(days=float(days), kind=AgeKind.POSTNATAL)
+        return Age(days=float(days), timeline=Timeline.POSTNATAL)
 
     @staticmethod
     def postnatal_years(
@@ -89,7 +110,7 @@ class Age:
         if not isinstance(years, int) or years < 0:
             raise ValueError(f"`years` must be non-negative `int` but was {years}")
         days = years * Age.DAYS_IN_YEAR
-        return Age(days=days, kind=AgeKind.POSTNATAL)
+        return Age(days=days, timeline=Timeline.POSTNATAL)
 
     @staticmethod
     def postnatal(
@@ -103,7 +124,7 @@ class Age:
             total += months * Age.DAYS_IN_MONTH
             total += days
 
-            return Age(days=total, kind=AgeKind.POSTNATAL)
+            return Age(days=total, timeline=Timeline.POSTNATAL)
         else:
             raise ValueError(
                 f"`years`, `months` and `days` must be non-negative `int`s but were {years}, {months}, and {days}"
@@ -129,13 +150,13 @@ class Age:
         >>> from gpsea.model import Age
         >>> gestational = Age.from_iso8601_period("P2W6D")
         >>> gestational
-        Age(days=20.0, kind=AgeKind.GESTATIONAL)
+        Age(days=20.0, timeline=Timeline.GESTATIONAL)
 
         Parse postnatal age:
 
         >>> postnatal = Age.from_iso8601_period("P10Y")
         >>> postnatal
-        Age(days=3652.5, kind=AgeKind.POSTNATAL)
+        Age(days=3652.5, timeline=Timeline.POSTNATAL)
         
 
         :param value: a `str` with the duration (e.g. `P22W3D` for a gestational age or `P10Y4M2D` for a postnatal age).
@@ -177,36 +198,36 @@ class Age:
     def __init__(
         self,
         days: float,
-        kind: AgeKind,
+        timeline: Timeline,
     ):
         if not isinstance(days, float) or math.isnan(days) or days < 0:
             raise ValueError(f"`days` must be a non-negative `float` but was {days}")
         self._days = days
-        if not isinstance(kind, AgeKind):
-            raise ValueError(f"`kind` must be an instance of `AgeKind` but was {kind}")
-        self._kind = kind
+        if not isinstance(timeline, Timeline):
+            raise ValueError(f"`timeline` must be an instance of `Timeline` but was {timeline}")
+        self._timeline = timeline
 
     @property
     def days(self) -> float:
         return self._days
 
     @property
-    def kind(self) -> AgeKind:
-        return self._kind
+    def timeline(self) -> Timeline:
+        return self._timeline
 
     @property
     def is_gestational(self) -> bool:
         """
-        Return `True` if the age is gestational.
+        Return `True` if the age is on gestational timeline.
         """
-        return self._kind == AgeKind.GESTATIONAL
+        return self._timeline == Timeline.GESTATIONAL
 
     @property
     def is_postnatal(self) -> bool:
         """
-        Return `True` if the age is postnatal.
+        Return `True` if the age is on postnatal timeline.
         """
-        return self._kind == AgeKind.POSTNATAL
+        return self._timeline == Timeline.POSTNATAL
 
     def __lt__(self, value: object) -> bool:
         return self._compare(operator.lt, value)
@@ -226,9 +247,9 @@ class Age:
         value: object,
     ) -> bool:
         if isinstance(value, Age):
-            if op(self._kind, value._kind):
+            if op(self._timeline, value._timeline):
                 return True
-            elif self._kind == value._kind:
+            elif self._timeline == value._timeline:
                 return op(self._days, value._days)
             else:
                 return False
@@ -239,17 +260,17 @@ class Age:
         return (
             isinstance(value, Age)
             and self._days == value._days
-            and self._kind == value._kind
+            and self._timeline == value._timeline
         )
 
     def __hash__(self) -> int:
-        return hash((self._days, self._kind))
+        return hash((self._days, self._timeline))
 
     def __repr__(self) -> str:
-        return f"Age(days={self._days}, kind={self._kind})"
+        return f"Age(days={self._days}, timeline={self._timeline})"
 
     def __str__(self) -> str:
         return repr(self)
 
 
-BIRTH = Age(days=0.0, kind=AgeKind.POSTNATAL)
+BIRTH = Age(days=0.0, timeline=Timeline.POSTNATAL)

@@ -1,9 +1,8 @@
 import hpotk
 import pytest
 
-from gpsea.model import Patient, Age, VitalStatus, Status, Disease
+from gpsea.model import Patient, Age, VitalStatus, Status, Disease, Phenotype
 from gpsea.analysis.temporal.endpoint import death, disease_onset, hpo_onset
-from gpsea.model import Phenotype
 
 
 @pytest.fixture
@@ -39,7 +38,7 @@ class TestDeath:
         self,
         alive: Patient,
     ):
-        endpoint = death(kind="postnatal")
+        endpoint = death(timeline="postnatal")
 
         survival = endpoint.compute_survival(alive)
 
@@ -51,7 +50,7 @@ class TestDeath:
         self,
         deceased: Patient,
     ):
-        endpoint = death(kind="postnatal")
+        endpoint = death(timeline="postnatal")
 
         survival = endpoint.compute_survival(deceased)
 
@@ -63,14 +62,14 @@ class TestDeath:
         self,
         patient_no_data: Patient,
     ):
-        endpoint = death(kind="postnatal")
+        endpoint = death(timeline="postnatal")
 
         survival = endpoint.compute_survival(patient_no_data)
 
         assert survival is None
 
     def test_display_question(self):
-        endpoint = death(kind="postnatal")
+        endpoint = death(timeline="postnatal")
 
         assert endpoint.display_question() == "Compute time until postnatal death"
 
