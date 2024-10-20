@@ -142,7 +142,7 @@ class SurvivalAnalysisResult:
 class SurvivalAnalysis:
     """
     `SurvivalAnalysis` compares the survivals of genotype groups with respect
-    to an endpoint.
+    to an :class:`~gpsea.analysis.temporal.Endpoint`.
     
     The cohort is partitioned into groups using a genotype predicate
     and survival is computed for each cohort member. The difference between

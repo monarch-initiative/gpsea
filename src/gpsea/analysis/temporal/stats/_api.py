@@ -16,4 +16,8 @@ class SurvivalStatistic(metaclass=abc.ABCMeta):
         self,
         scores: typing.Collection[typing.Sequence[Survival]],
     ) -> float:
+        """
+        Compute p value for the collection of survivals being sampled from
+        the same source distribution.
+        """
         pass

@@ -68,10 +68,7 @@ class TestDeVriesScorer:
             devries_scorer: DeVriesPhenotypeScorer,
     ):
         patient = Patient.from_raw_parts(
-            labels=SampleLabels("test"),
-            sex=Sex.UNKNOWN_SEX,
-            age=None,
-            vital_status=None,
+            labels="test",
             phenotypes=(
                 Phenotype.from_raw_parts(
                     term_id=curie,
@@ -79,9 +76,6 @@ class TestDeVriesScorer:
                 )
                 for curie in term_set
             ),
-            measurements=(),
-            diseases=(),
-            variants=(),
         )
 
         actual = devries_scorer.score(patient)

@@ -209,6 +209,21 @@ POSTNATAL_DEATH = Death(kind=AgeKind.POSTNATAL)
 def death(
     kind: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
+    """
+    Get :class:`~gpsea.analysis.temporal.Endpoint` for computing time
+    until death of an individual or until the individual is lost from the study
+    without knowing about the time of death.
+
+    The time of death is computed from individual's vital status with the following rules:
+     
+    * If the individual is labeled as :attr:`~gpsea.model.Status.DECEASED`,
+      we compute the survival from the age of death.
+    * If the individual is :attr:`~gpsea.model.Status.ALIVE` or the status is missing,
+      we use the age at last encounter as the censored survival.
+    * If the age at last encounter is missing or if the age does not match the target age `kind`
+      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute the survival
+      and the endpoint returns `None`.
+    """
     age_kind = _decode_kind(kind)
     if age_kind == AgeKind.GESTATIONAL:
         return GESTATIONAL_DEATH
@@ -222,6 +237,21 @@ def disease_onset(
     disease_id: typing.Union[str, hpotk.TermId],
     kind: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
+    """
+    Get :class:`~gpsea.analysis.temporal.Endpoint` to compute time
+    until onset of a disease or until the individual is lost from the study.
+
+    The onset of diagnosis is computed from the onset field of
+    a :class:`~gpsea.model.Disease` with the following rules:
+     
+    * If the individual is diagnosed with the target disease and its onset is known,
+      then the survival is computed from the disease onset.
+    * If the individual is *not* diagnosed with the disease and the age at last encounter is known,
+      this age is used as censored survival.
+    * If the age at last encounter is missing or if the age does not match the target age `kind`
+      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute
+      the time until disease onset and the endpoint returns `None`.
+    """
     age_kind = _decode_kind(kind)
     disease_id = _validate_term_id(disease_id)
 
@@ -236,6 +266,21 @@ def hpo_onset(
     term_id: typing.Union[str, hpotk.TermId],
     kind: typing.Literal["gestational", "postnatal"] = "postnatal",
 ) -> Endpoint:
+    """
+    Get :class:`~gpsea.analysis.temporal.Endpoint` to compute time
+    until onset of an HPO term or until the individual is lost from the study.
+
+    The HPO term onset is computed from the onset field of
+    a :class:`~gpsea.model.Phenotype` with the following rules:
+     
+    * If the individual is annotated with the target HPO term and its onset is known,
+      then the survival is computed from the term's onset.
+    * If the individual is *not* diagnosed with the term and the age at last encounter is known,
+      this age is used as censored survival.
+    * If the age at last encounter is missing or if the age does not match the target age `kind`
+      (e.g. `kind==postnatal` but the individual has `gestational` age) then we cannot compute
+      time until phenotype onset and the endpoint returns `None`.
+    """
     age_kind = _decode_kind(kind)
     term_id = _validate_term_id(term_id)
 

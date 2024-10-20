@@ -6,6 +6,9 @@ import typing
 
 
 class AgeKind(enum.Enum):
+    """
+    `AgeKind` determines if the :class:`~gpsea.model.Age` is gestational or postnatal.
+    """
     GESTATIONAL = enum.auto()
     POSTNATAL = enum.auto()
 
@@ -35,6 +38,19 @@ class AgeKind(enum.Enum):
 
 
 class Age:
+    """
+    Representation of an age of an individual.
+
+    In GPSEA, we model the age at the resolution of a day.
+    The age is either gestational or postnatal. A gestational age is created
+    from the number of weeks and days since the last menstrual period
+    and the postnatal age is created from years, months and days since birth.
+
+    Age overloads the comparison operators and can, thus, be compared or sorted.
+    Gestational age is always before the postnatal age.
+
+    Internally, the age is always stored as the number of days.
+    """
 
     ISO8601PT = re.compile(
         r"^P(?P<year>\d+Y)?(?P<month>\d+M)?(?P<week>\d+W)?(?P<day>\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$"
@@ -42,14 +58,6 @@ class Age:
     DAYS_IN_YEAR = 365.25
     DAYS_IN_MONTH = DAYS_IN_YEAR / 12
     DAYS_IN_WEEK = 7
-
-    @staticmethod
-    def future_postnatal() -> "Age":
-        return POSTNATAL_FUTURE
-
-    @staticmethod
-    def future_gestational() -> "Age":
-        return GESTATIONAL_FUTURE
 
     @staticmethod
     def gestational(
@@ -65,6 +73,9 @@ class Age:
 
     @staticmethod
     def birth() -> "Age":
+        """
+        Age of an individual at birth
+        """
         return BIRTH
 
     @staticmethod
@@ -102,6 +113,33 @@ class Age:
     def from_iso8601_period(
         value: str,
     ) -> "Age":
+        """
+        Create `Age` from ISO8601 duration.
+
+        A `value` with **weeks** or days is parsed into a gestational age, while a `value` with years, months or days
+        is parsed into a postnatal age. An error is raised if a value for weeks and months (or years) is included
+        at the same time.
+
+        
+        Examples
+        --------
+
+        Parse gestational age:
+
+        >>> from gpsea.model import Age
+        >>> gestational = Age.from_iso8601_period("P2W6D")
+        >>> gestational
+        Age(days=20.0, kind=AgeKind.GESTATIONAL)
+
+        Parse postnatal age:
+
+        >>> postnatal = Age.from_iso8601_period("P10Y")
+        >>> postnatal
+        Age(days=3652.5, kind=AgeKind.POSTNATAL)
+        
+
+        :param value: a `str` with the duration (e.g. `P22W3D` for a gestational age or `P10Y4M2D` for a postnatal age).
+        """
         matcher = Age.ISO8601PT.match(value)
         if matcher:
             year = matcher.group("year")
@@ -158,10 +196,16 @@ class Age:
 
     @property
     def is_gestational(self) -> bool:
+        """
+        Return `True` if the age is gestational.
+        """
         return self._kind == AgeKind.GESTATIONAL
 
     @property
     def is_postnatal(self) -> bool:
+        """
+        Return `True` if the age is postnatal.
+        """
         return self._kind == AgeKind.POSTNATAL
 
     def __lt__(self, value: object) -> bool:
@@ -209,46 +253,3 @@ class Age:
 
 
 BIRTH = Age(days=0.0, kind=AgeKind.POSTNATAL)
-POSTNATAL_FUTURE = Age(days=float("inf"), kind=AgeKind.POSTNATAL)
-GESTATIONAL_FUTURE = Age(days=float("inf"), kind=AgeKind.GESTATIONAL)
-
-
-class TemporalRange:
-
-    def __init__(
-        self,
-        start: typing.Optional[Age],
-        end: typing.Optional[Age],
-    ):
-        if start is not None:
-            assert isinstance(start, Age)
-        if end is not None:
-            assert isinstance(end, Age)
-        if start is not None and end is not None:
-            assert start <= end, "Start must be at or before end"
-        
-        self._start = start
-        self._end = end
-
-    @property
-    def start(self) -> typing.Optional[Age]:
-        return self._start
-
-    @property
-    def end(self) -> typing.Optional[Age]:
-        return self._end
-
-    def __eq__(self, value: object) -> bool:
-        if isinstance(value, TemporalRange):
-            return self._start == value._start and self._end == value._end
-        else:
-            return False
-        
-    def __hash__(self) -> int:
-        return hash((self._start, self._end))
-    
-    def __str__(self) -> str:
-        return f"TemporalRange(start={self._start}, end={self._end})"
-
-    def __repr__(self) -> str:
-        return str(self)

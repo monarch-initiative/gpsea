@@ -312,10 +312,4 @@ class TestSexPredicate:
         return Patient.from_raw_parts(
             SampleLabels(label),
             sex,
-            age=None,
-            vital_status=None,
-            phenotypes=(),
-            measurements=(),
-            diseases=(),
-            variants=(),
         )

@@ -7,12 +7,23 @@ from ._api import SurvivalStatistic
 
 
 class LogRankTest(SurvivalStatistic):
+    """
+    Log Rank test compares survivals of individual groups.
+
+    The class is a wrapper around Scipy's :func:`~scipy.stats.logrank` function.
+    A two-sided alternative hypothesis is tested.
+    """
 
     def compute_pval(
         self,
-        scores: typing.Collection[typing.Sequence[Survival]],
+        scores: typing.Collection[typing.Iterable[Survival]],
     ) -> float:
-        assert len(scores) == 2, "Log rank test only supports 2 categories at this time"
+        """
+        Compute p value for survivals being sourced from the same distribution.
+
+        :param scores: a pair of survival groups
+        """
+        assert len(scores) == 2, "Log rank test only supports 2 groups at this time"
         x, y = tuple(scores)
 
         xc = LogRankTest._prepare_censored_data(x)
@@ -28,7 +39,7 @@ class LogRankTest(SurvivalStatistic):
 
     @staticmethod
     def _prepare_censored_data(
-        survivals: typing.Collection[Survival],
+        survivals: typing.Iterable[Survival],
     ) -> stats.CensoredData:
         uncensored = []
         right_censored = []

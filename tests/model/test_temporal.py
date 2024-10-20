@@ -85,24 +85,3 @@ class TestAge:
         with pytest.raises(ValueError) as e:
             Age.from_iso8601_period(value)
         assert e.value.args == (error,)
-
-    def test_future_postnatal_is_comparable(self):
-        a = Age.future_postnatal()
-        b = Age.future_postnatal()
-        
-        assert a == b
-
-    def test_future_gestational_is_comparable(self):
-        a = Age.future_gestational()
-        b = Age.future_gestational()
-
-        assert a == b
-
-    def test_comparing_corner_cases(self):
-        birth = Age.birth()
-        gestational_future = Age.future_gestational()
-        postnatal_future = Age.future_postnatal()
-
-        assert gestational_future < postnatal_future
-        assert gestational_future < birth
-        assert birth < postnatal_future

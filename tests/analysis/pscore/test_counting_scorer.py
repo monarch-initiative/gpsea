@@ -53,8 +53,6 @@ class TestCountingPhenotypeScorer:
         patient = Patient.from_raw_parts(
             labels=SampleLabels("test"),
             sex=Sex.UNKNOWN_SEX,
-            age=None,
-            vital_status=None,
             phenotypes=(
                 Phenotype.from_raw_parts(
                     hpotk.TermId.from_curie(curie),
@@ -62,9 +60,6 @@ class TestCountingPhenotypeScorer:
                 )
                 for curie in curies
             ),
-            measurements=(),
-            diseases=(),
-            variants=(),
         )
 
         actual = counting_scorer.score(patient)

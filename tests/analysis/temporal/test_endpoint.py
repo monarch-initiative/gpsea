@@ -3,9 +3,7 @@ import pytest
 
 from gpsea.model import Patient, Age, VitalStatus, Status, Disease
 from gpsea.analysis.temporal.endpoint import death, disease_onset, hpo_onset
-from gpsea.model._phenotype import Phenotype
-
-# from gpsea.analysis.temporal.endpoint import death, disease_onset, hpo_onset
+from gpsea.model import Phenotype
 
 
 @pytest.fixture
@@ -19,7 +17,6 @@ def patient_no_data() -> Patient:
 def alive() -> Patient:
     return Patient.from_raw_parts(
         labels="A",
-        sex=None,
         age=Age.postnatal_days(days=40),
         vital_status=VitalStatus(status=Status.ALIVE, age_of_death=None),
     )
@@ -29,7 +26,6 @@ def alive() -> Patient:
 def deceased() -> Patient:
     return Patient.from_raw_parts(
         labels="D",
-        sex=None,
         age=Age.postnatal_days(days=60),
         vital_status=VitalStatus(
             status=Status.DECEASED, age_of_death=Age.postnatal_days(60)

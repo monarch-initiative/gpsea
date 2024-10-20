@@ -1,5 +1,4 @@
 import abc
-import math
 import typing
 
 import pandas as pd
@@ -79,7 +78,7 @@ class PhenotypeScoreAnalysisResult:
         pval: float,
     ):
         self._genotype_phenotype_scores = genotype_phenotype_scores
-        if isinstance(pval, float) and math.isfinite(pval) and 0. <= pval <= 1.:
+        if isinstance(pval, float) and 0. <= pval <= 1.:
             self._pval = float(pval)
         else:
             raise ValueError(f"`p_val` must be a finite float in range [0, 1] but it was {pval}")

@@ -21,7 +21,6 @@ class Status(enum.Enum):
 
 @dataclass(frozen=True)
 class VitalStatus:
-    # TODO: check consistency. age of death must not be set if the individual is alive.
     status: Status
     age_of_death: typing.Optional[Age]
 
