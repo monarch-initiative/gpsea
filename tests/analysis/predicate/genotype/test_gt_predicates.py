@@ -10,6 +10,7 @@ from gpsea.analysis.predicate.genotype import (
     biallelic_predicate,
     autosomal_dominant,
     autosomal_recessive,
+    allele_counting,
     VariantPredicates,
     VariantPredicate,
 )
@@ -285,6 +286,30 @@ class TestAllelePredicates:
             )
 
         assert e.value.args == (msg,)
+    
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("walt", "Biallelic"),
+            ("skyler", "Biallelic"),
+            ("flynn", "Biallelic"),
+            ("holly", "Biallelic"),
+        ],
+    )
+    def test_allele_counting(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = allele_counting()
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
 
 
 class TestSexPredicate:
