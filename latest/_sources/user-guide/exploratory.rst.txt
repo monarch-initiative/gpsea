@@ -89,7 +89,7 @@ Interactive exploration
 We designed GPSEA to integrate with interactive Python with a widespread use
 in contemporary scientific workflows.
 
-The code for exploration is located in :mod:`gpsea.view` module. 
+The code for exploration is located in :mod:`gpsea.view` module.
 As a rule of thumb, the reports are provided as :class:`~gpsea.view.GpseaReport`
 which leverages IPython's "magic" to integrate with environments such as Jupyter notebook.
 
@@ -178,3 +178,4 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 
     >>> fig.tight_layout()
     >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
+
