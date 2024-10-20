@@ -179,8 +179,3 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
     >>> fig.tight_layout()
     >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
 
-
-if you would like to save a file with this grapic, use the following command. ::
-
-    fig.savefig('protein_diagram.pdf')  # for PDF format
-    fig.savefig('protein_diagram.png')  # for PNG format
