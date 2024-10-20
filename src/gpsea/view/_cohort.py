@@ -11,6 +11,7 @@ from ._formatter import VariantFormatter
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
+
 class CohortViewable:
     """
     Class to create a viewable object that is uses a Jinja2 template to create an HTML element
@@ -135,8 +136,8 @@ class CohortViewable:
                 var_effects_list.append({"effect": effect, "count": count, "percent": percent})
         else:
             has_transcript = False
-        if transcript_id is None:
             transcript_id = "MANE transcript ID"
+            
         # The following dictionary is used by the Jinja2 HTML template
         return {
             "n_individuals": len(cohort.all_patients),
@@ -176,13 +177,18 @@ class CohortViewable:
         for var in cohort.all_variants():
             variant_key = var.variant_info.variant_key
             display = var_formatter.format_as_string(var)
-            tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
-            if tx_annotation is not None:
-                hgvsp = tx_annotation.hgvsp
-                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+            if transcript_id is None:
+                tx_annotation = None
             else:
+                tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
+            
+            if tx_annotation is None:
                 hgvsp = None
                 var_effects = None
+            else:
+                hgvsp = tx_annotation.hgvsp
+                var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
+    
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
