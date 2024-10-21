@@ -110,10 +110,10 @@ GPSEA helps with gaining insight into the cohort by providing
 Show cohort summary
 -------------------
 
-The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:
+The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:
 
->>> from gpsea.view import CohortViewable
->>> viewer = CohortViewable(hpo)
+>>> from gpsea.view import CohortViewer
+>>> viewer = CohortViewer(hpo)
 >>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
 >>> report  # doctest: +SKIP
 

@@ -1,4 +1,4 @@
-from ._cohort import CohortViewable
+from ._cohort import CohortViewer
 from ._cohort_variant_viewer import CohortVariantViewer
 from ._disease import DiseaseViewable
 from ._phenotype_analysis import summarize_hpo_analysis
@@ -13,7 +13,7 @@ from ._formatter import Formatter, VariantFormatter
 __all__ = [
     'GpseaReport',
     'CohortVariantViewer',
-    'CohortViewable',
+    'CohortViewer',
     'ProteinVisualizer', 'ProteinVisualizable', 'ProteinVariantViewer',
     'DiseaseViewable',
     'MtcStatsViewer',

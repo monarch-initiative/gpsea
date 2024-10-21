@@ -4,28 +4,28 @@ import hpotk
 import pytest
 
 from gpsea.model import Cohort
-from gpsea.view import CohortViewable
+from gpsea.view import CohortViewer
 
 
-class TestCohortViewable:
+class TestCohortViewer:
 
     @pytest.fixture
-    def cohort_viewable(
+    def cohort_viewer(
         self,
         hpo: hpotk.MinimalOntology,
-    ) -> CohortViewable:
-        return CohortViewable(
+    ) -> CohortViewer:
+        return CohortViewer(
             hpo=hpo,
         )
 
     def test_process(
         self,
-        cohort_viewable: CohortViewable,
+        cohort_viewer: CohortViewer,
         toy_cohort: Cohort,
     ):
         toy_transcript_id = "NM_123.1"
 
-        report = cohort_viewable.process(
+        report = cohort_viewer.process(
             cohort=toy_cohort, transcript_id=toy_transcript_id
         )
 
