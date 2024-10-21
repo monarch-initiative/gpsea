@@ -66,7 +66,7 @@ Assuming AR inheritance, we compare missense vs. rest:
 >>> gt_predicate = biallelic_predicate(
 ...     a_predicate=is_missense,
 ...     b_predicate=~is_missense,
-...     names=('Missense', 'Other'),
+...     a_label="Missense", b_label="Other",
 ...     partitions=({0,}, {1, 2}),
 ... )
 >>> gt_predicate.display_question()

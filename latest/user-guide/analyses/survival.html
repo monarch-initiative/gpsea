@@ -142,7 +142,7 @@ versus one allele of other <em>UMOD</em> variant:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_in_exon3</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_in_exon3</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Exon 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Exon 3&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;Allele group: Exon 3, Other&#39;</span>

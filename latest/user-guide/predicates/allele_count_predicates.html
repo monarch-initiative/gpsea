@@ -166,7 +166,8 @@ and frameshift (<cite>B</cite>) variants:</p>
 </div>
 <p>Monoallelic predicate lets us customize the category names.
 Let’s use <cite>Missense</cite> and <cite>Frameshift</cite> instead of the defaults <cite>A</cite> and <cite>B</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Missense&quot;</span><span class="p">,</span> <span class="s2">&quot;Frameshift&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a_label</span> <span class="o">=</span> <span class="s2">&quot;Missense&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b_label</span> <span class="o">=</span> <span class="s2">&quot;Frameshift&quot;</span>
 </pre></div>
 </div>
 <p>Now we have all we need to create the monoallelic predicate:</p>
@@ -174,7 +175,7 @@ Let’s use <cite>Missense</cite> and <cite>Frameshift</cite> instead of the def
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;Allele group: Missense, Frameshift&#39;</span>
@@ -256,7 +257,7 @@ and we will use the same allele group names as before - <cite>Missense</cite> an
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">biallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;Allele group: Missense/Missense, Missense/Frameshift, Frameshift/Frameshift&#39;</span>
@@ -292,7 +293,7 @@ to the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicat
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">biallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>

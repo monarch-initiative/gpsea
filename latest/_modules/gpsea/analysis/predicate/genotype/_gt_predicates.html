@@ -246,7 +246,8 @@
 
 
 <span class="k">def</span> <span class="nf">build_count_to_cat</span><span class="p">(</span>
-    <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Categorization</span><span class="p">]:</span>
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
@@ -257,9 +258,9 @@
     <span class="p">)</span>
 
     <span class="n">partition2label</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a_label</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">a_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a_label</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">b_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b_label</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">b_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">ac2cat</span> <span class="o">=</span> <span class="p">{}</span>
@@ -292,17 +293,18 @@
     <span class="k">def</span> <span class="nf">monoallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-        <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PolyCountingGenotypePredicate&quot;</span><span class="p">:</span>
         <span class="n">count2cat</span> <span class="o">=</span> <span class="p">{</span>
             <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">Categorization</span><span class="p">(</span>
                 <span class="n">PatientCategory</span><span class="p">(</span>
-                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Monoallelic </span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Monoallelic </span><span class="si">{</span><span class="n">a_label</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="p">),</span>
             <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">Categorization</span><span class="p">(</span>
                 <span class="n">PatientCategory</span><span class="p">(</span>
-                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Monoallelic </span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">cat_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Monoallelic </span><span class="si">{</span><span class="n">b_label</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="p">),</span>
         <span class="p">}</span>
@@ -317,10 +319,15 @@
     <span class="k">def</span> <span class="nf">biallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-        <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PolyCountingGenotypePredicate&quot;</span><span class="p">:</span>
-        <span class="n">count2cat</span> <span class="o">=</span> <span class="n">build_count_to_cat</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">)</span>
+        <span class="n">count2cat</span> <span class="o">=</span> <span class="n">build_count_to_cat</span><span class="p">(</span>
+            <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span>
+            <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
+            <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">for_predicates_and_categories</span><span class="p">(</span>
             <span class="n">count2cat</span><span class="o">=</span><span class="n">count2cat</span><span class="p">,</span>
@@ -397,7 +404,8 @@
 <span class="k">def</span> <span class="nf">monoallelic_predicate</span><span class="p">(</span>
     <span class="n">a_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
     <span class="n">b_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-    <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>
+    <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+    <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The predicate bins patient into one of two groups, `A` and `B`,</span>
@@ -410,12 +418,17 @@
 <span class="sd">        meet the criteria of the first group (named `A` by default).</span>
 <span class="sd">    :param b_predicate: predicate to test if the variants</span>
 <span class="sd">        meet the criteria of the second group (named `B` by default).</span>
-<span class="sd">    :param names: group names (default ``(&#39;A&#39;, &#39;B&#39;)``).</span>
+<span class="sd">    :param a_label: display name of the `a_predicate` (default ``&quot;A&quot;``).</span>
+<span class="sd">    :param b_label: display name of the `b_predicate` (default ``&quot;B&quot;``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">monoallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="o">=</span><span class="n">b_predicate</span><span class="p">,</span>
-        <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+        <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span>
+        <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -425,7 +438,8 @@
 <span class="k">def</span> <span class="nf">biallelic_predicate</span><span class="p">(</span>
     <span class="n">a_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
     <span class="n">b_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
-    <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>
+    <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+    <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
     <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -438,18 +452,22 @@
 
 <span class="sd">    :param a_predicate: predicate to test if the variants meet the criteria of the first group (named `A` by default).</span>
 <span class="sd">    :param b_predicate: predicate to test if the variants meet the criteria of the second group (named `B` by default).</span>
-<span class="sd">    :param names: group names (default ``(&#39;A&#39;, &#39;B&#39;)``).</span>
+<span class="sd">    :param a_label: display name of the `a_predicate` (default ``&quot;A&quot;``).</span>
+<span class="sd">    :param b_label: display name of the `b_predicate` (default ``&quot;B&quot;``).</span>
 <span class="sd">    :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Q/C</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
     <span class="n">partitions</span> <span class="o">=</span> <span class="n">fixate_partitions</span><span class="p">(</span><span class="n">partitions</span><span class="p">)</span>
     <span class="n">qc_partitions</span><span class="p">(</span><span class="n">partitions</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">biallelic</span><span class="p">(</span>
         <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="o">=</span><span class="n">b_predicate</span><span class="p">,</span>
-        <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+        <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span>
+        <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
         <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">,</span>
     <span class="p">)</span></div>
 

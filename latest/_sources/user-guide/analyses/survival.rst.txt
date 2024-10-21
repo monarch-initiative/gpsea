@@ -58,7 +58,7 @@ versus one allele of other *UMOD* variant:
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=is_in_exon3,
 ...     b_predicate=~is_in_exon3,
-...     names=('Exon 3', 'Other'),
+...     a_label="Exon 3", b_label="Other",
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Exon 3, Other'
