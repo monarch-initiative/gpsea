@@ -2,6 +2,7 @@ import abc
 import typing
 
 import hpotk
+from hpotk.util import validate_instance
 
 from gpsea.model import Patient
 
@@ -111,13 +112,13 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
         query: hpotk.TermId,
         missing_implies_phenotype_excluded: bool = False,
     ):
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, "hpo")
-        self._query = hpotk.util.validate_instance(
+        self._hpo = validate_instance(hpo, hpotk.MinimalOntology, "hpo")
+        self._query = validate_instance(
             query, hpotk.TermId, "phenotypic_feature"
         )
         self._query_label = self._hpo.get_term_name(query)
         assert self._query_label is not None, f"Query {query} is in HPO"
-        self._missing_implies_phenotype_excluded = hpotk.util.validate_instance(
+        self._missing_implies_phenotype_excluded = validate_instance(
             missing_implies_phenotype_excluded,
             bool,
             "missing_implies_phenotype_excluded",
@@ -176,22 +177,18 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
         for phenotype in patient.phenotypes:
             if phenotype.is_present:
-                if any(
+                if self._query == phenotype.identifier or any(
                     self._query == anc
-                    for anc in self._hpo.graph.get_ancestors(
-                        phenotype, include_source=True
-                    )
+                    for anc in self._hpo.graph.get_ancestors(phenotype)
                 ):
                     return self._phenotype_observed
             else:
                 if self._missing_implies_phenotype_excluded:
                     return self._phenotype_excluded
                 else:
-                    if any(
-                        self._query == desc
-                        for desc in self._hpo.graph.get_descendants(
-                            phenotype, include_source=True
-                        )
+                    if phenotype.identifier == self._query or any(
+                        phenotype.identifier == anc
+                        for anc in self._hpo.graph.get_ancestors(self._query)
                     ):
                         return self._phenotype_excluded
 
@@ -220,7 +217,7 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
 
     def __init__(self, disease_id_query: hpotk.TermId):
-        self._query = hpotk.util.validate_instance(
+        self._query = validate_instance(
             disease_id_query, hpotk.TermId, "disease_id_query"
         )
 
