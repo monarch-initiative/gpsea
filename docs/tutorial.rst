@@ -204,7 +204,7 @@ in the individuals of the *TBX5* cohort.
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
 ...     b_predicate=VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id),
-...     names=('Missense', 'Frameshift')
+...     a_label="Missense", b_label="Frameshift",
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Missense, Frameshift'

@@ -31,7 +31,8 @@ def umod_cohort(
 def umod_gt_predicate() -> GenotypePolyPredicate:
     in_exon_3 = VariantPredicates.exon(3, tx_id="NM_003361.4")
     return monoallelic_predicate(
-        a_predicate=in_exon_3, b_predicate=~in_exon_3, names=("Exon 3", "Other exon")
+        a_predicate=in_exon_3, b_predicate=~in_exon_3, 
+        a_label="Exon 3", b_label="Other exon",
     )
 
 

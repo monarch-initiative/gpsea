@@ -48,9 +48,8 @@ def test_build_count_to_cat(
     partitions: typing.Sequence[typing.Sequence[int]],
     ac2cat_name: typing.Mapping[typing.Tuple[int, int], str],
 ):
-    names = ("A", "B")
     ac2cat = build_count_to_cat(
-        names=names,
+        a_label="A", b_label="B",
         partitions=partitions,
     )
 
