@@ -181,9 +181,9 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
 <p>GPSEA helps with gaining insight into the cohort by providing</p>
 <section id="show-cohort-summary">
 <h4>Show cohort summary<a class="headerlink" href="#show-cohort-summary" title="Link to this heading"></a></h4>
-<p>The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewable</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewable</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
+<p>The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewer</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
 </pre></div>
