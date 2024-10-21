@@ -280,7 +280,7 @@ class TestAllelePredicates:
             biallelic_predicate(
                 a_predicate=is_missense,
                 b_predicate=is_synonymous,
-                names=("A", "B"),
+                a_label="A", b_label="B",
                 partitions=partitions
             )
 

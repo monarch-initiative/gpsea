@@ -65,7 +65,8 @@ and frameshift (`B`) variants:
 Monoallelic predicate lets us customize the category names.
 Let's use `Missense` and `Frameshift` instead of the defaults `A` and `B`:
 
->>> names = ("Missense", "Frameshift")
+>>> a_label = "Missense"
+>>> b_label = "Frameshift"
 
 Now we have all we need to create the monoallelic predicate:
 
@@ -73,7 +74,7 @@ Now we have all we need to create the monoallelic predicate:
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=is_missense,
 ...     b_predicate=is_frameshift,
-...     names=names,
+...     a_label=a_label, b_label=b_label,
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Missense, Frameshift'
@@ -154,7 +155,7 @@ and we will use the same allele group names as before - `Missense` and `Frameshi
 >>> gt_predicate = biallelic_predicate(
 ...     a_predicate=is_missense,
 ...     b_predicate=is_frameshift,
-...     names=names,
+...     a_label=a_label, b_label=b_label,
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Missense/Missense, Missense/Frameshift, Frameshift/Frameshift'
@@ -191,7 +192,7 @@ to the :func:`~gpsea.analysis.predicate.genotype.biallelic_predicate` function:
 >>> gt_predicate = biallelic_predicate(
 ...     a_predicate=is_missense,
 ...     b_predicate=is_frameshift,
-...     names=names,
+...     a_label=a_label, b_label=b_label,
 ...     partitions=partitions,
 ... )
 >>> gt_predicate.display_question()
