@@ -74,7 +74,7 @@ processed into a cohort
 Individuals Processed: ...
 
 
-we can create HPO predicates for testing all 260 HPO terms used in the cohort
+we can create HPO predicates for testing all 369 HPO terms used in the cohort
 
 >>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(
@@ -82,6 +82,6 @@ we can create HPO predicates for testing all 260 HPO terms used in the cohort
 ...     hpo=hpo,
 ... )
 >>> len(pheno_predicates)
-260
+369
 
 and subject the predicates into further analysis, such as :class:`~gpsea.analysis.pcats.HpoTermAnalysis`.

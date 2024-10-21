@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.phenotype._util &mdash; GPSEA 0.5.0 documentation</title>
+  <title>gpsea.analysis.predicate.phenotype._util &mdash; GPSEA 0.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -91,9 +91,8 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest">[docs]</a>
 <span class="k">def</span> <span class="nf">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
     <span class="n">cohort</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
-    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">GraphAware</span><span class="p">,</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
     <span class="n">missing_implies_excluded</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">min_n_of_patients_with_term</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience method for creating a battery of :class:`PropagatingPhenotypePredicate` predicates</span>
@@ -102,8 +101,6 @@
 <span class="sd">    :param cohort: a cohort of individuals to investigate.</span>
 <span class="sd">    :param hpo: an entity with an HPO graph (e.g. :class:`~hpotk.MinimalOntology`).</span>
 <span class="sd">    :param missing_implies_excluded: `True` if absence of an annotation should be counted as its explicit exclusion.</span>
-<span class="sd">    :param min_n_of_patients_with_term: the minimum number of patients that must feature an HPO term</span>
-<span class="sd">        (either directly or indirectly) for the term to be included in the analysis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
         <span class="n">HpoPredicate</span><span class="p">(</span>
@@ -111,7 +108,7 @@
             <span class="n">query</span><span class="o">=</span><span class="n">term</span><span class="p">,</span>
             <span class="n">missing_implies_phenotype_excluded</span><span class="o">=</span><span class="n">missing_implies_excluded</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">prepare_hpo_terms_of_interest</span><span class="p">(</span>
-            <span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span> <span class="n">min_n_of_patients_with_term</span><span class="p">,</span>
+            <span class="n">cohort</span><span class="p">,</span> <span class="n">hpo</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
 
@@ -121,8 +118,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_hpo_terms_of_interest">[docs]</a>
 <span class="k">def</span> <span class="nf">prepare_hpo_terms_of_interest</span><span class="p">(</span>
     <span class="n">cohort</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
-    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">GraphAware</span><span class="p">,</span>
-    <span class="n">min_n_of_patients_with_term</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prepare a collection of HPO terms to test.</span>
@@ -131,9 +127,7 @@
 <span class="sd">    as well as the ancestors of the present terms and the descendants of the excluded terms.</span>
 
 <span class="sd">    :param cohort: a cohort of individuals to investigate.</span>
-<span class="sd">    :param hpo: an entity with an HPO graph (e.g. :class:`~hpotk.MinimalOntology`).</span>
-<span class="sd">    :param min_n_of_patients_with_term: the minimum number of patients that must feature an HPO term</span>
-<span class="sd">        (either directly or indirectly) for the term to be included in the analysis.</span>
+<span class="sd">    :param hpo: HPO as :class:`~hpotk.MinimalOntology`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">present_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
     <span class="n">excluded_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
@@ -165,7 +159,7 @@
         <span class="c1"># Keep the term if it is mentioned at least *n* times (incl. being excluded)</span>
         <span class="c1"># in the cohort</span>
         <span class="n">n_all</span> <span class="o">=</span> <span class="n">total_count</span><span class="p">[</span><span class="n">term_id</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">n_all</span> <span class="o">&gt;=</span> <span class="n">min_n_of_patients_with_term</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n_all</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">final_hpo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">final_hpo</span><span class="p">)</span></div>

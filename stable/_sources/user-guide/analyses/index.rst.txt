@@ -18,3 +18,4 @@ and explanations of how they are implemented by our software.
   phenotype-groups
   phenotype-scores
   measurements
+  survival

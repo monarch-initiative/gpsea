@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.io &mdash; GPSEA 0.5.0 documentation</title>
+  <title>gpsea.io &mdash; GPSEA 0.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -103,7 +103,11 @@
     <span class="n">Measurement</span><span class="p">,</span>
     <span class="n">Disease</span><span class="p">,</span>
     <span class="n">Phenotype</span><span class="p">,</span>
+    <span class="n">Age</span><span class="p">,</span>
+    <span class="n">Timeline</span><span class="p">,</span>
     <span class="n">Sex</span><span class="p">,</span>
+    <span class="n">Status</span><span class="p">,</span>
+    <span class="n">VitalStatus</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Contig</span><span class="p">,</span> <span class="n">Region</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
 
@@ -191,19 +195,26 @@
                 <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                 <span class="s2">&quot;meta_label&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">meta_label</span><span class="p">,</span>
             <span class="p">}</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Sex</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="n">Sex</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">Strand</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">,</span> <span class="n">Status</span><span class="p">)):</span>
             <span class="c1"># enums</span>
             <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Phenotype</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;term_id&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s2">&quot;is_present&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">is_present</span><span class="p">,</span>
+                <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Age</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">days</span><span class="p">,</span>
+                <span class="s2">&quot;timeline&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">timeline</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Disease</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;term_id&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;is_observed&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">is_present</span><span class="p">,</span>
+                <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -216,10 +227,17 @@
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
                 <span class="s2">&quot;sex&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">sex</span><span class="p">,</span>
+                <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
+                <span class="s2">&quot;vital_status&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">vital_status</span><span class="p">,</span>
                 <span class="s2">&quot;phenotypes&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">,</span>
                 <span class="s2">&quot;measurements&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">measurements</span><span class="p">,</span>
                 <span class="s2">&quot;diseases&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">diseases</span><span class="p">,</span>
                 <span class="s2">&quot;variants&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">variants</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">VitalStatus</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="s2">&quot;age_of_death&quot;</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">age_of_death</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -285,10 +303,12 @@
 <span class="n">_PROTEIN_METADATA</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;protein_id&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_features&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_length&quot;</span><span class="p">)</span>
 <span class="n">_PROTEIN_FEATURE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_type&quot;</span><span class="p">)</span>
 <span class="n">_FEATURE_INFO</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;region&quot;</span><span class="p">)</span>
-<span class="n">_PHENOTYPE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;term_id&quot;</span><span class="p">,</span> <span class="s2">&quot;is_present&quot;</span><span class="p">)</span>
-<span class="n">_DISEASE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;term_id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;is_observed&quot;</span><span class="p">)</span>
+<span class="n">_PHENOTYPE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;term_id&quot;</span><span class="p">,</span> <span class="s2">&quot;is_present&quot;</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
+<span class="n">_AGE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;timeline&quot;</span><span class="p">)</span>
+<span class="n">_DISEASE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;term_id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;is_observed&quot;</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
 <span class="n">_MEASUREMENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;test_term_id&quot;</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">,</span> <span class="s2">&quot;test_result&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span>
-<span class="n">_PATIENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;phenotypes&quot;</span><span class="p">,</span> <span class="s2">&quot;diseases&quot;</span><span class="p">,</span> <span class="s2">&quot;variants&quot;</span><span class="p">)</span>
+<span class="n">_PATIENT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;vital_status&quot;</span><span class="p">,</span> <span class="s2">&quot;phenotypes&quot;</span><span class="p">,</span> <span class="s2">&quot;diseases&quot;</span><span class="p">,</span> <span class="s2">&quot;variants&quot;</span><span class="p">)</span>
+<span class="n">_VITAL_STATUS_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;age_of_death&quot;</span><span class="p">)</span>
 <span class="n">_COHORT_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="s2">&quot;excluded_patient_count&quot;</span><span class="p">)</span>
 
 
@@ -405,12 +425,19 @@
             <span class="k">return</span> <span class="n">Phenotype</span><span class="p">(</span>
                 <span class="n">term_id</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;term_id&quot;</span><span class="p">]),</span>
                 <span class="n">is_observed</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;is_present&quot;</span><span class="p">],</span>
+                <span class="n">onset</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_AGE_FIELDS</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="p">(</span>
+                <span class="n">days</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;days&quot;</span><span class="p">],</span>
+                <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;timeline&quot;</span><span class="p">]],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_DISEASE_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Disease</span><span class="p">(</span>
                 <span class="n">term_id</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;term_id&quot;</span><span class="p">]),</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
                 <span class="n">is_observed</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;is_observed&quot;</span><span class="p">],</span>
+                <span class="n">onset</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_MEASUREMENT_FIELDS</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Measurement</span><span class="p">(</span>
@@ -423,10 +450,17 @@
             <span class="k">return</span> <span class="n">Patient</span><span class="p">(</span>
                 <span class="n">labels</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">],</span>
                 <span class="n">sex</span><span class="o">=</span><span class="n">Sex</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">]],</span>
+                <span class="n">age</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span>
+                <span class="n">vital_status</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;vital_status&quot;</span><span class="p">],</span>
                 <span class="n">phenotypes</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;phenotypes&quot;</span><span class="p">],</span>
                 <span class="n">measurements</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;measurements&quot;</span><span class="p">],</span>
                 <span class="n">diseases</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;diseases&quot;</span><span class="p">],</span>
                 <span class="n">variants</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;variants&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_VITAL_STATUS_FIELDS</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">VitalStatus</span><span class="p">(</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">Status</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]],</span>
+                <span class="n">age_of_death</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;age_of_death&quot;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">GpseaJSONDecoder</span><span class="o">.</span><span class="n">_has_all_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_TX_COORDINATES</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">TranscriptCoordinates</span><span class="p">(</span>

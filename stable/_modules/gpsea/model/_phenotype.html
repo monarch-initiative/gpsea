@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._phenotype &mdash; GPSEA 0.5.0 documentation</title>
+  <title>gpsea.model._phenotype &mdash; GPSEA 0.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -76,15 +76,34 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.model._phenotype</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
+<span class="kn">from</span> <span class="nn">._temporal</span> <span class="kn">import</span> <span class="n">Age</span>
+
+
+<span class="k">class</span> <span class="nc">OnsetAware</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A mixin for classes which may know about their :class:`~gpsea.model.Age` or onset.</span>
+
+<span class="sd">    For instance, the onset of a phenotype or a disease in an individual.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">onset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the age of onset or `None` if unknown or otherwise not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
 
 <div class="viewcode-block" id="Phenotype">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Phenotype">[docs]</a>
-<span class="k">class</span> <span class="nc">Phenotype</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ObservableFeature</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Phenotype</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ObservableFeature</span><span class="p">,</span> <span class="n">OnsetAware</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Phenotype` represents a clinical sign or symptom represented as an HPO term.</span>
 <span class="sd">    </span>
@@ -104,12 +123,15 @@
     <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
         <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
         <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">onset</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Phenotype&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create `Phenotype` from a term ID and observation state.</span>
 
 <span class="sd">        :param term_id: a `str` with CURIE (e.g. `HP:0001250`) or a :class:`~hpotk.TermId`.</span>
 <span class="sd">        :param is_observed: `True` if the term ID was observed in patient or `False` if it was explicitly excluded.</span>
+<span class="sd">        :param onset: the :class:`~gpsea.model.Age` when the phenotype was first observed in patient</span>
+<span class="sd">            or `None` if not available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
@@ -120,17 +142,20 @@
         
         <span class="k">return</span> <span class="n">Phenotype</span><span class="p">(</span>
             <span class="n">term_id</span><span class="p">,</span>
-            <span class="n">is_observed</span><span class="p">,</span>
+            <span class="n">is_observed</span><span class="o">=</span><span class="n">is_observed</span><span class="p">,</span>
+            <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
-        <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">onset</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="s1">&#39;term_id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">is_observed</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s1">&#39;is_observed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_optional_instance</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">Age</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
@@ -158,6 +183,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_present</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">onset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the age of onset of the phenotype or `None` if unknown or otherwise not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_observed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns `True` if the phenotype was *present* in the respective patient.</span>
@@ -169,15 +201,17 @@
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Phenotype</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_term_id</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_observed</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_observed</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_onset</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Phenotype(&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">)&quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;onset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_onset</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -186,20 +220,42 @@
 
 <div class="viewcode-block" id="Disease">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Disease">[docs]</a>
-<span class="k">class</span> <span class="nc">Disease</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ObservableFeature</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Named</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Disease</span><span class="p">(</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ObservableFeature</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Named</span><span class="p">,</span> <span class="n">OnsetAware</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Representation of a disease diagnosed (or excluded) in an investigated individual.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Disease.from_raw_parts">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Disease.from_raw_parts">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">onset</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Disease&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">Disease</span><span class="p">(</span>
+            <span class="n">term_id</span><span class="o">=</span><span class="n">term_id</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">is_observed</span><span class="o">=</span><span class="n">is_observed</span><span class="p">,</span>
+            <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">is_observed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">onset</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="s1">&#39;term_id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">is_observed</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s1">&#39;is_observed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_optional_instance</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">Age</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
@@ -221,21 +277,30 @@
 <span class="sd">        Return `True` if the disease was diagnosed in the individual or `False` if it was excluded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">onset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the age of onset of the disease or `None` if unknown or otherwise not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Disease</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_term_id</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_name</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_observed</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_observed</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_onset</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onset</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Disease(&quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="si">}</span><span class="s2">, &quot;</span> \
                <span class="sa">f</span><span class="s2">&quot;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">)&quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;is_present=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_observed</span><span class="si">}</span><span class="s2">, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;onset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_onset</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>

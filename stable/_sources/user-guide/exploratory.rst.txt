@@ -89,7 +89,7 @@ Interactive exploration
 We designed GPSEA to integrate with interactive Python with a widespread use
 in contemporary scientific workflows.
 
-The code for exploration is located in :mod:`gpsea.view` module. 
+The code for exploration is located in :mod:`gpsea.view` module.
 As a rule of thumb, the reports are provided as :class:`~gpsea.view.GpseaReport`
 which leverages IPython's "magic" to integrate with environments such as Jupyter notebook.
 
@@ -98,10 +98,10 @@ Cohort summary
 --------------
 
 We recommend that users start be generating a cohort summary
-with an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:
+with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:
 
->>> from gpsea.view import CohortViewable
->>> viewer = CohortViewable(hpo)
+>>> from gpsea.view import CohortViewer
+>>> viewer = CohortViewer(hpo)
 >>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
 >>> report  # doctest: +SKIP
 
@@ -178,3 +178,4 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 
     >>> fig.tight_layout()
     >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
+

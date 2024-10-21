@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare genotype and phenotype groups &mdash; GPSEA 0.5.0 documentation</title>
+  <title>Compare genotype and phenotype groups &mdash; GPSEA 0.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -64,6 +64,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
@@ -223,14 +224,13 @@ utility function to generate phenotype predicates for all HPO terms.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicates</span> <span class="o">=</span> <span class="n">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">min_n_of_patients_with_term</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
-<span class="go">260</span>
+<span class="go">369</span>
 </pre></div>
 </div>
-<p>The function finds all HPO terms that annotate at least <em>n</em> (<code class="docutils literal notranslate"><span class="pre">min_n_of_patients_with_term=2</span></code> above) individuals,
-including the <em>indirect</em> annotations whose presence is implied by the true path rule.</p>
+<p>The function finds 369 HPO terms that annotate at least one individual,
+including the <em>indirect</em> annotations whose presence is implied by the <a class="reference internal" href="../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a>.</p>
 </section>
 <section id="statistical-test">
 <h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
@@ -286,12 +286,12 @@ into <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html
 <span class="gp">... </span>    <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
-<span class="go">260</span>
+<span class="go">369</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
-<span class="go">38</span>
+<span class="go">24</span>
 </pre></div>
 </div>
-<p>Thanks to phenotype MTC filter, we only tested 38 out of 260 terms.
+<p>Thanks to phenotype MTC filter, we only tested 24 out of 369 terms.
 We can learn more by showing the MTC filter report:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
@@ -349,9 +349,9 @@ We can learn more by showing the MTC filter report:</p>
   <h1>Phenotype testing report</h1>
   <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
   <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 38 out of the total of 260 HPO terms.</p>
+  <p>Performed statistical tests for 24 out of the total of 369 HPO terms.</p>
     <table>
-      <caption>Using <em>HPO MTC filter</em>, 222 term(s) were omitted from statistical analysis.</caption>
+      <caption>Using <em>HPO MTC filter</em>, 345 term(s) were omitted from statistical analysis.</caption>
         <tbody>
           <tr>
             <th>Code</th>
@@ -366,21 +366,15 @@ We can learn more by showing the MTC filter report:</p>
           </tr>
           
           <tr>
-            <td>HMF03</td>
-            <td>Skipping term because of a child term with the same individual counts</td>
-            <td>1</td>
-          </tr>
-          
-          <tr>
             <td>HMF08</td>
             <td>Skipping general term</td>
-            <td>44</td>
+            <td>48</td>
           </tr>
           
           <tr>
             <td>HMF09</td>
-            <td>Skipping term with maximum annotation frequency that was less than threshold 0.25</td>
-            <td>167</td>
+            <td>Skipping term with maximum annotation frequency that was less than threshold 0.4</td>
+            <td>287</td>
           </tr>
           
         </tbody>
@@ -422,7 +416,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>59%</p></td>
 <td><p>19/19</p></td>
 <td><p>100%</p></td>
-<td><p>0.009193214651997994</p></td>
+<td><p>0.005806240832840839</p></td>
 <td><p>0.00024192670136836825</p></td>
 </tr>
 <tr class="row-even"><td><p>Absent thumb [HP:0009777]</p></td>
@@ -430,47 +424,31 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>18%</p></td>
 <td><p>14/31</p></td>
 <td><p>45%</p></td>
-<td><p>0.07055975880437862</p></td>
+<td><p>0.044564058192239124</p></td>
 <td><p>0.003713671516019927</p></td>
 </tr>
-<tr class="row-odd"><td><p>Patent ductus arteriosus [HP:0001643]</p></td>
-<td><p>6/40</p></td>
-<td><p>15%</p></td>
-<td><p>2/2</p></td>
-<td><p>100%</p></td>
-<td><p>0.4119241192411924</p></td>
-<td><p>0.03252032520325203</p></td>
-</tr>
-<tr class="row-even"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
+<tr class="row-odd"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
 <td><p>23/55</p></td>
 <td><p>42%</p></td>
 <td><p>4/22</p></td>
 <td><p>18%</p></td>
-<td><p>0.45983847234923847</p></td>
+<td><p>0.4065940176561687</p></td>
 <td><p>0.06544319142266644</p></td>
 </tr>
-<tr class="row-odd"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
+<tr class="row-even"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
 <td><p>23/99</p></td>
 <td><p>23%</p></td>
 <td><p>13/32</p></td>
 <td><p>41%</p></td>
-<td><p>0.45983847234923847</p></td>
+<td><p>0.4065940176561687</p></td>
 <td><p>0.06932119159387057</p></td>
-</tr>
-<tr class="row-even"><td><p>Cardiac conduction abnormality [HP:0031546]</p></td>
-<td><p>15/37</p></td>
-<td><p>41%</p></td>
-<td><p>3/3</p></td>
-<td><p>100%</p></td>
-<td><p>0.45983847234923847</p></td>
-<td><p>0.08259109311740892</p></td>
 </tr>
 <tr class="row-odd"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
 <td><p>8/84</p></td>
 <td><p>10%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
-<td><p>0.45983847234923847</p></td>
+<td><p>0.4065940176561687</p></td>
 <td><p>0.08470708701170182</p></td>
 </tr>
 <tr class="row-even"><td><p>Short thumb [HP:0009778]</p></td>
@@ -489,22 +467,6 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>0.7703831604944444</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal ventricular septum morphology [HP:0010438]</p></td>
-<td><p>42/42</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal cardiac ventricle morphology [HP:0001713]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
 <tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
 <td><p>89/89</p></td>
 <td><p>100%</p></td>
@@ -521,15 +483,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal joint morphology [HP:0001367]</p></td>
-<td><p>33/33</p></td>
-<td><p>100%</p></td>
-<td><p>6/6</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
 <td><p>63/65</p></td>
 <td><p>97%</p></td>
 <td><p>20/20</p></td>
@@ -537,7 +491,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
 <td><p>64/64</p></td>
 <td><p>100%</p></td>
 <td><p>20/20</p></td>
@@ -545,7 +499,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
 <td><p>64/64</p></td>
 <td><p>100%</p></td>
 <td><p>20/20</p></td>
@@ -553,19 +507,11 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
+<tr class="row-odd"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
 <td><p>34/75</p></td>
 <td><p>45%</p></td>
 <td><p>6/14</p></td>
 <td><p>43%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Forearm undergrowth [HP:0009821]</p></td>
-<td><p>35/35</p></td>
-<td><p>100%</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
@@ -577,15 +523,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Upper limb undergrowth [HP:0009824]</p></td>
-<td><p>38/38</p></td>
-<td><p>100%</p></td>
-<td><p>7/7</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
 <td><p>78/78</p></td>
 <td><p>100%</p></td>
 <td><p>22/22</p></td>
@@ -593,7 +531,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
 <td><p>80/80</p></td>
 <td><p>100%</p></td>
 <td><p>23/23</p></td>
@@ -601,7 +539,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
 <td><p>78/78</p></td>
 <td><p>100%</p></td>
 <td><p>22/22</p></td>
@@ -609,34 +547,10 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
 <td><p>78/78</p></td>
 <td><p>100%</p></td>
 <td><p>22/22</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving forearm bones [HP:0006503]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>12/12</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal forearm bone morphology [HP:0040072]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>14/14</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Short long bone [HP:0003026]</p></td>
-<td><p>41/41</p></td>
-<td><p>100%</p></td>
-<td><p>9/9</p></td>
 <td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
@@ -649,31 +563,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the radius [HP:0006501]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>11/11</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal morphology of the radius [HP:0002818]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>13/13</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of the thumb [HP:0009601]</p></td>
-<td><p>40/40</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
+<tr class="row-even"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
 <td><p>44/44</p></td>
 <td><p>100%</p></td>
 <td><p>19/19</p></td>
@@ -681,7 +571,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
 <td><p>44/44</p></td>
 <td><p>100%</p></td>
 <td><p>19/19</p></td>
@@ -689,7 +579,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
+<tr class="row-even"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
 <td><p>64/64</p></td>
 <td><p>100%</p></td>
 <td><p>31/31</p></td>
@@ -697,7 +587,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
+<tr class="row-odd"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
 <td><p>67/67</p></td>
 <td><p>100%</p></td>
 <td><p>33/33</p></td>
@@ -705,18 +595,10 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
+<tr class="row-even"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
 <td><p>58/58</p></td>
 <td><p>100%</p></td>
 <td><p>31/31</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormality of thumb phalanx [HP:0009602]</p></td>
-<td><p>26/26</p></td>
-<td><p>100%</p></td>
-<td><p>13/13</p></td>
 <td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
@@ -726,11 +608,11 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <p>The table shows that several HPO terms are significantly associated
 with presence of a heterozygous (<cite>Monoallelic</cite>) frameshift variant in <em>TBX5</em>.
 For example, <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001629">Ventricular septal defect</a>
-was observed in 42/71 (59%) patients with a missense variant
-but it was observed in 19/19 (100%) patients with a frameshift variant.
+was observed in 42/71 (59%) patients with no frameshift allele (<cite>No allele</cite>)
+but it was observed in 19/19 (100%) patients with a frameshift allele (<cite>Monoallelic</cite>).
 Fisher exact test computed a p value of <cite>~0.000242</cite>
 and the p value corrected by Benjamini-Hochberg procedure
-is <cite>~0.00919</cite>.</p>
+is <cite>~0.005806</cite>.</p>
 </section>
 </section>
 </section>

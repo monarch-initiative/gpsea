@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.model._temporal &mdash; GPSEA 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.model._temporal</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.model._temporal</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<div class="viewcode-block" id="Timeline">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Timeline">[docs]</a>
+<span class="k">class</span> <span class="nc">Timeline</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `Timeline` represents the stage of temporal development of an organism.</span>
+<span class="sd">    </span>
+<span class="sd">    There are two stages: gestational and postnatal.</span>
+<span class="sd">    </span>
+<span class="sd">    Gestational timeline starts at the last menstrual period and ends at (but does not include) birth.</span>
+<span class="sd">    The postnatal timeline starts at birth and ends at death.</span>
+
+<span class="sd">    The `Timeline` overloads comparison operators. Gestational timeline is always before postnatal timeline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">GESTATIONAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gestational timeline starts at the last menstrual period and ends at birth (excluded).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">POSTNATAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Postnatal timeline starts at birth and ends at death.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="o">&lt;</span> <span class="n">value</span> <span class="ow">or</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="o">&gt;</span> <span class="n">value</span> <span class="ow">or</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span></div>
+
+
+
+<div class="viewcode-block" id="Age">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age">[docs]</a>
+<span class="k">class</span> <span class="nc">Age</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representation of an age of an individual.</span>
+
+<span class="sd">    In GPSEA, we model the age at the resolution of a day.</span>
+<span class="sd">    The age is either gestational or postnatal. A gestational age is created</span>
+<span class="sd">    from the number of weeks and days since the last menstrual period</span>
+<span class="sd">    and the postnatal age is created from years, months and days since birth.</span>
+
+<span class="sd">    Age overloads the comparison operators and can, thus, be compared or sorted.</span>
+<span class="sd">    Gestational age is always before the postnatal age.</span>
+
+<span class="sd">    Internally, the age is always stored as the number of days.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ISO8601PT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^P(?P&lt;year&gt;\d+Y)?(?P&lt;month&gt;\d+M)?(?P&lt;week&gt;\d+W)?(?P&lt;day&gt;\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$&quot;</span>
+    <span class="p">)</span>
+    <span class="n">DAYS_IN_YEAR</span> <span class="o">=</span> <span class="mf">365.25</span>
+    <span class="n">DAYS_IN_MONTH</span> <span class="o">=</span> <span class="n">DAYS_IN_YEAR</span> <span class="o">/</span> <span class="mi">12</span>
+    <span class="n">DAYS_IN_WEEK</span> <span class="o">=</span> <span class="mi">7</span>
+
+<div class="viewcode-block" id="Age.gestational">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.gestational">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gestational</span><span class="p">(</span>
+        <span class="n">weeks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create age from the `weeks` and `days` on the gestational timeline.</span>
+
+<span class="sd">        :param weeks: a non-negative `int` with the number of completed weeks of gestation.</span>
+<span class="sd">        :param days: an `int` in range :math:`[0, 6]` representing the number of completed gestational days.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weeks</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">weeks</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`weeks` must be non-negative `int` but was </span><span class="si">{</span><span class="n">weeks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span> <span class="o">&gt;</span> <span class="n">days</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`days` must be an `int` between [0,6] was </span><span class="si">{</span><span class="n">days</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">weeks</span> <span class="o">*</span> <span class="n">Age</span><span class="o">.</span><span class="n">DAYS_IN_WEEK</span> <span class="o">+</span> <span class="n">days</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">),</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Age.birth">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.birth">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">birth</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Age of an individual at birth.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BIRTH</span></div>
+
+
+<div class="viewcode-block" id="Age.postnatal_days">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.postnatal_days">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">postnatal_days</span><span class="p">(</span><span class="n">days</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">days</span><span class="p">),</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Age.postnatal_years">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.postnatal_years">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">postnatal_years</span><span class="p">(</span>
+        <span class="n">years</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">years</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`years` must be non-negative `int` but was </span><span class="si">{</span><span class="n">years</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="n">years</span> <span class="o">*</span> <span class="n">Age</span><span class="o">.</span><span class="n">DAYS_IN_YEAR</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Age.postnatal">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.postnatal">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">postnatal</span><span class="p">(</span>
+        <span class="n">years</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">months</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">days</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">months</span><span class="p">,</span> <span class="n">days</span><span class="p">)):</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">years</span> <span class="o">*</span> <span class="n">Age</span><span class="o">.</span><span class="n">DAYS_IN_YEAR</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">months</span> <span class="o">*</span> <span class="n">Age</span><span class="o">.</span><span class="n">DAYS_IN_MONTH</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">days</span>
+
+            <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">total</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`years`, `months` and `days` must be non-negative `int`s but were </span><span class="si">{</span><span class="n">years</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">months</span><span class="si">}</span><span class="s2">, and </span><span class="si">{</span><span class="n">days</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Age.from_iso8601_period">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.from_iso8601_period">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_iso8601_period</span><span class="p">(</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create `Age` from ISO8601 duration.</span>
+
+<span class="sd">        A `value` with **weeks** or days is parsed into a gestational age, while a `value` with years, months or days</span>
+<span class="sd">        is parsed into a postnatal age. An error is raised if a value for weeks and months (or years) is included</span>
+<span class="sd">        at the same time.</span>
+
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Parse gestational age:</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpsea.model import Age</span>
+<span class="sd">        &gt;&gt;&gt; gestational = Age.from_iso8601_period(&quot;P2W6D&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; gestational</span>
+<span class="sd">        Age(days=20.0, timeline=Timeline.GESTATIONAL)</span>
+
+<span class="sd">        Parse postnatal age:</span>
+
+<span class="sd">        &gt;&gt;&gt; postnatal = Age.from_iso8601_period(&quot;P10Y&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; postnatal</span>
+<span class="sd">        Age(days=3652.5, timeline=Timeline.POSTNATAL)</span>
+<span class="sd">        </span>
+
+<span class="sd">        :param value: a `str` with the duration (e.g. `P22W3D` for a gestational age or `P10Y4M2D` for a postnatal age).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">matcher</span> <span class="o">=</span> <span class="n">Age</span><span class="o">.</span><span class="n">ISO8601PT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matcher</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
+            <span class="n">month</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">)</span>
+            <span class="n">week</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;week&quot;</span><span class="p">)</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">week</span><span class="p">,</span> <span class="n">day</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;At least one of year, month, week or day fields must provided&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">week</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># postnatal</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Year, month or day must be provided for postnatal age: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">years</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">year</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">months</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">month</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">days</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal</span><span class="p">(</span><span class="n">years</span><span class="o">=</span><span class="n">years</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="n">months</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># gestational</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Year and month must not be provided for gestational age: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">weeks</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">week</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">week</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">days</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; did not match ISO8601 pattern&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">days</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">timeline</span><span class="p">:</span> <span class="n">Timeline</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">days</span><span class="p">)</span> <span class="ow">or</span> <span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`days` must be a non-negative `float` but was </span><span class="si">{</span><span class="n">days</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_days</span> <span class="o">=</span> <span class="n">days</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeline</span><span class="p">,</span> <span class="n">Timeline</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`timeline` must be an instance of `Timeline` but was </span><span class="si">{</span><span class="n">timeline</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span> <span class="o">=</span> <span class="n">timeline</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">days</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">timeline</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Timeline</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_gestational</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the age is on gestational timeline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_postnatal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return `True` if the age is on postnatal timeline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span> <span class="o">==</span> <span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">le</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compare</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Age</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">_timeline</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_timeline</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_days</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">_days</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Age</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_days</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_timeline</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_days</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Age(days=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_days</span><span class="si">}</span><span class="s2">, timeline=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeline</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+<span class="n">BIRTH</span> <span class="o">=</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
