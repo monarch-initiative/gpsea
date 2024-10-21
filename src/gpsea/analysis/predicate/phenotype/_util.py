@@ -11,9 +11,8 @@ from gpsea.model import Patient
 
 def prepare_predicates_for_terms_of_interest(
     cohort: typing.Iterable[Patient],
-    hpo: hpotk.graph.GraphAware,
+    hpo: hpotk.MinimalOntology,
     missing_implies_excluded: bool = False,
-    min_n_of_patients_with_term: int = 2,
 ) -> typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]:
     """
     A convenience method for creating a battery of :class:`PropagatingPhenotypePredicate` predicates
@@ -22,8 +21,6 @@ def prepare_predicates_for_terms_of_interest(
     :param cohort: a cohort of individuals to investigate.
     :param hpo: an entity with an HPO graph (e.g. :class:`~hpotk.MinimalOntology`).
     :param missing_implies_excluded: `True` if absence of an annotation should be counted as its explicit exclusion.
-    :param min_n_of_patients_with_term: the minimum number of patients that must feature an HPO term
-        (either directly or indirectly) for the term to be included in the analysis.
     """
     return tuple(
         HpoPredicate(
@@ -31,15 +28,14 @@ def prepare_predicates_for_terms_of_interest(
             query=term,
             missing_implies_phenotype_excluded=missing_implies_excluded,
         ) for term in prepare_hpo_terms_of_interest(
-            cohort, hpo, min_n_of_patients_with_term,
+            cohort, hpo,
         )
     )
 
 
 def prepare_hpo_terms_of_interest(
     cohort: typing.Iterable[Patient],
-    hpo: hpotk.graph.GraphAware,
-    min_n_of_patients_with_term: int = 2,
+    hpo: hpotk.MinimalOntology,
 ) -> typing.Sequence[hpotk.TermId]:
     """
     Prepare a collection of HPO terms to test.
@@ -48,9 +44,7 @@ def prepare_hpo_terms_of_interest(
     as well as the ancestors of the present terms and the descendants of the excluded terms.
 
     :param cohort: a cohort of individuals to investigate.
-    :param hpo: an entity with an HPO graph (e.g. :class:`~hpotk.MinimalOntology`).
-    :param min_n_of_patients_with_term: the minimum number of patients that must feature an HPO term
-        (either directly or indirectly) for the term to be included in the analysis.
+    :param hpo: HPO as :class:`~hpotk.MinimalOntology`.
     """
     present_count = Counter()
     excluded_count = Counter()
@@ -82,7 +76,7 @@ def prepare_hpo_terms_of_interest(
         # Keep the term if it is mentioned at least *n* times (incl. being excluded)
         # in the cohort
         n_all = total_count[term_id]
-        if n_all >= min_n_of_patients_with_term:
+        if n_all >= 1:
             final_hpo.append(term_id)
 
     return tuple(final_hpo)

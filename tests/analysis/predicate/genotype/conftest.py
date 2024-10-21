@@ -191,6 +191,8 @@ def patient_w_missense(
     return Patient.from_raw_parts(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -206,6 +208,8 @@ def patient_w_frameshift(
     return Patient.from_raw_parts(
         labels=sample_labels,
         sex=Sex.UNKNOWN_SEX,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -330,9 +334,11 @@ def adam(
     genesis_missense_mutation: Variant,
     genesis_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         adam_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -354,9 +360,11 @@ def eve(
     genesis_missense_mutation: Variant,
     genesis_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         eve_label,
         sex=Sex.FEMALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -378,9 +386,11 @@ def cain(
     genesis_missense_mutation: Variant,
     genesis_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         cain_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -513,9 +523,11 @@ def walt(
     white_missense_mutation: Variant,
     white_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         walt_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -537,9 +549,11 @@ def skyler(
     white_missense_mutation: Variant,
     white_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         skyler_label,
         sex=Sex.FEMALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -561,9 +575,11 @@ def flynn(
     white_missense_mutation: Variant,
     white_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         flynn_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -585,9 +601,11 @@ def holly(
     white_missense_mutation: Variant,
     white_synonymous_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         holly_label,
         sex=Sex.FEMALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -669,9 +687,11 @@ def anakin(
     anakin_label: SampleLabels,
     skywalker_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         anakin_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -689,9 +709,11 @@ def padme(
     padme_label: SampleLabels,
     skywalker_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         padme_label,
         sex=Sex.FEMALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -709,9 +731,11 @@ def luke(
     luke_label: SampleLabels,
     skywalker_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         luke_label,
         sex=Sex.MALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),
@@ -729,9 +753,11 @@ def leia(
     leia_label: SampleLabels,
     skywalker_mutation: Variant,
 ) -> Patient:
-    return Patient(
+    return Patient.from_raw_parts(
         leia_label,
         sex=Sex.FEMALE,
+        age=None,
+        vital_status=None,
         phenotypes=(),
         measurements=(),
         diseases=(),

@@ -6,10 +6,13 @@
         "meta_label": "PMID_36303223_individual_10_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -17,7 +20,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -144,10 +148,13 @@
         "meta_label": "PMID_36303223_individual_11_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -155,7 +162,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -397,10 +405,13 @@
         "meta_label": "PMID_36303223_individual_12_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -408,7 +419,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -535,10 +547,13 @@
         "meta_label": "PMID_36303223_individual_13_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -546,7 +561,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -673,50 +689,63 @@
         "meta_label": "PMID_36303223_individual_14_PMID_11825068"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0012610",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -724,7 +753,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 152.1875,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -851,34 +884,43 @@
         "meta_label": "PMID_36303223_individual_15_PMID_12001203"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -886,7 +928,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -1013,42 +1059,53 @@
         "meta_label": "PMID_36303223_individual_16_PMID_12368985"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -1056,7 +1113,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 24.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -1298,50 +1359,63 @@
         "meta_label": "PMID_36303223_individual_17_PMID_15952210"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0011935",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -1349,7 +1423,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 3.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -1476,54 +1554,68 @@
         "meta_label": "PMID_36303223_individual_18_PMID_23414711"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034745",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0003166",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -1531,7 +1623,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 365.25,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -1658,62 +1754,78 @@
         "meta_label": "PMID_36303223_individual_19_PMID_23452914"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034745",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0003166",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -1721,7 +1833,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 365.25,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -1848,46 +1964,58 @@
         "meta_label": "PMID_36303223_individual_1_PMID_9050047"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500181",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -1895,7 +2023,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -2022,30 +2154,38 @@
         "meta_label": "PMID_36303223_individual_20_PMID_24938149"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -2053,7 +2193,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -2295,46 +2439,58 @@
         "meta_label": "PMID_36303223_individual_21_PMID_27289259"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -2342,7 +2498,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 15.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -2469,46 +2629,58 @@
         "meta_label": "PMID_36303223_individual_22_PMID_27289259"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -2516,7 +2688,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 39.4375,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -2643,42 +2819,53 @@
         "meta_label": "PMID_36303223_individual_23_PMID_28725568"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0003166",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -2686,7 +2873,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 21.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -2928,42 +3119,53 @@
         "meta_label": "PMID_36303223_individual_24_PMID_28629418"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -2971,7 +3173,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -3098,42 +3304,53 @@
         "meta_label": "PMID_36303223_individual_25_PMID_31870341"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -3141,7 +3358,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 365.25,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -3383,42 +3604,53 @@
         "meta_label": "PMID_36303223_individual_26_PMID_31870341"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -3426,7 +3658,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 487.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -3668,42 +3904,53 @@
         "meta_label": "PMID_36303223_individual_27_PMID_31870341"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -3711,7 +3958,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 426.125,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -3953,46 +4204,58 @@
         "meta_label": "PMID_36303223_individual_28_PMID_33335014"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4000,7 +4263,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -4127,50 +4394,63 @@
         "meta_label": "PMID_36303223_individual_29_PMID_33335014"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0500152",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4178,7 +4458,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 6.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -4305,46 +4589,58 @@
         "meta_label": "PMID_36303223_individual_2_PMID_9600976"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0012758",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0011935",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4352,7 +4648,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 152.1875,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -4479,62 +4779,78 @@
         "meta_label": "PMID_36303223_individual_30_PMID_31806255"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0003166",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0012610",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4542,7 +4858,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 273.9375,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -4669,62 +4989,78 @@
         "meta_label": "PMID_36303223_individual_31_PMID_31806255"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0034332",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0003166",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0012610",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4732,7 +5068,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 700.0625,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -4859,46 +5199,58 @@
         "meta_label": "PMID_36303223_individual_32_PMID_34025712"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -4906,7 +5258,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 15.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -5148,30 +5504,38 @@
         "meta_label": "PMID_36303223_individual_33_PMID_33405344"
       },
       "sex": "FEMALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -5179,7 +5543,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -5421,30 +5789,38 @@
         "meta_label": "PMID_36303223_individual_34_PMID_33405344"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -5452,7 +5828,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 3.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -5694,58 +6074,73 @@
         "meta_label": "PMID_36303223_individual_35_PMID_36303223"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0020222",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0032350",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001250",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0012610",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -5753,7 +6148,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -5995,50 +6391,63 @@
         "meta_label": "PMID_36303223_individual_3_PMID_10519592"
       },
       "sex": "MALE",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0002071",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001276",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0001083",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         },
         {
           "term_id": "HP:0012758",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0034332",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0001252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0000252",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0010934",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0011814",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         },
         {
           "term_id": "HP:0012610",
-          "is_present": false
+          "is_present": false,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6046,7 +6455,11 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": {
+            "days": 0.0,
+            "timeline": "POSTNATAL"
+          }
         }
       ],
       "variants": [
@@ -6288,10 +6701,13 @@
         "meta_label": "PMID_36303223_individual_4_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6299,7 +6715,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -6426,10 +6843,13 @@
         "meta_label": "PMID_36303223_individual_5_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6437,7 +6857,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -6679,10 +7100,13 @@
         "meta_label": "PMID_36303223_individual_6_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6690,7 +7114,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -6817,10 +7242,13 @@
         "meta_label": "PMID_36303223_individual_7_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6828,7 +7256,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -6955,10 +7384,13 @@
         "meta_label": "PMID_36303223_individual_8_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -6966,7 +7398,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [
@@ -7093,10 +7526,13 @@
         "meta_label": "PMID_36303223_individual_9_PMID_12112661"
       },
       "sex": "UNKNOWN_SEX",
+      "age": null,
+      "vital_status": null,
       "phenotypes": [
         {
           "term_id": "HP:0001250",
-          "is_present": true
+          "is_present": true,
+          "onset": null
         }
       ],
       "measurements": [],
@@ -7104,7 +7540,8 @@
         {
           "term_id": "OMIM:272300",
           "name": "Sulfite oxidase deficiency",
-          "is_observed": true
+          "is_observed": true,
+          "onset": null
         }
       ],
       "variants": [

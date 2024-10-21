@@ -12,6 +12,20 @@ from gpsea.analysis.pcats import apply_predicates_on_patients
 from gpsea.model import Cohort
 
 
+@pytest.fixture(scope='module')
+def patient_counts(
+    suox_cohort: Cohort,
+    suox_gt_predicate: GenotypePolyPredicate,
+    suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+) -> typing.Sequence[pd.DataFrame]:
+    _, counts = apply_predicates_on_patients(
+        patients=suox_cohort.all_patients,
+        gt_predicate=suox_gt_predicate,
+        pheno_predicates=suox_pheno_predicates,
+    )
+    return counts
+
+
 class TestHpoMtcFilter:
 
     @pytest.fixture
@@ -24,20 +38,6 @@ class TestHpoMtcFilter:
             term_frequency_threshold=0.2,
             annotation_frequency_threshold=.1,
         )
-
-    @pytest.fixture(scope='class')
-    def patient_counts(
-            self,
-            suox_cohort: Cohort,
-            suox_gt_predicate: GenotypePolyPredicate,
-            suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
-    ) -> typing.Sequence[pd.DataFrame]:
-        _, counts = apply_predicates_on_patients(
-            patients=suox_cohort.all_patients,
-            gt_predicate=suox_gt_predicate,
-            pheno_predicates=suox_pheno_predicates,
-        )
-        return counts
 
     @pytest.fixture(scope='class')
     def gt_predicate(
@@ -180,46 +180,6 @@ class TestHpoMtcFilter:
             None, None,
         ]
 
-    def test_specified_term_mtc_filter(
-        self,
-        suox_gt_predicate: GenotypePolyPredicate,
-        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
-        patient_counts: typing.Sequence[pd.DataFrame],
-        suox_cohort: Cohort,
-    ):
-        """
-        The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
-        is the only term that should survive the filter. We start with a total of five terms (n_usable==5),
-        but after our filter, only one survives, and we have four cases in which the
-        reason for filtering out is 'Non-specified term'
-        """
-        specified_filter = SpecifiedTermsMtcFilter(
-            terms_to_test=(hpotk.TermId.from_curie("HP:0032350"),),
-        )
-
-        mtc_report = specified_filter.filter(
-            gt_predicate=suox_gt_predicate,
-            ph_predicates=suox_pheno_predicates,
-            counts=patient_counts,
-            cohort_size=len(suox_cohort),
-        )
-        assert isinstance(mtc_report, typing.Sequence)
-        assert len(mtc_report) == 5
-
-        is_passed = [r.is_passed() for r in mtc_report]
-        assert is_passed == [
-            False, False, True, False, False,
-        ]
-
-        reasons = [r.reason for r in mtc_report]
-        assert reasons == [
-            'Non-specified term',
-            'Non-specified term',
-            None,
-            'Non-specified term',
-            'Non-specified term',
-        ]
-
     def test_min_observed_HPO_threshold(
         self,
         suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
@@ -290,3 +250,66 @@ class TestHpoMtcFilter:
             ph_predicate=hypertonia_predicate,
         )
         assert max_f == pytest.approx(0.5714, abs=EPSILON)
+
+
+class TestSpecifyTermsMtcFilter:
+    
+    def test_specified_term_mtc_filter(
+        self,
+        suox_gt_predicate: GenotypePolyPredicate,
+        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        patient_counts: typing.Sequence[pd.DataFrame],
+        suox_cohort: Cohort,
+    ):
+        """
+        The point of this test is to check that if we filter to test only one term ("HP:0032350"), then this
+        is the only term that should survive the filter. We start with a total of five terms (n_usable==5),
+        but after our filter, only one survives, and we have four cases in which the
+        reason for filtering out is 'Non-specified term'
+        """
+        specified_filter = SpecifiedTermsMtcFilter(
+            terms_to_test=(
+                hpotk.TermId.from_curie("HP:0032350"),
+            ),
+        )
+
+        mtc_report = specified_filter.filter(
+            gt_predicate=suox_gt_predicate,
+            ph_predicates=suox_pheno_predicates,
+            counts=patient_counts,
+            cohort_size=len(suox_cohort),
+        )
+        assert isinstance(mtc_report, typing.Sequence)
+        assert len(mtc_report) == 5
+
+        is_passed = [r.is_passed() for r in mtc_report]
+        assert is_passed == [
+            False, False, True, False, False,
+        ]
+
+        reasons = [r.reason for r in mtc_report]
+        assert reasons == [
+            'Non-specified term',
+            'Non-specified term',
+            None,
+            'Non-specified term',
+            'Non-specified term',
+        ]
+
+    @pytest.mark.parametrize(
+        "val, msg",
+        [
+            ("NotACurie", "The CURIE NotACurie has no colon `:` or underscore `_`"),
+            (0, "0 is neither `str` nor `hpotk.TermId`"),
+        ]
+    )
+    def test_explodes_if_invalid_terms_provided(
+        self,
+        val: typing.Any,
+        msg: str
+    ):
+        with pytest.raises(ValueError) as e:
+            SpecifiedTermsMtcFilter(
+                terms_to_test=(val,),
+            )
+        assert e.value.args == (msg,)

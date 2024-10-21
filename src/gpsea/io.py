@@ -25,7 +25,11 @@ from gpsea.model import (
     Measurement,
     Disease,
     Phenotype,
+    Age,
+    Timeline,
     Sex,
+    Status,
+    VitalStatus,
 )
 from gpsea.model.genome import Contig, Region, GenomicRegion, Strand
 
@@ -109,19 +113,26 @@ class GpseaJSONEncoder(JSONEncoder):
                 "label": o.label,
                 "meta_label": o.meta_label,
             }
-        elif isinstance(o, (Sex, Genotype, VariantEffect, Strand, VariantClass)):
+        elif isinstance(o, (Sex, Timeline, Genotype, VariantEffect, Strand, VariantClass, Status)):
             # enums
             return o.name
         elif isinstance(o, Phenotype):
             return {
                 "term_id": o.identifier.value,
                 "is_present": o.is_present,
+                "onset": o.onset,
+            }
+        elif isinstance(o, Age):
+            return {
+                "days": o.days,
+                "timeline": o.timeline,
             }
         elif isinstance(o, Disease):
             return {
                 "term_id": o.identifier.value,
                 "name": o.name,
                 "is_observed": o.is_present,
+                "onset": o.onset,
             }
         elif isinstance(o, Measurement):
             return {
@@ -134,10 +145,17 @@ class GpseaJSONEncoder(JSONEncoder):
             return {
                 "labels": o.labels,
                 "sex": o.sex,
+                "age": o.age,
+                "vital_status": o.vital_status,
                 "phenotypes": o.phenotypes,
                 "measurements": o.measurements,
                 "diseases": o.diseases,
                 "variants": o.variants,
+            }
+        elif isinstance(o, VitalStatus):
+            return {
+                "status": o.status,
+                "age_of_death": o.age_of_death,
             }
         elif isinstance(o, Cohort):
             return {
@@ -201,10 +219,12 @@ _TX_COORDINATES = ("identifier", "region", "exons", "cds_start", "cds_end")
 _PROTEIN_METADATA = ("protein_id", "label", "protein_features", "protein_length")
 _PROTEIN_FEATURE = ("info", "feature_type")
 _FEATURE_INFO = ("name", "region")
-_PHENOTYPE_FIELDS = ("term_id", "is_present")
-_DISEASE_FIELDS = ("term_id", "name", "is_observed")
+_PHENOTYPE_FIELDS = ("term_id", "is_present", "onset")
+_AGE_FIELDS = ("days", "timeline")
+_DISEASE_FIELDS = ("term_id", "name", "is_observed", "onset")
 _MEASUREMENT_FIELDS = ("test_term_id", "test_name", "test_result", "unit")
-_PATIENT_FIELDS = ("labels", "sex", "phenotypes", "diseases", "variants")
+_PATIENT_FIELDS = ("labels", "sex", "age", "vital_status", "phenotypes", "diseases", "variants")
+_VITAL_STATUS_FIELDS = ("status", "age_of_death")
 _COHORT_FIELDS = ("members", "excluded_patient_count")
 
 
@@ -317,12 +337,19 @@ class GpseaJSONDecoder(JSONDecoder):
             return Phenotype(
                 term_id=hpotk.TermId.from_curie(obj["term_id"]),
                 is_observed=obj["is_present"],
+                onset=obj["onset"],
+            )
+        elif GpseaJSONDecoder._has_all_fields(obj, _AGE_FIELDS):
+            return Age(
+                days=obj["days"],
+                timeline=Timeline[obj["timeline"]],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _DISEASE_FIELDS):
             return Disease(
                 term_id=hpotk.TermId.from_curie(obj["term_id"]),
                 name=obj["name"],
                 is_observed=obj["is_observed"],
+                onset=obj["onset"],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _MEASUREMENT_FIELDS):
             return Measurement(
@@ -335,10 +362,17 @@ class GpseaJSONDecoder(JSONDecoder):
             return Patient(
                 labels=obj["labels"],
                 sex=Sex[obj["sex"]],
+                age=obj["age"],
+                vital_status=obj["vital_status"],
                 phenotypes=obj["phenotypes"],
                 measurements=obj["measurements"],
                 diseases=obj["diseases"],
                 variants=obj["variants"],
+            )
+        elif GpseaJSONDecoder._has_all_fields(obj, _VITAL_STATUS_FIELDS):
+            return VitalStatus(
+                status=Status[obj["status"]],
+                age_of_death=obj["age_of_death"],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _TX_COORDINATES):
             return TranscriptCoordinates(
