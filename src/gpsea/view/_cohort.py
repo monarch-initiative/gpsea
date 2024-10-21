@@ -12,10 +12,9 @@ from ._formatter import VariantFormatter
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
 
-class CohortViewable:
+class CohortViewer:
     """
-    Class to create a viewable object that is uses a Jinja2 template to create an HTML element
-    for display in the Jupyter notebook.
+    `CohortViewer` summarizes the most salient :class:`~gpsea.model.Cohort` aspects into an HTML report.
     """
 
     def __init__(
@@ -42,7 +41,7 @@ class CohortViewable:
         transcript_id: typing.Optional[str] = None,
     ) -> GpseaReport:
         """
-        Create an HTML that should be shown with display(HTML(..)) of the ipython package.
+        Generate the report for a given `cohort`.
 
         Args:
             cohort (Cohort): The cohort being analyzed in the current Notebook
@@ -78,7 +77,7 @@ class CohortViewable:
             )
 
         variant_counts = list()
-        variant_to_display_d = CohortViewable._get_variant_description(cohort, transcript_id)
+        variant_to_display_d = CohortViewer._get_variant_description(cohort, transcript_id)
         for variant_key, count in cohort.list_all_variants(top=self._top_variant_count):
             # get HGVS or human readable variant
             if variant_key in variant_to_display_d:
@@ -123,7 +122,9 @@ class CohortViewable:
         if transcript_id is not None:
             has_transcript = True
             data_by_tx = cohort.variant_effect_count_by_tx(tx_id=transcript_id)
-            # e.g., data structure -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175}, {'effect}': 'STOP_GAINED', 'count': 67},
+            # e.g., data structure
+            #   -- {'effect}': 'FRAMESHIFT_VARIANT', 'count': 175},
+            #   -- {'effect}': 'STOP_GAINED', 'count': 67},
             for tx_id, counter in data_by_tx.items():
                 if tx_id == transcript_id:
                     for effect, count in counter.items():
@@ -169,7 +170,9 @@ class CohortViewable:
             only_hgvs (bool): do not show the transcript ID part of the HGVS annotation, just the annotation.
 
         Returns:
-            typing.Mapping[str, ToDisplay]: key: variant key, value: namedtuple(display (e.g. HGVS) string of variant, hgvsp protein string of variant)
+            typing.Mapping[str, ToDisplay]:
+              key: variant key,
+              value: namedtuple(display (e.g. HGVS) string of variant, hgvsp protein string of variant)
         """
         chrom_to_display = dict()
         var_formatter = VariantFormatter(transcript_id)
