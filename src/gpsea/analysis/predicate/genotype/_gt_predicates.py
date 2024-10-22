@@ -166,7 +166,8 @@ def qc_partitions(
 
 
 def build_count_to_cat(
-    names: typing.Tuple[str, str],
+    a_label: str,
+    b_label: str,
     partitions: typing.Iterable[typing.Iterable[int]],
 ) -> typing.Mapping[typing.Tuple[int, int], Categorization]:
     # NOT PART OF THE PUBLIC API
@@ -177,9 +178,9 @@ def build_count_to_cat(
     )
 
     partition2label = (
-        f"{names[0]}/{names[0]}",
-        f"{names[0]}/{names[1]}",
-        f"{names[1]}/{names[1]}",
+        f"{a_label}/{a_label}",
+        f"{a_label}/{b_label}",
+        f"{b_label}/{b_label}",
     )
 
     ac2cat = {}
@@ -212,17 +213,18 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
     def monoallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
-        names: typing.Tuple[str, str],
+        a_label: str,
+        b_label: str,
     ) -> "PolyCountingGenotypePredicate":
         count2cat = {
             (1, 0): Categorization(
                 PatientCategory(
-                    cat_id=0, name=names[0], description=f"Monoallelic {names[0]}"
+                    cat_id=0, name=a_label, description=f"Monoallelic {a_label}"
                 )
             ),
             (0, 1): Categorization(
                 PatientCategory(
-                    cat_id=1, name=names[1], description=f"Monoallelic {names[1]}"
+                    cat_id=1, name=b_label, description=f"Monoallelic {b_label}"
                 )
             ),
         }
@@ -237,10 +239,15 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
     def biallelic(
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
-        names: typing.Tuple[str, str],
+        a_label: str,
+        b_label: str,
         partitions: typing.Iterable[typing.Iterable[int]],
     ) -> "PolyCountingGenotypePredicate":
-        count2cat = build_count_to_cat(names, partitions=partitions)
+        count2cat = build_count_to_cat(
+            a_label=a_label,
+            b_label=b_label,
+            partitions=partitions,
+        )
 
         return PolyCountingGenotypePredicate.for_predicates_and_categories(
             count2cat=count2cat,
@@ -315,7 +322,8 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 def monoallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
-    names: typing.Tuple[str, str] = ("A", "B"),
+    a_label: str = "A",
+    b_label: str = "B",
 ) -> GenotypePolyPredicate:
     """
     The predicate bins patient into one of two groups, `A` and `B`,
@@ -327,24 +335,30 @@ def monoallelic_predicate(
     :param a_predicate: predicate to test if the variants
         meet the criteria of the first group (named `A` by default).
     :param b_predicate: predicate to test if the variants
-        meet the criteria of the second group (named `B` by default) or `None`
-        if the inverse of `a_predicate` should be used.
-    :param names: group names (default ``('A', 'B')``).
+        meet the criteria of the second group or `None`
+        if the inverse of `a_predicate` should be used (named `B` by default).
+    :param a_label: display name of the `a_predicate` (default ``"A"``).
+    :param b_label: display name of the `b_predicate` (default ``"B"``).
     """
+    assert isinstance(a_label, str)
+    assert isinstance(b_label, str)
+
     if b_predicate is None:
         b_predicate = ~a_predicate
 
     return PolyCountingGenotypePredicate.monoallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
-        names=names,
+        a_label=a_label,
+        b_label=b_label,
     )
 
 
 def biallelic_predicate(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
-    names: typing.Tuple[str, str] = ("A", "B"),
+    a_label: str = "A",
+    b_label: str = "B",
     partitions: typing.Collection[typing.Collection[int]] = ((0,), (1,), (2,)),
 ) -> GenotypePolyPredicate:
     """
@@ -358,13 +372,16 @@ def biallelic_predicate(
     :param a_predicate: predicate to test if the variants meet
         the criteria of the first group (named `A` by default).
     :param b_predicate: predicate to test if the variants meet
-        the criteria of the second group (named `B` by default)
-        or `None` if an inverse of `a_predicate` should be used.
-    :param names: group names (default ``('A', 'B')``).
+        the criteria of the second group or `None` if an inverse
+        of `a_predicate` should be used (named `B` by default).
+    :param a_label: display name of the `a_predicate` (default ``"A"``).
+    :param b_label: display name of the `b_predicate` (default ``"B"``).
     :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
     """
     # Q/C
-    assert len(names) == 2
+    assert isinstance(a_label, str)
+    assert isinstance(b_label, str)
+
     partitions = fixate_partitions(partitions)
     qc_partitions(partitions)
 
@@ -374,7 +391,8 @@ def biallelic_predicate(
     return PolyCountingGenotypePredicate.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
-        names=names,
+        a_label=a_label,
+        b_label=b_label,
         partitions=partitions,
     )
 

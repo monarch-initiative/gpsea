@@ -265,8 +265,8 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     @staticmethod
     def default_filter(
         hpo: hpotk.MinimalOntology,
-        term_frequency_threshold: float = 0.2,
-        annotation_frequency_threshold: float = 0.25,
+        term_frequency_threshold: float = 0.4,
+        annotation_frequency_threshold: float = 0.4,
         phenotypic_abnormality: hpotk.TermId = hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY,
     ):
         """
@@ -275,12 +275,13 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency
               for an HPO term to have in at least one of the genotype groups
               (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
-              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
+              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
+              The default threshold is `0.4` (40%).
             annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of
                 annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
                 we have explicit observed observations for 20 and excluded for 10 individuals, then the
-                annotation frequency is 0.3. By default, we set a threshold of 25%. The purpose of this
-                threshold is to omit terms for which we simply do not have much data overall.
+                annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which
+                we simply do not have much data overall. By default, we set a threshold to `0.4` (40%).
             phenotypic_abnormality: a :class:`~hpotk.TermId` corresponding to the root of HPO phenotype hierarchy.
               Having to specify this option should be very rarely, if ever.
         """
@@ -337,15 +338,6 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         annotation_frequency_threshold: float,
         general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
-        """
-        Args:
-            hpo: reference to HPO ontology object
-            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency
-              for an HPO term to have in at least one of the genotype groups
-              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
-              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2)
-            annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of annotation
-        """
         self._hpo = hpo
         self._hpo_term_frequency_filter = term_frequency_threshold
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold

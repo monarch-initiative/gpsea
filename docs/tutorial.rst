@@ -110,10 +110,10 @@ GPSEA helps with gaining insight into the cohort by providing
 Show cohort summary
 -------------------
 
-The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occurr most frequently:
+The summary report provides an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:
 
->>> from gpsea.view import CohortViewable
->>> viewer = CohortViewable(hpo)
+>>> from gpsea.view import CohortViewer
+>>> viewer = CohortViewer(hpo)
 >>> report = viewer.process(cohort=cohort, transcript_id=tx_id)
 >>> report  # doctest: +SKIP
 
@@ -204,7 +204,7 @@ in the individuals of the *TBX5* cohort.
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id),
 ...     b_predicate=VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id),
-...     names=('Missense', 'Frameshift')
+...     a_label="Missense", b_label="Frameshift",
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Missense, Frameshift'
@@ -230,11 +230,9 @@ was excluded):
 >>> pheno_predicates = prepare_predicates_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
-...     min_n_of_patients_with_term=2,
 ... )
 
-By default, GPSEA will perform one hypothesis test for each HPO term used to annotate two or more individuals in the cohort
-(see ``min_n_of_patients_with_term=2`` above).
+By default, GPSEA will perform one hypothesis test for each HPO term used to annotate at least one individual in the cohort.
 Testing multiple hypothesis on the same dataset increases the chance of receiving false positive result.
 However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
@@ -252,7 +250,7 @@ with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
 with a false discovery control level at (``mtc_alpha=0.05``):
 
 >>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=0.2)
+>>> mtc_filter = HpoMtcFilter.default_filter(hpo)
 >>> mtc_correction = 'fdr_bh'
 >>> mtc_alpha = 0.05
 
@@ -281,15 +279,15 @@ Now we can perform the analysis and investigate the results.
 ...     pheno_predicates=pheno_predicates,
 ... )
 >>> result.total_tests
-34
+16
 
-We only tested 34 HPO terms. This is despite the individuals being collectively annotated with
-260 direct and indirect HPO terms
+We only tested 16 HPO terms. This is despite the individuals being collectively annotated with
+369 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
-260
+369
 
-We can show the reasoning behind *not* testing 226 (`260 - 34`) HPO terms
+We can show the reasoning behind *not* testing 353 (`369 - 16`) HPO terms
 by exploring the phenotype MTC filtering report.
 
 >>> from gpsea.view import MtcStatsViewer
@@ -328,4 +326,4 @@ was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 19/19 (100%) patients with a frameshift variant.
 Fisher exact test computed a p value of `~0.0000562`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.001910`.
+is `~0.000899`.

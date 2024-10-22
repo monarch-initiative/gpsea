@@ -128,7 +128,7 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=point_mutation,
 ...     b_predicate=lof_mutation,
-...     names=('Point', 'LoF'),
+...     a_label="Point", b_label="LoF",
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Point, LoF'

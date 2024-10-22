@@ -4,10 +4,11 @@ from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 from collections import Counter, defaultdict
 
+from gpsea.model import Cohort
 from ._report import GpseaReport, HtmlGpseaReport
 
 
-class DiseaseViewable:
+class DiseaseViewer:
     """
     TODO
     """
@@ -21,12 +22,18 @@ class DiseaseViewable:
         environment = Environment(loader=(PackageLoader('gpsea.view', 'templates')))
         self._cohort_template = environment.get_template("disease.html")
         
-    def process(self, cohort) -> GpseaReport:
-        context = self._prepare_context(cohort)
+    def process(
+        self,
+        cohort: Cohort,
+    ) -> GpseaReport:
+        context = DiseaseViewer._prepare_context(cohort)
         html = self._cohort_template.render(context)
         return HtmlGpseaReport(html=html)
     
-    def _prepare_context(self, cohort) -> typing.Mapping[str, typing.Any]:
+    @staticmethod
+    def _prepare_context(
+        cohort: Cohort,
+    ) -> typing.Mapping[str, typing.Any]:
         diseases = cohort.list_all_diseases()
         n_diseases = len(diseases)
         disease_counts = list()
