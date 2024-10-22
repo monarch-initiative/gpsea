@@ -113,7 +113,7 @@ def _compute_hash(
         hash_value += 13 * hash(val)
 
     for counter in counters:
-        hash_value += 23 * hash(counter)    
+        hash_value += 23 * hash(counter)
 
     return hash_value
 
