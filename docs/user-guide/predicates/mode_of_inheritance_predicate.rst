@@ -49,7 +49,7 @@ and those with no alleles (`No allele`), while omitting the individuals with 2 o
 >>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
 >>> gt_predicate = monoallelic_predicate(
 ...     a_predicate=in_exon_6,
-...     names=("Monoallelic", "No allele"),
+...     a_label="Monoallelic", b_label="No allele",
 ... )
 >>> gt_predicate.display_question()
 'Allele group: Monoallelic, No allele'
