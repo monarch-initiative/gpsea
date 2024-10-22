@@ -3,110 +3,63 @@ import pytest
 
 from gpsea.model import Patient, Sex, SampleLabels, VariantEffect
 from gpsea.analysis.predicate.genotype import (
-    GenotypePolyPredicate,
-    groups_predicate,
     sex_predicate,
     monoallelic_predicate,
     biallelic_predicate,
-    autosomal_dominant,
-    autosomal_recessive,
-    allele_counting,
+    allele_count,
     VariantPredicates,
-    VariantPredicate,
 )
 
 
 TX_ID = "tx:xyz"
 
 
-class TestGroupsPredicate:
+class TestAlleleCount:
 
-    @pytest.fixture(scope="class")
-    def predicate(self) -> GenotypePolyPredicate:
-        return groups_predicate(
-            predicates=(
-                VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID),
-                VariantPredicates.variant_effect(
-                    VariantEffect.FRAMESHIFT_VARIANT, TX_ID
-                ),
-            ),
-            group_names=(
-                "Point",
-                "LoF",
-            ),
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("adam", "1"),
+            ("eve", "1"),
+            ("cain", "1"),
+        ],
+    )
+    def test_ad_family__all_variants(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        patient = request.getfixturevalue(patient_name)
+        predicate = allele_count(counts=((0,), (1,)))
+
+        categorization = predicate.test(patient)
+
+        assert categorization is not None
+
+        assert categorization.category.name == name
+    
+    @pytest.mark.parametrize(
+        "patient_name,name",
+        [
+            ("adam", "0"),
+            ("eve", "1"),
+            ("cain", "1"),
+        ],
+    )
+    def test_ad_family__missense_subset(
+        self,
+        patient_name: str,
+        name: str,
+        request: pytest.FixtureRequest,
+    ):
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
+        patient = request.getfixturevalue(patient_name)
+        predicate = allele_count(
+            counts=((0,), (1,)),
+            target=is_missense,
         )
 
-    def test_get_question(
-        self,
-        predicate: GenotypePolyPredicate,
-    ):
-        question = predicate.get_question_base()
-        assert question == "Genotype group"
-
-    def test_get_categorizations(
-        self,
-        predicate: GenotypePolyPredicate,
-    ):
-        categorizations = predicate.get_categorizations()
-
-        names = [c.category.name for c in categorizations]
-        assert names == ["Point", "LoF"]
-
-        descriptions = [c.category.description for c in categorizations]
-        assert descriptions == [
-            "MISSENSE_VARIANT on tx:xyz",
-            "FRAMESHIFT_VARIANT on tx:xyz",
-        ]
-
-    def test_test__missense(
-        self,
-        patient_w_missense: Patient,
-        predicate: GenotypePolyPredicate,
-    ):
-        cat = predicate.test(patient_w_missense)
-
-        assert cat is not None
-        assert cat.category.cat_id == 0
-        assert cat.category.name == "Point"
-        assert cat.category.description == "MISSENSE_VARIANT on tx:xyz"
-
-    def test_test__frameshift(
-        self,
-        patient_w_frameshift: Patient,
-        predicate: GenotypePolyPredicate,
-    ):
-        cat = predicate.test(patient_w_frameshift)
-
-        assert cat is not None
-        assert cat.category.cat_id == 1
-        assert cat.category.name == "LoF"
-        assert cat.category.description == "FRAMESHIFT_VARIANT on tx:xyz"
-
-
-class TestModeOfInheritancePredicate:
-
-    @pytest.fixture(scope="class")
-    def variant_predicate(self) -> VariantPredicate:
-        return VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            ("adam", "No allele"),
-            ("eve", "Monoallelic"),
-            ("cain", "Monoallelic"),
-        ],
-    )
-    def test_autosomal_dominant(
-        self,
-        patient_name: str,
-        name: str,
-        variant_predicate: VariantPredicate,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = autosomal_dominant(variant_predicate)
-
         categorization = predicate.test(patient)
 
         assert categorization is not None
@@ -116,69 +69,48 @@ class TestModeOfInheritancePredicate:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "Monoallelic"),  # 0/0 & 0/1
-            ("eve", "Monoallelic"),  # 0/1 & 0/0
-            ("cain", "Monoallelic"),  # 0/1 & 0/0
+            ("walt", "2"),
+            ("skyler", "2"),
+            ("flynn", "2"),
+            ("holly", "2"),
         ],
     )
-    def test_autosomal_dominant__with_default_predicate(
+    def test_ar_family__all_variants(
         self,
         patient_name: str,
         name: str,
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = autosomal_dominant()
+        predicate = allele_count(counts=((0, 1), (2,)))
 
         categorization = predicate.test(patient)
 
         assert categorization is not None
 
         assert categorization.category.name == name
-
+    
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("walt", "Monoallelic"),
-            ("skyler", "Monoallelic"),
-            ("flynn", "Biallelic"),
-            ("holly", "No allele"),
+            ("walt", "1"),
+            ("skyler", "1"),
+            ("flynn", "2"),
+            ("holly", "0"),
         ],
     )
-    def test_autosomal_recessive(
-        self,
-        patient_name: str,
-        name: str,
-        variant_predicate: VariantPredicate,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = autosomal_recessive(variant_predicate)
-
-        categorization = predicate.test(patient)
-
-        assert categorization is not None
-
-        assert categorization.category.name == name
-
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            # The White family has two variants:
-            ("walt", "Biallelic"),  # 0/1 & 0/1
-            ("skyler", "Biallelic"),  # 0/1 & 0/1
-            ("flynn", "Biallelic"),  # 1/1 & 0/0
-            ("holly", "Biallelic"),  # 0/0 & 1/1
-        ],
-    )
-    def test_autosomal_recessive__with_default_predicate(
+    def test_ar_family__only_missense(
         self,
         patient_name: str,
         name: str,
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        predicate = autosomal_recessive()
+        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
+        predicate = allele_count(
+            counts=((0,), (1,), (2,)),
+            target=is_missense,
+        )
 
         categorization = predicate.test(patient)
 
@@ -286,30 +218,6 @@ class TestAllelePredicates:
             )
 
         assert e.value.args == (msg,)
-    
-    @pytest.mark.parametrize(
-        "patient_name,name",
-        [
-            ("walt", "Biallelic"),
-            ("skyler", "Biallelic"),
-            ("flynn", "Biallelic"),
-            ("holly", "Biallelic"),
-        ],
-    )
-    def test_allele_counting(
-        self,
-        patient_name: str,
-        name: str,
-        request: pytest.FixtureRequest,
-    ):
-        patient = request.getfixturevalue(patient_name)
-        predicate = allele_counting()
-
-        categorization = predicate.test(patient)
-
-        assert categorization is not None
-
-        assert categorization.category.name == name
 
 
 class TestSexPredicate:

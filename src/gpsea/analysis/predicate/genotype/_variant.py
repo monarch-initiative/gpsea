@@ -42,7 +42,7 @@ class VariantPredicates:
         >>> genes = ('SURF1', 'SURF2',)
         >>> predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)
         >>> predicate.get_question()
-        '(impacts SURF1 AND impacts SURF2)'
+        '(affects SURF1 AND affects SURF2)'
 
         Args:
             predicates: an iterable of predicates to test
