@@ -4,7 +4,7 @@ from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple
 
-from gpsea.model import Cohort
+from gpsea.model import Cohort, Sex
 from ._report import GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
 
@@ -138,10 +138,24 @@ class CohortViewer:
         else:
             has_transcript = False
             transcript_id = "MANE transcript ID"
-            
+
+        n_male = 0
+        n_female = 0
+        n_unknown_sex = 0
+        for pat in cohort.all_patients:
+            if pat.sex == Sex.MALE:
+                n_male += 1
+            elif pat.sex == Sex.FEMALE:
+                n_female += 1
+            else:
+                n_unknown_sex += 1
+
         # The following dictionary is used by the Jinja2 HTML template
         return {
             "n_individuals": len(cohort.all_patients),
+            "n_male": n_male,
+            "n_female": n_female,
+            "n_unknown_sex": n_unknown_sex,
             "n_excluded": cohort.get_excluded_count(),
             "total_hpo_count": len(cohort.all_phenotypes()),
             "top_hpo_count": self._top_phenotype_count,
@@ -184,14 +198,14 @@ class CohortViewer:
                 tx_annotation = None
             else:
                 tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
-            
+
             if tx_annotation is None:
                 hgvsp = None
                 var_effects = None
             else:
                 hgvsp = tx_annotation.hgvsp
                 var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
-    
+
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
