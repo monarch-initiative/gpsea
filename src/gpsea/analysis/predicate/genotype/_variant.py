@@ -185,12 +185,12 @@ class VariantPredicates:
         """
         if isinstance(region, Region):
             pass
-        elif isinstance(region, tuple) and len(region) == 2 and all(isinstance(c, int) for c in region):
+        elif isinstance(region, tuple) and len(region) == 2 and all(isinstance(c, int) and c > 0 for c in region):
             start = region[0] - 1  # Convert to 0-based
             end = region[1]
             region = Region(start=start, end=end)
         else:
-            raise ValueError(f'region must be a `Region` or a tuple with two integers, but got {region}')
+            raise ValueError(f'region must be a `Region` or a tuple with two positive `int`s, but got {region}')
 
         return ProteinRegionPredicate(region, tx_id)
 
