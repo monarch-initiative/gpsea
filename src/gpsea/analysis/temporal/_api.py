@@ -117,7 +117,6 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
                 data = scipy.stats.ecdf(censored_data)
                 data.sf.plot(ax, label=pat_cat.name)
         
-        ax.set(xlabel=self._endpoint.question_base().capitalize(), ylabel="Empirical SF")
         ax.legend()
 
     def __eq__(self, value: object) -> bool:
