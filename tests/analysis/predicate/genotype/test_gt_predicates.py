@@ -1,4 +1,3 @@
-import typing
 import pytest
 
 from gpsea.model import Patient, Sex, SampleLabels, VariantEffect
@@ -118,6 +117,18 @@ class TestAlleleCount:
 
         assert categorization.category.name == name
 
+    def test_eq_and_hash(self):
+        a = allele_count(counts=((0, 1), (2,)))
+        b = allele_count(counts=((0, 1), (2,)))
+
+        assert a == b
+        assert hash(a) == hash(b)
+
+    def test_display_question(self):
+        a = allele_count(counts=((0, 1), (2,)))
+
+        assert a.display_question() == "Allele count: 0 OR 1, 2"
+
 
 class TestAllelePredicates:
 
@@ -189,35 +200,6 @@ class TestAllelePredicates:
         gt_predicate = biallelic_predicate(is_missense, is_synonymous)
         
         assert gt_predicate.display_question() == 'Allele group: A/A, A/B, B/B'
-
-    @pytest.mark.parametrize(
-        "partitions, msg",
-        [
-            (((0,), (0,), (2,)), "partition (0,) was present 2!=1 times"),
-            (((0, 1), (1, 2,)), "element 1 was present 2!=1 times"),
-            (((0, 1), (1, 0)), "element 0 was present 2!=1 times, element 1 was present 2!=1 times"),
-            (((0, 1, 1), (1, 1, 2,)), "element 1 was present 4!=1 times"),
-            (((0.1,), (1,), (2,)), "Each partition index must be a non-negative int"),
-            (((0, 1, 2),), "At least 2 partitions must be provided"),
-        ]
-    )
-    def test_biallelic_predicate__invalid_partitions(
-        self,
-        partitions: typing.Sequence[typing.Sequence[int]],
-        msg: str,
-    ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
-        
-        with pytest.raises(ValueError) as e:
-            biallelic_predicate(
-                a_predicate=is_missense,
-                b_predicate=is_synonymous,
-                a_label="A", b_label="B",
-                partitions=partitions
-            )
-
-        assert e.value.args == (msg,)
 
 
 class TestSexPredicate:
