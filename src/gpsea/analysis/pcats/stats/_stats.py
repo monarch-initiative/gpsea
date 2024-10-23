@@ -10,8 +10,10 @@ import pandas as pd
 
 import scipy
 
+from ..._base import Statistic
 
-class CountStatistic(metaclass=abc.ABCMeta):
+
+class CountStatistic(Statistic, metaclass=abc.ABCMeta):
     """
     `CountStatistic` calculates a p value for a contingency table
     produced by a pair of discrete random variables.
@@ -65,7 +67,7 @@ class CountStatistic(metaclass=abc.ABCMeta):
 
 class FisherExactTest(CountStatistic):
     """
-    `FisherExactTest` performs Fisher Exact Test on a `2x2` or `2x3` contingency table.
+    `FisherExactTest` performs Fisher's Exact Test on a `2x2` or `2x3` contingency table.
 
     The `2x2` version is a thin wrapper around Scipy :func:`~scipy.stats.fisher_exact` function,
     while the `2x3` variant is implemented in Python.
@@ -74,6 +76,10 @@ class FisherExactTest(CountStatistic):
     
     def __init__(self):
         self._shape = (2, (2, 3))
+
+    @property
+    def name(self) -> str:
+        return "Fisher's Exact Test"
 
     @property
     def supports_shape(

@@ -4,8 +4,10 @@ import typing
 
 from scipy.stats import mannwhitneyu, ttest_ind
 
+from ..._base import Statistic
 
-class PhenotypeScoreStatistic(metaclass=abc.ABCMeta):
+
+class PhenotypeScoreStatistic(Statistic, metaclass=abc.ABCMeta):
     """
     `PhenotypeScoreStatistic` calculates a p value
     for 2 or more phenotype score groups
@@ -31,6 +33,10 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
     See :ref:`phenotype-score-stats` for an example usage.
     """
     
+    @property
+    def name(self) -> str:
+        return "Mann-Whitney U test"
+
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
@@ -64,6 +70,9 @@ class TTestStatistic(PhenotypeScoreStatistic):
     The `NaN` phenotype score values are ignored.
     """
 
+    @property
+    def name(self) -> str:
+        return "Student's t-test"
     # TODO: refer to a user guide example to show a usage example.
 
     def compute_pval(

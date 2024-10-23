@@ -4,6 +4,20 @@ import abc
 from .predicate.genotype import GenotypePolyPredicate
 
 
+class Statistic(metaclass=abc.ABCMeta):
+    """
+    Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.
+    """
+    
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        """
+        Get the name of the statistic (e.g. `Fisher Exact Test`, `Logrank test`).
+        """
+        pass
+    
+
 class AnalysisResult(metaclass=abc.ABCMeta):
     """
     `AnalysisResult` includes the common parts of results of all analyses.
@@ -22,6 +36,8 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         Get the genotype predicate used in the survival analysis that produced this result.
         """
         return self._gt_predicate
+
+    # test, p values, corrected values (optional), correction
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, AnalysisResult) \
