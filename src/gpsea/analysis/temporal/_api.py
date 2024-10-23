@@ -51,8 +51,9 @@ class SurvivalAnalysisResult(AnalysisResult):
         data: pd.DataFrame,
         pval: float,
     ):
-        assert isinstance(gt_predicate, GenotypePolyPredicate)
-        self._gt_predicate = gt_predicate
+        super().__init__(
+            gt_predicate=gt_predicate,
+        )
 
         assert isinstance(data, pd.DataFrame) and all(
             col in data for col in ("genotype", "survival")
@@ -65,13 +66,6 @@ class SurvivalAnalysisResult(AnalysisResult):
             raise ValueError(
                 f"`p_val` must be a finite float in range [0, 1] but it was {pval}"
             )
-
-    @property
-    def gt_predicate(self) -> GenotypePolyPredicate:
-        """
-        Get the genotype predicate used in the survival analysis that produced this result.
-        """
-        return self._gt_predicate
 
     @property
     def data(self) -> pd.DataFrame:
@@ -121,13 +115,17 @@ class SurvivalAnalysisResult(AnalysisResult):
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, SurvivalAnalysisResult)
-            and self._gt_predicate == value._gt_predicate
+            and super(AnalysisResult, self).__eq__(value)
             and self._data.equals(value._data)
             and self._pval == value._pval
         )
 
     def __hash__(self) -> int:
-        return hash((self._gt_predicate, self._data, self._pval))
+        return hash((
+            super(AnalysisResult, self).__hash__(),
+            self._data,
+            self._pval,
+        ))
 
     def __str__(self) -> str:
         return (

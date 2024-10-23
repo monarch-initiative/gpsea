@@ -270,7 +270,6 @@ to visualize the phenotype score distributions:
 >>> import matplotlib.pyplot as plt
 >>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
 >>> result.plot_boxplots(
-...     gt_predicate=gt_predicate,
 ...     ax=ax,
 ... )
 >>> _ = ax.grid(axis="y")

@@ -76,9 +76,13 @@ class PhenotypeScoreAnalysisResult(AnalysisResult):
 
     def __init__(
         self,
+        gt_predicate: GenotypePolyPredicate,
         genotype_phenotype_scores: pd.DataFrame,
         pval: float,
     ):
+        super().__init__(
+            gt_predicate=gt_predicate,
+        )
         self._genotype_phenotype_scores = genotype_phenotype_scores
         if isinstance(pval, float) and 0. <= pval <= 1.:
             self._pval = float(pval)
@@ -118,7 +122,6 @@ class PhenotypeScoreAnalysisResult(AnalysisResult):
 
     def plot_boxplots(
         self,
-        gt_predicate: GenotypePolyPredicate,
         ax,
         colors=("darksalmon", "honeydew"),
     ):
@@ -137,16 +140,16 @@ class PhenotypeScoreAnalysisResult(AnalysisResult):
         # Check that the provided genotype predicate defines the same categories
         # as those found in `data.`
         actual = set(data["genotype"].unique())
-        expected = set(c.cat_id for c in gt_predicate.get_categories())
+        expected = set(c.cat_id for c in self._gt_predicate.get_categories())
         assert actual == expected, 'Mismatch in the genotype categories'
         
         x = [
             data.loc[data["genotype"] == c.category.cat_id, "phenotype"].to_list()
-            for c in gt_predicate.get_categorizations()
+            for c in self._gt_predicate.get_categorizations()
         ]
         
         gt_cat_names = [
-            c.category.name for c in gt_predicate.get_categorizations()
+            c.category.name for c in self._gt_predicate.get_categorizations()
         ]
         bplot = ax.boxplot(
             x=x,
@@ -219,6 +222,7 @@ class PhenotypeScoreAnalysis:
         pval = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(
+            gt_predicate=gt_predicate,
             genotype_phenotype_scores=data,
             pval=pval,
         )
