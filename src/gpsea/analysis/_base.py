@@ -1,4 +1,5 @@
 import abc
+import typing
 
 
 from .predicate.genotype import GenotypePolyPredicate
@@ -40,12 +41,17 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: Statistic,
+        mtc_correction: typing.Optional[str]
     ):
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         self._gt_predicate = gt_predicate
 
         assert isinstance(statistic, Statistic)
         self._statistic = statistic
+
+        if mtc_correction is not None:
+            assert isinstance(mtc_correction, str)
+        self._mtc_correction = mtc_correction
     
     @property
     def gt_predicate(self) -> GenotypePolyPredicate:
@@ -60,16 +66,26 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         Get the statistic which computed the (nominal) p values for this result.
         """
         return self._statistic
+    
+    @property
+    def mtc_correction(self) -> typing.Optional[str]:
+        """
+        Get name/code of the used multiple testing correction
+        (e.g. `fdr_bh` for Benjamini-Hochberg) or `None` if no correction was applied.
+        """
+        return self._mtc_correction
 
     # test, p values, corrected values (optional), correction
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, AnalysisResult) \
             and self._gt_predicate == value._gt_predicate \
-            and self._statistic == value._statistic
+            and self._statistic == value._statistic \
+            and self._mtc_correction == value._mtc_correction
     
     def __hash__(self) -> int:
         return hash((
             self._gt_predicate,
             self._statistic,
+            self._mtc_correction,
         ))

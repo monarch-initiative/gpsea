@@ -106,10 +106,12 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult, metaclass=
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: CountStatistic,
+        mtc_correction: typing.Optional[str],
     ):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            mtc_correction=mtc_correction,
         )
 
     @property
@@ -309,6 +311,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: CountStatistic,
+        mtc_correction: typing.Optional[str],
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
@@ -318,6 +321,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            mtc_correction=mtc_correction,
         )
         self._pheno_predicates = tuple(pheno_predicates)
         self._n_usable = tuple(n_usable)
@@ -432,6 +436,7 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         return BaseMultiPhenotypeAnalysisResult(
             gt_predicate=gt_predicate,
             statistic=self._count_statistic,
+            mtc_correction=self._mtc_correction,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
@@ -452,6 +457,7 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: CountStatistic,
+        mtc_correction: typing.Optional[str],
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[hpotk.TermId]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
@@ -459,11 +465,12 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_filter_name: str,
         mtc_filter_results: typing.Sequence[PhenotypeMtcResult],
-        mtc_name: typing.Optional[str],
+        
     ):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            mtc_correction=mtc_correction,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
@@ -472,7 +479,6 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         )
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
-        self._mtc_name = mtc_name
 
         errors = self._check_hpo_result_sanity()
         if errors:
@@ -501,27 +507,18 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         """
         return self._mtc_filter_results
 
-    @property
-    def mtc_name(self) -> typing.Optional[str]:
-        """
-        Get the name of the multiple testing correction (MTC) procedure (e.g. `bonferroni`, `fdr_bh`, ...)
-        or `None` if no MTC was performed.
-        """
-        return self._mtc_name
-
     def __eq__(self, other):
         return isinstance(other, HpoTermAnalysisResult) \
             and super(BaseMultiPhenotypeAnalysisResult, self).__eq__(other) \
             and self._mtc_filter_name == other._mtc_filter_name \
-            and self._mtc_filter_results == other._mtc_filter_results \
-            and self._mtc_name == other._mtc_name
+            and self._mtc_filter_results == other._mtc_filter_results
 
     def __hash__(self):
         return hash((
             super(BaseMultiPhenotypeAnalysisResult, self).__hash__(),
             self._pheno_predicates, self._n_usable, self._all_counts,
             self._pvals, self._corrected_pvals,
-            self._mtc_filter_name, self._mtc_filter_results, self._mtc_name,
+            self._mtc_filter_name, self._mtc_filter_results,
         ))
 
 
@@ -598,6 +595,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         return HpoTermAnalysisResult(
             gt_predicate=gt_predicate,
             statistic=self._count_statistic,
+            mtc_correction=self._mtc_correction,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
@@ -605,7 +603,6 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             corrected_pvals=corrected_pvals,
             mtc_filter_name=self._mtc_filter.filter_method_name(),
             mtc_filter_results=mtc_filter_results,
-            mtc_name=self._mtc_correction,
         )
 
 

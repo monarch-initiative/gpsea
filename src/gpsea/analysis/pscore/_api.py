@@ -84,6 +84,7 @@ class PhenotypeScoreAnalysisResult(AnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            mtc_correction=None,  # Does not apply in phenotype score analysis (yet)
         )
         self._genotype_phenotype_scores = genotype_phenotype_scores
         if isinstance(pval, float) and 0. <= pval <= 1.:

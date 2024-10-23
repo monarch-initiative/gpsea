@@ -55,6 +55,7 @@ class SurvivalAnalysisResult(AnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            mtc_correction=None,  # Does not apply in survival analysis (yet)
         )
 
         assert isinstance(data, pd.DataFrame) and all(
