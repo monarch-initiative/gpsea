@@ -85,6 +85,8 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: Statistic,
+        pvals: typing.Sequence[float],
+        corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_correction: typing.Optional[str]
     ):
         super().__init__(
@@ -92,10 +94,38 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
             statistic=statistic,
         )
 
+        self._pvals = tuple(pvals)
+        self._corrected_pvals = (
+            None if corrected_pvals is None else tuple(corrected_pvals)
+        )
         if mtc_correction is not None:
             assert isinstance(mtc_correction, str)
         self._mtc_correction = mtc_correction
     
+    @property
+    def pvals(self) -> typing.Sequence[float]:
+        """
+        Get a sequence of nominal p values for each tested phenotype.
+        The sequence includes a `NaN` value for each phenotype that was *not* tested.
+        """
+        return self._pvals
+
+    @property
+    def corrected_pvals(self) -> typing.Optional[typing.Sequence[float]]:
+        """
+        Get a sequence with p values for each tested phenotype after multiple testing correction
+        or `None` if the correction was not applied.
+        The sequence includes a `NaN` value for each phenotype that was *not* tested.
+        """
+        return self._corrected_pvals
+
+    @property
+    def total_tests(self) -> int:
+        """
+        Get total count of genotype-phenotype associations that were tested in this analysis.
+        """
+        return sum(1 for pval in self.pvals if not math.isnan(pval))
+
     @property
     def mtc_correction(self) -> typing.Optional[str]:
         """
@@ -107,11 +137,15 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MultiPhenotypeAnalysisResult) \
             and super(AnalysisResult, self).__eq__(value) \
+            and self._pvals == value._pvals \
+            and self._corrected_pvals == value._corrected_pvals \
             and self._mtc_correction == value._mtc_correction
     
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
+            self._pvals,
+            self._corrected_pvals,
             self._mtc_correction,
         ))
 

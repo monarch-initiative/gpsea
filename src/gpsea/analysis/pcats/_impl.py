@@ -179,30 +179,6 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
         return self._all_counts
 
     @property
-    def pvals(self) -> typing.Sequence[float]:
-        """
-        Get a sequence of nominal p values for each tested HPO term.
-        The sequence includes a `NaN` value for each input phenotype that was *not* tested.
-        """
-        return self._pvals
-
-    @property
-    def corrected_pvals(self) -> typing.Optional[typing.Sequence[float]]:
-        """
-        Get a sequence with p values for each tested HPO term after multiple testing correction
-        or `None` if the correction was not applied.
-        The sequence includes a `NaN` value for each input phenotype that was *not* tested.
-        """
-        return self._corrected_pvals
-
-    @property
-    def total_tests(self) -> int:
-        """
-        Get total count of tests that were run for this analysis.
-        """
-        return sum(1 for pval in self.pvals if not math.isnan(pval))
-
-    @property
     def pheno_predicates(
         self,
     ) -> typing.Sequence[PhenotypePolyPredicate[P]]:
@@ -217,16 +193,12 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
             and super(MultiPhenotypeAnalysisResult).__eq__(other) \
             and self._pheno_predicates == other._pheno_predicates \
             and self._n_usable == other._n_usable \
-            and self._all_counts == other._all_counts \
-            and self._pvals == other._pvals \
-            and self._corrected_pvals == other._corrected_pvals
+            and self._all_counts == other._all_counts
 
     def __hash__(self):
-        # NOTE: if a field is added, the hash method of the subclasses must be updated as well.
         return hash((
             super(MultiPhenotypeAnalysisResult, self).__hash__(),
             self._pheno_predicates, self._n_usable, self._all_counts,
-            self._pvals, self._corrected_pvals,
         ))
 
 
@@ -476,7 +448,6 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         return hash((
             super(BaseMultiPhenotypeAnalysisResult, self).__hash__(),
             self._pheno_predicates, self._n_usable, self._all_counts,
-            self._pvals, self._corrected_pvals,
             self._mtc_filter_name, self._mtc_filter_results,
         ))
 
