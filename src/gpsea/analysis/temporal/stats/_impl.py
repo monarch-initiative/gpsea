@@ -14,6 +14,11 @@ class LogRankTest(SurvivalStatistic):
     A two-sided alternative hypothesis is tested.
     """
 
+    def __init__(self):
+        super().__init__(
+            name="Logrank test",
+        )
+
     def compute_pval(
         self,
         scores: typing.Collection[typing.Iterable[Survival]],
@@ -23,7 +28,7 @@ class LogRankTest(SurvivalStatistic):
 
         :param scores: a pair of survival groups
         """
-        assert len(scores) == 2, "Log rank test only supports 2 groups at this time"
+        assert len(scores) == 2, "Logrank test only supports 2 groups at this time"
         x, y = tuple(scores)
 
         xc = LogRankTest._prepare_censored_data(x)
@@ -52,3 +57,9 @@ class LogRankTest(SurvivalStatistic):
             uncensored=uncensored,
             right=right_censored,
         )
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, LogRankTest)
+    
+    def __hash__(self) -> int:
+        return 37
