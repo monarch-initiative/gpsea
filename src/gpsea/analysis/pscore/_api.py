@@ -7,6 +7,8 @@ from gpsea.model import Patient
 from ..predicate.genotype import GenotypePolyPredicate
 from .stats import PhenotypeScoreStatistic
 
+from .._base import AnalysisResult
+
 
 class PhenotypeScorer(metaclass=abc.ABCMeta):
     """
@@ -67,7 +69,7 @@ class FunctionPhenotypeScorer(PhenotypeScorer):
         return self._func(patient)
 
 
-class PhenotypeScoreAnalysisResult:
+class PhenotypeScoreAnalysisResult(AnalysisResult):
     """
     `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.
     """

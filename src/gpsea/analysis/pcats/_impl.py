@@ -17,6 +17,7 @@ from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
 
+from .._base import AnalysisResult
 
 DEFAULT_MTC_PROCEDURE = 'fdr_bh'
 """
@@ -92,7 +93,7 @@ def apply_predicates_on_patients(
     return n_usable_patients, counts
 
 
-class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
+class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult, metaclass=abc.ABCMeta):
     """
     `MultiPhenotypeAnalysisResult` reports the outcome of :class:`MultiPhenotypeAnalysis`.
 

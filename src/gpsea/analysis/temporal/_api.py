@@ -12,6 +12,8 @@ from ..predicate.genotype import GenotypePolyPredicate
 from ._base import Survival
 from .stats import SurvivalStatistic
 
+from .._base import AnalysisResult
+
 
 class Endpoint(metaclass=abc.ABCMeta):
     """
@@ -38,7 +40,7 @@ class Endpoint(metaclass=abc.ABCMeta):
         pass
 
 
-class SurvivalAnalysisResult:
+class SurvivalAnalysisResult(AnalysisResult):
     """
     `SurvivalAnalysisResult` includes the results of a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
     """
