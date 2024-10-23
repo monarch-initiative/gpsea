@@ -14,9 +14,10 @@ class LogRankTest(SurvivalStatistic):
     A two-sided alternative hypothesis is tested.
     """
 
-    @property
-    def name(self) -> str:
-        return "Logrank test"
+    def __init__(self):
+        super().__init__(
+            name="Logrank test",
+        )
 
     def compute_pval(
         self,
@@ -56,3 +57,9 @@ class LogRankTest(SurvivalStatistic):
             uncensored=uncensored,
             right=right_censored,
         )
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, LogRankTest)
+    
+    def __hash__(self) -> int:
+        return 37

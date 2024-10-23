@@ -48,11 +48,13 @@ class SurvivalAnalysisResult(AnalysisResult):
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        statistic: SurvivalStatistic,
         data: pd.DataFrame,
         pval: float,
     ):
         super().__init__(
             gt_predicate=gt_predicate,
+            statistic=statistic,
         )
 
         assert isinstance(data, pd.DataFrame) and all(
@@ -192,6 +194,7 @@ class SurvivalAnalysis:
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,
+            statistic=self._statistic,
             data=data,
             pval=pval,
         )

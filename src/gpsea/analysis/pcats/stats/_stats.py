@@ -47,6 +47,9 @@ class CountStatistic(Statistic, metaclass=abc.ABCMeta):
     +------------------------+-------------------------+------------------+
     """
 
+    def __init__(self, name: str):
+        super().__init__(name)
+
     @property
     @abc.abstractmethod
     def supports_shape(
@@ -64,6 +67,12 @@ class CountStatistic(Statistic, metaclass=abc.ABCMeta):
     ) -> float:
         pass
 
+    def __eq__(self, value: object) -> bool:
+        return super().__eq__(value)
+    
+    def __hash__(self) -> int:
+        return super().__hash__()
+
 
 class FisherExactTest(CountStatistic):
     """
@@ -75,11 +84,10 @@ class FisherExactTest(CountStatistic):
     """
     
     def __init__(self):
+        super().__init__(
+            name="Fisher's Exact Test",
+        )
         self._shape = (2, (2, 3))
-
-    @property
-    def name(self) -> str:
-        return "Fisher's Exact Test"
 
     @property
     def supports_shape(
@@ -207,3 +215,9 @@ class FisherExactTest(CountStatistic):
                 else:
                     pos_new = (xx + 1, yy)
                 self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, FisherExactTest)
+    
+    def __hash__(self) -> int:
+        return 17

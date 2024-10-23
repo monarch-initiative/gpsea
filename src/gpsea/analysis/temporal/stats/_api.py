@@ -12,6 +12,9 @@ class SurvivalStatistic(Statistic, metaclass=abc.ABCMeta):
     computed by a :class:`~gpsea.analysis.tempo.SurvivalMetric`.
     """
 
+    def __init__(self, name: str):
+        super().__init__(name)
+
     @abc.abstractmethod
     def compute_pval(
         self,
@@ -22,3 +25,9 @@ class SurvivalStatistic(Statistic, metaclass=abc.ABCMeta):
         the same source distribution.
         """
         pass
+
+    def __eq__(self, value: object) -> bool:
+        return super().__eq__(value)
+    
+    def __hash__(self) -> int:
+        return super().__hash__()

@@ -12,11 +12,12 @@ import pandas as pd
 from statsmodels.stats import multitest
 
 from gpsea.model import Patient
-from gpsea.analysis.pcats.stats import CountStatistic
+
 from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
 
+from .stats import CountStatistic
 from .._base import AnalysisResult
 
 DEFAULT_MTC_PROCEDURE = 'fdr_bh'
@@ -104,8 +105,12 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult, metaclass=
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        statistic: CountStatistic,
     ):
-        super().__init__(gt_predicate)
+        super().__init__(
+            gt_predicate=gt_predicate,
+            statistic=statistic,
+        )
 
     @property
     @abc.abstractmethod
@@ -303,6 +308,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        statistic: CountStatistic,
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
@@ -311,6 +317,7 @@ class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysis
     ):
         super().__init__(
             gt_predicate=gt_predicate,
+            statistic=statistic,
         )
         self._pheno_predicates = tuple(pheno_predicates)
         self._n_usable = tuple(n_usable)
@@ -424,6 +431,7 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
 
         return BaseMultiPhenotypeAnalysisResult(
             gt_predicate=gt_predicate,
+            statistic=self._count_statistic,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
@@ -442,23 +450,25 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
 
     def __init__(
         self,
+        gt_predicate: GenotypePolyPredicate,
+        statistic: CountStatistic,
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[hpotk.TermId]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
         pvals: typing.Sequence[float],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
-        gt_predicate: GenotypePolyPredicate,
         mtc_filter_name: str,
         mtc_filter_results: typing.Sequence[PhenotypeMtcResult],
         mtc_name: typing.Optional[str],
     ):
         super().__init__(
+            gt_predicate=gt_predicate,
+            statistic=statistic,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
             corrected_pvals=corrected_pvals,
-            gt_predicate=gt_predicate,
         )
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
@@ -587,6 +597,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
 
         return HpoTermAnalysisResult(
             gt_predicate=gt_predicate,
+            statistic=self._count_statistic,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,

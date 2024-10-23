@@ -84,6 +84,7 @@ class TestSurvivalAnalysisResult:
         ).set_index("patient_id")
         return SurvivalAnalysisResult(
             gt_predicate=umod_gt_predicate,
+            statistic=LogRankTest(),
             data=data,
             pval=0.1234,
         )

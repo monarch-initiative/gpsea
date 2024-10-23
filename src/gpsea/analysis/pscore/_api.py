@@ -77,11 +77,13 @@ class PhenotypeScoreAnalysisResult(AnalysisResult):
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        statistic: PhenotypeScoreStatistic,
         genotype_phenotype_scores: pd.DataFrame,
         pval: float,
     ):
         super().__init__(
             gt_predicate=gt_predicate,
+            statistic=statistic,
         )
         self._genotype_phenotype_scores = genotype_phenotype_scores
         if isinstance(pval, float) and 0. <= pval <= 1.:
@@ -223,6 +225,7 @@ class PhenotypeScoreAnalysis:
 
         return PhenotypeScoreAnalysisResult(
             gt_predicate=gt_predicate,
+            statistic=self._statistic,
             genotype_phenotype_scores=data,
             pval=pval,
         )
