@@ -3,6 +3,7 @@ import typing
 from scipy import stats
 
 from .._base import Survival
+from .._util import prepare_censored_data
 from ._api import SurvivalStatistic
 
 
@@ -31,8 +32,8 @@ class LogRankTest(SurvivalStatistic):
         assert len(scores) == 2, "Logrank test only supports 2 groups at this time"
         x, y = tuple(scores)
 
-        xc = LogRankTest._prepare_censored_data(x)
-        yc = LogRankTest._prepare_censored_data(y)
+        xc = prepare_censored_data(x)
+        yc = prepare_censored_data(y)
 
         result = stats.logrank(
             x=xc,
@@ -41,22 +42,6 @@ class LogRankTest(SurvivalStatistic):
         )
 
         return float(result.pvalue)
-
-    @staticmethod
-    def _prepare_censored_data(
-        survivals: typing.Iterable[Survival],
-    ) -> stats.CensoredData:
-        uncensored = []
-        right_censored = []
-        for survival in survivals:
-            if survival.is_censored:
-                right_censored.append(survival.value)
-            else:
-                uncensored.append(survival.value)
-        return stats.CensoredData(
-            uncensored=uncensored,
-            right=right_censored,
-        )
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, LogRankTest)

@@ -55,8 +55,8 @@ class Death(EndpointBase):
                 is_censored=True,
             )
         
-    def display_question(self) -> str:
-        return f"Compute time until {self._timeline.name.lower()} death"
+    def question_base(self) -> str:
+        return f"time until {self._timeline.name.lower()} death"
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, Death) and self._timeline == value._timeline
@@ -125,9 +125,9 @@ class PhenotypicFeatureOnset(EndpointBase):
                 is_censored=False,
             )
             
-    def display_question(self) -> str:
+    def question_base(self) -> str:
         label = self._hpo.get_term_name(self._term_id)
-        return f"Compute time until {self._timeline.name.lower()} onset of {label}"
+        return f"time until {self._timeline.name.lower()} onset of {label}"
 
     def __eq__(self, value: object) -> bool:
         return (
@@ -180,8 +180,8 @@ class DiseaseOnset(EndpointBase):
             is_censored=True,
         )
         
-    def display_question(self) -> str:
-        return f"Compute time until {self._timeline.name.lower()} diagnosis of {self._disease_id.value}"
+    def question_base(self) -> str:
+        return f"time until {self._timeline.name.lower()} diagnosis of {self._disease_id.value}"
 
     def __eq__(self, value: object) -> bool:
         return (

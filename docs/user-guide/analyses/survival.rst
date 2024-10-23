@@ -128,8 +128,35 @@ Kaplan-Meier curves
 
 We can plot Kaplan-Meier curves:
 
-TODO: implement!
+>>> from gpsea.model import Age
+>>> import matplotlib as mpl
+>>> import matplotlib.pyplot as plt
+>>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
+>>> result.plot_kaplan_meier_curves(
+...     ax=ax,
+... )
+>>> _ = ax.xaxis.set(
+...     # Show X axis in years ...
+...     major_formatter=mpl.ticker.FuncFormatter(lambda x, pos: f"{x / Age.DAYS_IN_YEAR:.0f}"),  
+...     # ... with a tick for every decade
+...     major_locator=mpl.ticker.MultipleLocator(10 * Age.DAYS_IN_YEAR),
+... )
+>>> _ = ax.set(
+...     xlabel=f"{endpoint.question_base().capitalize()} [years]",
+...     ylabel="Empirical survival",
+... )
+>>> _ = ax.grid(axis="y")
 
+.. image:: /img/umod_km_curves.png
+   :alt: UMOD Kaplan-Meier curves
+   :align: center
+   :width: 600px
+
+.. doctest:: survival
+   :hide:
+
+   >>> fig.savefig('docs/img/umod_km_curves.png')  # doctest: +SKIP
+   
 
 Raw data
 --------

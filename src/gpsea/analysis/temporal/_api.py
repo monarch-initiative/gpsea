@@ -4,11 +4,13 @@ import typing
 from collections import defaultdict
 
 import pandas as pd
+import scipy.stats
 
 from gpsea.model import Patient
 from ..predicate.genotype import GenotypePolyPredicate
 
 from ._base import Survival
+from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
 from .._base import MonoPhenotypeAnalysisResult
@@ -35,8 +37,11 @@ class Endpoint(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def display_question(self) -> str:
+    def question_base(self) -> str:
         pass
+
+    def display_question(self) -> str:
+        return f"Compute {self.question_base()}"
 
 
 class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
@@ -67,6 +72,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        endpoint: Endpoint,
         statistic: SurvivalStatistic,
         data: pd.DataFrame,
         pval: float,
@@ -77,6 +83,41 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
             data=data,
             pval=pval,
         )
+
+        assert isinstance(endpoint, Endpoint)
+        self._endpoint = endpoint
+
+    @property
+    def endpoint(self) -> Endpoint:
+        """
+        Get the endpoint used to compute the survival of the individuals.
+        """
+        return self._endpoint
+
+    def plot_kaplan_meier_curves(
+        self,
+        ax,
+    ):
+        """
+        Plot genotype group survivals on the provided axes.
+
+        The axes includes legend. However, if no survival is available
+        for a genotype group, the group name will be missing from the legend.
+
+        :param ax: a Matplotlib `Axes` to draw on.
+        """
+        for pat_cat in self._gt_predicate.get_categories():
+            survivals = self._data.loc[
+                self._data[MonoPhenotypeAnalysisResult.GT_COL] == pat_cat.cat_id,
+                MonoPhenotypeAnalysisResult.PH_COL,
+            ]
+            non_na = survivals[survivals.notna()]
+            if len(non_na) > 0:
+                censored_data = prepare_censored_data(survivals=non_na)
+                data = scipy.stats.ecdf(censored_data)
+                data.sf.plot(ax, label=pat_cat.name)
+        
+        ax.legend()
 
     def __eq__(self, value: object) -> bool:
         return (
@@ -153,6 +194,7 @@ class SurvivalAnalysis:
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,
+            endpoint=endpoint,
             statistic=self._statistic,
             data=data,
             pval=pval,
