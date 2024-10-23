@@ -242,15 +242,15 @@ with point vs. loss-of-function mutations.
 
 To explore further, we can access a data frame with genotype categories and phenotype counts:
 
->>> scores = result.genotype_phenotype_scores.sort_index()
+>>> scores = result.data.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
-                                     genotype phenotype_score
+                                      genotype  phenotype
 patient_id
-Subject 10[PMID_27087320_Subject_10]        1         0
-Subject 1[PMID_27087320_Subject_1]          0         4
-Subject 1[PMID_29330883_Subject_1]          1         0
-Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]          1         1
+Subject 10[PMID_27087320_Subject_10]         1          0
+Subject 1[PMID_27087320_Subject_1]           0          4
+Subject 1[PMID_29330883_Subject_1]           1          0
+Subject 2[PMID_27087320_Subject_2]        None          4
+Subject 2[PMID_29330883_Subject_2]           1          1
 
 
 The data frame provides a `genotype` category and a `phenotype_score` for each patient.

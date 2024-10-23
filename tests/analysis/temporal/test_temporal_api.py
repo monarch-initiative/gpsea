@@ -31,7 +31,7 @@ def umod_cohort(
 def umod_gt_predicate() -> GenotypePolyPredicate:
     in_exon_3 = VariantPredicates.exon(3, tx_id="NM_003361.4")
     return monoallelic_predicate(
-        a_predicate=in_exon_3, b_predicate=~in_exon_3, 
+        a_predicate=in_exon_3, b_predicate=~in_exon_3,
         a_label="Exon 3", b_label="Other exon",
     )
 
@@ -75,7 +75,7 @@ class TestSurvivalAnalysisResult:
             data={
                 "patient_id": ["A", "B", "C"],
                 "genotype": [0, 1, None],
-                "survival": [
+                "phenotype": [
                     Survival(value=12.3, is_censored=False),
                     None,
                     Survival(value=45.6, is_censored=True),
@@ -108,4 +108,4 @@ class TestSurvivalAnalysisResult:
 
         assert records.shape == (1, 2)
         assert records.loc["A", "genotype"] == 0
-        assert records.loc["A", "survival"] == Survival(value=12.3, is_censored=False)
+        assert records.loc["A", "phenotype"] == Survival(value=12.3, is_censored=False)

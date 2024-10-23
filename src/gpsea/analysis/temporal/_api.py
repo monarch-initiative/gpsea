@@ -1,5 +1,4 @@
 import abc
-import math
 import typing
 
 from collections import defaultdict
@@ -43,6 +42,26 @@ class Endpoint(metaclass=abc.ABCMeta):
 class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     """
     `SurvivalAnalysisResult` includes the results of a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
+
+    The genotype categories and survival are reported in the `data` data frame with the following structure:
+
+    ============  ===========  ============================================
+     patient_id    genotype     phenotype
+    ============  ===========  ============================================
+     patient_1     0            `Survival(value=123.4, is_censored=False)`
+     patient_2     0            `None`
+     patient_3     `None`       `Survival(value=456.7, is_censored=True)`
+     patient_4     1            `None`
+     ...           ...          ...
+    ============  ===========  ============================================
+
+    The index includes the individual IDs (`patient_id`), and then there are 2 columns
+    with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
+    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.tempo.Survival` object.
+
+    A `genotype` value may be missing (`None`) if the individual cannot be assigned
+    into a genotype category.
+    Similarly, a `survival` is `None` if computing the survival for an individual is impossible.
     """
 
     def __init__(
@@ -55,69 +74,24 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            data=data,
             pval=pval,
         )
-
-        assert isinstance(data, pd.DataFrame) and all(
-            col in data for col in ("genotype", "survival")
-        )
-        self._data = data
-
-    @property
-    def data(self) -> pd.DataFrame:
-        """
-        Get the data frame with the genotype group
-        and the corresponding :class:`~gpsea.analysis.tempo.Survival`.
-
-        The DataFrame has the following structure:
-
-        ==========  ==========  ============================================
-        patient_id   genotype    survival
-        ==========  ==========  ============================================
-        patient_1   0            `Survival(value=123.4, is_censored=False)`
-        patient_2   0            `None`
-        patient_3   `None`       `Survival(value=456.7, is_censored=True)`
-        patient_4   1            `None`
-        ...         ...          ...
-        ==========  ==========  ============================================
-
-        The index includes the individual IDs (`patient_id`), and then there are 2 columns
-        with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
-        and the `survival` encoded as :class:`~gpsea.analysis.tempo.Survival` object.
-
-        A `genotype` value may be missing (`None`) if the individual cannot be assigned
-        into a genotype category.
-        Similarly, a `survival` may be `None` if computing the survival is impossible for
-        the individual in question.
-        """
-        return self._data
-
-    def complete_records(self) -> pd.DataFrame:
-        """
-        Get the :meth:`~gpsea.analysis.temporal.SurvivalAnalysisResult.data` rows
-        where both `genotype` and `survival` columns are available (i.e. not `None`).
-        """
-        return self._data.loc[
-            self._data["genotype"].notna() & self._data["survival"].notna()
-        ]
 
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, SurvivalAnalysisResult)
             and super(MonoPhenotypeAnalysisResult, self).__eq__(value)
-            and self._data.equals(value._data)
         )
 
     def __hash__(self) -> int:
-        return hash((
-            super(MonoPhenotypeAnalysisResult, self).__hash__(),
-            self._data,
-        ))
+        return super(MonoPhenotypeAnalysisResult, self).__hash__()
 
     def __str__(self) -> str:
         return (
             "SurvivalAnalysisResult("
             "gt_predicate={self._gt_predicate}, "
+            "statistic={self._statistic}, "
             "data={self._data}, "
             "pval={self._pval})"
         )
@@ -157,19 +131,19 @@ class SurvivalAnalysis:
         data = pd.DataFrame(
             None,
             index=idx,
-            columns=["genotype", "survival"],
+            columns=MonoPhenotypeAnalysisResult.DATA_COLUMNS,
         )
         survivals = defaultdict(list)
         # Apply the predicate and the survival metric on the cohort
         for patient in cohort:
             gt_cat = gt_predicate.test(patient)
             if gt_cat is None:
-                data.loc[patient.patient_id, "genotype"] = None
+                data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = None
             else:
-                data.loc[patient.patient_id, "genotype"] = gt_cat.category.cat_id
+                data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = gt_cat.category.cat_id
 
             survival = endpoint.compute_survival(patient)
-            data.loc[patient.patient_id, "survival"] = survival  # type: ignore
+            data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.PH_COL] = survival  # type: ignore
 
             if gt_cat is not None and survival is not None:
                 survivals[gt_cat].append(survival)

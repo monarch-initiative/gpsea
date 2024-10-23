@@ -3,12 +3,8 @@ import os
 import typing
 
 import hpotk
-import numpy as np
-import pandas as pd
 import pytest
 
-from gpsea.analysis.mtc_filter import PhenotypeMtcResult
-from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     VariantPredicates,
@@ -199,57 +195,6 @@ def suox_pheno_predicates(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001276"),  # Hypertonia
         ),
-    )
-
-
-@pytest.fixture
-def hpo_result(
-    suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
-    suox_gt_predicate: GenotypePolyPredicate,
-) -> HpoTermAnalysisResult:
-    return HpoTermAnalysisResult(
-        pheno_predicates=suox_pheno_predicates,
-        n_usable=(40, 20, 30, 10, 100),
-        all_counts=tuple(
-            make_count_df(count, suox_gt_predicate, ph_pred)
-            for count, ph_pred in zip(
-                [
-                    (10, 5, 15, 10),
-                    (5, 2, 8, 5),
-                    (10, 5, 5, 10),
-                    (2, 3, 2, 3),
-                    (10, 25, 35, 30),
-                ],
-                suox_pheno_predicates,
-            )
-        ),
-        pvals=(0.01, 0.04, 0.3, 0.2, 0.7),
-        corrected_pvals=(0.04, 0.1, 0.7, 0.5, 1.0),
-        gt_predicate=suox_gt_predicate,
-        mtc_filter_name="MTC filter name",
-        mtc_filter_results=(
-            PhenotypeMtcResult.ok(),
-            PhenotypeMtcResult.ok(),
-            PhenotypeMtcResult.ok(),
-            PhenotypeMtcResult.ok(),
-            PhenotypeMtcResult.ok(),
-        ),
-        mtc_name="MTC name",
-    )
-
-
-def make_count_df(
-    counts: typing.Tuple[int, int, int, int],
-    gt_predicate: GenotypePolyPredicate,
-    ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
-) -> pd.DataFrame:
-    rows = tuple(ph_predicate.get_categories())
-    cols = tuple(gt_predicate.get_categories())
-    data = np.array(counts).reshape((len(rows), len(cols)))
-    return pd.DataFrame(
-        data=data,
-        index=pd.Index(rows),
-        columns=pd.Index(cols),
     )
 
 

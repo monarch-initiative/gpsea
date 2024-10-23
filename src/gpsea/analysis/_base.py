@@ -247,15 +247,35 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     `MonoPhenotypeAnalysisResult` reports the outcome of an analysis
     that tested a single genotype-phenotype association.
     """
-    # phenotype
+    
+    GT_COL = "genotype"
+    """
+    Name of column for storing genotype data.
+    """
+
+    PH_COL = "phenotype"
+    """
+    Name of column for storing phenotype data.
+    """
+
+    DATA_COLUMNS = (GT_COL, PH_COL)
+    """
+    The required columns of the `data` data frame.
+    """
 
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: Statistic,
+        data: pd.DataFrame,
         pval: float,
     ):
         super().__init__(gt_predicate, statistic)
+
+        assert isinstance(data, pd.DataFrame) and all(
+            col in data.columns for col in MonoPhenotypeAnalysisResult.DATA_COLUMNS
+        )
+        self._data = data
 
         if isinstance(pval, float) and math.isfinite(pval) and 0.0 <= pval <= 1.0:
             self._pval = float(pval)
@@ -263,6 +283,37 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
             raise ValueError(
                 f"`pval` must be a finite float in range [0, 1] but it was {pval}"
             )
+
+    @property
+    def data(self) -> pd.DataFrame:
+        """
+        Get the data frame with genotype and phenotype values for each tested individual.
+
+        The index of the data frame contains the identifiers of the tested individuals,
+        and the values are stored in `genotype` and `phenotype` columns.
+        
+        The `genotype` column includes the genotype category ID
+        (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
+        or `None` if the individual could not be assigned into a genotype group.
+        The `phenotype` contains the phenotype values, and the data type depends on the analysis.
+        
+        Here are some common phenotype data types:
+
+        * a phenotype score computed in :class:`~gpsea.analysis.pscore.PhenotypeScoreAnalysis` is a `float`
+        * survival computed in :class:`~gpsea.analysis.temporal.SurvivalAnalysis`
+          is of type :class:`~gpsea.analysis.temporal.Survival`
+        """
+        return self._data
+
+    def complete_records(self) -> pd.DataFrame:
+        """
+        Get the :attr:`~gpsea.analysis.temporal.MonoPhenotypeAnalysisResult.data` rows
+        where both `genotype` and `phenotype` columns are available (i.e. not `None` or `NaN`).
+        """
+        return self._data.loc[
+            self._data[MonoPhenotypeAnalysisResult.GT_COL].notna()
+            & self._data[MonoPhenotypeAnalysisResult.PH_COL].notna()
+        ]
 
     @property
     def pval(self) -> float:
@@ -274,10 +325,12 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MonoPhenotypeAnalysisResult) \
             and super(AnalysisResult, self).__eq__(value) \
-            and self._pval == value._pval
+            and self._pval == value._pval \
+            and self._data.equals(value._data)
     
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
             self._pval,
+            self._data,
         ))
