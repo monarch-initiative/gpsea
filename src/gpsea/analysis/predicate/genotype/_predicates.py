@@ -3,9 +3,8 @@ import hpotk
 
 import operator
 
-from gpsea.model import Variant, VariantEffect, VariantClass, FeatureType
+from gpsea.model import Variant, VariantEffect, VariantClass, FeatureType, ProteinMetadata
 from gpsea.model.genome import Region
-from gpsea.preprocessing import ProteinMetadataService
 
 from ._api import VariantPredicate
 
@@ -253,7 +252,7 @@ class VariantExonPredicate(VariantPredicate):
 
 class IsLargeImpreciseStructuralVariantPredicate(VariantPredicate):
     """
-    `IsLargeImpreciseStructuralVariantPredicate` tests if the variant is a large imprecise SV 
+    `IsLargeImpreciseStructuralVariantPredicate` tests if the variant is a large imprecise SV
     where the exact breakpoint coordinates are not available.
     """
 
@@ -315,7 +314,7 @@ class VariantClassPredicate(VariantPredicate):
 
 class StructuralTypePredicate(VariantPredicate):
     """
-    `StructuralTypePredicate` tests if the variant has a certain structural type, 
+    `StructuralTypePredicate` tests if the variant has a certain structural type,
     e.g. `chromosomal_deletion` (`SO:1000029 <http://purl.obolibrary.org/obo/SO_1000029>`_).
     """
 
@@ -341,8 +340,9 @@ class StructuralTypePredicate(VariantPredicate):
         return f'structural type is {self._query}'
 
     def test(self, variant: Variant) -> bool:
-        if variant.variant_info.has_sv_info():
-            return variant.variant_info.sv_info.structural_type == self._query
+        sv_info = variant.variant_info.sv_info
+        if sv_info is not None:
+            return sv_info.structural_type == self._query
         return False
 
     def __eq__(self, value: object) -> bool:
@@ -395,8 +395,9 @@ class ChangeLengthPredicate(VariantPredicate):
         return f'change length {self._operator_str} {self._threshold}'
 
     def test(self, variant: Variant) -> bool:
-        if variant.variant_info.has_variant_coordinates():
-            return self._operator(variant.variant_info.variant_coordinates.change_length, self._threshold)
+        vc = variant.variant_info.variant_coordinates
+        if vc is not None:
+            return self._operator(vc.change_length, self._threshold)
         return False
 
     def __eq__(self, value: object) -> bool:
@@ -436,8 +437,9 @@ class RefAlleleLengthPredicate(VariantPredicate):
         return f'ref allele length {self._operator_str} {self._length}'
 
     def test(self, variant: Variant) -> bool:
-        if variant.variant_info.has_variant_coordinates():
-            return self._operator(len(variant.variant_info.variant_coordinates), self._length)
+        vc = variant.variant_info.variant_coordinates
+        if vc is not None:
+            return self._operator(len(vc), self._length)
         return False
 
     def __eq__(self, value: object) -> bool:
@@ -467,7 +469,7 @@ class ProteinRegionPredicate(VariantPredicate):
     :param region: a `Region` with the start and end coordinates
     :param tx_id: the accession of the transcript of interest
     """
-    
+
     def __init__(
         self,
         region: Region,
@@ -520,44 +522,36 @@ class ProteinFeatureTypePredicate(VariantPredicate):
     def __init__(
         self,
         feature_type: FeatureType,
-        tx_id: str,
-        protein_metadata_service: ProteinMetadataService,
+        protein_metadata: ProteinMetadata,
     ):
+        assert isinstance(feature_type, FeatureType)
         self._feature_type = feature_type
-        self._tx_id = tx_id
-        self._prot_service = protein_metadata_service
+        
+        assert isinstance(protein_metadata, ProteinMetadata)
+        self._protein_metadata = protein_metadata
         
     def get_question(self) -> str:
-        return f'variant affects {self._feature_type.name} feature type on the protein ' \
-            f'encoded by transcript {self._tx_id}'
+        return f'variant affects {self._feature_type.name} of {self._protein_metadata.protein_id}'
 
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
-        if tx_anno is None:
-            return False
-        location = tx_anno.protein_effect_location
-        if location is None:
-            return False
-        
-        protein_id = tx_anno.protein_id
-        if protein_id is None:
-            return False
-        
-        protein_meta = self._prot_service.annotate(protein_id)
-        for feat in protein_meta.protein_features:
-            if feat.feature_type == self._feature_type and location.overlaps_with(feat.info.region):
-                return True
+        for tx_ann in variant.tx_annotations:
+            if tx_ann.protein_id is not None and tx_ann.protein_id == self._protein_metadata.protein_id:
+                location = tx_ann.protein_effect_location
+                if location is not None:
+                    return any(
+                        self._feature_type == feature.feature_type and location.overlaps_with(feature.info.region)
+                        for feature in self._protein_metadata.protein_features
+                    )
+                
         return False
 
     def __eq__(self, value: object) -> bool:
-        if isinstance(value, ProteinFeatureTypePredicate):
-            # We do not care about `self._prot_service`
-            return self._feature_type == value._feature_type and self._tx_id == value._tx_id
-        return False
+        return isinstance(value, ProteinFeatureTypePredicate) \
+            and self._feature_type == value._feature_type \
+            and self._protein_metadata == value._protein_metadata
     
     def __hash__(self) -> int:
-        # We do not care about `self._prot_service`
-        return hash((self._feature_type, self._tx_id,))
+        return hash((self._feature_type, self._protein_metadata,))
 
     def __str__(self):
         return repr(self)
@@ -565,15 +559,13 @@ class ProteinFeatureTypePredicate(VariantPredicate):
     def __repr__(self):
         return 'ProteinFeatureTypePredicate(' \
             f'feature_type={self._feature_type}, ' \
-            f'tx_id={self._tx_id}, ' \
-            f'protein_metadata_service={self._prot_service}' \
-            ')'
+            f'protein_metadata={self._protein_metadata})'
 
 
 class ProteinFeaturePredicate(VariantPredicate):
     """
     `ProteinFeaturePredicate` checks if the variant overlaps with
-    a feature type in the protein encoded by a transcript of interest.
+    a feature with a specific id.
     
     Args:
         feature_type (FeatureType): a member of the `FeatureType` enum
@@ -581,48 +573,45 @@ class ProteinFeaturePredicate(VariantPredicate):
         protein_metadata_service (ProteinMetadataService): a service for fetching protein information
     """
     
-    def __init__(self, feature_name: str, tx_id: str, protein_metadata_service: ProteinMetadataService) -> None:
-        self._feature_name = feature_name
-        self._tx_id = tx_id
-        self._prot_service = protein_metadata_service
+    def __init__(
+        self,
+        feature_id: str,
+        protein_metadata: ProteinMetadata,
+    ):
+        assert isinstance(feature_id, str)
+        self._feature_id = feature_id
+        
+        assert isinstance(protein_metadata, ProteinMetadata)
+        self._protein_metadata = protein_metadata
 
     def get_question(self) -> str:
-        return f'Variant that affects {self._feature_name} feature on the protein encoded by transcript {self._tx_id}'
+        return f'variant affects {self._feature_id} of {self._protein_metadata.protein_id}'
         
     def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
-        if tx_anno is None:
-            return False
+        for tx_ann in variant.tx_annotations:
+            if tx_ann.protein_id is not None and tx_ann.protein_id == self._protein_metadata.protein_id:
+                location = tx_ann.protein_effect_location
+                if location is not None:
+                    return any(
+                        self._feature_id == feature.info.name and location.overlaps_with(feature.info.region)
+                        for feature in self._protein_metadata.protein_features
+                    )
         
-        location = tx_anno.protein_effect_location
-        if location is None:
-            return False
-        
-        protein_id = tx_anno.protein_id
-        if protein_id is None:
-            return False
-
-        protein = self._prot_service.annotate(protein_id)
-        for feat in protein.protein_features:
-            if feat.info.name == self._feature_name and location.overlaps_with(feat.info.region):
-                return True
         return False
     
     def __eq__(self, value: object) -> bool:
-        if isinstance(value, ProteinFeaturePredicate):
-            # We do not care about `self._prot_service`
-            return self._feature_name == value._feature_name and self._tx_id == value._tx_id
-        return False
+        return isinstance(value, ProteinFeaturePredicate) \
+            and self._feature_id == value._feature_id \
+            and self._protein_metadata == value._protein_metadata
     
     def __hash__(self) -> int:
         # We do not care about `self._prot_service`
-        return hash((self._feature_name, self._tx_id,))
+        return hash((self._feature_id, self._protein_metadata,))
 
     def __str__(self):
         return repr(self)
 
     def __repr__(self):
-        return f'ProteinFeaturePredicate(' \
-            f'feature_name={self._feature_name}, ' \
-            f'tx_id={self._tx_id}, ' \
-            f'protein_metadata_service={self._prot_service})'
+        return 'ProteinFeaturePredicate(' \
+            f'feature_id={self._feature_id}, ' \
+            f'protein_metadata={self._protein_metadata})'
