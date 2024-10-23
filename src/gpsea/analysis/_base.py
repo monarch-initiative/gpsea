@@ -1,4 +1,5 @@
 import abc
+import math
 import typing
 
 
@@ -120,13 +121,37 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     `MonoPhenotypeAnalysisResult` reports the outcome of an analysis
     that tested a single genotype-phenotype association.
     """
-    # phenotype, pval
+    # phenotype
+
+    def __init__(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        statistic: Statistic,
+        pval: float,
+    ):
+        super().__init__(gt_predicate, statistic)
+
+        if isinstance(pval, float) and math.isfinite(pval) and 0.0 <= pval <= 1.0:
+            self._pval = float(pval)
+        else:
+            raise ValueError(
+                f"`pval` must be a finite float in range [0, 1] but it was {pval}"
+            )
+
+    @property
+    def pval(self) -> float:
+        """
+        Get the p value of the test.
+        """
+        return self._pval
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MonoPhenotypeAnalysisResult) \
-            and super(AnalysisResult, self).__eq__(value)
+            and super(AnalysisResult, self).__eq__(value) \
+            and self._pval == value._pval
     
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
+            self._pval,
         ))

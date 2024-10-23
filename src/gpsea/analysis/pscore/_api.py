@@ -84,12 +84,9 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            pval=pval,
         )
         self._genotype_phenotype_scores = genotype_phenotype_scores
-        if isinstance(pval, float) and 0. <= pval <= 1.:
-            self._pval = float(pval)
-        else:
-            raise ValueError(f"`p_val` must be a finite float in range [0, 1] but it was {pval}")
 
     @property
     def genotype_phenotype_scores(self) -> pd.DataFrame:
@@ -114,13 +111,6 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         cannot be assigned into any genotype category.
         """
         return self._genotype_phenotype_scores
-
-    @property
-    def pval(self) -> float:
-        """
-        Get the p value of the test.
-        """
-        return self._pval
 
     def plot_boxplots(
         self,

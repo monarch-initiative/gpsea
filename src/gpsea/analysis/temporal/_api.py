@@ -55,19 +55,13 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
+            pval=pval,
         )
 
         assert isinstance(data, pd.DataFrame) and all(
             col in data for col in ("genotype", "survival")
         )
         self._data = data
-
-        if isinstance(pval, float) and math.isfinite(pval) and 0.0 <= pval <= 1.0:
-            self._pval = float(pval)
-        else:
-            raise ValueError(
-                f"`p_val` must be a finite float in range [0, 1] but it was {pval}"
-            )
 
     @property
     def data(self) -> pd.DataFrame:
@@ -107,26 +101,17 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
             self._data["genotype"].notna() & self._data["survival"].notna()
         ]
 
-    @property
-    def pval(self) -> float:
-        """
-        Get the p value of the test.
-        """
-        return self._pval
-
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, SurvivalAnalysisResult)
             and super(MonoPhenotypeAnalysisResult, self).__eq__(value)
             and self._data.equals(value._data)
-            and self._pval == value._pval
         )
 
     def __hash__(self) -> int:
         return hash((
             super(MonoPhenotypeAnalysisResult, self).__hash__(),
             self._data,
-            self._pval,
         ))
 
     def __str__(self) -> str:
