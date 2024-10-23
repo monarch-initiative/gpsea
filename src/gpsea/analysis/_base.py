@@ -1,8 +1,11 @@
 import abc
 import math
+import os
 import typing
 
+import pandas as pd
 
+from .predicate.phenotype import PhenotypePolyPredicate, P
 from .predicate.genotype import GenotypePolyPredicate
 
 
@@ -75,7 +78,7 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         ))
 
 
-class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
+class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
     """
     `MultiPhenotypeAnalysisResult` reports the outcome of an analysis
     that tested the association of genotype with two or more phenotypes.
@@ -84,7 +87,10 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
         statistic: Statistic,
+        n_usable: typing.Sequence[int],
+        all_counts: typing.Sequence[pd.DataFrame],
         pvals: typing.Sequence[float],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_correction: typing.Optional[str]
@@ -94,14 +100,94 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
             statistic=statistic,
         )
 
+        self._pheno_predicates = tuple(pheno_predicates)
+
+        self._n_usable = tuple(n_usable)
+        self._all_counts = tuple(all_counts)
+
         self._pvals = tuple(pvals)
         self._corrected_pvals = (
             None if corrected_pvals is None else tuple(corrected_pvals)
         )
+        errors = self._check_sanity()
+        if errors:
+            raise ValueError(os.linesep.join(errors))
+
         if mtc_correction is not None:
             assert isinstance(mtc_correction, str)
         self._mtc_correction = mtc_correction
-    
+
+    def _check_sanity(self) -> typing.Sequence[str]:
+        errors = []
+        # All sequences must have the same lengths ...
+        for seq, name in (
+            (self._n_usable, 'n_usable'),
+            (self._all_counts, 'all_counts'),
+            (self._pvals, 'pvals'),
+        ):
+            if len(self._pheno_predicates) != len(seq):
+                errors.append(
+                    f"`len(pheno_predicates)` must be the same as `len({name})` but "
+                    f"{len(self._pheno_predicates)}!={len(seq)}"
+                )
+
+        # ... including the optional corrected p values
+        if self._corrected_pvals is not None and len(self._pheno_predicates) != len(self._corrected_pvals):
+            errors.append(
+                f"`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but "
+                f"{len(self._pheno_predicates)}!={len(self._corrected_pvals)}"
+            )
+
+        if not isinstance(self._gt_predicate, GenotypePolyPredicate):
+            errors.append(
+                "`gt_predicate` must be an instance of `GenotypePolyPredicate`"
+            )
+        return errors
+
+    @property
+    def pheno_predicates(
+        self,
+    ) -> typing.Sequence[PhenotypePolyPredicate[P]]:
+        """
+        Get the phenotype predicates used in the analysis.
+        """
+        return self._pheno_predicates
+
+    @property
+    def phenotypes(self) -> typing.Sequence[P]:
+        """
+        Get the phenotypes that were tested for association with genotype in the analysis.
+        """
+        return tuple(p.phenotype for p in self._pheno_predicates)
+
+    @property
+    def n_usable(self) -> typing.Sequence[int]:
+        """
+        Get a sequence of numbers of patients where the phenotype was assessable,
+        and are, thus, usable for genotype-phenotype correlation analysis.
+        """
+        return self._n_usable
+
+    @property
+    def all_counts(self) -> typing.Sequence[pd.DataFrame]:
+        """
+        Get a :class:`~pandas.DataFrame` sequence where each `DataFrame` includes the counts of patients
+        in genotype and phenotype groups.
+
+        An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence
+        of a missense variant in transcript `NM_123456.7`, and phenotype predicate that checks
+        presence/absence of `HP:0001166` (a phenotype term)::
+
+                       Has MISSENSE_VARIANT in NM_123456.7
+                       No       Yes
+            Present
+            Yes        1        13
+            No         7        5
+
+        The rows correspond to the phenotype categories, and the columns represent the genotype categories.
+        """
+        return self._all_counts
+
     @property
     def pvals(self) -> typing.Sequence[float]:
         """
@@ -137,6 +223,9 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MultiPhenotypeAnalysisResult) \
             and super(AnalysisResult, self).__eq__(value) \
+            and self._pheno_predicates == value._pheno_predicates \
+            and self._n_usable == value._n_usable \
+            and self._all_counts == value._all_counts \
             and self._pvals == value._pvals \
             and self._corrected_pvals == value._corrected_pvals \
             and self._mtc_correction == value._mtc_correction
@@ -144,6 +233,9 @@ class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
+            self._pheno_predicates,
+            self._n_usable,
+            self._all_counts,
             self._pvals,
             self._corrected_pvals,
             self._mtc_correction,
