@@ -480,8 +480,8 @@ class ProteinRegionPredicate(VariantPredicate):
         
     def get_question(self) -> str:
         # We report in 1-based coordinate system
-        return f'variant affects aminoacid(s) between {self._region.start + 1} and {self._region.end} ' \
-            f'on protein encoded by transcript {self._tx_id}'
+        return f'variant affects the aminoacid(s) located at [{self._region.start + 1},{self._region.end}] ' \
+            f'in the protein encoded by {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)

@@ -188,12 +188,30 @@ class VariantPredicates:
 
     @staticmethod
     def region(
-        region: typing.Union[Region, typing.Tuple[int, int]],
+        region: typing.Union[typing.Tuple[int, int], Region],
         tx_id: str,
     ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant
         overlaps with a region on a protein of a specific transcript.
+
+        
+        Example
+        -------
+
+        Create a predicate to test if the variant overlaps with the 5th aminoacid
+        of the protein encoded by a fictional transcript `NM_1234.5`:
+
+        >>> from gpsea.analysis.predicate.genotype import VariantPredicates
+        >>> overlaps_with_fifth_aa = VariantPredicates.region(region=(5, 5), tx_id="NM_1234.5")
+        >>> overlaps_with_fifth_aa.get_question()
+        'variant affects the aminoacid(s) located at [5,5] in the protein encoded by NM_1234.5'
+
+        Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:
+
+        >>> overlaps_with_first_20 = VariantPredicates.region(region=(1, 20), tx_id="NM_1234.5")
+        >>> overlaps_with_first_20.get_question()
+        'variant affects the aminoacid(s) located at [1,20] in the protein encoded by NM_1234.5'
 
         Args:
             region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate

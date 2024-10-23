@@ -7,6 +7,8 @@ from collections import deque
 import hpotk
 import pandas as pd
 
+from hpotk.constants.hpo.base import PHENOTYPIC_ABNORMALITY
+
 from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import PhenotypePolyPredicate, P
 
@@ -267,7 +269,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         hpo: hpotk.MinimalOntology,
         term_frequency_threshold: float = 0.4,
         annotation_frequency_threshold: float = 0.4,
-        phenotypic_abnormality: hpotk.TermId = hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY,
+        phenotypic_abnormality: hpotk.TermId = PHENOTYPIC_ABNORMALITY,
     ):
         """
         Args:
@@ -409,7 +411,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 continue
 
             if not self._hpo.graph.is_ancestor_of(
-                    hpotk.constants.hpo.base.PHENOTYPIC_ABNORMALITY, term_id
+                    PHENOTYPIC_ABNORMALITY, term_id
             ):
                 results[idx] = HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM
                 continue
