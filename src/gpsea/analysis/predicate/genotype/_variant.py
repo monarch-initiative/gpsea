@@ -1,10 +1,26 @@
 import typing
 
-from gpsea.model import VariantEffect, FeatureType
+import hpotk
+
+from gpsea.model import FeatureType, VariantClass, VariantEffect, ProteinMetadata
 from gpsea.model.genome import Region
-from gpsea.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
-from ._predicates import *
+from ._predicates import (
+    AlwaysTrueVariantPredicate,
+    ChangeLengthPredicate,
+    IsLargeImpreciseStructuralVariantPredicate,
+    ProteinFeaturePredicate,
+    ProteinFeatureTypePredicate,
+    ProteinRegionPredicate,
+    RefAlleleLengthPredicate,
+    StructuralTypePredicate,
+    VariantClassPredicate,
+    VariantEffectPredicate,
+    VariantExonPredicate,
+    VariantGenePredicate,
+    VariantKeyPredicate,
+    VariantTranscriptPredicate,
+)
 
 
 # We do not need more than just one instance of these predicates.
