@@ -1,6 +1,6 @@
 import pytest
 
-from gpsea.analysis.predicate.genotype import VariantPredicates, ProteinPredicates
+from gpsea.analysis.predicate.genotype import VariantPredicates
 from gpsea.model import *
 from gpsea.model.genome import *
 
@@ -114,8 +114,8 @@ class TestVariantPredicates:
     ):
         predicate = VariantPredicates.is_large_imprecise_sv()
 
-        assert predicate.test(missense_variant) == False
-        assert predicate.test(structural_variant) == True
+        assert predicate.test(missense_variant) is False
+        assert predicate.test(structural_variant) is True
 
     def test_is_structural_predicate(
         self,
@@ -124,8 +124,8 @@ class TestVariantPredicates:
     ):
         predicate = VariantPredicates.is_structural_variant()
 
-        assert predicate.test(missense_variant) == False
-        assert predicate.test(structural_variant) == True
+        assert predicate.test(missense_variant) is False
+        assert predicate.test(structural_variant) is True
 
     def test_structural_type(
         self,
@@ -134,8 +134,8 @@ class TestVariantPredicates:
     ):
         predicate = VariantPredicates.structural_type('SO:1000029')
 
-        assert predicate.test(missense_variant) == False
-        assert predicate.test(structural_variant) == True
+        assert predicate.test(missense_variant) is False
+        assert predicate.test(structural_variant) is True
 
     def test_variant_class(
         self,
@@ -143,7 +143,7 @@ class TestVariantPredicates:
     ):
         predicate = VariantPredicates.variant_class(VariantClass.SNV)
 
-        assert predicate.test(missense_variant) == True
+        assert predicate.test(missense_variant) is True
 
     def test_change_length(
         self,
@@ -153,10 +153,10 @@ class TestVariantPredicates:
         predicate = VariantPredicates.change_length('==', 0)
         
         # variant is an SNP
-        assert predicate.test(missense_variant) == True
+        assert predicate.test(missense_variant) is True
 
         # structural_variant is an imprecise DEL, hence False
-        assert predicate.test(structural_variant) == False
+        assert predicate.test(structural_variant) is False
 
     def test_change_length_is_false_for_imprecise_SVs_no_matter_what(
         self,
@@ -164,7 +164,7 @@ class TestVariantPredicates:
     ):
         for op in ("<", "<=", "==", "!=", ">=", ">"):
             predicate = VariantPredicates.change_length(op, 0)
-            assert predicate.test(structural_variant) == False
+            assert predicate.test(structural_variant) is False
 
     def test_structural_deletion(
         self,
@@ -172,10 +172,28 @@ class TestVariantPredicates:
     ):
         predicate = VariantPredicates.is_structural_deletion()
 
-        assert predicate.test(structural_variant) == True
+        assert predicate.test(structural_variant) is True
 
 
 class TestProteinPredicates:
+
+    @pytest.fixture(scope="class")
+    def protein_metadata(self) -> ProteinMetadata:
+        return ProteinMetadata(
+            protein_id="pt:xyz",
+            label="xyz_label",
+            protein_features=(
+                ProteinFeature.create(
+                    FeatureInfo(name="MOCK_REPEAT", region=Region(55, 80)),
+                    FeatureType.REPEAT,
+                ),
+                ProteinFeature.create(
+                    FeatureInfo(name="MOCK_DOMAIN", region=Region(30, 50)),
+                    FeatureType.DOMAIN,
+                ),
+            ),
+            protein_length=100,
+        )
 
     @pytest.mark.parametrize(
         'feature_type, expected',
@@ -186,12 +204,15 @@ class TestProteinPredicates:
     )
     def test_protein_feature_type(
             self,
-            protein_predicates: ProteinPredicates,
             missense_variant: Variant,
             feature_type: FeatureType,
+            protein_metadata: ProteinMetadata,
             expected: bool,
     ):
-        predicate = protein_predicates.protein_feature_type(feature_type, tx_id='tx:xyz')
+        predicate = VariantPredicates.protein_feature_type(
+            feature_type=feature_type,
+            protein_metadata=protein_metadata,
+        )
 
         assert predicate.test(missense_variant) == expected
 
@@ -205,12 +226,15 @@ class TestProteinPredicates:
     )
     def test_protein_feature_id(
             self,
-            protein_predicates: ProteinPredicates,
             missense_variant: Variant,
             feature_id: str,
+            protein_metadata: ProteinMetadata,
             expected: bool,
     ):
-        predicate = protein_predicates.protein_feature(feature_id, tx_id='tx:xyz')
+        predicate = VariantPredicates.protein_feature(
+            feature_id=feature_id,
+            protein_metadata=protein_metadata,
+        )
 
         assert predicate.test(missense_variant) == expected
 

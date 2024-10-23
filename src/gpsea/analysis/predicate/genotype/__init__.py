@@ -4,7 +4,7 @@ from ._counter import AlleleCounter
 from ._gt_predicates import sex_predicate, diagnosis_predicate
 from ._gt_predicates import monoallelic_predicate, biallelic_predicate
 from ._gt_predicates import allele_count
-from ._variant import VariantPredicates, ProteinPredicates
+from ._variant import VariantPredicates
 
 __all__ = [
     'GenotypePolyPredicate',
@@ -12,5 +12,5 @@ __all__ = [
     'monoallelic_predicate', 'biallelic_predicate',
     'allele_count',
     'AlleleCounter', 'VariantPredicate',
-    'VariantPredicates', 'ProteinPredicates',
+    'VariantPredicates',
 ]

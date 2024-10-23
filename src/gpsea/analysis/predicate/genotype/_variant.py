@@ -257,7 +257,8 @@ class VariantPredicates:
         variant_class: VariantClass,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.
+        Prepare a :class:`VariantPredicate` for testing if the variant
+        is of a certain :class:`~gpsea.model.VariantClass`.
 
         **Example**
 
@@ -369,42 +370,39 @@ class VariantPredicates:
             & VariantPredicates.change_length("<=", threshold)
         )
 
-
-class ProteinPredicates:
-    """
-    `ProteinPredicates` prepares variant predicates that need to consult 
-    :class:`~gpsea.preprocessing.ProteinMetadataService`
-    to categorize a :class:`~gpsea.model.Variant`.
-    """
-
-    def __init__(
-        self,
-        protein_metadata_service: ProteinMetadataService,
-    ):
-        self._protein_metadata_service = protein_metadata_service
-
+    @staticmethod
     def protein_feature_type(
-        self, feature_type: FeatureType, tx_id: str
+        feature_type: FeatureType,
+        protein_metadata: ProteinMetadata,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+        Prepare a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+        to test if the variant affects a `feature_type` of a protein.
 
         Args:
             feature_type: the target protein :class:`~gpsea.model.FeatureType`
-                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)
+                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).
+            protein_metadata: the information about the protein.
         """
         return ProteinFeatureTypePredicate(
-            feature_type, tx_id, self._protein_metadata_service
+            feature_type=feature_type,
+            protein_metadata=protein_metadata,
         )
 
-    def protein_feature(self, feature_id: str, tx_id: str) -> VariantPredicate:
+    @staticmethod
+    def protein_feature(
+        feature_id: str,
+        protein_metadata: ProteinMetadata,
+    ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+        Prepare a :class:`VariantPredicate` to test if the variant affects a protein feature
+        labeled with the provided `feature_id`.
 
         Args:
             feature_id: the id of the target protein feature (e.g. `ANK 1`)
-            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
+            protein_metadata: the information about the protein.
         """
         return ProteinFeaturePredicate(
-            feature_id, tx_id, self._protein_metadata_service
+            feature_id=feature_id,
+            protein_metadata=protein_metadata,
         )
