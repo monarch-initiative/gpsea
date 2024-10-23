@@ -12,7 +12,7 @@ from ..predicate.genotype import GenotypePolyPredicate
 from ._base import Survival
 from .stats import SurvivalStatistic
 
-from .._base import AnalysisResult
+from .._base import MonoPhenotypeAnalysisResult
 
 
 class Endpoint(metaclass=abc.ABCMeta):
@@ -40,7 +40,7 @@ class Endpoint(metaclass=abc.ABCMeta):
         pass
 
 
-class SurvivalAnalysisResult(AnalysisResult):
+class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     """
     `SurvivalAnalysisResult` includes the results of a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
     """
@@ -55,7 +55,6 @@ class SurvivalAnalysisResult(AnalysisResult):
         super().__init__(
             gt_predicate=gt_predicate,
             statistic=statistic,
-            mtc_correction=None,  # Does not apply in survival analysis (yet)
         )
 
         assert isinstance(data, pd.DataFrame) and all(
@@ -118,14 +117,14 @@ class SurvivalAnalysisResult(AnalysisResult):
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, SurvivalAnalysisResult)
-            and super(AnalysisResult, self).__eq__(value)
+            and super(MonoPhenotypeAnalysisResult, self).__eq__(value)
             and self._data.equals(value._data)
             and self._pval == value._pval
         )
 
     def __hash__(self) -> int:
         return hash((
-            super(AnalysisResult, self).__hash__(),
+            super(MonoPhenotypeAnalysisResult, self).__hash__(),
             self._data,
             self._pval,
         ))

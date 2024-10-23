@@ -41,7 +41,6 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: Statistic,
-        mtc_correction: typing.Optional[str]
     ):
         assert isinstance(gt_predicate, GenotypePolyPredicate)
         self._gt_predicate = gt_predicate
@@ -49,10 +48,6 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         assert isinstance(statistic, Statistic)
         self._statistic = statistic
 
-        if mtc_correction is not None:
-            assert isinstance(mtc_correction, str)
-        self._mtc_correction = mtc_correction
-    
     @property
     def gt_predicate(self) -> GenotypePolyPredicate:
         """
@@ -66,6 +61,39 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         Get the statistic which computed the (nominal) p values for this result.
         """
         return self._statistic
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, AnalysisResult) \
+            and self._gt_predicate == value._gt_predicate \
+            and self._statistic == value._statistic
+    
+    def __hash__(self) -> int:
+        return hash((
+            self._gt_predicate,
+            self._statistic,
+        ))
+
+
+class MultiPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
+    """
+    `MultiPhenotypeAnalysisResult` reports the outcome of an analysis
+    that tested the association of genotype with two or more phenotypes.
+    """
+    
+    def __init__(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        statistic: Statistic,
+        mtc_correction: typing.Optional[str]
+    ):
+        super().__init__(
+            gt_predicate=gt_predicate,
+            statistic=statistic,
+        )
+
+        if mtc_correction is not None:
+            assert isinstance(mtc_correction, str)
+        self._mtc_correction = mtc_correction
     
     @property
     def mtc_correction(self) -> typing.Optional[str]:
@@ -75,17 +103,30 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         """
         return self._mtc_correction
 
-    # test, p values, corrected values (optional), correction
-
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AnalysisResult) \
-            and self._gt_predicate == value._gt_predicate \
-            and self._statistic == value._statistic \
+        return isinstance(value, MultiPhenotypeAnalysisResult) \
+            and super(AnalysisResult, self).__eq__(value) \
             and self._mtc_correction == value._mtc_correction
     
     def __hash__(self) -> int:
         return hash((
-            self._gt_predicate,
-            self._statistic,
+            super(AnalysisResult, self).__hash__(),
             self._mtc_correction,
+        ))
+
+
+class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
+    """
+    `MonoPhenotypeAnalysisResult` reports the outcome of an analysis
+    that tested a single genotype-phenotype association.
+    """
+    # phenotype, pval
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, MonoPhenotypeAnalysisResult) \
+            and super(AnalysisResult, self).__eq__(value)
+    
+    def __hash__(self) -> int:
+        return hash((
+            super(AnalysisResult, self).__hash__(),
         ))

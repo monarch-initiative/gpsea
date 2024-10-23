@@ -1,5 +1,5 @@
-from ._base import AnalysisResult
+from ._base import AnalysisResult, MonoPhenotypeAnalysisResult, MultiPhenotypeAnalysisResult
 
 __all__ = [
-    "AnalysisResult",
+    "AnalysisResult", "MonoPhenotypeAnalysisResult", "MultiPhenotypeAnalysisResult",
 ]
