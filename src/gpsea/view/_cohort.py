@@ -1,5 +1,5 @@
 import typing
-
+from collections import defaultdict
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple
@@ -142,6 +142,11 @@ class CohortViewer:
         n_male = 0
         n_female = 0
         n_unknown_sex = 0
+        n_deceased = 0
+        n_alive = 0
+        n_has_age_at_last_encounter = 0
+        n_has_disease_onset = 0
+        hpo_id_to_has_cnset_count_d = defaultdict(int)
         for pat in cohort.all_patients:
             if pat.sex == Sex.MALE:
                 n_male += 1
@@ -149,13 +154,50 @@ class CohortViewer:
                 n_female += 1
             else:
                 n_unknown_sex += 1
+            patient_not_deceased = True
+            if pat.vital_status is not None:
+                if pat.vital_status.is_deceased():
+                    n_deceased += 1
+                    patient_not_deceased = False
+            if patient_not_deceased:
+                n_alive += 1
+            if pat.age is not None:
+                n_has_age_at_last_encounter += 1
+            diseases = pat.diseases
+            for d in diseases:
+                if d.onset is not None:
+                    n_has_disease_onset += 1
+                    break # for now, do this for any diseases. All of our current phenopackets habve but one disease
+            for pf in pat.present_phenotypes():
+                if pf.onset is not None:
+                    hpo_id_to_has_cnset_count_d[pf.identifier] += 1
+        # When we get here, we want to present the counts of HPO terms that have onset information
+        n_individuals = len(cohort.all_patients)
+        onset_threshold = int(0.2 * n_individuals) ## only show terms with a decent amount of information
+        has_onset_information = list()
+        for hpo_id, count in hpo_id_to_has_cnset_count_d.items():
+            if count < onset_threshold:
+                continue
+            label = self._hpo.get_term_name(hpo_id)
+            if label is not None:
+                display_label = f"{label} ({hpo_id})"
+            else:
+                display_label = hpo_id
+            has_onset_information.append({"HPO":display_label, "count": count})
+        n_has_onset_info = len(has_onset_information)
 
         # The following dictionary is used by the Jinja2 HTML template
         return {
-            "n_individuals": len(cohort.all_patients),
+            "n_individuals": n_individuals,
             "n_male": n_male,
             "n_female": n_female,
             "n_unknown_sex": n_unknown_sex,
+            "n_deceased": n_deceased,
+            "n_alive": n_alive,
+            "n_has_disease_onset": n_has_disease_onset,
+            "n_has_age_at_last_encounter": n_has_age_at_last_encounter,
+            "has_onset_information": has_onset_information,
+            "n_has_onset_info": n_has_onset_info,
             "n_excluded": cohort.get_excluded_count(),
             "total_hpo_count": len(cohort.all_phenotypes()),
             "top_hpo_count": self._top_phenotype_count,
