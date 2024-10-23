@@ -106,42 +106,42 @@ Genotype predicate
 ------------------
 
 We want to separate the patients into two groups: a group *with* a frameshift variant
-and a group *without* a frameshift variant, based on the functional annotation.
+and a group *without* a frameshift variant (i.e. any other heterozygous variant).
 We will use the *MANE* transcript for the analysis:
+
+>>> tx_id = 'NM_181486.4'
 
 Building a genotype predicate is a two step process. 
 First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-to test if the variant leads to a frameshift (in this case):
+to test if the variant is predicted to lead to a frameshift in `NM_181486.4`:
 
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> tx_id = 'NM_181486.4'
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
 >>> is_frameshift.get_question()
 'FRAMESHIFT_VARIANT on NM_181486.4'
 
-and then we choose the expected mode of inheritance to test. In case of *TBX5*,
-we expect the autosomal dominant mode of inheritance:
+and then we wrap `is_frameshift` in a :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate` 
+to classify each *TBX5* cohort member either as an individual with one frameshift allele (`Frameshift`)
+or as an idividual with one non-frameshift allele (`Other`):
 
->>> from gpsea.analysis.predicate.genotype import autosomal_dominant
->>> gt_predicate = autosomal_dominant(is_frameshift)
+>>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
+>>> gt_predicate = monoallelic_predicate(
+...     a_predicate=is_frameshift,
+...     a_label="Frameshift",
+...     b_label="Other",
+... )
 >>> gt_predicate.display_question()
-'What is the genotype group: No allele, Monoallelic'
+'Allele group: Frameshift, Other'
 
-`gt_predicate` will assign the patients with no frameshift variant allele into `No allele` group
-and the patients with one frameshift allele will be assigned into `Monoallelic` group.
-Note, any patient with 2 or more alleles will be *omitted* from the analysis.
-
-.. note::
-
-   Mode of inheritance testing is not the only way to dissect by a genotype.
-   See the :ref:`genotype-predicates` section for more info.
+In the subsequent analysis, `gt_predicate` will assign a cohort member into the respective group.
+Note, any patient with :math:`0` or :math:`\ge 2` alleles will be *omitted* from the analysis.
 
 
 Phenotype predicates
 --------------------
 
-We recommend testing the genotype phenotype association for all HPO terms that are present in 2 or more cohort members,
+We recommend testing the genotype phenotype association for all HPO terms that annotate the cohort members,
 while taking advantage of the HPO graph structure and of the :ref:`true-path-rule`.
 We will use the :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
 utility function to generate phenotype predicates for all HPO terms.
@@ -170,7 +170,7 @@ including the *indirect* annotations whose presence is implied by the :ref:`true
 Statistical test
 ----------------
 
-We will use :ref:<fisher-exact-test> to test the association
+We will use :ref:`fisher-exact-test` to test the association
 between genotype and phenotype groups, as described previously.
 
 >>> from gpsea.analysis.pcats.stats import FisherExactTest
@@ -182,10 +182,10 @@ FET will compute a p value for each genotype phenotype group.
 Multiple testing correction
 ---------------------------
 
-In the case of this cohort, we could test association between having a frameshift variant and one of 260 HPO terms.
+In the case of this cohort, we could test association between having a frameshift variant and one of 369 HPO terms.
 However, testing multiple hypotheses on the same dataset increases the risk of finding a significant association
 by chance.
-GPSEA uses a two-pronged strategy to mitigate this risk - use Phenotype MTC filter and multiple testing correction.
+GPSEA uses a two-pronged strategy to mitigate this risk - a phenotype MTC filter and multiple testing correction.
 
 .. note::
 
@@ -270,10 +270,10 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 
 
 The table shows that several HPO terms are significantly associated
-with presence of a heterozygous (`Monoallelic`) frameshift variant in *TBX5*.
+with presence of a heterozygous (`Frameshift`) frameshift variant in *TBX5*.
 For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
-was observed in 42/71 (59%) patients with no frameshift allele (`No allele`)
-but it was observed in 19/19 (100%) patients with a frameshift allele (`Monoallelic`).
+was observed in 42/71 (59%) patients with no frameshift allele (`Other`)
+but it was observed in 19/19 (100%) patients with a frameshift allele (`Frameshift`).
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
 is `~0.005806`.

@@ -177,39 +177,40 @@ and the HPO terms. We need to create one genotype predicate and one or more phen
 <section id="genotype-predicate">
 <h4>Genotype predicate<a class="headerlink" href="#genotype-predicate" title="Link to this heading"></a></h4>
 <p>We want to separate the patients into two groups: a group <em>with</em> a frameshift variant
-and a group <em>without</em> a frameshift variant, based on the functional annotation.
+and a group <em>without</em> a frameshift variant (i.e. any other heterozygous variant).
 We will use the <em>MANE</em> transcript for the analysis:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_181486.4&#39;</span>
+</pre></div>
+</div>
 <p>Building a genotype predicate is a two step process.
 First, we create a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
-to test if the variant leads to a frameshift (in this case):</p>
+to test if the variant is predicted to lead to a frameshift in <cite>NM_181486.4</cite>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_181486.4&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
 <span class="go">&#39;FRAMESHIFT_VARIANT on NM_181486.4&#39;</span>
 </pre></div>
 </div>
-<p>and then we choose the expected mode of inheritance to test. In case of <em>TBX5</em>,
-we expect the autosomal dominant mode of inheritance:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">autosomal_dominant</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">autosomal_dominant</span><span class="p">(</span><span class="n">is_frameshift</span><span class="p">)</span>
+<p>and then we wrap <cite>is_frameshift</cite> in a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate" title="gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">monoallelic_predicate</span></code></a>
+to classify each <em>TBX5</em> cohort member either as an individual with one frameshift allele (<cite>Frameshift</cite>)
+or as an idividual with one non-frameshift allele (<cite>Other</cite>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Frameshift&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What is the genotype group: No allele, Monoallelic&#39;</span>
+<span class="go">&#39;Allele group: Frameshift, Other&#39;</span>
 </pre></div>
 </div>
-<p><cite>gt_predicate</cite> will assign the patients with no frameshift variant allele into <cite>No allele</cite> group
-and the patients with one frameshift allele will be assigned into <cite>Monoallelic</cite> group.
-Note, any patient with 2 or more alleles will be <em>omitted</em> from the analysis.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Mode of inheritance testing is not the only way to dissect by a genotype.
-See the <a class="reference internal" href="../predicates/genotype_predicates.html#genotype-predicates"><span class="std std-ref">Genotype Predicates</span></a> section for more info.</p>
-</div>
+<p>In the subsequent analysis, <cite>gt_predicate</cite> will assign a cohort member into the respective group.
+Note, any patient with <span class="math notranslate nohighlight">\(0\)</span> or <span class="math notranslate nohighlight">\(\ge 2\)</span> alleles will be <em>omitted</em> from the analysis.</p>
 </section>
 <section id="phenotype-predicates">
 <h4>Phenotype predicates<a class="headerlink" href="#phenotype-predicates" title="Link to this heading"></a></h4>
-<p>We recommend testing the genotype phenotype association for all HPO terms that are present in 2 or more cohort members,
+<p>We recommend testing the genotype phenotype association for all HPO terms that annotate the cohort members,
 while taking advantage of the HPO graph structure and of the <a class="reference internal" href="../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a>.
 We will use the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest" title="gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a>
 utility function to generate phenotype predicates for all HPO terms.</p>
@@ -234,7 +235,7 @@ including the <em>indirect</em> annotations whose presence is implied by the <a 
 </section>
 <section id="statistical-test">
 <h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
-<p>We will use :ref:&lt;fisher-exact-test&gt; to test the association
+<p>We will use <a class="reference internal" href="#fisher-exact-test"><span class="std std-ref">Fisher exact test (FET)</span></a> to test the association
 between genotype and phenotype groups, as described previously.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">count_statistic</span> <span class="o">=</span> <span class="n">FisherExactTest</span><span class="p">()</span>
@@ -244,10 +245,10 @@ between genotype and phenotype groups, as described previously.</p>
 </section>
 <section id="multiple-testing-correction">
 <h4>Multiple testing correction<a class="headerlink" href="#multiple-testing-correction" title="Link to this heading"></a></h4>
-<p>In the case of this cohort, we could test association between having a frameshift variant and one of 260 HPO terms.
+<p>In the case of this cohort, we could test association between having a frameshift variant and one of 369 HPO terms.
 However, testing multiple hypotheses on the same dataset increases the risk of finding a significant association
 by chance.
-GPSEA uses a two-pronged strategy to mitigate this risk - use Phenotype MTC filter and multiple testing correction.</p>
+GPSEA uses a two-pronged strategy to mitigate this risk - a phenotype MTC filter and multiple testing correction.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>See the <a class="reference internal" href="../mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a> section for more info on multiple testing procedures.</p>
@@ -393,11 +394,11 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text"><em>TBX5</em> frameshift vs rest</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <thead>
-<tr class="row-odd"><th class="head"><p>What is the genotype group</p></th>
-<th class="head"><p>No allele</p></th>
-<th class="head"><p>No allele</p></th>
-<th class="head"><p>Monoallelic</p></th>
-<th class="head"><p>Monoallelic</p></th>
+<tr class="row-odd"><th class="head"><p>Allele group</p></th>
+<th class="head"><p>Frameshift</p></th>
+<th class="head"><p>Frameshift</p></th>
+<th class="head"><p>Other</p></th>
+<th class="head"><p>Other</p></th>
 <th class="head"></th>
 <th class="head"></th>
 </tr>
@@ -412,193 +413,193 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 </thead>
 <tbody>
 <tr class="row-odd"><td><p>Ventricular septal defect [HP:0001629]</p></td>
-<td><p>42/71</p></td>
-<td><p>59%</p></td>
 <td><p>19/19</p></td>
 <td><p>100%</p></td>
+<td><p>42/71</p></td>
+<td><p>59%</p></td>
 <td><p>0.005806240832840839</p></td>
-<td><p>0.00024192670136836825</p></td>
+<td><p>0.00024192670136836828</p></td>
 </tr>
 <tr class="row-even"><td><p>Absent thumb [HP:0009777]</p></td>
-<td><p>18/100</p></td>
-<td><p>18%</p></td>
 <td><p>14/31</p></td>
 <td><p>45%</p></td>
-<td><p>0.044564058192239124</p></td>
-<td><p>0.003713671516019927</p></td>
+<td><p>18/100</p></td>
+<td><p>18%</p></td>
+<td><p>0.04456405819223913</p></td>
+<td><p>0.0037136715160199273</p></td>
 </tr>
 <tr class="row-odd"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
-<td><p>23/55</p></td>
-<td><p>42%</p></td>
 <td><p>4/22</p></td>
 <td><p>18%</p></td>
+<td><p>23/55</p></td>
+<td><p>42%</p></td>
 <td><p>0.4065940176561687</p></td>
 <td><p>0.06544319142266644</p></td>
 </tr>
 <tr class="row-even"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
-<td><p>23/99</p></td>
-<td><p>23%</p></td>
 <td><p>13/32</p></td>
 <td><p>41%</p></td>
+<td><p>23/99</p></td>
+<td><p>23%</p></td>
 <td><p>0.4065940176561687</p></td>
 <td><p>0.06932119159387057</p></td>
 </tr>
 <tr class="row-odd"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
-<td><p>8/84</p></td>
-<td><p>10%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
+<td><p>8/84</p></td>
+<td><p>10%</p></td>
 <td><p>0.4065940176561687</p></td>
 <td><p>0.08470708701170182</p></td>
 </tr>
 <tr class="row-even"><td><p>Short thumb [HP:0009778]</p></td>
-<td><p>25/69</p></td>
-<td><p>36%</p></td>
 <td><p>8/30</p></td>
 <td><p>27%</p></td>
+<td><p>25/69</p></td>
+<td><p>36%</p></td>
 <td><p>1.0</p></td>
-<td><p>0.48700997145537483</p></td>
+<td><p>0.4870099714553749</p></td>
 </tr>
 <tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
-<td><p>9/43</p></td>
-<td><p>21%</p></td>
 <td><p>6/25</p></td>
 <td><p>24%</p></td>
+<td><p>9/43</p></td>
+<td><p>21%</p></td>
 <td><p>1.0</p></td>
 <td><p>0.7703831604944444</p></td>
 </tr>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>63/65</p></td>
+<td><p>97%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>64/64</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
 <tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<td><p>28/28</p></td>
+<td><p>100%</p></td>
 <td><p>89/89</p></td>
 <td><p>100%</p></td>
-<td><p>28/28</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
+<td><p>64/64</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
+<td><p>6/14</p></td>
+<td><p>43%</p></td>
+<td><p>34/75</p></td>
+<td><p>45%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal appendicular skeleton morphology [HP:0011844]</p></td>
+<td><p>34/34</p></td>
+<td><p>100%</p></td>
+<td><p>93/93</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>78/78</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<td><p>23/23</p></td>
+<td><p>100%</p></td>
+<td><p>80/80</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>78/78</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
+<td><p>22/22</p></td>
+<td><p>100%</p></td>
+<td><p>78/78</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
+<td><p>13/13</p></td>
+<td><p>100%</p></td>
+<td><p>50/50</p></td>
 <td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
 <tr class="row-odd"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
+<td><p>20/20</p></td>
+<td><p>100%</p></td>
 <td><p>75/75</p></td>
-<td><p>100%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
-<td><p>63/65</p></td>
-<td><p>97%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
-<td><p>64/64</p></td>
-<td><p>100%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
-<td><p>64/64</p></td>
-<td><p>100%</p></td>
-<td><p>20/20</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
-<td><p>34/75</p></td>
-<td><p>45%</p></td>
-<td><p>6/14</p></td>
-<td><p>43%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal appendicular skeleton morphology [HP:0011844]</p></td>
-<td><p>93/93</p></td>
-<td><p>100%</p></td>
-<td><p>34/34</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
-<td><p>78/78</p></td>
-<td><p>100%</p></td>
-<td><p>22/22</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
-<td><p>80/80</p></td>
-<td><p>100%</p></td>
-<td><p>23/23</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
-<td><p>78/78</p></td>
-<td><p>100%</p></td>
-<td><p>22/22</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
-<td><p>78/78</p></td>
-<td><p>100%</p></td>
-<td><p>22/22</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
-<td><p>50/50</p></td>
-<td><p>100%</p></td>
-<td><p>13/13</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
-<td><p>64/64</p></td>
-<td><p>100%</p></td>
-<td><p>31/31</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
-<td><p>67/67</p></td>
-<td><p>100%</p></td>
-<td><p>33/33</p></td>
 <td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
 <tr class="row-even"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
+<td><p>31/31</p></td>
+<td><p>100%</p></td>
 <td><p>58/58</p></td>
 <td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
 <td><p>31/31</p></td>
+<td><p>100%</p></td>
+<td><p>64/64</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
+<td><p>33/33</p></td>
+<td><p>100%</p></td>
+<td><p>67/67</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/Hypoplasia of fingers [HP:0006265]</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>44/44</p></td>
+<td><p>100%</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the hand [HP:0005927]</p></td>
+<td><p>19/19</p></td>
+<td><p>100%</p></td>
+<td><p>44/44</p></td>
 <td><p>100%</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
@@ -606,10 +607,10 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 </tbody>
 </table>
 <p>The table shows that several HPO terms are significantly associated
-with presence of a heterozygous (<cite>Monoallelic</cite>) frameshift variant in <em>TBX5</em>.
+with presence of a heterozygous (<cite>Frameshift</cite>) frameshift variant in <em>TBX5</em>.
 For example, <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001629">Ventricular septal defect</a>
-was observed in 42/71 (59%) patients with no frameshift allele (<cite>No allele</cite>)
-but it was observed in 19/19 (100%) patients with a frameshift allele (<cite>Monoallelic</cite>).
+was observed in 42/71 (59%) patients with no frameshift allele (<cite>Other</cite>)
+but it was observed in 19/19 (100%) patients with a frameshift allele (<cite>Frameshift</cite>).
 Fisher exact test computed a p value of <cite>~0.000242</cite>
 and the p value corrected by Benjamini-Hochberg procedure
 is <cite>~0.005806</cite>.</p>

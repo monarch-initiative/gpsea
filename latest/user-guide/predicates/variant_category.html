@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Allele count predicates &mdash; GPSEA 0.6.1.dev0 documentation</title>
+  <title>Group by variant category &mdash; GPSEA 0.6.1.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -25,7 +25,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Mode of Inheritance Predicates" href="mode_of_inheritance_predicate.html" />
+    <link rel="next" title="Group by allele count" href="allele_count.html" />
     <link rel="prev" title="Variant Predicates" href="variant_predicates.html" /> 
 </head>
 
@@ -58,11 +58,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Predicates</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="variant_predicates.html">Variant Predicates</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Allele count predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="mode_of_inheritance_predicate.html">Mode of Inheritance Predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="male_female_predicate.html">Partition by the sex of the individual</a></li>
-<li class="toctree-l4"><a class="reference internal" href="diagnosis_predicate.html">Partition by a diagnosis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="groups_predicate.html">Groups Predicate</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Group by variant category</a></li>
+<li class="toctree-l4"><a class="reference internal" href="allele_count.html">Group by allele count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sex.html">Group by sex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="diagnosis.html">Group by diagnosis</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a></li>
@@ -96,9 +95,9 @@
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="index.html">Predicates</a></li>
           <li class="breadcrumb-item"><a href="genotype_predicates.html">Genotype Predicates</a></li>
-      <li class="breadcrumb-item active">Allele count predicates</li>
+      <li class="breadcrumb-item active">Group by variant category</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/user-guide/predicates/allele_count_predicates.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/user-guide/predicates/variant_category.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -106,71 +105,92 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="allele-count-predicates">
-<span id="id1"></span><h1>Allele count predicates<a class="headerlink" href="#allele-count-predicates" title="Link to this heading"></a></h1>
-<p>Sometimes we want to analyze the individuals who have the same allele count of the variants of interest.
-Most of the time, the allele count is <cite>1</cite> to analyze individuals with an autosomal dominant disease,
-or <cite>2</cite> for the individuals with a disease segregating with the autosomal recessive mode of inheritance.</p>
-<p>GPSEA provides <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate" title="gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">monoallelic_predicate()</span></code></a>
-and <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate" title="gpsea.analysis.predicate.genotype.biallelic_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">biallelic_predicate()</span></code></a> to investigate
-the individuals with <cite>1</cite> or <cite>2</cite> alleles of the variants of interest.</p>
-<p>Both predicates take two variant predicates (<a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>)
-that are used to determine the allele count of the target variants.</p>
-<section id="monoallelic-predicate">
-<span id="id2"></span><h2>Monoallelic predicate<a class="headerlink" href="#monoallelic-predicate" title="Link to this heading"></a></h2>
-<p>Monoallelic predicate compares individuals who have <em>one</em> allele of a variant of interest.
-The predicate requires two variant predicates <cite>A</cite> and <cite>B</cite> for choosing
-the variants of interest (e.g. variants overlapping with a specific protein domain).
-The allele counts <span class="math notranslate nohighlight">\(A_{AC}\)</span> and <span class="math notranslate nohighlight">\(B_{AC}\)</span> for the variants of interest
-are computed and the individual is assigned into a category
-based on the following table:</p>
-<table class="docutils align-default" id="id4">
-<caption><span class="caption-text">Monoallelic predicate genotype categories</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
+  <section id="group-by-variant-category">
+<span id="variant-category"></span><h1>Group by variant category<a class="headerlink" href="#group-by-variant-category" title="Link to this heading"></a></h1>
+<p>Sometimes we want to compare the individuals who have the same allele count (<cite>AC</cite>) of variant categories <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>.
+For example, in the context of an autosomal dominant disease,
+we may want to compare the individuals with <span class="math notranslate nohighlight">\(AC_{A}=1\)</span> (where <span class="math notranslate nohighlight">\(A\)</span> is e.g. a predicted loss-of-function mutation)
+with those harboring <span class="math notranslate nohighlight">\(AC_{B}=1\)</span> (where <span class="math notranslate nohighlight">\(B\)</span> is e.g. a missense mutation).
+Similarly, in an autosomal recessive disease, we may be interested in comparing the individuals
+with <span class="math notranslate nohighlight">\(AC_{A} \ge 1\)</span> with those with <span class="math notranslate nohighlight">\(AC_{A} = 0\)</span>.
+In both analyses, we compare two variant categories <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>
+which are described by a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+(see <a class="reference internal" href="variant_predicates.html#variant-predicates"><span class="std std-ref">Variant Predicates</span></a> section),
+while ensuring the allele count sum of both variant categories is <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(k = \sum_{i \in \{A, B\}} AC_{i}\)</span></p>
+<p>GPSEA provides two predicates:</p>
+<table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(A_{AC}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(B_{AC}\)</span></p></th>
-<th class="head"><p>Category</p></th>
+<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(k\)</span></p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Function</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>1</p></td>
-<td><p>0</p></td>
-<td><p>A</p></td>
+<td><p>Monoallelic predicate</p></td>
+<td><p><a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate" title="gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">monoallelic_predicate()</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>0</p></td>
-<td><p>1</p></td>
-<td><p>B</p></td>
-</tr>
-<tr class="row-even"><td><p>other</p></td>
-<td><p>other</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Biallelic predicate</p></td>
+<td><p><a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate" title="gpsea.analysis.predicate.genotype.biallelic_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">biallelic_predicate()</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
-<p>The individuals with different allele counts
-(e.g. <span class="math notranslate nohighlight">\(A_{AC} = 0\)</span> and <span class="math notranslate nohighlight">\(B_{AC} = 2\)</span>)
-are assigned into the <code class="docutils literal notranslate"><span class="pre">None</span></code> group and, thus, omitted from the analysis.</p>
+<section id="monoallelic-predicate">
+<span id="id1"></span><h2>Monoallelic predicate<a class="headerlink" href="#monoallelic-predicate" title="Link to this heading"></a></h2>
+<p>Monoallelic predicate compares individuals who have <em>one</em> allele of a variants of interest.
+The predicate needs two variant predicates <cite>A</cite> and <cite>B</cite>
+to compute the allele counts <span class="math notranslate nohighlight">\(AC_{A}\)</span> and <span class="math notranslate nohighlight">\(AC_{B}\)</span>,
+in order to assign an individual into one of the following genotype groups:</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Monoallelic predicate genotype groups</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Genotype group</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(AC_{A}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(AC_{B}\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>B</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>other</p></td>
+<td><p>other</p></td>
+</tr>
+</tbody>
+</table>
+<p>The individuals with <span class="math notranslate nohighlight">\(\sum_{i \in \{A, B\}} AC_{i} \neq 1\)</span>
+are omitted from the analysis.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
 <p>Let’s create a predicate to categorize the individuals
 to those having one missense allele or to those having
 one frameshift allele with respect to fictional transcript <code class="docutils literal notranslate"><span class="pre">NM_1234.5</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_1234.5&quot;</span>
+</pre></div>
+</div>
 <p>We start by creating the variant predicates for missense (<cite>A</cite>)
 and frameshift (<cite>B</cite>) variants:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_1234.5&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="o">=</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="o">=</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Monoallelic predicate lets us customize the category names.
-Let’s use <cite>Missense</cite> and <cite>Frameshift</cite> instead of the defaults <cite>A</cite> and <cite>B</cite>:</p>
+Let’s use <cite>Missense</cite> and <cite>Frameshift</cite> instead of the defaults:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a_label</span> <span class="o">=</span> <span class="s2">&quot;Missense&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b_label</span> <span class="o">=</span> <span class="s2">&quot;Frameshift&quot;</span>
 </pre></div>
 </div>
-<p>Now we have all we need to create the monoallelic predicate:</p>
+<p>Now we have all we need to create the predicate:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
@@ -181,83 +201,60 @@ Let’s use <cite>Missense</cite> and <cite>Frameshift</cite> instead of the def
 <span class="go">&#39;Allele group: Missense, Frameshift&#39;</span>
 </pre></div>
 </div>
-<p><cite>gt_predicate</cite> can be used in any GPSEA analysis, to compare the individuals who harbor
-one allele of a missense variant with the individuals with one allele that leads to a frameshift.</p>
 </section>
 </section>
 <section id="biallelic-predicate">
-<span id="id3"></span><h2>Biallelic predicate<a class="headerlink" href="#biallelic-predicate" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2>Biallelic predicate<a class="headerlink" href="#biallelic-predicate" title="Link to this heading"></a></h2>
 <p>Biallelic predicate compares the individuals with <em>two</em> alleles of the variants of interest.
 The functionality is very similar to that of monoallelic predicate, with two differences.</p>
 <section id="categories">
 <h3>Categories<a class="headerlink" href="#categories" title="Link to this heading"></a></h3>
-<p>A biallelic locus can be present in one of three genotypes.
-For example, using the predicates <cite>A</cite> and <cite>B</cite> for the missense vs. frameshift comparison as in the monoallelic case,
-we will assign the individuals into one of the following genotype categories:</p>
-<table class="docutils align-default" id="id5">
-<caption><span class="caption-text">Biallelic predicate genotype categories</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<p>Biallelic locus can be present in one of three genotypes, allowing an individual
+to be assigned into one of the three genotype groups:</p>
+<span id="biallelic-predicate-gt-groups"></span><table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Biallelic predicate genotype groups</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
 <thead>
-<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(A_{AC}\)</span></p></th>
-<th class="head"><p><span class="math notranslate nohighlight">\(B_{AC}\)</span></p></th>
-<th class="head"><p>Category</p></th>
-<th class="head"><p>Category index</p></th>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Genotype group</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(AC_{A}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(AC_{B}\)</span></p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>2</p></td>
-<td><p>0</p></td>
+<tr class="row-even"><td><p>0</p></td>
 <td><p>A/A</p></td>
+<td><p>2</p></td>
 <td><p>0</p></td>
 </tr>
 <tr class="row-odd"><td><p>1</p></td>
-<td><p>1</p></td>
 <td><p>A/B</p></td>
 <td><p>1</p></td>
+<td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p>0</p></td>
-<td><p>2</p></td>
+<tr class="row-even"><td><p>2</p></td>
 <td><p>B/B</p></td>
+<td><p>0</p></td>
 <td><p>2</p></td>
 </tr>
-<tr class="row-odd"><td><p>other</p></td>
-<td><p>other</p></td>
+<tr class="row-odd"><td></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-<td></td>
+<td><p>other</p></td>
+<td><p>other</p></td>
 </tr>
 </tbody>
 </table>
-<p>The individuals with a different allele count combination
-(e.g. <span class="math notranslate nohighlight">\(A_{AC} = 1\)</span> and <span class="math notranslate nohighlight">\(B_{AC} = 2\)</span>)
-are assigned into the <code class="docutils literal notranslate"><span class="pre">None</span></code> group and will be, thus, omitted from the analysis.</p>
-</section>
-<section id="partitions">
-<h3>Partitions<a class="headerlink" href="#partitions" title="Link to this heading"></a></h3>
-<p>Sometimes we are interested in lumping several genotype categories into a group and then comparing the groups.
-For instance, we may want to compare phenotype of the individuals with <em>at least one</em> frameshift allele
-with those with <em>no</em> frameshift allele.</p>
-<p>The <cite>partitions</cite> option dictates form of the genotype categories.
-The option needs a set of sets of category indices (see table above).
-The set is a partition of a set with the following properties:</p>
-<ul class="simple">
-<li><p>no subset is empty</p></li>
-<li><p>the union of the subsets include all group indices</p></li>
-<li><p>the intersection of any subsets is empty</p></li>
-</ul>
-<p>as in <a class="reference external" href="https://en.wikipedia.org/wiki/Partition_of_a_set">partitions of a set</a>.</p>
-</section>
-<section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
-<p>Let <cite>A</cite> and <cite>B</cite> correspond to the variant predicates that select <em>MISSENSE</em> and <em>FRAMESHIFT</em> variants,
-and let’s reuse the variant predicates <code class="docutils literal notranslate"><span class="pre">is_missense</span></code> and <code class="docutils literal notranslate"><span class="pre">is_frameshift</span></code> from the previous section.</p>
-<section id="compare-missense-vs-frameshift">
-<h4>Compare missense vs. frameshift<a class="headerlink" href="#compare-missense-vs-frameshift" title="Link to this heading"></a></h4>
-<p>We compare missense and frameshift variants in the context of an autosomal recessive disease,
-and we will use the same allele group names as before - <cite>Missense</cite> and <cite>Frameshift</cite>.</p>
+<p>Note that <span class="math notranslate nohighlight">\(\sum_{i \in \{A, B\}} AC_{i} = 2\)</span> and the individuals
+with a different allele count sum are omitted from the analysis.</p>
+<section id="id3">
+<h4>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<p>Let <cite>A</cite> and <cite>B</cite> correspond to <em>MISSENSE</em> and <em>FRAMESHIFT</em> variants,
+and let’s reuse the variant predicates <code class="docutils literal notranslate"><span class="pre">is_missense</span></code> and <code class="docutils literal notranslate"><span class="pre">is_frameshift</span></code> from the previous section,
+to compare missense and frameshift variants in the context of an autosomal recessive disease.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">biallelic_predicate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">biallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Missense&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Frameshift&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;Allele group: Missense/Missense, Missense/Frameshift, Frameshift/Frameshift&#39;</span>
@@ -265,41 +262,51 @@ and we will use the same allele group names as before - <cite>Missense</cite> an
 </div>
 <p>The predicate will assign the individuals into one of three genotype groups:</p>
 <ul class="simple">
-<li><p><cite>Missense/Missense</cite> - individual with two missense alleles</p></li>
-<li><p><cite>Missense/Frameshift</cite> - individual with one missense allele and one frameshift allele</p></li>
-<li><p><cite>Frameshift/Frameshift</cite> - individual with two frameshift alleles</p></li>
+<li><p><cite>Missense/Missense</cite> - two missense alleles</p></li>
+<li><p><cite>Missense/Frameshift</cite> - one missense allele and one frameshift allele</p></li>
+<li><p><cite>Frameshift/Frameshift</cite> - two frameshift alleles</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This corresponds to the partitions:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">partitions</span> <span class="o">=</span> <span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,})</span>
-</pre></div>
-</div>
-</div>
 </section>
-<section id="compare-missense-vs-at-least-one-frameshift-allele">
-<h4>Compare missense vs. at least one frameshift allele<a class="headerlink" href="#compare-missense-vs-at-least-one-frameshift-allele" title="Link to this heading"></a></h4>
-<p>Here we compare individuals with at least one frameshift allele with those with only missense variants.
-We can achieve this by providing the <cite>partitions</cite> option:</p>
+</section>
+<section id="partitions">
+<h3>Partitions<a class="headerlink" href="#partitions" title="Link to this heading"></a></h3>
+<p>Sometimes we are interested in lumping several genotype groups into a partition
+and then comparing the partitions.
+For instance, in the context of an autosomal recessive disease,
+we may want to compare individuals with two “mild” mutations with the individuals
+with at least one “severe” mutation.
+This comparison can be implemented using the <cite>partitions</cite> option.</p>
+<p>We define a partition as a set of one or more genotype group indices
+(see <a class="reference internal" href="#biallelic-predicate-gt-groups"><span class="std std-ref">Biallelic predicate genotype groups</span></a> table),
+and we must provide at least two such partitions to the <cite>partitions</cite> option.</p>
+<section id="id4">
+<h4>Example<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<p>Let <cite>A</cite> and <cite>B</cite> correspond to <em>MISSENSE</em> and <em>FRAMESHIFT</em> variant
+Here we compare the individuals with two missense alleles with the individuals with one frameshift and one missense alleles,
+or with two frameshift alelles.</p>
+<p>The partition for the two missense alleles will include the genotype group <cite>0</cite>,
+and the one or more frameshift alleles partition corresponds to the genotype groups <cite>{1, 2}</cite> (see <a class="reference internal" href="#biallelic-predicate-gt-groups"><span class="std std-ref">Biallelic predicate genotype groups</span></a> table).
+The complete partitions are defined as:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">partitions</span> <span class="o">=</span> <span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>The partitions includes subsets of the category indices to lump together.
-With reference to the <em>Biallelic predicate genotype categories</em> table,
-the first subset represents the individuals with <cite>Missense/Missense</cite> genotype
-and the second subset represents those with either <cite>Missense/Frameshift</cite> or <cite>Frameshift/Frameshift</cite>.</p>
-<p>We provide <cite>partitions</cite> as an extra argument
+<p>We provide <cite>partitions</cite>
 to the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate" title="gpsea.analysis.predicate.genotype.biallelic_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">biallelic_predicate()</span></code></a> function:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">biallelic_predicate</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="n">a_label</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="n">b_label</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Missense&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Frameshift&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">partitions</span><span class="o">=</span><span class="n">partitions</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
 <span class="go">&#39;Allele group: Missense/Missense, Missense/Frameshift OR Frameshift/Frameshift&#39;</span>
 </pre></div>
 </div>
+<p>Now <cite>gt_predicate</cite> assigns an individual into one of the two categories:</p>
+<ul class="simple">
+<li><p><cite>Missense/Missense</cite></p></li>
+<li><p><cite>Missense/Frameshift</cite> OR <cite>Frameshift/Frameshift</cite></p></li>
+</ul>
 </section>
 </section>
 </section>
@@ -310,7 +317,7 @@ to the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicat
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="variant_predicates.html" class="btn btn-neutral float-left" title="Variant Predicates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mode_of_inheritance_predicate.html" class="btn btn-neutral float-right" title="Mode of Inheritance Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="allele_count.html" class="btn btn-neutral float-right" title="Group by allele count" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

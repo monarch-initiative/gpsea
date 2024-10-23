@@ -638,12 +638,15 @@
     <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_GENERAL_TERM</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF01</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span><span class="p">,</span>  <span class="c1"># HMF02</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span><span class="p">,</span>  <span class="c1"># HMF03</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span><span class="p">,</span>  <span class="c1"># HMF05</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span><span class="p">,</span>  <span class="c1"># HMF06</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span><span class="p">,</span>  <span class="c1"># HMF06</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span><span class="p">,</span>  <span class="c1"># HMF07</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_GENERAL_TERM</span><span class="p">,</span>  <span class="c1"># HMF08</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_below_annotation_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF09</span>
         <span class="p">)</span></div>
 
 
