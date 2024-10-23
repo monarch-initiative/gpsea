@@ -82,11 +82,13 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 
 <span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">Survival</span>
+<span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">prepare_censored_data</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">SurvivalStatistic</span>
 
 <span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span>
@@ -117,11 +119,17 @@
         <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="Endpoint.question_base">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint.question_base">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+
 <div class="viewcode-block" id="Endpoint.display_question">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint.display_question">[docs]</a>
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">display_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Compute </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">question_base</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
 
 
@@ -156,6 +164,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">SurvivalStatistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -166,6 +175,44 @@
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">Endpoint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endpoint</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the endpoint used to compute the survival of the individuals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span>
+
+<div class="viewcode-block" id="SurvivalAnalysisResult.plot_kaplan_meier_curves">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_kaplan_meier_curves</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot genotype group survivals on the provided axes.</span>
+
+<span class="sd">        The axes includes legend. However, if no survival is available</span>
+<span class="sd">        for a genotype group, the group name will be missing from the legend.</span>
+
+<span class="sd">        :param ax: a Matplotlib `Axes` to draw on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">pat_cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">():</span>
+            <span class="n">survivals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">pat_cat</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span>
+                <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">non_na</span> <span class="o">=</span> <span class="n">survivals</span><span class="p">[</span><span class="n">survivals</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_na</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">censored_data</span> <span class="o">=</span> <span class="n">prepare_censored_data</span><span class="p">(</span><span class="n">survivals</span><span class="o">=</span><span class="n">non_na</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">ecdf</span><span class="p">(</span><span class="n">censored_data</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">sf</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pat_cat</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -247,6 +294,7 @@
 
         <span class="k">return</span> <span class="n">SurvivalAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>

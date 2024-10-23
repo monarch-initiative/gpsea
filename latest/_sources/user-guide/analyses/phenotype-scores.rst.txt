@@ -276,13 +276,18 @@ to visualize the phenotype score distributions:
 >>> _ = ax.set(
 ...     ylabel="Phenotype score", ylim=(-0.5, len(structural_defects) + 0.5)
 ... )
->>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
 
 
 .. image:: /img/rere_phenotype_score_boxplot.png
    :alt: Phenotype score distribution
    :align: center
    :width: 600px
+
+.. doctest:: phenotype-scores
+   :hide:
+
+   >>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
+
 
 
 We see that the individuals with the point mutations feature structural defects
