@@ -3,7 +3,6 @@ import pytest
 
 from gpsea.analysis.predicate import PatientCategory, PatientCategories
 from gpsea.analysis.predicate.phenotype import HpoPredicate, DiseasePresencePredicate
-from gpsea.analysis.predicate.genotype import *
 from gpsea.model import Cohort, Patient
 
 
@@ -47,6 +46,7 @@ class TestHpoPredicate:
         predicate = HpoPredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
+        assert actual is not None
         assert actual.phenotype == term_id
         assert actual.category == expected
 

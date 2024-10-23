@@ -1,8 +1,17 @@
 import pytest
 
 from gpsea.analysis.predicate.genotype import VariantPredicates
-from gpsea.model import *
-from gpsea.model.genome import *
+from gpsea.model import (
+    Cohort,
+    FeatureInfo,
+    FeatureType,
+    ProteinFeature,
+    ProteinMetadata,
+    Variant,
+    VariantClass,
+    VariantEffect,
+)
+from gpsea.model.genome import Region
 
 
 class TestVariantPredicates:

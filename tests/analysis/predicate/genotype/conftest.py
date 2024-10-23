@@ -2,8 +2,27 @@ import pytest
 
 import hpotk
 
-from gpsea.model import *
-from gpsea.model.genome import *
+from gpsea.model import (
+    Genotype,
+    Genotypes,
+    ImpreciseSvInfo,
+    Patient,
+    SampleLabels,
+    Sex,
+    TranscriptAnnotation,
+    Variant,
+    VariantClass,
+    VariantCoordinates,
+    VariantEffect,
+    VariantInfo,
+)
+from gpsea.model.genome import (
+    GenomeBuild,
+    GenomicRegion,
+    Region,
+    Strand,
+
+)
 
 
 @pytest.fixture(scope="package")
@@ -265,9 +284,7 @@ def genesis_synonymous_mutation(
                 tx_id="tx:xyz",
                 hgvs_cdna=None,
                 is_preferred=True,
-                variant_effects=(
-                    VariantEffect.SYNONYMOUS_VARIANT,
-                ),
+                variant_effects=(VariantEffect.SYNONYMOUS_VARIANT,),
                 affected_exons=(5,),
                 protein_id="pt:xyz",
                 hgvsp=None,
@@ -453,9 +470,7 @@ def white_synonymous_mutation(
                 tx_id="tx:xyz",
                 hgvs_cdna=None,
                 is_preferred=True,
-                variant_effects=(
-                    VariantEffect.SYNONYMOUS_VARIANT,
-                ),
+                variant_effects=(VariantEffect.SYNONYMOUS_VARIANT,),
                 affected_exons=(5,),
                 protein_id="pt:xyz",
                 hgvsp=None,
