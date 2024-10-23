@@ -78,7 +78,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         self,
         gt_predicate: GenotypePolyPredicate,
         statistic: PhenotypeScoreStatistic,
-        genotype_phenotype_scores: pd.DataFrame,
+        data: pd.DataFrame,
         pval: float,
     ):
         super().__init__(
@@ -86,7 +86,10 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
             statistic=statistic,
             pval=pval,
         )
-        self._genotype_phenotype_scores = genotype_phenotype_scores
+        assert isinstance(data, pd.DataFrame) and all(
+            col in data for col in ("genotype", "phenotype_score")
+        )
+        self._genotype_phenotype_scores = data
 
     @property
     def genotype_phenotype_scores(self) -> pd.DataFrame:
@@ -95,19 +98,19 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
 
         The DataFrame has the following structure:
 
-        ==========  ========  =========
-        patient_id  genotype  phenotype
-        ==========  ========  =========
+        ==========  ========  ===============
+        patient_id  genotype  phenotype_score
+        ==========  ========  ===============
         patient_1   0         1
         patient_2   0         3
         patient_3   None      2
         patient_4   1         2
         ...         ...       ...
-        ==========  ========  =========
+        ==========  ========  ===============
 
         The DataFrame index includes the patient IDs, and then there are 2 columns
         with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
-        and the `phenotype` score. A `genotype` value may be missing if the patient
+        and the `phenotype_score`. A `genotype` value may be missing if the patient
         cannot be assigned into any genotype category.
         """
         return self._genotype_phenotype_scores
@@ -136,7 +139,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         assert actual == expected, 'Mismatch in the genotype categories'
         
         x = [
-            data.loc[data["genotype"] == c.category.cat_id, "phenotype"].to_list()
+            data.loc[data["genotype"] == c.category.cat_id, "phenotype_score"].to_list()
             for c in self._gt_predicate.get_categorizations()
         ]
         
@@ -151,6 +154,17 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
 
         for patch, color in zip(bplot["boxes"], colors):
             patch.set_facecolor(color)
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, PhenotypeScoreAnalysisResult) \
+            and super(MonoPhenotypeAnalysisResult, self).__eq__(value) \
+            and self._genotype_phenotype_scores.equals(value._genotype_phenotype_scores)
+    
+    def __hash__(self) -> int:
+        return hash((
+            super(MonoPhenotypeAnalysisResult, self).__hash__(),
+            self._pval,
+        ))
 
 
 class PhenotypeScoreAnalysis:
@@ -193,7 +207,7 @@ class PhenotypeScoreAnalysis:
         data = pd.DataFrame(
             None,
             index=idx,
-            columns=["genotype", "phenotype"],
+            columns=["genotype", "phenotype_score"],
         )
 
         # Apply the predicates on the patients
@@ -204,18 +218,18 @@ class PhenotypeScoreAnalysis:
             else:
                 data.loc[patient.patient_id, "genotype"] = gt_cat.category.cat_id
             
-            data.loc[patient.patient_id, "phenotype"] = pheno_scorer.score(patient)
+            data.loc[patient.patient_id, "phenotype_score"] = pheno_scorer.score(patient)
 
         # Sort by PatientCategory.cat_id and unpack.
         # For now, we only allow to have up to 2 groups.
         x_key, y_key = sorted(data["genotype"].dropna().unique())
-        x = data.loc[data["genotype"] == x_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
-        y = data.loc[data["genotype"] == y_key, "phenotype"].to_numpy(dtype=float)  # type: ignore
+        x = data.loc[data["genotype"] == x_key, "phenotype_score"].to_numpy(dtype=float)  # type: ignore
+        y = data.loc[data["genotype"] == y_key, "phenotype_score"].to_numpy(dtype=float)  # type: ignore
         pval = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(
             gt_predicate=gt_predicate,
             statistic=self._statistic,
-            genotype_phenotype_scores=data,
+            data=data,
             pval=pval,
         )

@@ -126,7 +126,7 @@ Show data frame with scores
 
 >>> scores = result.genotype_phenotype_scores.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
-                                     genotype phenotype
+                                     genotype phenotype_score
 patient_id                                                   
 individual 10[PMID_30968594_individual_10]        1     614.0
 individual 11[PMID_30968594_individual_11]        1     630.0
