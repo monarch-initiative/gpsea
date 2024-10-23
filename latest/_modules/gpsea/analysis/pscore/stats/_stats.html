@@ -82,10 +82,12 @@
 
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">mannwhitneyu</span><span class="p">,</span> <span class="n">ttest_ind</span>
 
+<span class="kn">from</span> <span class="nn">..._base</span> <span class="kn">import</span> <span class="n">Statistic</span>
+
 
 <div class="viewcode-block" id="PhenotypeScoreStatistic">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.PhenotypeScoreStatistic">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeScoreStatistic</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PhenotypeScoreStatistic</span><span class="p">(</span><span class="n">Statistic</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScoreStatistic` calculates a p value</span>
 <span class="sd">    for 2 or more phenotype score groups</span>
@@ -100,7 +102,13 @@
         <span class="n">scores</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">pass</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span></div>
 
 
 
@@ -117,6 +125,11 @@
 <span class="sd">    See :ref:`phenotype-score-stats` for an example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mann-Whitney U test&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
 <div class="viewcode-block" id="MannWhitneyStatistic.compute_pval">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.MannWhitneyStatistic.compute_pval">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_pval</span><span class="p">(</span>
@@ -141,7 +154,13 @@
     <span class="k">def</span> <span class="nf">_remove_nans</span><span class="p">(</span>
         <span class="n">a</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MannWhitneyStatistic</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">23</span></div>
 
 
 
@@ -155,6 +174,11 @@
 
 <span class="sd">    The `NaN` phenotype score values are ignored.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Student&#39;s t-test&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># TODO: refer to a user guide example to show a usage example.</span>
 
@@ -174,7 +198,13 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">pvalue</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">TTestStatistic</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">31</span></div>
 
 </pre></div>
 

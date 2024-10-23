@@ -216,7 +216,7 @@ the genotype groups:</p>
 <p>The <cite>result</cite> includes the survival values for all cohort members:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">survivals</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">survivals</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
-<span class="go">                          genotype    survival</span>
+<span class="go">                          genotype    phenotype</span>
 <span class="go">patient_id</span>
 <span class="go">AII.1[PMID_22034507_AII_1]       0    Survival(value=18262.5, is_censored=True)</span>
 <span class="go">AII.2[PMID_22034507_AII_2]       0    None</span>
@@ -227,7 +227,7 @@ the genotype groups:</p>
 </div>
 <p>Each line corresponeds to an individual and the dataframe is indexed by the individual’s identifier/label.
 The <cite>genotype</cite> column contains the genotype group code,
-and <cite>survival</cite> column includes a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a> value
+and <cite>phenotype</cite> column includes a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a> value
 or <cite>None</cite> if computing the survival was impossible (see <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.hpo_onset" title="gpsea.analysis.temporal.endpoint.hpo_onset"><code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_onset()</span></code></a> for details).
 The <cite>Survival</cite> reports the number of days until attaining the endpoint,
 here defined as end stage renal disease (<cite>is_censored=False</cite>),

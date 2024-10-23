@@ -79,17 +79,21 @@
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">from</span> <span class="nn">..._base</span> <span class="kn">import</span> <span class="n">Statistic</span>
 <span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">Survival</span>
 
 
 <div class="viewcode-block" id="SurvivalStatistic">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.temporal.stats.html#gpsea.analysis.temporal.stats.SurvivalStatistic">[docs]</a>
-<span class="k">class</span> <span class="nc">SurvivalStatistic</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SurvivalStatistic</span><span class="p">(</span><span class="n">Statistic</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `SurvivalStatistic` calculates a p value</span>
 <span class="sd">    for 2 or more survival groups</span>
 <span class="sd">    computed by a :class:`~gpsea.analysis.tempo.SurvivalMetric`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SurvivalStatistic.compute_pval">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.temporal.stats.html#gpsea.analysis.temporal.stats.SurvivalStatistic.compute_pval">[docs]</a>
@@ -103,7 +107,13 @@
 <span class="sd">        the same source distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span></div>
 
 </pre></div>
 

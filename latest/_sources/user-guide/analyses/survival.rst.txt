@@ -138,7 +138,7 @@ The `result` includes the survival values for all cohort members:
 
 >>> survivals = result.data.sort_index()
 >>> survivals.head()  # doctest: +NORMALIZE_WHITESPACE
-                          genotype    survival
+                          genotype    phenotype
 patient_id                                                                        
 AII.1[PMID_22034507_AII_1]       0    Survival(value=18262.5, is_censored=True)
 AII.2[PMID_22034507_AII_2]       0    None
@@ -148,7 +148,7 @@ AIII.4[PMID_22034507_AIII_4]     0    Survival(value=19723.5, is_censored=False)
 
 Each line corresponeds to an individual and the dataframe is indexed by the individual's identifier/label.
 The `genotype` column contains the genotype group code,
-and `survival` column includes a :class:`~gpsea.analysis.temporal.Survival` value
+and `phenotype` column includes a :class:`~gpsea.analysis.temporal.Survival` value
 or `None` if computing the survival was impossible (see :func:`~gpsea.analysis.temporal.endpoint.hpo_onset` for details).
 The `Survival` reports the number of days until attaining the endpoint,
 here defined as end stage renal disease (`is_censored=False`),

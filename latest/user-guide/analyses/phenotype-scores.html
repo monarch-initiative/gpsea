@@ -304,18 +304,18 @@ with point vs. loss-of-function mutations.</p>
 </pre></div>
 </div>
 <p>To explore further, we can access a data frame with genotype categories and phenotype counts:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">genotype_phenotype_scores</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
-<span class="go">                                     genotype phenotype</span>
+<span class="go">                                      genotype  phenotype</span>
 <span class="go">patient_id</span>
-<span class="go">Subject 10[PMID_27087320_Subject_10]        1         0</span>
-<span class="go">Subject 1[PMID_27087320_Subject_1]          0         4</span>
-<span class="go">Subject 1[PMID_29330883_Subject_1]          1         0</span>
-<span class="go">Subject 2[PMID_27087320_Subject_2]       None         4</span>
-<span class="go">Subject 2[PMID_29330883_Subject_2]          1         1</span>
+<span class="go">Subject 10[PMID_27087320_Subject_10]         1          0</span>
+<span class="go">Subject 1[PMID_27087320_Subject_1]           0          4</span>
+<span class="go">Subject 1[PMID_29330883_Subject_1]           1          0</span>
+<span class="go">Subject 2[PMID_27087320_Subject_2]        None          4</span>
+<span class="go">Subject 2[PMID_29330883_Subject_2]           1          1</span>
 </pre></div>
 </div>
-<p>The data frame provides a <cite>genotype</cite> category and a <cite>phenotype</cite> score for each patient.
+<p>The data frame provides a <cite>genotype</cite> category and a <cite>phenotype_score</cite> for each patient.
 The genotype category should be interpreted in the context of the genotype predicate:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span>
@@ -329,7 +329,6 @@ to visualize the phenotype score distributions:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">plot_boxplots</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>

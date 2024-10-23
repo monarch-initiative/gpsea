@@ -85,6 +85,8 @@
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
 
+<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span>
+
 
 <div class="viewcode-block" id="PhenotypeScorer">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer">[docs]</a>
@@ -156,58 +158,37 @@
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeScoreAnalysisResult</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">PhenotypeScoreAnalysisResult</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.</span>
+
+<span class="sd">    The :attr:`PhenotypeScoreAnalysisResult.data` property provides a data frame</span>
+<span class="sd">    with phenotype score for each tested individual:</span>
+<span class="sd">    </span>
+<span class="sd">    ==========  ========  =========</span>
+<span class="sd">    patient_id  genotype  phenotype</span>
+<span class="sd">    ==========  ========  =========</span>
+<span class="sd">    patient_1   0         1</span>
+<span class="sd">    patient_2   0         nan</span>
+<span class="sd">    patient_3   None      2</span>
+<span class="sd">    patient_4   1         2</span>
+<span class="sd">    ...         ...       ...</span>
+<span class="sd">    ==========  ========  ===============</span>
+
+<span class="sd">    The DataFrame index includes the identifiers of the tested individuals and the values are stored</span>
+<span class="sd">    in `genotype` and `phenotype` columns.</span>
+
+<span class="sd">    The `genotype` includes the genotype category ID (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
+<span class="sd">    or `None` if the patient cannot be assigned into any genotype category.</span>
+<span class="sd">    </span>
+<span class="sd">    The `phenotype` contains a `float` with the phenotype score. A `NaN` value is used</span>
+<span class="sd">    if the phenotype score is impossible to compute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">genotype_phenotype_scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span> <span class="o">=</span> <span class="n">genotype_phenotype_scores</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">pval</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`p_val` must be a finite float in range [0, 1] but it was </span><span class="si">{</span><span class="n">pval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">genotype_phenotype_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the DataFrame with the genotype group and the phenotype score for each patient.</span>
-
-<span class="sd">        The DataFrame has the following structure:</span>
-
-<span class="sd">        ==========  ========  =========</span>
-<span class="sd">        patient_id  genotype  phenotype</span>
-<span class="sd">        ==========  ========  =========</span>
-<span class="sd">        patient_1   0         1</span>
-<span class="sd">        patient_2   0         3</span>
-<span class="sd">        patient_3   None      2</span>
-<span class="sd">        patient_4   1         2</span>
-<span class="sd">        ...         ...       ...</span>
-<span class="sd">        ==========  ========  =========</span>
-
-<span class="sd">        The DataFrame index includes the patient IDs, and then there are 2 columns</span>
-<span class="sd">        with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
-<span class="sd">        and the `phenotype` score. A `genotype` value may be missing if the patient</span>
-<span class="sd">        cannot be assigned into any genotype category.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the p value of the test.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span>
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.plot_boxplots">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots">[docs]</a>
     <span class="k">def</span> <span class="nf">plot_boxplots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">,</span>
         <span class="n">colors</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;darksalmon&quot;</span><span class="p">,</span> <span class="s2">&quot;honeydew&quot;</span><span class="p">),</span>
     <span class="p">):</span>
@@ -219,23 +200,25 @@
 <span class="sd">        :param colors: a tuple with colors to use for coloring the box patches of the box plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># skip the patients with unassigned genotype group</span>
-        <span class="n">bla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="n">bla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
         <span class="n">not_na_gts</span> <span class="o">=</span> <span class="n">bla</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genotype_phenotype_scores</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">not_na_gts</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">not_na_gts</span><span class="p">]</span>
         
         <span class="c1"># Check that the provided genotype predicate defines the same categories</span>
         <span class="c1"># as those found in `data.`</span>
-        <span class="n">actual</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cat_id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cat_id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
         <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">&#39;Mismatch in the genotype categories&#39;</span>
         
         <span class="n">x</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
         <span class="p">]</span>
         
         <span class="n">gt_cat_names</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
         <span class="p">]</span>
         <span class="n">bplot</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
@@ -245,7 +228,26 @@
 
         <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bplot</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span> <span class="n">colors</span><span class="p">):</span>
             <span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;PhenotypeScoreAnalysisResult(&quot;</span>
+            <span class="s2">&quot;gt_predicate=</span><span class="si">{self._gt_predicate}</span><span class="s2">, &quot;</span>
+            <span class="s2">&quot;statistic=</span><span class="si">{self._statistic}</span><span class="s2">, &quot;</span>
+            <span class="s2">&quot;data=</span><span class="si">{self._data}</span><span class="s2">, &quot;</span>
+            <span class="s2">&quot;pval=</span><span class="si">{self._pval}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
@@ -293,28 +295,34 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>
-            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">],</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">DATA_COLUMNS</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Apply the predicates on the patients</span>
         <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">:</span>
             <span class="n">gt_cat</span> <span class="o">=</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">gt_cat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
             
-            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pheno_scorer</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">pheno_scorer</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
         <span class="c1"># Sort by PatientCategory.cat_id and unpack.</span>
         <span class="c1"># For now, we only allow to have up to 2 groups.</span>
-        <span class="n">x_key</span><span class="p">,</span> <span class="n">y_key</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_key</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_key</span><span class="p">,</span> <span class="s2">&quot;phenotype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">x_key</span><span class="p">,</span> <span class="n">y_key</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">scores</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">(</span>
-            <span class="n">genotype_phenotype_scores</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
