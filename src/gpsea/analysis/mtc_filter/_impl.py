@@ -493,12 +493,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
         return (
             PhenotypeMtcFilter.OK,
-            HpoMtcFilter.SKIPPING_GENERAL_TERM,
-            HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM,
-            self._below_frequency_threshold,
-            self._not_powered_for_2_by_2,
-            HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,
-            HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,
+            self._below_frequency_threshold,  # HMF01
+            HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,  # HMF02
+            HpoMtcFilter.SAME_COUNT_AS_THE_ONLY_CHILD,  # HMF03
+            HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,  # HMF05
+            self._not_powered_for_2_by_2,  # HMF06
+            self._not_powered_for_2_by_3,  # HMF06
+            HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM,  # HMF07
+            HpoMtcFilter.SKIPPING_GENERAL_TERM,  # HMF08
+            self._below_annotation_frequency_threshold,  # HMF09
         )
 
     def filter_method_name(self) -> str:

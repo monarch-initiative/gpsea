@@ -130,7 +130,7 @@ class VariantGenePredicate(VariantPredicate):
         self._symbol = symbol
 
     def get_question(self) -> str:
-        return f'impacts {self._symbol}'
+        return f'affects {self._symbol}'
 
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
@@ -477,7 +477,8 @@ class ProteinRegionPredicate(VariantPredicate):
         self._tx_id = tx_id
         
     def get_question(self) -> str:
-        return f'variant affects aminoacid(s) between {self._region.start} and {self._region.end} ' \
+        # We report in 1-based coordinate system
+        return f'variant affects aminoacid(s) between {self._region.start + 1} and {self._region.end} ' \
             f'on protein encoded by transcript {self._tx_id}'
 
     def test(self, variant: Variant) -> bool:
