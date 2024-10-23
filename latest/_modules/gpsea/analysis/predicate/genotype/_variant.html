@@ -375,7 +375,8 @@
         <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant</span>
+<span class="sd">        is of a certain :class:`~gpsea.model.VariantClass`.</span>
 
 <span class="sd">        **Example**</span>
 
@@ -495,54 +496,48 @@
             <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
             <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
         <span class="p">)</span></div>
-</div>
 
 
-
-<div class="viewcode-block" id="ProteinPredicates">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates">[docs]</a>
-<span class="k">class</span> <span class="nc">ProteinPredicates</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ProteinPredicates` prepares variant predicates that need to consult </span>
-<span class="sd">    :class:`~gpsea.preprocessing.ProteinMetadataService`</span>
-<span class="sd">    to categorize a :class:`~gpsea.model.Variant`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span> <span class="o">=</span> <span class="n">protein_metadata_service</span>
-
-<div class="viewcode-block" id="ProteinPredicates.protein_feature_type">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">[docs]</a>
+<div class="viewcode-block" id="VariantPredicates.protein_feature_type">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature_type">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Prepare a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`</span>
+<span class="sd">        to test if the variant affects a `feature_type` of a protein.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            feature_type: the target protein :class:`~gpsea.model.FeatureType`</span>
-<span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)</span>
+<span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).</span>
+<span class="sd">            protein_metadata: the information about the protein.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
-            <span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+            <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProteinPredicates.protein_feature">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature">[docs]</a>
-    <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<div class="viewcode-block" id="VariantPredicates.protein_feature">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span>
+        <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` to test if the variant affects a protein feature</span>
+<span class="sd">        labeled with the provided `feature_id`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            feature_id: the id of the target protein feature (e.g. `ANK 1`)</span>
-<span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+<span class="sd">            protein_metadata: the information about the protein.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span>
-            <span class="n">feature_id</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+            <span class="n">feature_id</span><span class="o">=</span><span class="n">feature_id</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
