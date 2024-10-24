@@ -27,11 +27,11 @@ class VitalStatus:
     @property
     def is_alive(self) -> bool:
         return self.status == Status.ALIVE
-    
+
     @property
     def is_deceased(self) -> bool:
         return self.status == Status.DECEASED
-    
+
     @property
     def is_unknown(self) -> bool:
         return self.status == Status.UNKNOWN
@@ -55,7 +55,7 @@ class Patient:
     * genotype information as one or more :class:`~gpsea.model.Variant`
 
     .. note::
-    
+
         We strongly recommend using the :func:`from_raw_parts` static constructor
         instead of `__init__`.
     """
@@ -79,7 +79,7 @@ class Patient:
 
         if sex is None:
             sex = Sex.UNKNOWN_SEX
-        
+
         return Patient(
             labels=labels,
             sex=sex,
@@ -104,14 +104,14 @@ class Patient:
     ):
         assert isinstance(labels, SampleLabels)
         self._labels = labels
-        
+
         assert isinstance(sex, Sex)
         self._sex = sex
-        
+
         if age is not None:
             assert isinstance(age, Age)
         self._age = age
-        
+
         if vital_status is not None:
             assert isinstance(vital_status, VitalStatus)
         self._vital_status = vital_status
@@ -148,7 +148,7 @@ class Patient:
         Get age of the individual or `None` if not available.
         """
         return self._age
-    
+
     @property
     def vital_status(self) -> typing.Optional[VitalStatus]:
         """
@@ -162,14 +162,14 @@ class Patient:
         Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
-    
+
     @property
     def measurements(self) -> typing.Sequence[Measurement]:
         """
         Get the measurements in the patient.
         """
         return self._measurements
-    
+
     def measurement_by_id(
         self,
         term_id: typing.Union[str, hpotk.TermId],
@@ -191,7 +191,7 @@ class Patient:
         for m in self._measurements:
             if m.identifier.value == term_id:
                 return m
-        
+
         return None
 
     @property
@@ -316,6 +316,12 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         return set(itertools.chain(phenotype for patient in self._members for phenotype in patient.phenotypes))
 
+    def all_measurements(self) -> typing.Set[Measurement]:
+        """
+        Get a set of all phenotypes (observed or excluded) in the cohort members.
+        """
+        return set(itertools.chain(measurement for patient in self._members for measurement in patient.measurements))
+
     def all_diseases(self) -> typing.Set[Disease]:
         """
         Get a set of all diseases (observed or excluded) in the cohort members.
@@ -354,11 +360,11 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
-        
+
         Args:
             typing.Optional[int]: If not given, lists all present phenotypes.
                 Otherwise, lists only the `top` highest counts
-        
+
         Returns:
             typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,
                 number of patients with that phenotype)
@@ -366,6 +372,26 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         counter = Counter()
         for patient in self._members:
             counter.update(p.identifier.value for p in patient.phenotypes if p.is_present)
+        return counter.most_common(top)
+
+    def list_measurements(
+            self,
+            top: typing.Optional[int] = None,
+    ) -> typing.Sequence[typing.Tuple[str, int]]:
+        """
+        Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
+
+        Args:
+            typing.Optional[int]: If not given, lists all present phenotypes.
+                Otherwise, lists only the `top` highest counts
+
+        Returns:
+            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,
+                number of patients with that phenotype)
+        """
+        counter = Counter()
+        for patient in self._members:
+            counter.update(m.identifier.value for m in patient.measurements if m.is_present)
         return counter.most_common(top)
 
     def list_all_diseases(
@@ -384,7 +410,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         Args:
             typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
-        
+
         Returns:
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
         """
@@ -400,7 +426,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         Args:
             typing.Optional[int]: If not given, lists all proteins. Otherwise, lists only the `top` highest counts.
-        
+
         Returns:
             list: A list of tuples, formatted (protein ID string, the count of variants that affect the protein)
         """
@@ -419,7 +445,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Args:
             tx_id: a `str` with transcript accession (e.g. `NM_123456.5`)
               or `None` if all transcripts should be listed.
-        
+
         Returns:
             typing.Mapping[str, typing.Mapping[str, int]]: Each transcript ID references a Counter(), with the variant effect as the key
               and the count of variants with that effect on the transcript id.
@@ -437,7 +463,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
 
     def get_excluded_count(self) -> int:
         return self._excluded_count
-    
+
     def get_variant_by_key(self, variant_key) -> Variant:
         for v in self.all_variants():
             if v.variant_info.variant_key == variant_key:

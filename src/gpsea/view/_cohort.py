@@ -75,6 +75,24 @@ class CohortViewer:
                     "Count": individual_count,
                 }
             )
+        # Show the same max number of measuresments as phenotypes
+        measurement_counts = list()
+        for msmt in cohort.list_measurements(top=self._top_phenotype_count):
+            msmt_id = msmt[0]
+            individual_count = msmt[1]
+            msmt_label = "n/a"
+            #if hpo_id in self._hpo:
+            #    hpo_label = self._hpo.get_term_name(hpo_id)
+            msmt_label = "need a way to retrieve measuremnt label"
+            measurement_counts.append(
+                {
+                    "Assay": msmt_label,
+                    "ID": msmt_id,
+                    "Count": individual_count,
+                })
+        n_measurements = len(measurement_counts)
+
+
 
         variant_counts = list()
         variant_to_display_d = CohortViewer._get_variant_description(cohort, transcript_id)
@@ -202,6 +220,8 @@ class CohortViewer:
             "total_hpo_count": len(cohort.all_phenotypes()),
             "top_hpo_count": self._top_phenotype_count,
             "hpo_counts": hpo_counts,
+            "total_measurement_count": n_measurements,
+            "measurement_counts": measurement_counts,
             "unique_variant_count": len(cohort.all_variants()),
             "top_var_count": self._top_variant_count,
             "var_counts": variant_counts,
