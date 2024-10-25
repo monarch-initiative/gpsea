@@ -14,9 +14,10 @@ from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
 from .._base import MonoPhenotypeAnalysisResult
+from .._partition import ContinuousPartitioning
 
 
-class Endpoint(metaclass=abc.ABCMeta):
+class Endpoint(ContinuousPartitioning, metaclass=abc.ABCMeta):
     """
     `Endpoint` computes survival for the analyzed individual.
 
@@ -35,13 +36,6 @@ class Endpoint(metaclass=abc.ABCMeta):
         data (e.g. age of death or age at last investigation).
         """
         pass
-
-    @abc.abstractmethod
-    def question_base(self) -> str:
-        pass
-
-    def display_question(self) -> str:
-        return f"Compute {self.question_base()}"
 
 
 class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):

@@ -23,7 +23,7 @@ def summarize_hpo_analysis(
     # Column index: multiindex of counts and percentages for all genotype predicate groups
     gt_idx = pd.MultiIndex.from_product(
         iterables=(result.gt_predicate.get_categories(), ("Count", "Percent")),
-        names=(result.gt_predicate.get_question_base(), None),
+        names=(result.gt_predicate.variable_name, None),
     )
 
     # We'll fill this frame with data

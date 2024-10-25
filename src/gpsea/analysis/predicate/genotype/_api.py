@@ -8,7 +8,7 @@ from .._api import PolyPredicate, Categorization
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
     """
     `GenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`
-    that test the genotype axis.
+    that assign an individual into a group based on the genotype.
     """
     pass
 

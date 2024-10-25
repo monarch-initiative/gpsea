@@ -24,8 +24,8 @@ class CountingPhenotypeScorer(PhenotypeScorer):
 
     @staticmethod
     def from_query_curies(
-            hpo: hpotk.MinimalOntology,
-            query: typing.Iterable[typing.Union[str, hpotk.TermId]],
+        hpo: hpotk.MinimalOntology,
+        query: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
         """
         Create a scorer to test for the number of phenotype terms that fall into the phenotype groups.
@@ -76,8 +76,17 @@ class CountingPhenotypeScorer(PhenotypeScorer):
         self._hpo = hpo
         self._query = set(query)
 
-    def get_question(self) -> str:
-        return "How many of the query HPO terms (or their descendants) does the individual display"
+    @property
+    def name(self) -> str:
+        return "HPO Group Count"
+
+    @property
+    def summary(self) -> str:
+        return (
+            "Assign a phenotype score that is equivalent to the count "
+            "of present phenotypes that are either an exact match to "
+            "the query terms or their descendants"
+        )
 
     def score(
             self,
@@ -132,6 +141,16 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             'HP:0001256': 1, 'HP:0002342': 1, 'HP:0001249': 1,
             'HP:0006889': 0.5,
         }
+
+    @property
+    def name(self) -> str:
+        return "De Vries Score"
+
+    @property
+    def summary(self) -> str:
+        return (
+            "A phenotypic severity score for individuals with intellectual disability"
+        )
 
     def _developmental_delay_score(
         self,

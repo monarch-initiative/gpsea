@@ -32,6 +32,14 @@ class EndpointBase(Endpoint, metaclass=abc.ABCMeta):
 
 class Death(EndpointBase):
 
+    @property
+    def name(self) -> str:
+        return "Death"
+
+    @property
+    def summary(self) -> str:
+        return f"Compute time until {self._timeline.name.lower()} death"
+
     def compute_survival(
         self,
         patient: Patient,
@@ -89,6 +97,14 @@ class PhenotypicFeatureOnset(EndpointBase):
 
         assert term_id in hpo, f"`term_id` {term_id.value} is not in HPO {hpo.version}"
 
+    @property
+    def name(self) -> str:
+        return f"Onset of {self._hpo.get_term_name(self._term_id)}"
+
+    @property
+    def summary(self) -> str:
+        return f"Compute time until onset of {self._hpo.get_term_name(self._term_id)}"
+
     def compute_survival(
         self,
         patient: Patient,
@@ -124,10 +140,6 @@ class PhenotypicFeatureOnset(EndpointBase):
                 age=earliest_onset,
                 is_censored=False,
             )
-            
-    def question_base(self) -> str:
-        label = self._hpo.get_term_name(self._term_id)
-        return f"time until {self._timeline.name.lower()} onset of {label}"
 
     def __eq__(self, value: object) -> bool:
         return (
@@ -163,6 +175,14 @@ class DiseaseOnset(EndpointBase):
 
         assert isinstance(disease_id, hpotk.TermId)
         self._disease_id = disease_id
+
+    @property
+    def name(self) -> str:
+        return f"Onset of {self._disease_id.value}"
+
+    @property
+    def summary(self) -> str:
+        return f"Compute time until {self._disease_id.value} onset"
 
     def compute_survival(
         self,

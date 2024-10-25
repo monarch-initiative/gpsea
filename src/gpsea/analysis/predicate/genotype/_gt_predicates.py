@@ -142,6 +142,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         }
 
         return PolyCountingGenotypePredicate.for_predicates_and_categories(
+            total_count=1,
             count2cat=count2cat,
             a_predicate=a_predicate,
             b_predicate=b_predicate,
@@ -162,6 +163,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         )
 
         return PolyCountingGenotypePredicate.for_predicates_and_categories(
+            total_count=2,
             count2cat=count2cat,
             a_predicate=a_predicate,
             b_predicate=b_predicate,
@@ -169,11 +171,13 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
     @staticmethod
     def for_predicates_and_categories(
+        total_count: int,
         count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
     ) -> "PolyCountingGenotypePredicate":
         return PolyCountingGenotypePredicate(
+            total_count=total_count,
             a_counter=AlleleCounter(a_predicate),
             b_counter=AlleleCounter(b_predicate),
             count2cat=count2cat,
@@ -181,10 +185,12 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
     def __init__(
         self,
+        total_count: int,
         count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
         a_counter: AlleleCounter,
         b_counter: AlleleCounter,
     ):
+        self._total_count = total_count
         self._count2cat = dict(count2cat)
         self._categorizations = tuple(_deduplicate_categorizations(count2cat.values()))
         self._a_counter = a_counter
@@ -194,8 +200,18 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
-    def get_question_base(self) -> str:
-        return "Allele group"
+    @property
+    def name(self) -> str:
+        return "Allele Group Predicate"
+
+    @property
+    def summary(self) -> str:
+        allele = "allele" if self._total_count == 1 else "alleles"
+        return f"Partition by allele group ({self._total_count} {allele} per group)"
+
+    @property
+    def variable_name(self) -> str:
+        return "Allele groups"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
@@ -300,9 +316,9 @@ def _build_ac_to_cat(
     partitions: typing.Collection[typing.Collection[int]],
 ) -> typing.Mapping[int, Categorization]:
     labels = (
-        "No allele",
-        "One allele",
-        "Two alleles",
+        "zero",
+        "one",
+        "two",
     )
 
     ac2cat = {}
@@ -340,14 +356,14 @@ def allele_count(
 
     >>> from gpsea.analysis.predicate.genotype import allele_count
     >>> zero_vs_one = allele_count(counts=({0,}, {1,}))
-    >>> zero_vs_one.display_question()
-    'Allele count: 0, 1'
+    >>> zero_vs_one.summarize_groups()
+    'Allele counts: 0, 1'
     
     These counts will create three groups for individuals with zero, one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=({0,}, {1,}, {2,}))
-    >>> zero_vs_one_vs_two.display_question()
-    'Allele count: 0, 1, 2'
+    >>> zero_vs_one_vs_two.summarize_groups()
+    'Allele counts: 0, 1, 2'
 
     :param counts: a sequence with allele count partitions.
     :param target: a predicate for choosing the variants for testing
@@ -389,8 +405,17 @@ class AlleleCountPredicate(GenotypePolyPredicate):
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
-    def get_question_base(self) -> str:
-        return "Allele count"
+    @property
+    def name(self) -> str:
+        return "Allele Count Predicate"
+
+    @property
+    def summary(self) -> str:
+        return "Partition by the allele count"
+
+    @property
+    def variable_name(self) -> str:
+        return "Allele counts"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
@@ -431,8 +456,17 @@ class SexGenotypePredicate(GenotypePolyPredicate):
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
 
-    def get_question_base(self) -> str:
-        return "Sex of the individual"
+    @property
+    def name(self) -> str:
+        return "Sex Predicate"
+
+    @property
+    def summary(self) -> str:
+        return "Partition by sex"
+
+    @property
+    def variable_name(self) -> str:
+        return "Sex"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         if patient.sex.is_provided():
@@ -506,6 +540,14 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         # Last, put the predicate together.
         return DiagnosisPredicate(categorizations)
 
+    @property
+    def name(self) -> str:
+        return "Diagnosis Predicate"
+
+    @property
+    def summary(self) -> str:
+        return "Partition the individual by diagnosis"
+
     def __init__(
         self,
         categorizations: typing.Mapping[hpotk.TermId, Categorization],
@@ -516,11 +558,12 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         )
         self._hash = hash(tuple(categorizations.items()))
 
+    @property
+    def variable_name(self) -> str:
+        return "Diagnosis"
+
     def get_categorizations(self) -> typing.Sequence[Categorization]:
         return self._categorizations
-
-    def get_question_base(self) -> str:
-        return "What disease was diagnosed"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         categorization = None

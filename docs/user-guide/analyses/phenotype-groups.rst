@@ -131,8 +131,8 @@ or as an idividual with one non-frameshift allele (`Other`):
 ...     a_label="Frameshift",
 ...     b_label="Other",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Frameshift, Other'
+>>> gt_predicate.group_labels
+('Frameshift', 'Other')
 
 In the subsequent analysis, `gt_predicate` will assign a cohort member into the respective group.
 Note, any patient with :math:`0` or :math:`\ge 2` alleles will be *omitted* from the analysis.

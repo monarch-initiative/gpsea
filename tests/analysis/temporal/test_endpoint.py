@@ -1,4 +1,8 @@
+import io
+
 import hpotk
+
+
 import pytest
 
 from gpsea.model import Patient, Age, VitalStatus, Status, Disease, Phenotype
@@ -68,10 +72,15 @@ class TestDeath:
 
         assert survival is None
 
-    def test_display_question(self):
+    def test_summarize(self):
         endpoint = death(timeline="postnatal")
 
-        assert endpoint.display_question() == "Compute time until postnatal death"
+        lines = endpoint.summarize().splitlines()
+
+        assert lines == [
+            'Death',
+            'Compute time until postnatal death',
+        ]
 
 
 class TestDiseaseOnset:
@@ -124,10 +133,15 @@ class TestDiseaseOnset:
 
         assert survival is None
 
-    def test_display_question(self):
+    def test_summarize(self):
         endpoint = disease_onset(disease_id="OMIM:100000")
+        
+        lines = endpoint.summarize().splitlines()
 
-        assert endpoint.display_question() == "Compute time until postnatal diagnosis of OMIM:100000"
+        assert lines == [
+            'Onset of OMIM:100000',
+            'Compute time until OMIM:100000 onset',
+        ]
 
 
 class TestPhenotypeOnset:
@@ -183,10 +197,15 @@ class TestPhenotypeOnset:
         assert not survival.is_censored
         assert survival.value == pytest.approx(20.)  # Focal-onset seizure has the earliest onset
 
-    def test_display_question(
+    def test_summarize(
         self,
         hpo: hpotk.MinimalOntology,
     ):
         endpoint = hpo_onset(hpo, term_id="HP:0001250")  # Seizure
 
-        assert endpoint.display_question() == "Compute time until postnatal onset of Seizure"
+        lines = endpoint.summarize().splitlines()
+
+        assert lines == [
+            'Onset of Seizure',
+            'Compute time until onset of Seizure',
+        ]

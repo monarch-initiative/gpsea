@@ -130,8 +130,8 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 ...     b_predicate=lof_mutation,
 ...     a_label="Point", b_label="LoF",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Point, LoF'
+>>> gt_predicate.group_labels
+('Point', 'LoF')
 
 
 .. _phenotype-score:
@@ -191,6 +191,8 @@ We construct the scorer with
 ...     hpo=hpo,
 ...     query=structural_defects,
 ... )
+>>> pheno_scorer.summary
+'Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants'
 
 
 Statistical test

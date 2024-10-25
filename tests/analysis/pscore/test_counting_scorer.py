@@ -1,3 +1,5 @@
+import io
+import os
 import typing
 
 import hpotk
@@ -66,12 +68,16 @@ class TestCountingPhenotypeScorer:
 
         assert actual == expected
 
-    def test_get_question(
+    def test_summarize(
         self,
         counting_scorer: CountingPhenotypeScorer,
     ):
-        actual = counting_scorer.get_question()
-        assert actual == "How many of the query HPO terms (or their descendants) does the individual display"
+        lines = counting_scorer.summarize().splitlines()
+        assert lines == [
+            'HPO Group Count',
+            'Assign a phenotype score that is equivalent to the count of present phenotypes '
+            + 'that are either an exact match to the query terms or their descendants',
+        ]
 
     def test_creating_scorer_with_term_and_ancestor_fails(
         self,

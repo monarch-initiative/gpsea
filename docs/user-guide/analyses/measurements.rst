@@ -1,4 +1,4 @@
-.. _measurement-stat:
+`.. _measurement-stat:
 
 
 ==========================
@@ -69,8 +69,8 @@ Assuming AR inheritance, we compare missense vs. rest:
 ...     a_label="Missense", b_label="Other",
 ...     partitions=({0,}, {1, 2}),
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense/Missense, Missense/Other OR Other/Other'
+>>> gt_predicate.group_labels
+('Missense/Missense', 'Missense/Other OR Other/Other')
 
 Phenotype score
 ---------------
@@ -84,7 +84,10 @@ We use the measurement of `Testosterone [Mass/volume] in Serum or Plasma <https:
 >>> testosterone = 'LOINC:2986-8'
 >>> pheno_scorer = MeasurementPhenotypeScorer.from_measurement_id(
 ...     term_id=testosterone,
+...     label="Testosterone [Mass/volume] in Serum or Plasma",
 ... )
+>>> pheno_scorer.summary
+'The value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]'
 
 
 Statistical test
