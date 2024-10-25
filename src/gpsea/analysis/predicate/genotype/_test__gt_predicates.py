@@ -1,11 +1,7 @@
 import typing
 import pytest
 
-from ._gt_predicates import (
-    build_count_to_cat,
-    ModeOfInheritancePredicate,
-    ModeOfInheritanceInfo,
-)
+from ._gt_predicates import _build_count_to_cat, _build_ac_to_cat, _qc_partitions
 
 
 @pytest.mark.parametrize(
@@ -48,8 +44,9 @@ def test_build_count_to_cat(
     partitions: typing.Sequence[typing.Sequence[int]],
     ac2cat_name: typing.Mapping[typing.Tuple[int, int], str],
 ):
-    ac2cat = build_count_to_cat(
-        a_label="A", b_label="B",
+    ac2cat = _build_count_to_cat(
+        a_label="A",
+        b_label="B",
         partitions=partitions,
     )
 
@@ -59,45 +56,90 @@ def test_build_count_to_cat(
 
 
 @pytest.mark.parametrize(
-    "partitions, moi_data, ac2cat_name",
+    "partitions, ac2cat_name",
     [
         (
-            [(0,), (1,)],
-            ModeOfInheritanceInfo.autosomal_dominant(),
+            ((0,), (1,), (2,)),
             {
-                0: "No allele",
-                1: "Monoallelic",
+                0: "0",
+                1: "1",
+                2: "2",
             },
         ),
         (
-            [(0,), (1,), (2,)],
-            ModeOfInheritanceInfo.autosomal_recessive(),
+            ((0, 1), (2,)),
             {
-                0: "No allele",
-                1: "Monoallelic",
-                2: "Biallelic",
+                0: "0 OR 1",
+                1: "0 OR 1",
+                2: "2",
             },
         ),
         (
-            [(1,), (2,)],
-            ModeOfInheritanceInfo.autosomal_recessive(),
+            ((0,), (1, 2)),
             {
-                1: "Monoallelic",
-                2: "Biallelic",
+                0: "0",
+                1: "1 OR 2",
+                2: "1 OR 2",
+            },
+        ),
+        (
+            ((1,), (2,)),
+            {
+                1: "1",
+                2: "2",
             },
         ),
     ],
 )
-def test_prepare_count_to_cat(
+def test__build_ac_to_cat(
     partitions: typing.Sequence[typing.Sequence[int]],
-    moi_data: ModeOfInheritanceInfo,
     ac2cat_name: typing.Mapping[int, str],
 ):
-    ac2cat = ModeOfInheritancePredicate.prepare_count2cat(
+    ac2cat = _build_ac_to_cat(
         partitions=partitions,
-        mode_of_inheritance_data=moi_data,
     )
 
     for ac, expected_cat_name in ac2cat_name.items():
         categorization = ac2cat[ac]
         assert categorization.category.name == expected_cat_name
+
+
+@pytest.mark.parametrize(
+    "partitions, expected",
+    [
+        (
+            ((0, 1), (1,)),
+            "element 1 was present 2!=1 times",
+        ),
+        (((0,), (0,), (2,)),
+            "partition (0,) was present 2!=1 times"),
+        (
+            ((0, 1), (1, 2,)),
+            "element 1 was present 2!=1 times",
+        ),
+        (
+            ((0, 1), (1, 0)),
+            "element 0 was present 2!=1 times, element 1 was present 2!=1 times",
+        ),
+        (
+            ((0, 1, 1), (1, 1, 2,)),
+            "element 1 was present 4!=1 times",
+        ),
+        (
+            ((0.1,), (1,), (2,)),
+            "Each partition index must be a non-negative int",
+        ),
+        (
+            ((0, 1, 2),),
+            "At least 2 partitions must be provided",
+        ),
+    ],
+)
+def test__qc_partitions__explodes_when_expected(
+    partitions: typing.Sequence[typing.Sequence[int]],
+    expected: str,
+):
+    with pytest.raises(ValueError) as e:
+        _qc_partitions(partitions=partitions)
+
+    assert e.value.args == (expected,)

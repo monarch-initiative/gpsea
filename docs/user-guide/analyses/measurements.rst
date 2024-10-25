@@ -124,15 +124,15 @@ We execute the analysis by running
 
 Show data frame with scores
 
->>> scores = result.genotype_phenotype_scores.sort_index()
+>>> scores = result.data.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
-                                     genotype phenotype
-patient_id                                                   
-individual 10[PMID_30968594_individual_10]        1     614.0
-individual 11[PMID_30968594_individual_11]        1     630.0
-individual 12[PMID_30968594_individual_12]        1       NaN
-individual 13[PMID_30968594_individual_13]        1     303.0
-individual 14[PMID_30968594_individual_14]        1     664.0
+                                            genotype  phenotype
+patient_id                                                     
+individual 10[PMID_30968594_individual_10]         1      614.0
+individual 11[PMID_30968594_individual_11]         1      630.0
+individual 12[PMID_30968594_individual_12]         1        NaN
+individual 13[PMID_30968594_individual_13]         1      303.0
+individual 14[PMID_30968594_individual_14]         1      664.0
 
 
 Prepare genotype category legend:

@@ -4,8 +4,10 @@ import typing
 
 from scipy.stats import mannwhitneyu, ttest_ind
 
+from ..._base import Statistic
 
-class PhenotypeScoreStatistic(metaclass=abc.ABCMeta):
+
+class PhenotypeScoreStatistic(Statistic, metaclass=abc.ABCMeta):
     """
     `PhenotypeScoreStatistic` calculates a p value
     for 2 or more phenotype score groups
@@ -19,6 +21,12 @@ class PhenotypeScoreStatistic(metaclass=abc.ABCMeta):
     ) -> float:
         pass
 
+    def __eq__(self, value: object) -> bool:
+        return super().__eq__(value)
+    
+    def __hash__(self) -> int:
+        return super().__hash__()
+
 
 class MannWhitneyStatistic(PhenotypeScoreStatistic):
     """
@@ -31,6 +39,11 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
     See :ref:`phenotype-score-stats` for an example usage.
     """
     
+    def __init__(self):
+        super().__init__(
+            name="Mann-Whitney U test",
+        )
+
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
@@ -54,6 +67,12 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
     ) -> typing.Sequence[float]:
         return tuple(val for val in a if not math.isnan(val))
 
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, MannWhitneyStatistic)
+    
+    def __hash__(self) -> int:
+        return 23
+
 
 class TTestStatistic(PhenotypeScoreStatistic):
     """
@@ -63,6 +82,11 @@ class TTestStatistic(PhenotypeScoreStatistic):
 
     The `NaN` phenotype score values are ignored.
     """
+
+    def __init__(self):
+        super().__init__(
+            name="Student's t-test",
+        )
 
     # TODO: refer to a user guide example to show a usage example.
 
@@ -80,3 +104,9 @@ class TTestStatistic(PhenotypeScoreStatistic):
         )
 
         return res.pvalue
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, TTestStatistic)
+    
+    def __hash__(self) -> int:
+        return 31

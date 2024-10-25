@@ -3,9 +3,7 @@ import pytest
 
 from gpsea.analysis.predicate import PatientCategory, PatientCategories
 from gpsea.analysis.predicate.phenotype import HpoPredicate, DiseasePresencePredicate
-from gpsea.analysis.predicate.genotype import *
 from gpsea.model import Cohort, Patient
-from gpsea.preprocessing import ProteinMetadataService
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> Patient:
@@ -48,6 +46,7 @@ class TestHpoPredicate:
         predicate = HpoPredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
+        assert actual is not None
         assert actual.phenotype == term_id
         assert actual.category == expected
 
@@ -84,11 +83,7 @@ class TestDiseasePresencePredicate:
         disease_id = hpotk.TermId.from_curie("OMIM:148050")
         predicate = DiseasePresencePredicate(disease_id)
         actual = predicate.test(patient)
+
+        assert actual is not None
         assert actual.phenotype == disease_id
         assert actual.category == patient_category
-
-
-
-@pytest.fixture(scope='module')
-def protein_predicates(protein_test_service: ProteinMetadataService) -> ProteinPredicates:
-    return ProteinPredicates(protein_metadata_service=protein_test_service)

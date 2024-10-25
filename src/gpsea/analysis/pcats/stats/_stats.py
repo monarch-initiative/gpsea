@@ -10,8 +10,10 @@ import pandas as pd
 
 import scipy
 
+from ..._base import Statistic
 
-class CountStatistic(metaclass=abc.ABCMeta):
+
+class CountStatistic(Statistic, metaclass=abc.ABCMeta):
     """
     `CountStatistic` calculates a p value for a contingency table
     produced by a pair of discrete random variables.
@@ -45,6 +47,9 @@ class CountStatistic(metaclass=abc.ABCMeta):
     +------------------------+-------------------------+------------------+
     """
 
+    def __init__(self, name: str):
+        super().__init__(name)
+
     @property
     @abc.abstractmethod
     def supports_shape(
@@ -62,10 +67,16 @@ class CountStatistic(metaclass=abc.ABCMeta):
     ) -> float:
         pass
 
+    def __eq__(self, value: object) -> bool:
+        return super().__eq__(value)
+    
+    def __hash__(self) -> int:
+        return super().__hash__()
+
 
 class FisherExactTest(CountStatistic):
     """
-    `FisherExactTest` performs Fisher Exact Test on a `2x2` or `2x3` contingency table.
+    `FisherExactTest` performs Fisher's Exact Test on a `2x2` or `2x3` contingency table.
 
     The `2x2` version is a thin wrapper around Scipy :func:`~scipy.stats.fisher_exact` function,
     while the `2x3` variant is implemented in Python.
@@ -73,6 +84,9 @@ class FisherExactTest(CountStatistic):
     """
     
     def __init__(self):
+        super().__init__(
+            name="Fisher's Exact Test",
+        )
         self._shape = (2, (2, 3))
 
     @property
@@ -201,3 +215,9 @@ class FisherExactTest(CountStatistic):
                 else:
                     pos_new = (xx + 1, yy)
                 self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, FisherExactTest)
+    
+    def __hash__(self) -> int:
+        return 17

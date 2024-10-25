@@ -2,47 +2,27 @@ import pytest
 
 import hpotk
 
-from gpsea.model import *
-from gpsea.model.genome import *
-from gpsea.preprocessing import ProteinMetadataService
+from gpsea.model import (
+    Genotype,
+    Genotypes,
+    ImpreciseSvInfo,
+    Patient,
+    SampleLabels,
+    Sex,
+    TranscriptAnnotation,
+    Variant,
+    VariantClass,
+    VariantCoordinates,
+    VariantEffect,
+    VariantInfo,
+)
+from gpsea.model.genome import (
+    GenomeBuild,
+    GenomicRegion,
+    Region,
+    Strand,
 
-from gpsea.analysis.predicate.genotype import ProteinPredicates
-
-
-@pytest.fixture(scope="package")
-def protein_metadata_service() -> ProteinMetadataService:
-    response = ProteinMetadata(
-        protein_id="pt:xyz",
-        label="xyz_label",
-        protein_features=(
-            ProteinFeature.create(
-                FeatureInfo(name="MOCK_REPEAT", region=Region(55, 80)),
-                FeatureType.REPEAT,
-            ),
-            ProteinFeature.create(
-                FeatureInfo(name="MOCK_DOMAIN", region=Region(30, 50)),
-                FeatureType.DOMAIN,
-            ),
-        ),
-        protein_length=100,
-    )
-    return MockProteinMetadataService(response)
-
-
-@pytest.fixture(scope="package")
-def protein_predicates(
-    protein_metadata_service: ProteinMetadataService,
-) -> ProteinPredicates:
-    return ProteinPredicates(protein_metadata_service)
-
-
-class MockProteinMetadataService(ProteinMetadataService):
-
-    def __init__(self, response: ProteinMetadata):
-        self._response = response
-
-    def annotate(self, protein_id: str) -> ProteinMetadata:
-        return self._response
+)
 
 
 @pytest.fixture(scope="package")
@@ -304,9 +284,7 @@ def genesis_synonymous_mutation(
                 tx_id="tx:xyz",
                 hgvs_cdna=None,
                 is_preferred=True,
-                variant_effects=(
-                    VariantEffect.SYNONYMOUS_VARIANT,
-                ),
+                variant_effects=(VariantEffect.SYNONYMOUS_VARIANT,),
                 affected_exons=(5,),
                 protein_id="pt:xyz",
                 hgvsp=None,
@@ -492,9 +470,7 @@ def white_synonymous_mutation(
                 tx_id="tx:xyz",
                 hgvs_cdna=None,
                 is_preferred=True,
-                variant_effects=(
-                    VariantEffect.SYNONYMOUS_VARIANT,
-                ),
+                variant_effects=(VariantEffect.SYNONYMOUS_VARIANT,),
                 affected_exons=(5,),
                 protein_id="pt:xyz",
                 hgvsp=None,

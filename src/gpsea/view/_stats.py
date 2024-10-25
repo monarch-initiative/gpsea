@@ -66,7 +66,7 @@ class MtcStatsViewer:
 
         # The following dictionary is used by the Jinja2 HTML template
         return {
-            "mtc_name": report.mtc_name,
+            "mtc_name": report.mtc_correction,
             "hpo_mtc_filter_name": report.mtc_filter_name,
             "skipped_hpo_count": n_skipped,
             "tested_hpo_count": n_tested,

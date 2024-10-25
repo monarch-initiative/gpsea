@@ -1,10 +1,26 @@
 import typing
 
-from gpsea.model import VariantEffect, FeatureType
+import hpotk
+
+from gpsea.model import FeatureType, VariantClass, VariantEffect, ProteinMetadata
 from gpsea.model.genome import Region
-from gpsea.preprocessing import ProteinMetadataService
 from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
-from ._predicates import *
+from ._predicates import (
+    AlwaysTrueVariantPredicate,
+    ChangeLengthPredicate,
+    IsLargeImpreciseStructuralVariantPredicate,
+    ProteinFeaturePredicate,
+    ProteinFeatureTypePredicate,
+    ProteinRegionPredicate,
+    RefAlleleLengthPredicate,
+    StructuralTypePredicate,
+    VariantClassPredicate,
+    VariantEffectPredicate,
+    VariantExonPredicate,
+    VariantGenePredicate,
+    VariantKeyPredicate,
+    VariantTranscriptPredicate,
+)
 
 
 # We do not need more than just one instance of these predicates.
@@ -42,7 +58,7 @@ class VariantPredicates:
         >>> genes = ('SURF1', 'SURF2',)
         >>> predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)
         >>> predicate.get_question()
-        '(impacts SURF1 AND impacts SURF2)'
+        '(affects SURF1 AND affects SURF2)'
 
         Args:
             predicates: an iterable of predicates to test
@@ -171,15 +187,45 @@ class VariantPredicates:
         return VariantExonPredicate(exon, tx_id)
 
     @staticmethod
-    def region(region: Region, tx_id: str) -> VariantPredicate:
+    def region(
+        region: typing.Union[typing.Tuple[int, int], Region],
+        tx_id: str,
+    ) -> VariantPredicate:
         """
         Prepare a :class:`VariantPredicate` that tests if the variant
         overlaps with a region on a protein of a specific transcript.
 
+        
+        Example
+        -------
+
+        Create a predicate to test if the variant overlaps with the 5th aminoacid
+        of the protein encoded by a fictional transcript `NM_1234.5`:
+
+        >>> from gpsea.analysis.predicate.genotype import VariantPredicates
+        >>> overlaps_with_fifth_aa = VariantPredicates.region(region=(5, 5), tx_id="NM_1234.5")
+        >>> overlaps_with_fifth_aa.get_question()
+        'variant affects the aminoacid(s) located at [5,5] in the protein encoded by NM_1234.5'
+
+        Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:
+
+        >>> overlaps_with_first_20 = VariantPredicates.region(region=(1, 20), tx_id="NM_1234.5")
+        >>> overlaps_with_first_20.get_question()
+        'variant affects the aminoacid(s) located at [1,20] in the protein encoded by NM_1234.5'
+
         Args:
             region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate
-                of the region of interest on a protein strand.
+                of the region of interest on a protein strand or a tuple with 1-based coordinates.
         """
+        if isinstance(region, Region):
+            pass
+        elif isinstance(region, tuple) and len(region) == 2 and all(isinstance(c, int) and c > 0 for c in region):
+            start = region[0] - 1  # Convert to 0-based
+            end = region[1]
+            region = Region(start=start, end=end)
+        else:
+            raise ValueError(f'region must be a `Region` or a tuple with two positive `int`s, but got {region}')
+
         return ProteinRegionPredicate(region, tx_id)
 
     @staticmethod
@@ -245,7 +291,8 @@ class VariantPredicates:
         variant_class: VariantClass,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.
+        Prepare a :class:`VariantPredicate` for testing if the variant
+        is of a certain :class:`~gpsea.model.VariantClass`.
 
         **Example**
 
@@ -357,42 +404,39 @@ class VariantPredicates:
             & VariantPredicates.change_length("<=", threshold)
         )
 
-
-class ProteinPredicates:
-    """
-    `ProteinPredicates` prepares variant predicates that need to consult 
-    :class:`~gpsea.preprocessing.ProteinMetadataService`
-    to categorize a :class:`~gpsea.model.Variant`.
-    """
-
-    def __init__(
-        self,
-        protein_metadata_service: ProteinMetadataService,
-    ):
-        self._protein_metadata_service = protein_metadata_service
-
+    @staticmethod
     def protein_feature_type(
-        self, feature_type: FeatureType, tx_id: str
+        feature_type: FeatureType,
+        protein_metadata: ProteinMetadata,
     ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+        Prepare a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+        to test if the variant affects a `feature_type` of a protein.
 
         Args:
             feature_type: the target protein :class:`~gpsea.model.FeatureType`
-                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)
+                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).
+            protein_metadata: the information about the protein.
         """
         return ProteinFeatureTypePredicate(
-            feature_type, tx_id, self._protein_metadata_service
+            feature_type=feature_type,
+            protein_metadata=protein_metadata,
         )
 
-    def protein_feature(self, feature_id: str, tx_id: str) -> VariantPredicate:
+    @staticmethod
+    def protein_feature(
+        feature_id: str,
+        protein_metadata: ProteinMetadata,
+    ) -> VariantPredicate:
         """
-        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.
+        Prepare a :class:`VariantPredicate` to test if the variant affects a protein feature
+        labeled with the provided `feature_id`.
 
         Args:
             feature_id: the id of the target protein feature (e.g. `ANK 1`)
-            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)
+            protein_metadata: the information about the protein.
         """
         return ProteinFeaturePredicate(
-            feature_id, tx_id, self._protein_metadata_service
+            feature_id=feature_id,
+            protein_metadata=protein_metadata,
         )

@@ -242,18 +242,18 @@ with point vs. loss-of-function mutations.
 
 To explore further, we can access a data frame with genotype categories and phenotype counts:
 
->>> scores = result.genotype_phenotype_scores.sort_index()
+>>> scores = result.data.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
-                                     genotype phenotype
+                                      genotype  phenotype
 patient_id
-Subject 10[PMID_27087320_Subject_10]        1         0
-Subject 1[PMID_27087320_Subject_1]          0         4
-Subject 1[PMID_29330883_Subject_1]          1         0
-Subject 2[PMID_27087320_Subject_2]       None         4
-Subject 2[PMID_29330883_Subject_2]          1         1
+Subject 10[PMID_27087320_Subject_10]         1          0
+Subject 1[PMID_27087320_Subject_1]           0          4
+Subject 1[PMID_29330883_Subject_1]           1          0
+Subject 2[PMID_27087320_Subject_2]        None          4
+Subject 2[PMID_29330883_Subject_2]           1          1
 
 
-The data frame provides a `genotype` category and a `phenotype` score for each patient.
+The data frame provides a `genotype` category and a `phenotype_score` for each patient.
 The genotype category should be interpreted in the context of the genotype predicate:
 
 >>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_predicate.get_categorizations()}
@@ -270,20 +270,24 @@ to visualize the phenotype score distributions:
 >>> import matplotlib.pyplot as plt
 >>> fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
 >>> result.plot_boxplots(
-...     gt_predicate=gt_predicate,
 ...     ax=ax,
 ... )
 >>> _ = ax.grid(axis="y")
 >>> _ = ax.set(
 ...     ylabel="Phenotype score", ylim=(-0.5, len(structural_defects) + 0.5)
 ... )
->>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
 
 
 .. image:: /img/rere_phenotype_score_boxplot.png
    :alt: Phenotype score distribution
    :align: center
    :width: 600px
+
+.. doctest:: phenotype-scores
+   :hide:
+
+   >>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
+
 
 
 We see that the individuals with the point mutations feature structural defects
