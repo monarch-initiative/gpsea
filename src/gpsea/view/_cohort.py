@@ -8,7 +8,6 @@ from gpsea.model import Cohort, Sex
 from ._report import GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
 
-
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
 
@@ -36,9 +35,9 @@ class CohortViewer:
         self._cohort_template = environment.get_template("cohort.html")
 
     def process(
-        self,
-        cohort: Cohort,
-        transcript_id: typing.Optional[str] = None,
+            self,
+            cohort: Cohort,
+            transcript_id: typing.Optional[str] = None,
     ) -> GpseaReport:
         """
         Generate the report for a given `cohort`.
@@ -56,9 +55,9 @@ class CohortViewer:
         return HtmlGpseaReport(html=report)
 
     def _prepare_context(
-        self,
-        cohort: Cohort,
-        transcript_id: typing.Optional[str],
+            self,
+            cohort: Cohort,
+            transcript_id: typing.Optional[str],
     ) -> typing.Mapping[str, typing.Any]:
 
         hpo_counts = list()
@@ -91,8 +90,6 @@ class CohortViewer:
                     "Count": individual_count,
                 })
         n_measurements = len(measurement_counts)
-
-
 
         variant_counts = list()
         variant_to_display_d = CohortViewer._get_variant_description(cohort, transcript_id)
@@ -174,7 +171,7 @@ class CohortViewer:
                 n_unknown_sex += 1
             patient_not_deceased = True
             if pat.vital_status is not None:
-                if pat.vital_status.is_deceased():
+                if pat.vital_status.is_deceased:
                     n_deceased += 1
                     patient_not_deceased = False
             if patient_not_deceased:
@@ -185,13 +182,17 @@ class CohortViewer:
             for d in diseases:
                 if d.onset is not None:
                     n_has_disease_onset += 1
-                    break # for now, do this for any diseases. All of our current phenopackets habve but one disease
+                    break  # for now, do this for any diseases. All of our current phenopackets habve but one disease
+            terms_and_ancestors_with_onset_information = set()
             for pf in pat.present_phenotypes():
                 if pf.onset is not None:
-                    hpo_id_to_has_cnset_count_d[pf.identifier] += 1
+                    ancs = self._hpo.graph.get_ancestors(pf.identifier, include_source=True)
+                    terms_and_ancestors_with_onset_information.update(ancs)
+            for hpo_id in terms_and_ancestors_with_onset_information:
+                hpo_id_to_has_cnset_count_d[hpo_id] += 1
         # When we get here, we want to present the counts of HPO terms that have onset information
         n_individuals = len(cohort.all_patients)
-        onset_threshold = int(0.2 * n_individuals) ## only show terms with a decent amount of information
+        onset_threshold = int(0.2 * n_individuals)  # only show terms with a decent amount of information
         has_onset_information = list()
         for hpo_id, count in hpo_id_to_has_cnset_count_d.items():
             if count < onset_threshold:
@@ -201,7 +202,7 @@ class CohortViewer:
                 display_label = f"{label} ({hpo_id})"
             else:
                 display_label = hpo_id
-            has_onset_information.append({"HPO":display_label, "count": count})
+            has_onset_information.append({"HPO": display_label, "count": count})
         n_has_onset_info = len(has_onset_information)
 
         # The following dictionary is used by the Jinja2 HTML template
@@ -234,9 +235,9 @@ class CohortViewer:
 
     @staticmethod
     def _get_variant_description(
-        cohort: Cohort,
-        transcript_id: typing.Optional[str],
-        only_hgvs: bool = True,
+            cohort: Cohort,
+            transcript_id: typing.Optional[str],
+            only_hgvs: bool = True,
     ) -> typing.Mapping[str, ToDisplay]:
         """
         Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings

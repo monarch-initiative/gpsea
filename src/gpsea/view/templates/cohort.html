@@ -68,8 +68,11 @@
       and {{ n_unknown_sex }} as unknown sex. {{ n_alive }} were reported to be alive at the time of last
       encounter, and {{ n_deceased }} were deceased. {{ n_has_disease_onset }} had disease onset information
       and {{n_has_age_at_last_encounter  }} had information about the age at last encounter. In the cohort,
-      there were a total of {{ total_hpo_count }} HPO terms used for annotation and {{ total_measurement_count }}
+      there were a total of {{ total_hpo_count }} HPO terms used for annotation.
+    {% if total_measurement_count > 0 %}
+      Information was provided for {{ total_measurement_count }}
       measurement assays.
+    {% endif %}
   </p>
   {% if n_excluded > 0 %}
   <p>Not able to load {{ n_excluded }} individuals.</p>
