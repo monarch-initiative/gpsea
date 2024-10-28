@@ -1,4 +1,4 @@
-.. _variant-category:
+`.. _variant-category:
 
 =========================
 Group by variant category
@@ -89,8 +89,8 @@ Now we have all we need to create the predicate:
 ...     b_predicate=is_frameshift,
 ...     a_label=a_label, b_label=b_label,
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense, Frameshift'
+>>> gt_predicate.group_labels
+('Missense', 'Frameshift')
 
 
 
@@ -142,8 +142,9 @@ to compare missense and frameshift variants in the context of an autosomal reces
 ...     b_predicate=is_frameshift,
 ...     a_label="Missense", b_label="Frameshift",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense/Missense, Missense/Frameshift, Frameshift/Frameshift'
+>>> gt_predicate.group_labels
+('Missense/Missense', 'Missense/Frameshift', 'Frameshift/Frameshift')
+
 
 The predicate will assign the individuals into one of three genotype groups:
 
@@ -189,8 +190,8 @@ to the :func:`~gpsea.analysis.predicate.genotype.biallelic_predicate` function:
 ...     a_label="Missense", b_label="Frameshift",
 ...     partitions=partitions,
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense/Missense, Missense/Frameshift OR Frameshift/Frameshift'
+>>> gt_predicate.group_labels
+('Missense/Missense', 'Missense/Frameshift OR Frameshift/Frameshift')
 
 Now `gt_predicate` assigns an individual into one of the two categories:
 

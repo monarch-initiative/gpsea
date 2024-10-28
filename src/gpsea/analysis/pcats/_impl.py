@@ -1,5 +1,4 @@
 import abc
-import math
 import os
 import typing
 
@@ -65,11 +64,11 @@ def apply_predicates_on_patients(
                 data=0,
                 index=pd.Index(
                     data=ph_predicate.get_categories(),
-                    name=ph_predicate.get_question_base(),
+                    name=ph_predicate.variable_name,
                 ),
                 columns=pd.Index(
                     data=gt_predicate.get_categories(),
-                    name=gt_predicate.get_question_base(),
+                    name=gt_predicate.variable_name,
                 ),
             )
 
@@ -92,44 +91,6 @@ def apply_predicates_on_patients(
     counts = [count_dict[ph_predicate.phenotype] for ph_predicate in pheno_predicates]
 
     return n_usable_patients, counts
-
-
-# class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysisResult[P]):
-
-#     def __init__(
-#         self,
-#         gt_predicate: GenotypePolyPredicate,
-#         statistic: CountStatistic,
-#         mtc_correction: typing.Optional[str],
-#         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-#         n_usable: typing.Sequence[int],
-#         all_counts: typing.Sequence[pd.DataFrame],
-#         pvals: typing.Sequence[float],
-#         corrected_pvals: typing.Optional[typing.Sequence[float]],
-#     ):
-#         super().__init__(
-#             gt_predicate=gt_predicate,
-#             pheno_predicates=pheno_predicates,
-#             statistic=statistic,
-#             n_usable=n_usable,
-#             all_counts=all_counts,
-#             pvals=pvals,
-#             corrected_pvals=corrected_pvals,
-#             mtc_correction=mtc_correction,
-#         )
-
-#     def __eq__(self, other):
-#         return isinstance(other, BaseMultiPhenotypeAnalysisResult) \
-#             and super(MultiPhenotypeAnalysisResult).__eq__(other) \
-#             and self._pheno_predicates == other._pheno_predicates \
-#             and self._n_usable == other._n_usable \
-#             and self._all_counts == other._all_counts
-
-#     def __hash__(self):
-#         return hash((
-#             super(MultiPhenotypeAnalysisResult, self).__hash__(),
-#             self._pheno_predicates, self._n_usable, self._all_counts,
-#         ))
 
 
 class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):

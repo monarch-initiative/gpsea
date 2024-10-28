@@ -124,10 +124,10 @@ class TestAlleleCount:
         assert a == b
         assert hash(a) == hash(b)
 
-    def test_display_question(self):
+    def test_summarize_groups(self):
         a = allele_count(counts=((0, 1), (2,)))
 
-        assert a.display_question() == "Allele count: 0 OR 1, 2"
+        assert a.summarize_groups() == "Allele counts: 0 OR 1, 2"
 
 
 class TestAllelePredicates:
@@ -164,7 +164,7 @@ class TestAllelePredicates:
         
         gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
         
-        assert gt_predicate.display_question() == 'Allele group: A, B'
+        assert gt_predicate.summarize_groups() == 'Allele groups: A, B'
 
     @pytest.mark.parametrize(
         "individual_name,expected_name",
@@ -199,7 +199,7 @@ class TestAllelePredicates:
         
         gt_predicate = biallelic_predicate(is_missense, is_synonymous)
         
-        assert gt_predicate.display_question() == 'Allele group: A/A, A/B, B/B'
+        assert gt_predicate.summarize_groups() == 'Allele groups: A/A, A/B, B/B'
 
 
 class TestSexPredicate:
@@ -218,9 +218,10 @@ class TestSexPredicate:
         assert gt_predicate.test(jane) == female
         assert gt_predicate.test(miffy) is None
 
-    def test_get_question(self):
+    def test_summarize_groups(self):
         gt_predicate = sex_predicate()
-        assert gt_predicate.display_question() == 'Sex of the individual: FEMALE, MALE'
+
+        assert gt_predicate.summarize_groups() == "Sex: FEMALE, MALE"
 
     @staticmethod
     def make_patient(label: str, sex: Sex) -> Patient:

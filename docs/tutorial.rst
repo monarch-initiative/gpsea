@@ -206,8 +206,8 @@ in the individuals of the *TBX5* cohort.
 ...     b_predicate=VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id),
 ...     a_label="Missense", b_label="Frameshift",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense, Frameshift'
+>>> gt_predicate.group_labels
+('Missense', 'Frameshift')
 
 .. note::
 

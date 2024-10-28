@@ -1,19 +1,21 @@
 import abc
+import warnings
 import typing
 
 from gpsea.model import Variant
 from .._api import PolyPredicate, Categorization
+from ..._partition import Partitioning
 
 
 class GenotypePolyPredicate(PolyPredicate[Categorization], metaclass=abc.ABCMeta):
     """
     `GenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`
-    that test the genotype axis.
+    that assign an individual into a group based on the genotype.
     """
     pass
 
 
-class VariantPredicate(metaclass=abc.ABCMeta):
+class VariantPredicate(Partitioning, metaclass=abc.ABCMeta):
     """
     `VariantPredicate` tests if a variant meets a certain criterion.
 
@@ -23,12 +25,16 @@ class VariantPredicate(metaclass=abc.ABCMeta):
     We *strongly* recommend implementing ``__str__`` and ``__repr__`` as well.
     """
 
-    @abc.abstractmethod
     def get_question(self) -> str:
         """
         Prepare a `str` with the question the predicate can answer.
         """
-        pass
+        # TODO: remove in `v1.0.0`
+        warnings.warn(
+            "`get_question` will be removed soon. Use `description` property instead",
+            DeprecationWarning, stacklevel=2,
+        )
+        return self.description
 
     @abc.abstractmethod
     def test(self, variant: Variant) -> bool:
@@ -102,13 +108,39 @@ class LogicalVariantPredicate(VariantPredicate, metaclass=abc.ABCMeta):
     @property
     def predicates(self) -> typing.Sequence[VariantPredicate]:
         return self._predicates
+    
+    @property
+    def name(self) -> str:
+        sep = f" {self._separator_symbol()} "
+        return "(" + sep.join(p.name for p in self._predicates) + ")"
+
+    @property
+    def description(self) -> str:
+        sep = f" {self._separator_word().upper()} "
+        return "(" + sep.join(p.description for p in self._predicates) + ")"
+
+    @property
+    def variable_name(self) -> str:
+        sep = f" {self._separator_symbol()} "
+        return "(" + sep.join(p.variable_name for p in self._predicates) + ")"
+
+    @abc.abstractmethod
+    def _separator_symbol(self) -> str:
+        pass
+
+    @abc.abstractmethod
+    def _separator_word(self) -> str:
+        pass
 
 
 class AnyVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
 
-    def get_question(self) -> str:
-        return '(' + ' OR '.join(predicate.get_question() for predicate in self._predicates) + ')'
+    def _separator_symbol(self) -> str:
+        return "|"
+    
+    def _separator_word(self) -> str:
+        return "or"
 
     def test(self, variant: Variant) -> bool:
         return any(predicate.test(variant) for predicate in self._predicates)
@@ -131,8 +163,11 @@ class AnyVariantPredicate(LogicalVariantPredicate):
 class AllVariantPredicate(LogicalVariantPredicate):
     # NOT PART OF THE PUBLIC API
 
-    def get_question(self) -> str:
-        return '(' + ' AND '.join(predicate.get_question() for predicate in self._predicates) + ')'
+    def _separator_symbol(self) -> str:
+        return "&"
+    
+    def _separator_word(self) -> str:
+        return "and"
 
     def test(self, variant: Variant) -> bool:
         return all(predicate.test(variant) for predicate in self._predicates)
@@ -161,8 +196,17 @@ class InvVariantPredicate(VariantPredicate):
     ):
         self._inner = inner
 
-    def get_question(self) -> str:
-        return 'NOT ' + self._inner.get_question()
+    @property
+    def name(self) -> str:
+        return "NOT " + self._inner.name
+
+    @property
+    def description(self) -> str:
+        return "NOT " + self._inner.description
+
+    @property
+    def variable_name(self) -> str:
+        return "NOT " + self._inner.variable_name
 
     def test(self, variant: Variant) -> bool:
         return not self._inner.test(variant)

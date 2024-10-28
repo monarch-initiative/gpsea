@@ -204,14 +204,14 @@ class VariantPredicates:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> overlaps_with_fifth_aa = VariantPredicates.region(region=(5, 5), tx_id="NM_1234.5")
-        >>> overlaps_with_fifth_aa.get_question()
-        'variant affects the aminoacid(s) located at [5,5] in the protein encoded by NM_1234.5'
+        >>> overlaps_with_fifth_aa.description
+        'overlaps with [5,5] region of the protein encoded by NM_1234.5'
 
         Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:
 
         >>> overlaps_with_first_20 = VariantPredicates.region(region=(1, 20), tx_id="NM_1234.5")
-        >>> overlaps_with_first_20.get_question()
-        'variant affects the aminoacid(s) located at [1,20] in the protein encoded by NM_1234.5'
+        >>> overlaps_with_first_20.description
+        'overlaps with [1,20] region of the protein encoded by NM_1234.5'
 
         Args:
             region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate
@@ -330,8 +330,8 @@ class VariantPredicates:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.ref_length('>', 5)
-        >>> predicate.get_question()
-        'ref allele length > 5'
+        >>> predicate.description
+        'reference allele length > 5'
 
         Args:
             operator: a `str` with the desired test. Must be one of ``{ '<', '<=', '==', '!=', '>=', '>' }``.

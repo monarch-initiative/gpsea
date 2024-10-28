@@ -100,7 +100,7 @@ class TestSurvivalAnalysisResult:
         self,
         result: SurvivalAnalysisResult,
     ):
-        assert tuple(result.gt_predicate.get_category_names()) == (
+        assert tuple(result.gt_predicate.group_labels) == (
             "Exon 3",
             "Other exon",
         )
