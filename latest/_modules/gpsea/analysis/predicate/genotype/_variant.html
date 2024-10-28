@@ -310,14 +310,14 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; overlaps_with_fifth_aa = VariantPredicates.region(region=(5, 5), tx_id=&quot;NM_1234.5&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; overlaps_with_fifth_aa.get_question()</span>
-<span class="sd">        &#39;variant affects the aminoacid(s) located at [5,5] in the protein encoded by NM_1234.5&#39;</span>
+<span class="sd">        &gt;&gt;&gt; overlaps_with_fifth_aa.description</span>
+<span class="sd">        &#39;overlaps with [5,5] region of the protein encoded by NM_1234.5&#39;</span>
 
 <span class="sd">        Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:</span>
 
 <span class="sd">        &gt;&gt;&gt; overlaps_with_first_20 = VariantPredicates.region(region=(1, 20), tx_id=&quot;NM_1234.5&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; overlaps_with_first_20.get_question()</span>
-<span class="sd">        &#39;variant affects the aminoacid(s) located at [1,20] in the protein encoded by NM_1234.5&#39;</span>
+<span class="sd">        &gt;&gt;&gt; overlaps_with_first_20.description</span>
+<span class="sd">        &#39;overlaps with [1,20] region of the protein encoded by NM_1234.5&#39;</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate</span>
@@ -451,8 +451,8 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.ref_length(&#39;&gt;&#39;, 5)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
-<span class="sd">        &#39;ref allele length &gt; 5&#39;</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
+<span class="sd">        &#39;reference allele length &gt; 5&#39;</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            operator: a `str` with the desired test. Must be one of ``{ &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39;, &#39;!=&#39;, &#39;&gt;=&#39;, &#39;&gt;&#39; }``.</span>

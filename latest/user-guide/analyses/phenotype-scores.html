@@ -181,8 +181,8 @@ is a point mutation or a loss of function mutation.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> \
 <span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> \
 <span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">effect</span> <span class="ow">in</span> <span class="n">point_mutation_effects</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)&#39;</span>
 </pre></div>
 </div>
 <p>For the loss of function predicate, the following variant effects are considered loss of function:</p>
@@ -193,7 +193,7 @@ is a point mutation or a loss of function mutation.</p>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">lof_effects</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)&#39;</span>
 </pre></div>
 </div>
@@ -204,8 +204,8 @@ is a point mutation or a loss of function mutation.</p>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">lof_mutation</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;LoF&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele group: Point, LoF&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;Point&#39;, &#39;LoF&#39;)</span>
 </pre></div>
 </div>
 </section>
@@ -258,6 +258,8 @@ or that is its descendant
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">structural_defects</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants&#39;</span>
 </pre></div>
 </div>
 </section>

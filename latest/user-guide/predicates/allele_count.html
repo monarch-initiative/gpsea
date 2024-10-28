@@ -112,7 +112,7 @@ For instance, we may want to compare the survival of individuals harboring a mut
 with those with no such mutation (<span class="math notranslate nohighlight">\(AC = 0\)</span>).
 Alternatively, in some genes, heterozygous mutations (<span class="math notranslate nohighlight">\(AC = 1\)</span>) and biallelic mutations (<span class="math notranslate nohighlight">\(AC = 2\)</span>)
 can lead to different diseases.</p>
-<p>The allele count analysis differs from the <a class="reference internal" href="variant_category.html#variant-category"><span class="std std-ref">Group by variant category</span></a> analysis.
+<p>The allele count analysis differs from the <span class="xref std std-ref">variant-category</span> analysis.
 The allele count analysis partitions the individuals based on different allele counts of one genotype category,
 while the variant category analysis partitions the individuals based on a fixed allele count of different genotype categories.</p>
 <p>The allele count analysis can be done with <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.allele_count" title="gpsea.analysis.predicate.genotype.allele_count"><code class="xref py py-func docutils literal notranslate"><span class="pre">allele_count()</span></code></a> predicate.</p>
@@ -124,7 +124,7 @@ while the variant category analysis partitions the individuals based on a fixed 
 any <em>EGFR</em> variant:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;EGFR&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects EGFR&#39;</span>
 </pre></div>
 </div>
@@ -135,8 +135,8 @@ based on presence of zero or one <em>EGFR</em> mutation allele:</p>
 <span class="gp">... </span>    <span class="n">counts</span><span class="o">=</span><span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,}),</span>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_egfr</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele count: 0, 1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;0&#39;, &#39;1&#39;)</span>
 </pre></div>
 </div>
 <p>We create the predicate with two arguments.
@@ -153,7 +153,7 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <p>For this example, the target mutation is any mutation that affects <em>LMNA</em></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;LMNA&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects LMNA&#39;</span>
 </pre></div>
 </div>
@@ -162,8 +162,8 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <span class="gp">... </span>    <span class="n">counts</span><span class="o">=</span><span class="p">({</span><span class="mi">1</span><span class="p">,},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,}),</span>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_lmna</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele count: 1, 2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;1&#39;, &#39;2&#39;)</span>
 </pre></div>
 </div>
 <p>The predicate will partition the individuals into two groups:

@@ -77,7 +77,6 @@
              
   <h1>Source code for gpsea.analysis.pcats._impl</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -145,11 +144,11 @@
                 <span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">(),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">ph_predicate</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">columns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">(),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">)</span>
 
@@ -173,44 +172,6 @@
 
     <span class="k">return</span> <span class="n">n_usable_patients</span><span class="p">,</span> <span class="n">counts</span></div>
 
-
-
-<span class="c1"># class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysisResult[P]):</span>
-
-<span class="c1">#     def __init__(</span>
-<span class="c1">#         self,</span>
-<span class="c1">#         gt_predicate: GenotypePolyPredicate,</span>
-<span class="c1">#         statistic: CountStatistic,</span>
-<span class="c1">#         mtc_correction: typing.Optional[str],</span>
-<span class="c1">#         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],</span>
-<span class="c1">#         n_usable: typing.Sequence[int],</span>
-<span class="c1">#         all_counts: typing.Sequence[pd.DataFrame],</span>
-<span class="c1">#         pvals: typing.Sequence[float],</span>
-<span class="c1">#         corrected_pvals: typing.Optional[typing.Sequence[float]],</span>
-<span class="c1">#     ):</span>
-<span class="c1">#         super().__init__(</span>
-<span class="c1">#             gt_predicate=gt_predicate,</span>
-<span class="c1">#             pheno_predicates=pheno_predicates,</span>
-<span class="c1">#             statistic=statistic,</span>
-<span class="c1">#             n_usable=n_usable,</span>
-<span class="c1">#             all_counts=all_counts,</span>
-<span class="c1">#             pvals=pvals,</span>
-<span class="c1">#             corrected_pvals=corrected_pvals,</span>
-<span class="c1">#             mtc_correction=mtc_correction,</span>
-<span class="c1">#         )</span>
-
-<span class="c1">#     def __eq__(self, other):</span>
-<span class="c1">#         return isinstance(other, BaseMultiPhenotypeAnalysisResult) \</span>
-<span class="c1">#             and super(MultiPhenotypeAnalysisResult).__eq__(other) \</span>
-<span class="c1">#             and self._pheno_predicates == other._pheno_predicates \</span>
-<span class="c1">#             and self._n_usable == other._n_usable \</span>
-<span class="c1">#             and self._all_counts == other._all_counts</span>
-
-<span class="c1">#     def __hash__(self):</span>
-<span class="c1">#         return hash((</span>
-<span class="c1">#             super(MultiPhenotypeAnalysisResult, self).__hash__(),</span>
-<span class="c1">#             self._pheno_predicates, self._n_usable, self._all_counts,</span>
-<span class="c1">#         ))</span>
 
 
 <div class="viewcode-block" id="MultiPhenotypeAnalysis">

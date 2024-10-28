@@ -100,9 +100,9 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.GenotypePolyPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">GenotypePolyPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#GenotypePolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>]</p>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code>]</p>
 <p><cite>GenotypePolyPredicate</cite> is a base class for all <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>
-that test the genotype axis.</p>
+that assign an individual into a group based on the genotype.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -193,14 +193,14 @@ A count can be included only in one partition.</p>
 with zero allele or one target allele:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">allele_count</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,}))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele count: 0, 1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span><span class="o">.</span><span class="n">summarize_groups</span><span class="p">()</span>
+<span class="go">&#39;Allele counts: 0, 1&#39;</span>
 </pre></div>
 </div>
 <p>These counts will create three groups for individuals with zero, one or two alleles:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,}))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele count: 0, 1, 2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span><span class="o">.</span><span class="n">summarize_groups</span><span class="p">()</span>
+<span class="go">&#39;Allele counts: 0, 1, 2&#39;</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -258,14 +258,14 @@ or <cite>None</cite> if <em>all</em> variants in the individual should be used.<
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.genotype.</span></span><span class="sig-name descname"><span class="pre">VariantPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#VariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Partitioning</span></code></p>
 <p><cite>VariantPredicate</cite> tests if a variant meets a certain criterion.</p>
 <p>The subclasses <em>MUST</em> implement all abstract methods of this class
 <em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building the compound predicates.</p>
 <p>We <em>strongly</em> recommend implementing <code class="docutils literal notranslate"><span class="pre">__str__</span></code> and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> as well.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.genotype.VariantPredicate.get_question">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#VariantPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicate.get_question" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/genotype/_api.html#VariantPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.genotype.VariantPredicate.get_question" title="Link to this definition"></a></dt>
 <dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
 </dd></dl>
 
@@ -447,14 +447,14 @@ overlaps with a region on a protein of a specific transcript.</p>
 of the protein encoded by a fictional transcript <cite>NM_1234.5</cite>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_fifth_aa</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">tx_id</span><span class="o">=</span><span class="s2">&quot;NM_1234.5&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_fifth_aa</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;variant affects the aminoacid(s) located at [5,5] in the protein encoded by NM_1234.5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_fifth_aa</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;overlaps with [5,5] region of the protein encoded by NM_1234.5&#39;</span>
 </pre></div>
 </div>
 <p>Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_first_20</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">tx_id</span><span class="o">=</span><span class="s2">&quot;NM_1234.5&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_first_20</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;variant affects the aminoacid(s) located at [1,20] in the protein encoded by NM_1234.5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_first_20</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;overlaps with [1,20] region of the protein encoded by NM_1234.5&#39;</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -544,8 +544,8 @@ of variant is above, below, or (not) equal to certain <cite>length</cite>.</p>
 <p>Prepare a predicate that tests that the REF allele includes more than 5 base pairs:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;ref allele length &gt; 5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;reference allele length &gt; 5&#39;</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

@@ -220,6 +220,7 @@
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">for_predicates_and_categories</span><span class="p">(</span>
+            <span class="n">total_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">count2cat</span><span class="o">=</span><span class="n">count2cat</span><span class="p">,</span>
             <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
             <span class="n">b_predicate</span><span class="o">=</span><span class="n">b_predicate</span><span class="p">,</span>
@@ -240,6 +241,7 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="o">.</span><span class="n">for_predicates_and_categories</span><span class="p">(</span>
+            <span class="n">total_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">count2cat</span><span class="o">=</span><span class="n">count2cat</span><span class="p">,</span>
             <span class="n">a_predicate</span><span class="o">=</span><span class="n">a_predicate</span><span class="p">,</span>
             <span class="n">b_predicate</span><span class="o">=</span><span class="n">b_predicate</span><span class="p">,</span>
@@ -247,11 +249,13 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">for_predicates_and_categories</span><span class="p">(</span>
+        <span class="n">total_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">count2cat</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Categorization</span><span class="p">],</span>
         <span class="n">a_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
         <span class="n">b_predicate</span><span class="p">:</span> <span class="n">VariantPredicate</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PolyCountingGenotypePredicate&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PolyCountingGenotypePredicate</span><span class="p">(</span>
+            <span class="n">total_count</span><span class="o">=</span><span class="n">total_count</span><span class="p">,</span>
             <span class="n">a_counter</span><span class="o">=</span><span class="n">AlleleCounter</span><span class="p">(</span><span class="n">a_predicate</span><span class="p">),</span>
             <span class="n">b_counter</span><span class="o">=</span><span class="n">AlleleCounter</span><span class="p">(</span><span class="n">b_predicate</span><span class="p">),</span>
             <span class="n">count2cat</span><span class="o">=</span><span class="n">count2cat</span><span class="p">,</span>
@@ -259,10 +263,12 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">total_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">count2cat</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Categorization</span><span class="p">],</span>
         <span class="n">a_counter</span><span class="p">:</span> <span class="n">AlleleCounter</span><span class="p">,</span>
         <span class="n">b_counter</span><span class="p">:</span> <span class="n">AlleleCounter</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span> <span class="o">=</span> <span class="n">total_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_count2cat</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">count2cat</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_deduplicate_categorizations</span><span class="p">(</span><span class="n">count2cat</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_a_counter</span> <span class="o">=</span> <span class="n">a_counter</span>
@@ -272,8 +278,18 @@
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
 
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Allele group&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Allele Group Predicate&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">allele</span> <span class="o">=</span> <span class="s2">&quot;allele&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;alleles&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Partition by allele group (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_count</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">allele</span><span class="si">}</span><span class="s2"> per group)&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Allele groups&quot;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
@@ -384,9 +400,9 @@
     <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Categorization</span><span class="p">]:</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;No allele&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;One allele&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Two alleles&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zero&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;one&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;two&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">ac2cat</span> <span class="o">=</span> <span class="p">{}</span>
@@ -426,14 +442,14 @@
 
 <span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import allele_count</span>
 <span class="sd">    &gt;&gt;&gt; zero_vs_one = allele_count(counts=({0,}, {1,}))</span>
-<span class="sd">    &gt;&gt;&gt; zero_vs_one.display_question()</span>
-<span class="sd">    &#39;Allele count: 0, 1&#39;</span>
+<span class="sd">    &gt;&gt;&gt; zero_vs_one.summarize_groups()</span>
+<span class="sd">    &#39;Allele counts: 0, 1&#39;</span>
 <span class="sd">    </span>
 <span class="sd">    These counts will create three groups for individuals with zero, one or two alleles:</span>
 
 <span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two = allele_count(counts=({0,}, {1,}, {2,}))</span>
-<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two.display_question()</span>
-<span class="sd">    &#39;Allele count: 0, 1, 2&#39;</span>
+<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two.summarize_groups()</span>
+<span class="sd">    &#39;Allele counts: 0, 1, 2&#39;</span>
 
 <span class="sd">    :param counts: a sequence with allele count partitions.</span>
 <span class="sd">    :param target: a predicate for choosing the variants for testing</span>
@@ -476,8 +492,17 @@
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
 
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Allele count&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Allele Count Predicate&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Partition by the allele count&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Allele counts&quot;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_patient</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
@@ -518,8 +543,17 @@
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
 
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Sex of the individual&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Sex Predicate&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Partition by sex&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Sex&quot;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">sex</span><span class="o">.</span><span class="n">is_provided</span><span class="p">():</span>
@@ -596,6 +630,14 @@
         <span class="c1"># Last, put the predicate together.</span>
         <span class="k">return</span> <span class="n">DiagnosisPredicate</span><span class="p">(</span><span class="n">categorizations</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Diagnosis Predicate&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Partition the individual by diagnosis&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">categorizations</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="n">Categorization</span><span class="p">],</span>
@@ -606,11 +648,12 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">categorizations</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Diagnosis&quot;</span>
+
     <span class="k">def</span> <span class="nf">get_categorizations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span>
-
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;What disease was diagnosed&quot;</span>
 
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Categorization</span><span class="p">]:</span>
         <span class="n">categorization</span> <span class="o">=</span> <span class="kc">None</span>

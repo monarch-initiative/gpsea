@@ -132,8 +132,8 @@ and then serialized as a JSON file following the instructions in <a class="refer
 <p>One allele of exon 3 vs. one allele of elsewhere.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
-<span class="go">&#39;variant affects exon 3 on NM_003361.4&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;overlaps with exon 3 of NM_003361.4&#39;</span>
 </pre></div>
 </div>
 <p>Monoallelic predicate to compare one allele of <em>UMOD</em> exon 3 variant
@@ -144,8 +144,8 @@ versus one allele of other <em>UMOD</em> variant:</p>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_in_exon3</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Exon 3&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele group: Exon 3, Other&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;Exon 3&#39;, &#39;Other&#39;)</span>
 </pre></div>
 </div>
 </section>
@@ -167,8 +167,8 @@ to compute the time until an individual develops end stage renal disease:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal.endpoint</span> <span class="kn">import</span> <span class="n">hpo_onset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">term_id</span> <span class="o">=</span> <span class="s2">&quot;HP:0003774&quot;</span>  <span class="c1"># Stage 5 chronic kidney disease</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">hpo_onset</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="n">term_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Compute time until postnatal onset of Stage 5 chronic kidney disease&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;Compute time until onset of Stage 5 chronic kidney disease&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -223,7 +223,7 @@ the genotype groups:</p>
 <span class="gp">... </span>    <span class="n">major_locator</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">Age</span><span class="o">.</span><span class="n">DAYS_IN_YEAR</span><span class="p">),</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">xlabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endpoint</span><span class="o">.</span><span class="n">question_base</span><span class="p">()</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> [years]&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">xlabel</span><span class="o">=</span><span class="n">endpoint</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; [years]&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Empirical survival&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>

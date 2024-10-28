@@ -105,7 +105,9 @@ or using the phenotype features encoded into HPO terms (<code class="xref py py-
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypePolyPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#PhenotypePolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate._api.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>[<a class="reference internal" href="#gpsea.analysis.predicate.phenotype.PhenotypeCategorization" title="gpsea.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>]]</p>
-<p><cite>PhenotypePolyPredicate</cite> investigates a patient in context of one or more phenotype categories <cite>P</cite>.</p>
+<p><cite>PhenotypePolyPredicate</cite> is a base class for all <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate" title="gpsea.analysis.predicate.PolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a>
+that assigns an individual into a group based on phenotype.
+The predicate assigns an individual into one of phenotype categories <cite>P</cite>.</p>
 <p>Each phenotype category <cite>P</cite> can be a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a> representing an HPO term or an OMIM/MONDO term.</p>
 <p>Only one category can be investigated, and <a class="reference internal" href="#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotype" title="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotype"><code class="xref py py-attr docutils literal notranslate"><span class="pre">phenotype</span></code></a> returns the investigated phenotype
 (e.g. <em>Arachnodactyly</em> <cite>HP:0001166</cite>).</p>
@@ -126,7 +128,7 @@ via <a class="reference internal" href="#gpsea.analysis.predicate.phenotype.Phen
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.present_phenotype_category">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.present_phenotype_category" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PatientCategory</span></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.present_phenotype_category" title="Link to this definition"></a></dt>
 <dd><p>Get the patient category that correspond to the group of the patients who exibit the investigated phenotype.</p>
 </dd></dl>
 
@@ -148,10 +150,23 @@ via <a class="reference internal" href="#gpsea.analysis.predicate.phenotype.Phen
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.HpoPredicate.get_question_base">
-<span class="sig-name descname"><span class="pre">get_question_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#HpoPredicate.get_question_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.HpoPredicate.get_question_base" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.HpoPredicate.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.HpoPredicate.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.HpoPredicate.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.HpoPredicate.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.HpoPredicate.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.HpoPredicate.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HPO term</cite>, <cite>Diagnosis</cite></p>
 </dd></dl>
 
 <dl class="py property">
@@ -169,7 +184,7 @@ via <a class="reference internal" href="#gpsea.analysis.predicate.phenotype.Phen
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.HpoPredicate.get_categorizations">
 <span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.phenotype.PhenotypeCategorization" title="gpsea.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#HpoPredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.HpoPredicate.get_categorizations" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
+<dd><p>Get a sequence of all categories which the predicate can produce.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -214,10 +229,23 @@ or not listed.</p>
 <dd class="field-odd"><p><strong>disease_id_query</strong> – the Disease ID to test</p>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_question_base">
-<span class="sig-name descname"><span class="pre">get_question_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.get_question_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_question_base" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HPO term</cite>, <cite>Diagnosis</cite></p>
 </dd></dl>
 
 <dl class="py property">
@@ -235,7 +263,7 @@ or not listed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">
 <span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.phenotype.PhenotypeCategorization" title="gpsea.analysis.predicate.phenotype._pheno.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#DiseasePresencePredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the <cite>PolyPredicate</cite> can produce.</p>
+<dd><p>Get a sequence of all categories which the predicate can produce.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -266,8 +294,8 @@ or is excluded.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.PhenotypeCategorization">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypeCategorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#PhenotypeCategorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.PhenotypeCategorization" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.phenotype.</span></span><span class="sig-name descname"><span class="pre">PhenotypeCategorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatientCategory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/phenotype/_pheno.html#PhenotypeCategorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.phenotype.PhenotypeCategorization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></p>
 <p>On top of the attributes of the <cite>Categorization</cite>, <cite>PhenotypeCategorization</cite> keeps track of the target phenotype <cite>P</cite>.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.analysis.predicate.phenotype.PhenotypeCategorization.phenotype">

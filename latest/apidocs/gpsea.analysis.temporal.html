@@ -102,7 +102,7 @@ between genotype groups.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">Endpoint</span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></p>
 <p><cite>Endpoint</cite> computes survival for the analyzed individual.</p>
 <p>An example endpoint includes <code class="xref py py-func docutils literal notranslate"><span class="pre">death()</span></code>,
 <code class="xref py py-func docutils literal notranslate"><span class="pre">disease_onset()</span></code>,
@@ -113,16 +113,6 @@ or onset of a phenotypic feature (<code class="xref py py-func docutils literal 
 <dd><p>Compute a survival for a given <cite>patient</cite> or <cite>None</cite> if the <cite>patient</cite> lacks the required
 data (e.g. age of death or age at last investigation).</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint.question_base">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">question_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint.question_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint.question_base" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint.display_question">
-<span class="sig-name descname"><span class="pre">display_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint.display_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint.display_question" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -180,7 +170,7 @@ survivals is tested with selected <a class="reference internal" href="gpsea.anal
 </tbody>
 </table>
 <p>The index includes the individual IDs (<cite>patient_id</cite>), and then there are 2 columns
-with the <cite>genotype</cite> group id (<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>)
+with the <cite>genotype</cite> group id (<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
 and the <cite>phenotype</cite> with the survival represented as <code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code> object.</p>
 <p>A <cite>genotype</cite> value may be missing (<cite>None</cite>) if the individual cannot be assigned
 into a genotype category.

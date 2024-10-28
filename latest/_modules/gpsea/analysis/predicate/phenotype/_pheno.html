@@ -84,7 +84,7 @@
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
 
-<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">PatientCategories</span><span class="p">,</span> <span class="n">Categorization</span>
+<span class="kn">from</span> <span class="nn">.._api</span> <span class="kn">import</span> <span class="n">PolyPredicate</span><span class="p">,</span> <span class="n">PatientCategory</span><span class="p">,</span> <span class="n">Categorization</span>
 
 <span class="n">P</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -92,6 +92,16 @@
 
 <span class="sd">However, phenotype entity can be anything as long as it is :class:`~typing.Hashable` and comparable</span>
 <span class="sd">(have `__eq__` and `__lt__` magic methods).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">YES</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Yes&#39;</span><span class="p">,</span> <span class="s1">&#39;The patient belongs to the group.&#39;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Category for a patient who *belongs* to the tested group.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">NO</span> <span class="o">=</span> <span class="n">PatientCategory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">,</span> <span class="s1">&#39;The patient does not belong to the group.&#39;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Category for a patient who does *not* belong to the tested group.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -140,7 +150,9 @@
     <span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">P</span><span class="p">],</span> <span class="n">PolyPredicate</span><span class="p">[</span><span class="n">PhenotypeCategorization</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `PhenotypePolyPredicate` investigates a patient in context of one or more phenotype categories `P`.</span>
+<span class="sd">    `PhenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`</span>
+<span class="sd">    that assigns an individual into a group based on phenotype.</span>
+<span class="sd">    The predicate assigns an individual into one of phenotype categories `P`.</span>
 
 <span class="sd">    Each phenotype category `P` can be a :class:`~hpotk.model.TermId` representing an HPO term or an OMIM/MONDO term.</span>
 
@@ -210,21 +222,27 @@
             <span class="s2">&quot;missing_implies_phenotype_excluded&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
-            <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">YES</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
-            <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">NO</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">NO</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Some tests depend on the order of `self._categorizations`.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorizations</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_observed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_excluded</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HpoPredicate.get_question_base">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_question_base">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> present in the patient&quot;</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;HPO Predicate&quot;</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Test for presence of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_label</span><span class="si">}</span><span class="s2"> is present&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
@@ -320,19 +338,25 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_present</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
-            <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">YES</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">disease_id_query</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_excluded</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
-            <span class="n">category</span><span class="o">=</span><span class="n">PatientCategories</span><span class="o">.</span><span class="n">NO</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">NO</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">disease_id_query</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DiseasePresencePredicate.get_question_base">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_question_base">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_question_base</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="si">}</span><span class="s2"> diagnosed in the patient&quot;</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Disease Predicate&quot;</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Partition based on a diagnosis&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> was diagnosed&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
