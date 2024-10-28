@@ -18,8 +18,17 @@ class AlwaysTrueVariantPredicate(VariantPredicate):
     def get_instance() -> "AlwaysTrueVariantPredicate":
         return ALWAYS_TRUE
 
-    def get_question(self) -> str:
-        return ""
+    @property
+    def name(self) -> str:
+        return "Always True"
+
+    @property
+    def description(self) -> str:
+        return "true"
+
+    @property
+    def variable_name(self) -> str:
+        return "N/A"
 
     def test(self, variant: Variant) -> bool:
         return True
@@ -53,9 +62,18 @@ class VariantEffectPredicate(VariantPredicate):
     def __init__(self, effect: VariantEffect, tx_id: str) -> None:
         self._effect = effect
         self._tx_id = tx_id
-        
-    def get_question(self) -> str:
-        return f'{self._effect.name} on {self._tx_id}'
+    
+    @property
+    def name(self) -> str:
+        return "Variant Effect"
+
+    @property
+    def description(self) -> str:
+        return f"{self._effect.name} on {self._tx_id}"
+
+    @property
+    def variable_name(self) -> str:
+        return "variant effect"
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
@@ -94,9 +112,18 @@ class VariantKeyPredicate(VariantPredicate):
     
     def __init__(self, key: str) -> None:
         self._key = key
-        
-    def get_question(self) -> str:
-        return f'variant has ID of {self._key}'
+
+    @property
+    def name(self) -> str:
+        return "Variant Key Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"variant key is {self._key}"
+
+    @property
+    def variable_name(self) -> str:
+        return "variant key"
 
     def test(self, variant: Variant) -> bool:
         return self._key == variant.variant_info.variant_key
@@ -128,8 +155,17 @@ class VariantGenePredicate(VariantPredicate):
     def __init__(self, symbol: str) -> None:
         self._symbol = symbol
 
-    def get_question(self) -> str:
-        return f'affects {self._symbol}'
+    @property
+    def name(self) -> str:
+        return "Gene Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"affects {self._symbol}"
+
+    @property
+    def variable_name(self) -> str:
+        return "gene"
 
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
@@ -164,8 +200,17 @@ class VariantTranscriptPredicate(VariantPredicate):
     def __init__(self, tx_id: str) -> None:
         self._tx_id = tx_id
 
-    def get_question(self) -> str:
-        return f'variant affects transcript {self._tx_id}'
+    @property
+    def name(self) -> str:
+        return "Transcript Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"affects {self._tx_id}"
+
+    @property
+    def variable_name(self) -> str:
+        return "transcript"
         
     def test(self, variant: Variant) -> bool:
         for tx in variant.tx_annotations:
@@ -221,9 +266,18 @@ class VariantExonPredicate(VariantPredicate):
         self._exon = exon
         assert isinstance(tx_id, str)
         self._tx_id = tx_id
-        
-    def get_question(self) -> str:
-        return f'variant affects exon {self._exon} on {self._tx_id}'
+    
+    @property
+    def name(self) -> str:
+        return "Exon Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"overlaps with exon {self._exon} of {self._tx_id}"
+
+    @property
+    def variable_name(self) -> str:
+        return "exon"
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
@@ -256,8 +310,17 @@ class IsLargeImpreciseStructuralVariantPredicate(VariantPredicate):
     where the exact breakpoint coordinates are not available.
     """
 
-    def get_question(self) -> str:
-        return 'is large imprecise structural variant'
+    @property
+    def name(self) -> str:
+        return "Large Imprecise SV"
+
+    @property
+    def description(self) -> str:
+        return "is large imprecise structural variant"
+
+    @property
+    def variable_name(self) -> str:
+        return "variant"
 
     def test(self, variant: Variant) -> bool:
         return variant.variant_info.has_sv_info()
@@ -286,9 +349,18 @@ class VariantClassPredicate(VariantPredicate):
     ):
         assert isinstance(query, VariantClass), 'query must be `VariantClass`'
         self._query = query
+    
+    @property
+    def name(self) -> str:
+        return "Variant Class"
 
-    def get_question(self) -> str:
-        return f'variant class is {self._query.name}'
+    @property
+    def description(self) -> str:
+        return f"variant class is {self._query.name}"
+
+    @property
+    def variable_name(self) -> str:
+        return "variant class"
 
     def test(self, variant: Variant) -> bool:
         """
@@ -336,8 +408,17 @@ class StructuralTypePredicate(VariantPredicate):
         assert isinstance(query, hpotk.TermId), 'query must be a `TermId`'
         self._query = query
 
-    def get_question(self) -> str:
-        return f'structural type is {self._query}'
+    @property
+    def name(self) -> str:
+        return "Structural Type"
+
+    @property
+    def description(self) -> str:
+        return f"structural type is {self._query.value}"
+
+    @property
+    def variable_name(self) -> str:
+        return "structural type"
 
     def test(self, variant: Variant) -> bool:
         sv_info = variant.variant_info.sv_info
@@ -391,8 +472,17 @@ class ChangeLengthPredicate(VariantPredicate):
         assert isinstance(threshold, int), 'threshold must be an `int`'
         self._threshold = threshold
 
-    def get_question(self) -> str:
-        return f'change length {self._operator_str} {self._threshold}'
+    @property
+    def name(self) -> str:
+        return "Change Length"
+
+    @property
+    def description(self) -> str:
+        return f"change length {self._operator_str} {self._threshold}"
+
+    @property
+    def variable_name(self) -> str:
+        return "change length"
 
     def test(self, variant: Variant) -> bool:
         vc = variant.variant_info.variant_coordinates
@@ -433,8 +523,17 @@ class RefAlleleLengthPredicate(VariantPredicate):
         assert length >= 0, 'length must be non-negative'
         self._length = length
 
-    def get_question(self) -> str:
-        return f'ref allele length {self._operator_str} {self._length}'
+    @property
+    def name(self) -> str:
+        return "Reference Allele Length"
+
+    @property
+    def description(self) -> str:
+        return f"reference allele length {self._operator_str} {self._length}"
+
+    @property
+    def variable_name(self) -> str:
+        return "length of the reference allele"
 
     def test(self, variant: Variant) -> bool:
         vc = variant.variant_info.variant_coordinates
@@ -478,10 +577,21 @@ class ProteinRegionPredicate(VariantPredicate):
         self._region = region
         self._tx_id = tx_id
         
-    def get_question(self) -> str:
-        # We report in 1-based coordinate system
-        return f'variant affects the aminoacid(s) located at [{self._region.start + 1},{self._region.end}] ' \
-            f'in the protein encoded by {self._tx_id}'
+    @property
+    def name(self) -> str:
+        return "Protein Region"
+
+    @property
+    def description(self) -> str:
+        return (
+            "overlaps with "
+            f"[{self._region.start + 1},{self._region.end}] region "  # Reporting 1-based coordinates
+            f"of the protein encoded by {self._tx_id}"
+        )
+
+    @property
+    def variable_name(self) -> str:
+        return "overlap with aminoacid region"
 
     def test(self, variant: Variant) -> bool:
         tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
@@ -530,8 +640,17 @@ class ProteinFeatureTypePredicate(VariantPredicate):
         assert isinstance(protein_metadata, ProteinMetadata)
         self._protein_metadata = protein_metadata
         
-    def get_question(self) -> str:
-        return f'variant affects {self._feature_type.name} of {self._protein_metadata.protein_id}'
+    @property
+    def name(self) -> str:
+        return "Protein Feature Type"
+
+    @property
+    def description(self) -> str:
+        return f"overlaps with a protein feature {self._feature_type.name}"
+
+    @property
+    def variable_name(self) -> str:
+        return f"overlap with {self._feature_type.name} feature"
 
     def test(self, variant: Variant) -> bool:
         for tx_ann in variant.tx_annotations:
@@ -584,8 +703,17 @@ class ProteinFeaturePredicate(VariantPredicate):
         assert isinstance(protein_metadata, ProteinMetadata)
         self._protein_metadata = protein_metadata
 
-    def get_question(self) -> str:
-        return f'variant affects {self._feature_id} of {self._protein_metadata.protein_id}'
+    @property
+    def name(self) -> str:
+        return "Protein Feature"
+
+    @property
+    def description(self) -> str:
+        return f"overlaps with {self._feature_id}"
+
+    @property
+    def variable_name(self) -> str:
+        return "overlap with a protein feature"
         
     def test(self, variant: Variant) -> bool:
         for tx_ann in variant.tx_annotations:

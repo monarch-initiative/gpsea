@@ -57,7 +57,7 @@ TODO - create real predicate.
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=tx_id)
->>> is_missense.get_question()
+>>> is_missense.description
 'MISSENSE_VARIANT on NM_000500.9'
 
 Assuming AR inheritance, we compare missense vs. rest:

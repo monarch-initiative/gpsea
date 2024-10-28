@@ -1,8 +1,18 @@
 import pytest
 
-from gpsea.analysis.predicate.genotype import AlleleCounter, VariantPredicate
-from gpsea.model import *
-from gpsea.model.genome import *
+from gpsea.model import (
+    Genotype,
+    Genotypes,
+    Patient,
+    SampleLabels,
+    TranscriptAnnotation,
+    Variant,
+    VariantCoordinates,
+    VariantEffect,
+    VariantInfo,
+)
+from gpsea.model.genome import Contig, GenomeBuild, GenomicRegion, Region, Strand
+from gpsea.analysis.predicate.genotype import AlleleCounter, VariantPredicates
 
 
 @pytest.fixture(scope="module")
@@ -199,7 +209,7 @@ class TestAlleleCounter:
         variant_key: str,
         expected: int,
     ):
-        predicate = MockVariantKeyPredicate(variant_key)
+        predicate = VariantPredicates.variant_key(key=variant_key)
         counter = AlleleCounter(predicate)
 
         assert counter.count(patient) == expected
@@ -216,38 +226,7 @@ class TestAlleleCounter:
     def test_count_effects(
         self, patient: Patient, variant_effect: VariantEffect, tx_id: str, expected: int
     ):
-        predicate = MockVariantEffectPredicate(variant_effect, tx_id)
+        predicate = VariantPredicates.variant_effect(effect=variant_effect, tx_id=tx_id)
         counter = AlleleCounter(predicate)
 
         assert counter.count(patient) == expected
-
-
-class MockVariantKeyPredicate(VariantPredicate):
-
-    def __init__(self, variant_key: str):
-        self._variant_key = variant_key
-
-    def get_question(self) -> str:
-        return f"variant is {self._variant_key}"
-
-    def test(self, variant: Variant) -> bool:
-        return variant.variant_info.variant_key == self._variant_key
-
-
-class MockVariantEffectPredicate(VariantPredicate):
-
-    def __init__(self, variant_effect: VariantEffect, tx_id: str) -> None:
-        self._variant_effect = variant_effect
-        self._tx_id = tx_id
-
-    def get_question(self) -> str:
-        return f"variant has {self._variant_effect} on {self._tx_id}"
-
-    def test(self, variant: Variant) -> bool:
-        tx_anno = variant.get_tx_anno_by_tx_id(self._tx_id)
-        if tx_anno is None:
-            return False
-        for effect in tx_anno.variant_effects:
-            if effect == self._variant_effect:
-                return True
-        return False

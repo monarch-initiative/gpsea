@@ -118,7 +118,7 @@ to test if the variant is predicted to lead to a frameshift in `NM_181486.4`:
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
->>> is_frameshift.get_question()
+>>> is_frameshift.description
 'FRAMESHIFT_VARIANT on NM_181486.4'
 
 and then we wrap `is_frameshift` in a :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate` 

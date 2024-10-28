@@ -48,8 +48,8 @@ One allele of exon 3 vs. one allele of elsewhere.
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_in_exon3 = VariantPredicates.exon(exon=3, tx_id=tx_id)
->>> is_in_exon3.get_question()
-'variant affects exon 3 on NM_003361.4'
+>>> is_in_exon3.description
+'overlaps with exon 3 of NM_003361.4'
 
 Monoallelic predicate to compare one allele of *UMOD* exon 3 variant
 versus one allele of other *UMOD* variant:

@@ -21,46 +21,35 @@ The variant predicate can leverage multiple primary data:
 | Protein data           | variant is located in a region encoding a protein domain, protein feature type                  |
 +------------------------+-------------------------------------------------------------------------------------------------+
 
-which demands a considerable amount of flexibility for creating the predicate.
 
 As a rule of thumb, the predicates for testing basic conditions are available off the shelf,
 and they can be used as building block for testing for more complex conditions,
 such as testing if the variant is "a missense or synonymous variant located in exon 6 of transcript `NM_013275.6`".
 
-Let's demonstrate this on few examples.
-We will load a cohort of 19 subjects with variants in *RERE*,
-leading to `Holt-Oram syndrome MIM:142900 <https://omim.org/entry/142900>`_.
-The the clinical signs and symptoms of the subjects were encoded into HPO terms
-along with the pathogenic *RERE* variant.
+Let's demonstrate the variant predicate usage on a few examples.
 
-Let's load the phenopackets, as previously described in greater detail the :ref:`input-data` section.
-Briefly, we first load HPO:
 
->>> import hpotk
->>> store = hpotk.configure_ontology_store()
->>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+Load cohort
+-----------
 
-then, we configure the cohort creator:
+For the purpose of this example, we will load a :class:`~gpsea.model.Cohort`
+of 19 individuals with mutations in *RERE* leading to Holt-Oram syndrome.
+The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+and then serialized as
+a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_
+following the instructions in :ref:`cohort-persistence` section.
 
->>> from gpsea.preprocessing import configure_caching_cohort_creator
->>> cohort_creator = configure_caching_cohort_creator(hpo)
+.. 
+   Prepare the JSON file by running the tests in `tests/tests/test_generate_doc_cohorts.py`.
 
-which we use to create a :class:`~gpsea.model.Cohort` from a bunch of phenopackets
-from the release `0.1.18` of `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
-We will load 19 individuals with mutations in *RERE* gene:
-
->>> from ppktstore.registry import configure_phenopacket_registry
->>> registry = configure_phenopacket_registry()
->>> with registry.open_phenopacket_store(release='0.1.18') as ps:
-...     phenopackets = tuple(ps.iter_cohort_phenopackets('RERE'))
->>> len(phenopackets)
+>>> import json
+>>> from gpsea.io import GpseaJSONDecoder
+>>> fpath_cohort_json = 'docs/cohort-data/RERE.0.1.20.json'
+>>> with open(fpath_cohort_json) as fh:
+...     cohort = json.load(fh, cls=GpseaJSONDecoder)
+>>> len(cohort)
 19
 
-and we will convert the phenopacket into a :class:`~gpsea.model.Cohort`:
-
->>> from gpsea.preprocessing import load_phenopackets
->>> cohort, _ = load_phenopackets(phenopackets, cohort_creator)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-Individuals Processed: ...
 
 To demonstrate the predicate API, we will use the variant ``1_8358231_8358231_T_C`` that corresponds 
 to a pathogenic variant `VCV000522858.5 <https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/>`_ 
@@ -128,7 +117,7 @@ such as testing if the variant is a *"chromosomal deletion" or a deletion which 
 >>> from gpsea.model import VariantClass
 >>> chromosomal_deletion = "SO:1000029"
 >>> predicate = VariantPredicates.structural_type(chromosomal_deletion) | (VariantPredicates.variant_class(VariantClass.DEL) & VariantPredicates.change_length("<=", -50))
->>> predicate.get_question()
+>>> predicate.description
 '(structural type is SO:1000029 OR (variant class is DEL AND change length <= -50))'
 
 
@@ -157,7 +146,7 @@ the underlying predicate and to invert its test result.
 This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:
 
 >>> non_frameshift_del = ~VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id=rere_mane_tx_id) & VariantPredicates.variant_class(VariantClass.DEL)
->>> non_frameshift_del.get_question()
+>>> non_frameshift_del.description
 '(NOT FRAMESHIFT_VARIANT on NM_001042681.2 AND variant class is DEL)'
 
 Note the presence of a tilde ``~`` before the variant effect predicate and resulting ``NOT`` in the predicate question.
