@@ -224,7 +224,7 @@ class CohortViewer:
             "hpo_counts": hpo_counts,
             "total_measurement_count": n_measurements,
             "measurement_counts": measurement_counts,
-            "unique_variant_count": len(cohort.all_variants()),
+            "unique_variant_count": len(cohort.all_variant_infos()),
             "top_var_count": self._top_variant_count,
             "var_counts": variant_counts,
             "n_diseases": n_diseases,

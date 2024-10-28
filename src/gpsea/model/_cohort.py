@@ -10,7 +10,7 @@ import hpotk
 from ._base import SampleLabels, Sex
 from ._phenotype import Phenotype, Disease, Measurement
 from ._temporal import Age
-from ._variant import Variant
+from ._variant import Variant, VariantInfo
 
 
 class Status(enum.Enum):
@@ -334,6 +334,14 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         return set(itertools.chain(variant for patient in self._members for variant in patient.variants))
 
+    def all_variant_infos(self) -> typing.Set[VariantInfo]:
+        """
+        Get a set of variant infos observed in the cohort members.
+        """
+        return set(
+            itertools.chain(variant.variant_info for individual in self._members for variant in individual.variants)
+        )
+
     @property
     def all_transcript_ids(self) -> typing.Set[str]:
         """
@@ -414,6 +422,8 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Returns:
             list: A sequence of tuples, formatted (variant key, number of patients with that variant)
         """
+        # TODO: the counter counts the number of occurrences of a variant in an individual,
+        # and NOT the allele count! Evaluate if this is what we want!
         counter = Counter()
         for patient in self._members:
             counter.update(variant.variant_info.variant_key for variant in patient.variants)

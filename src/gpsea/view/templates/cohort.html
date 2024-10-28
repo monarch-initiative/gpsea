@@ -64,7 +64,7 @@
 
 <body>
   <h1>GPSEA cohort analysis</h1>
-  <p>Successfully loaded {{ n_individuals }} individuals. {{ n_male }} were recorded as male, {{ n_female }},
+  <p>Successfully loaded {{ n_individuals }} individuals. {{ n_male }} were recorded as male, {{ n_female }} as female,
       and {{ n_unknown_sex }} as unknown sex. {{ n_alive }} were reported to be alive at the time of last
       encounter, and {{ n_deceased }} were deceased. {{ n_has_disease_onset }} had disease onset information
       and {{n_has_age_at_last_encounter  }} had information about the age at last encounter. In the cohort,
@@ -104,8 +104,8 @@
   {% if n_has_onset_info > 0 %}
       <p> {{ n_has_onset_info }} had onset information for at least 20% of individuals.</p>
        <caption style="color: black;">
-        <h3>Top {{top_var_count}} Variants</h3>
-        Variants are shown according to {{ transcript_id }}. A total of {{ unique_variant_count}} unique variants were identified in the cohort.
+        <h3>Top {{top_var_count}} HPO Terms</h3>
+        A total of {{ total_hpo_count }} HPO terms were used to annotated the cohort.
     </caption>
             <tbody>
                 <tr class="strng">
@@ -131,7 +131,7 @@
     </caption>
             <tbody>
                 <tr class="strng">
-                    <th>Count</th>
+                    <th>Seen in <em>n</em> individuals</th>
                     <th class="lft">Variant key</th>
                     <th>Variant Name</th>
                     <th>Protein Variant</th>
