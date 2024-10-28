@@ -1,8 +1,9 @@
 import typing
-from collections import defaultdict
+
+from collections import namedtuple, defaultdict
+
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
-from collections import namedtuple
 
 from gpsea.model import Cohort, Sex
 from ._report import GpseaReport, HtmlGpseaReport
@@ -35,9 +36,9 @@ class CohortViewer:
         self._cohort_template = environment.get_template("cohort.html")
 
     def process(
-            self,
-            cohort: Cohort,
-            transcript_id: typing.Optional[str] = None,
+        self,
+        cohort: Cohort,
+        transcript_id: typing.Optional[str] = None,
     ) -> GpseaReport:
         """
         Generate the report for a given `cohort`.
@@ -55,9 +56,9 @@ class CohortViewer:
         return HtmlGpseaReport(html=report)
 
     def _prepare_context(
-            self,
-            cohort: Cohort,
-            transcript_id: typing.Optional[str],
+        self,
+        cohort: Cohort,
+        transcript_id: typing.Optional[str],
     ) -> typing.Mapping[str, typing.Any]:
 
         hpo_counts = list()
@@ -120,7 +121,7 @@ class CohortViewer:
         for disease_id, disease_count in cohort.list_all_diseases():
             disease_name = "Unknown"
             for disease in cohort.all_diseases():
-                if disease.identifier == disease_id:
+                if disease.identifier.value == disease_id:
                     disease_name = disease.name
             disease_counts.append(
                 {
@@ -235,9 +236,9 @@ class CohortViewer:
 
     @staticmethod
     def _get_variant_description(
-            cohort: Cohort,
-            transcript_id: typing.Optional[str],
-            only_hgvs: bool = True,
+        cohort: Cohort,
+        transcript_id: typing.Optional[str],
+        only_hgvs: bool = True,
     ) -> typing.Mapping[str, ToDisplay]:
         """
         Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings

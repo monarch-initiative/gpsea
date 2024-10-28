@@ -2,7 +2,7 @@ import enum
 import itertools
 import typing
 
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 
 import hpotk
@@ -375,8 +375,8 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         return counter.most_common(top)
 
     def list_measurements(
-            self,
-            top: typing.Optional[int] = None,
+        self,
+        top: typing.Optional[int] = None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
@@ -391,21 +391,21 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         counter = Counter()
         for patient in self._members:
-            counter.update(m.identifier.value for m in patient.measurements if m.is_present)
+            counter.update(m.identifier.value for m in patient.measurements)
         return counter.most_common(top)
 
     def list_all_diseases(
-            self,
-            top=None,
-    ) -> typing.Sequence[typing.Tuple[hpotk.TermId, int]]:
+        self,
+        top=None,
+    ) -> typing.Sequence[typing.Tuple[str, int]]:
         counter = Counter()
         for patient in self._members:
-            counter.update(d.identifier for d in patient.diseases)
+            counter.update(d.identifier.value for d in patient.diseases)
         return counter.most_common(top)
 
     def list_all_variants(
-            self,
-            top=None,
+        self,
+        top=None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
         Args:
@@ -447,16 +447,14 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
               or `None` if all transcripts should be listed.
 
         Returns:
-            typing.Mapping[str, typing.Mapping[str, int]]: Each transcript ID references a Counter(), with the variant effect as the key
-              and the count of variants with that effect on the transcript id.
+            typing.Mapping[str, typing.Mapping[str, int]]: Each transcript ID references a Counter(),
+              with the variant effect as the key and the count of variants with that effect on the transcript id.
         """
-        counters = {}
+        counters = defaultdict(Counter)
 
         for v in self.all_variants():
             for txa in v.tx_annotations:
                 if tx_id is None or tx_id == txa.transcript_id:
-                    if txa.transcript_id not in counters.keys():
-                        counters[txa.transcript_id] = Counter()
                     counters[txa.transcript_id].update(ve.name for ve in txa.variant_effects)
 
         return counters
