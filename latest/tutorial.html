@@ -254,7 +254,13 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
 
 <body>
   <h1>GPSEA cohort analysis</h1>
-  <p>Successfully loaded 156 individuals.</p>
+  <p>Successfully loaded 156 individuals. 46 were recorded as male, 56 as female,
+      and 54 as unknown sex. 156 were reported to be alive at the time of last
+      encounter, and 0 were deceased. 1 had disease onset information
+      and 51 had information about the age at last encounter. In the cohort,
+      there were a total of 117 HPO terms used for annotation.
+    
+  </p>
   
   <p>No errors encountered.</p>
   
@@ -262,7 +268,7 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
     <table>
     <caption style="color: black;">
         <h3>Top 10 HPO Terms</h3>
-        A total of 116 HPO terms were used to annotated the cohort.
+        A total of 117 HPO terms were used to annotated the cohort.
     </caption>
         <tbody>
             <tr class="strng">
@@ -296,14 +302,14 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
                 </tr>
             
             <tr>
-                <td class="lft">Absent thumb</td>
-                <td>HP:0009777</td>
+                <td class="lft">Short thumb</td>
+                <td>HP:0009778</td>
                 <td>32</td>
                 </tr>
             
             <tr>
-                <td class="lft">Short thumb</td>
-                <td>HP:0009778</td>
+                <td class="lft">Absent thumb</td>
+                <td>HP:0009777</td>
                 <td>32</td>
                 </tr>
             
@@ -334,14 +340,16 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
                 </tbody>
     </table>
 
+  
+
     <table>
     <caption style="color: black;">
         <h3>Top 10 Variants</h3>
-        Variants are shown according to NM_181486.4. A total of 156 unique variants were identified in the cohort.
+        Variants are shown according to NM_181486.4. A total of 53 unique variants were identified in the cohort.
     </caption>
             <tbody>
                 <tr class="strng">
-                    <th>Count</th>
+                    <th>Seen in <em>n</em> individuals</th>
                     <th class="lft">Variant key</th>
                     <th>Variant Name</th>
                     <th>Protein Variant</th>
@@ -382,6 +390,14 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
                 
                 <tr>
                     <td>5</td>
+                    <td class="lft">12_114399514_114399514_A_C</td>
+                    <td>c.361T>G</td>
+                    <td>p.Trp121Gly</td>
+                    <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
                     <td class="lft">12_114398682_114398682_C_CG</td>
                     <td>c.400dup</td>
                     <td>p.Arg134ProfsTer49</td>
@@ -394,14 +410,6 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
                     <td>c.106_107insC</td>
                     <td>p.Ser36ThrfsTer25</td>
                     <td>FRAMESHIFT_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>5</td>
-                    <td class="lft">12_114399514_114399514_A_C</td>
-                    <td>c.361T>G</td>
-                    <td>p.Trp121Gly</td>
-                    <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
                 </tr>
                 
                 <tr>
@@ -422,10 +430,10 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
                 
                 <tr>
                     <td>4</td>
-                    <td class="lft">12_114366360_114366360_C_T</td>
-                    <td>c.787G>A</td>
-                    <td>p.Val263Met</td>
-                    <td>MISSENSE_VARIANT</td>
+                    <td class="lft">12_114403798_114403798_G_GC</td>
+                    <td>c.100dup</td>
+                    <td>p.Ala34GlyfsTer27</td>
+                    <td>FRAMESHIFT_VARIANT</td>
                 </tr>
                 
             </tbody>
@@ -458,61 +466,73 @@ See <a class="reference internal" href="user-guide/input-data.html#input-data"><
             <tr class="strng">
                 <th class="lft">Variant effect</th>
                 <th>Annotation Count</th>
+                <th>Percent</th>
               </tr>
               
               <tr>
-                <td class="lft">FRAMESHIFT_VARIANT</td>
-                <td>38</td>
+                <td class="lft">MISSENSE_VARIANT</td>
+                <td>85</td>
+               <td>50%</td>
                 </tr>
             
               <tr>
-                <td class="lft">MISSENSE_VARIANT</td>
-                <td>85</td>
+                <td class="lft">FRAMESHIFT_VARIANT</td>
+                <td>38</td>
+               <td>22%</td>
                 </tr>
             
               <tr>
                 <td class="lft">STOP_GAINED</td>
                 <td>19</td>
+               <td>11%</td>
                 </tr>
             
               <tr>
                 <td class="lft">SPLICE_REGION_VARIANT</td>
                 <td>10</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
-                <td>2</td>
+               <td>6%</td>
                 </tr>
             
               <tr>
                 <td class="lft">SPLICE_DONOR_VARIANT</td>
                 <td>7</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
-                <td>2</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">INTRON_VARIANT</td>
-                <td>2</td>
+               <td>4%</td>
                 </tr>
             
               <tr>
                 <td class="lft">INFRAME_INSERTION</td>
                 <td>2</td>
+               <td>1%</td>
                 </tr>
             
               <tr>
                 <td class="lft">STOP_RETAINED_VARIANT</td>
                 <td>2</td>
+               <td>1%</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
+                <td>2</td>
+               <td>1%</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
+                <td>2</td>
+               <td>1%</td>
+                </tr>
+            
+              <tr>
+                <td class="lft">INTRON_VARIANT</td>
+                <td>2</td>
+               <td>1%</td>
                 </tr>
             
               <tr>
                 <td class="lft">INFRAME_DELETION</td>
                 <td>1</td>
+               <td>1%</td>
                 </tr>
             
            </tbody>

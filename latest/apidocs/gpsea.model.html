@@ -124,6 +124,12 @@ and we follow with data classes for phenotype, genotype, transcript, and protein
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.all_measurements">
+<span class="sig-name descname"><span class="pre">all_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Measurement" title="gpsea.model._phenotype.Measurement"><span class="pre">Measurement</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_measurements" title="Link to this definition"></a></dt>
+<dd><p>Get a set of all phenotypes (observed or excluded) in the cohort members.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Cohort.all_diseases">
 <span class="sig-name descname"><span class="pre">all_diseases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_diseases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_diseases" title="Link to this definition"></a></dt>
 <dd><p>Get a set of all diseases (observed or excluded) in the cohort members.</p>
@@ -133,6 +139,12 @@ and we follow with data classes for phenotype, genotype, transcript, and protein
 <dt class="sig sig-object py" id="gpsea.model.Cohort.all_variants">
 <span class="sig-name descname"><span class="pre">all_variants</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Variant" title="gpsea.model._variant.Variant"><span class="pre">Variant</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_variants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_variants" title="Link to this definition"></a></dt>
 <dd><p>Get a set of all variants observed in the cohort members.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.all_variant_infos">
+<span class="sig-name descname"><span class="pre">all_variant_infos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.VariantInfo" title="gpsea.model._variant.VariantInfo"><span class="pre">VariantInfo</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_variant_infos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_variant_infos" title="Link to this definition"></a></dt>
+<dd><p>Get a set of variant infos observed in the cohort members.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -176,8 +188,30 @@ Otherwise, lists only the <cite>top</cite> highest counts</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.list_measurements">
+<span class="sig-name descname"><span class="pre">list_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.list_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.list_measurements" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence with counts of HPO terms used as direct annotations of the cohort members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typing.Optional</strong><strong>[</strong><strong>int</strong><strong>]</strong> – If not given, lists all present phenotypes.
+Otherwise, lists only the <cite>top</cite> highest counts</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A sequence of tuples, formatted (phenotype CURIE,</dt><dd><p>number of patients with that phenotype)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><em>Sequence</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Cohort.list_all_diseases">
-<span class="sig-name descname"><span class="pre">list_all_diseases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.list_all_diseases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.list_all_diseases" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_all_diseases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.list_all_diseases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.list_all_diseases" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -223,7 +257,7 @@ or <cite>None</cite> if all transcripts should be listed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Each transcript ID references a Counter(), with the variant effect as the key</dt><dd><p>and the count of variants with that effect on the transcript id.</p>
+<dt>Each transcript ID references a Counter(),</dt><dd><p>with the variant effect as the key and the count of variants with that effect on the transcript id.</p>
 </dd>
 </dl>
 </p>

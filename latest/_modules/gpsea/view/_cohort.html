@@ -78,14 +78,14 @@
   <h1>Source code for gpsea.view._cohort</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span>
+
 <span class="kn">from</span> <span class="nn">hpotk</span> <span class="kn">import</span> <span class="n">MinimalOntology</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Sex</span>
 <span class="kn">from</span> <span class="nn">._report</span> <span class="kn">import</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
 <span class="kn">from</span> <span class="nn">._formatter</span> <span class="kn">import</span> <span class="n">VariantFormatter</span>
-
 
 <span class="n">ToDisplay</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ToDisplay&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hgvs_cdna&#39;</span><span class="p">,</span> <span class="s1">&#39;hgvsp&#39;</span><span class="p">,</span> <span class="s1">&#39;variant_effects&#39;</span><span class="p">])</span>
 
@@ -158,6 +158,22 @@
                     <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">individual_count</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
+        <span class="c1"># Show the same max number of measuresments as phenotypes</span>
+        <span class="n">measurement_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">msmt</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_measurements</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">):</span>
+            <span class="n">msmt_id</span> <span class="o">=</span> <span class="n">msmt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">individual_count</span> <span class="o">=</span> <span class="n">msmt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">msmt_label</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
+            <span class="c1">#if hpo_id in self._hpo:</span>
+            <span class="c1">#    hpo_label = self._hpo.get_term_name(hpo_id)</span>
+            <span class="n">msmt_label</span> <span class="o">=</span> <span class="s2">&quot;need a way to retrieve measuremnt label&quot;</span>
+            <span class="n">measurement_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Assay&quot;</span><span class="p">:</span> <span class="n">msmt_label</span><span class="p">,</span>
+                    <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">msmt_id</span><span class="p">,</span>
+                    <span class="s2">&quot;Count&quot;</span><span class="p">:</span> <span class="n">individual_count</span><span class="p">,</span>
+                <span class="p">})</span>
+        <span class="n">n_measurements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurement_counts</span><span class="p">)</span>
 
         <span class="n">variant_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="n">variant_to_display_d</span> <span class="o">=</span> <span class="n">CohortViewer</span><span class="o">.</span><span class="n">_get_variant_description</span><span class="p">(</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">)</span>
@@ -188,7 +204,7 @@
         <span class="k">for</span> <span class="n">disease_id</span><span class="p">,</span> <span class="n">disease_count</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_diseases</span><span class="p">():</span>
             <span class="n">disease_name</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
             <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_diseases</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">disease</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">disease_id</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">disease</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">disease_id</span><span class="p">:</span>
                     <span class="n">disease_name</span> <span class="o">=</span> <span class="n">disease</span><span class="o">.</span><span class="n">name</span>
             <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
@@ -221,15 +237,77 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">has_transcript</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">transcript_id</span> <span class="o">=</span> <span class="s2">&quot;MANE transcript ID&quot;</span>
-            
+
+        <span class="n">n_male</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_female</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_unknown_sex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_deceased</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_alive</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_has_age_at_last_encounter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_has_disease_onset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">hpo_id_to_has_cnset_count_d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">sex</span> <span class="o">==</span> <span class="n">Sex</span><span class="o">.</span><span class="n">MALE</span><span class="p">:</span>
+                <span class="n">n_male</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">pat</span><span class="o">.</span><span class="n">sex</span> <span class="o">==</span> <span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">:</span>
+                <span class="n">n_female</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">n_unknown_sex</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">patient_not_deceased</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">vital_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">vital_status</span><span class="o">.</span><span class="n">is_deceased</span><span class="p">:</span>
+                    <span class="n">n_deceased</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">patient_not_deceased</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">patient_not_deceased</span><span class="p">:</span>
+                <span class="n">n_alive</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n_has_age_at_last_encounter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">diseases</span> <span class="o">=</span> <span class="n">pat</span><span class="o">.</span><span class="n">diseases</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">diseases</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">onset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">n_has_disease_onset</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>  <span class="c1"># for now, do this for any diseases. All of our current phenopackets habve but one disease</span>
+            <span class="n">terms_and_ancestors_with_onset_information</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">pf</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">present_phenotypes</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">pf</span><span class="o">.</span><span class="n">onset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ancs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ancestors</span><span class="p">(</span><span class="n">pf</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">terms_and_ancestors_with_onset_information</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ancs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">hpo_id</span> <span class="ow">in</span> <span class="n">terms_and_ancestors_with_onset_information</span><span class="p">:</span>
+                <span class="n">hpo_id_to_has_cnset_count_d</span><span class="p">[</span><span class="n">hpo_id</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># When we get here, we want to present the counts of HPO terms that have onset information</span>
+        <span class="n">n_individuals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">)</span>
+        <span class="n">onset_threshold</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">n_individuals</span><span class="p">)</span>  <span class="c1"># only show terms with a decent amount of information</span>
+        <span class="n">has_onset_information</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">hpo_id</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">hpo_id_to_has_cnset_count_d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="n">onset_threshold</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">get_term_name</span><span class="p">(</span><span class="n">hpo_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">display_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">hpo_id</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">display_label</span> <span class="o">=</span> <span class="n">hpo_id</span>
+            <span class="n">has_onset_information</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;HPO&quot;</span><span class="p">:</span> <span class="n">display_label</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span>
+        <span class="n">n_has_onset_info</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">has_onset_information</span><span class="p">)</span>
+
         <span class="c1"># The following dictionary is used by the Jinja2 HTML template</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">),</span>
+            <span class="s2">&quot;n_individuals&quot;</span><span class="p">:</span> <span class="n">n_individuals</span><span class="p">,</span>
+            <span class="s2">&quot;n_male&quot;</span><span class="p">:</span> <span class="n">n_male</span><span class="p">,</span>
+            <span class="s2">&quot;n_female&quot;</span><span class="p">:</span> <span class="n">n_female</span><span class="p">,</span>
+            <span class="s2">&quot;n_unknown_sex&quot;</span><span class="p">:</span> <span class="n">n_unknown_sex</span><span class="p">,</span>
+            <span class="s2">&quot;n_deceased&quot;</span><span class="p">:</span> <span class="n">n_deceased</span><span class="p">,</span>
+            <span class="s2">&quot;n_alive&quot;</span><span class="p">:</span> <span class="n">n_alive</span><span class="p">,</span>
+            <span class="s2">&quot;n_has_disease_onset&quot;</span><span class="p">:</span> <span class="n">n_has_disease_onset</span><span class="p">,</span>
+            <span class="s2">&quot;n_has_age_at_last_encounter&quot;</span><span class="p">:</span> <span class="n">n_has_age_at_last_encounter</span><span class="p">,</span>
+            <span class="s2">&quot;has_onset_information&quot;</span><span class="p">:</span> <span class="n">has_onset_information</span><span class="p">,</span>
+            <span class="s2">&quot;n_has_onset_info&quot;</span><span class="p">:</span> <span class="n">n_has_onset_info</span><span class="p">,</span>
             <span class="s2">&quot;n_excluded&quot;</span><span class="p">:</span> <span class="n">cohort</span><span class="o">.</span><span class="n">get_excluded_count</span><span class="p">(),</span>
             <span class="s2">&quot;total_hpo_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_phenotypes</span><span class="p">()),</span>
             <span class="s2">&quot;top_hpo_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span><span class="p">,</span>
             <span class="s2">&quot;hpo_counts&quot;</span><span class="p">:</span> <span class="n">hpo_counts</span><span class="p">,</span>
-            <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">()),</span>
+            <span class="s2">&quot;total_measurement_count&quot;</span><span class="p">:</span> <span class="n">n_measurements</span><span class="p">,</span>
+            <span class="s2">&quot;measurement_counts&quot;</span><span class="p">:</span> <span class="n">measurement_counts</span><span class="p">,</span>
+            <span class="s2">&quot;unique_variant_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="o">.</span><span class="n">all_variant_infos</span><span class="p">()),</span>
             <span class="s2">&quot;top_var_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span><span class="p">,</span>
             <span class="s2">&quot;var_counts&quot;</span><span class="p">:</span> <span class="n">variant_counts</span><span class="p">,</span>
             <span class="s2">&quot;n_diseases&quot;</span><span class="p">:</span> <span class="n">n_diseases</span><span class="p">,</span>
@@ -267,14 +345,14 @@
                 <span class="n">tx_annotation</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">tx_annotation</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">get_tx_anno_by_tx_id</span><span class="p">(</span><span class="n">transcript_id</span><span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="n">tx_annotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">hgvsp</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">var_effects</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">hgvsp</span> <span class="o">=</span> <span class="n">tx_annotation</span><span class="o">.</span><span class="n">hgvsp</span>
                 <span class="n">var_effects</span> <span class="o">=</span> <span class="p">[</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">tx_annotation</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">]</span>
-    
+
             <span class="k">if</span> <span class="n">only_hgvs</span><span class="p">:</span>
                 <span class="c1"># do not show the transcript id</span>
                 <span class="n">fields_dna</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
