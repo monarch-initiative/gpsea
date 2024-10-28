@@ -1,13 +1,13 @@
 import typing
 
+from collections import namedtuple, defaultdict
+
 from hpotk import MinimalOntology
 from jinja2 import Environment, PackageLoader
-from collections import namedtuple
 
-from gpsea.model import Cohort
+from gpsea.model import Cohort, Sex
 from ._report import GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
-
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
@@ -75,6 +75,22 @@ class CohortViewer:
                     "Count": individual_count,
                 }
             )
+        # Show the same max number of measuresments as phenotypes
+        measurement_counts = list()
+        for msmt in cohort.list_measurements(top=self._top_phenotype_count):
+            msmt_id = msmt[0]
+            individual_count = msmt[1]
+            msmt_label = "n/a"
+            #if hpo_id in self._hpo:
+            #    hpo_label = self._hpo.get_term_name(hpo_id)
+            msmt_label = "need a way to retrieve measuremnt label"
+            measurement_counts.append(
+                {
+                    "Assay": msmt_label,
+                    "ID": msmt_id,
+                    "Count": individual_count,
+                })
+        n_measurements = len(measurement_counts)
 
         variant_counts = list()
         variant_to_display_d = CohortViewer._get_variant_description(cohort, transcript_id)
@@ -105,7 +121,7 @@ class CohortViewer:
         for disease_id, disease_count in cohort.list_all_diseases():
             disease_name = "Unknown"
             for disease in cohort.all_diseases():
-                if disease.identifier == disease_id:
+                if disease.identifier.value == disease_id:
                     disease_name = disease.name
             disease_counts.append(
                 {
@@ -138,15 +154,77 @@ class CohortViewer:
         else:
             has_transcript = False
             transcript_id = "MANE transcript ID"
-            
+
+        n_male = 0
+        n_female = 0
+        n_unknown_sex = 0
+        n_deceased = 0
+        n_alive = 0
+        n_has_age_at_last_encounter = 0
+        n_has_disease_onset = 0
+        hpo_id_to_has_cnset_count_d = defaultdict(int)
+        for pat in cohort.all_patients:
+            if pat.sex == Sex.MALE:
+                n_male += 1
+            elif pat.sex == Sex.FEMALE:
+                n_female += 1
+            else:
+                n_unknown_sex += 1
+            patient_not_deceased = True
+            if pat.vital_status is not None:
+                if pat.vital_status.is_deceased:
+                    n_deceased += 1
+                    patient_not_deceased = False
+            if patient_not_deceased:
+                n_alive += 1
+            if pat.age is not None:
+                n_has_age_at_last_encounter += 1
+            diseases = pat.diseases
+            for d in diseases:
+                if d.onset is not None:
+                    n_has_disease_onset += 1
+                    break  # for now, do this for any diseases. All of our current phenopackets habve but one disease
+            terms_and_ancestors_with_onset_information = set()
+            for pf in pat.present_phenotypes():
+                if pf.onset is not None:
+                    ancs = self._hpo.graph.get_ancestors(pf.identifier, include_source=True)
+                    terms_and_ancestors_with_onset_information.update(ancs)
+            for hpo_id in terms_and_ancestors_with_onset_information:
+                hpo_id_to_has_cnset_count_d[hpo_id] += 1
+        # When we get here, we want to present the counts of HPO terms that have onset information
+        n_individuals = len(cohort.all_patients)
+        onset_threshold = int(0.2 * n_individuals)  # only show terms with a decent amount of information
+        has_onset_information = list()
+        for hpo_id, count in hpo_id_to_has_cnset_count_d.items():
+            if count < onset_threshold:
+                continue
+            label = self._hpo.get_term_name(hpo_id)
+            if label is not None:
+                display_label = f"{label} ({hpo_id})"
+            else:
+                display_label = hpo_id
+            has_onset_information.append({"HPO": display_label, "count": count})
+        n_has_onset_info = len(has_onset_information)
+
         # The following dictionary is used by the Jinja2 HTML template
         return {
-            "n_individuals": len(cohort.all_patients),
+            "n_individuals": n_individuals,
+            "n_male": n_male,
+            "n_female": n_female,
+            "n_unknown_sex": n_unknown_sex,
+            "n_deceased": n_deceased,
+            "n_alive": n_alive,
+            "n_has_disease_onset": n_has_disease_onset,
+            "n_has_age_at_last_encounter": n_has_age_at_last_encounter,
+            "has_onset_information": has_onset_information,
+            "n_has_onset_info": n_has_onset_info,
             "n_excluded": cohort.get_excluded_count(),
             "total_hpo_count": len(cohort.all_phenotypes()),
             "top_hpo_count": self._top_phenotype_count,
             "hpo_counts": hpo_counts,
-            "unique_variant_count": len(cohort.all_variants()),
+            "total_measurement_count": n_measurements,
+            "measurement_counts": measurement_counts,
+            "unique_variant_count": len(cohort.all_variant_infos()),
             "top_var_count": self._top_variant_count,
             "var_counts": variant_counts,
             "n_diseases": n_diseases,
@@ -184,14 +262,14 @@ class CohortViewer:
                 tx_annotation = None
             else:
                 tx_annotation = var.get_tx_anno_by_tx_id(transcript_id)
-            
+
             if tx_annotation is None:
                 hgvsp = None
                 var_effects = None
             else:
                 hgvsp = tx_annotation.hgvsp
                 var_effects = [var_eff.name for var_eff in tx_annotation.variant_effects]
-    
+
             if only_hgvs:
                 # do not show the transcript id
                 fields_dna = display.split(":")
