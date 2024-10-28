@@ -1,3 +1,4 @@
+
 .. _hpo-predicate:
 
 
@@ -35,8 +36,12 @@ and now we can set up a predicate to test for presence of *Abnormal lens morphol
 ...     hpo=hpo,
 ...     query=query,
 ... )
->>> pheno_predicate.display_question()
-'Is Abnormal lens morphology present in the patient: Yes, No'
+>>> pheno_predicate.name
+'HPO Predicate'
+>>> pheno_predicate.description
+'Test for presence of Abnormal lens morphology'
+>>> pheno_predicate.group_labels
+('Yes', 'No')
 
 
 

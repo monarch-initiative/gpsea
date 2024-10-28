@@ -48,8 +48,8 @@ One allele of exon 3 vs. one allele of elsewhere.
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_in_exon3 = VariantPredicates.exon(exon=3, tx_id=tx_id)
->>> is_in_exon3.get_question()
-'variant affects exon 3 on NM_003361.4'
+>>> is_in_exon3.description
+'overlaps with exon 3 of NM_003361.4'
 
 Monoallelic predicate to compare one allele of *UMOD* exon 3 variant
 versus one allele of other *UMOD* variant:
@@ -60,8 +60,8 @@ versus one allele of other *UMOD* variant:
 ...     b_predicate=~is_in_exon3,
 ...     a_label="Exon 3", b_label="Other",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Exon 3, Other'
+>>> gt_predicate.group_labels
+('Exon 3', 'Other')
 
 
 Survival endpoint
@@ -84,8 +84,8 @@ to compute the time until an individual develops end stage renal disease:
 >>> from gpsea.analysis.temporal.endpoint import hpo_onset
 >>> term_id = "HP:0003774"  # Stage 5 chronic kidney disease
 >>> endpoint = hpo_onset(hpo=hpo, term_id=term_id)
->>> endpoint.display_question()
-'Compute time until postnatal onset of Stage 5 chronic kidney disease'
+>>> endpoint.description
+'Compute time until onset of Stage 5 chronic kidney disease'
 
 
 Statistical test
@@ -142,7 +142,7 @@ We can plot Kaplan-Meier curves:
 ...     major_locator=mpl.ticker.MultipleLocator(10 * Age.DAYS_IN_YEAR),
 ... )
 >>> _ = ax.set(
-...     xlabel=f"{endpoint.question_base().capitalize()} [years]",
+...     xlabel=endpoint.name + " [years]",
 ...     ylabel="Empirical survival",
 ... )
 >>> _ = ax.grid(axis="y")

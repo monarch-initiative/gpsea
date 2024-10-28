@@ -13,8 +13,8 @@ based on the disease diagnoses present in the individuals.
 ...     diagnoses=('OMIM:154700', 'OMIM:129600'),
 ...     labels=('Marfan syndrome', 'Ectopia lentis, familial'),
 ... )
->>> gt_predicate.display_question()
-'What disease was diagnosed: OMIM:154700, OMIM:129600'
+>>> gt_predicate.group_labels
+('OMIM:154700', 'OMIM:129600')
 
 The predicate takes two or more disease identifiers (`diagnoses`) as well as their names (`labels`),
 and it assigns the individuals based on their diagnoses.

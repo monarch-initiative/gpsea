@@ -105,8 +105,8 @@ In this example, the point mutation is a mutation that meets the following condi
 >>> point_mutation = VariantPredicates.change_length('==', 0) \
 ...     & VariantPredicates.ref_length('==', 1) \
 ...     & VariantPredicates.any(VariantPredicates.variant_effect(effect, tx_id) for effect in point_mutation_effects)
->>> point_mutation.get_question()
-'((change length == 0 AND ref allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)'
+>>> point_mutation.description
+'((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)'
 
 
 For the loss of function predicate, the following variant effects are considered loss of function:
@@ -118,7 +118,7 @@ For the loss of function predicate, the following variant effects are considered
 ...     VariantEffect.STOP_GAINED,
 ... )
 >>> lof_mutation = VariantPredicates.any(VariantPredicates.variant_effect(eff, tx_id) for eff in lof_effects)
->>> lof_mutation.get_question()
+>>> lof_mutation.description
 '(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
 
 
@@ -130,8 +130,8 @@ The genotype predicate will bin the patient into two groups: a point mutation gr
 ...     b_predicate=lof_mutation,
 ...     a_label="Point", b_label="LoF",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Point, LoF'
+>>> gt_predicate.group_labels
+('Point', 'LoF')
 
 
 .. _phenotype-score:
@@ -191,6 +191,8 @@ We construct the scorer with
 ...     hpo=hpo,
 ...     query=structural_defects,
 ... )
+>>> pheno_scorer.description
+'Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants'
 
 
 Statistical test

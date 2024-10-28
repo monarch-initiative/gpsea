@@ -118,7 +118,7 @@ to test if the variant is predicted to lead to a frameshift in `NM_181486.4`:
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
->>> is_frameshift.get_question()
+>>> is_frameshift.description
 'FRAMESHIFT_VARIANT on NM_181486.4'
 
 and then we wrap `is_frameshift` in a :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate` 
@@ -131,8 +131,8 @@ or as an idividual with one non-frameshift allele (`Other`):
 ...     a_label="Frameshift",
 ...     b_label="Other",
 ... )
->>> gt_predicate.display_question()
-'Allele group: Frameshift, Other'
+>>> gt_predicate.group_labels
+('Frameshift', 'Other')
 
 In the subsequent analysis, `gt_predicate` will assign a cohort member into the respective group.
 Note, any patient with :math:`0` or :math:`\ge 2` alleles will be *omitted* from the analysis.

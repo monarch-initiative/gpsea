@@ -8,9 +8,10 @@ from ..predicate.genotype import GenotypePolyPredicate
 from .stats import PhenotypeScoreStatistic
 
 from .._base import MonoPhenotypeAnalysisResult
+from .._partition import ContinuousPartitioning
 
 
-class PhenotypeScorer(metaclass=abc.ABCMeta):
+class PhenotypeScorer(ContinuousPartitioning, metaclass=abc.ABCMeta):
     """
     `PhenotypeScorer` assigns the patient with a phenotype score.
 
@@ -22,6 +23,7 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
     @staticmethod
     def wrap_scoring_function(
         func: typing.Callable[[Patient], float],
+        name: str = "Custom Scoring Function",
     ) -> "PhenotypeScorer":
         """
         Create a `PhenotypeScorer` by wrap the provided scoring function `func`.
@@ -40,7 +42,10 @@ class PhenotypeScorer(metaclass=abc.ABCMeta):
 
         :param func: the scoring function.
         """
-        return FunctionPhenotypeScorer(func=func)
+        return FunctionPhenotypeScorer(
+            name=name,
+            func=func,
+        )
 
     @abc.abstractmethod
     def score(self, patient: Patient) -> float:
@@ -56,10 +61,25 @@ class FunctionPhenotypeScorer(PhenotypeScorer):
     """
     # NOT PART OF THE PUBLIC API
 
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> str:
+        return "A custom function to compute the phenotype score"
+
+    @property
+    def variable_name(self) -> str:
+        return "Score"
+
     def __init__(
         self,
+        name: str,
         func: typing.Callable[[Patient], float],
     ):
+        assert isinstance(name, str)
+        self._name = name
         self._func = func
 
     def score(self, patient: Patient) -> float:

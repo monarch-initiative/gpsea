@@ -28,7 +28,7 @@ any *EGFR* variant:
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> affects_egfr = VariantPredicates.gene(symbol="EGFR")
->>> affects_egfr.get_question()
+>>> affects_egfr.description
 'affects EGFR'
 
 Next, we create allele count predicate to partition the individuals
@@ -39,8 +39,8 @@ based on presence of zero or one *EGFR* mutation allele:
 ...     counts=({0,}, {1,}),
 ...     target=affects_egfr,
 ... )
->>> gt_predicate.display_question()
-'Allele count: 0, 1'
+>>> gt_predicate.group_labels
+('0', '1')
 
 We create the predicate with two arguments.
 The `counts` argument takes a tuple of two sets, to partition the individuals
@@ -61,7 +61,7 @@ For this example, the target mutation is any mutation that affects *LMNA*
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> affects_lmna = VariantPredicates.gene(symbol="LMNA")
->>> affects_lmna.get_question()
+>>> affects_lmna.description
 'affects LMNA'
 
 and we will compare the individuals with one allele with those with two alleles:
@@ -70,8 +70,9 @@ and we will compare the individuals with one allele with those with two alleles:
 ...     counts=({1,}, {2,}),
 ...     target=affects_lmna,
 ... )
->>> gt_predicate.display_question()
-'Allele count: 1, 2'
+>>> gt_predicate.group_labels
+('1', '2')
+
 
 The predicate will partition the individuals into two groups:
 those with one *LMNA* variant allele and those with two *LMNA* variant alleles.

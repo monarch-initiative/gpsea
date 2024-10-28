@@ -36,7 +36,7 @@ class TestPhenotypeScoreAnalysisResult:
         self,
         result: PhenotypeScoreAnalysisResult,
     ):
-        assert tuple(result.gt_predicate.get_category_names()) == (
+        assert tuple(result.gt_predicate.group_labels) == (
             "0",
             "1",
         )
