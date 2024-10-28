@@ -191,7 +191,7 @@ We construct the scorer with
 ...     hpo=hpo,
 ...     query=structural_defects,
 ... )
->>> pheno_scorer.summary
+>>> pheno_scorer.description
 'Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants'
 
 

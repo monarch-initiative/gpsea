@@ -1,4 +1,5 @@
 import abc
+import io
 import typing
 
 
@@ -10,9 +11,19 @@ class Summarizable(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def summarize(
         self,
-        other: typing.Optional[str] = None,
+        out: typing.TextIO,
     ):
         """
-        Summarize the item while also considering `other` (default `None`).
+        Summarize the item into the provided IO handle.
+
+        :param out: an IO handle to write into.
         """
         pass
+
+    def summary(self) -> str:
+        """
+        Get the summary.
+        """
+        buf = io.StringIO()
+        self.summarize(buf)
+        return buf.getvalue()

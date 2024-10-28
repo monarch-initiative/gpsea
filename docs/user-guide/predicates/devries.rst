@@ -172,7 +172,7 @@ and use it to create :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`
 
 >>> from gpsea.analysis.pscore import DeVriesPhenotypeScorer
 >>> pheno_scorer = DeVriesPhenotypeScorer(hpo)
->>> pheno_scorer.summary
+>>> pheno_scorer.description
 'A phenotypic severity score for individuals with intellectual disability'
 
 which we can use as a phenotype scorer.

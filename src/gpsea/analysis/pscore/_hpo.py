@@ -81,7 +81,7 @@ class CountingPhenotypeScorer(PhenotypeScorer):
         return "HPO Group Count"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         return (
             "Assign a phenotype score that is equivalent to the count "
             "of present phenotypes that are either an exact match to "
@@ -147,7 +147,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         return "De Vries Score"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         return (
             "A phenotypic severity score for individuals with intellectual disability"
         )

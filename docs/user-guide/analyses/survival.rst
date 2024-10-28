@@ -84,7 +84,7 @@ to compute the time until an individual develops end stage renal disease:
 >>> from gpsea.analysis.temporal.endpoint import hpo_onset
 >>> term_id = "HP:0003774"  # Stage 5 chronic kidney disease
 >>> endpoint = hpo_onset(hpo=hpo, term_id=term_id)
->>> endpoint.summary
+>>> endpoint.description
 'Compute time until onset of Stage 5 chronic kidney disease'
 
 

@@ -37,8 +37,8 @@ and now we can set up a predicate to test for presence of *Abnormal lens morphol
 ...     query=query,
 ... )
 >>> pheno_predicate.name
-''
->>> pheno_predicate.summary
+'HPO Predicate'
+>>> pheno_predicate.description
 'Test for presence of Abnormal lens morphology'
 >>> pheno_predicate.group_labels
 ('Yes', 'No')

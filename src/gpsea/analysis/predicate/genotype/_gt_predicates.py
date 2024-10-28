@@ -205,7 +205,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         return "Allele Group Predicate"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         allele = "allele" if self._total_count == 1 else "alleles"
         return f"Partition by allele group ({self._total_count} {allele} per group)"
 
@@ -410,7 +410,7 @@ class AlleleCountPredicate(GenotypePolyPredicate):
         return "Allele Count Predicate"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         return "Partition by the allele count"
 
     @property
@@ -461,7 +461,7 @@ class SexGenotypePredicate(GenotypePolyPredicate):
         return "Sex Predicate"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         return "Partition by sex"
 
     @property
@@ -545,7 +545,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         return "Diagnosis Predicate"
 
     @property
-    def summary(self) -> str:
+    def description(self) -> str:
         return "Partition the individual by diagnosis"
 
     def __init__(

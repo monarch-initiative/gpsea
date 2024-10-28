@@ -86,7 +86,7 @@ We use the measurement of `Testosterone [Mass/volume] in Serum or Plasma <https:
 ...     term_id=testosterone,
 ...     label="Testosterone [Mass/volume] in Serum or Plasma",
 ... )
->>> pheno_scorer.summary
+>>> pheno_scorer.description
 'The value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]'
 
 

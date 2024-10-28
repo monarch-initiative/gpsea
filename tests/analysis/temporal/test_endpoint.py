@@ -1,5 +1,3 @@
-import io
-
 import hpotk
 
 
@@ -75,7 +73,7 @@ class TestDeath:
     def test_summarize(self):
         endpoint = death(timeline="postnatal")
 
-        lines = endpoint.summarize().splitlines()
+        lines = endpoint.summary().splitlines()
 
         assert lines == [
             'Death',
@@ -136,7 +134,7 @@ class TestDiseaseOnset:
     def test_summarize(self):
         endpoint = disease_onset(disease_id="OMIM:100000")
         
-        lines = endpoint.summarize().splitlines()
+        lines = endpoint.summary().splitlines()
 
         assert lines == [
             'Onset of OMIM:100000',
@@ -203,7 +201,7 @@ class TestPhenotypeOnset:
     ):
         endpoint = hpo_onset(hpo, term_id="HP:0001250")  # Seizure
 
-        lines = endpoint.summarize().splitlines()
+        lines = endpoint.summary().splitlines()
 
         assert lines == [
             'Onset of Seizure',

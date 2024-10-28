@@ -23,7 +23,7 @@ class Partitioning(Summarizable, metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def summary(self) -> str:
+    def description(self) -> str:
         """
         Get a description of the partitioning.
         """
@@ -31,15 +31,15 @@ class Partitioning(Summarizable, metaclass=abc.ABCMeta):
 
     def summarize(
         self,
-        other: typing.Optional[str] = None,
+        out: typing.TextIO,
     ):
         """
         Summarize the item while also considering `other` (default `None`).
         """
-        if other is None:
-            return os.linesep.join((self.name, self.summary))
-        else:
-            return os.linesep.join((self.name, self.summary, other))
+        out.write(self.name)
+        out.write(os.linesep)
+        out.write(self.description)
+        out.write(os.linesep)
 
     @staticmethod
     def _check_patient(patient: Patient):

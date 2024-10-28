@@ -153,9 +153,9 @@ class PolyPredicate(typing.Generic[C], Partitioning, metaclass=abc.ABCMeta):
         return (c.category for c in self.get_categorizations())
 
     @property
-    def group_labels(self) -> typing.Sequence[str]:
+    def group_labels(self) -> typing.Collection[str]:
         """
-        Get a sequence with names of the :class:`PatientCategory` items that the predicate can produce.
+        Get a collection with names of the :class:`PatientCategory` items that the predicate can produce.
         """
         return tuple(cat.name for cat in self.get_categories())
 
@@ -165,18 +165,16 @@ class PolyPredicate(typing.Generic[C], Partitioning, metaclass=abc.ABCMeta):
 
     def summarize(
         self,
-        other: typing.Optional[str] = None,
+        out: typing.TextIO,
     ):
         """
-        Prepare the question which the predicate can answer.
+        Summarize the predicate into the `out` handle.
 
-        The question includes the question base and the category names
+        The summary includes the name, summary, and the groups the predicate can assign individuals into.
         """
-        header = Partitioning.summarize(self)
-        if other is None:
-            return os.linesep.join((header, self.summarize_groups()))
-        else:
-            return os.linesep.join((header, self.summarize_groups(), other))
+        Partitioning.summarize(self, out)
+        out.write(self.summarize_groups())
+        out.write(os.linesep)
 
     def n_categorizations(self) -> int:
         """
