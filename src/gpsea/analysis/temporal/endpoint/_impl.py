@@ -40,6 +40,10 @@ class Death(EndpointBase):
     def description(self) -> str:
         return f"Compute time until {self._timeline.name.lower()} death"
 
+    @property
+    def variable_name(self) -> str:
+        return "Age of death"
+
     def compute_survival(
         self,
         patient: Patient,
@@ -104,6 +108,10 @@ class PhenotypicFeatureOnset(EndpointBase):
     @property
     def description(self) -> str:
         return f"Compute time until onset of {self._hpo.get_term_name(self._term_id)}"
+
+    @property
+    def variable_name(self) -> str:
+        return "Phenotype onset"
 
     def compute_survival(
         self,
@@ -183,6 +191,10 @@ class DiseaseOnset(EndpointBase):
     @property
     def description(self) -> str:
         return f"Compute time until {self._disease_id.value} onset"
+
+    @property
+    def variable_name(self) -> str:
+        return "Disease onset"
 
     def compute_survival(
         self,

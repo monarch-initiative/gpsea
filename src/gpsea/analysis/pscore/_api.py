@@ -69,6 +69,10 @@ class FunctionPhenotypeScorer(PhenotypeScorer):
     def description(self) -> str:
         return "A custom function to compute the phenotype score"
 
+    @property
+    def variable_name(self) -> str:
+        return "Score"
+
     def __init__(
         self,
         name: str,

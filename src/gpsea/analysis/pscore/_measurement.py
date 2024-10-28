@@ -68,6 +68,10 @@ class MeasurementPhenotypeScorer(PhenotypeScorer):
 
     @property
     def description(self) -> str:
+        return self.variable_name
+
+    @property
+    def variable_name(self) -> str:
         return f"The value of {self._label} [{self._identifier.value}]"
 
     def score(

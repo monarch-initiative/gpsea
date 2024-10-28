@@ -88,6 +88,10 @@ class CountingPhenotypeScorer(PhenotypeScorer):
             "the query terms or their descendants"
         )
 
+    @property
+    def variable_name(self) -> str:
+        return "HPO group count"
+
     def score(
             self,
             patient: Patient,
@@ -151,6 +155,10 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         return (
             "A phenotypic severity score for individuals with intellectual disability"
         )
+
+    @property
+    def variable_name(self) -> str:
+        return "De Vries score"
 
     def _developmental_delay_score(
         self,

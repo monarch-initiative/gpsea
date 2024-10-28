@@ -135,16 +135,6 @@ class PolyPredicate(typing.Generic[C], Partitioning, metaclass=abc.ABCMeta):
         Get a sequence of all categories which the predicate can produce.
         """
         pass
-    
-    @property
-    @abc.abstractmethod
-    def variable_name(self) -> str:
-        """
-        Get a `str` with the name of the variable investigated by the predicate.
-
-        For instance `Sex`, `Allele groups`, `HPO term`, `Diagnosis`
-        """
-        pass
 
     def get_categories(self) -> typing.Iterator[PatientCategory]:
         """

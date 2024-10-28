@@ -29,6 +29,16 @@ class Partitioning(Summarizable, metaclass=abc.ABCMeta):
         """
         pass
 
+    @property
+    @abc.abstractmethod
+    def variable_name(self) -> str:
+        """
+        Get a `str` with the name of the variable investigated by the partitioning.
+
+        For instance `Sex`, `Allele groups`, `HPO term`, `Diagnosis`
+        """
+        pass
+
     def summarize(
         self,
         out: typing.TextIO,
