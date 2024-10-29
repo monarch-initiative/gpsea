@@ -80,11 +80,9 @@
 
 <span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">from</span> <span class="nn">stairval.notepad</span> <span class="kn">import</span> <span class="n">Notepad</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Cohort</span>
-
-<span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Auditor</span><span class="p">,</span> <span class="n">Notepad</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -96,32 +94,48 @@
 
 <div class="viewcode-block" id="PatientCreator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PatientCreator">[docs]</a>
-<span class="k">class</span> <span class="nc">PatientCreator</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Auditor</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Patient</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PatientCreator</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PatientCreator` can create a `Patient` from some input `T`.</span>
-
-<span class="sd">    `PatientCreator` is an `Auditor`, hence the input is sanitized and any errors are reported to the caller.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+    
+<div class="viewcode-block" id="PatientCreator.process">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PatientCreator.process">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Patient</span><span class="p">]:</span>
+        <span class="k">pass</span></div>
+</div>
 
 
 
 <div class="viewcode-block" id="CohortCreator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.CohortCreator">[docs]</a>
-<span class="k">class</span> <span class="nc">CohortCreator</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Auditor</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Cohort</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">CohortCreator</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CohortCreator` creates a cohort from an iterable of some `T` where `T` represents a cohort member.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient_creator</span><span class="p">:</span> <span class="n">PatientCreator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">patient_creator</span><span class="p">:</span> <span class="n">PatientCreator</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+    <span class="p">):</span>
         <span class="c1"># Check that we&#39;re getting a `PatientCreator`.</span>
         <span class="c1"># Unfortunately, we cannot check that `T`s of `PatientCreator` and `CohortCreator` actually match</span>
         <span class="c1"># due to Python&#39;s loosey-goosey nature.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">patient_creator</span><span class="p">,</span> <span class="n">PatientCreator</span><span class="p">,</span> <span class="s1">&#39;patient_creator&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patient_creator</span><span class="p">,</span> <span class="n">PatientCreator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span> <span class="o">=</span> <span class="n">patient_creator</span>
 
 <div class="viewcode-block" id="CohortCreator.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.CohortCreator.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cohort</span><span class="p">:</span>
         <span class="n">patients</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">patient_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">duplicate_pat_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -129,22 +143,27 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
             <span class="n">sub</span> <span class="o">=</span> <span class="n">notepad</span><span class="o">.</span><span class="n">add_subsection</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;patient #</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">patient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pc</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">sub</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">labels</span> <span class="ow">in</span> <span class="n">patient_labels</span><span class="p">:</span>
-                <span class="n">duplicate_pat_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
-            <span class="n">patient_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
-            <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">patient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">patient</span><span class="o">.</span><span class="n">labels</span> <span class="ow">in</span> <span class="n">patient_labels</span><span class="p">:</span>
+                    <span class="n">duplicate_pat_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+                <span class="n">patient_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+                <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
 
         <span class="c1"># What happens if a sample has</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate_pat_labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">label_summaries</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">label_summary</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">duplicate_pat_labels</span><span class="p">]</span>
             <span class="n">label_summaries</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient ID/s </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_summaries</span><span class="p">)</span><span class="si">}</span><span class="s2"> have a duplicate&quot;</span><span class="p">,</span>
-                              <span class="s2">&quot;Please verify every patient has an unique ID.&quot;</span><span class="p">)</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Patient ID/s </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_summaries</span><span class="p">)</span><span class="si">}</span><span class="s2"> have a duplicate&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Please verify every patient has an unique ID.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># We should have &gt;1 patients in the cohort, right?</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cohort must include </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1">&gt;1 members&#39;</span><span class="p">,</span>
-                                <span class="s1">&#39;Fix issues in patients to enable the analysis&#39;</span><span class="p">)</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Cohort must include </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span><span class="si">}</span><span class="s1">&gt;1 members&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Fix issues in patients to enable the analysis&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Cohort</span><span class="o">.</span><span class="n">from_patients</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span></div>
 </div>

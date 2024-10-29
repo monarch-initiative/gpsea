@@ -374,14 +374,18 @@
 <div class="viewcode-block" id="Cohort">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort">[docs]</a>
 <span class="k">class</span> <span class="nc">Cohort</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Sized</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cohort is a collection of individuals that have been preprocessed</span>
+<span class="sd">    and are ready for genotype-phenotype association analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Cohort.from_patients">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.from_patients">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_patients</span><span class="p">(</span>
-            <span class="n">members</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
-            <span class="n">include_patients_with_no_HPO</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">include_patients_with_no_variants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">members</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
+        <span class="n">include_patients_with_no_HPO</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_patients_with_no_variants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a cohort from a sequence of patients.</span>

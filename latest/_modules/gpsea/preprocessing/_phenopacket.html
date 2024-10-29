@@ -83,6 +83,9 @@
 <span class="kn">from</span> <span class="nn">hpotk.util</span> <span class="kn">import</span> <span class="n">validate_instance</span>
 <span class="kn">from</span> <span class="nn">hpotk.validate</span> <span class="kn">import</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="n">ValidationLevel</span>
 
+<span class="kn">from</span> <span class="nn">stairval</span> <span class="kn">import</span> <span class="n">Level</span>
+<span class="kn">from</span> <span class="nn">stairval.notepad</span> <span class="kn">import</span> <span class="n">Notepad</span>
+
 <span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.base_pb2</span> <span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span>
@@ -113,7 +116,6 @@
     <span class="n">FunctionalAnnotator</span><span class="p">,</span>
     <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._audit</span> <span class="kn">import</span> <span class="n">Notepad</span><span class="p">,</span> <span class="n">Level</span>
 <span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
 
 
@@ -373,7 +375,11 @@
 
 <div class="viewcode-block" id="PhenopacketPatientCreator.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Patient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Patient</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a Patient from the data in a given Phenopacket</span>
 
 <span class="sd">        Args:</span>
