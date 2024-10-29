@@ -482,11 +482,12 @@
         <span class="p">)</span>
 
         <span class="c1"># 2 - Apply MTC filter and select p values to MTC</span>
+        <span class="n">cohort_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">)</span>
         <span class="n">mtc_filter_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
             <span class="n">ph_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
             <span class="n">counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
-            <span class="n">cohort_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">),</span>
+            <span class="n">cohort_size</span><span class="o">=</span><span class="n">cohort_size</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_usable</span><span class="p">),),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>

@@ -85,7 +85,7 @@
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
 
-<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span>
+<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span>
 <span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
 
 
@@ -158,7 +158,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Score&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Phenotype score&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -204,6 +204,29 @@
 <span class="sd">    The `phenotype` contains a `float` with the phenotype score. A `NaN` value is used</span>
 <span class="sd">    if the phenotype score is impossible to compute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">phenotype</span><span class="p">:</span> <span class="n">PhenotypeScorer</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">phenotype</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phenotype</span><span class="p">,</span> <span class="n">PhenotypeScorer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhenotypeScoreAnalysisResult.phenotype_scorer">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.phenotype_scorer">[docs]</a>
+    <span class="k">def</span> <span class="nf">phenotype_scorer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeScorer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the scorer that computed the phenotype score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We are sure that `self._phenotype` is a `PhenotypeScorer`</span>
+        <span class="c1"># because of the instance check in `__init__` and `PhenotypeScorer`</span>
+        <span class="c1"># being a subclass of `Partitioning`.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span>  <span class="c1"># type: ignore</span></div>
+
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.plot_boxplots">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots">[docs]</a>
@@ -260,10 +283,11 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;PhenotypeScoreAnalysisResult(&quot;</span>
-            <span class="s2">&quot;gt_predicate=</span><span class="si">{self._gt_predicate}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;statistic=</span><span class="si">{self._statistic}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;data=</span><span class="si">{self._data}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;pval=</span><span class="si">{self._pval}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;gt_predicate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;phenotype_scorer=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;pval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -310,6 +334,7 @@
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">.</span><span class="n">n_categorizations</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
         <span class="p">),</span> <span class="s2">&quot;We only support 2 genotype categories at this point&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pheno_scorer</span><span class="p">,</span> <span class="n">PhenotypeScorer</span><span class="p">)</span>
 
         <span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">((</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;patient_id&quot;</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
@@ -341,6 +366,7 @@
 
         <span class="k">return</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">phenotype</span><span class="o">=</span><span class="n">pheno_scorer</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>

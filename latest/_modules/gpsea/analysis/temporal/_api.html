@@ -159,20 +159,22 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">phenotype</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
         <span class="p">)</span>
-
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">Endpoint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endpoint</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the endpoint used to compute the survival of the individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span>
+        <span class="c1"># We are sure that `self._phenotype` is assignable to `Endpoint`</span>
+        <span class="c1"># because of the instance check in `__init__` and `Endpoint`</span>
+        <span class="c1"># being a subclass of `Partitioning`.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="SurvivalAnalysisResult.plot_kaplan_meier_curves">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves">[docs]</a>
@@ -214,10 +216,11 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;SurvivalAnalysisResult(&quot;</span>
-            <span class="s2">&quot;gt_predicate=</span><span class="si">{self._gt_predicate}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;statistic=</span><span class="si">{self._statistic}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;data=</span><span class="si">{self._data}</span><span class="s2">, &quot;</span>
-            <span class="s2">&quot;pval=</span><span class="si">{self._pval}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;gt_predicate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;endpoint=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;pval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

@@ -112,7 +112,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Death&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Age of death&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -189,7 +189,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Phenotype onset&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Onset of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">compute_survival</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -272,7 +272,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;Disease onset&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Onset of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_disease_id</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">compute_survival</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

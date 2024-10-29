@@ -87,7 +87,7 @@ We use the measurement of `Testosterone [Mass/volume] in Serum or Plasma <https:
 ...     label="Testosterone [Mass/volume] in Serum or Plasma",
 ... )
 >>> pheno_scorer.description
-'The value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]'
+'Value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]'
 
 
 Statistical test
