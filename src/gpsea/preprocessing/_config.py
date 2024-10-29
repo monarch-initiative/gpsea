@@ -385,7 +385,6 @@ def load_phenopackets(
         notepad=notepad,
     )
 
-    assert cohort is not None
     return cohort, validation_result
 
 
