@@ -3,6 +3,9 @@ import os
 import hpotk
 import pytest
 
+from stairval import Level
+from stairval.notepad import create_notepad
+
 from google.protobuf.json_format import Parse
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
@@ -21,7 +24,6 @@ from gpsea.preprocessing import (
     ImpreciseSvFunctionalAnnotator,
     DefaultImpreciseSvFunctionalAnnotator,
 )
-from gpsea.preprocessing import Level
 from gpsea.preprocessing import PhenopacketPatientCreator
 from gpsea.preprocessing import VVMultiCoordinateService
 
@@ -208,8 +210,10 @@ class TestPhenopacketPatientCreator:
         phenopacket: Phenopacket,
         patient_creator: PhenopacketPatientCreator,
     ):
-        notepad = patient_creator.prepare_notepad("A phenopacket")
+        notepad = create_notepad("A phenopacket")
         patient = patient_creator.process(phenopacket, notepad)
+        
+        assert patient is not None
 
         # No issues
         assert not notepad.has_errors_or_warnings(include_subsections=True)
@@ -295,7 +299,7 @@ class TestPhenopacketPatientCreator:
         pp.CopyFrom(phenopacket)
         del pp.interpretations[:]  # clear variants
 
-        notepad = patient_creator.prepare_notepad("no-gt")
+        notepad = create_notepad("no-gt")
         
         _ = patient_creator.process(pp=pp, notepad=notepad)
         
@@ -322,7 +326,7 @@ class TestPhenopacketPatientCreator:
         del pp.diseases[:]
         del pp.measurements[:]
 
-        notepad = patient_creator.prepare_notepad("no-gt")
+        notepad = create_notepad("no-gt")
         
         _ = patient_creator.process(pp=pp, notepad=notepad)
         

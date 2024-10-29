@@ -1,5 +1,4 @@
 import abc
-import math
 import os
 import typing
 
@@ -12,11 +11,13 @@ import pandas as pd
 from statsmodels.stats import multitest
 
 from gpsea.model import Patient
-from gpsea.analysis.pcats.stats import CountStatistic
+
 from ..predicate.genotype import GenotypePolyPredicate
 from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
 
+from .stats import CountStatistic
+from .._base import MultiPhenotypeAnalysisResult
 
 DEFAULT_MTC_PROCEDURE = 'fdr_bh'
 """
@@ -63,11 +64,11 @@ def apply_predicates_on_patients(
                 data=0,
                 index=pd.Index(
                     data=ph_predicate.get_categories(),
-                    name=ph_predicate.get_question_base(),
+                    name=ph_predicate.variable_name,
                 ),
                 columns=pd.Index(
                     data=gt_predicate.get_categories(),
-                    name=gt_predicate.get_question_base(),
+                    name=gt_predicate.variable_name,
                 ),
             )
 
@@ -90,71 +91,6 @@ def apply_predicates_on_patients(
     counts = [count_dict[ph_predicate.phenotype] for ph_predicate in pheno_predicates]
 
     return n_usable_patients, counts
-
-
-class MultiPhenotypeAnalysisResult(typing.Generic[P], metaclass=abc.ABCMeta):
-    """
-    `MultiPhenotypeAnalysisResult` reports the outcome of :class:`MultiPhenotypeAnalysis`.
-
-    The result consists of several arrays with items
-    with the order determined by the phenotype order.
-    """
-
-    @property
-    @abc.abstractmethod
-    def n_usable(self) -> typing.Sequence[int]:
-        """
-        Get a sequence of numbers of patients where the phenotype was assessable,
-        and are, thus, usable for genotype-phenotype correlation analysis.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def all_counts(self) -> typing.Sequence[pd.DataFrame]:
-        """
-        Get a :class:`~pandas.DataFrame` sequence where each `DataFrame` includes the counts of patients
-        in genotype and phenotype groups.
-
-        An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence
-        of a missense variant in transcript `NM_123456.7`, and phenotype predicate that checks
-        presence/absence of `HP:0001166` (a phenotype term)::
-
-                       Has MISSENSE_VARIANT in NM_123456.7
-                       No       Yes
-            Present
-            Yes        1        13
-            No         7        5
-
-        The rows correspond to the phenotype categories, and the columns represent the genotype categories.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def pvals(self) -> typing.Sequence[float]:
-        """
-        Get a sequence of nominal p values for each tested HPO term.
-        The sequence includes a `NaN` value for each input phenotype that was *not* tested.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def corrected_pvals(self) -> typing.Optional[typing.Sequence[float]]:
-        """
-        Get a sequence with p values for each tested HPO term after multiple testing correction
-        or `None` if the correction was not applied.
-        The sequence includes a `NaN` value for each input phenotype that was *not* tested.
-        """
-        pass
-
-    @property
-    def total_tests(self) -> int:
-        """
-        Get total count of tests that were run for this analysis.
-        """
-        return sum(1 for pval in self.pvals if not math.isnan(pval))
 
 
 class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
@@ -291,103 +227,6 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
         return corrected_pvals
 
 
-class BaseMultiPhenotypeAnalysisResult(typing.Generic[P], MultiPhenotypeAnalysisResult[P]):
-
-    def __init__(
-        self,
-        pheno_predicates: typing.Iterable[PhenotypePolyPredicate[P]],
-        n_usable: typing.Sequence[int],
-        all_counts: typing.Sequence[pd.DataFrame],
-        pvals: typing.Sequence[float],
-        corrected_pvals: typing.Optional[typing.Sequence[float]],
-        gt_predicate: GenotypePolyPredicate,
-    ):
-        self._pheno_predicates = tuple(pheno_predicates)
-        self._n_usable = tuple(n_usable)
-        self._all_counts = tuple(all_counts)
-        self._pvals = tuple(pvals)
-        self._corrected_pvals = (
-            None if corrected_pvals is None else tuple(corrected_pvals)
-        )
-        self._gt_predicate = gt_predicate
-        errors = self._check_sanity()
-        if errors:
-            raise ValueError(os.linesep.join(errors))
-
-    def _check_sanity(self) -> typing.Sequence[str]:
-        errors = []
-        # All sequences must have the same lengths ...
-        for seq, name in (
-            (self._n_usable, 'n_usable'),
-            (self._all_counts, 'all_counts'),
-            (self._pvals, 'pvals'),
-        ):
-            if len(self._pheno_predicates) != len(seq):
-                errors.append(
-                    f"`len(pheno_predicates)` must be the same as `len({name})` but "
-                    f"{len(self._pheno_predicates)}!={len(seq)}"
-                )
-
-        # ... including the optional corrected p values
-        if self._corrected_pvals is not None and len(self._pheno_predicates) != len(self._corrected_pvals):
-            errors.append(
-                f"`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but "
-                f"{len(self._pheno_predicates)}!={len(self._corrected_pvals)}"
-            )
-
-        if not isinstance(self._gt_predicate, GenotypePolyPredicate):
-            errors.append(
-                "`gt_predicate` must be an instance of `GenotypePolyPredicate`"
-            )
-        return errors
-
-    @property
-    def gt_predicate(self) -> GenotypePolyPredicate:
-        return self._gt_predicate
-
-    @property
-    def pheno_predicates(
-        self,
-    ) -> typing.Sequence[PhenotypePolyPredicate[P]]:
-        return self._pheno_predicates
-
-    @property
-    def phenotypes(self) -> typing.Sequence[P]:
-        return tuple(p.phenotype for p in self._pheno_predicates)
-
-    @property
-    def n_usable(self) -> typing.Sequence[int]:
-        return self._n_usable
-
-    @property
-    def all_counts(self) -> typing.Sequence[pd.DataFrame]:
-        return self._all_counts
-
-    @property
-    def pvals(self) -> typing.Sequence[float]:
-        return self._pvals
-
-    @property
-    def corrected_pvals(self) -> typing.Optional[typing.Sequence[float]]:
-        return self._corrected_pvals
-
-    def __eq__(self, other):
-        return isinstance(other, BaseMultiPhenotypeAnalysisResult) \
-            and self._pheno_predicates == other._pheno_predicates \
-            and self._n_usable == other._n_usable \
-            and self._all_counts == other._all_counts \
-            and self._pvals == other._pvals \
-            and self._corrected_pvals == other._corrected_pvals\
-            and self._gt_predicate == other._gt_predicate
-
-    def __hash__(self):
-        # NOTE: if a field is added, the hash method of the subclasses must be updated as well.
-        return hash((
-            self._pheno_predicates, self._n_usable, self._all_counts,
-            self._pvals, self._corrected_pvals, self._gt_predicate,
-        ))
-
-
 class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
 
     def _compute_result(
@@ -416,17 +255,19 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         else:
             corrected_pvals = self._apply_mtc(pvals=pvals)
 
-        return BaseMultiPhenotypeAnalysisResult(
+        return MultiPhenotypeAnalysisResult(
+            gt_predicate=gt_predicate,
+            statistic=self._count_statistic,
+            mtc_correction=self._mtc_correction,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
             corrected_pvals=corrected_pvals,
-            gt_predicate=gt_predicate,
         )
 
 
-class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
+class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
     """
     `HpoTermAnalysisResult` includes the :class:`HpoTermAnalysis` results.
 
@@ -436,27 +277,30 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
 
     def __init__(
         self,
+        gt_predicate: GenotypePolyPredicate,
+        statistic: CountStatistic,
+        mtc_correction: typing.Optional[str],
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[hpotk.TermId]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
         pvals: typing.Sequence[float],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
-        gt_predicate: GenotypePolyPredicate,
         mtc_filter_name: str,
         mtc_filter_results: typing.Sequence[PhenotypeMtcResult],
-        mtc_name: typing.Optional[str],
+        
     ):
         super().__init__(
+            gt_predicate=gt_predicate,
             pheno_predicates=pheno_predicates,
+            statistic=statistic,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
             corrected_pvals=corrected_pvals,
-            gt_predicate=gt_predicate,
+            mtc_correction=mtc_correction,
         )
         self._mtc_filter_name = mtc_filter_name
         self._mtc_filter_results = tuple(mtc_filter_results)
-        self._mtc_name = mtc_name
 
         errors = self._check_hpo_result_sanity()
         if errors:
@@ -485,26 +329,17 @@ class HpoTermAnalysisResult(BaseMultiPhenotypeAnalysisResult[hpotk.TermId]):
         """
         return self._mtc_filter_results
 
-    @property
-    def mtc_name(self) -> typing.Optional[str]:
-        """
-        Get the name of the multiple testing correction (MTC) procedure (e.g. `bonferroni`, `fdr_bh`, ...)
-        or `None` if no MTC was performed.
-        """
-        return self._mtc_name
-
     def __eq__(self, other):
         return isinstance(other, HpoTermAnalysisResult) \
-            and BaseMultiPhenotypeAnalysisResult.__eq__(self, other) \
+            and super(MultiPhenotypeAnalysisResult, self).__eq__(other) \
             and self._mtc_filter_name == other._mtc_filter_name \
-            and self._mtc_filter_results == other._mtc_filter_results \
-            and self._mtc_name == other._mtc_name
+            and self._mtc_filter_results == other._mtc_filter_results
 
     def __hash__(self):
         return hash((
+            super(MultiPhenotypeAnalysisResult, self).__hash__(),
             self._pheno_predicates, self._n_usable, self._all_counts,
-            self._pvals, self._corrected_pvals, self._gt_predicate,
-            self._mtc_filter_name, self._mtc_filter_results, self._mtc_name,
+            self._mtc_filter_name, self._mtc_filter_results,
         ))
 
 
@@ -552,11 +387,12 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         )
 
         # 2 - Apply MTC filter and select p values to MTC
+        cohort_size = sum(1 for _ in cohort)
         mtc_filter_results = self._mtc_filter.filter(
             gt_predicate=gt_predicate,
             ph_predicates=pheno_predicates,
             counts=all_counts,
-            cohort_size=len(cohort),
+            cohort_size=cohort_size,
         )
 
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)
@@ -579,15 +415,16 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
                 corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
 
         return HpoTermAnalysisResult(
+            gt_predicate=gt_predicate,
+            statistic=self._count_statistic,
+            mtc_correction=self._mtc_correction,
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
             pvals=pvals,
             corrected_pvals=corrected_pvals,
-            gt_predicate=gt_predicate,
             mtc_filter_name=self._mtc_filter.filter_method_name(),
             mtc_filter_results=mtc_filter_results,
-            mtc_name=self._mtc_correction,
         )
 
 

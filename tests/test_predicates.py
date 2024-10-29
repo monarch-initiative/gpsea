@@ -1,11 +1,8 @@
 import hpotk
 import pytest
 
-from gpsea.analysis.predicate import PatientCategory, PatientCategories
 from gpsea.analysis.predicate.phenotype import HpoPredicate, DiseasePresencePredicate
-from gpsea.analysis.predicate.genotype import *
 from gpsea.model import Cohort, Patient
-from gpsea.preprocessing import ProteinMetadataService
 
 
 def find_patient(pat_id: str, cohort: Cohort) -> Patient:
@@ -25,15 +22,15 @@ class TestHpoPredicate:
                                  # Test exact match
                                  ('HP:0001166',  # Arachnodactyly
                                   'HetSingleVar',
-                                  PatientCategories.YES),
+                                  "Yes"),
                                  # Test inferred annotations
                                  ('HP:0001250',  # Seizure
                                   'HetSingleVar',
-                                  PatientCategories.YES),
+                                  "Yes"),
                                  # Test excluded feature
                                  ('HP:0001257',  # Spasticity
                                   'HetSingleVar',
-                                  PatientCategories.NO),
+                                  "No"),
                              ])
     def test_phenotype_predicate__present_or_excluded(
             self,
@@ -41,15 +38,16 @@ class TestHpoPredicate:
             hpo: hpotk.MinimalOntology,
             curie: str,
             patient_id: str,
-            expected: PatientCategory,
+            expected: str,
     ):
         patient = find_patient(patient_id, toy_cohort)
         term_id = hpotk.TermId.from_curie(curie)
         predicate = HpoPredicate(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
+        assert actual is not None
         assert actual.phenotype == term_id
-        assert actual.category == expected
+        assert actual.category.name == expected
 
     def test_phenotype_predicate__unknown(
             self,
@@ -70,13 +68,13 @@ class TestDiseasePresencePredicate:
     @pytest.mark.parametrize(
         'patient_id, patient_category',
         [
-            ('HetSingleVar', PatientCategories.YES),
-            ('HomoVar', PatientCategories.NO),
+            ('HetSingleVar', "Yes"),
+            ('HomoVar', "No"),
         ])
     def test_disease_predicate(
         self,
         patient_id: str,
-        patient_category: PatientCategories,
+        patient_category: str,
         toy_cohort: Cohort,
 
     ):
@@ -84,11 +82,7 @@ class TestDiseasePresencePredicate:
         disease_id = hpotk.TermId.from_curie("OMIM:148050")
         predicate = DiseasePresencePredicate(disease_id)
         actual = predicate.test(patient)
+
+        assert actual is not None
         assert actual.phenotype == disease_id
-        assert actual.category == patient_category
-
-
-
-@pytest.fixture(scope='module')
-def protein_predicates(protein_test_service: ProteinMetadataService) -> ProteinPredicates:
-    return ProteinPredicates(protein_metadata_service=protein_test_service)
+        assert actual.category.name == patient_category

@@ -11,6 +11,8 @@ from hpotk.validate import (
     PhenotypicAbnormalityValidator,
 )
 
+from stairval.notepad import create_notepad
+
 # pyright: reportGeneralTypeIssues=false
 from google.protobuf.json_format import Parse
 from phenopackets import Phenopacket
@@ -375,7 +377,7 @@ def load_phenopackets(
     cohort_iter = tqdm(
         phenopackets, desc="Individuals Processed", file=sys.stdout, unit="individuals"
     )
-    notepad = cohort_creator.prepare_notepad("Phenopackets")
+    notepad = create_notepad(label="Phenopackets")
     cohort = cohort_creator.process(cohort_iter, notepad)
 
     validation_result = PreprocessingValidationResult(

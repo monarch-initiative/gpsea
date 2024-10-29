@@ -66,12 +66,16 @@ class TestCountingPhenotypeScorer:
 
         assert actual == expected
 
-    def test_get_question(
+    def test_summarize(
         self,
         counting_scorer: CountingPhenotypeScorer,
     ):
-        actual = counting_scorer.get_question()
-        assert actual == "How many of the query HPO terms (or their descendants) does the individual display"
+        lines = counting_scorer.summary().splitlines()
+        assert lines == [
+            'HPO Group Count',
+            'Assign a phenotype score that is equivalent to the count of present phenotypes '
+            + 'that are either an exact match to the query terms or their descendants',
+        ]
 
     def test_creating_scorer_with_term_and_ancestor_fails(
         self,
@@ -84,7 +88,10 @@ class TestCountingPhenotypeScorer:
             )
             CountingPhenotypeScorer.from_query_curies(hpo, query)
 
-        assert e.value.args[0] == "Both HP:0001250 and its ancestor term HP:0012638 were found in the query, but query terms must not include a term and its ancestor"
+        assert e.value.args[0] == (
+            "Both HP:0001250 and its ancestor term HP:0012638 were found in the query, "
+            "but query terms must not include a term and its ancestor"
+        )
 
     def test_creating_scorer_with_unknown_term_fails(
         self,

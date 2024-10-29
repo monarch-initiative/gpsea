@@ -2,10 +2,11 @@ import abc
 import typing
 
 import hpotk
+from hpotk.util import validate_instance
 
 from gpsea.model import Patient
 
-from .._api import PolyPredicate, PatientCategory, PatientCategories, Categorization
+from .._api import PolyPredicate, PatientCategory, Categorization
 
 P = typing.TypeVar("P")
 """
@@ -13,6 +14,16 @@ Phenotype entity of interest, such as :class:`~hpotk.model.TermId`, representing
 
 However, phenotype entity can be anything as long as it is :class:`~typing.Hashable` and comparable
 (have `__eq__` and `__lt__` magic methods).
+"""
+
+YES = PatientCategory(1, 'Yes', 'The patient belongs to the group.')
+"""
+Category for a patient who *belongs* to the tested group.
+"""
+
+NO = PatientCategory(0, 'No', 'The patient does not belong to the group.')
+"""
+Category for a patient who does *not* belong to the tested group.
 """
 
 
@@ -56,7 +67,9 @@ class PhenotypePolyPredicate(
     typing.Generic[P], PolyPredicate[PhenotypeCategorization[P]], metaclass=abc.ABCMeta
 ):
     """
-    `PhenotypePolyPredicate` investigates a patient in context of one or more phenotype categories `P`.
+    `PhenotypePolyPredicate` is a base class for all :class:`~gpsea.analysis.predicate.PolyPredicate`
+    that assigns an individual into a group based on phenotype.
+    The predicate assigns an individual into one of phenotype categories `P`.
 
     Each phenotype category `P` can be a :class:`~hpotk.model.TermId` representing an HPO term or an OMIM/MONDO term.
 
@@ -111,30 +124,39 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
         query: hpotk.TermId,
         missing_implies_phenotype_excluded: bool = False,
     ):
-        self._hpo = hpotk.util.validate_instance(hpo, hpotk.MinimalOntology, "hpo")
-        self._query = hpotk.util.validate_instance(
+        self._hpo = validate_instance(hpo, hpotk.MinimalOntology, "hpo")
+        self._query = validate_instance(
             query, hpotk.TermId, "phenotypic_feature"
         )
         self._query_label = self._hpo.get_term_name(query)
         assert self._query_label is not None, f"Query {query} is in HPO"
-        self._missing_implies_phenotype_excluded = hpotk.util.validate_instance(
+        self._missing_implies_phenotype_excluded = validate_instance(
             missing_implies_phenotype_excluded,
             bool,
             "missing_implies_phenotype_excluded",
         )
         self._phenotype_observed = PhenotypeCategorization(
-            category=PatientCategories.YES,
+            category=YES,
             phenotype=self._query,
         )
         self._phenotype_excluded = PhenotypeCategorization(
-            category=PatientCategories.NO,
+            category=NO,
             phenotype=self._query,
         )
         # Some tests depend on the order of `self._categorizations`.
         self._categorizations = (self._phenotype_observed, self._phenotype_excluded)
 
-    def get_question_base(self) -> str:
-        return f"Is {self._query_label} present in the patient"
+    @property
+    def name(self) -> str:
+        return "HPO Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"Test for presence of {self._query_label} [{self._query.value}]"
+
+    @property
+    def variable_name(self) -> str:
+        return self._query.value
 
     @property
     def phenotype(self) -> hpotk.TermId:
@@ -176,22 +198,18 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
         for phenotype in patient.phenotypes:
             if phenotype.is_present:
-                if any(
+                if self._query == phenotype.identifier or any(
                     self._query == anc
-                    for anc in self._hpo.graph.get_ancestors(
-                        phenotype, include_source=True
-                    )
+                    for anc in self._hpo.graph.get_ancestors(phenotype)
                 ):
                     return self._phenotype_observed
             else:
                 if self._missing_implies_phenotype_excluded:
                     return self._phenotype_excluded
                 else:
-                    if any(
-                        self._query == desc
-                        for desc in self._hpo.graph.get_descendants(
-                            phenotype, include_source=True
-                        )
+                    if phenotype.identifier == self._query or any(
+                        phenotype.identifier == anc
+                        for anc in self._hpo.graph.get_ancestors(self._query)
                     ):
                         return self._phenotype_excluded
 
@@ -220,21 +238,30 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
 
     def __init__(self, disease_id_query: hpotk.TermId):
-        self._query = hpotk.util.validate_instance(
+        self._query = validate_instance(
             disease_id_query, hpotk.TermId, "disease_id_query"
         )
 
         self._diagnosis_present = PhenotypeCategorization(
-            category=PatientCategories.YES,
+            category=YES,
             phenotype=disease_id_query,
         )
         self._diagnosis_excluded = PhenotypeCategorization(
-            category=PatientCategories.NO,
+            category=NO,
             phenotype=disease_id_query,
         )
 
-    def get_question_base(self) -> str:
-        return f"Was {self._query} diagnosed in the patient"
+    @property
+    def name(self) -> str:
+        return "Disease Predicate"
+
+    @property
+    def description(self) -> str:
+        return f"Partition based on a diagnosis of {self._query.value}"
+
+    @property
+    def variable_name(self) -> str:
+        return self._query.value
 
     @property
     def phenotype(self) -> hpotk.TermId:
