@@ -7,6 +7,7 @@ import pandas as pd
 
 from .predicate.phenotype import PhenotypePolyPredicate, P
 from .predicate.genotype import GenotypePolyPredicate
+from ._partition import Partitioning
 
 
 class Statistic(metaclass=abc.ABCMeta):
@@ -266,11 +267,15 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __init__(
         self,
         gt_predicate: GenotypePolyPredicate,
+        phenotype: Partitioning,
         statistic: Statistic,
         data: pd.DataFrame,
         pval: float,
     ):
         super().__init__(gt_predicate, statistic)
+
+        assert isinstance(phenotype, Partitioning)
+        self._phenotype = phenotype
 
         assert isinstance(data, pd.DataFrame) and all(
             col in data.columns for col in MonoPhenotypeAnalysisResult.DATA_COLUMNS
@@ -283,6 +288,13 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
             raise ValueError(
                 f"`pval` must be a finite float in range [0, 1] but it was {pval}"
             )
+        
+    @property
+    def phenotype(self) -> Partitioning:
+        """
+        Get the :class:`~gpsea.analysis.Partitioning` that produced the phenotype.
+        """
+        return self._phenotype
 
     @property
     def data(self) -> pd.DataFrame:
@@ -325,12 +337,14 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MonoPhenotypeAnalysisResult) \
             and super(AnalysisResult, self).__eq__(value) \
+            and self._phenotype == value._phenotype \
             and self._pval == value._pval \
             and self._data.equals(value._data)
     
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
+            self._phenotype,
             self._pval,
             self._data,
         ))

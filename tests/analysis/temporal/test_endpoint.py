@@ -76,7 +76,7 @@ class TestDeath:
         lines = endpoint.summary().splitlines()
 
         assert lines == [
-            'Death',
+            'Age of death',
             'Compute time until postnatal death',
         ]
 

@@ -34,7 +34,7 @@ class Death(EndpointBase):
 
     @property
     def name(self) -> str:
-        return "Death"
+        return "Age of death"
 
     @property
     def description(self) -> str:
@@ -111,7 +111,7 @@ class PhenotypicFeatureOnset(EndpointBase):
 
     @property
     def variable_name(self) -> str:
-        return "Phenotype onset"
+        return f"Onset of {self._term_id.value}"
 
     def compute_survival(
         self,
@@ -194,7 +194,7 @@ class DiseaseOnset(EndpointBase):
 
     @property
     def variable_name(self) -> str:
-        return "Disease onset"
+        return f"Onset of {self._disease_id.value}"
 
     def compute_survival(
         self,

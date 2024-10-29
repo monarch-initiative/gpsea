@@ -211,7 +211,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
     @property
     def variable_name(self) -> str:
-        return "Allele groups"
+        return "Allele group"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
@@ -357,13 +357,13 @@ def allele_count(
     >>> from gpsea.analysis.predicate.genotype import allele_count
     >>> zero_vs_one = allele_count(counts=({0,}, {1,}))
     >>> zero_vs_one.summarize_groups()
-    'Allele counts: 0, 1'
+    'Allele count: 0, 1'
     
     These counts will create three groups for individuals with zero, one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=({0,}, {1,}, {2,}))
     >>> zero_vs_one_vs_two.summarize_groups()
-    'Allele counts: 0, 1, 2'
+    'Allele count: 0, 1, 2'
 
     :param counts: a sequence with allele count partitions.
     :param target: a predicate for choosing the variants for testing
@@ -415,7 +415,7 @@ class AlleleCountPredicate(GenotypePolyPredicate):
 
     @property
     def variable_name(self) -> str:
-        return "Allele counts"
+        return "Allele count"
 
     def test(self, patient: Patient) -> typing.Optional[Categorization]:
         self._check_patient(patient)
@@ -540,14 +540,6 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         # Last, put the predicate together.
         return DiagnosisPredicate(categorizations)
 
-    @property
-    def name(self) -> str:
-        return "Diagnosis Predicate"
-
-    @property
-    def description(self) -> str:
-        return "Partition the individual by diagnosis"
-
     def __init__(
         self,
         categorizations: typing.Mapping[hpotk.TermId, Categorization],
@@ -557,6 +549,15 @@ class DiagnosisPredicate(GenotypePolyPredicate):
             sorted(categorizations.values(), key=lambda c: c.category.cat_id)
         )
         self._hash = hash(tuple(categorizations.items()))
+
+    @property
+    def name(self) -> str:
+        return "Diagnosis Predicate"
+
+    @property
+    def description(self) -> str:
+        diagnoses = ", ".join(cat.category.name for cat in self._categorizations)
+        return f"Partition the individual by presence of {diagnoses}"
 
     @property
     def variable_name(self) -> str:
