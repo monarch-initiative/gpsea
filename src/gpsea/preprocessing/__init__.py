@@ -1,7 +1,6 @@
 from ._api import PreprocessingValidationResult
 from ._api import TranscriptCoordinateService, GeneCoordinateService
 from ._api import VariantCoordinateFinder, FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, ProteinMetadataService
-from ._audit import Auditor, DataSanityIssue, Level, Notepad, NotepadTree
 from ._config import load_phenopacket_folder, load_phenopacket_files, load_phenopackets
 from ._config import configure_caching_cohort_creator, configure_cohort_creator
 from ._config import configure_default_protein_metadata_service, configure_protein_metadata_service
@@ -27,6 +26,5 @@ __all__ = [
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator', 'VariantAnnotationCache', 'VarCachingFunctionalAnnotator',
     'VVHgvsVariantCoordinateFinder', 'VVMultiCoordinateService',
-    'Auditor', 'DataSanityIssue', 'Level', 'Notepad', 'NotepadTree',
     'DefaultImpreciseSvFunctionalAnnotator',
 ]

@@ -5,6 +5,9 @@ import hpotk
 from hpotk.util import validate_instance
 from hpotk.validate import ValidationRunner, ValidationLevel
 
+from stairval import Level
+from stairval.notepad import Notepad
+
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 from phenopackets.schema.v2.core.base_pb2 import TimeElement as PPTimeElement
@@ -35,7 +38,6 @@ from ._api import (
     FunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
 )
-from ._audit import Notepad, Level
 from ._patient import PatientCreator
 
 
@@ -285,7 +287,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             "1000044",  # chromosomal_translocation
         }
 
-    def process(self, pp: Phenopacket, notepad: Notepad) -> Patient:
+    def process(
+        self,
+        pp: Phenopacket,
+        notepad: Notepad,
+    ) -> typing.Optional[Patient]:
         """Creates a Patient from the data in a given Phenopacket
 
         Args:
