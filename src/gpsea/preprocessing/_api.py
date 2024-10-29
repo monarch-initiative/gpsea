@@ -1,5 +1,4 @@
 import abc
-import io
 import os
 import sys
 import typing
@@ -175,7 +174,7 @@ class PreprocessingValidationResult:
 
     def summarize(
         self,
-        file: io.TextIOBase = sys.stdout,
+        file: typing.TextIO = sys.stdout,
         indent: int = 2,
     ):
         """
@@ -207,9 +206,9 @@ class PreprocessingValidationResult:
                         file.write(os.linesep)
                         for error in node.errors():
                             file.write(
-                                l_pad + " " + error.message + f". {error.solution}"
-                                if error.solution
-                                else ""
+                                l_pad + " ·" + error.message + (
+                                    f". {error.solution}" if error.solution else ""
+                                )
                             )
                             file.write(os.linesep)
                     if node.has_warnings():
@@ -217,9 +216,9 @@ class PreprocessingValidationResult:
                         file.write(os.linesep)
                         for warning in node.warnings():
                             file.write(
-                                l_pad + " ·" + warning.message + f". {warning.solution}"
-                                if warning.solution
-                                else ""
+                                l_pad + " ·" + warning.message + (
+                                    f". {warning.solution}" if warning.solution else ""
+                                )
                             )
                             file.write(os.linesep)
         else:
