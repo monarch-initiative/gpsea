@@ -3,6 +3,8 @@ import os
 import sys
 import typing
 
+from stairval.notepad import Notepad
+
 from gpsea.model import (
     VariantCoordinates,
     ProteinMetadata,
@@ -11,8 +13,6 @@ from gpsea.model import (
     TranscriptAnnotation,
     ImpreciseSvInfo,
 )
-
-from ._audit import NotepadTree
 
 T = typing.TypeVar("T")
 
@@ -141,7 +141,7 @@ class PreprocessingValidationResult:
     def __init__(
         self,
         policy: str,
-        notepad: NotepadTree,
+        notepad: Notepad,
     ):
         self._policy = policy
         self._notepad = notepad
@@ -188,13 +188,13 @@ class PreprocessingValidationResult:
         file.write(f"Validated under {self._policy} policy")
         file.write(os.linesep)
 
-        n_errors = sum(node.error_count() for node in self._notepad.iterate_nodes())
-        n_warnings = sum(node.warning_count() for node in self._notepad.iterate_nodes())
+        n_errors = sum(node.error_count() for node in self._notepad.iter_sections())
+        n_warnings = sum(node.warning_count() for node in self._notepad.iter_sections())
         if n_errors > 0 or n_warnings > 0:
             file.write("Showing errors and warnings")
             file.write(os.linesep)
 
-            for node in self._notepad.iterate_nodes():
+            for node in self._notepad.iter_sections():
                 if node.has_errors_or_warnings(include_subsections=True):
                     # We must report the node label even if there are no issues with the node.
                     l_pad = " " * (node.level * indent)

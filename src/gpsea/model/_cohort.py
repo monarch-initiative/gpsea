@@ -267,12 +267,16 @@ class Patient:
 
 
 class Cohort(typing.Sized, typing.Iterable[Patient]):
+    """
+    Cohort is a collection of individuals that have been preprocessed
+    and are ready for genotype-phenotype association analysis.
+    """
 
     @staticmethod
     def from_patients(
-            members: typing.Iterable[Patient],
-            include_patients_with_no_HPO: bool = False,
-            include_patients_with_no_variants: bool = False,
+        members: typing.Iterable[Patient],
+        include_patients_with_no_HPO: bool = False,
+        include_patients_with_no_variants: bool = False,
     ):
         """
         Create a cohort from a sequence of patients.
