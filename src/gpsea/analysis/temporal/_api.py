@@ -73,20 +73,22 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     ):
         super().__init__(
             gt_predicate=gt_predicate,
+            phenotype=endpoint,
             statistic=statistic,
             data=data,
             pval=pval,
         )
-
         assert isinstance(endpoint, Endpoint)
-        self._endpoint = endpoint
 
     @property
     def endpoint(self) -> Endpoint:
         """
         Get the endpoint used to compute the survival of the individuals.
         """
-        return self._endpoint
+        # We are sure that `self._phenotype` is assignable to `Endpoint`
+        # because of the instance check in `__init__` and `Endpoint`
+        # being a subclass of `Partitioning`.
+        return self._phenotype  # type: ignore
 
     def plot_kaplan_meier_curves(
         self,
@@ -125,10 +127,11 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     def __str__(self) -> str:
         return (
             "SurvivalAnalysisResult("
-            "gt_predicate={self._gt_predicate}, "
-            "statistic={self._statistic}, "
-            "data={self._data}, "
-            "pval={self._pval})"
+            f"gt_predicate={self._gt_predicate}, "
+            f"endpoint={self._phenotype}, "
+            f"statistic={self._statistic}, "
+            f"data={self._data}, "
+            f"pval={self._pval})"
         )
 
     def __repr__(self) -> str:

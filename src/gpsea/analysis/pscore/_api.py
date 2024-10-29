@@ -7,7 +7,7 @@ from gpsea.model import Patient
 from ..predicate.genotype import GenotypePolyPredicate
 from .stats import PhenotypeScoreStatistic
 
-from .._base import MonoPhenotypeAnalysisResult
+from .._base import MonoPhenotypeAnalysisResult, Statistic
 from .._partition import ContinuousPartitioning
 
 
@@ -116,6 +116,26 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     if the phenotype score is impossible to compute.
     """
 
+    def __init__(
+        self,
+        gt_predicate: GenotypePolyPredicate,
+        phenotype: PhenotypeScorer,
+        statistic: Statistic,
+        data: pd.DataFrame,
+        pval: float,
+    ):
+        super().__init__(gt_predicate, phenotype, statistic, data, pval)
+        assert isinstance(phenotype, PhenotypeScorer)
+
+    def phenotype_scorer(self) -> PhenotypeScorer:
+        """
+        Get the scorer that computed the phenotype score.
+        """
+        # We are sure that `self._phenotype` is a `PhenotypeScorer`
+        # because of the instance check in `__init__` and `PhenotypeScorer`
+        # being a subclass of `Partitioning`.
+        return self._phenotype  # type: ignore
+
     def plot_boxplots(
         self,
         ax,
@@ -168,10 +188,11 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     def __str__(self) -> str:
         return (
             "PhenotypeScoreAnalysisResult("
-            "gt_predicate={self._gt_predicate}, "
-            "statistic={self._statistic}, "
-            "data={self._data}, "
-            "pval={self._pval})"
+            f"gt_predicate={self._gt_predicate}, "
+            f"phenotype_scorer={self._phenotype}, "
+            f"statistic={self._statistic}, "
+            f"data={self._data}, "
+            f"pval={self._pval})"
         )
 
     def __repr__(self) -> str:
@@ -213,6 +234,7 @@ class PhenotypeScoreAnalysis:
         assert (
             gt_predicate.n_categorizations() == 2
         ), "We only support 2 genotype categories at this point"
+        assert isinstance(pheno_scorer, PhenotypeScorer)
 
         idx = pd.Index((patient.patient_id for patient in cohort), name="patient_id")
         data = pd.DataFrame(
@@ -244,6 +266,7 @@ class PhenotypeScoreAnalysis:
 
         return PhenotypeScoreAnalysisResult(
             gt_predicate=gt_predicate,
+            phenotype=pheno_scorer,
             statistic=self._statistic,
             data=data,
             pval=pval,
