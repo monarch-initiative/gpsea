@@ -111,7 +111,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_cohort_INFO.html')  # doctest: +SKIP
+    >>> report.write('docs/user-guide/reports/tbx5_cohort_info.html')  # doctest: +SKIP
 
 
 Distribution of variants across protein domains

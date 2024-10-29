@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -99,13 +99,13 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScorer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScorer</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></p>
 <p><cite>PhenotypeScorer</cite> assigns the patient with a phenotype score.</p>
 <p>The score can be <cite>math.nan</cite> if it is not possible to compute the score for a patient.</p>
 <p>The scorer can be created by wrapping a scoring function (see <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">wrap_scoring_function()</span></code></a>).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_scoring_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer.wrap_scoring_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_scoring_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Custom</span> <span class="pre">Scoring</span> <span class="pre">Function'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer.wrap_scoring_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="Link to this definition"></a></dt>
 <dd><p>Create a <cite>PhenotypeScorer</cite> by wrap the provided scoring function <cite>func</cite>.</p>
 <p>The function must take exactly one argument of type <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>
 and return a <cite>float</cite> with the corresponding phenotype score.</p>
@@ -160,59 +160,26 @@ and the results are reported as a <a class="reference internal" href="#gpsea.ana
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScoreAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genotype_phenotype_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScoreAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult" title="gpsea.analysis._base.MonoPhenotypeAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonoPhenotypeAnalysisResult</span></code></a></p>
 <p><cite>PhenotypeScoreAnalysisResult</cite> is a container for <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysis" title="gpsea.analysis.pscore.PhenotypeScoreAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code></a> results.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.genotype_phenotype_scores">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genotype_phenotype_scores</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.genotype_phenotype_scores" title="Link to this definition"></a></dt>
-<dd><p>Get the DataFrame with the genotype group and the phenotype score for each patient.</p>
-<p>The DataFrame has the following structure:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>patient_id</p></th>
-<th class="head"><p>genotype</p></th>
-<th class="head"><p>phenotype</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>patient_1</p></td>
-<td><p>0</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>patient_2</p></td>
-<td><p>0</p></td>
-<td><p>3</p></td>
-</tr>
-<tr class="row-even"><td><p>patient_3</p></td>
-<td><p>None</p></td>
-<td><p>2</p></td>
-</tr>
-<tr class="row-odd"><td><p>patient_4</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-</tr>
-<tr class="row-even"><td><p>…</p></td>
-<td><p>…</p></td>
-<td><p>…</p></td>
-</tr>
-</tbody>
-</table>
-<p>The DataFrame index includes the patient IDs, and then there are 2 columns
-with the <cite>genotype</cite> group id (<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>)
-and the <cite>phenotype</cite> score. A <cite>genotype</cite> value may be missing if the patient
-cannot be assigned into any genotype category.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.pval">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.pval" title="Link to this definition"></a></dt>
-<dd><p>Get the p value of the test.</p>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysisResult.data</span></code> property provides a data frame
+with phenotype score for each tested individual:</p>
+<p>The DataFrame index includes the identifiers of the tested individuals and the values are stored
+in <cite>genotype</cite> and <cite>phenotype</cite> columns.</p>
+<p>The <cite>genotype</cite> includes the genotype category ID (<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
+or <cite>None</cite> if the patient cannot be assigned into any genotype category.</p>
+<p>The <cite>phenotype</cite> contains a <cite>float</cite> with the phenotype score. A <cite>NaN</cite> value is used
+if the phenotype score is impossible to compute.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.phenotype_scorer">
+<span class="sig-name descname"><span class="pre">phenotype_scorer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.phenotype_scorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.phenotype_scorer" title="Link to this definition"></a></dt>
+<dd><p>Get the scorer that computed the phenotype score.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots">
-<span class="sig-name descname"><span class="pre">plot_boxplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('darksalmon',</span> <span class="pre">'honeydew')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.plot_boxplots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_boxplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('darksalmon',</span> <span class="pre">'honeydew')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.plot_boxplots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots" title="Link to this definition"></a></dt>
 <dd><p>Draw box plot with distributions of phenotype scores for the genotype groups.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -253,10 +220,24 @@ or as term IDs.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.get_question">
-<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_hpo.html#CountingPhenotypeScorer.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.get_question" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.CountingPhenotypeScorer.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HP:0001250</cite>, <cite>OMIM:256000</cite></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.CountingPhenotypeScorer.score">
@@ -276,6 +257,25 @@ Do not double count if the patient has two terms
 <p><cite>DeVriesPhenotypeScorer</cite> computes “adapted De Vries Score”
 as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/21712853">Feenstra et al.</a>.</p>
 <p>See more in <a class="reference internal" href="../user-guide/predicates/devries.html#devries-scorer"><span class="std std-ref">De Vries Score</span></a> section.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HP:0001250</cite>, <cite>OMIM:256000</cite></p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.score">
 <span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_hpo.html#DeVriesPhenotypeScorer.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.score" title="Link to this definition"></a></dt>
@@ -292,7 +292,7 @@ as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">MeasurementPhenotypeScorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_measurement.html#MeasurementPhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">MeasurementPhenotypeScorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_measurement.html#MeasurementPhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a></p>
 <p><cite>MeasurementPhenotypeScorer</cite> uses a value of a measurement as a phenotype score.</p>
 <p>For instance, the amount of <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>.</p>
@@ -301,21 +301,56 @@ as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.
 <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>
 LOINC code as a phenotype score.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">MeasurementPhenotypeScorer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">MeasurementPhenotypeScorer</span><span class="o">.</span><span class="n">from_measurement_id</span><span class="p">(</span><span class="s2">&quot;LOINC:2986-8&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">MeasurementPhenotypeScorer</span><span class="o">.</span><span class="n">from_measurement_id</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;LOINC:2986-8&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Testosterone [Mass/volume] in Serum or Plasma&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># use the scorer in the analysis ...</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.from_measurement_id">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_measurement_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="gpsea.analysis.pscore._measurement.MeasurementPhenotypeScorer"><span class="pre">MeasurementPhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_measurement.html#MeasurementPhenotypeScorer.from_measurement_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.from_measurement_id" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_measurement_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="gpsea.analysis.pscore._measurement.MeasurementPhenotypeScorer"><span class="pre">MeasurementPhenotypeScorer</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_measurement.html#MeasurementPhenotypeScorer.from_measurement_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.from_measurement_id" title="Link to this definition"></a></dt>
 <dd><p>Create <cite>MeasurementPhenotypeScorer</cite> from a measurement identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>term_id</strong> – a <cite>str</cite> with CURIE or a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>
-representing the term ID of a measurement (e.g. <cite>LOINC:2986-8</cite>).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term_id</strong> – a <cite>str</cite> with CURIE or a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>
+representing the term ID of a measurement (e.g. <cite>LOINC:2986-8</cite>).</p></li>
+<li><p><strong>label</strong> – a <cite>str</cite> with the measurement label (e.g. <cite>Testosterone [Mass/volume] in Serum or Plasma</cite>)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HP:0001250</cite>, <cite>OMIM:256000</cite></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.term_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">term_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.term_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.label">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.MeasurementPhenotypeScorer.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.MeasurementPhenotypeScorer.score">

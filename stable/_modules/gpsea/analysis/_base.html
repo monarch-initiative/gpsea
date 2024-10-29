@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.analysis._base &mdash; GPSEA 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.analysis._base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.analysis._base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.predicate.phenotype</span> <span class="kn">import</span> <span class="n">PhenotypePolyPredicate</span><span class="p">,</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">.predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
+<span class="kn">from</span> <span class="nn">._partition</span> <span class="kn">import</span> <span class="n">Partitioning</span>
+
+
+<span class="k">class</span> <span class="nc">Statistic</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the name of the statistic (e.g. `Fisher Exact Test`, `Logrank test`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+    
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_name</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,))</span>
+
+
+<div class="viewcode-block" id="AnalysisResult">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.AnalysisResult">[docs]</a>
+<span class="k">class</span> <span class="nc">AnalysisResult</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `AnalysisResult` includes the common parts of results of all analyses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">GenotypePolyPredicate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span> <span class="o">=</span> <span class="n">gt_predicate</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">statistic</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">=</span> <span class="n">statistic</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gt_predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the genotype predicate used in the survival analysis that produced this result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Statistic</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the statistic which computed the (nominal) p values for this result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AnalysisResult</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_gt_predicate</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_statistic</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
+        <span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="MultiPhenotypeAnalysisResult">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.MultiPhenotypeAnalysisResult">[docs]</a>
+<span class="k">class</span> <span class="nc">MultiPhenotypeAnalysisResult</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">P</span><span class="p">],</span> <span class="n">AnalysisResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `MultiPhenotypeAnalysisResult` reports the outcome of an analysis</span>
+<span class="sd">    that tested the association of genotype with two or more phenotypes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
+        <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+        <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+        <span class="n">pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">corrected_pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">mtc_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n_usable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">all_counts</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">corrected_pvals</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_sanity</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">mtc_correction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtc_correction</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="o">=</span> <span class="n">mtc_correction</span>
+
+    <span class="k">def</span> <span class="nf">_check_sanity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># All sequences must have the same lengths ...</span>
+        <span class="k">for</span> <span class="n">seq</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="p">,</span> <span class="s1">&#39;n_usable&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">,</span> <span class="s1">&#39;all_counts&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">,</span> <span class="s1">&#39;pvals&#39;</span><span class="p">),</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`len(pheno_predicates)` must be the same as `len(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)` but &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># ... including the optional corrected p values</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`len(pheno_predicates)` must be the same as `len(corrected_pvals)` but &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span><span class="si">}</span><span class="s2">!=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="p">,</span> <span class="n">GenotypePolyPredicate</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">&quot;`gt_predicate` must be an instance of `GenotypePolyPredicate`&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">errors</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pheno_predicates</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">P</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the phenotype predicates used in the analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phenotypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">P</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the phenotypes that were tested for association with genotype in the analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">phenotype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_usable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence of numbers of patients where the phenotype was assessable,</span>
+<span class="sd">        and are, thus, usable for genotype-phenotype correlation analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">all_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`~pandas.DataFrame` sequence where each `DataFrame` includes the counts of patients</span>
+<span class="sd">        in genotype and phenotype groups.</span>
+
+<span class="sd">        An example for a genotype predicate that bins into two categories (`Yes` and `No`) based on presence</span>
+<span class="sd">        of a missense variant in transcript `NM_123456.7`, and phenotype predicate that checks</span>
+<span class="sd">        presence/absence of `HP:0001166` (a phenotype term)::</span>
+
+<span class="sd">                       Has MISSENSE_VARIANT in NM_123456.7</span>
+<span class="sd">                       No       Yes</span>
+<span class="sd">            Present</span>
+<span class="sd">            Yes        1        13</span>
+<span class="sd">            No         7        5</span>
+
+<span class="sd">        The rows correspond to the phenotype categories, and the columns represent the genotype categories.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence of nominal p values for each tested phenotype.</span>
+<span class="sd">        The sequence includes a `NaN` value for each phenotype that was *not* tested.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corrected_pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence with p values for each tested phenotype after multiple testing correction</span>
+<span class="sd">        or `None` if the correction was not applied.</span>
+<span class="sd">        The sequence includes a `NaN` value for each phenotype that was *not* tested.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get total count of genotype-phenotype associations that were tested in this analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">pval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvals</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pval</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mtc_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get name/code of the used multiple testing correction</span>
+<span class="sd">        (e.g. `fdr_bh` for Benjamini-Hochberg) or `None` if no correction was applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MultiPhenotypeAnalysisResult</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pheno_predicates</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_n_usable</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_all_counts</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pvals</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_corrected_pvals</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_mtc_correction</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span><span class="p">,</span>
+        <span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="MonoPhenotypeAnalysisResult">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult">[docs]</a>
+<span class="k">class</span> <span class="nc">MonoPhenotypeAnalysisResult</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `MonoPhenotypeAnalysisResult` reports the outcome of an analysis</span>
+<span class="sd">    that tested a single genotype-phenotype association.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">GT_COL</span> <span class="o">=</span> <span class="s2">&quot;genotype&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Name of column for storing genotype data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PH_COL</span> <span class="o">=</span> <span class="s2">&quot;phenotype&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Name of column for storing phenotype data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DATA_COLUMNS</span> <span class="o">=</span> <span class="p">(</span><span class="n">GT_COL</span><span class="p">,</span> <span class="n">PH_COL</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The required columns of the `data` data frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">phenotype</span><span class="p">:</span> <span class="n">Partitioning</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">statistic</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phenotype</span><span class="p">,</span> <span class="n">Partitioning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span> <span class="o">=</span> <span class="n">phenotype</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">DATA_COLUMNS</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">pval</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`pval` must be a finite float in range [0, 1] but it was </span><span class="si">{</span><span class="n">pval</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Partitioning</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the :class:`~gpsea.analysis.Partitioning` that produced the phenotype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the data frame with genotype and phenotype values for each tested individual.</span>
+
+<span class="sd">        The index of the data frame contains the identifiers of the tested individuals,</span>
+<span class="sd">        and the values are stored in `genotype` and `phenotype` columns.</span>
+<span class="sd">        </span>
+<span class="sd">        The `genotype` column includes the genotype category ID</span>
+<span class="sd">        (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
+<span class="sd">        or `None` if the individual could not be assigned into a genotype group.</span>
+<span class="sd">        The `phenotype` contains the phenotype values, and the data type depends on the analysis.</span>
+<span class="sd">        </span>
+<span class="sd">        Here are some common phenotype data types:</span>
+
+<span class="sd">        * a phenotype score computed in :class:`~gpsea.analysis.pscore.PhenotypeScoreAnalysis` is a `float`</span>
+<span class="sd">        * survival computed in :class:`~gpsea.analysis.temporal.SurvivalAnalysis`</span>
+<span class="sd">          is of type :class:`~gpsea.analysis.temporal.Survival`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="MonoPhenotypeAnalysisResult.complete_records">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.complete_records">[docs]</a>
+    <span class="k">def</span> <span class="nf">complete_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the :attr:`~gpsea.analysis.temporal.MonoPhenotypeAnalysisResult.data` rows</span>
+<span class="sd">        where both `genotype` and `phenotype` columns are available (i.e. not `None` or `NaN`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+            <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+        <span class="p">]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the p value of the test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_phenotype</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pval</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
+        <span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

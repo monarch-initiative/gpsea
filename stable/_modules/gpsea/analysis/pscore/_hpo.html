@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore._hpo &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.pscore._hpo &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -106,8 +106,8 @@
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_query_curies</span><span class="p">(</span>
-            <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-            <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
+        <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a scorer to test for the number of phenotype terms that fall into the phenotype groups.</span>
@@ -159,11 +159,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CountingPhenotypeScorer.get_question">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.get_question">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_question</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;How many of the query HPO terms (or their descendants) does the individual display&quot;</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;HPO Group Count&quot;</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;Assign a phenotype score that is equivalent to the count &quot;</span>
+            <span class="s2">&quot;of present phenotypes that are either an exact match to &quot;</span>
+            <span class="s2">&quot;the query terms or their descendants&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;HPO group count&quot;</span>
 
 <div class="viewcode-block" id="CountingPhenotypeScorer.score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.score">[docs]</a>
@@ -224,6 +234,20 @@
             <span class="s1">&#39;HP:0001256&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;HP:0002342&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;HP:0001249&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s1">&#39;HP:0006889&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;De Vries Score&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;A phenotypic severity score for individuals with intellectual disability&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;De Vries score&quot;</span>
 
     <span class="k">def</span> <span class="nf">_developmental_delay_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

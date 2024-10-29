@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.genotype._variant &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.predicate.genotype._variant &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,11 +78,27 @@
   <h1>Source code for gpsea.analysis.predicate.genotype._variant</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">AllVariantPredicate</span><span class="p">,</span> <span class="n">AnyVariantPredicate</span>
-<span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AlwaysTrueVariantPredicate</span><span class="p">,</span>
+    <span class="n">ChangeLengthPredicate</span><span class="p">,</span>
+    <span class="n">IsLargeImpreciseStructuralVariantPredicate</span><span class="p">,</span>
+    <span class="n">ProteinFeaturePredicate</span><span class="p">,</span>
+    <span class="n">ProteinFeatureTypePredicate</span><span class="p">,</span>
+    <span class="n">ProteinRegionPredicate</span><span class="p">,</span>
+    <span class="n">RefAlleleLengthPredicate</span><span class="p">,</span>
+    <span class="n">StructuralTypePredicate</span><span class="p">,</span>
+    <span class="n">VariantClassPredicate</span><span class="p">,</span>
+    <span class="n">VariantEffectPredicate</span><span class="p">,</span>
+    <span class="n">VariantExonPredicate</span><span class="p">,</span>
+    <span class="n">VariantGenePredicate</span><span class="p">,</span>
+    <span class="n">VariantKeyPredicate</span><span class="p">,</span>
+    <span class="n">VariantTranscriptPredicate</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="c1"># We do not need more than just one instance of these predicates.</span>
@@ -127,7 +143,7 @@
 <span class="sd">        &gt;&gt;&gt; genes = (&#39;SURF1&#39;, &#39;SURF2&#39;,)</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)</span>
 <span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
-<span class="sd">        &#39;(impacts SURF1 AND impacts SURF2)&#39;</span>
+<span class="sd">        &#39;(affects SURF1 AND affects SURF2)&#39;</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            predicates: an iterable of predicates to test</span>
@@ -277,15 +293,45 @@
 <div class="viewcode-block" id="VariantPredicates.region">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.region">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="n">region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Region</span><span class="p">],</span>
+        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant</span>
 <span class="sd">        overlaps with a region on a protein of a specific transcript.</span>
 
+<span class="sd">        </span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        Create a predicate to test if the variant overlaps with the 5th aminoacid</span>
+<span class="sd">        of the protein encoded by a fictional transcript `NM_1234.5`:</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
+<span class="sd">        &gt;&gt;&gt; overlaps_with_fifth_aa = VariantPredicates.region(region=(5, 5), tx_id=&quot;NM_1234.5&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; overlaps_with_fifth_aa.description</span>
+<span class="sd">        &#39;overlaps with [5,5] region of the protein encoded by NM_1234.5&#39;</span>
+
+<span class="sd">        Create a predicate to test if the variant Overlaps with the first 20 aminoacid residues of the same transcript:</span>
+
+<span class="sd">        &gt;&gt;&gt; overlaps_with_first_20 = VariantPredicates.region(region=(1, 20), tx_id=&quot;NM_1234.5&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; overlaps_with_first_20.description</span>
+<span class="sd">        &#39;overlaps with [1,20] region of the protein encoded by NM_1234.5&#39;</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate</span>
-<span class="sd">                of the region of interest on a protein strand.</span>
+<span class="sd">                of the region of interest on a protein strand or a tuple with 1-based coordinates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">region</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Convert to 0-based</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;region must be a `Region` or a tuple with two positive `int`s, but got </span><span class="si">{</span><span class="n">region</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">ProteinRegionPredicate</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
 
 
@@ -363,7 +409,8 @@
         <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant is of a certain :class:`~gpsea.model.VariantClass`.</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` for testing if the variant</span>
+<span class="sd">        is of a certain :class:`~gpsea.model.VariantClass`.</span>
 
 <span class="sd">        **Example**</span>
 
@@ -404,8 +451,8 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.ref_length(&#39;&gt;&#39;, 5)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
-<span class="sd">        &#39;ref allele length &gt; 5&#39;</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
+<span class="sd">        &#39;reference allele length &gt; 5&#39;</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            operator: a `str` with the desired test. Must be one of ``{ &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39;, &#39;!=&#39;, &#39;&gt;=&#39;, &#39;&gt;&#39; }``.</span>
@@ -483,54 +530,48 @@
             <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
             <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
         <span class="p">)</span></div>
-</div>
 
 
-
-<div class="viewcode-block" id="ProteinPredicates">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates">[docs]</a>
-<span class="k">class</span> <span class="nc">ProteinPredicates</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `ProteinPredicates` prepares variant predicates that need to consult </span>
-<span class="sd">    :class:`~gpsea.preprocessing.ProteinMetadataService`</span>
-<span class="sd">    to categorize a :class:`~gpsea.model.Variant`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span> <span class="o">=</span> <span class="n">protein_metadata_service</span>
-
-<div class="viewcode-block" id="ProteinPredicates.protein_feature_type">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature_type">[docs]</a>
+<div class="viewcode-block" id="VariantPredicates.protein_feature_type">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature_type">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Prepare a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`</span>
+<span class="sd">        to test if the variant affects a `feature_type` of a protein.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            feature_type: the target protein :class:`~gpsea.model.FeatureType`</span>
-<span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`)</span>
+<span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).</span>
+<span class="sd">            protein_metadata: the information about the protein.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
-            <span class="n">feature_type</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+            <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProteinPredicates.protein_feature">
-<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.ProteinPredicates.protein_feature">[docs]</a>
-    <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<div class="viewcode-block" id="VariantPredicates.protein_feature">
+<a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span>
+        <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare a :class:`VariantPredicate` that tests if the variant affects a protein feature type.</span>
+<span class="sd">        Prepare a :class:`VariantPredicate` to test if the variant affects a protein feature</span>
+<span class="sd">        labeled with the provided `feature_id`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            feature_id: the id of the target protein feature (e.g. `ANK 1`)</span>
-<span class="sd">            tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+<span class="sd">            protein_metadata: the information about the protein.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span>
-            <span class="n">feature_id</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span>
+            <span class="n">feature_id</span><span class="o">=</span><span class="n">feature_id</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 

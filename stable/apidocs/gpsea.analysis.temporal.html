@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal package &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.temporal package &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -102,7 +102,7 @@ between genotype groups.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">Endpoint</span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></p>
 <p><cite>Endpoint</cite> computes survival for the analyzed individual.</p>
 <p>An example endpoint includes <code class="xref py py-func docutils literal notranslate"><span class="pre">death()</span></code>,
 <code class="xref py py-func docutils literal notranslate"><span class="pre">disease_onset()</span></code>,
@@ -113,11 +113,6 @@ or onset of a phenotypic feature (<code class="xref py py-func docutils literal 
 <dd><p>Compute a survival for a given <cite>patient</cite> or <cite>None</cite> if the <cite>patient</cite> lacks the required
 data (e.g. age of death or age at last investigation).</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint.display_question">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint.display_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint.display_question" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -140,26 +135,15 @@ survivals is tested with selected <a class="reference internal" href="gpsea.anal
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">SurvivalAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">SurvivalAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal._api.Endpoint"><span class="pre">Endpoint</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.temporal.stats.html#gpsea.analysis.temporal.stats.SurvivalStatistic" title="gpsea.analysis.temporal.stats._api.SurvivalStatistic"><span class="pre">SurvivalStatistic</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult" title="gpsea.analysis._base.MonoPhenotypeAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonoPhenotypeAnalysisResult</span></code></a></p>
 <p><cite>SurvivalAnalysisResult</cite> includes the results of a <a class="reference internal" href="#gpsea.analysis.temporal.SurvivalAnalysis" title="gpsea.analysis.temporal.SurvivalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurvivalAnalysis</span></code></a>.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.gt_predicate">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gt_predicate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></em><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.gt_predicate" title="Link to this definition"></a></dt>
-<dd><p>Get the genotype predicate used in the survival analysis that produced this result.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></em><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.data" title="Link to this definition"></a></dt>
-<dd><p>Get the data frame with the genotype group
-and the corresponding <code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code>.</p>
-<p>The DataFrame has the following structure:</p>
+<p>The genotype categories and survival are reported in the <cite>data</cite> data frame with the following structure:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>patient_id</p></th>
 <th class="head"><p>genotype</p></th>
-<th class="head"><p>survival</p></th>
+<th class="head"><p>phenotype</p></th>
 </tr>
 </thead>
 <tbody>
@@ -186,25 +170,28 @@ and the corresponding <code class="xref py py-class docutils literal notranslate
 </tbody>
 </table>
 <p>The index includes the individual IDs (<cite>patient_id</cite>), and then there are 2 columns
-with the <cite>genotype</cite> group id (<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>)
-and the <cite>survival</cite> encoded as <code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code> object.</p>
+with the <cite>genotype</cite> group id (<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
+and the <cite>phenotype</cite> with the survival represented as <code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code> object.</p>
 <p>A <cite>genotype</cite> value may be missing (<cite>None</cite>) if the individual cannot be assigned
 into a genotype category.
-Similarly, a <cite>survival</cite> may be <cite>None</cite> if computing the survival is impossible for
-the individual in question.</p>
+Similarly, a <cite>survival</cite> is <cite>None</cite> if computing the survival for an individual is impossible.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.endpoint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">endpoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal._api.Endpoint"><span class="pre">Endpoint</span></a></em><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.endpoint" title="Link to this definition"></a></dt>
+<dd><p>Get the endpoint used to compute the survival of the individuals.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.complete_records">
-<span class="sig-name descname"><span class="pre">complete_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult.complete_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.complete_records" title="Link to this definition"></a></dt>
-<dd><p>Get the <a class="reference internal" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.data" title="gpsea.analysis.temporal.SurvivalAnalysisResult.data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">data()</span></code></a> rows
-where both <cite>genotype</cite> and <cite>survival</cite> columns are available (i.e. not <cite>None</cite>).</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.pval">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></em><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.pval" title="Link to this definition"></a></dt>
-<dd><p>Get the p value of the test.</p>
+<dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves">
+<span class="sig-name descname"><span class="pre">plot_kaplan_meier_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult.plot_kaplan_meier_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves" title="Link to this definition"></a></dt>
+<dd><p>Plot genotype group survivals on the provided axes.</p>
+<p>The axes includes legend. However, if no survival is available
+for a genotype group, the group name will be missing from the legend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ax</strong> – a Matplotlib <cite>Axes</cite> to draw on.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

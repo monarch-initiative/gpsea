@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis package &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis package &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -97,6 +97,161 @@
              
   <section id="module-gpsea.analysis">
 <span id="gpsea-analysis-package"></span><h1>gpsea.analysis package<a class="headerlink" href="#module-gpsea.analysis" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.AnalysisResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.</span></span><span class="sig-name descname"><span class="pre">AnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Statistic</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#AnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.AnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>AnalysisResult</cite> includes the common parts of results of all analyses.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.AnalysisResult.gt_predicate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gt_predicate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></em><a class="headerlink" href="#gpsea.analysis.AnalysisResult.gt_predicate" title="Link to this definition"></a></dt>
+<dd><p>Get the genotype predicate used in the survival analysis that produced this result.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.AnalysisResult.statistic">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">statistic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Statistic</span></em><a class="headerlink" href="#gpsea.analysis.AnalysisResult.statistic" title="Link to this definition"></a></dt>
+<dd><p>Get the statistic which computed the (nominal) p values for this result.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.</span></span><span class="sig-name descname"><span class="pre">MonoPhenotypeAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Partitioning</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#MonoPhenotypeAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.AnalysisResult" title="gpsea.analysis._base.AnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisResult</span></code></a></p>
+<p><cite>MonoPhenotypeAnalysisResult</cite> reports the outcome of an analysis
+that tested a single genotype-phenotype association.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.GT_COL">
+<span class="sig-name descname"><span class="pre">GT_COL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'genotype'</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.GT_COL" title="Link to this definition"></a></dt>
+<dd><p>Name of column for storing genotype data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.PH_COL">
+<span class="sig-name descname"><span class="pre">PH_COL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'phenotype'</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.PH_COL" title="Link to this definition"></a></dt>
+<dd><p>Name of column for storing phenotype data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.DATA_COLUMNS">
+<span class="sig-name descname"><span class="pre">DATA_COLUMNS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('genotype',</span> <span class="pre">'phenotype')</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.DATA_COLUMNS" title="Link to this definition"></a></dt>
+<dd><p>The required columns of the <cite>data</cite> data frame.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.phenotype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Partitioning</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.phenotype" title="Link to this definition"></a></dt>
+<dd><p>Get the <code class="xref py py-class docutils literal notranslate"><span class="pre">Partitioning</span></code> that produced the phenotype.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.data" title="Link to this definition"></a></dt>
+<dd><p>Get the data frame with genotype and phenotype values for each tested individual.</p>
+<p>The index of the data frame contains the identifiers of the tested individuals,
+and the values are stored in <cite>genotype</cite> and <cite>phenotype</cite> columns.</p>
+<p>The <cite>genotype</cite> column includes the genotype category ID
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
+or <cite>None</cite> if the individual could not be assigned into a genotype group.
+The <cite>phenotype</cite> contains the phenotype values, and the data type depends on the analysis.</p>
+<p>Here are some common phenotype data types:</p>
+<ul class="simple">
+<li><p>a phenotype score computed in <a class="reference internal" href="gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysis" title="gpsea.analysis.pscore.PhenotypeScoreAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code></a> is a <cite>float</cite></p></li>
+<li><p>survival computed in <a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.SurvivalAnalysis" title="gpsea.analysis.temporal.SurvivalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurvivalAnalysis</span></code></a>
+is of type <a class="reference internal" href="gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.complete_records">
+<span class="sig-name descname"><span class="pre">complete_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#MonoPhenotypeAnalysisResult.complete_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.complete_records" title="Link to this definition"></a></dt>
+<dd><p>Get the <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> rows
+where both <cite>genotype</cite> and <cite>phenotype</cite> columns are available (i.e. not <cite>None</cite> or <cite>NaN</cite>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.pval">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.pval" title="Link to this definition"></a></dt>
+<dd><p>Get the p value of the test.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.</span></span><span class="sig-name descname"><span class="pre">MultiPhenotypeAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pheno_predicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="gpsea.analysis.predicate.phenotype._pheno.PhenotypePolyPredicate"><span class="pre">PhenotypePolyPredicate</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_usable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pvals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected_pvals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtc_correction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#MultiPhenotypeAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="#gpsea.analysis.AnalysisResult" title="gpsea.analysis._base.AnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisResult</span></code></a></p>
+<p><cite>MultiPhenotypeAnalysisResult</cite> reports the outcome of an analysis
+that tested the association of genotype with two or more phenotypes.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.pheno_predicates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pheno_predicates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="gpsea.analysis.predicate.phenotype._pheno.PhenotypePolyPredicate"><span class="pre">PhenotypePolyPredicate</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.pheno_predicates" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype predicates used in the analysis.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotypes that were tested for association with genotype in the analysis.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.n_usable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_usable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.n_usable" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of numbers of patients where the phenotype was assessable,
+and are, thus, usable for genotype-phenotype correlation analysis.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.all_counts">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_counts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.all_counts" title="Link to this definition"></a></dt>
+<dd><p>Get a <a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a> sequence where each <cite>DataFrame</cite> includes the counts of patients
+in genotype and phenotype groups.</p>
+<p>An example for a genotype predicate that bins into two categories (<cite>Yes</cite> and <cite>No</cite>) based on presence
+of a missense variant in transcript <cite>NM_123456.7</cite>, and phenotype predicate that checks
+presence/absence of <cite>HP:0001166</cite> (a phenotype term):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>           <span class="n">Has</span> <span class="n">MISSENSE_VARIANT</span> <span class="ow">in</span> <span class="n">NM_123456</span><span class="mf">.7</span>
+           <span class="n">No</span>       <span class="n">Yes</span>
+<span class="n">Present</span>
+<span class="n">Yes</span>        <span class="mi">1</span>        <span class="mi">13</span>
+<span class="n">No</span>         <span class="mi">7</span>        <span class="mi">5</span>
+</pre></div>
+</div>
+<p>The rows correspond to the phenotype categories, and the columns represent the genotype categories.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.pvals">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pvals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.pvals" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of nominal p values for each tested phenotype.
+The sequence includes a <cite>NaN</cite> value for each phenotype that was <em>not</em> tested.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.corrected_pvals">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">corrected_pvals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.corrected_pvals" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence with p values for each tested phenotype after multiple testing correction
+or <cite>None</cite> if the correction was not applied.
+The sequence includes a <cite>NaN</cite> value for each phenotype that was <em>not</em> tested.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.total_tests">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_tests</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.total_tests" title="Link to this definition"></a></dt>
+<dd><p>Get total count of genotype-phenotype associations that were tested in this analysis.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.MultiPhenotypeAnalysisResult.mtc_correction">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtc_correction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.analysis.MultiPhenotypeAnalysisResult.mtc_correction" title="Link to this definition"></a></dt>
+<dd><p>Get name/code of the used multiple testing correction
+(e.g. <cite>fdr_bh</cite> for Benjamini-Hochberg) or <cite>None</cite> if no correction was applied.</p>
+</dd></dl>
+
+</dd></dl>
+
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
@@ -121,9 +276,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.predicate.html">gpsea.analysis.predicate package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory"><code class="docutils literal notranslate"><span class="pre">PatientCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategories"><code class="docutils literal notranslate"><span class="pre">PatientCategories</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization"><code class="docutils literal notranslate"><span class="pre">Categorization</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate"><code class="docutils literal notranslate"><span class="pre">PolyPredicate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.html#subpackages">Subpackages</a></li>
 </ul>

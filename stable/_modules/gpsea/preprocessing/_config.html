@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._config &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.preprocessing._config &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -88,6 +88,8 @@
     <span class="n">AnnotationPropagationValidator</span><span class="p">,</span>
     <span class="n">PhenotypicAbnormalityValidator</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">stairval.notepad</span> <span class="kn">import</span> <span class="n">create_notepad</span>
 
 <span class="c1"># pyright: reportGeneralTypeIssues=false</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
@@ -473,7 +475,7 @@
     <span class="n">cohort_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
         <span class="n">phenopackets</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Individuals Processed&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;individuals&quot;</span>
     <span class="p">)</span>
-    <span class="n">notepad</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">prepare_notepad</span><span class="p">(</span><span class="s2">&quot;Phenopackets&quot;</span><span class="p">)</span>
+    <span class="n">notepad</span> <span class="o">=</span> <span class="n">create_notepad</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Phenopackets&quot;</span><span class="p">)</span>
     <span class="n">cohort</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort_iter</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
 
     <span class="n">validation_result</span> <span class="o">=</span> <span class="n">PreprocessingValidationResult</span><span class="p">(</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal.stats._impl &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.temporal.stats._impl &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,6 +81,7 @@
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
 
 <span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">Survival</span>
+<span class="kn">from</span> <span class="nn">.._util</span> <span class="kn">import</span> <span class="n">prepare_censored_data</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">SurvivalStatistic</span>
 
 
@@ -94,6 +95,11 @@
 <span class="sd">    A two-sided alternative hypothesis is tested.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Logrank test&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
 <div class="viewcode-block" id="LogRankTest.compute_pval">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.temporal.stats.html#gpsea.analysis.temporal.stats.LogRankTest.compute_pval">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_pval</span><span class="p">(</span>
@@ -105,11 +111,11 @@
 
 <span class="sd">        :param scores: a pair of survival groups</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Log rank test only supports 2 groups at this time&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Logrank test only supports 2 groups at this time&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 
-        <span class="n">xc</span> <span class="o">=</span> <span class="n">LogRankTest</span><span class="o">.</span><span class="n">_prepare_censored_data</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">yc</span> <span class="o">=</span> <span class="n">LogRankTest</span><span class="o">.</span><span class="n">_prepare_censored_data</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="n">prepare_censored_data</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="n">prepare_censored_data</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">logrank</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">xc</span><span class="p">,</span>
@@ -120,21 +126,11 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">pvalue</span><span class="p">)</span></div>
 
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_prepare_censored_data</span><span class="p">(</span>
-        <span class="n">survivals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Survival</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">stats</span><span class="o">.</span><span class="n">CensoredData</span><span class="p">:</span>
-        <span class="n">uncensored</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">right_censored</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">survival</span> <span class="ow">in</span> <span class="n">survivals</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">survival</span><span class="o">.</span><span class="n">is_censored</span><span class="p">:</span>
-                <span class="n">right_censored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">survival</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">uncensored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">survival</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">stats</span><span class="o">.</span><span class="n">CensoredData</span><span class="p">(</span>
-            <span class="n">uncensored</span><span class="o">=</span><span class="n">uncensored</span><span class="p">,</span>
-            <span class="n">right</span><span class="o">=</span><span class="n">right_censored</span><span class="p">,</span>
-        <span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">LogRankTest</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">37</span></div>
 
 </pre></div>
 

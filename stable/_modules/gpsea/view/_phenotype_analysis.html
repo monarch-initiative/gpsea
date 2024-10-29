@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._phenotype_analysis &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.view._phenotype_analysis &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -103,7 +103,7 @@
     <span class="c1"># Column index: multiindex of counts and percentages for all genotype predicate groups</span>
     <span class="n">gt_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
         <span class="n">iterables</span><span class="o">=</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Percent&quot;</span><span class="p">)),</span>
-        <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_question_base</span><span class="p">(),</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># We&#39;ll fill this frame with data</span>

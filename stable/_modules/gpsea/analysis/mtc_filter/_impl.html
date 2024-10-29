@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.mtc_filter._impl &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.analysis.mtc_filter._impl &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -84,6 +84,8 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">hpotk.constants.hpo.base</span> <span class="kn">import</span> <span class="n">PHENOTYPIC_ABNORMALITY</span>
 
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">..predicate.phenotype</span> <span class="kn">import</span> <span class="n">PhenotypePolyPredicate</span><span class="p">,</span> <span class="n">P</span>
@@ -406,7 +408,7 @@
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
-        <span class="n">phenotypic_abnormality</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span>
+        <span class="n">phenotypic_abnormality</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span> <span class="o">=</span> <span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -551,7 +553,7 @@
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_ancestor_of</span><span class="p">(</span>
-                    <span class="n">hpotk</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span> <span class="n">term_id</span>
+                    <span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span> <span class="n">term_id</span>
             <span class="p">):</span>
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span>
                 <span class="k">continue</span>
@@ -638,12 +640,15 @@
     <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_GENERAL_TERM</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span><span class="p">,</span>
-            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF01</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span><span class="p">,</span>  <span class="c1"># HMF02</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span><span class="p">,</span>  <span class="c1"># HMF03</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span><span class="p">,</span>  <span class="c1"># HMF05</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span><span class="p">,</span>  <span class="c1"># HMF06</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span><span class="p">,</span>  <span class="c1"># HMF06</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span><span class="p">,</span>  <span class="c1"># HMF07</span>
+            <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">SKIPPING_GENERAL_TERM</span><span class="p">,</span>  <span class="c1"># HMF08</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_below_annotation_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF09</span>
         <span class="p">)</span></div>
 
 

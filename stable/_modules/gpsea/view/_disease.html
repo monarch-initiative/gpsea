@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._disease &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.view._disease &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -108,13 +108,13 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="n">DiseaseViewer</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_context</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
         <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
-    
-    <span class="nd">@staticmethod</span>
+
     <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="n">diseases</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">list_all_diseases</span><span class="p">()</span>
@@ -122,21 +122,32 @@
         <span class="n">disease_counts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="n">disease_variants_counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">Counter</span><span class="p">)</span>
         <span class="n">disease_effects_counts</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">diseases</span><span class="p">:</span>
-            <span class="n">disease_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">disease_count</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">curie</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">diseases</span><span class="p">:</span>
             <span class="n">disease_name</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
-            <span class="n">disease_variants_counts</span><span class="p">[</span><span class="n">disease_id</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
-            <span class="n">disease_effects_counts</span><span class="p">[</span><span class="n">disease_id</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+            <span class="n">disease_variants_counts</span><span class="p">[</span><span class="n">curie</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+            <span class="n">disease_effects_counts</span><span class="p">[</span><span class="n">curie</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+            
             <span class="k">for</span> <span class="n">dis</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_diseases</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">dis</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">dis</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">curie</span><span class="p">:</span>
                     <span class="n">disease_name</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">break</span>
+            
+            <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">curie</span><span class="p">,</span>
+                    <span class="s2">&quot;disease_name&quot;</span><span class="p">:</span> <span class="n">disease_name</span><span class="p">,</span>
+                    <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
             <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_patients</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">disease_id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">disease</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">diseases</span><span class="p">]:</span>
-                    <span class="n">disease_variants_counts</span><span class="p">[</span><span class="n">disease_id</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">var_effect</span> <span class="ow">in</span> <span class="p">[</span><span class="n">txa</span><span class="o">.</span><span class="n">variant_effects</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span> <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">]:</span>
-                        <span class="n">disease_effects_counts</span><span class="p">[</span><span class="n">disease_id</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">var_eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var_eff</span> <span class="ow">in</span> <span class="n">var_effect</span><span class="p">)</span>
-            <span class="n">disease_counts</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;disease_id&quot;</span><span class="p">:</span> <span class="n">disease_id</span><span class="p">,</span> <span class="s2">&quot;disease_name&quot;</span><span class="p">:</span> <span class="n">disease_name</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">disease_count</span><span class="p">})</span>
+                <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">diseases</span><span class="p">:</span>
+                    <span class="n">variant_key_count</span> <span class="o">=</span> <span class="n">disease_variants_counts</span><span class="p">[</span><span class="n">disease</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                    <span class="n">variant_key_count</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">variant</span><span class="o">.</span><span class="n">variant_info</span><span class="o">.</span><span class="n">variant_key</span> <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">pat</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">txa</span> <span class="ow">in</span> <span class="n">variant</span><span class="o">.</span><span class="n">tx_annotations</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">==</span> <span class="n">txa</span><span class="o">.</span><span class="n">transcript_id</span><span class="p">:</span>
+                                <span class="n">disease_effects_counts</span><span class="p">[</span><span class="n">curie</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">eff</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">txa</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">)</span>
             
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;n_diseases&#39;</span><span class="p">:</span> <span class="n">n_diseases</span><span class="p">,</span>

@@ -1,4 +1,4 @@
-.. _measurement-stat:
+`.. _measurement-stat:
 
 
 ==========================
@@ -57,7 +57,7 @@ TODO - create real predicate.
 >>> from gpsea.model import VariantEffect
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=tx_id)
->>> is_missense.get_question()
+>>> is_missense.description
 'MISSENSE_VARIANT on NM_000500.9'
 
 Assuming AR inheritance, we compare missense vs. rest:
@@ -69,8 +69,8 @@ Assuming AR inheritance, we compare missense vs. rest:
 ...     a_label="Missense", b_label="Other",
 ...     partitions=({0,}, {1, 2}),
 ... )
->>> gt_predicate.display_question()
-'Allele group: Missense/Missense, Missense/Other OR Other/Other'
+>>> gt_predicate.group_labels
+('Missense/Missense', 'Missense/Other OR Other/Other')
 
 Phenotype score
 ---------------
@@ -84,7 +84,10 @@ We use the measurement of `Testosterone [Mass/volume] in Serum or Plasma <https:
 >>> testosterone = 'LOINC:2986-8'
 >>> pheno_scorer = MeasurementPhenotypeScorer.from_measurement_id(
 ...     term_id=testosterone,
+...     label="Testosterone [Mass/volume] in Serum or Plasma",
 ... )
+>>> pheno_scorer.description
+'Value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]'
 
 
 Statistical test
@@ -124,15 +127,15 @@ We execute the analysis by running
 
 Show data frame with scores
 
->>> scores = result.genotype_phenotype_scores.sort_index()
+>>> scores = result.data.sort_index()
 >>> scores.head()  # doctest: +NORMALIZE_WHITESPACE
-                                     genotype phenotype
-patient_id                                                   
-individual 10[PMID_30968594_individual_10]        1     614.0
-individual 11[PMID_30968594_individual_11]        1     630.0
-individual 12[PMID_30968594_individual_12]        1       NaN
-individual 13[PMID_30968594_individual_13]        1     303.0
-individual 14[PMID_30968594_individual_14]        1     664.0
+                                            genotype  phenotype
+patient_id                                                     
+individual 10[PMID_30968594_individual_10]         1      614.0
+individual 11[PMID_30968594_individual_11]         1      630.0
+individual 12[PMID_30968594_individual_12]         1        NaN
+individual 13[PMID_30968594_individual_13]         1      303.0
+individual 14[PMID_30968594_individual_14]         1      664.0
 
 
 Prepare genotype category legend:

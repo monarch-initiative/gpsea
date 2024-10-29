@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Partition by a diagnosis &mdash; GPSEA 0.6.0 documentation</title>
+  <title>Group by sex &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Groups Predicate" href="groups_predicate.html" />
-    <link rel="prev" title="Partition by the sex of the individual" href="male_female_predicate.html" /> 
+    <link rel="next" title="Group by diagnosis" href="diagnosis.html" />
+    <link rel="prev" title="Group by allele count" href="allele_count.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,11 +56,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Predicates</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="genotype_predicates.html">Genotype Predicates</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="variant_predicates.html">Variant Predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="allele_count_predicates.html">Allele count predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="mode_of_inheritance_predicate.html">Mode of Inheritance Predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="male_female_predicate.html">Partition by the sex of the individual</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Partition by a diagnosis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="groups_predicate.html">Groups Predicate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="variant_category.html">Group by variant category</a></li>
+<li class="toctree-l4"><a class="reference internal" href="allele_count.html">Group by allele count</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Group by sex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="diagnosis.html">Group by diagnosis</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype_predicates.html">Phenotype Predicates</a></li>
@@ -94,9 +93,9 @@
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="index.html">Predicates</a></li>
           <li class="breadcrumb-item"><a href="genotype_predicates.html">Genotype Predicates</a></li>
-      <li class="breadcrumb-item active">Partition by a diagnosis</li>
+      <li class="breadcrumb-item active">Group by sex</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/user-guide/predicates/diagnosis_predicate.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/user-guide/predicates/sex.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -104,31 +103,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="partition-by-a-diagnosis">
-<span id="diagnosis-predicate"></span><h1>Partition by a diagnosis<a class="headerlink" href="#partition-by-a-diagnosis" title="Link to this heading"></a></h1>
-<p>It is also possible to bin the individuals based on a diagnosis.
-The <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate" title="gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a>
-prepares a genotype predicate for assigning an individual into a diagnosis group:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">diagnosis_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">diagnosis_predicate</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">diagnoses</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;OMIM:154700&#39;</span><span class="p">,</span> <span class="s1">&#39;OMIM:129600&#39;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Marfan syndrome&#39;</span><span class="p">,</span> <span class="s1">&#39;Ectopia lentis, familial&#39;</span><span class="p">),</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;What disease was diagnosed: OMIM:154700, OMIM:129600&#39;</span>
+  <section id="group-by-sex">
+<span id="id1"></span><h1>Group by sex<a class="headerlink" href="#group-by-sex" title="Link to this heading"></a></h1>
+<p>It is easy to investigate the differences between males and females.
+The <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate" title="gpsea.analysis.predicate.genotype.sex_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a> partitions
+the individuals based on their <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Sex" title="gpsea.model.Sex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sex</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">sex_predicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">sex_predicate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;FEMALE&#39;, &#39;MALE&#39;)</span>
 </pre></div>
 </div>
-<p>Note, an individual must match only one diagnosis group. Any individuals labeled with two or more diagnoses
-(e.g. an individual with both <em>Marfan syndrome</em> and <em>Ectopia lentis, familial</em>)
-will be automatically omitted from the analysis.</p>
+<p>The individuals with <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Sex.UNKNOWN_SEX" title="gpsea.model.Sex.UNKNOWN_SEX"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNKNOWN_SEX</span></code></a> will be omitted from the analysis.</p>
+<p>Note that we implemented this predicate as a genotype predicate.
+Currently, it is not possible to compare the distribution of genotypes across sexes.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="male_female_predicate.html" class="btn btn-neutral float-left" title="Partition by the sex of the individual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="groups_predicate.html" class="btn btn-neutral float-right" title="Groups Predicate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="allele_count.html" class="btn btn-neutral float-left" title="Group by allele count" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="diagnosis.html" class="btn btn-neutral float-right" title="Group by diagnosis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

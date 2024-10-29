@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare measurement values &mdash; GPSEA 0.6.0 documentation</title>
+  <title>Compare measurement values &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -98,8 +98,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="compare-measurement-values">
-<span id="measurement-stat"></span><h1>Compare measurement values<a class="headerlink" href="#compare-measurement-values" title="Link to this heading"></a></h1>
+  <p><a href="#id1"><span class="problematic" id="id2">`</span></a>.. _measurement-stat:</p>
+<section id="compare-measurement-values">
+<h1>Compare measurement values<a class="headerlink" href="#compare-measurement-values" title="Link to this heading"></a></h1>
 <section id="example-analysis">
 <h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
 <p>We will analyze 69 individuals reported by
@@ -138,7 +139,7 @@ TODO - create real predicate.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span><span class="o">.</span><span class="n">get_question</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;MISSENSE_VARIANT on NM_000500.9&#39;</span>
 </pre></div>
 </div>
@@ -150,8 +151,8 @@ TODO - create real predicate.</p>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Missense&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">partitions</span><span class="o">=</span><span class="p">({</span><span class="mi">0</span><span class="p">,},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}),</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">display_question</span><span class="p">()</span>
-<span class="go">&#39;Allele group: Missense/Missense, Missense/Other OR Other/Other&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="go">(&#39;Missense/Missense&#39;, &#39;Missense/Other OR Other/Other&#39;)</span>
 </pre></div>
 </div>
 </section>
@@ -164,7 +165,10 @@ TODO - create real predicate.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">testosterone</span> <span class="o">=</span> <span class="s1">&#39;LOINC:2986-8&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">MeasurementPhenotypeScorer</span><span class="o">.</span><span class="n">from_measurement_id</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">term_id</span><span class="o">=</span><span class="n">testosterone</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Testosterone [Mass/volume] in Serum or Plasma&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;Value of Testosterone [Mass/volume] in Serum or Plasma [LOINC:2986-8]&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -203,15 +207,15 @@ of the different genotype groups</p>
 </pre></div>
 </div>
 <p>Show data frame with scores</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">genotype_phenotype_scores</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
-<span class="go">                                     genotype phenotype</span>
+<span class="go">                                            genotype  phenotype</span>
 <span class="go">patient_id</span>
-<span class="go">individual 10[PMID_30968594_individual_10]        1     614.0</span>
-<span class="go">individual 11[PMID_30968594_individual_11]        1     630.0</span>
-<span class="go">individual 12[PMID_30968594_individual_12]        1       NaN</span>
-<span class="go">individual 13[PMID_30968594_individual_13]        1     303.0</span>
-<span class="go">individual 14[PMID_30968594_individual_14]        1     664.0</span>
+<span class="go">individual 10[PMID_30968594_individual_10]         1      614.0</span>
+<span class="go">individual 11[PMID_30968594_individual_11]         1      630.0</span>
+<span class="go">individual 12[PMID_30968594_individual_12]         1        NaN</span>
+<span class="go">individual 13[PMID_30968594_individual_13]         1      303.0</span>
+<span class="go">individual 14[PMID_30968594_individual_14]         1      664.0</span>
 </pre></div>
 </div>
 <p>Prepare genotype category legend:</p>

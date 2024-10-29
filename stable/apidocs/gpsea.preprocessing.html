@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing package &mdash; GPSEA 0.6.0 documentation</title>
+  <title>gpsea.preprocessing package &mdash; GPSEA 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -253,21 +253,24 @@ and <cite>None</cite> may be returned.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.preprocessing.PatientCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PatientCreator</span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_patient.html#PatientCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PatientCreator" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference internal" href="#gpsea.preprocessing.Auditor" title="gpsea.preprocessing._audit.Auditor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Auditor</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p><cite>PatientCreator</cite> can create a <cite>Patient</cite> from some input <cite>T</cite>.</p>
-<p><cite>PatientCreator</cite> is an <cite>Auditor</cite>, hence the input is sanitized and any errors are reported to the caller.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.preprocessing.PatientCreator.process">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Notepad</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_patient.html#PatientCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PatientCreator.process" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.preprocessing.CohortCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">CohortCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.PatientCreator" title="gpsea.preprocessing._patient.PatientCreator"><span class="pre">PatientCreator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_patient.html#CohortCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.CohortCreator" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference internal" href="#gpsea.preprocessing.Auditor" title="gpsea.preprocessing._audit.Auditor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Auditor</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference internal" href="gpsea.model.html#gpsea.model.Cohort" title="gpsea.model._cohort.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p><cite>CohortCreator</cite> creates a cohort from an iterable of some <cite>T</cite> where <cite>T</cite> represents a cohort member.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.CohortCreator.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing._audit.Notepad"><span class="pre">Notepad</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.Cohort" title="gpsea.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_patient.html#CohortCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.CohortCreator.process" title="Link to this definition"></a></dt>
-<dd><p>Audit and sanitize the <cite>data</cite>, record the issues to the <cite>notepad</cite> and return the sanitized data.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Notepad</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.Cohort" title="gpsea.model._cohort.Cohort"><span class="pre">Cohort</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_patient.html#CohortCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.CohortCreator.process" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -324,13 +327,13 @@ and <a class="reference internal" href="gpsea.model.html#gpsea.model.Genotype" t
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.PhenopacketPatientCreator.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Phenopacket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing._audit.Notepad"><span class="pre">Notepad</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_phenopacket.html#PhenopacketPatientCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PhenopacketPatientCreator.process" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Phenopacket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Notepad</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_phenopacket.html#PhenopacketPatientCreator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PhenopacketPatientCreator.process" title="Link to this definition"></a></dt>
 <dd><p>Creates a Patient from the data in a given Phenopacket</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pp</strong> (<em>Phenopacket</em>) – A Phenopacket object</p></li>
-<li><p><strong>notepad</strong> (<a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing.Notepad"><em>Notepad</em></a>) – notepad to write down the issues</p></li>
+<li><p><strong>notepad</strong> (<em>Notepad</em>) – notepad to write down the issues</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -412,7 +415,7 @@ The value must be one of <cite>{‘permissive’, ‘lenient’, ‘strict’}</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.preprocessing.PreprocessingValidationResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PreprocessingValidationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.NotepadTree" title="gpsea.preprocessing._audit.NotepadTree"><span class="pre">NotepadTree</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_api.html#PreprocessingValidationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PreprocessingValidationResult" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">PreprocessingValidationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Notepad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_api.html#PreprocessingValidationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PreprocessingValidationResult" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The result of input validation of patient data.</p>
 <dl class="py property">
@@ -435,7 +438,7 @@ The value must be one of <cite>{‘permissive’, ‘lenient’, ‘strict’}</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.PreprocessingValidationResult.summarize">
-<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file:</span> <span class="pre">~io.TextIOBase</span> <span class="pre">=</span> <span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_api.html#PreprocessingValidationResult.summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file:</span> <span class="pre">~typing.TextIO</span> <span class="pre">=</span> <span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_api.html#PreprocessingValidationResult.summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="Link to this definition"></a></dt>
 <dd><p>Summarize the validation results into the provided <cite>file</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -866,267 +869,6 @@ both a <em>gene</em> ID and a specific <em>transcript</em> ID.</p>
 <dt class="sig sig-object py" id="gpsea.preprocessing.VVMultiCoordinateService.parse_multiple">
 <span class="sig-name descname"><span class="pre">parse_multiple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.13)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptCoordinates" title="gpsea.model._tx.TranscriptCoordinates"><span class="pre">TranscriptCoordinates</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vv.html#VVMultiCoordinateService.parse_multiple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VVMultiCoordinateService.parse_multiple" title="Link to this definition"></a></dt>
 <dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Auditor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">Auditor</span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Auditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Auditor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">IN</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">OUT</span></code>]</p>
-<p><cite>Auditor</cite> checks the inputs for sanity issues and relates the issues with sanitized inputs
-as <code class="xref py py-class docutils literal notranslate"><span class="pre">SanitationResults</span></code>.</p>
-<p>The auditor may sanitize the input as a matter of discretion and returns the input as <cite>OUT</cite>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Auditor.prepare_notepad">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_notepad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.preprocessing.NotepadTree" title="gpsea.preprocessing._audit.NotepadTree"><span class="pre">NotepadTree</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Auditor.prepare_notepad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Auditor.prepare_notepad" title="Link to this definition"></a></dt>
-<dd><p>Prepare a <a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing.Notepad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Notepad</span></code></a> for recording issues and errors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>label</strong> – a <cite>str</cite> with the top-level section label.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an instance of <a class="reference internal" href="#gpsea.preprocessing.NotepadTree" title="gpsea.preprocessing.NotepadTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotepadTree</span></code></a>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#gpsea.preprocessing.NotepadTree" title="gpsea.preprocessing.NotepadTree">NotepadTree</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Auditor.process">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notepad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing._audit.Notepad"><span class="pre">Notepad</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OUT</span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Auditor.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Auditor.process" title="Link to this definition"></a></dt>
-<dd><p>Audit and sanitize the <cite>data</cite>, record the issues to the <cite>notepad</cite> and return the sanitized data.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.preprocessing.DataSanityIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">DataSanityIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.Level" title="gpsea.preprocessing._audit.Level"><span class="pre">Level</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#DataSanityIssue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.DataSanityIssue" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>DataSanityIssue</cite> summarizes an issue found in the input data.</p>
-<p>The issue has a <cite>level</cite>, a <cite>message</cite> with human-friendly description, and an optional <cite>solution</cite>
-for removing the issue.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.DataSanityIssue.level">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.preprocessing.Level" title="gpsea.preprocessing._audit.Level"><span class="pre">Level</span></a></em><a class="headerlink" href="#gpsea.preprocessing.DataSanityIssue.level" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.DataSanityIssue.message">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.preprocessing.DataSanityIssue.message" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.DataSanityIssue.solution">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.preprocessing.DataSanityIssue.solution" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Level">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">Level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Level" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>An enum to represent severity of the <a class="reference internal" href="#gpsea.preprocessing.DataSanityIssue" title="gpsea.preprocessing.DataSanityIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSanityIssue</span></code></a>.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Level.WARN">
-<span class="sig-name descname"><span class="pre">WARN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#gpsea.preprocessing.Level.WARN" title="Link to this definition"></a></dt>
-<dd><p>Warning is an issue when something not entirely right. However, unlike <a class="reference internal" href="#gpsea.preprocessing.Level.ERROR" title="gpsea.preprocessing.Level.ERROR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Level.ERROR</span></code></a>, the analysis should
-complete albeit with sub-optimal results 😧.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Level.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#gpsea.preprocessing.Level.ERROR" title="Link to this definition"></a></dt>
-<dd><p>Error is a serious issue in the input data and the downstream analysis may not complete or the analysis results
-may be malarkey 😱.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">Notepad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Record issues encountered during parsing/validation of a hierarchical data structure.</p>
-<p>The issues can be organized in sections. <cite>Notepad</cite> keeps track of issues in one section
-and the subsections can be created by calling <a class="reference internal" href="#gpsea.preprocessing.Notepad.add_subsection" title="gpsea.preprocessing.Notepad.add_subsection"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_subsection()</span></code></a>. The function returns
-an instance responsible for issues of a subsection.</p>
-<p>A collection of the issues from the current section are available via <a class="reference internal" href="#gpsea.preprocessing.Notepad.issues" title="gpsea.preprocessing.Notepad.issues"><code class="xref py py-attr docutils literal notranslate"><span class="pre">issues</span></code></a> property
-and the convenience functions provide iterators over error and warnings.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.add_subsection">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_subsection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing._audit.Notepad"><span class="pre">Notepad</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.add_subsection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.add_subsection" title="Link to this definition"></a></dt>
-<dd><p>Add a labeled subsection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a notepad for recording issues within the subsection.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing.Notepad">Notepad</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.label">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.preprocessing.Notepad.label" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with the section label.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.issues">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.preprocessing.DataSanityIssue" title="gpsea.preprocessing._audit.DataSanityIssue"><span class="pre">DataSanityIssue</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.preprocessing.Notepad.issues" title="Link to this definition"></a></dt>
-<dd><p>Get an iterable with the issues of the current section.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.preprocessing.Level" title="gpsea.preprocessing._audit.Level"><span class="pre">Level</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.add_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add an issue with certain <cite>level</cite>, <cite>message</cite>, and an optional <cite>solution</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.add_error">
-<span class="sig-name descname"><span class="pre">add_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.add_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.add_error" title="Link to this definition"></a></dt>
-<dd><p>A convenience function for adding an <em>error</em> with a <cite>message</cite> and an optional <cite>solution</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.add_warning">
-<span class="sig-name descname"><span class="pre">add_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.add_warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.add_warning" title="Link to this definition"></a></dt>
-<dd><p>A convenience function for adding a <em>warning</em> with a <cite>message</cite> and an optional <cite>solution</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.errors">
-<span class="sig-name descname"><span class="pre">errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.preprocessing.DataSanityIssue" title="gpsea.preprocessing._audit.DataSanityIssue"><span class="pre">DataSanityIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.errors" title="Link to this definition"></a></dt>
-<dd><p>Iterate over the errors of the current section.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.warnings">
-<span class="sig-name descname"><span class="pre">warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.preprocessing.DataSanityIssue" title="gpsea.preprocessing._audit.DataSanityIssue"><span class="pre">DataSanityIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.warnings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.warnings" title="Link to this definition"></a></dt>
-<dd><p>Iterate over the warnings of the current section.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.error_count">
-<span class="sig-name descname"><span class="pre">error_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.error_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.error_count" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>count of errors found in this section.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.Notepad.warning_count">
-<span class="sig-name descname"><span class="pre">warning_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#Notepad.warning_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.Notepad.warning_count" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>count of warnings found in this section.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">NotepadTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing._audit.Notepad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Notepad</span></code></a></p>
-<p><cite>NotepadTree</cite> implements <a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing.Notepad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Notepad</span></code></a> using a tree where each tree node corresponds to a (sub)section. The node
-can have <cite>0..n</cite> children.</p>
-<p>Each node has a <code class="xref py py-attr docutils literal notranslate"><span class="pre">label</span></code>, a collection of issues, and children with subsections. For convenience, the node
-has <a class="reference internal" href="#gpsea.preprocessing.NotepadTree.level" title="gpsea.preprocessing.NotepadTree.level"><code class="xref py py-attr docutils literal notranslate"><span class="pre">level</span></code></a> to correspond to the depth of the node within the tree (the level of the root node is <cite>0</cite>).</p>
-<p>The nodes can be accessed via <a class="reference internal" href="#gpsea.preprocessing.NotepadTree.children" title="gpsea.preprocessing.NotepadTree.children"><code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code></a> property or through convenience methods for tree traversal, either
-using the visitor pattern (<a class="reference internal" href="#gpsea.preprocessing.NotepadTree.visit" title="gpsea.preprocessing.NotepadTree.visit"><code class="xref py py-func docutils literal notranslate"><span class="pre">visit()</span></code></a>) or by iterating over the nodes via <a class="reference internal" href="#gpsea.preprocessing.NotepadTree.iterate_nodes" title="gpsea.preprocessing.NotepadTree.iterate_nodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">iterate_nodes()</span></code></a>. In both cases,
-the traversal is done in the depth-first fashion.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.children">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.children" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.level">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.level" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.add_subsection">
-<span class="sig-name descname"><span class="pre">add_subsection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.add_subsection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.add_subsection" title="Link to this definition"></a></dt>
-<dd><p>Add a labeled subsection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a notepad for recording issues within the subsection.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#gpsea.preprocessing.Notepad" title="gpsea.preprocessing.Notepad">Notepad</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.visit">
-<span class="sig-name descname"><span class="pre">visit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visitor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.visit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.visit" title="Link to this definition"></a></dt>
-<dd><p>Perform a depth-first search on the tree and call <cite>visitor</cite> with all nodes.
-:param visitor: a callable that takes the current node as a single argument.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.iterate_nodes">
-<span class="sig-name descname"><span class="pre">iterate_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.iterate_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.iterate_nodes" title="Link to this definition"></a></dt>
-<dd><p>Iterate over nodes in the depth-first fashion.</p>
-<p>Returns: a depth-first node iterator.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.has_warnings">
-<span class="sig-name descname"><span class="pre">has_warnings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_subsections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.has_warnings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.has_warnings" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>True</cite> if one or more warnings were found in the current section or its subsections.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.has_errors">
-<span class="sig-name descname"><span class="pre">has_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_subsections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.has_errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.has_errors" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>True</cite> if one or more errors were found in the current section or its subsections.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.preprocessing.NotepadTree.has_errors_or_warnings">
-<span class="sig-name descname"><span class="pre">has_errors_or_warnings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_subsections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_audit.html#NotepadTree.has_errors_or_warnings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.NotepadTree.has_errors_or_warnings" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>True</cite> if one or more errors or warnings were found in the current section or its subsections.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
 
 </dd></dl>
 
