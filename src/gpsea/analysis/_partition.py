@@ -35,7 +35,7 @@ class Partitioning(Summarizable, metaclass=abc.ABCMeta):
         """
         Get a `str` with the name of the variable investigated by the partitioning.
 
-        For instance `Sex`, `Allele groups`, `HPO term`, `Diagnosis`
+        For instance `Sex`, `Allele groups`, `HP:0001250`, `OMIM:256000`
         """
         pass
 

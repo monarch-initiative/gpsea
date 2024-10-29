@@ -71,7 +71,7 @@ class FunctionPhenotypeScorer(PhenotypeScorer):
 
     @property
     def variable_name(self) -> str:
-        return "Score"
+        return "Phenotype score"
 
     def __init__(
         self,

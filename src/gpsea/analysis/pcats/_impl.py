@@ -387,11 +387,12 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         )
 
         # 2 - Apply MTC filter and select p values to MTC
+        cohort_size = sum(1 for _ in cohort)
         mtc_filter_results = self._mtc_filter.filter(
             gt_predicate=gt_predicate,
             ph_predicates=pheno_predicates,
             counts=all_counts,
-            cohort_size=len(cohort),
+            cohort_size=cohort_size,
         )
 
         pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)

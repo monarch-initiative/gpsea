@@ -152,11 +152,11 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
     @property
     def description(self) -> str:
-        return f"Test for presence of {self._query_label}"
+        return f"Test for presence of {self._query_label} [{self._query.value}]"
 
     @property
     def variable_name(self) -> str:
-        return f"{self._query_label} is present"
+        return self._query.value
 
     @property
     def phenotype(self) -> hpotk.TermId:
@@ -257,11 +257,11 @@ class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
     @property
     def description(self) -> str:
-        return "Partition based on a diagnosis"
+        return f"Partition based on a diagnosis of {self._query.value}"
 
     @property
     def variable_name(self) -> str:
-        return f"{self._query.value} was diagnosed"
+        return self._query.value
 
     @property
     def phenotype(self) -> hpotk.TermId:

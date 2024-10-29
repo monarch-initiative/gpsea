@@ -68,11 +68,19 @@ class MeasurementPhenotypeScorer(PhenotypeScorer):
 
     @property
     def description(self) -> str:
-        return self.variable_name
+        return f"Value of {self._label} [{self._identifier.value}]"
 
     @property
     def variable_name(self) -> str:
-        return f"The value of {self._label} [{self._identifier.value}]"
+        return self._identifier.value
+
+    @property
+    def term_id(self) -> hpotk.TermId:
+        return self._identifier
+    
+    @property
+    def label(self) -> str:
+        return self._label
 
     def score(
         self,
