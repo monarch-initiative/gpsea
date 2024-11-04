@@ -1,30 +1,54 @@
 .. _tutorial:
 
+
 ========
 Tutorial
 ========
 
-Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
-The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
-The :ref:`user-guide` contains details about additional methods and functionalities.
+Here we present an example genotype-phenotype (G/P) analysis with GPSEA.
+We assume GPSEA was installed into the active Python environment and
+we encourage the users to execute the code in a Jupyter notebook.
 
+.. note::
+
+  The tutorial illustrates just one of many G/P association analyses made possible by GPSEA.
+  See the :ref:`user-guide` for comprehensive info.
+
+
+.. contents:: Table of Contents
+  :depth: 2
+
+
+**********
+Background
+**********
 
 The tutorial presents an analysis of a cohort of individuals with pathogenic variants in *TBX5* leading to
 `Holt-Oram syndrome MIM:142900 <https://omim.org/entry/142900>`_.
 
 Holt-Oram syndrome is an autosomal dominant disorder characterized by
 upper limb defects, congenital heart defects, and arrhythmias (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
-It has been observed in the literature that congenital defects of the ventricular and atrial septum are more
-common in the truncating than in the missense variants (`PMID:30552424 <https://pubmed.ncbi.nlm.nih.gov/30552424/>`_).
+It has been observed in the literature that congenital defects of the ventricular and atrial septum
+are more common in the truncating than in the missense variants (`PMID:30552424 <https://pubmed.ncbi.nlm.nih.gov/30552424/>`_).
 Additionally, upper limb defects are more frequent in patients with protein-truncating variants (`PMID:38336121 <https://pubmed.ncbi.nlm.nih.gov/38336121/>`_).
 
-To perform the analysis, we curated the literature and created on `GA4GH phenopacket <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_ for each
-affected individual. The phenopackets are made available in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
+We curated the literature and created a `GA4GH phenopacket <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_
+for each affected individual.
+The phenopackets are published in `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
 
 
+*****************
+Analysis Overview
+*****************
 
-The analysis
-~~~~~~~~~~~~
+GPSEA analysis consists of several steps. We start with loading phenopackets
+and the input quality control. Then we generate reports to explore the cohort.
+And 
+
+
+********
+Analysis
+********
 
 For the analysis, the `MANE <https://www.ncbi.nlm.nih.gov/refseq/MANE/>`_ transcript
 (i.e., the "main" biomedically relevant transcript of a gene) should be chosen unless
@@ -61,8 +85,9 @@ We use HPO toolkit to load HPO version `v2024-07-01`:
   Use the latest HPO release by omitting the `release` option.
 
 
-Prepare cohort
-^^^^^^^^^^^^^^
+*****************
+Load phenopackets
+*****************
 
 Now we will load the samples to analyze. We will use the cohort of 156 individuals with mutations in *TBX5*
 whose clinical signs and symptoms were encoded into HPO terms
@@ -101,8 +126,9 @@ We loaded the patient data into a `cohort` which is ready for the next steps.
   See :ref:`input-data` section to learn how to create a cohort from another inputs.
 
 
+**************
 Explore cohort
-^^^^^^^^^^^^^^
+**************
 
 GPSEA helps with gaining insight into the cohort by providing 
 
@@ -191,8 +217,9 @@ with one or more variant alleles (*Count*):
   >>> report.write('docs/report/tbx5_all_variants.html')  # doctest: +SKIP
 
 
+*****************************************
 Prepare genotype and phenotype predicates
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*****************************************
 
 We will create a predicate to bin patients into group
 depending on presence of a single allele of a missense or frameshift variant to test
