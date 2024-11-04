@@ -241,7 +241,7 @@ class Region(typing.Sized):
         """
         return self._end
 
-    def overlaps_with(self, other) -> bool:
+    def overlaps_with(self, other: "Region") -> bool:
         """
         Test if this `Region` overlaps with the `other` `Region`.
 
@@ -250,7 +250,7 @@ class Region(typing.Sized):
         other = Region._check_is_region(other)
         return _a_overlaps_with_b(self.start, self.end, other.start, other.end)
 
-    def contains(self, other) -> bool:
+    def contains(self, other: "Region") -> bool:
         """
         Test if this `Region` contains the `other` region.
 
@@ -279,7 +279,7 @@ class Region(typing.Sized):
         """
         return self._start < pos <= self._end
 
-    def distance_to(self, other) -> int:
+    def distance_to(self, other: "Region") -> int:
         """
         Calculate the number of bases present between this and the `other` region.
 
@@ -301,7 +301,7 @@ class Region(typing.Sized):
         return _is_empty(self._start, self._end)
 
     @staticmethod
-    def _check_is_region(other):
+    def _check_is_region(other: "Region"):
         if not isinstance(other, Region):
             raise ValueError(f'`other` is not instance of `Region`: {type(other)}')
         return other
@@ -431,7 +431,7 @@ class GenomicRegion(Transposable, Region):
         self._contig = contig
         self._strand = strand
         if end > len(self._contig):
-            raise ValueError(f'Genomic region end {end} must not extend '
+            raise ValueError('Genomic region end {end} must not extend '
                              f'beyond contig {self._contig.name} bounds [0,{len(self._contig)}]')
 
     @property
@@ -460,7 +460,7 @@ class GenomicRegion(Transposable, Region):
         else:
             return GenomicRegion(self.contig, self.start_on_strand(other), self.end_on_strand(other), other)
 
-    def overlaps_with(self, other) -> bool:
+    def overlaps_with(self, other: "GenomicRegion") -> bool:
         """
         Test if this `GenomicRegion` overlaps with the other `GenomicRegion`.
 
@@ -484,7 +484,7 @@ class GenomicRegion(Transposable, Region):
         else:
             return _a_overlaps_with_b(self.start, self.end, other.start, other.end)
 
-    def contains(self, other) -> bool:
+    def contains(self, other: "GenomicRegion") -> bool:
         """
         Check if this `GenomicRegion` contains the `other` genomic region.
 
@@ -506,7 +506,7 @@ class GenomicRegion(Transposable, Region):
         else:
             return _a_contains_b(self.start, self.end, other.start, other.end)
 
-    def distance_to(self, other) -> int:
+    def distance_to(self, other: "GenomicRegion") -> int:
         """
         Calculate the number of bases present between this `GenomicRegion` and the `other` genomic region.
 
