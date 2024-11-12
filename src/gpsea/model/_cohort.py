@@ -319,6 +319,16 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
         return set(itertools.chain(phenotype for patient in self._members for phenotype in patient.phenotypes))
+    
+    def count_distinct_hpo_terms(self) -> int:
+        """
+        Get count of distinct HPO terms (either in present or excluded state) seen in the cohort members.
+        """
+        terms = set(
+            itertools.chain(phenotype.identifier for patient in self._members for phenotype in patient.phenotypes)
+        )
+        return len(terms)
+
 
     def all_measurements(self) -> typing.Set[Measurement]:
         """
@@ -331,6 +341,14 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a set of all diseases (observed or excluded) in the cohort members.
         """
         return set(itertools.chain(disease for patient in self._members for disease in patient.diseases))
+
+    def count_with_disease_onset(self) -> int:
+        """
+        Get the count of individuals with recorded disease onset.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: any(d.onset is not None for d in i.diseases),
+        )
 
     def all_variants(self) -> typing.Set[Variant]:
         """
@@ -482,6 +500,65 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
                 return v
         else:
             raise ValueError(f"Variant key {variant_key} not found in cohort.")
+
+    def count_males(self) -> int:
+        """
+        Get the number of males in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.MALE)
+
+    def count_females(self) -> int:
+        """
+        Get the number of females in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.FEMALE)
+
+    def count_unknown_sex(self) -> int:
+        """
+        Get the number of individuals with unknown sex in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.UNKNOWN_SEX)
+
+    def _count_individuals_with_sex(self, sex: Sex) -> int:
+        return self._count_individuals_with_condition(lambda i: i.sex == sex)
+
+    def count_alive(self) -> int:
+        """
+        Get the number of individuals reported to be alive at the time of last encounter.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.is_alive
+        )
+
+    def count_deceased(self) -> int:
+        """
+        Get the number of individuals reported to be deceased.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.is_deceased
+        )
+    
+    def count_unknown_vital_status(self) -> int:
+        """
+        Get the number of individuals with unknown or no reported vital status.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is None or i.vital_status.is_unknown
+        )
+
+    def count_with_age_of_last_encounter(self) -> int:
+        """
+        Get the number of individuals with a known age of last encounter.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.age_of_death is not None
+        )
+
+    def _count_individuals_with_condition(
+        self,
+        predicate: typing.Callable[[Patient], bool],
+    ) -> int:
+        return sum(predicate(individual) for individual in self._members)
 
     def __eq__(self, other):
         return isinstance(other, Cohort) and self._members == other._members
