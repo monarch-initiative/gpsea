@@ -239,10 +239,10 @@
         <li><a href="apidocs/gpsea.analysis.temporal.stats.html#gpsea.analysis.temporal.stats.SurvivalStatistic.compute_pval">(gpsea.analysis.temporal.stats.SurvivalStatistic method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint.compute_survival">compute_survival() (gpsea.analysis.temporal.Endpoint method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_cohort_creator">configure_caching_cohort_creator() (in module gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator">configure_cohort_creator() (in module gpsea.preprocessing)</a>
@@ -274,6 +274,24 @@
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter.count">count() (gpsea.analysis.predicate.genotype.AlleleCounter method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_alive">count_alive() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_deceased">count_deceased() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_distinct_hpo_terms">count_distinct_hpo_terms() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_females">count_females() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_males">count_males() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_unknown_sex">count_unknown_sex() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_unknown_vital_status">count_unknown_vital_status() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_with_age_of_last_encounter">count_with_age_of_last_encounter() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_with_disease_onset">count_with_disease_onset() (gpsea.model.Cohort method)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer">CountingPhenotypeScorer (class in gpsea.analysis.pscore)</a>
 </li>
@@ -1068,6 +1086,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.n_categorizations">n_categorizations() (gpsea.analysis.predicate.PolyPredicate method)</a>
 </li>
+      <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysisResult.n_filtered_out">n_filtered_out() (gpsea.analysis.pcats.HpoTermAnalysisResult method)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.n_significant_for_alpha">n_significant_for_alpha() (gpsea.analysis.MultiPhenotypeAnalysisResult method)</a>
+
+      <ul>
+        <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.n_significant_for_alpha">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult method)</a>
+</li>
+      </ul></li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.n_usable">n_usable (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
 
       <ul>
@@ -1428,6 +1454,12 @@
 </li>
       <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate">sex_predicate() (in module gpsea.analysis.predicate.genotype)</a>
 </li>
+      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.significant_phenotype_indices">significant_phenotype_indices() (gpsea.analysis.MultiPhenotypeAnalysisResult method)</a>
+
+      <ul>
+        <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.significant_phenotype_indices">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult method)</a>
+</li>
+      </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Genotypes.single">single() (gpsea.model.Genotypes static method)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.SKIPPING_GENERAL_TERM">SKIPPING_GENERAL_TERM (gpsea.analysis.mtc_filter.HpoMtcFilter attribute)</a>
@@ -1464,10 +1496,10 @@
       </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.START_LOST">START_LOST (gpsea.model.VariantEffect attribute)</a>
 </li>
-      <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.GenomicRegion.start_on_strand">start_on_strand() (gpsea.model.genome.GenomicRegion method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.GenomicRegion.start_on_strand">start_on_strand() (gpsea.model.genome.GenomicRegion method)</a>
+</li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.START_RETAINED_VARIANT">START_RETAINED_VARIANT (gpsea.model.VariantEffect attribute)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.AnalysisResult.statistic">statistic (gpsea.analysis.AnalysisResult property)</a>

@@ -142,7 +142,7 @@
 
 <span class="sd">        &gt;&gt;&gt; genes = (&#39;SURF1&#39;, &#39;SURF2&#39;,)</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;(affects SURF1 AND affects SURF2)&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -176,7 +176,7 @@
 <span class="sd">        &gt;&gt;&gt; tx_id = &#39;NM_123456.7&#39;</span>
 <span class="sd">        &gt;&gt;&gt; effects = (VariantEffect.MISSENSE_VARIANT, VariantEffect.STOP_GAINED,)</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.any(VariantPredicates.variant_effect(e, tx_id) for e in effects)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -208,7 +208,7 @@
 <span class="sd">        &gt;&gt;&gt; from gpsea.model import VariantEffect</span>
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=&#39;NM_123.4&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;MISSENSE_VARIANT on NM_123.4&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -393,7 +393,7 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.structural_type(&#39;SO:1000029&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;structural type is SO:1000029&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -419,7 +419,7 @@
 <span class="sd">        &gt;&gt;&gt; from gpsea.model import VariantClass</span>
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.variant_class(VariantClass.DEL)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;variant class is DEL&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -483,7 +483,7 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.change_length(&#39;&lt;=&#39;, -10)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;change length &lt;= -10&#39;</span>
 
 <span class="sd">        Args:</span>
@@ -518,7 +518,7 @@
 
 <span class="sd">        &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import VariantPredicates</span>
 <span class="sd">        &gt;&gt;&gt; predicate = VariantPredicates.is_structural_deletion(-20)</span>
-<span class="sd">        &gt;&gt;&gt; predicate.get_question()</span>
+<span class="sd">        &gt;&gt;&gt; predicate.description</span>
 <span class="sd">        &#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -20))&#39;</span>
 
 <span class="sd">        Args:</span>
