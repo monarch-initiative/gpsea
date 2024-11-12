@@ -118,21 +118,28 @@ class FeatureType(enum.Enum):
     A region of interest that cannot be described in other subsections.
     """
 
+    ZINC_FINGER = enum.auto()
+    """
+    A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.
+    """
+
     @staticmethod
     def from_string(category: str) -> "FeatureType":
-        cat_lover = category.lower()
-        if cat_lover == "repeat":
+        cat_lower = category.lower()
+        if cat_lower == "repeat":
             return FeatureType.REGION
-        elif cat_lover == "motif":
+        elif cat_lower == "motif":
             return FeatureType.MOTIF
-        elif cat_lover == "domain":
+        elif cat_lower == "domain":
             return FeatureType.DOMAIN
-        elif cat_lover == "region":
+        elif cat_lower == "region":
             return FeatureType.REGION
-        elif cat_lover == "coiled coil":
+        elif cat_lower == "coiled coil":
             return FeatureType.REGION
-        elif cat_lover == "compositional bias":
+        elif cat_lower == "compositional bias":
             return FeatureType.COMPOSITIONAL_BIAS
+        elif cat_lower == "zinc finger":
+            return FeatureType.ZINC_FINGER
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
