@@ -50,7 +50,7 @@ class TestUniprotJsonToMetadata:
     @pytest.fixture
     def P17010_protein_metadata(
             self,
-            P17010_json_file_path#: str,
+            P17010_json_file_path: str,
     ) -> ProteinMetadata:
         """
         :returns: ProteinMetadata created from a downloaded UniProt JSON file
@@ -96,8 +96,10 @@ class TestUniprotJsonToMetadata:
         assert feature_0.info.name == "Calponin-homology (CH) 1"
 
 
-    def test_ZFX(self,
-                 P17010_protein_metadata):
+    def test_ZFX(
+        self,
+        P17010_protein_metadata: ProteinMetadata,
+    ):
         """
         :[{"type":"Zinc finger",
         "location":{"start":{"value":425,"modifier":"EXACT"},
