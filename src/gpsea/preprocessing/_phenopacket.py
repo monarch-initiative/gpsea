@@ -10,7 +10,7 @@ from stairval.notepad import Notepad
 
 import phenopackets.schema.v2.core.individual_pb2 as ppi
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
-from phenopackets.schema.v2.core.base_pb2 import TimeElement as PPTimeElement
+from phenopackets.schema.v2.core.base_pb2 import TimeElement as PPTimeElement, OntologyClass as PPOntologyClass
 from phenopackets.schema.v2.core.phenotypic_feature_pb2 import PhenotypicFeature as PPPhenotypicFeature
 from phenopackets.schema.v2.core.disease_pb2 import Disease as PPDisease
 from phenopackets.schema.v2.core.measurement_pb2 import Measurement as PPMeasurement
@@ -226,6 +226,16 @@ class PhenopacketVariantCoordinateFinder(
         return structural_type is not None and gene_context is not None
 
 
+class PhenopacketOntologyTermOnsetParser:
+    
+    def process(
+        self,
+        ontology_class: PPOntologyClass,
+        notepad: Notepad,
+    ) -> typing.Optional[Age]:
+        return None
+
+
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     """
     `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`~gpsea.model.Patient`.
@@ -247,6 +257,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         hgvs_coordinate_finder: VariantCoordinateFinder[str],
+        term_onset_parser: typing.Optional[PhenopacketOntologyTermOnsetParser] = None,
     ):
         self._logger = logging.getLogger(__name__)
         # Violates DI, but it is specific to this class, so I'll leave it "as is".
@@ -255,8 +266,12 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
         )
         self._gt_parser = PhenopacketGenotypeParser()
         self._validator = validate_instance(validator, ValidationRunner, 'validator')
+        if term_onset_parser is not None:
+            assert isinstance(term_onset_parser, PhenopacketOntologyTermOnsetParser)
+        self._term_onset_parser = term_onset_parser
         self._phenotype_creator = PhenopacketPhenotypicFeatureCreator(
             hpo=validate_instance(hpo, hpotk.MinimalOntology, 'hpo'),
+            term_onset_parser=term_onset_parser,
         )
         self._functional_annotator = validate_instance(
             functional_annotator, FunctionalAnnotator, "functional_annotator"
@@ -404,9 +419,10 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             else:
                 term_id = hpotk.TermId.from_curie(dis.term.id)
             
-            if dis.HasField("onset"):
-                onset = PhenopacketPatientCreator._parse_time_element(
+            if dis.HasField("onset") and self._term_onset_parser is not None:
+                onset = parse_onset_element(
                     time_element=dis.onset,
+                    term_onset_parser=self._term_onset_parser,
                     notepad=ith_disease_subsection,
                 )
             else:
@@ -423,22 +439,6 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             )
 
         return final_diseases
-    
-    @staticmethod
-    def _parse_time_element(
-        time_element: PPTimeElement,
-        notepad: Notepad,
-    ) -> typing.Optional[Age]:
-        case = time_element.WhichOneof("element")
-        if case == "gestational_age":
-            age = time_element.gestational_age
-            return Age.gestational(weeks=age.weeks, days=age.days)
-        elif case == "age":
-            age = time_element.age
-            return Age.from_iso8601_period(value=age.iso8601duration)
-        else:
-            notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
-            return None
 
     def _add_measurements(
         self,
@@ -508,7 +508,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     ) -> typing.Optional[Age]:
         if individual.HasField("time_at_last_encounter"):
             tale = individual.time_at_last_encounter
-            return PhenopacketPatientCreator._parse_time_element(tale, notepad)
+            return parse_age_element(tale, notepad)
         return None
 
     @staticmethod
@@ -530,7 +530,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
                 status = Status.UNKNOWN
             
             if vital_status.HasField("time_of_death"):
-                age_of_death = PhenopacketPatientCreator._parse_time_element(
+                age_of_death = parse_age_element(
                     time_element=vital_status.time_of_death,
                     notepad=notepad,
                 )
@@ -746,8 +746,10 @@ class PhenopacketPhenotypicFeatureCreator:
     def __init__(
         self,
         hpo: hpotk.MinimalOntology,
+        term_onset_parser: typing.Optional[PhenopacketOntologyTermOnsetParser],
     ):
         self._hpo = hpo
+        self._term_onset_parser = term_onset_parser
 
     def process(
         self,
@@ -795,9 +797,10 @@ class PhenopacketPhenotypicFeatureCreator:
                 f'Replace {term_id} with the primary term ID {term.identifier}',
             )
         
-        if pf.HasField("onset"):
-            onset = PhenopacketPatientCreator._parse_time_element(
+        if pf.HasField("onset") and self._term_onset_parser is not None:
+            onset = parse_onset_element(
                 time_element=pf.onset,
+                term_onset_parser=self._term_onset_parser,
                 notepad=notepad,
             )
         else:
@@ -808,3 +811,41 @@ class PhenopacketPhenotypicFeatureCreator:
             is_observed=not pf.excluded,
             onset=onset,
         )
+
+def parse_onset_element(
+    time_element: PPTimeElement,
+    term_onset_parser: PhenopacketOntologyTermOnsetParser,
+    notepad: Notepad,
+) -> typing.Optional[Age]:
+    """
+    We allow to use `GestationalAge`, `Age` or `OntologyClass` as onset.
+    """
+    case = time_element.WhichOneof("element")
+    if case == "ontology_class":
+        term_onset_parser.process(
+            ontology_class=time_element.ontology_class,
+            notepad=notepad,
+        )
+    else:
+        return parse_age_element(
+            time_element=time_element,
+            notepad=notepad,
+        )
+
+def parse_age_element(
+    time_element: PPTimeElement,
+    notepad: Notepad,
+) -> typing.Optional[Age]:
+    """
+    We allow to use `GestationalAge` or `Age` as age.
+    """
+    case = time_element.WhichOneof("element")
+    if case == "gestational_age":
+        age = time_element.gestational_age
+        return Age.gestational(weeks=age.weeks, days=age.days)
+    elif case == "age":
+        age = time_element.age
+        return Age.from_iso8601_period(value=age.iso8601duration)
+    else:
+        notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
+        return None
