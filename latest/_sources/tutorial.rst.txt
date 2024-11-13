@@ -237,39 +237,20 @@ Testing multiple hypothesis on the same dataset increases the chance of receivin
 However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
 For general use, we recommend using a combination
-of a *Phenotype MTC filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
-Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which
+of a *phenotype MT filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
+Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
+on the most interesting terms (see :ref:`HPO MT filter <hpo-mtc-filter-strategy>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See :ref:`mtc` for more information.
 
-In this example, we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
-with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
-with a false discovery control level at (``mtc_alpha=0.05``):
+>>> from gpsea.analysis.pcats import configure_hpo_term_analysis
+>>> analysis = configure_hpo_term_analysis(hpo)
 
->>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> mtc_filter = HpoMtcFilter.default_filter(hpo)
->>> mtc_correction = 'fdr_bh'
->>> mtc_alpha = 0.05
-
-Choosing the statistical procedure for assessment of association between genotype and phenotype
-groups is the last missing piece of the analysis. We will use Fisher Exact Test:
-
->>> from gpsea.analysis.pcats.stats import FisherExactTest
->>> count_statistic = FisherExactTest()
-
-and we finalize the analysis setup by putting all components together
-into :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
-
->>> from gpsea.analysis.pcats import HpoTermAnalysis
->>> analysis = HpoTermAnalysis(
-...     count_statistic=count_statistic,
-...     mtc_filter=mtc_filter,
-...     mtc_correction=mtc_correction,
-...     mtc_alpha=mtc_alpha,
-... )
+:func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` configures the analysis
+that uses HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) for selecting HPO terms of interest,
+Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for multiple testing correction.
 
 Now we can perform the analysis and investigate the results.
 
