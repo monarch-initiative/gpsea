@@ -227,13 +227,96 @@ class PhenopacketVariantCoordinateFinder(
 
 
 class PhenopacketOntologyTermOnsetParser:
+    """
+    Parser for mapping an onset formatted as an ontology class to the corresponding :class:`~gpsea.model.Age`.
+
+    Each HPO onset includes start and end bounds (e.g. 29th day to 16th year for Pediatric onset) of the onset range
+    and the onset is mapped into the midpoint of the range.
+
+    Use `default_parser` to create the parser for parsing current HPO
+    or provide the curie -> :class:`~gpsea.model.Age` mapping via `__init__`.
+    """
     
+    @staticmethod
+    def default_parser() -> "PhenopacketOntologyTermOnsetParser":
+        # These ranges are horribly general.
+        # Assuming 40 weeks as birth date and 80 years as age of death.
+        weeks_at_birth = 40
+        age_at_death = 80
+        term_id_to_range={
+            'HP:0030674': (Age.last_menstrual_period(), Age.gestational(weeks=weeks_at_birth)),  # Antenatal onset
+            'HP:0011460': (Age.last_menstrual_period(), Age.gestational(weeks=11)),  # Embryonal onset
+            'HP:0011461': (Age.gestational(weeks=11), Age.gestational(weeks=weeks_at_birth)),  # Fetal onset
+            'HP:0034199': (Age.gestational(weeks=11), Age.gestational(weeks=14)),  # Late first trimester onset
+            'HP:0034198': (Age.gestational(weeks=14), Age.gestational(weeks=28)),  # Second trimester onset
+            'HP:0034197': (Age.gestational(weeks=28), Age.gestational(weeks=weeks_at_birth)),  # Third trimester onset
+            
+            'HP:0003577': (Age.birth(), Age.birth()),  # Congenital onset
+            'HP:0003623': (Age.birth(), Age.postnatal_days(29)),  # Neonatal onset
+
+            'HP:0410280': (Age.postnatal_days(29), Age.postnatal_years(16)),  # Pediatric onset
+            'HP:0003593': (Age.postnatal_days(29), Age.postnatal_years(1)),  # Infantile onset
+            'HP:0011463': (Age.postnatal_years(1), Age.postnatal_years(5)),  # Childhood onset
+            'HP:0003621': (Age.postnatal_years(5), Age.postnatal_years(16)),  # Juvenile onset
+
+            'HP:0003581': (Age.postnatal_years(16), Age.postnatal_years(age_at_death)),  # Adult onset
+            'HP:0011462': (Age.postnatal_years(16), Age.postnatal_years(40)),  # Young adult onset
+            'HP:0025708': (Age.postnatal_years(16), Age.postnatal_years(19)),  # Early young adult onset
+            'HP:0025709': (Age.postnatal_years(19), Age.postnatal_years(25)),  # Intermediate young adult onset
+            'HP:0025710': (Age.postnatal_years(25), Age.postnatal_years(40)),  # Late young adult onset
+            
+            'HP:0003596': (Age.postnatal_years(40), Age.postnatal_years(60)),  # Middle age onset
+            'HP:0003584': (Age.postnatal_years(60), Age.postnatal_years(age_at_death)),  # Late onset
+        }
+        return PhenopacketOntologyTermOnsetParser(
+            term_id_to_age={
+                curie: PhenopacketOntologyTermOnsetParser._median_age(start, end)
+                for curie, (start, end) in term_id_to_range.items()
+            },
+        )
+
+    @staticmethod
+    def _median_age(left: Age, right: Age) -> Age:
+        # Assuming right is at or after left
+        days = left.days + ((right.days - left.days) / 2) 
+        if left.is_gestational and right.is_gestational:
+            return Age.gestational_days(days=days)
+        elif left.is_postnatal and right.is_postnatal:
+            return Age.postnatal_days(days=days)
+        else:
+            raise ValueError(f'`left` and `right` must be on the same timeline, but left={left.timeline}, right={right.timeline}`')
+
+    def __init__(
+        self,
+        term_id_to_age: typing.Mapping[str, Age],
+    ):
+        """
+        Create the onset parser from term to age mapping.
+
+        :param term_id_to_age: a mapping from HPO curie (e.g. `HP:0410280`) to the corresponding :class:`~gpsea.model.Age`.
+        """
+        self._term_id_to_age = dict(term_id_to_age)
+
     def process(
         self,
         ontology_class: PPOntologyClass,
         notepad: Notepad,
     ) -> typing.Optional[Age]:
-        return None
+        curie = ontology_class.id       
+        if curie.startswith('HP:'):
+            age = self._term_id_to_age.get(curie, None)
+            if age is None:
+                notepad.add_warning(
+                    f'Unknown onset term {curie}',
+                    solution='Use a term from HPO\'s Onset [HP:0003674] module',
+                )
+            return age
+        else:
+            notepad.add_warning(
+                f'Unsupported ontology class {curie}',
+                solution='Use a term from HPO\'s Onset [HP:0003674] module',
+            )
+            return None
 
 
 class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
