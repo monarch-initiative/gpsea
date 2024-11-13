@@ -13,6 +13,12 @@ from ._temporal import Age
 from ._variant import Variant, VariantInfo
 
 
+I = typing.TypeVar('I', bound=hpotk.model.Identified)
+"""
+Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).
+"""
+
+
 class Status(enum.Enum):
     UNKNOWN = 0
     ALIVE = 1
@@ -162,6 +168,16 @@ class Patient:
         Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
+    
+    def phenotype_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Phenotype]:
+        """
+        Get a phenotype with an identifier or `None` if the individual has no such phenotype.
+        """
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.phenotypes)
 
     @property
     def measurements(self) -> typing.Sequence[Measurement]:
@@ -181,18 +197,8 @@ class Patient:
             representing the term ID of a measurement (e.g. `LOINC:2986-8` for *Testosterone[Mass/Vol]*).
         :returns: the corresponding :class:`Measurement` or `None` if not found in the patient.
         """
-        if isinstance(term_id, str):
-            pass
-        elif isinstance(term_id, hpotk.TermId):
-            term_id = term_id.value
-        else:
-            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
-
-        for m in self._measurements:
-            if m.identifier.value == term_id:
-                return m
-
-        return None
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.measurements)
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:
@@ -200,6 +206,16 @@ class Patient:
         Get the diseases the patient has (not) been diagnosed with.
         """
         return self._diseases
+
+    def disease_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Disease]:
+        """
+        Get a disease with an identifier or `None` if the individual has no such disease.
+        """
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.diseases)
 
     @property
     def variants(self) -> typing.Sequence[Variant]:
@@ -231,6 +247,28 @@ class Patient:
         Get an iterator with diseases whose presence was excluded in the patient.
         """
         return filter(lambda d: not d.is_present, self._diseases)
+
+    @staticmethod
+    def _check_id(
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> hpotk.TermId:
+        if isinstance(term_id, str):
+            return hpotk.TermId.from_curie(term_id)
+        elif isinstance(term_id, hpotk.TermId):
+            return term_id
+        else:
+            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
+        
+    @staticmethod
+    def _find_first_by_id(
+        term_id: hpotk.TermId,
+        items: typing.Iterable[I],
+    ) -> typing.Optional[I]:
+        for m in items:
+            if m.identifier == term_id:
+                return m
+
+        return None
 
     def __str__(self) -> str:
         return (f"Patient("
