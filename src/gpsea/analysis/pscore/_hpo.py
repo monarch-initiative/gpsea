@@ -221,7 +221,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         for term_id in observed_term_ids:
             for desc_tid in self._hpo.graph.get_ancestors(term_id, include_source=True):
                 if desc_tid.value == target_tid:
-                    return  1
+                    return 1
         return 0
 
     def _postnatal_growth_score(
@@ -263,13 +263,13 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         Returns: facial dysmorphism score (between 0 and 2)
 
         """
-        globe_location = 'HP:0100886' # include Hypertelorism and others
+        globe_location = 'HP:0100886'  # include Hypertelorism and others
         lip = 'HP:0000159' # Abnormal lip morphology HP:0000159
         external_nose = 'HP:0010938'
         pinna_morphology = 'HP:0000377'
         facial_shape = 'HP:0001999'  # Abnormal facial shape
-        midface = 'HP:0000309' #Abnormal midface morphology
-        chin = 'HP:0000306' #Abnormality of the chin
+        midface = 'HP:0000309'  # Abnormal midface morphology
+        chin = 'HP:0000306'  # Abnormality of the chin
 
         total_count = self._term_or_descendant_count(target_tid=globe_location, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=lip, observed_term_ids=observed_term_ids)
@@ -298,7 +298,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         Returns:   Non-facial dysmorphism and congenital abnormalities score (between 0 and 2)
 
         """
-        abn_external_genitalia = 'HP:0000811' # Abnormal external genitalia
+        abn_external_genitalia = 'HP:0000811'  # Abnormal external genitalia
         abnormal_hand_morphology = 'HP:0005922'
         abnormal_heart_morphology = 'HP:0001627'
 
