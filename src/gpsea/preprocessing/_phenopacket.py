@@ -502,7 +502,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             else:
                 term_id = hpotk.TermId.from_curie(dis.term.id)
             
-            if dis.HasField("onset") and self._term_onset_parser is not None:
+            if dis.HasField("onset"):
                 onset = parse_onset_element(
                     time_element=dis.onset,
                     term_onset_parser=self._term_onset_parser,
@@ -880,7 +880,7 @@ class PhenopacketPhenotypicFeatureCreator:
                 f'Replace {term_id} with the primary term ID {term.identifier}',
             )
         
-        if pf.HasField("onset") and self._term_onset_parser is not None:
+        if pf.HasField("onset"):
             onset = parse_onset_element(
                 time_element=pf.onset,
                 term_onset_parser=self._term_onset_parser,
@@ -897,7 +897,7 @@ class PhenopacketPhenotypicFeatureCreator:
 
 def parse_onset_element(
     time_element: PPTimeElement,
-    term_onset_parser: PhenopacketOntologyTermOnsetParser,
+    term_onset_parser: typing.Optional[PhenopacketOntologyTermOnsetParser],
     notepad: Notepad,
 ) -> typing.Optional[Age]:
     """
@@ -905,10 +905,13 @@ def parse_onset_element(
     """
     case = time_element.WhichOneof("element")
     if case == "ontology_class":
-        term_onset_parser.process(
-            ontology_class=time_element.ontology_class,
-            notepad=notepad,
-        )
+        if term_onset_parser is None:
+            return None
+        else:
+            return term_onset_parser.process(
+                ontology_class=time_element.ontology_class,
+                notepad=notepad,
+            )
     else:
         return parse_age_element(
             time_element=time_element,
