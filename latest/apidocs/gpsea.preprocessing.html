@@ -634,10 +634,13 @@ This class specifically only works with a RefSeq database ID (e.g. NP_037407.4).
 <dd class="field-odd"><p><strong>protein_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A protein ID</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A sequence of ProteinMetadata objects, or an empty sequence if no data was found.</p>
+<dd class="field-even"><p>A <a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model.ProteinMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadata</span></code></a> corresponding to the input <cite>protein_id</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Sequence[<a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model.ProteinMetadata">ProteinMetadata</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model.ProteinMetadata">ProteinMetadata</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – in case of issues with <cite>protein_id</cite>, I/O issues, or parsing the REST response.</p>
 </dd>
 </dl>
 </dd></dl>

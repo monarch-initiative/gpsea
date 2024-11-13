@@ -204,23 +204,30 @@
 <span class="sd">    A region of interest that cannot be described in other subsections.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">ZINC_FINGER</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="FeatureType.from_string">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FeatureType.from_string">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FeatureType&quot;</span><span class="p">:</span>
-        <span class="n">cat_lover</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span>
+        <span class="n">cat_lower</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
-        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;motif&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;motif&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">MOTIF</span>
-        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">DOMAIN</span>
-        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;region&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;region&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
-        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;coiled coil&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;coiled coil&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">REGION</span>
-        <span class="k">elif</span> <span class="n">cat_lover</span> <span class="o">==</span> <span class="s2">&quot;compositional bias&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;compositional bias&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">COMPOSITIONAL_BIAS</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;zinc finger&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">ZINC_FINGER</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized protein feature type: &quot;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
 </div>
@@ -467,19 +474,16 @@
 
         <span class="n">regions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">region_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
-                <span class="n">locus</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
-                <span class="n">region_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># convert to 0-based coordinates</span>
-                <span class="n">region_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
-                <span class="n">finfo</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">region_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">region_end</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">pfeature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">finfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">)</span>
-                <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfeature</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">feature_exception</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse feature: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">feature_exception</span><span class="p">)</span><span class="si">}</span><span class="s2"> (skipping)&quot;</span><span class="p">)</span>
+            <span class="n">region_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+            <span class="n">locus</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+            <span class="n">region_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># convert to 0-based coordinates</span>
+            <span class="n">region_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">locus</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+            <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+            <span class="n">finfo</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">region_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">region_end</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">pfeature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">finfo</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">)</span>
+            <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfeature</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
             <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
