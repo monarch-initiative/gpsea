@@ -178,6 +178,29 @@
         <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">),</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Age.last_menstrual_period">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.last_menstrual_period">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">last_menstrual_period</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Age of an individual at last menstrual period.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LAST_MENSTRUAL_PERIOD</span></div>
+
+
+<div class="viewcode-block" id="Age.gestational_days">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.gestational_days">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gestational_days</span><span class="p">(</span><span class="n">days</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a gestational age corresponding to the number of `days`</span>
+<span class="sd">        since the last menstrual period.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">days</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Age.birth">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.birth">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -191,8 +214,14 @@
 <div class="viewcode-block" id="Age.postnatal_days">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Age.postnatal_days">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">postnatal_days</span><span class="p">(</span><span class="n">days</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">days</span><span class="p">),</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">postnatal_days</span><span class="p">(</span><span class="n">days</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Age&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a postnatal age corresponding to the number of `days`</span>
+<span class="sd">        since birth.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">days</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Age.postnatal_years">
@@ -376,6 +405,7 @@
 
 
 <span class="n">BIRTH</span> <span class="o">=</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">POSTNATAL</span><span class="p">)</span>
+<span class="n">LAST_MENSTRUAL_PERIOD</span> <span class="o">=</span> <span class="n">Age</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">timeline</span><span class="o">=</span><span class="n">Timeline</span><span class="o">.</span><span class="n">GESTATIONAL</span><span class="p">)</span>
 </pre></div>
 
            </div>

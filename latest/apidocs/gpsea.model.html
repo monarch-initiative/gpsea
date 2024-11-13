@@ -401,6 +401,12 @@ instead of <cite>__init__</cite>.</p>
 <dd><p>Get the phenotypes observed and excluded in the patient.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Patient.phenotype_by_id">
+<span class="sig-name descname"><span class="pre">phenotype_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Phenotype" title="gpsea.model._phenotype.Phenotype"><span class="pre">Phenotype</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Patient.phenotype_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Patient.phenotype_by_id" title="Link to this definition"></a></dt>
+<dd><p>Get a phenotype with an identifier or <cite>None</cite> if the individual has no such phenotype.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.Patient.measurements">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measurements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Measurement" title="gpsea.model._phenotype.Measurement"><span class="pre">Measurement</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.Patient.measurements" title="Link to this definition"></a></dt>
@@ -426,6 +432,12 @@ representing the term ID of a measurement (e.g. <cite>LOINC:2986-8</cite> for <e
 <dt class="sig sig-object py" id="gpsea.model.Patient.diseases">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">diseases</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.Patient.diseases" title="Link to this definition"></a></dt>
 <dd><p>Get the diseases the patient has (not) been diagnosed with.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Patient.disease_by_id">
+<span class="sig-name descname"><span class="pre">disease_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Patient.disease_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Patient.disease_by_id" title="Link to this definition"></a></dt>
+<dd><p>Get a disease with an identifier or <cite>None</cite> if the individual has no such disease.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -634,6 +646,19 @@ Gestational age is always before the postnatal age.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Age.last_menstrual_period">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_menstrual_period</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.last_menstrual_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.last_menstrual_period" title="Link to this definition"></a></dt>
+<dd><p>Age of an individual at last menstrual period.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Age.gestational_days">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gestational_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.gestational_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.gestational_days" title="Link to this definition"></a></dt>
+<dd><p>Create a gestational age corresponding to the number of <cite>days</cite>
+since the last menstrual period.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.birth">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">birth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.birth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.birth" title="Link to this definition"></a></dt>
 <dd><p>Age of an individual at birth.</p>
@@ -641,8 +666,10 @@ Gestational age is always before the postnatal age.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.postnatal_days">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">postnatal_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.postnatal_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.postnatal_days" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">postnatal_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.postnatal_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.postnatal_days" title="Link to this definition"></a></dt>
+<dd><p>Create a postnatal age corresponding to the number of <cite>days</cite>
+since birth.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.postnatal_years">

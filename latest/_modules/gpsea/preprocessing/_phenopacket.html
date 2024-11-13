@@ -88,7 +88,7 @@
 
 <span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.base_pb2</span> <span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span>
+<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.base_pb2</span> <span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span><span class="p">,</span> <span class="n">OntologyClass</span> <span class="k">as</span> <span class="n">PPOntologyClass</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.phenotypic_feature_pb2</span> <span class="kn">import</span> <span class="n">PhenotypicFeature</span> <span class="k">as</span> <span class="n">PPPhenotypicFeature</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
 <span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.measurement_pb2</span> <span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
@@ -310,6 +310,108 @@
 
 
 
+<div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser">[docs]</a>
+<span class="k">class</span> <span class="nc">PhenopacketOntologyTermOnsetParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parser for mapping an onset formatted as an ontology class to the corresponding :class:`~gpsea.model.Age`.</span>
+
+<span class="sd">    Each HPO onset includes start and end bounds (e.g. 29th day to 16th year for Pediatric onset) of the onset range</span>
+<span class="sd">    and the onset is mapped into the midpoint of the range.</span>
+
+<span class="sd">    Use `default_parser` to create the parser for parsing current HPO</span>
+<span class="sd">    or provide the curie -&gt; :class:`~gpsea.model.Age` mapping via `__init__`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser.default_parser">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser.default_parser">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">default_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenopacketOntologyTermOnsetParser&quot;</span><span class="p">:</span>
+        <span class="c1"># These ranges are horribly general.</span>
+        <span class="c1"># Assuming 40 weeks as birth date and 80 years as age of death.</span>
+        <span class="n">weeks_at_birth</span> <span class="o">=</span> <span class="mi">40</span>
+        <span class="n">age_at_death</span> <span class="o">=</span> <span class="mi">80</span>
+        <span class="n">term_id_to_range</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;HP:0030674&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">last_menstrual_period</span><span class="p">(),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">weeks_at_birth</span><span class="p">)),</span>  <span class="c1"># Antenatal onset</span>
+            <span class="s1">&#39;HP:0011460&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">last_menstrual_period</span><span class="p">(),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">11</span><span class="p">)),</span>  <span class="c1"># Embryonal onset</span>
+            <span class="s1">&#39;HP:0011461&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">11</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">weeks_at_birth</span><span class="p">)),</span>  <span class="c1"># Fetal onset</span>
+            <span class="s1">&#39;HP:0034199&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">11</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">14</span><span class="p">)),</span>  <span class="c1"># Late first trimester onset</span>
+            <span class="s1">&#39;HP:0034198&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">28</span><span class="p">)),</span>  <span class="c1"># Second trimester onset</span>
+            <span class="s1">&#39;HP:0034197&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">28</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">weeks_at_birth</span><span class="p">)),</span>  <span class="c1"># Third trimester onset</span>
+            
+            <span class="s1">&#39;HP:0003577&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">birth</span><span class="p">(),</span> <span class="n">Age</span><span class="o">.</span><span class="n">birth</span><span class="p">()),</span>  <span class="c1"># Congenital onset</span>
+            <span class="s1">&#39;HP:0003623&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">birth</span><span class="p">(),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_days</span><span class="p">(</span><span class="mi">29</span><span class="p">)),</span>  <span class="c1"># Neonatal onset</span>
+
+            <span class="s1">&#39;HP:0410280&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_days</span><span class="p">(</span><span class="mi">29</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">16</span><span class="p">)),</span>  <span class="c1"># Pediatric onset</span>
+            <span class="s1">&#39;HP:0003593&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_days</span><span class="p">(</span><span class="mi">29</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>  <span class="c1"># Infantile onset</span>
+            <span class="s1">&#39;HP:0011463&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">5</span><span class="p">)),</span>  <span class="c1"># Childhood onset</span>
+            <span class="s1">&#39;HP:0003621&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">16</span><span class="p">)),</span>  <span class="c1"># Juvenile onset</span>
+
+            <span class="s1">&#39;HP:0003581&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="n">age_at_death</span><span class="p">)),</span>  <span class="c1"># Adult onset</span>
+            <span class="s1">&#39;HP:0011462&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">40</span><span class="p">)),</span>  <span class="c1"># Young adult onset</span>
+            <span class="s1">&#39;HP:0025708&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">19</span><span class="p">)),</span>  <span class="c1"># Early young adult onset</span>
+            <span class="s1">&#39;HP:0025709&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">19</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">25</span><span class="p">)),</span>  <span class="c1"># Intermediate young adult onset</span>
+            <span class="s1">&#39;HP:0025710&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">40</span><span class="p">)),</span>  <span class="c1"># Late young adult onset</span>
+            
+            <span class="s1">&#39;HP:0003596&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">60</span><span class="p">)),</span>  <span class="c1"># Middle age onset</span>
+            <span class="s1">&#39;HP:0003584&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="mi">60</span><span class="p">),</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_years</span><span class="p">(</span><span class="n">age_at_death</span><span class="p">)),</span>  <span class="c1"># Late onset</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">(</span>
+            <span class="n">term_id_to_age</span><span class="o">=</span><span class="p">{</span>
+                <span class="n">curie</span><span class="p">:</span> <span class="n">PhenopacketOntologyTermOnsetParser</span><span class="o">.</span><span class="n">_median_age</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">curie</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="n">term_id_to_range</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_median_age</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">Age</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Age</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Age</span><span class="p">:</span>
+        <span class="c1"># Assuming right is at or after left</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="p">((</span><span class="n">right</span><span class="o">.</span><span class="n">days</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">days</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">left</span><span class="o">.</span><span class="n">is_gestational</span> <span class="ow">and</span> <span class="n">right</span><span class="o">.</span><span class="n">is_gestational</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational_days</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">left</span><span class="o">.</span><span class="n">is_postnatal</span> <span class="ow">and</span> <span class="n">right</span><span class="o">.</span><span class="n">is_postnatal</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">postnatal_days</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`left` and `right` must be on the same timeline, but left=</span><span class="si">{</span><span class="n">left</span><span class="o">.</span><span class="n">timeline</span><span class="si">}</span><span class="s1">, right=</span><span class="si">{</span><span class="n">right</span><span class="o">.</span><span class="n">timeline</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">term_id_to_age</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Age</span><span class="p">],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the onset parser from term to age mapping.</span>
+
+<span class="sd">        :param term_id_to_age: a mapping from HPO curie (e.g. `HP:0410280`) to the corresponding :class:`~gpsea.model.Age`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_id_to_age</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">term_id_to_age</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser.process">
+<a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ontology_class</span><span class="p">:</span> <span class="n">PPOntologyClass</span><span class="p">,</span>
+        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+        <span class="n">curie</span> <span class="o">=</span> <span class="n">ontology_class</span><span class="o">.</span><span class="n">id</span>       
+        <span class="k">if</span> <span class="n">curie</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HP:&#39;</span><span class="p">):</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_id_to_age</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curie</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Unknown onset term </span><span class="si">{</span><span class="n">curie</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="n">solution</span><span class="o">=</span><span class="s1">&#39;Use a term from HPO</span><span class="se">\&#39;</span><span class="s1">s Onset [HP:0003674] module&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">age</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Unsupported ontology class </span><span class="si">{</span><span class="n">curie</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">solution</span><span class="o">=</span><span class="s1">&#39;Use a term from HPO</span><span class="se">\&#39;</span><span class="s1">s Onset [HP:0003674] module&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="PhenopacketPatientCreator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator">[docs]</a>
 <span class="k">class</span> <span class="nc">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">PatientCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]):</span>
@@ -333,6 +435,7 @@
         <span class="n">functional_annotator</span><span class="p">:</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span>
         <span class="n">imprecise_sv_functional_annotator</span><span class="p">:</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
         <span class="n">hgvs_coordinate_finder</span><span class="p">:</span> <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">term_onset_parser</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="c1"># Violates DI, but it is specific to this class, so I&#39;ll leave it &quot;as is&quot;.</span>
@@ -341,8 +444,12 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gt_parser</span> <span class="o">=</span> <span class="n">PhenopacketGenotypeParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">term_onset_parser</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_onset_parser</span><span class="p">,</span> <span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_onset_parser</span> <span class="o">=</span> <span class="n">term_onset_parser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype_creator</span> <span class="o">=</span> <span class="n">PhenopacketPhenotypicFeatureCreator</span><span class="p">(</span>
             <span class="n">hpo</span><span class="o">=</span><span class="n">validate_instance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span> <span class="s1">&#39;hpo&#39;</span><span class="p">),</span>
+            <span class="n">term_onset_parser</span><span class="o">=</span><span class="n">term_onset_parser</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_functional_annotator</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
             <span class="n">functional_annotator</span><span class="p">,</span> <span class="n">FunctionalAnnotator</span><span class="p">,</span> <span class="s2">&quot;functional_annotator&quot;</span>
@@ -494,8 +601,9 @@
                 <span class="n">term_id</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             
             <span class="k">if</span> <span class="n">dis</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;onset&quot;</span><span class="p">):</span>
-                <span class="n">onset</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+                <span class="n">onset</span> <span class="o">=</span> <span class="n">parse_onset_element</span><span class="p">(</span>
                     <span class="n">time_element</span><span class="o">=</span><span class="n">dis</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
+                    <span class="n">term_onset_parser</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_onset_parser</span><span class="p">,</span>
                     <span class="n">notepad</span><span class="o">=</span><span class="n">ith_disease_subsection</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -512,22 +620,6 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">final_diseases</span>
-    
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_time_element</span><span class="p">(</span>
-        <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
-        <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
-        <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
-            <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
-            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
-            <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
-            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_add_measurements</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -597,7 +689,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_at_last_encounter&quot;</span><span class="p">):</span>
             <span class="n">tale</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">time_at_last_encounter</span>
-            <span class="k">return</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span><span class="n">tale</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">parse_age_element</span><span class="p">(</span><span class="n">tale</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
@@ -619,7 +711,7 @@
                 <span class="n">status</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="n">UNKNOWN</span>
             
             <span class="k">if</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_of_death&quot;</span><span class="p">):</span>
-                <span class="n">age_of_death</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+                <span class="n">age_of_death</span> <span class="o">=</span> <span class="n">parse_age_element</span><span class="p">(</span>
                     <span class="n">time_element</span><span class="o">=</span><span class="n">vital_status</span><span class="o">.</span><span class="n">time_of_death</span><span class="p">,</span>
                     <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -836,8 +928,10 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+        <span class="n">term_onset_parser</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_onset_parser</span> <span class="o">=</span> <span class="n">term_onset_parser</span>
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -886,8 +980,9 @@
             <span class="p">)</span>
         
         <span class="k">if</span> <span class="n">pf</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;onset&quot;</span><span class="p">):</span>
-            <span class="n">onset</span> <span class="o">=</span> <span class="n">PhenopacketPatientCreator</span><span class="o">.</span><span class="n">_parse_time_element</span><span class="p">(</span>
+            <span class="n">onset</span> <span class="o">=</span> <span class="n">parse_onset_element</span><span class="p">(</span>
                 <span class="n">time_element</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
+                <span class="n">term_onset_parser</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_onset_parser</span><span class="p">,</span>
                 <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -898,6 +993,47 @@
             <span class="n">is_observed</span><span class="o">=</span><span class="ow">not</span> <span class="n">pf</span><span class="o">.</span><span class="n">excluded</span><span class="p">,</span>
             <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
         <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">parse_onset_element</span><span class="p">(</span>
+    <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
+    <span class="n">term_onset_parser</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">],</span>
+    <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    We allow to use `GestationalAge`, `Age` or `OntologyClass` as onset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;ontology_class&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">term_onset_parser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">term_onset_parser</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+                <span class="n">ontology_class</span><span class="o">=</span><span class="n">time_element</span><span class="o">.</span><span class="n">ontology_class</span><span class="p">,</span>
+                <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parse_age_element</span><span class="p">(</span>
+            <span class="n">time_element</span><span class="o">=</span><span class="n">time_element</span><span class="p">,</span>
+            <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">parse_age_element</span><span class="p">(</span>
+    <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
+    <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    We allow to use `GestationalAge` or `Age` as age.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 
            </div>
