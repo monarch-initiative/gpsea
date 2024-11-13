@@ -167,59 +167,84 @@ The function finds 369 HPO terms that annotate at least one individual,
 including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
-Statistical test
-----------------
+Statistical analysis
+--------------------
 
 We will use :ref:`fisher-exact-test` to test the association
 between genotype and phenotype groups, as described previously.
 
->>> from gpsea.analysis.pcats.stats import FisherExactTest
->>> count_statistic = FisherExactTest()
+In the case of this cohort, we can test association between having a frameshift variant and one of 369 HPO terms.
+However, testing multiple hypotheses on the same dataset increases the risk of finding
+a significant association solely by chance.
+GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, mitigate this risk:
+a phenotype multiple testing (MT) filter and multiple testing correction (MTC).
 
-FET will compute a p value for each genotype phenotype group.
+Phenotype MT filter selects a (sub)set of HPO terms for testing,
+for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifyTermsStrategy`)
+or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
+
+Multiple testing correction then adjusts the nominal p values for the increased risk
+of false positive G/P associations.
+The available MTC procedures are listed in the :ref:`mtc-correction-procedures` section.
+
+We must pick one of these to perform genotype-phenotype analysis.
 
 
-Multiple testing correction
----------------------------
+Default analysis
+^^^^^^^^^^^^^^^^
 
-In the case of this cohort, we could test association between having a frameshift variant and one of 369 HPO terms.
-However, testing multiple hypotheses on the same dataset increases the risk of finding a significant association
-by chance.
-GPSEA uses a two-pronged strategy to mitigate this risk - a phenotype MTC filter and multiple testing correction.
+We recommend using HPO MT filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) as a phenotype MT filter
+and Benjamini-Hochberg for multiple testing correction.
+The default analysis can be configured with :func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` convenience method.
+
+>>> from gpsea.analysis.pcats import configure_hpo_term_analysis
+>>> analysis = configure_hpo_term_analysis(hpo)
+
+
+Custom analysis
+^^^^^^^^^^^^^^^
+
+If the defaults do not work, we can configure the analysis manually.
+First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`):
+
+>>> from gpsea.analysis.mtc_filter import HpoMtcFilter
+>>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=.2)
 
 .. note::
 
-   See the :ref:`mtc` section for more info on multiple testing procedures.
+   See the :ref:`mtc-filters` section for more info on the available MT filters.
 
-Here we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
-with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
-with a false discovery control level set to `0.05` (``mtc_alpha=0.05``):
+then a statistical test (e.g. Fisher Exact test):
 
->>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=0.2)
+>>> from gpsea.analysis.pcats.stats import FisherExactTest
+>>> count_statistic = FisherExactTest()
+
+.. note::
+
+   See the :mod:`gpsea.analysis.pcats.stats` module for the available multiple testing procedures
+   (TL;DR, just Fisher Exact test at this time).
+
+and we finalize the setup by choosing a MTC procedure
+(e.g. `fdr_bh` for Benjamini-Hochberg) along with the MTC alpha:
+
 >>> mtc_correction = 'fdr_bh'
 >>> mtc_alpha = 0.05
 
-
-Final analysis
---------------
-
-We finalize the analysis setup by putting all components together
-into :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
+The final :class:`~gpsea.analysis.pcats.HpoTermAnalysis` is created as:
 
 >>> from gpsea.analysis.pcats import HpoTermAnalysis
 >>> analysis = HpoTermAnalysis(
 ...     count_statistic=count_statistic,
 ...     mtc_filter=mtc_filter,
-...     mtc_correction=mtc_correction,
-...     mtc_alpha=mtc_alpha,
+...     mtc_correction='fdr_bh',
+...     mtc_alpha=0.05,
 ... )
 
 
 Analysis
 ========
 
-We can now execute the analysis:
+We can now test associations between the genotype groups and the HPO terms:
 
 >>> result = analysis.compare_genotype_vs_phenotypes(
 ...     cohort=cohort,
@@ -232,8 +257,8 @@ We can now execute the analysis:
 24
 
 
-Thanks to phenotype MTC filter, we only tested 24 out of 369 terms.
-We can learn more by showing the MTC filter report:
+Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
+We can learn more by showing the MT filter report:
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()

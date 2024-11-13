@@ -24,7 +24,7 @@ from gpsea.model.genome import GRCh37, GRCh38, GenomeBuild
 from ._api import FunctionalAnnotator, PreprocessingValidationResult
 from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
-from ._phenopacket import PhenopacketPatientCreator
+from ._phenopacket import PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 
 from ._protein import (
     ProteinMetadataService,
@@ -44,6 +44,7 @@ def configure_caching_cohort_creator(
     genome_build: str = "GRCh38.p13",
     validation_runner: typing.Optional[ValidationRunner] = None,
     cache_dir: typing.Optional[str] = None,
+    include_ontology_class_onsets: bool = True,
     variant_fallback: str = "VEP",
     timeout: float = 30.0,
 ) -> CohortCreator[Phenopacket]:
@@ -58,6 +59,8 @@ def configure_caching_cohort_creator(
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
         if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.
         In any case, the directory will be created if it does not exist (including non-existing parents).
+    :param include_ontology_class_onsets: `True` if onsets in the ontology class format 
+        (e.g. `HP:0003621` for Juvenile onset) should be included (default `True`).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the REST APIs
@@ -73,6 +76,7 @@ def configure_caching_cohort_creator(
         build, cache_dir, timeout
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
+    term_onset_parser = PhenopacketOntologyTermOnsetParser.default_parser() if include_ontology_class_onsets else None
     pc = PhenopacketPatientCreator(
         hpo=hpo,
         validator=validator,
@@ -80,6 +84,7 @@ def configure_caching_cohort_creator(
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
+        term_onset_parser=term_onset_parser,
     )
 
     return CohortCreator(pc)
@@ -89,6 +94,7 @@ def configure_cohort_creator(
     hpo: hpotk.MinimalOntology,
     genome_build: str = "GRCh38.p13",
     validation_runner: typing.Optional[ValidationRunner] = None,
+    include_ontology_class_onsets: bool = True,
     variant_fallback: str = "VEP",
     timeout: float = 30.0,
 ) -> CohortCreator[Phenopacket]:
@@ -102,6 +108,8 @@ def configure_cohort_creator(
     :param validation_runner: an instance of the validation runner.
      if the data should be cached in `.cache` folder in the current working directory.
      In any case, the directory will be created if it does not exist (including non-existing parents).
+    :param include_ontology_class_onsets: `True` if onsets in the ontology class format 
+        (e.g. `HP:0003621` for Juvenile onset) should be included (default `True`).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the VEP API
@@ -116,6 +124,7 @@ def configure_cohort_creator(
         timeout=timeout,
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
+    term_onset_parser = PhenopacketOntologyTermOnsetParser.default_parser() if include_ontology_class_onsets else None
     pc = PhenopacketPatientCreator(
         hpo=hpo,
         validator=validator,
@@ -123,6 +132,7 @@ def configure_cohort_creator(
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
+        term_onset_parser=term_onset_parser,
     )
 
     return CohortCreator(pc)

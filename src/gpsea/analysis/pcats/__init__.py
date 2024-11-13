@@ -16,16 +16,20 @@ See :ref:`MTC section <mtc>` for more info.
 
 The results are provided as :class:`MultiPhenotypeAnalysisResult`
 (or more specific :class:`HpoTermAnalysisResult` for :class:`HpoTermAnalysis`).
+
+Use :func:`configure_hpo_term_analysis` to configure the HPO term analysis with the default parameters. 
 """
 
 from ._impl import MultiPhenotypeAnalysis, MultiPhenotypeAnalysisResult
 from ._impl import DiseaseAnalysis
 from ._impl import HpoTermAnalysis, HpoTermAnalysisResult
 from ._impl import apply_predicates_on_patients
+from ._config import configure_hpo_term_analysis
 
 __all__ = [
     'MultiPhenotypeAnalysis', 'MultiPhenotypeAnalysisResult',
     'DiseaseAnalysis',
     'HpoTermAnalysis', 'HpoTermAnalysisResult',
     'apply_predicates_on_patients',
+    'configure_hpo_term_analysis',
 ]

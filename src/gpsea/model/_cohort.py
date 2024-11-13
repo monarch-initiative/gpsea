@@ -13,6 +13,12 @@ from ._temporal import Age
 from ._variant import Variant, VariantInfo
 
 
+I = typing.TypeVar('I', bound=hpotk.model.Identified)
+"""
+Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).
+"""
+
+
 class Status(enum.Enum):
     UNKNOWN = 0
     ALIVE = 1
@@ -162,6 +168,16 @@ class Patient:
         Get the phenotypes observed and excluded in the patient.
         """
         return self._phenotypes
+    
+    def phenotype_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Phenotype]:
+        """
+        Get a phenotype with an identifier or `None` if the individual has no such phenotype.
+        """
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.phenotypes)
 
     @property
     def measurements(self) -> typing.Sequence[Measurement]:
@@ -181,18 +197,8 @@ class Patient:
             representing the term ID of a measurement (e.g. `LOINC:2986-8` for *Testosterone[Mass/Vol]*).
         :returns: the corresponding :class:`Measurement` or `None` if not found in the patient.
         """
-        if isinstance(term_id, str):
-            pass
-        elif isinstance(term_id, hpotk.TermId):
-            term_id = term_id.value
-        else:
-            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
-
-        for m in self._measurements:
-            if m.identifier.value == term_id:
-                return m
-
-        return None
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.measurements)
 
     @property
     def diseases(self) -> typing.Sequence[Disease]:
@@ -200,6 +206,16 @@ class Patient:
         Get the diseases the patient has (not) been diagnosed with.
         """
         return self._diseases
+
+    def disease_by_id(
+        self,
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> typing.Optional[Disease]:
+        """
+        Get a disease with an identifier or `None` if the individual has no such disease.
+        """
+        term_id = Patient._check_id(term_id)
+        return Patient._find_first_by_id(term_id, self.diseases)
 
     @property
     def variants(self) -> typing.Sequence[Variant]:
@@ -231,6 +247,28 @@ class Patient:
         Get an iterator with diseases whose presence was excluded in the patient.
         """
         return filter(lambda d: not d.is_present, self._diseases)
+
+    @staticmethod
+    def _check_id(
+        term_id: typing.Union[str, hpotk.TermId],
+    ) -> hpotk.TermId:
+        if isinstance(term_id, str):
+            return hpotk.TermId.from_curie(term_id)
+        elif isinstance(term_id, hpotk.TermId):
+            return term_id
+        else:
+            raise ValueError(f'`term_id` must be a `str` or `hpotk.TermId` but was {type(term_id)}')
+        
+    @staticmethod
+    def _find_first_by_id(
+        term_id: hpotk.TermId,
+        items: typing.Iterable[I],
+    ) -> typing.Optional[I]:
+        for m in items:
+            if m.identifier == term_id:
+                return m
+
+        return None
 
     def __str__(self) -> str:
         return (f"Patient("
@@ -319,6 +357,16 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
         return set(itertools.chain(phenotype for patient in self._members for phenotype in patient.phenotypes))
+    
+    def count_distinct_hpo_terms(self) -> int:
+        """
+        Get count of distinct HPO terms (either in present or excluded state) seen in the cohort members.
+        """
+        terms = set(
+            itertools.chain(phenotype.identifier for patient in self._members for phenotype in patient.phenotypes)
+        )
+        return len(terms)
+
 
     def all_measurements(self) -> typing.Set[Measurement]:
         """
@@ -331,6 +379,14 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         Get a set of all diseases (observed or excluded) in the cohort members.
         """
         return set(itertools.chain(disease for patient in self._members for disease in patient.diseases))
+
+    def count_with_disease_onset(self) -> int:
+        """
+        Get the count of individuals with recorded disease onset.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: any(d.onset is not None for d in i.diseases),
+        )
 
     def all_variants(self) -> typing.Set[Variant]:
         """
@@ -482,6 +538,65 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
                 return v
         else:
             raise ValueError(f"Variant key {variant_key} not found in cohort.")
+
+    def count_males(self) -> int:
+        """
+        Get the number of males in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.MALE)
+
+    def count_females(self) -> int:
+        """
+        Get the number of females in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.FEMALE)
+
+    def count_unknown_sex(self) -> int:
+        """
+        Get the number of individuals with unknown sex in the cohort.
+        """
+        return self._count_individuals_with_sex(Sex.UNKNOWN_SEX)
+
+    def _count_individuals_with_sex(self, sex: Sex) -> int:
+        return self._count_individuals_with_condition(lambda i: i.sex == sex)
+
+    def count_alive(self) -> int:
+        """
+        Get the number of individuals reported to be alive at the time of last encounter.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.is_alive
+        )
+
+    def count_deceased(self) -> int:
+        """
+        Get the number of individuals reported to be deceased.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.is_deceased
+        )
+    
+    def count_unknown_vital_status(self) -> int:
+        """
+        Get the number of individuals with unknown or no reported vital status.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is None or i.vital_status.is_unknown
+        )
+
+    def count_with_age_of_last_encounter(self) -> int:
+        """
+        Get the number of individuals with a known age of last encounter.
+        """
+        return self._count_individuals_with_condition(
+            lambda i: i.vital_status is not None and i.vital_status.age_of_death is not None
+        )
+
+    def _count_individuals_with_condition(
+        self,
+        predicate: typing.Callable[[Patient], bool],
+    ) -> int:
+        return sum(predicate(individual) for individual in self._members)
 
     def __eq__(self, other):
         return isinstance(other, Cohort) and self._members == other._members

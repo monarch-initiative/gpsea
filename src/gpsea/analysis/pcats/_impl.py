@@ -329,6 +329,12 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
         """
         return self._mtc_filter_results
 
+    def n_filtered_out(self) -> int:
+        """
+        Get the number of phenotype terms that were filtered out by the MTC filter.
+        """
+        return sum(result.is_filtered_out() for result in self.mtc_filter_results)
+
     def __eq__(self, other):
         return isinstance(other, HpoTermAnalysisResult) \
             and super(MultiPhenotypeAnalysisResult, self).__eq__(other) \
