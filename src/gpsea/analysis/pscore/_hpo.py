@@ -166,7 +166,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     ) -> float:
         """
         Calculate the dev delay component of the score
-        
+
         Args:
             observed_term_ids: terms observed in patient
 
@@ -177,12 +177,12 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         for t in observed_term_ids:
             if t in self._gdd_tids:
                 return self._gdd_tids[t]
-        
+
         # Intellectual disability
         for t in observed_term_ids:
             if t in self._idd_tids:
                 return self._idd_tids[t]
-        
+
         return 0
 
     def _term_or_descendant(
@@ -202,7 +202,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             if term_id == target_tid \
                or any(ancestor == target_tid for ancestor in self._hpo.graph.get_ancestors(term_id)):
                 return 1
-        
+
         return 0
 
     def _term_or_descendant_count(
@@ -216,14 +216,13 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             observed_term_ids: all terms observed in patient
 
         Returns:
-            the total count of the terms equal to or descending from the target_tid
+            1 if at least one term is equal to or descending from the target_tid, otherwise 0
         """
-        total_count = 0
         for term_id in observed_term_ids:
             for desc_tid in self._hpo.graph.get_ancestors(term_id, include_source=True):
                 if desc_tid.value == target_tid:
-                    total_count += 1
-        return total_count
+                    return  1
+        return 0
 
     def _postnatal_growth_score(
         self,
@@ -231,7 +230,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     ) -> int:
         """
         Calculate the postnatal growth component of the score.
-        
+
         Args:
             observed_term_ids: terms observed in patient
 
@@ -264,14 +263,22 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         Returns: facial dysmorphism score (between 0 and 2)
 
         """
-        hypertelorism = 'HP:0000316'
+        globe_location = 'HP:0100886' # include Hypertelorism and others
+        lip = 'HP:0000159' # Abnormal lip morphology HP:0000159
         external_nose = 'HP:0010938'
         pinna_morphology = 'HP:0000377'
+        facial_shape = 'HP:0001999'  # Abnormal facial shape
+        midface = 'HP:0000309' #Abnormal midface morphology
+        chin = 'HP:0000306' #Abnormality of the chin
 
-        # No need to inspect descendants since Hypertelorism has none.
-        total_count = 1 if hypertelorism in observed_term_ids else 0
+        total_count = self._term_or_descendant_count(target_tid=globe_location, observed_term_ids=observed_term_ids)
+        total_count += self._term_or_descendant_count(target_tid=lip, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=external_nose, observed_term_ids=observed_term_ids)
         total_count += self._term_or_descendant_count(target_tid=pinna_morphology, observed_term_ids=observed_term_ids)
+        total_count += self._term_or_descendant_count(target_tid=facial_shape, observed_term_ids=observed_term_ids)
+        total_count += self._term_or_descendant_count(target_tid=midface, observed_term_ids=observed_term_ids)
+        total_count += self._term_or_descendant_count(target_tid=chin, observed_term_ids=observed_term_ids)
+
         if total_count > 1:
             return 2
         else:
@@ -284,24 +291,20 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         """
         Non-facial dysmorphism and congenital abnormalities component.
         One point is assigned for either the corresponding HPO terms or any of their descendents up to a maximum of 2.
-        
+
         Args:
             observed_term_ids:  terms observed in patient
 
         Returns:   Non-facial dysmorphism and congenital abnormalities score (between 0 and 2)
 
         """
-        hypospadias = 'HP:0000047'
+        abn_external_genitalia = 'HP:0000811' # Abnormal external genitalia
         abnormal_hand_morphology = 'HP:0005922'
         abnormal_heart_morphology = 'HP:0001627'
-        # total_count = len([t for t in observed_term_ids if t == hypospadias])
-        total_count = self._term_or_descendant_count(
-            target_tid=hypospadias, observed_term_ids=observed_term_ids,
-        )
-        total_count += self._term_or_descendant_count(target_tid=abnormal_hand_morphology,
-                                                      observed_term_ids=observed_term_ids)
-        total_count += self._term_or_descendant_count(target_tid=abnormal_heart_morphology,
-                                                      observed_term_ids=observed_term_ids)
+
+        total_count = self._term_or_descendant_count(target_tid=abn_external_genitalia, observed_term_ids=observed_term_ids,)
+        total_count += self._term_or_descendant_count(target_tid=abnormal_hand_morphology, observed_term_ids=observed_term_ids)
+        total_count += self._term_or_descendant_count(target_tid=abnormal_heart_morphology, observed_term_ids=observed_term_ids)
         return min(2, total_count)
 
     def _prenatal_growth_score(
@@ -328,7 +331,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
     def score(self, patient: Patient) -> float:
         """
         Calculate score based on list of strings with term identifiers or observed HPO terms.
-        
+
         Args:
             patient: list of strings with term identifiers or observed HPO terms
 
@@ -342,5 +345,5 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         facial_score = self._facial_dysmorphism_score(observed_term_ids)
         congen_score = self._congenital_score(observed_term_ids)
         prenatal_score = self._prenatal_growth_score(observed_term_ids)
-        
+
         return delay_score + growth_score + facial_score + congen_score + prenatal_score
