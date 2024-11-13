@@ -368,19 +368,16 @@ class ProteinMetadata:
 
         regions = list()
         for feature in data["features"]:
-            try:
-                region_name = feature["description"]
-                locus = feature["location"]
-                region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
-                region_end = int(locus["end"]["value"])
-                feature_type = FeatureType.from_string(feature["type"])
-                finfo = FeatureInfo(
-                    name=region_name, region=Region(start=region_start, end=region_end)
-                )
-                pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
-                regions.append(pfeature)
-            except Exception as feature_exception:
-                print(f"Could not parse feature: {str(feature_exception)} (skipping)")
+            region_name = feature["description"]
+            locus = feature["location"]
+            region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
+            region_end = int(locus["end"]["value"])
+            feature_type = FeatureType.from_string(feature["type"])
+            finfo = FeatureInfo(
+                name=region_name, region=Region(start=region_start, end=region_end)
+            )
+            pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
+            regions.append(pfeature)
 
         return ProteinMetadata(
             protein_id=protein_id,
