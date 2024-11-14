@@ -85,9 +85,6 @@
     and vital status was unreported for {{ cohort.count_unknown_vital_status() | pluralize('individual')}}.
     {% endif %}
 
-    {# HPO terms #}
-    The cohort included {{ cohort.count_distinct_hpo_terms() | pluralize('HPO term') }}.
-
     {# Disease and age at last encounter #}
     {{ cohort.count_with_disease_onset() | pluralize('individual')}} had disease onset information
     and {{ cohort.count_with_age_of_last_encounter() }} had information about the age of last encounter.
@@ -106,10 +103,15 @@
   {% endif %}
 
   {# The most common HPO terms #}
+  <h2>HPO terms</h2>
+  {# HPO terms #}
+  {% set distinct_hpos = cohort.count_distinct_hpo_terms() %}
+  The cohort included {{ distinct_hpos | pluralize('distinct HPO term') }}.
+
+  {% if distinct_hpos > 0 %}
   <table>
     <caption style="color: black;">
-      <h3>Top {{top_hpo_count}} HPO terms</h3>
-      A total of {{ cohort.count_distinct_hpo_terms() }} HPO terms were used to annotated the cohort.
+      Top {{top_hpo_count}} most commonly used HPO terms.
       {% if n_has_onset_info %} {# Optional onset info #}
       {{ n_has_onset_info }} had onset information for at least 20% of individuals.
       {% endif %}
@@ -130,6 +132,7 @@
       {% endfor %}
     </tbody>
   </table>
+  {% endif %}
 
   {# The table is inconsistent. Skip it for now!
   {% if n_has_onset_info > 0 %}
@@ -181,7 +184,7 @@
       {% endfor %}
     </tbody>
   </table>
-  
+
   {# The most common diseases #}
   <table>
     <caption style="color: black;">
@@ -202,7 +205,7 @@
       {% endfor %}
     </tbody>
   </table>
-  
+
   {# The most common variant effects #}
   {% if has_transcript %}
   <table>
@@ -229,4 +232,5 @@
   {% endif %}
 
 </body>
+
 </html>
