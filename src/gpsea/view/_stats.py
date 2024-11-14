@@ -2,21 +2,21 @@ import typing
 
 from collections import Counter
 
-from jinja2 import Environment, PackageLoader
-
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.view._report import GpseaReport, HtmlGpseaReport
 
+from ._base import BaseViewer
 
-class MtcStatsViewer:
+
+class MtcStatsViewer(BaseViewer):
     """
     `MtcStatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook
     or for writing into a standalone HTML file.
     """
 
     def __init__(self):
-        environment = Environment(loader=(PackageLoader('gpsea.view', 'templates')))
-        self._cohort_template = environment.get_template("stats.html")
+        super().__init__()
+        self._cohort_template = self._environment.get_template("stats.html")
 
     def process(
         self,
@@ -24,8 +24,6 @@ class MtcStatsViewer:
     ) -> GpseaReport:
         """
         Create an HTML to present MTC part of the :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`.
-
-        Use the `display(HTML(..))` functions of the IPython package.
 
         Args:
             result (HpoTermAnalysisResult): the result to show
@@ -52,13 +50,15 @@ class MtcStatsViewer:
         issue_to_count = list()
         for mtc_issue, count in sorted(
             counts.items(),
-            key=lambda issue2count: (issue2count[0].code, issue2count[0].reason)
+            key=lambda issue2count: (issue2count[0].code, issue2count[0].reason),
         ):
-            issue_to_count.append({
-                "code": mtc_issue.code,
-                "reason": mtc_issue.reason,
-                "count": count,
-            })
+            issue_to_count.append(
+                {
+                    "code": mtc_issue.code,
+                    "reason": mtc_issue.reason,
+                    "count": count,
+                }
+            )
             n_skipped += count
 
         n_all = len(report.phenotypes)
