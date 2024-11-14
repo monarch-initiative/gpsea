@@ -4,13 +4,13 @@ from collections import namedtuple, defaultdict
 
 import hpotk
 
-from gpsea.model import Cohort, Sex
+from gpsea.model import Cohort
 from ._base import BaseViewer
 from ._report import GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
-
+IdentifiedCount = namedtuple("IdentifiedCount", ("term_id", "label", "count"))
 
 class CohortViewer(BaseViewer):
     """
@@ -26,7 +26,7 @@ class CohortViewer(BaseViewer):
         """
         Args:
             hpo(MinimalOntology): An HPO ontology object from hpo-toolkit
-            top_phenotype_count(int): Maximum number of HPO terms to display in the HTML table (default: 10)
+            top_phenotype_count(int): Maximum number of phenotype items (HPO terms, measurements, ...) to display in the HTML table (default: 10)
             top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)
         """
         super().__init__()
@@ -60,20 +60,11 @@ class CohortViewer(BaseViewer):
         cohort: Cohort,
         transcript_id: typing.Optional[str],
     ) -> typing.Mapping[str, typing.Any]:
+        hpo_counts = self._summarize_hpo_counts(cohort)
 
-        hpo_counts = list()
-        for term_id, count in cohort.list_present_phenotypes(top=self._top_phenotype_count):
-            label = self._hpo.get_term_name(term_id)
-            if label is None:
-                label = 'N/A'
+        measurement_counts = self._summarize_measurement_counts(cohort)
 
-            hpo_counts.append(
-                {
-                    "label": label,
-                    "term_id": term_id,
-                    "count": count,
-                }
-            )
+        disease_counts = self._summarize_disease_counts(cohort)
 
         variant_counts = list()
         variant_to_display_d = CohortViewer._get_variant_description(cohort, transcript_id)
@@ -96,22 +87,6 @@ class CohortViewer(BaseViewer):
                     "hgvsc": hgvsc,
                     "hgvsp": hgvsp,
                     "effects": effects,
-                }
-            )
-
-        disease_counts = list()
-        for disease_id, disease_count in cohort.list_all_diseases():
-            label = "Unknown"
-            for disease in cohort.all_diseases():
-                if disease.identifier.value == disease_id:
-                    label = disease.name
-                    break
-                
-            disease_counts.append(
-                {
-                    "disease_id": disease_id,
-                    "label": label,
-                    "count": disease_count,
                 }
             )
 
@@ -175,15 +150,73 @@ class CohortViewer(BaseViewer):
         return {
             "cohort": cohort,
             "transcript_id": transcript_id,
-            "top_hpo_count": self._top_phenotype_count,
+            "has_transcript": has_transcript,
+            "top_phenotype_count": self._top_phenotype_count,
             "hpo_counts": hpo_counts,
+            "measurement_counts": measurement_counts,
+            "disease_counts": disease_counts,
             "top_var_count": self._top_variant_count,
             "var_counts": variant_counts,
-            # "n_diseases": n_diseases,
-            "disease_counts": disease_counts,
-            "has_transcript": has_transcript,
             "variant_effects": variant_effects,
         }
+
+    def _summarize_hpo_counts(
+        self,
+        cohort: Cohort,
+    ) -> typing.Sequence[IdentifiedCount]:
+        counts = list()
+        for term_id, count in cohort.list_present_phenotypes(
+            top=self._top_phenotype_count,
+        ):
+            label = self._hpo.get_term_name(term_id)
+            if label is None:
+                label = 'N/A'
+
+            counts.append(
+                IdentifiedCount(
+                    term_id=term_id,
+                    label=label,
+                    count=count,
+                )
+            )
+            
+        return counts
+    
+    def _summarize_measurement_counts(
+        self,
+        cohort: Cohort,
+    ) -> typing.Sequence[IdentifiedCount]:
+        measurement2label = {
+            m.identifier.value: m.name for m in cohort.all_measurements()
+        }
+        
+        return [
+            IdentifiedCount(
+                term_id=measurement_id,
+                label=measurement2label.get(measurement_id, "N/A"),
+                count=count,
+            ) for measurement_id, count in cohort.list_measurements(
+                top=self._top_phenotype_count,
+            )
+        ]  
+    
+    def _summarize_disease_counts(
+        self,
+        cohort: Cohort,
+    ) -> typing.Sequence[IdentifiedCount]:
+        disease2label = {
+            m.identifier.value: m.name for m in cohort.all_diseases()
+        }
+
+        return [
+            IdentifiedCount(
+                term_id=disease_id,
+                label=disease2label.get(disease_id, "N/A"),
+                count=count,
+            ) for disease_id, count in cohort.list_all_diseases(
+                top=self._top_phenotype_count,
+            )
+        ]        
 
     @staticmethod
     def _get_variant_description(
