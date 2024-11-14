@@ -7,7 +7,7 @@ from gpsea.model import Cohort
 from gpsea.view import CohortViewer
 
 
-# @pytest.mark.skip("Just for manual testing and debugging")
+@pytest.mark.skip("Just for manual testing and debugging")
 class TestCohortViewer:
 
     @pytest.fixture
