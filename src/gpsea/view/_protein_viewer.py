@@ -34,6 +34,7 @@ class ProteinVariantViewer(BaseViewer):
         protein_metadata: ProteinMetadata,
         tx_id: str,
     ):
+        super().__init__()
         self._cohort_template = self._environment.get_template("protein.html")
         self._protein_meta = protein_metadata
         self._tx_id = tx_id
