@@ -100,7 +100,7 @@
   </p>
 
   {% if cohort.get_excluded_count() > 0 %}
-  <p>Not able to load {{ cohort.get_excluded_count() }} individuals.</p>
+  <p>Not able to load {{ cohort.get_excluded_count() | pluralize('individual') }}.</p>
   {% else %}
   <p>No errors encountered.</p>
   {% endif %}
