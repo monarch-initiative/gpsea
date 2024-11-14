@@ -4,6 +4,11 @@
 Tutorial
 ========
 
+.. doctest::
+  :hide:
+
+  >>> _overwrite = True
+
 Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
 The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.
 The :ref:`user-guide` contains details about additional methods and functionalities.
@@ -120,10 +125,10 @@ The summary report provides an overview about the HPO terms, variants, diseases,
 .. raw:: html
   :file: report/tbx5_cohort_info.html
 
-.. doctest:: tutorial
+.. doctest::
   :hide:
 
-  >>> report.write('docs/report/tbx5_cohort_info.html')  # doctest: +SKIP
+  >>> if _overwrite: report.write('docs/report/tbx5_cohort_info.html')
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -159,11 +164,10 @@ and we follow with plotting the diagram of the mutations on the protein:
    :align: center
    :width: 600px
 
-.. doctest:: tutorial
+.. doctest::
   :hide:
 
-  >>> fig.tight_layout()
-  >>> fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')  # doctest: +SKIP
+  >>> if _overwrite: fig.tight_layout(); fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')
 
 
 .. _show-cohort-variants:
@@ -188,7 +192,7 @@ with one or more variant alleles (*Count*):
 .. doctest:: tutorial
   :hide:
 
-  >>> report.write('docs/report/tbx5_all_variants.html')  # doctest: +SKIP
+  >>> if _overwrite: report.write('docs/report/tbx5_all_variants.html')
 
 
 Prepare genotype and phenotype predicates
@@ -282,7 +286,7 @@ by exploring the phenotype MTC filtering report.
 .. doctest:: tutorial
   :hide:
 
-  >>> mtc_report.write('docs/report/tbx5_frameshift_vs_missense.mtc_report.html')  # doctest: +SKIP
+  >>> if _overwrite: mtc_report.write('docs/report/tbx5_frameshift_vs_missense.mtc_report.html')
 
 
 and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
@@ -298,7 +302,7 @@ and these are the tested HPO terms ordered by the p value corrected with the Ben
 .. doctest:: tutorial
   :hide:
 
-  >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+  >>> if _overwrite: summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')
 
 We see that several HPO terms are significantly associated
 with presence of a frameshift variant in *TBX5*.

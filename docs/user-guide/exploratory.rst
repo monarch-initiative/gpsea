@@ -4,6 +4,11 @@
 Cohort exploratory analysis
 ===========================
 
+.. doctest::
+  :hide:
+
+  >>> _overwrite = True
+
 As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
 these in a targeted way. Performing numerous tests without any specific plan comes with an increased
 danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
@@ -111,7 +116,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_cohort_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_cohort_info.html')
 
 
 Distribution of variants across protein domains
@@ -149,7 +154,7 @@ with variants in the *TBX5* gene:
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_protein_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_protein_info.html')
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -176,6 +181,7 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 .. doctest:: exploratory
     :hide:
 
-    >>> fig.tight_layout()
-    >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
+    >>> if _overwrite:
+    ...     fig.tight_layout()
+    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')
 

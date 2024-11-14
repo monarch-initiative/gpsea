@@ -5,6 +5,10 @@
 Compare genotype and phenotype groups
 =====================================
 
+.. doctest::
+  :hide:
+
+  >>> _overwrite = True
 
 .. _fisher-exact-test:
 
@@ -271,7 +275,7 @@ We can learn more by showing the MT filter report:
 .. doctest:: phenotype-groups
    :hide:
 
-   >>> mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')  # doctest: +SKIP
+   >>> if _overwrite: mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')
 
 
 Genotype phenotype associations
@@ -291,7 +295,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 .. doctest:: phenotype-groups
    :hide:
 
-   >>> summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')  # doctest: +SKIP
+   >>> if _overwrite: summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')
 
 
 The table shows that several HPO terms are significantly associated

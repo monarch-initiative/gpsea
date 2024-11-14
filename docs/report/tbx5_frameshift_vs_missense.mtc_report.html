@@ -1,56 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <title>Cohort</title>
-  <style>table {
-    border-collapse: collapse;
-    margin: 25px 0;
-      font-size: 0.9em;
-      font-family: sans-serif;
-      min-width: 400px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  }
+    <meta charset="utf-8">
+    <title>Cohort</title>
+    <style>
+        :root {
+            /** Light theme */
+            --color-light-text: black;
+            --color-light-link-text: rgb(0, 118, 187);
+            --color-light-link-hover: rgb(0, 99, 156);
 
+            --color-light-primary-a0: #2f5170;
+            --color-light-primary-a10: #4778a5;
+            --color-light-primary-a20: #5995ce;
+            --color-light-primary-a60: LightSkyBlue;
 
-  th {
-    background-color: #f2f2f2;
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 2px;
-  }
+            --color-light-surface-a0: #fcfcfc;
+            --color-light-surface-a10: #ffffff;
+            --color-light-surface-a20: #b3b3b3;
+            --color-light-surface-a30: #8d8d8d;
+            --color-light-surface-a40: #646464;
+            --color-light-surface-a50: #000000;
 
-  tr {
-    border: 1px solid #dddddd;
-  }
+            /** Dark theme */
+            --color-dark-text: rgb(240, 240, 240);
+            --color-dark-link-text: rgb(240, 240, 240);
+            --color-dark-link-hover: lightblue;
 
-  td {
-    padding: 2px;
-    font-weight: bold;
-  }
+            --color-dark-primary-a0: #64a3df;
+            --color-dark-primary-a10: #5286b8;
+            --color-dark-primary-a20: #375c7e;
+            --color-dark-primary-a60: #233b52;
 
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
+            --color-dark-surface-a0: #121212;
+            --color-dark-surface-a10: #282828;
+            --color-dark-surface-a20: #3f3f3f;
+            --color-dark-surface-a30: #575757;
+            --color-dark-surface-a40: #717171;
+            --color-dark-surface-a50: #8b8b8b;
+        }
 
-  .table td,tr {
-    text-align: left;
-}
+        body {
+            max-width: 1600px;
+        }
 
-.table td:first-child, tr:first-child {
-    text-align: left;
-}
+        #cohort-summary {
+            max-width: 800px;
+        }
 
-  </style>
+        td {
+            padding: 5px 0;
+        }
+
+        .cards {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: top;
+            gap: 1rem;
+        }
+
+        .card {
+            border-radius: 10px;
+            padding: 0px 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        table .column-1 {
+            text-align: left;
+        }
+
+        table td,
+        tr {
+            text-align: right;
+            padding: 0px 5px;
+        }
+
+        .lft {
+            text-align: left;
+        }
+
+        caption {
+            caption-side: top;
+            text-align: left;
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
+
+        th {
+            text-align: left;
+            padding: 2px;
+            font-weight: bold;
+            font-size: 120%;
+        }
+
+        /* Light and dark mode */
+        @media (prefers-color-scheme: light) {
+            body {
+                color: var(--color-light-text);
+                background-color: var(--color-light-surface-a0);
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                color: var(--color-light-primary-a0);
+            }
+
+            a {
+                color: var(--color-light-link-text);
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: var(--color-light-link-hover);
+                font-weight: bold;
+            }
+
+            .card {
+                background: var(--color-light-surface-a10);
+                border: 1px solid var(--color-light-surface-a30);
+                box-shadow: 0 4px 8px var(--color-light-surface-a30);
+            }
+
+            table {
+                border: 1px solid var(--color-light-primary-a60);
+            }
+
+            th {
+                color: var(--color-light-text);
+                background-color: var(--color-light-primary-a60);
+            }
+
+            tr:nth-child(even) {
+                background-color: var(--color-light-surface-a10);
+            }
+
+            tr:nth-child(odd) {
+                background-color: var(--color-light-surface-a20);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: var(--color-dark-text);
+                background-color: var(--color-dark-surface-a0);
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                color: var(--color-dark-primary-a0);
+            }
+
+            a {
+                color: var(--color-dark-link-text);
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: var(--color-dark-link-hover);
+                font-weight: bold;
+            }
+
+            .card {
+                background: var(--color-dark-surface-a10);
+                border: 1px solid var(--color-dark-surface-a20);
+                box-shadow: 0 4px 8px #000;
+            }
+
+            table {
+                border: 1px solid var(--color-dark-primary-a60);
+            }
+
+            th {
+                color: var(--color-dark-text);
+                background-color: var(--color-dark-primary-a60);
+            }
+
+            tr:nth-child(even) {
+                background-color: var(--color-dark-surface-a10);
+            }
+
+            tr:nth-child(odd) {
+                background-color: var(--color-dark-surface-a20);
+            }
+        }
+    </style>
 </head>
+
 
 <body>
   <h1>Phenotype testing report</h1>
-  <p>Phenotype MTC filter: <em>HPO MTC filter</em></p>
-  <p>Multiple testing correction: <em>fdr_bh</em></p>
-  <p>Performed statistical tests for 16 out of the total of 369 HPO terms.</p>
-    <table>
-      <caption>Using <em>HPO MTC filter</em>, 353 term(s) were omitted from statistical analysis.</caption>
+  <div class="cards">
+    <div class="card">
+      <ul>
+        <li>Phenotype MTC filter: <em>HPO MTC filter</em></li>
+        <li>Multiple testing correction: <em>fdr_bh</em></li>
+      </ul>
+    </div>
+    <div class="card">
+      <table>
         <tbody>
           <tr>
             <th>Code</th>
@@ -77,6 +239,13 @@
           </tr>
           
         </tbody>
-    </table>
+        <caption>
+          Performed statistical tests for 16 out of the total of 369 HPO terms.
+        </caption>
+      </table>
+    </div>
+  </div>
 </body>
+
+
 </html>
