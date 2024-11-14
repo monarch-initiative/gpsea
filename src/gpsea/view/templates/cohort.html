@@ -160,16 +160,18 @@
       {# Genotype #}
       {# The most common variants #}
       <div class="card">
+        <h2>Variants</h2>
+        <p>
+          A total of {{ cohort.all_variant_infos() | count | pluralize('unique variant') }}
+          were identified in the cohort. Variants were annotated with respect to {{ transcript_id }}.
+        </p>
         <table>
           <caption>
             <h3>Top {{top_var_count}} variants</h3>
-            Variants are shown according to {{ transcript_id }}.
-            A total of {{ cohort.all_variant_infos() | count | pluralize('unique variant') }}
-            were identified in the cohort.
           </caption>
           <tbody>
             <tr class="strng">
-              <th>Seen in</th>
+              <th><em>n</em></th>
               <th class="lft">Variant key</th>
               <th>HGVS</th>
               <th>Variant Class</th>
@@ -189,21 +191,23 @@
       {# The most common variant effects #}
       <div class="card">
         {% if has_transcript %}
+        <h2>Variant effects</h2>
+        <p>
+          The effects were predicted for {{ transcript_id }}
+        </p>
         <table>
           <caption>
-            <h3>Variant categories for {{ transcript_id }}</h3>
+            
           </caption>
           <tbody>
             <tr class="strng">
               <th class="lft">Variant effect</th>
-              <th>Annotation count</th>
-              <th>Percent</th>
+              <th>Count</th>
             </tr>
             {% for effect in variant_effects %}
             <tr>
               <td class="lft">{{ effect['effect'] }}</td>
-              <td>{{ effect['count'] }}</td>
-              <td>{{ effect['percent'] }}%</td>
+              <td>{{ effect['count'] }} ({{ effect['percent'] }}%)</td>
             </tr>
             {% endfor %}
           </tbody>
