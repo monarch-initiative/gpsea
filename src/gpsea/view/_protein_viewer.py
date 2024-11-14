@@ -2,12 +2,13 @@ import typing
 
 from dataclasses import dataclass
 
-from jinja2 import Environment, PackageLoader
+
 from collections import defaultdict
 
 from gpsea.model import Cohort, ProteinMetadata
 from gpsea.model.genome import Region
 
+from ._base import BaseViewer
 from ._report import GpseaReport, HtmlGpseaReport
 
 
@@ -24,15 +25,16 @@ class Feature:
     variant_count: int
 
 
-class ProteinVariantViewer:
+class ProteinVariantViewer(BaseViewer):
     """
     Class to create a pretty HTML table to display the protein information in the Jupyter notebook.
     """
-    def __init__(self,
-                 protein_metadata: ProteinMetadata,
-                 tx_id: str) -> None:
-        environment = Environment(loader=(PackageLoader('gpsea.view', 'templates')))
-        self._cohort_template = environment.get_template("protein.html")
+    def __init__(
+        self,
+        protein_metadata: ProteinMetadata,
+        tx_id: str,
+    ):
+        self._cohort_template = self._environment.get_template("protein.html")
         self._protein_meta = protein_metadata
         self._tx_id = tx_id
 
@@ -54,15 +56,16 @@ class ProteinVariantViewer:
     def _prepare_context(self, cohort: Cohort) -> typing.Mapping[str, typing.Any]:
         protein_id = self._protein_meta.protein_id
         protein_label = self._protein_meta.label
-        protein_features = self._protein_meta.protein_features
-        protein_features = sorted(protein_features, key=lambda f: f.info.start)
-        protein_length = self._protein_meta.protein_length
+        protein_features = sorted(self._protein_meta.protein_features, key=lambda f: f.info.start)
+
         # collect variants that are located in the protein features as well as other variants that are located
         # "in-between" the features
-        feature_to_variant_list_d = defaultdict(list)
-        non_feature_to_variant_list = list()
+        feature_to_variants = defaultdict(list)
+        non_feature_count = 0
         n_variants_in_features = 0
 
+        # This iterates over variants as recorded in individuals,
+        # not over *unique* `VariantInfo`s
         for var in cohort.all_variants():
             target_annot = next((x for x in var.tx_annotations if x.transcript_id == self._tx_id), None)
             if target_annot is None:
@@ -87,38 +90,33 @@ class ProteinVariantViewer:
             for feature in protein_features:
                 if feature.info.region.overlaps_with(target_region):
                     found_overlap = True
-                    feature_to_variant_list_d[feature].append(hgvs_p)
+                    feature_to_variants[feature].append(hgvs_p)
             
             if found_overlap:
                 n_variants_in_features += 1
             else:
-                non_feature_to_variant_list.append(hgvs_p)
+                non_feature_count += 1
 
         feature_list = list()
         for feature in protein_features:
-            variant_list = "; ".join(set(feature_to_variant_list_d[feature]))
+            variant_list = "; ".join(set(feature_to_variants[feature]))
             feature_list.append(
                 {
                     'name': feature.info.name,
                     'type': feature.feature_type.name,
                     'start': feature.info.start,
                     'end': feature.info.end,
-                    'count': len(feature_to_variant_list_d[feature]),
+                    'count': len(feature_to_variants[feature]),
                     'variants': variant_list,
                 }
             )
-            
-        non_feature_count = len(non_feature_to_variant_list)
-        non_feature_variants = "; ".join(set(non_feature_to_variant_list))
 
         return {
-            'protein_id': protein_id,
-            'protein_length': protein_length,
             'protein_label': protein_label,
+            'protein_id': protein_id,
+            'protein_length': self._protein_meta.protein_length,
             'feature_list': feature_list,
             'n_variants_in_features': n_variants_in_features,
-            'n_features': len(feature_list),
             'non_feature_count': non_feature_count,
-            'non_feature_variants': non_feature_variants,
         }
 

@@ -1,89 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Cohort</title>
-  <style>table {
-    border-collapse: collapse;
-    margin: 25px 0;
-      font-size: 0.9em;
-      font-family: sans-serif;
-      min-width: 400px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  }
-
-
-  .table .column-1 {
-      text-align: left;
-  }
-  th {
-    background-color: LightSkyBlue;
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 5px;
-  font-weight: bold;
-  font-size: 120%;
-}
-
-
-  tr {
-    border: 1px solid #dddddd;
-  }
-
-  td {
-    padding: 5px;
-    font-weight: bold;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-
-  .table td,tr {
-    text-align: left;
-}
-
-.table td:first-child, tr:first-child {
-    text-align: left;
-}
-
-caption {
-  caption-side: top;
-  text-align: left;
-  padding-bottom: 10px;
-  font-weight: bold;
-}
-
-</style>
-</head>
-
+{% extends "base.html" %}
+{% block body %}
 <body>
-  <h1>{{ protein_label }}:  {{ protein_id }}</h1>
+  <h1>{{ protein_label }}: {{ protein_id }}</h1>
+  <div class="card">
+    <p>
+      {{ protein_label }} has {{ feature_list | count | pluralize('annotated protein features') }}.
+      {{ n_variants_in_features }} were found to be located within these features,
+      and {{ non_feature_count }} were located elsewhere.
+      The total length of the protein is {{ protein_length }} amino acid residues.
+    </p>
     <table>
-        <caption style="color:black;">
-           {{ protein_label }} ({{ protein_id }}) has {{ n_features }} annotated protein features.
-            {{ n_variants_in_features }} were found to be located within these features, and
-            {{ non_feature_count }} were located elsewhere. The total length of the protein is
-            {{ protein_length }} amino acid residues.
-        </caption>
-        <tbody>
-            <tr class="strng">
-                <th>Name</th>
-                <th>Type</th>
-                <th>Coordinates</th>
-                <th>Count</th>
-                <th>Variants</th>
-            </tr>
-            {% for feat in feature_list %}
-            <tr>
-                <td>{{ feat.name }}</td>
-                <td>{{ feat.type }}</td>
-                <td>{{ feat.start }} - {{ feat.end }}</td>
-                <td>{{ feat.count }}</td>
-                <td>{{ feat.variants }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+      <tbody>
+          <tr>
+            <th>Count</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Coordinates</th>
+            <th>Variants</th>
+          </tr>
+          {% for feat in feature_list %}
+          <tr>
+            <td>{{ feat.count }}</td>
+            <td>{{ feat.name }}</td>
+            <td>{{ feat.type }}</td>
+            <td>{{ feat.start + 1 }} - {{ feat.end }}</td>
+            <td>{{ feat.variants }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  </div>
 </body>
-</html>
+{% endblock %}
