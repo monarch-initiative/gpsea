@@ -1,19 +1,19 @@
 import typing
 
-from jinja2 import Environment, PackageLoader
-from collections import namedtuple, defaultdict
+from collections import namedtuple, Counter
 
 from gpsea.model import Cohort, Variant, VariantEffect
 from ._formatter import VariantFormatter
+from ._base import BaseViewer
 from ._report import GpseaReport, HtmlGpseaReport
 
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
 
-VariantData = namedtuple('VariantData', ['variant_key', 'hgvs_cdna', 'hgvsp', 'variant_effects', 'exons'])
+VariantData = namedtuple('VariantData', ['variant_key', 'hgvsc', 'hgvsp', 'variant_effects', 'exons'])
 
 
-class CohortVariantViewer:
+class CohortVariantViewer(BaseViewer):
     """
     `CohortVariantViewer` creates an HTML report with the cohort variants.
 
@@ -30,8 +30,8 @@ class CohortVariantViewer:
         Args:
             tx_id (str): The transcript identifier (Usually, the MANE RefSeq transcript, that should start with "NM_")
         """
-        environment = Environment(loader=PackageLoader('gpsea.view', 'templates'))
-        self._cohort_template = environment.get_template("all_variants.html")
+        super().__init__()
+        self._cohort_template = self._environment.get_template("all_variants.html")
         self._var_formatter = VariantFormatter(tx_id)
         if not tx_id.startswith("NM"):
             print(f"[WARNING] Non-RefSeq transcript id: {tx_id}")
@@ -62,47 +62,32 @@ class CohortVariantViewer:
         cohort: Cohort,
         only_hgvs: bool,
     ) -> typing.Mapping[str, typing.Any]:
-        variant_count_dictionary = defaultdict(int)
-        variant_effect_count_dictionary = defaultdict(int)
+        variant_count_dictionary = Counter()
         variant_key_to_variant = dict()
+        
         for var in cohort.all_variants():
             var_key = var.variant_info.variant_key
             vdata = self._get_variant_data(var, only_hgvs)
             variant_key_to_variant[var_key] = vdata
             variant_count_dictionary[var_key] += 1
-            for v_eff in vdata.variant_effects:
-                variant_effect_count_dictionary[v_eff] += 1
+        
         variant_counts = list()
-        variant_effect_counts = list()
         for var_key, count in variant_count_dictionary.items():
             var_data = variant_key_to_variant[var_key]
             variant_counts.append(
                 {
-                    "variant_key": var_data.variant_key,
-                    "variant": var_data.hgvs_cdna,
-                    "variant_name": var_data.hgvs_cdna,
-                    "protein_name": var_data.hgvsp,
-                    "variant_effects": ", ".join(var_data.variant_effects),
-                    "exons": ", ".join(map(str, var_data.exons)) if var_data.exons is not None else None,
                     "count": count,
+                    "variant_key": var_data.variant_key,
+                    "hgvs": f'{var_data.hgvsc} ({var_data.hgvsp})',
+                    "variant_effects": ", ".join(var_data.variant_effects),
+                    "exons": '-' if var_data.exons is None else ", ".join(map(str, var_data.exons)),
                 }
             )
-        for v_effect, count in variant_effect_count_dictionary.items():
-            variant_effect_counts.append(
-                {
-                    "effect": v_effect,
-                    "count": count
-                }
-            )
-        variant_counts = sorted(variant_counts, key=lambda row: row.get("count"), reverse=True)
-        variant_effect_counts = sorted(variant_effect_counts, key=lambda row: row.get("count"), reverse=True)
+        
+        variant_counts.sort(key=lambda row: row["count"], reverse=True)
 
-        # The following dictionary is used by the Jinja2 HTML template
         return {
-            "has_transcript": False,
-            "variant_count_list": variant_counts,
-            "variant_effect_count_list": variant_effect_counts,
-            "total_unique_allele_count": len(variant_counts)
+            "variant_counts": variant_counts,
         }
 
     def _get_variant_data(
@@ -119,48 +104,58 @@ class CohortVariantViewer:
         Returns:
             VariantData: a named tuple with variant data formatted for human consumption.
         """
-        variant_key = variant.variant_info.variant_key
+        
         if variant.variant_info.has_sv_info():
             sv_info = variant.variant_info.sv_info
+            assert sv_info is not None
             gene_symbol = sv_info.gene_symbol
             display = f"SV involving {gene_symbol}"
             effect = VariantEffect.structural_so_id_to_display(so_term=sv_info.structural_type)
             return VariantData(
-                variant_key=variant_key,
-                hgvs_cdna=display,
+                variant_key=variant.variant_info.variant_key,
+                hgvsc=display,
                 hgvsp="p.?",
-                variant_effects=[effect],
-                exons=[]
+                variant_effects=(effect,),
+                exons=(),
             )
-        else:
-            variant_key = variant.variant_info.variant_key
-            display = self._var_formatter.format_as_string(variant)
+        elif variant.variant_info.has_variant_coordinates():
             tx_annotation = variant.get_tx_anno_by_tx_id(self._transcript_id)
-            if tx_annotation is not None:
-                hgvsp = tx_annotation.hgvsp
-                var_effects = [var_eff.to_display() for var_eff in tx_annotation.variant_effects]
-                exons=tx_annotation.overlapping_exons
-            else:
-                hgvsp = None
-                var_effects = []
-                exons = []
-            if only_hgvs:
-                # do not show the transcript id
-                fields_dna = display.split(":")
-                if len(fields_dna) > 1:
-                    display_hgvs_cDNA = fields_dna[1]
+            if tx_annotation is None:
+                hgvsc = '-'
+                hgvsp = '-'
+                var_effects = ()
+                exons = ()
+            else:                
+                if only_hgvs:
+                    if tx_annotation.hgvs_cdna is None:
+                        hgvsc = '-'
+                        hgvsp = '-'
+                    else:
+                        fields_dna = tx_annotation.hgvs_cdna.split(":")
+                        if len(fields_dna) > 1:
+                            hgvsc = fields_dna[1]
+                        else:
+                            hgvsc = fields_dna[0]
+                        
+                        fields_ps = tx_annotation.hgvsp.split(":") if tx_annotation.hgvsp is not None else ('-',)
+                        if len(fields_ps) > 1:
+                            hgvsp = fields_ps[1]
+                        else:
+                            hgvsp = fields_ps[0]
                 else:
-                    display_hgvs_cDNA = fields_dna[0]
+                    hgvsc = tx_annotation.hgvs_cdna
                 
-                fields_ps = hgvsp.split(":") if hgvsp is not None else (None,)
-                if len(fields_ps) > 1:
-                    hgvsp = fields_ps[1]
-                else:
-                    hgvsp = fields_ps[0]
+                var_effects = tuple(var_eff.to_display() for var_eff in tx_annotation.variant_effects)
+                exons=tx_annotation.overlapping_exons
+            
             return VariantData(
-                variant_key=variant_key,
-                hgvs_cdna=display_hgvs_cDNA,
+                variant_key=variant.variant_info.variant_key,
+                hgvsc=hgvsc,
                 hgvsp=hgvsp,
                 variant_effects=var_effects,
                 exons=exons
             )
+        else:
+            raise ValueError('Neither variant coordinates nor SV info are available')
+        
+        
