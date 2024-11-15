@@ -1,4 +1,4 @@
-import io
+import os
 
 import hpotk
 import pytest
@@ -7,6 +7,7 @@ from gpsea.model import Cohort
 from gpsea.view import CohortViewer
 
 
+@pytest.mark.skip("Just for manual testing and debugging")
 class TestCohortViewer:
 
     @pytest.fixture
@@ -21,17 +22,13 @@ class TestCohortViewer:
     def test_process(
         self,
         cohort_viewer: CohortViewer,
-        toy_cohort: Cohort,
+        suox_cohort: Cohort,
+        suox_mane_tx_id: str,
     ):
-        toy_transcript_id = "NM_123.1"
-
         report = cohort_viewer.process(
-            cohort=toy_cohort, transcript_id=toy_transcript_id
+            cohort=suox_cohort,
+            transcript_id=suox_mane_tx_id,
         )
 
-        buf = io.StringIO()
-        report.write(buf)
-        html = buf.getvalue()
-
-        # A dummy test for now.
-        assert len(html) != 0
+        with open(os.path.join("dev", "SUOX.cohort.html"), "w") as fh:
+            report.write(fh)

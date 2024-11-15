@@ -1,3 +1,5 @@
+import typing
+
 import pytest
 
 from gpsea.model import Age
@@ -13,10 +15,32 @@ class TestAge:
             (20, 0, 140.0),
         ],
     )
-    def test_gestational(self, weeks: int, days: int, expected: int):
+    def test_gestational(
+        self,
+        weeks: int,
+        days: int,
+        expected: int,
+    ):
         age = Age.gestational(weeks, days=days)
         assert age.days == expected
         assert age.is_gestational
+
+    @pytest.mark.parametrize(
+        "days, expected",
+        [
+            (6, 6.0),
+            (10., 10.),  # input as `float` is also OK.
+        ],
+    )
+    def test_gestational_days(
+        self,
+        days: typing.Union[int, float],
+        expected: int,
+    ):
+        age = Age.gestational_days(days=days)
+        assert age.days == expected
+        assert age.is_gestational
+
 
     @pytest.mark.parametrize(
         "years, expected",
@@ -40,11 +64,12 @@ class TestAge:
             (0, 0.),
             (1, 1.),
             (10, 10.),
+            (10., 10.),  # input as `float` is also OK.
         ],
     )
     def test_postnatal_days(
         self,
-        days: int,
+        days: typing.Union[int, float],
         expected: float,
     ):
         age = Age.postnatal_days(days=days)

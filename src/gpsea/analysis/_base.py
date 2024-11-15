@@ -3,6 +3,7 @@ import math
 import os
 import typing
 
+import numpy as np
 import pandas as pd
 
 from .predicate.phenotype import PhenotypePolyPredicate, P
@@ -205,6 +206,48 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         The sequence includes a `NaN` value for each phenotype that was *not* tested.
         """
         return self._corrected_pvals
+    
+    def n_significant_for_alpha(
+        self,
+        alpha: float = .05,
+    ) -> typing.Optional[int]:
+        """
+        Get the count of the corrected p values with the value being less than or equal to `alpha`.
+
+        :param alpha: a `float` with significance level.
+        """
+        if self.corrected_pvals is None:
+            return None
+        else:
+            return sum(p_val <= alpha for p_val in self.corrected_pvals)
+        
+    def significant_phenotype_indices(
+        self,
+        alpha: float = .05,
+        pval_kind: typing.Literal["corrected", "nominal"] = "corrected",
+    ) -> typing.Optional[typing.Sequence[int]]:
+        """
+        Get the indices of phenotypes that attain significance for provided `alpha`.
+        """
+        if pval_kind == "corrected":
+            if self.corrected_pvals is None:
+                vals = None
+            else:
+                vals = np.array(self.corrected_pvals)
+        elif pval_kind == "nominal":
+            vals = np.array(self.pvals)
+        else:
+            raise ValueError(f"Unsupported `pval_kind` value {pval_kind}")
+        
+        if vals is None:
+            return None
+        
+        not_na = ~np.isnan(vals)
+        significant = vals <= alpha
+        selected = not_na & significant
+
+        return tuple(int(idx) for idx in np.argsort(vals) if selected[idx])
+
 
     @property
     def total_tests(self) -> int:

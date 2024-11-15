@@ -57,7 +57,7 @@ class VariantPredicates:
 
         >>> genes = ('SURF1', 'SURF2',)
         >>> predicate = VariantPredicates.all(VariantPredicates.gene(g) for g in genes)
-        >>> predicate.get_question()
+        >>> predicate.description
         '(affects SURF1 AND affects SURF2)'
 
         Args:
@@ -88,7 +88,7 @@ class VariantPredicates:
         >>> tx_id = 'NM_123456.7'
         >>> effects = (VariantEffect.MISSENSE_VARIANT, VariantEffect.STOP_GAINED,)
         >>> predicate = VariantPredicates.any(VariantPredicates.variant_effect(e, tx_id) for e in effects)
-        >>> predicate.get_question()
+        >>> predicate.description
         '(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)'
 
         Args:
@@ -117,7 +117,7 @@ class VariantPredicates:
         >>> from gpsea.model import VariantEffect
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id='NM_123.4')
-        >>> predicate.get_question()
+        >>> predicate.description
         'MISSENSE_VARIANT on NM_123.4'
 
         Args:
@@ -278,7 +278,7 @@ class VariantPredicates:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.structural_type('SO:1000029')
-        >>> predicate.get_question()
+        >>> predicate.description
         'structural type is SO:1000029'
 
         Args:
@@ -301,7 +301,7 @@ class VariantPredicates:
         >>> from gpsea.model import VariantClass
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.variant_class(VariantClass.DEL)
-        >>> predicate.get_question()
+        >>> predicate.description
         'variant class is DEL'
 
         Args:
@@ -359,7 +359,7 @@ class VariantPredicates:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.change_length('<=', -10)
-        >>> predicate.get_question()
+        >>> predicate.description
         'change length <= -10'
 
         Args:
@@ -391,7 +391,7 @@ class VariantPredicates:
 
         >>> from gpsea.analysis.predicate.genotype import VariantPredicates
         >>> predicate = VariantPredicates.is_structural_deletion(-20)
-        >>> predicate.get_question()
+        >>> predicate.description
         '(structural type is SO:1000029 OR (variant class is DEL AND change length <= -20))'
 
         Args:

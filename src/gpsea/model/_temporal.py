@@ -93,6 +93,23 @@ class Age:
         return Age(days=float(total), timeline=Timeline.GESTATIONAL)
 
     @staticmethod
+    def last_menstrual_period() -> "Age":
+        """
+        Age of an individual at last menstrual period.
+        """
+        return LAST_MENSTRUAL_PERIOD
+
+    @staticmethod
+    def gestational_days(days: typing.Union[int, float]) -> "Age":
+        """
+        Create a gestational age corresponding to the number of `days`
+        since the last menstrual period.
+        """
+        if isinstance(days, int):
+            days = float(days)
+        return Age(days=days, timeline=Timeline.GESTATIONAL)
+
+    @staticmethod
     def birth() -> "Age":
         """
         Age of an individual at birth.
@@ -100,8 +117,14 @@ class Age:
         return BIRTH
 
     @staticmethod
-    def postnatal_days(days: int) -> "Age":
-        return Age(days=float(days), timeline=Timeline.POSTNATAL)
+    def postnatal_days(days: typing.Union[int, float]) -> "Age":
+        """
+        Create a postnatal age corresponding to the number of `days`
+        since birth.
+        """
+        if isinstance(days, int):
+            days = float(days)
+        return Age(days=days, timeline=Timeline.POSTNATAL)
 
     @staticmethod
     def postnatal_years(
@@ -274,3 +297,4 @@ class Age:
 
 
 BIRTH = Age(days=0.0, timeline=Timeline.POSTNATAL)
+LAST_MENSTRUAL_PERIOD = Age(days=0.0, timeline=Timeline.GESTATIONAL)
