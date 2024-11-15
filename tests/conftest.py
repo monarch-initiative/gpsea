@@ -8,6 +8,7 @@ import pytest
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     VariantPredicates,
+    biallelic_predicate,
     allele_count,
 )
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
@@ -224,6 +225,46 @@ def suox_protein_metadata(
 ) -> ProteinMetadata:
     with open(fpath_suox_protein_metadata) as fh:
         return json.load(fh, cls=GpseaJSONDecoder)
+
+
+@pytest.fixture(scope="session")
+def fpath_cyp21a2_cohort(
+    fpath_test_data_dir: str,
+) -> str:
+    # Generated from Phenopacket Store `0.1.20`.
+    return os.path.join(fpath_test_data_dir, "CYP21A2.0.1.20.json")
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_cohort(
+    fpath_cyp21a2_cohort: str,
+) -> Cohort:
+    with open(fpath_cyp21a2_cohort) as fh:
+        return json.load(fh, cls=GpseaJSONDecoder)
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_mane_tx_id() -> str:
+    return "NM_000500.9"
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_gt_predicate(
+    cyp21a2_mane_tx_id: str,
+) -> GenotypePolyPredicate:
+    return biallelic_predicate(
+        a_predicate=VariantPredicates.variant_effect(
+            effect=VariantEffect.MISSENSE_VARIANT,
+            tx_id=cyp21a2_mane_tx_id,
+        ),
+        a_label="Missense",
+        b_label="Other",
+    )
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_testosterone_label() -> str:
+    return "LOINC:2986-8"
 
 
 @pytest.fixture(scope="session")

@@ -1,354 +1,454 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Cohort</title>
+<div>
     <style>
-    table {
-      border-collapse: collapse;
-      margin: 25px 0;
-      font-size: 0.9em;
-      font-family: sans-serif;
-      min-width: 400px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    }
+        /** Light theme is the default */
+        :root {
+            --gpsea-color-text: black;
+            --gpsea-color-link-text: rgb(0, 118, 187);
+            --gpsea-color-link-hover: rgb(0, 99, 156);
+            --gpsea-color-primary-a0: #2f5170;
+            --gpsea-color-primary-a10: #4778a5;
+            --gpsea-color-primary-a20: #5995ce;
+            --gpsea-color-primary-a60: LightSkyBlue;
+            --gpsea-color-surface-a0: #fcfcfc;
+            --gpsea-color-surface-a10: #ffffff;
+            --gpsea-color-surface-a20: #b3b3b3;
+            --gpsea-color-surface-a30: #8d8d8d;
+            --gpsea-color-surface-a40: #646464;
+            --gpsea-color-surface-a50: #000000;
+        }
 
-    .table .column-1 {
-      text-align: left;
-    }
-    th {
-      background-color: LightSkyBlue;
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 2px;
-      font-weight: bold;
-      font-size: 120%;
-    }
+        /** Dark theme */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --gpsea-color-text: rgb(240, 240, 240);
+                --gpsea-color-link-text: rgb(240, 240, 240);
+                --gpsea-color-link-hover: lightblue;
+                --gpsea-color-primary-a0: #64a3df;
+                --gpsea-color-primary-a10: #5286b8;
+                --gpsea-color-primary-a20: #375c7e;
+                --gpsea-color-primary-a60: #233b52;
+                --gpsea-color-surface-a0: #121212;
+                --gpsea-color-surface-a10: #282828;
+                --gpsea-color-surface-a20: #3f3f3f;
+                --gpsea-color-surface-a30: #575757;
+                --gpsea-color-surface-a40: #717171;
+                --gpsea-color-surface-a50: #8b8b8b;
+            }
 
-    tr {
-      border: 1px solid #dddddd;
-    }
+        }
 
-    td {
-      padding: 2px;
-      font-weight: bold;
-    }
+        #gpsea-body {
+            max-width: 1600px;
+            color: var(--gpsea-color-text);
+            background-color: var(--gpsea-color-surface-a0);
+        }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
+        #gpsea-body {
 
-    .table td, tr {
-      text-align: right;
-    }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                color: var(--gpsea-color-primary-a0);
+            }
 
-    .lft {
-      text-align: left;
-    }
+            a {
+                color: var(--gpsea-color-link-text);
+                text-decoration: none;
+            }
 
-    div {
-      display: block;
-      width: 100%;
-      padding-right: 1%;
-      margin-bottom: 20px; /* Add margin to separate divs */
-    }
+            a:hover {
+                color: var(--gpsea-color-link-hover);
+            }
 
-    caption {
-      caption-side: top;
-      text-align: left;
-      padding-bottom: 10px;
-      font-weight: bold;
-    }
-  </style>
-</head>
+            #cohort-summary {
+                max-width: 800px;
+            }
 
-<body>
-  <h1>GPSEA cohort analysis</h1>
-  <p>Successfully loaded 156 individuals. 46 were recorded as male, 56 as female,
-      and 54 as unknown sex. 156 were reported to be alive at the time of last
-      encounter, and 0 were deceased. 1 had disease onset information
-      and 51 had information about the age at last encounter. In the cohort,
-      there were a total of 117 HPO terms used for annotation.
+            td {
+                padding: 5px 0;
+            }
+
+            .cards {
+                display: flex;
+                flex-flow: row wrap;
+                align-items: top;
+                gap: 1rem;
+            }
+
+            .card {
+                border-radius: 10px;
+                padding: 0px 10px;
+                background: var(--gpsea-color-surface-a10);
+                border: 1px solid var(--gpsea-color-surface-a30);
+                box-shadow: 0 4px 8px var(--gpsea-color-surface-a30);
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 0.9em;
+                font-family: sans-serif;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+                border: 1px solid var(--gpsea-color-primary-a60);
+            }
+
+            th {
+                text-align: left;
+                padding: 2px;
+                font-weight: bold;
+                font-size: 120%;
+                color: var(--gpsea-color-text);
+                background-color: var(--gpsea-color-primary-a60);
+            }
+
+            table td,
+            tr {
+                text-align: right;
+                padding: 0px 5px;
+            }
+
+            tr:nth-child(even) {
+                background-color: var(--gpsea-color-surface-a10);
+            }
+
+            tr:nth-child(odd) {
+                background-color: var(--gpsea-color-surface-a20);
+            }
+
+            .lft {
+                text-align: left;
+            }
+
+            caption {
+                caption-side: top;
+                text-align: left;
+                padding-bottom: 10px;
+                font-weight: bold;
+            }
+        }
+    </style>
+    <div id="gpsea-body">
+        
+
+<h1>GPSEA cohort analysis</h1>
+<div id="cohort-summary">
+  <p>
+    Successfully loaded 156 individuals.
+
     
+    46 were recorded as male,
+    56 as female,
+    and 54 as unknown sex.
+
+    
+    
+    No information about individuals' vital status was reported.
+    
+
+    
+    1 individual had disease onset information
+    and 0 had information about the age of last encounter.
   </p>
+
   
   <p>No errors encountered.</p>
   
+</div>
 
-    <table>
-    <caption style="color: black;">
-        <h3>Top 10 HPO Terms</h3>
-        A total of 117 HPO terms were used to annotated the cohort.
-    </caption>
-        <tbody>
-            <tr class="strng">
-                <th class="lft">HPO Term</th>
-                <th>ID</th>
-                <th>Seen in <em>n</em> individuals</th>
-            </tr>
-            
-            <tr>
-                <td class="lft">Atrial septal defect</td>
-                <td>HP:0001631</td>
-                <td>50</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Ventricular septal defect</td>
-                <td>HP:0001629</td>
-                <td>41</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Hypoplasia of the radius</td>
-                <td>HP:0002984</td>
-                <td>40</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Triphalangeal thumb</td>
-                <td>HP:0001199</td>
-                <td>36</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Absent thumb</td>
-                <td>HP:0009777</td>
-                <td>32</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Short thumb</td>
-                <td>HP:0009778</td>
-                <td>32</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Abnormal carpal morphology</td>
-                <td>HP:0001191</td>
-                <td>30</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Secundum atrial septal defect</td>
-                <td>HP:0001684</td>
-                <td>27</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Absent radius</td>
-                <td>HP:0003974</td>
-                <td>15</td>
-                </tr>
-            
-            <tr>
-                <td class="lft">Cardiac conduction abnormality</td>
-                <td>HP:0031546</td>
-                <td>14</td>
-                </tr>
-            
-                </tbody>
-    </table>
 
+<div class="cards">
   
-
-    <table>
-    <caption style="color: black;">
-        <h3>Top 10 Variants</h3>
-        Variants are shown according to NM_181486.4. A total of 53 unique variants were identified in the cohort.
-    </caption>
-            <tbody>
-                <tr class="strng">
-                    <th>Seen in <em>n</em> individuals</th>
-                    <th class="lft">Variant key</th>
-                    <th>Variant Name</th>
-                    <th>Protein Variant</th>
-                    <th>Variant Class</th>
-                </tr>
-                
-                <tr>
-                    <td>22</td>
-                    <td class="lft">12_114385521_114385521_C_T</td>
-                    <td>c.710G>A</td>
-                    <td>p.Arg237Gln</td>
-                    <td>MISSENSE_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>20</td>
-                    <td class="lft">12_114401830_114401830_C_T</td>
-                    <td>c.238G>A</td>
-                    <td>p.Gly80Arg</td>
-                    <td>MISSENSE_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>8</td>
-                    <td class="lft">12_114385563_114385563_G_A</td>
-                    <td>c.668C>T</td>
-                    <td>p.Thr223Met</td>
-                    <td>MISSENSE_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>6</td>
-                    <td class="lft">12_114398675_114398675_G_T</td>
-                    <td>c.408C>A</td>
-                    <td>p.Tyr136Ter</td>
-                    <td>STOP_GAINED</td>
-                </tr>
-                
-                <tr>
-                    <td>5</td>
-                    <td class="lft">12_114398682_114398682_C_CG</td>
-                    <td>c.400dup</td>
-                    <td>p.Arg134ProfsTer49</td>
-                    <td>FRAMESHIFT_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>5</td>
-                    <td class="lft">12_114399514_114399514_A_C</td>
-                    <td>c.361T>G</td>
-                    <td>p.Trp121Gly</td>
-                    <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>5</td>
-                    <td class="lft">12_114403792_114403792_C_CG</td>
-                    <td>c.106_107insC</td>
-                    <td>p.Ser36ThrfsTer25</td>
-                    <td>FRAMESHIFT_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>4</td>
-                    <td class="lft">12_114385522_114385522_G_A</td>
-                    <td>c.709C>T</td>
-                    <td>p.Arg237Trp</td>
-                    <td>MISSENSE_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>4</td>
-                    <td class="lft">12_114398656_114398656_C_CG</td>
-                    <td>c.426dup</td>
-                    <td>p.Ala143ArgfsTer40</td>
-                    <td>FRAMESHIFT_VARIANT</td>
-                </tr>
-                
-                <tr>
-                    <td>4</td>
-                    <td class="lft">12_114403798_114403798_G_GC</td>
-                    <td>c.100dup</td>
-                    <td>p.Ala34GlyfsTer27</td>
-                    <td>FRAMESHIFT_VARIANT</td>
-                </tr>
-                
-            </tbody>
-        </table>
-    <table>
-    <caption style="color: black;">
-        <h3>Diseases</h3>
-    </caption>
-        <tbody>
-            <tr class="strng">
-                <th class="lft">Disease Name</th>
-                <th >Disease ID</th>
-                <th>Annotation Count</th>
-              </tr>
-              
-              <tr>
-                <td class="lft">Holt-Oram syndrome</td>
-                <td>OMIM:142900</td>
-                <td>156</td>
-                </tr>
-            
-           </tbody>
-    </table>
+  <div id="hpo" class="card">
+    <h2>HPO terms</h2>
+    
     
     <table>
-    <caption style="color: black;">
-        <h3>Variant categories for NM_181486.4</h3>
-    </caption>
-        <tbody>
-            <tr class="strng">
-                <th class="lft">Variant effect</th>
-                <th>Annotation Count</th>
-                <th>Percent</th>
-              </tr>
-              
-              <tr>
-                <td class="lft">MISSENSE_VARIANT</td>
-                <td>85</td>
-               <td>50%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">FRAMESHIFT_VARIANT</td>
-                <td>38</td>
-               <td>22%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">STOP_GAINED</td>
-                <td>19</td>
-               <td>11%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_REGION_VARIANT</td>
-                <td>10</td>
-               <td>6%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_DONOR_VARIANT</td>
-                <td>7</td>
-               <td>4%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
-                <td>2</td>
-               <td>1%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
-                <td>2</td>
-               <td>1%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">INTRON_VARIANT</td>
-                <td>2</td>
-               <td>1%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">INFRAME_INSERTION</td>
-                <td>2</td>
-               <td>1%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">STOP_RETAINED_VARIANT</td>
-                <td>2</td>
-               <td>1%</td>
-                </tr>
-            
-              <tr>
-                <td class="lft">INFRAME_DELETION</td>
-                <td>1</td>
-               <td>1%</td>
-                </tr>
-            
-           </tbody>
+      The cohort included 90 distinct HPO terms.
+      <caption>
+        
+        Top 10 most common HPO terms.
+        
+        
+      </caption>
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">HPO Term</th>
+        </tr>
+
+        
+        <tr>
+          <td>50</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0001631">Atrial septal defect</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>41</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0001629">Ventricular septal defect</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>40</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0002984">Hypoplasia of the radius</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>36</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0001199">Triphalangeal thumb</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>32</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0009777">Absent thumb</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>32</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0009778">Short thumb</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>30</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0001191">Abnormal carpal morphology</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>27</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0001684">Secundum atrial septal defect</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>15</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0003974">Absent radius</a>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>14</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/HP:0031546">Cardiac conduction abnormality</a>
+          </td>
+        </tr>
+        
+      </tbody>
     </table>
+    
+    
+  </div>
+
   
+  <div id="measurements" class="card">
+    <h2>Measurements</h2>
+    
+    
+    No data regarding measurement assays were provided.
+    
+  </div>
 
+  
+  <div id="diseases" class="card">
+    <h2>Diseases</h2>
+    
+    
+    The cohort members were diagnosed with 1 disease.
+    <table>
+      
 
-</body>
-</html>
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">Disease</th>
+        </tr>
+        
+        <tr>
+          <td>156</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/disease/OMIM:142900">Holt-Oram syndrome</a>
+          </td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  
+  
+  <div class="card">
+    <h2>Variants</h2>
+    <p>
+      A total of 53 unique variants
+      were identified in the cohort. Variants were annotated with respect to NM_181486.4.
+    </p>
+    <table>
+      <caption>
+        <h3>Top 10 variants</h3>
+      </caption>
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">Variant key</th>
+          <th>HGVS</th>
+          <th>Variant Class</th>
+        </tr>
+        
+        <tr>
+          <td>22</td>
+          <td class="lft">12_114385521_114385521_C_T</td>
+          <td>c.710G>A (p.Arg237Gln)</td>
+          <td>MISSENSE_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>20</td>
+          <td class="lft">12_114401830_114401830_C_T</td>
+          <td>c.238G>A (p.Gly80Arg)</td>
+          <td>MISSENSE_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>8</td>
+          <td class="lft">12_114385563_114385563_G_A</td>
+          <td>c.668C>T (p.Thr223Met)</td>
+          <td>MISSENSE_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>6</td>
+          <td class="lft">12_114398675_114398675_G_T</td>
+          <td>c.408C>A (p.Tyr136Ter)</td>
+          <td>STOP_GAINED</td>
+        </tr>
+        
+        <tr>
+          <td>5</td>
+          <td class="lft">12_114398682_114398682_C_CG</td>
+          <td>c.400dup (p.Arg134ProfsTer49)</td>
+          <td>FRAMESHIFT_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>5</td>
+          <td class="lft">12_114399514_114399514_A_C</td>
+          <td>c.361T>G (p.Trp121Gly)</td>
+          <td>MISSENSE_VARIANT, SPLICE_REGION_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>5</td>
+          <td class="lft">12_114403792_114403792_C_CG</td>
+          <td>c.106_107insC (p.Ser36ThrfsTer25)</td>
+          <td>FRAMESHIFT_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>4</td>
+          <td class="lft">12_114385522_114385522_G_A</td>
+          <td>c.709C>T (p.Arg237Trp)</td>
+          <td>MISSENSE_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>4</td>
+          <td class="lft">12_114398656_114398656_C_CG</td>
+          <td>c.426dup (p.Ala143ArgfsTer40)</td>
+          <td>FRAMESHIFT_VARIANT</td>
+        </tr>
+        
+        <tr>
+          <td>4</td>
+          <td class="lft">12_114403798_114403798_G_GC</td>
+          <td>c.100dup (p.Ala34GlyfsTer27)</td>
+          <td>FRAMESHIFT_VARIANT</td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+
+  
+  <div class="card">
+    
+    <h2>Variant effects</h2>
+    <p>
+      The effects were predicted for NM_181486.4
+    </p>
+    <table>
+      <tbody>
+        <tr class="strng">
+          <th class="lft">Variant effect</th>
+          <th>Count</th>
+        </tr>
+        
+        <tr>
+          <td class="lft">MISSENSE_VARIANT</td>
+          <td>85 (50%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">FRAMESHIFT_VARIANT</td>
+          <td>38 (22%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">STOP_GAINED</td>
+          <td>19 (11%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">SPLICE_REGION_VARIANT</td>
+          <td>10 (6%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">SPLICE_DONOR_VARIANT</td>
+          <td>7 (4%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">INFRAME_INSERTION</td>
+          <td>2 (1%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">STOP_RETAINED_VARIANT</td>
+          <td>2 (1%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
+          <td>2 (1%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">INTRON_VARIANT</td>
+          <td>2 (1%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">SPLICE_ACCEPTOR_VARIANT</td>
+          <td>2 (1%)</td>
+        </tr>
+        
+        <tr>
+          <td class="lft">INFRAME_DELETION</td>
+          <td>1 (1%)</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+</div>
+
+    </div>
+</div>
