@@ -7,7 +7,7 @@ Survival analysis
 .. doctest::
   :hide:
 
-  >>> _overwrite = True
+  >>> from gpsea import _overwrite
 
 
 ****************

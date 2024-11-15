@@ -8,7 +8,7 @@ Compare phenotype scores in genotype groups
 .. doctest::
   :hide:
 
-  >>> _overwrite = True
+  >>> from gpsea import _overwrite
 
 .. _mann-whitney-u-test:
 

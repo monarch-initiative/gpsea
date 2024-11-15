@@ -7,7 +7,7 @@ Tutorial
 .. doctest::
   :hide:
 
-  >>> _overwrite = True
+  >>> from gpsea import _overwrite
 
 Here we demonstrate an end-to-end genotype-phenotype analysis with GPSEA.
 The tutorial illustrates just one of the many ways GPSEA can be used to characterize genotype-phenotype correlations.

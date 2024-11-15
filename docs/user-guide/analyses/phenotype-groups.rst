@@ -8,7 +8,7 @@ Compare genotype and phenotype groups
 .. doctest::
   :hide:
 
-  >>> _overwrite = True
+  >>> from gpsea import _overwrite
 
 .. _fisher-exact-test:
 

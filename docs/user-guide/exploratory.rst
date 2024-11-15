@@ -7,7 +7,7 @@ Cohort exploratory analysis
 .. doctest::
   :hide:
 
-  >>> _overwrite = True
+  >>> from gpsea import _overwrite
 
 As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
 these in a targeted way. Performing numerous tests without any specific plan comes with an increased
