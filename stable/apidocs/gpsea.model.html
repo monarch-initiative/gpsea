@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model package &mdash; GPSEA 0.7.0 documentation</title>
+  <title>gpsea.model package &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -126,6 +126,12 @@ and are ready for genotype-phenotype association analysis.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_distinct_hpo_terms">
+<span class="sig-name descname"><span class="pre">count_distinct_hpo_terms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_distinct_hpo_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_distinct_hpo_terms" title="Link to this definition"></a></dt>
+<dd><p>Get count of distinct HPO terms (either in present or excluded state) seen in the cohort members.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Cohort.all_measurements">
 <span class="sig-name descname"><span class="pre">all_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Measurement" title="gpsea.model._phenotype.Measurement"><span class="pre">Measurement</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_measurements" title="Link to this definition"></a></dt>
 <dd><p>Get a set of all phenotypes (observed or excluded) in the cohort members.</p>
@@ -135,6 +141,12 @@ and are ready for genotype-phenotype association analysis.</p>
 <dt class="sig sig-object py" id="gpsea.model.Cohort.all_diseases">
 <span class="sig-name descname"><span class="pre">all_diseases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.all_diseases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.all_diseases" title="Link to this definition"></a></dt>
 <dd><p>Get a set of all diseases (observed or excluded) in the cohort members.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_with_disease_onset">
+<span class="sig-name descname"><span class="pre">count_with_disease_onset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_with_disease_onset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_with_disease_onset" title="Link to this definition"></a></dt>
+<dd><p>Get the count of individuals with recorded disease onset.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -280,6 +292,48 @@ or <cite>None</cite> if all transcripts should be listed.</p>
 <span class="sig-name descname"><span class="pre">get_variant_by_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_key</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Variant" title="gpsea.model._variant.Variant"><span class="pre">Variant</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.get_variant_by_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.get_variant_by_key" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_males">
+<span class="sig-name descname"><span class="pre">count_males</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_males"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_males" title="Link to this definition"></a></dt>
+<dd><p>Get the number of males in the cohort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_females">
+<span class="sig-name descname"><span class="pre">count_females</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_females"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_females" title="Link to this definition"></a></dt>
+<dd><p>Get the number of females in the cohort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_unknown_sex">
+<span class="sig-name descname"><span class="pre">count_unknown_sex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_unknown_sex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_unknown_sex" title="Link to this definition"></a></dt>
+<dd><p>Get the number of individuals with unknown sex in the cohort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_alive">
+<span class="sig-name descname"><span class="pre">count_alive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_alive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_alive" title="Link to this definition"></a></dt>
+<dd><p>Get the number of individuals reported to be alive at the time of last encounter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_deceased">
+<span class="sig-name descname"><span class="pre">count_deceased</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_deceased"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_deceased" title="Link to this definition"></a></dt>
+<dd><p>Get the number of individuals reported to be deceased.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_unknown_vital_status">
+<span class="sig-name descname"><span class="pre">count_unknown_vital_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_unknown_vital_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_unknown_vital_status" title="Link to this definition"></a></dt>
+<dd><p>Get the number of individuals with unknown or no reported vital status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Cohort.count_with_age_of_last_encounter">
+<span class="sig-name descname"><span class="pre">count_with_age_of_last_encounter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Cohort.count_with_age_of_last_encounter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Cohort.count_with_age_of_last_encounter" title="Link to this definition"></a></dt>
+<dd><p>Get the number of individuals with a known age of last encounter.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -347,6 +401,12 @@ instead of <cite>__init__</cite>.</p>
 <dd><p>Get the phenotypes observed and excluded in the patient.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Patient.phenotype_by_id">
+<span class="sig-name descname"><span class="pre">phenotype_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Phenotype" title="gpsea.model._phenotype.Phenotype"><span class="pre">Phenotype</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Patient.phenotype_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Patient.phenotype_by_id" title="Link to this definition"></a></dt>
+<dd><p>Get a phenotype with an identifier or <cite>None</cite> if the individual has no such phenotype.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.Patient.measurements">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measurements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Measurement" title="gpsea.model._phenotype.Measurement"><span class="pre">Measurement</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.Patient.measurements" title="Link to this definition"></a></dt>
@@ -372,6 +432,12 @@ representing the term ID of a measurement (e.g. <cite>LOINC:2986-8</cite> for <e
 <dt class="sig sig-object py" id="gpsea.model.Patient.diseases">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">diseases</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.Patient.diseases" title="Link to this definition"></a></dt>
 <dd><p>Get the diseases the patient has (not) been diagnosed with.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Patient.disease_by_id">
+<span class="sig-name descname"><span class="pre">disease_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Disease" title="gpsea.model._phenotype.Disease"><span class="pre">Disease</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_cohort.html#Patient.disease_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Patient.disease_by_id" title="Link to this definition"></a></dt>
+<dd><p>Get a disease with an identifier or <cite>None</cite> if the individual has no such disease.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -580,6 +646,19 @@ Gestational age is always before the postnatal age.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Age.last_menstrual_period">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_menstrual_period</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.last_menstrual_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.last_menstrual_period" title="Link to this definition"></a></dt>
+<dd><p>Age of an individual at last menstrual period.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.Age.gestational_days">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gestational_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.gestational_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.gestational_days" title="Link to this definition"></a></dt>
+<dd><p>Create a gestational age corresponding to the number of <cite>days</cite>
+since the last menstrual period.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.birth">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">birth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.birth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.birth" title="Link to this definition"></a></dt>
 <dd><p>Age of an individual at birth.</p>
@@ -587,8 +666,10 @@ Gestational age is always before the postnatal age.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.postnatal_days">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">postnatal_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.postnatal_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.postnatal_days" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">postnatal_days</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.postnatal_days"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.postnatal_days" title="Link to this definition"></a></dt>
+<dd><p>Create a postnatal age corresponding to the number of <cite>days</cite>
+since birth.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Age.postnatal_years">
@@ -2185,6 +2266,12 @@ distribution of amino acids, often leading to specific structural or functional 
 <dt class="sig sig-object py" id="gpsea.model.FeatureType.REGION">
 <span class="sig-name descname"><span class="pre">REGION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#gpsea.model.FeatureType.REGION" title="Link to this definition"></a></dt>
 <dd><p>A region of interest that cannot be described in other subsections.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.model.FeatureType.ZINC_FINGER">
+<span class="sig-name descname"><span class="pre">ZINC_FINGER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#gpsea.model.FeatureType.ZINC_FINGER" title="Link to this definition"></a></dt>
+<dd><p>A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.</p>
 </dd></dl>
 
 <dl class="py method">

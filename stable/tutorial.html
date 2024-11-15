@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; GPSEA 0.7.0 documentation</title>
+  <title>Tutorial &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1213,39 +1213,20 @@ was excluded):</p>
 Testing multiple hypothesis on the same dataset increases the chance of receiving false positive result.
 However, GPSEA simplifies the application of an appropriate multiple testing correction.</p>
 <p>For general use, we recommend using a combination
-of a <em>Phenotype MTC filter</em> (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>) with a <em>multiple testing correction</em>.
-Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which
+of a <em>phenotype MT filter</em> (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>) with a <em>multiple testing correction</em>.
+Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see <a class="reference internal" href="user-guide/mtc.html#hpo-mtc-filter-strategy"><span class="std std-ref">HPO MTC filter</span></a> for more info).
+on the most interesting terms (see <a class="reference internal" href="user-guide/mtc.html#hpo-mtc-filter-strategy"><span class="std std-ref">HPO MT filter</span></a> for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See <a class="reference internal" href="user-guide/mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a> for more information.</p>
-<p>In this example, we will use a combination of the HPO MTC filter (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>)
-with Benjamini-Hochberg procedure (<code class="docutils literal notranslate"><span class="pre">mtc_correction='fdr_bh'</span></code>)
-with a false discovery control level at (<code class="docutils literal notranslate"><span class="pre">mtc_alpha=0.05</span></code>):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_correction</span> <span class="o">=</span> <span class="s1">&#39;fdr_bh&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">configure_hpo_term_analysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_hpo_term_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Choosing the statistical procedure for assessment of association between genotype and phenotype
-groups is the last missing piece of the analysis. We will use Fisher Exact Test:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">count_statistic</span> <span class="o">=</span> <span class="n">FisherExactTest</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>and we finalize the analysis setup by putting all components together
-into <a class="reference internal" href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">count_statistic</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">mtc_filter</span><span class="o">=</span><span class="n">mtc_filter</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">mtc_correction</span><span class="o">=</span><span class="n">mtc_correction</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">mtc_alpha</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
+<p><a class="reference internal" href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> configures the analysis
+that uses HPO MTC filter (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) for selecting HPO terms of interest,
+Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for multiple testing correction.</p>
 <p>Now we can perform the analysis and investigate the results.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_phenotypes</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>

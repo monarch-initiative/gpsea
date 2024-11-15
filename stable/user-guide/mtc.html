@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multiple-testing correction &mdash; GPSEA 0.7.0 documentation</title>
+  <title>Multiple-testing correction &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#background">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#implementation-in-gpsea">Implementation in GPSEA</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#multiple-testing-correction-procedures">Multiple-testing correction procedures</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mtc-filters-choosing-which-terms-to-test">MTC filters: Choosing which terms to test</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mt-filters-choosing-which-terms-to-test">MT filters: Choosing which terms to test</a></li>
 </ul>
 </li>
 </ul>
@@ -126,9 +126,9 @@ in the cohort, meaning that we may perform up to hundreds of tests.
 Therefore, unless we take into account the fact that multiple statistical tests are being performed,
 it is likely that we will obtain one or more false-positive results.</p>
 <p>GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
-and MTC filters to choose the terms to be tested.</p>
+and MT filters to choose the terms to be tested.</p>
 <section id="multiple-testing-correction-procedures">
-<h3>Multiple-testing correction procedures<a class="headerlink" href="#multiple-testing-correction-procedures" title="Link to this heading"></a></h3>
+<span id="mtc-correction-procedures"></span><h3>Multiple-testing correction procedures<a class="headerlink" href="#multiple-testing-correction-procedures" title="Link to this heading"></a></h3>
 <p>A number of MTC procedures have
 been developed to limit the probability of false-positive results. The
 MTC procedures differ in complexity, in their assumptions about the
@@ -202,8 +202,8 @@ when creating an instance of <a class="reference internal" href="../apidocs/gpse
 </pre></div>
 </div>
 </section>
-<section id="mtc-filters-choosing-which-terms-to-test">
-<span id="mtc-filters"></span><h3>MTC filters: Choosing which terms to test<a class="headerlink" href="#mtc-filters-choosing-which-terms-to-test" title="Link to this heading"></a></h3>
+<section id="mt-filters-choosing-which-terms-to-test">
+<span id="mtc-filters"></span><h3>MT filters: Choosing which terms to test<a class="headerlink" href="#mt-filters-choosing-which-terms-to-test" title="Link to this heading"></a></h3>
 <p>We can reduce the overall MTC burden by choosing which terms to test.
 For example, if we choose to test only ten terms out of 450,
 then the mutliplication factor of the Bonferroni correction
@@ -211,22 +211,12 @@ is only 10 instead of 450, and more p-values
 may “survive” the multiple-testing correction.</p>
 <p>In the context of GPSEA, we represent the concept of phenotype filtering
 by <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>.
-The filter must be chosen before the <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysis" title="gpsea.analysis.pcats.MultiPhenotypeAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPhenotypeAnalysis</span></code></a>,
-such as <a class="reference internal" href="../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>, is run:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">()</span>  
-<span class="gt">Traceback (most recent call last):</span>
-<span class="w">  </span><span class="c">...</span>
-<span class="gr">TypeError</span>: <span class="n">HpoTermAnalysis.__init__() missing 2 required positional arguments: &#39;count_statistic&#39; and &#39;mtc_filter&#39;</span>
-</pre></div>
-</div>
-<p>Note the missing <cite>mtc_filter</cite> option.</p>
-<p>We describe the three filtering strategies in the following sections.</p>
+We provide three filtering strategies.</p>
 <section id="test-all-terms">
 <span id="use-all-terms-strategy"></span><h4>Test all terms<a class="headerlink" href="#test-all-terms" title="Link to this heading"></a></h4>
-<p>The first MTC filtering strategy is the simplest - do not apply any filtering at all.
-This will result in testing all terms. We do not recommend this strategy,
-but it can be useful to disable MTC filtering.</p>
+<p>The first MT filtering strategy is the simplest - do not apply any filtering at all.
+This will result in testing all terms and we do not recommend this strategy,
+but it can be used to disable MT filtering.</p>
 <p>The strategy is implemented in <a class="reference internal" href="../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter" title="gpsea.analysis.mtc_filter.UseAllTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">UseAllTermsMtcFilter</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">use_all</span> <span class="o">=</span> <span class="n">UseAllTermsMtcFilter</span><span class="p">()</span>
@@ -253,9 +243,9 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:</p>
 </pre></div>
 </div>
 </section>
-<section id="hpo-mtc-filter-strategy">
-<span id="id2"></span><h4>HPO MTC filter strategy<a class="headerlink" href="#hpo-mtc-filter-strategy" title="Link to this heading"></a></h4>
-<p>Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
+<section id="hpo-mt-filter-strategy">
+<span id="hpo-mtc-filter-strategy"></span><h4>HPO MT filter strategy<a class="headerlink" href="#hpo-mt-filter-strategy" title="Link to this heading"></a></h4>
+<p>The HPO MT strategy involves making several domain judgments and takes advantage of the HPO structure.
 The strategy needs access to HPO:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>

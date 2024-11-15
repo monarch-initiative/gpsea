@@ -36,8 +36,9 @@ Therefore, unless we take into account the fact that multiple statistical tests 
 it is likely that we will obtain one or more false-positive results.
 
 GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
-and MTC filters to choose the terms to be tested.
+and MT filters to choose the terms to be tested.
 
+.. _mtc-correction-procedures:
 
 Multiple-testing correction procedures
 ======================================
@@ -106,7 +107,7 @@ when creating an instance of :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
 
 .. _mtc-filters:
 
-MTC filters: Choosing which terms to test
+MT filters: Choosing which terms to test
 =========================================
 
 We can reduce the overall MTC burden by choosing which terms to test. 
@@ -117,18 +118,7 @@ may "survive" the multiple-testing correction.
 
 In the context of GPSEA, we represent the concept of phenotype filtering 
 by :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.
-The filter must be chosen before the :class:`~gpsea.analysis.pcats.MultiPhenotypeAnalysis`,
-such as :class:`~gpsea.analysis.pcats.HpoTermAnalysis`, is run:
-
->>> from gpsea.analysis.pcats import HpoTermAnalysis
->>> analysis = HpoTermAnalysis()  # doctest: +ELLIPSIS
-Traceback (most recent call last):
-  ...
-TypeError: HpoTermAnalysis.__init__() missing 2 required positional arguments: 'count_statistic' and 'mtc_filter'
-
-Note the missing `mtc_filter` option.
-
-We describe the three filtering strategies in the following sections.
+We provide three filtering strategies.
 
 
 .. _use-all-terms-strategy:
@@ -136,9 +126,9 @@ We describe the three filtering strategies in the following sections.
 Test all terms
 --------------
 
-The first MTC filtering strategy is the simplest - do not apply any filtering at all.
-This will result in testing all terms. We do not recommend this strategy, 
-but it can be useful to disable MTC filtering.
+The first MT filtering strategy is the simplest - do not apply any filtering at all.
+This will result in testing all terms and we do not recommend this strategy, 
+but it can be used to disable MT filtering.
 
 The strategy is implemented in :class:`~gpsea.analysis.mtc_filter.UseAllTermsMtcFilter`.
 
@@ -171,10 +161,10 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:
 
 .. _hpo-mtc-filter-strategy:
 
-HPO MTC filter strategy
+HPO MT filter strategy
 -----------------------
 
-Last, the HPO MTC strategy involves making several domain judgments to take advantage of the HPO structure.
+The HPO MT strategy involves making several domain judgments and takes advantage of the HPO structure.
 The strategy needs access to HPO:
 
 >>> import hpotk

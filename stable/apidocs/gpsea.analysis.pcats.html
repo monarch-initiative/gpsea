@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pcats package &mdash; GPSEA 0.7.0 documentation</title>
+  <title>gpsea.analysis.pcats package &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -111,6 +111,7 @@ Therefore, we must correct for multiple testing to prevent false positive findin
 See <a class="reference internal" href="../user-guide/mtc.html#mtc"><span class="std std-ref">MTC section</span></a> for more info.</p>
 <p>The results are provided as <a class="reference internal" href="#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult" title="gpsea.analysis.pcats.MultiPhenotypeAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPhenotypeAnalysisResult</span></code></a>
 (or more specific <a class="reference internal" href="#gpsea.analysis.pcats.HpoTermAnalysisResult" title="gpsea.analysis.pcats.HpoTermAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysisResult</span></code></a> for <a class="reference internal" href="#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>).</p>
+<p>Use <a class="reference internal" href="#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> to configure the HPO term analysis with the default parameters.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.pcats.MultiPhenotypeAnalysis">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pcats.</span></span><span class="sig-name descname"><span class="pre">MultiPhenotypeAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.pcats.stats.html#gpsea.analysis.pcats.stats.CountStatistic" title="gpsea.analysis.pcats.stats._stats.CountStatistic"><span class="pre">CountStatistic</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtc_correction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fdr_bh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtc_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/_impl.html#MultiPhenotypeAnalysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.MultiPhenotypeAnalysis" title="Link to this definition"></a></dt>
@@ -180,6 +181,23 @@ or <cite>None</cite> if the correction was not applied.
 The sequence includes a <cite>NaN</cite> value for each phenotype that was <em>not</em> tested.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.n_significant_for_alpha">
+<span class="sig-name descname"><span class="pre">n_significant_for_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#MultiPhenotypeAnalysisResult.n_significant_for_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.n_significant_for_alpha" title="Link to this definition"></a></dt>
+<dd><p>Get the count of the corrected p values with the value being less than or equal to <cite>alpha</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> – a <cite>float</cite> with significance level.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.significant_phenotype_indices">
+<span class="sig-name descname"><span class="pre">significant_phenotype_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval_kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'corrected'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nominal'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'corrected'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/_base.html#MultiPhenotypeAnalysisResult.significant_phenotype_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.significant_phenotype_indices" title="Link to this definition"></a></dt>
+<dd><p>Get the indices of phenotypes that attain significance for provided <cite>alpha</cite>.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.total_tests">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_tests</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.total_tests" title="Link to this definition"></a></dt>
@@ -231,6 +249,12 @@ the results include the outcome of <code class="xref py py-class docutils litera
 <dd><p>Get a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcResult</span></code> for each of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">phenotypes</span></code>.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.HpoTermAnalysisResult.n_filtered_out">
+<span class="sig-name descname"><span class="pre">n_filtered_out</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/_impl.html#HpoTermAnalysisResult.n_filtered_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.HpoTermAnalysisResult.n_filtered_out" title="Link to this definition"></a></dt>
+<dd><p>Get the number of phenotype terms that were filtered out by the MTC filter.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -262,6 +286,16 @@ and j-th genotype category where i and j are rows and columns of the data frame.
 <dd class="field-odd"><p>a tuple with 2 items</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.pcats.configure_hpo_term_analysis">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pcats.</span></span><span class="sig-name descname"><span class="pre">configure_hpo_term_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo:</span> <span class="pre">~hpotk.ontology._api.MinimalOntology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_statistic:</span> <span class="pre">~gpsea.analysis.pcats.stats._stats.CountStatistic</span> <span class="pre">=</span> <span class="pre">&lt;gpsea.analysis.pcats.stats._stats.FisherExactTest</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtc_correction:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'fdr_bh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtc_alpha:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats._impl.HpoTermAnalysis"><span class="pre">HpoTermAnalysis</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/pcats/_config.html#configure_hpo_term_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pcats.configure_hpo_term_analysis" title="Link to this definition"></a></dt>
+<dd><p>Configure HPO term analysis with default parameters.</p>
+<p>The default analysis will pre-filter HPO terms with <a class="reference internal" href="gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>,
+then compute nominal p values using <cite>count_statistic</cite> (default Fisher exact test),
+and apply multiple testing correction (default Benjamini/Hochberg (<cite>fdr_bh</cite>))
+with target <cite>mtc_alpha</cite> (default <cite>0.05</cite>).</p>
 </dd></dl>
 
 <section id="subpackages">

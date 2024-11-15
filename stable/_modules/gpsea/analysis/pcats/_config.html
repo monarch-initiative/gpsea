@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal._base &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.pcats._config &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">gpsea.analysis.temporal._base</li>
+      <li class="breadcrumb-item active">gpsea.analysis.pcats._config</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,36 +75,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for gpsea.analysis.temporal._base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">math</span>
+  <h1>Source code for gpsea.analysis.pcats._config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">..mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
+<span class="kn">from</span> <span class="nn">._impl</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
+<span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">CountStatistic</span><span class="p">,</span> <span class="n">FisherExactTest</span>
 
 
-<div class="viewcode-block" id="Survival">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival">[docs]</a>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Survival</span><span class="p">:</span>
+<div class="viewcode-block" id="configure_hpo_term_analysis">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_hpo_term_analysis</span><span class="p">(</span>
+    <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
+    <span class="n">count_statistic</span><span class="p">:</span> <span class="n">CountStatistic</span> <span class="o">=</span> <span class="n">FisherExactTest</span><span class="p">(),</span>
+    <span class="n">mtc_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fdr_bh&quot;</span><span class="p">,</span>
+    <span class="n">mtc_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HpoTermAnalysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Information regarding individual&#39;s survival.</span>
+<span class="sd">    Configure HPO term analysis with default parameters.</span>
+
+<span class="sd">    The default analysis will pre-filter HPO terms with :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`,</span>
+<span class="sd">    then compute nominal p values using `count_statistic` (default Fisher exact test),</span>
+<span class="sd">    and apply multiple testing correction (default Benjamini/Hochberg (`fdr_bh`))</span>
+<span class="sd">    with target `mtc_alpha` (default `0.05`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The survival value, expressed as a `float`.</span>
-
-<span class="sd">    The `value` must be finite and non-`NaN`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">is_censored</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `True` if the survival has been censored and `False` otherwise.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`value` must be finite and non-NaN, but was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+    <span class="k">return</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
+        <span class="n">mtc_filter</span><span class="o">=</span><span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
+        <span class="n">count_statistic</span><span class="o">=</span><span class="n">count_statistic</span><span class="p">,</span>
+        <span class="n">mtc_correction</span><span class="o">=</span><span class="n">mtc_correction</span><span class="p">,</span>
+        <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">mtc_alpha</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

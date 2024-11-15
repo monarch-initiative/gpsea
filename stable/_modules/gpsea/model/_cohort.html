@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._cohort &mdash; GPSEA 0.7.0 documentation</title>
+  <title>gpsea.model._cohort &mdash; GPSEA 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -89,6 +89,12 @@
 <span class="kn">from</span> <span class="nn">._phenotype</span> <span class="kn">import</span> <span class="n">Phenotype</span><span class="p">,</span> <span class="n">Disease</span><span class="p">,</span> <span class="n">Measurement</span>
 <span class="kn">from</span> <span class="nn">._temporal</span> <span class="kn">import</span> <span class="n">Age</span>
 <span class="kn">from</span> <span class="nn">._variant</span> <span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantInfo</span>
+
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="Status">
@@ -251,6 +257,19 @@
 <span class="sd">        Get the phenotypes observed and excluded in the patient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotypes</span>
+    
+<div class="viewcode-block" id="Patient.phenotype_by_id">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Patient.phenotype_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">phenotype_by_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Phenotype</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a phenotype with an identifier or `None` if the individual has no such phenotype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">term_id</span> <span class="o">=</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_check_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_find_first_by_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Measurement</span><span class="p">]:</span>
@@ -272,18 +291,8 @@
 <span class="sd">            representing the term ID of a measurement (e.g. `LOINC:2986-8` for *Testosterone[Mass/Vol]*).</span>
 <span class="sd">        :returns: the corresponding :class:`Measurement` or `None` if not found in the patient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
-            <span class="n">term_id</span> <span class="o">=</span> <span class="n">term_id</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`term_id` must be a `str` or `hpotk.TermId` but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measurements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">term_id</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">m</span>
-
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="n">term_id</span> <span class="o">=</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_check_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_find_first_by_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurements</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -292,6 +301,19 @@
 <span class="sd">        Get the diseases the patient has (not) been diagnosed with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span>
+
+<div class="viewcode-block" id="Patient.disease_by_id">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Patient.disease_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">disease_by_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a disease with an identifier or `None` if the individual has no such disease.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">term_id</span> <span class="o">=</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_check_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Patient</span><span class="o">.</span><span class="n">_find_first_by_id</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diseases</span><span class="p">)</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Variant</span><span class="p">]:</span>
@@ -335,6 +357,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">is_present</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diseases</span><span class="p">)</span></div>
 
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_id</span><span class="p">(</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">term_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`term_id` must be a `str` or `hpotk.TermId` but was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">term_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_first_by_id</span><span class="p">(</span>
+        <span class="n">term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">I</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">term_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">m</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patient(&quot;</span>
@@ -432,6 +476,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">phenotype</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span> <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">))</span></div>
 
+    
+<div class="viewcode-block" id="Cohort.count_distinct_hpo_terms">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_distinct_hpo_terms">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_distinct_hpo_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get count of distinct HPO terms (either in present or excluded state) seen in the cohort members.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">phenotype</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span> <span class="k">for</span> <span class="n">phenotype</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="Cohort.all_measurements">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.all_measurements">[docs]</a>
@@ -449,6 +506,17 @@
 <span class="sd">        Get a set of all diseases (observed or excluded) in the cohort members.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">disease</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span> <span class="k">for</span> <span class="n">disease</span> <span class="ow">in</span> <span class="n">patient</span><span class="o">.</span><span class="n">diseases</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Cohort.count_with_disease_onset">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_with_disease_onset">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_with_disease_onset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the count of individuals with recorded disease onset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">onset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">diseases</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Cohort.all_variants">
@@ -634,6 +702,86 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variant key </span><span class="si">{</span><span class="n">variant_key</span><span class="si">}</span><span class="s2"> not found in cohort.&quot;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Cohort.count_males">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_males">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_males</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of males in the cohort.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_sex</span><span class="p">(</span><span class="n">Sex</span><span class="o">.</span><span class="n">MALE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cohort.count_females">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_females">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_females</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of females in the cohort.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_sex</span><span class="p">(</span><span class="n">Sex</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cohort.count_unknown_sex">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_unknown_sex">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_unknown_sex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of individuals with unknown sex in the cohort.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_sex</span><span class="p">(</span><span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_count_individuals_with_sex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sex</span><span class="p">:</span> <span class="n">Sex</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">sex</span> <span class="o">==</span> <span class="n">sex</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cohort.count_alive">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_alive">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of individuals reported to be alive at the time of last encounter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span><span class="o">.</span><span class="n">is_alive</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cohort.count_deceased">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_deceased">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_deceased</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of individuals reported to be deceased.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span><span class="o">.</span><span class="n">is_deceased</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Cohort.count_unknown_vital_status">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_unknown_vital_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_unknown_vital_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of individuals with unknown or no reported vital status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span><span class="o">.</span><span class="n">is_unknown</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cohort.count_with_age_of_last_encounter">
+<a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Cohort.count_with_age_of_last_encounter">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_with_age_of_last_encounter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of individuals with a known age of last encounter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_individuals_with_condition</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">vital_status</span><span class="o">.</span><span class="n">age_of_death</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_count_individuals_with_condition</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">predicate</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_members</span>
