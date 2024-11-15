@@ -23,7 +23,7 @@ class PhenotypeScoreStatistic(Statistic, metaclass=abc.ABCMeta):
 
     def __eq__(self, value: object) -> bool:
         return super().__eq__(value)
-    
+
     def __hash__(self) -> int:
         return super().__hash__()
 
@@ -38,7 +38,7 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
 
     See :ref:`phenotype-score-stats` for an example usage.
     """
-    
+
     def __init__(self):
         super().__init__(
             name="Mann-Whitney U test",
@@ -49,7 +49,7 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
         scores: typing.Collection[typing.Sequence[float]],
     ) -> float:
         assert len(scores) == 2, 'Mann-Whitney U rank test only supports 2 categories at this time'
-        
+
         x, y = scores
         x = MannWhitneyStatistic._remove_nans(x)
         y = MannWhitneyStatistic._remove_nans(y)
@@ -69,7 +69,7 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MannWhitneyStatistic)
-    
+
     def __hash__(self) -> int:
         return 23
 
@@ -93,9 +93,13 @@ class TTestStatistic(PhenotypeScoreStatistic):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
-    ) -> float:
+    ) -> (float, float):
+        """
+        :Returns:
+            a tuple with the p-value and the t-statistic
+        """
         assert len(scores) == 2, 'T test only supports 2 categories at this time'
-        
+
         x, y = scores
         res = ttest_ind(
             a=x, b=y,
@@ -103,10 +107,10 @@ class TTestStatistic(PhenotypeScoreStatistic):
             nan_policy="omit",
         )
 
-        return res.pvalue
+        return res.pvalue, res.statistic
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, TTestStatistic)
-    
+
     def __hash__(self) -> int:
         return 31

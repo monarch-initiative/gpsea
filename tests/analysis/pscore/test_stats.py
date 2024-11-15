@@ -62,9 +62,9 @@ class TestTTestStatistic:
         y: typing.Sequence[float],
         expected: float,
     ):
-        actual = statistic.compute_pval((x, y))
+        actual_pval, t_statistic = statistic.compute_pval((x, y))
 
-        assert actual == pytest.approx(expected)
+        assert actual_pval == pytest.approx(expected)
 
     def test_compute_pval__with_nan(
         self,
@@ -73,6 +73,6 @@ class TestTTestStatistic:
         x = (1., 2., 3., np.nan, np.nan)
         y = (1., 2., 3., float("nan"))
 
-        actual = statistic.compute_pval((x, y))
+        actual_pval, t_statistic = statistic.compute_pval((x, y))
 
-        assert actual == pytest.approx(1.)
+        assert actual_pval == pytest.approx(1.)
