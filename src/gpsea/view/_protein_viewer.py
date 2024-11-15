@@ -8,8 +8,7 @@ from collections import defaultdict
 from gpsea.model import Cohort, ProteinMetadata
 from gpsea.model.genome import Region
 
-from ._base import BaseViewer
-from ._report import GpseaReport, HtmlGpseaReport
+from ._base import BaseViewer, GpseaReport, HtmlGpseaReport
 
 
 @dataclass(frozen=False)

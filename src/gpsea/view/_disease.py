@@ -5,7 +5,7 @@ from jinja2 import Environment, PackageLoader
 from collections import Counter, defaultdict
 
 from gpsea.model import Cohort
-from ._report import GpseaReport, HtmlGpseaReport
+from ._base import GpseaReport, HtmlGpseaReport
 
 
 class DiseaseViewer:

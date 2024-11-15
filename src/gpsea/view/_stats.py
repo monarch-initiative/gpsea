@@ -3,9 +3,8 @@ import typing
 from collections import Counter
 
 from gpsea.analysis.pcats import HpoTermAnalysisResult
-from gpsea.view._report import GpseaReport, HtmlGpseaReport
 
-from ._base import BaseViewer
+from ._base import BaseViewer, GpseaReport, HtmlGpseaReport
 
 
 class MtcStatsViewer(BaseViewer):

@@ -5,8 +5,7 @@ from collections import namedtuple, defaultdict
 import hpotk
 
 from gpsea.model import Cohort
-from ._base import BaseViewer
-from ._report import GpseaReport, HtmlGpseaReport
+from ._base import BaseViewer, GpseaReport, HtmlGpseaReport
 from ._formatter import VariantFormatter
 
 ToDisplay = namedtuple('ToDisplay', ['hgvs_cdna', 'hgvsp', 'variant_effects'])
