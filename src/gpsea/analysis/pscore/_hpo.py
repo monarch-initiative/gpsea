@@ -185,26 +185,6 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
 
         return 0
 
-    def _term_or_descendant(
-        self,
-        target_tid: str,
-        observed_term_ids: typing.Iterable[str],
-    ) -> int:
-        """
-        Args:
-            target_tid: term of interest
-            observed_term_ids: all terms observed in patient
-
-        Returns:
-            1 if the term or any descendant is present in the patient, otherwise 0
-        """
-        for term_id in observed_term_ids:
-            if term_id == target_tid \
-               or any(ancestor == target_tid for ancestor in self._hpo.graph.get_ancestors(term_id)):
-                return 1
-
-        return 0
-
     def _term_or_descendant_count(
         self,
         target_tid: str,
@@ -219,9 +199,8 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
             1 if at least one term is equal to or descending from the target_tid, otherwise 0
         """
         for term_id in observed_term_ids:
-            for desc_tid in self._hpo.graph.get_ancestors(term_id, include_source=True):
-                if desc_tid.value == target_tid:
-                    return 1
+            if term_id == target_tid or self._hpo.graph.is_descendant_of(term_id, target_tid):
+                return 1
         return 0
 
     def _postnatal_growth_score(
@@ -242,7 +221,7 @@ class DeVriesPhenotypeScorer(PhenotypeScorer):
         tall_stature = 'HP:0000098'
         total_count = 0
         for tid in (microcephaly, short_stature, macrocephaly, tall_stature):
-            total_count += self._term_or_descendant(tid, observed_term_ids)
+            total_count += self._term_or_descendant_count(tid, observed_term_ids)
         if total_count > 2:
             raise ValueError(f"Inconsistent annotations for postnatal growth score {total_count}:  {observed_term_ids}")
         return total_count
