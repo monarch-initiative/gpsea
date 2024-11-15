@@ -1,34 +1,30 @@
-{% extends "base.html" %}
+{% extends "minibase.html" %}
 {% block body %}
+<h1>Variant alleles</h1>
+<div class="card">
+  <table>
+    <caption>
+      A total of {{ variant_counts | count | pluralize('unique allele') }} were identified in the cohort.
+    </caption>
 
-<body>
-  <h1>Variant alleles</h1>
-  <div class="card">
-    <table>
-      <caption>
-        A total of {{ variant_counts | count | pluralize('unique allele') }} were identified in the cohort.
-      </caption>
-  
-      <tbody>
-        <tr>
-          <th>Count</th>
-          <th class="lft">Variant key</th>
-          <th>HGVS</th>
-          <th>Overlapping Exons</th>
-          <th>Effects</th>
-        </tr>
-        {% for vdata in variant_counts %}
-        <tr>
-          <td>{{ vdata['count'] }}</td>
-          <td class="lft">{{ vdata['variant_key'] }}</td>
-          <td>{{ vdata['hgvs'] }}</td>
-          <td>{{ vdata['exons'] }}</td>
-          <td>{{ vdata['variant_effects'] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-</body>
+    <tbody>
+      <tr>
+        <th>Count</th>
+        <th class="lft">Variant key</th>
+        <th>HGVS</th>
+        <th>Overlapping Exons</th>
+        <th>Effects</th>
+      </tr>
+      {% for vdata in variant_counts %}
+      <tr>
+        <td>{{ vdata['count'] }}</td>
+        <td class="lft">{{ vdata['variant_key'] }}</td>
+        <td>{{ vdata['hgvs'] }}</td>
+        <td>{{ vdata['exons'] }}</td>
+        <td>{{ vdata['variant_effects'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

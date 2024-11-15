@@ -1,35 +1,33 @@
-{% extends "base.html" %}
+{% extends "minibase.html" %}
 {% block body %}
-<body>
-  <h1>Phenotype testing report</h1>
-  <div class="cards">
-    <div class="card">
-      <ul>
-        <li>Phenotype MTC filter: <em>{{ hpo_mtc_filter_name }}</em></li>
-        <li>Multiple testing correction: <em>{{ mtc_name }}</em></li>
-      </ul>
-    </div>
-    <div class="card">
-      <table>
-        <tbody>
-          <tr>
-            <th>Code</th>
-            <th>Reason</th>
-            <th>Count</th>
-          </tr>
-          {% for skipped  in issue_to_count %}
-          <tr>
-            <td>{{ skipped.code }}</td>
-            <td>{{ skipped.reason }}</td>
-            <td>{{ skipped.count }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <caption>
-          Performed statistical tests for {{ tested_hpo_count }} out of the total of {{ total_hpo_count }} HPO terms.
-        </caption>
-      </table>
-    </div>
+<h1>Phenotype testing report</h1>
+<div class="cards">
+  <div class="card">
+    <ul>
+      <li>Phenotype MTC filter: <em>{{ hpo_mtc_filter_name }}</em></li>
+      <li>Multiple testing correction: <em>{{ mtc_name }}</em></li>
+    </ul>
   </div>
-</body>
+  <div class="card">
+    <table>
+      <tbody>
+        <tr>
+          <th>Code</th>
+          <th>Reason</th>
+          <th>Count</th>
+        </tr>
+        {% for skipped  in issue_to_count %}
+        <tr>
+          <td>{{ skipped.code }}</td>
+          <td>{{ skipped.reason }}</td>
+          <td>{{ skipped.count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <caption>
+        Performed statistical tests for {{ tested_hpo_count }} out of the total of {{ total_hpo_count }} HPO terms.
+      </caption>
+    </table>
+  </div>
+</div>
 {% endblock %}

@@ -1,219 +1,216 @@
-{% extends "base.html" %}
+{% extends "minibase.html" %}
 {% block body %}
-<body>
-  <div>
-    <h1>GPSEA cohort analysis</h1>
-    <div id="cohort-summary">
-      <p>
-        Successfully loaded {{ cohort | count | pluralize('individual') }}.
 
-        {# Sex #}
-        {{ cohort.count_males() | was_were }} recorded as male,
-        {{ cohort.count_females() }} as female,
-        and {{ cohort.count_unknown_sex() }} as unknown sex.
+<h1>GPSEA cohort analysis</h1>
+<div id="cohort-summary">
+  <p>
+    Successfully loaded {{ cohort | count | pluralize('individual') }}.
 
-        {# Vital status #}
-        {% if cohort | count == cohort.count_unknown_vital_status() %}
-        No information about individuals' vital status was reported.
-        {% else %}
-        {{ cohort.count_alive() | was_were }} reported to be alive at the time of last encounter,
-        {{ cohort.count_deceased() | was_were }} deceased,
-        and vital status was unreported for {{ cohort.count_unknown_vital_status() | pluralize('individual')}}.
+    {# Sex #}
+    {{ cohort.count_males() | was_were }} recorded as male,
+    {{ cohort.count_females() }} as female,
+    and {{ cohort.count_unknown_sex() }} as unknown sex.
+
+    {# Vital status #}
+    {% if cohort | count == cohort.count_unknown_vital_status() %}
+    No information about individuals' vital status was reported.
+    {% else %}
+    {{ cohort.count_alive() | was_were }} reported to be alive at the time of last encounter,
+    {{ cohort.count_deceased() | was_were }} deceased,
+    and vital status was unreported for {{ cohort.count_unknown_vital_status() | pluralize('individual')}}.
+    {% endif %}
+
+    {# Disease and age at last encounter #}
+    {{ cohort.count_with_disease_onset() | pluralize('individual')}} had disease onset information
+    and {{ cohort.count_with_age_of_last_encounter() }} had information about the age of last encounter.
+  </p>
+
+  {% if cohort.get_excluded_count() > 0 %}
+  <p>Unable to load {{ cohort.get_excluded_count() | pluralize('individual') }}.</p>
+  {% else %}
+  <p>No errors encountered.</p>
+  {% endif %}
+</div>
+
+{# Genotype & Phenotype #}
+<div class="cards">
+  {# HPO terms #}
+  <div id="hpo" class="card">
+    <h2>HPO terms</h2>
+    {% set distinct_hpos = cohort.count_distinct_hpo_terms() %}
+    {% if distinct_hpos > 0 %}
+    <table>
+      The cohort included {{ distinct_hpos | pluralize('distinct HPO term') }}.
+      <caption>
+        {% if distinct_hpos > top_phenotype_count %}
+        Top {{top_phenotype_count}} most common HPO terms.
         {% endif %}
-
-        {# Disease and age at last encounter #}
-        {{ cohort.count_with_disease_onset() | pluralize('individual')}} had disease onset information
-        and {{ cohort.count_with_age_of_last_encounter() }} had information about the age of last encounter.
-      </p>
-
-      {% if cohort.get_excluded_count() > 0 %}
-      <p>Unable to load {{ cohort.get_excluded_count() | pluralize('individual') }}.</p>
-      {% else %}
-      <p>No errors encountered.</p>
-      {% endif %}
-    </div>
-
-    {# Genotype & Phenotype #}
-    <div class="cards">
-      {# HPO terms #}
-      <div id="hpo" class="card">
-        <h2>HPO terms</h2>
-        {% set distinct_hpos = cohort.count_distinct_hpo_terms() %}
-        {% if distinct_hpos > 0 %}
-        <table>
-          The cohort included {{ distinct_hpos | pluralize('distinct HPO term') }}.
-          <caption>
-            {% if distinct_hpos > top_phenotype_count %}
-            Top {{top_phenotype_count}} most common HPO terms.
-            {% endif %}
-            {% if n_has_onset_info %} {# Optional onset info #}
-            {{ n_has_onset_info }} had onset information for at least 20% of individuals.
-            {% endif %}
-          </caption>
-          <tbody>
-            <tr class="strng">
-              <th><em>n</em></th>
-              <th class="lft">HPO Term</th>
-            </tr>
-
-            {% for count in hpo_counts %}
-            <tr>
-              <td>{{ count['count'] }}</td>
-              <td class="lft"><a href="https://hpo.jax.org/browse/term/{{ count['term_id'] }}">{{ count['label'] }}</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        No HPO terms were provided.
+        {% if n_has_onset_info %} {# Optional onset info #}
+        {{ n_has_onset_info }} had onset information for at least 20% of individuals.
         {% endif %}
-        {# The table is inconsistent. Skip it for now!
-        {% if n_has_onset_info > 0 %}
-        <h3>Top {{top_var_count}} HPO Terms</h3>
-        <p>
-          A total of {{ cohort.count_distinct_hpo_terms() }} HPO terms were used to annotated the cohort.
-        </p>
-        <table>
-          <tbody>
-            <tr class="strng">
-              <th>HPO</th>
-              <th>Count</th>
-            </tr>
-            {% for onset_info in has_onset_information %}
-            <tr>
-              <td>{{ onset_info.display_label }}</td>
-              <td>{{ onset_info.count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% endif %}
-        #}
-      </div>
+      </caption>
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">HPO Term</th>
+        </tr>
 
-      {# Measurements #}
-      <div id="measurements" class="card">
-        <h2>Measurements</h2>
-        {% set distinct_measurements = cohort.count_distinct_measurements() %}
-        {% if distinct_measurements > 0 %}
-        The cohort included {{ distinct_measurements | pluralize('measurement') }}.
-        <table>
-          {% if distinct_measurements > top_phenotype_count %}
-          <caption></caption>
-          Top {{ top_phenotype_count }} most common measurements.
-          </caption>
-          {% endif %}
-          <tbody>
-            <tr class="strng">
-              <th><em>n</em></th>
-              <th class="lft">Measurement</th>
-              <th>ID</th>
-            </tr>
-
-            {% for count in measurement_counts %}
-            <tr>
-              <td>{{ count['count'] }}</td>
-              <td class="lft">{{ count['label'] }}</td>
-              <td>{{ count['term_id'] }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        No data regarding measurement assays were provided.
-        {% endif %}
-      </div>
-
-      {# The most common diseases #}
-      <div id="diseases" class="card">
-        <h2>Diseases</h2>
-        {% set distinct_diseases = cohort.count_distinct_diseases() %}
-        {% if distinct_diseases > 0 %}
-        The cohort members were diagnosed with {{ distinct_diseases | pluralize('disease') }}.
-        <table>
-          {% if distinct_diseases > top_phenotype_count %}
-          <caption>
-            Top {{ top_phenotype_count }} most common diseases.
-          </caption>
-          {% endif %}
-
-          <tbody>
-            <tr class="strng">
-              <th><em>n</em></th>
-              <th class="lft">Disease</th>
-            </tr>
-            {% for count in disease_counts %}
-            <tr>
-              <td>{{ count['count'] }}</td>
-              <td class="lft"><a href="https://hpo.jax.org/browse/disease/{{ count['term_id'] }}">{{ count['label'] }}</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        No diagnoses were provided.
-        {% endif %}
-      </div>
-
-      {# Genotype #}
-      {# The most common variants #}
-      <div class="card">
-        <h2>Variants</h2>
-        <p>
-          A total of {{ cohort.all_variant_infos() | count | pluralize('unique variant') }}
-          were identified in the cohort. Variants were annotated with respect to {{ transcript_id }}.
-        </p>
-        <table>
-          <caption>
-            <h3>Top {{top_var_count}} variants</h3>
-          </caption>
-          <tbody>
-            <tr class="strng">
-              <th><em>n</em></th>
-              <th class="lft">Variant key</th>
-              <th>HGVS</th>
-              <th>Variant Class</th>
-            </tr>
-            {% for count in var_counts %}
-            <tr>
-              <td>{{ count['count'] }}</td>
-              <td class="lft">{{ count['key'] }}</td>
-              <td>{{ count['hgvsc'] }} ({{ count['hgvsp'] }})</td>
-              <td>{{ count['effects'] }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      {# The most common variant effects #}
-      <div class="card">
-        {% if has_transcript %}
-        <h2>Variant effects</h2>
-        <p>
-          The effects were predicted for {{ transcript_id }}
-        </p>
-        <table>
-          <tbody>
-            <tr class="strng">
-              <th class="lft">Variant effect</th>
-              <th>Count</th>
-            </tr>
-            {% for effect in variant_effects %}
-            <tr>
-              <td class="lft">{{ effect['effect'] }}</td>
-              <td>{{ effect['count'] }} ({{ effect['percent'] }}%)</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <p>Call this function with transcript to see table with variant effect counts.</p>
-        {% endif %}
-      </div>
-    </div>
+        {% for count in hpo_counts %}
+        <tr>
+          <td>{{ count['count'] }}</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/term/{{ count['term_id'] }}">{{ count['label'] }}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    No HPO terms were provided.
+    {% endif %}
+    {# The table is inconsistent. Skip it for now!
+    {% if n_has_onset_info > 0 %}
+    <h3>Top {{top_var_count}} HPO Terms</h3>
+    <p>
+      A total of {{ cohort.count_distinct_hpo_terms() }} HPO terms were used to annotated the cohort.
+    </p>
+    <table>
+      <tbody>
+        <tr class="strng">
+          <th>HPO</th>
+          <th>Count</th>
+        </tr>
+        {% for onset_info in has_onset_information %}
+        <tr>
+          <td>{{ onset_info.display_label }}</td>
+          <td>{{ onset_info.count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    #}
   </div>
-</body>
+
+  {# Measurements #}
+  <div id="measurements" class="card">
+    <h2>Measurements</h2>
+    {% set distinct_measurements = cohort.count_distinct_measurements() %}
+    {% if distinct_measurements > 0 %}
+    The cohort included {{ distinct_measurements | pluralize('measurement') }}.
+    <table>
+      {% if distinct_measurements > top_phenotype_count %}
+      <caption></caption>
+      Top {{ top_phenotype_count }} most common measurements.
+      </caption>
+      {% endif %}
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">Measurement</th>
+          <th>ID</th>
+        </tr>
+
+        {% for count in measurement_counts %}
+        <tr>
+          <td>{{ count['count'] }}</td>
+          <td class="lft">{{ count['label'] }}</td>
+          <td>{{ count['term_id'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    No data regarding measurement assays were provided.
+    {% endif %}
+  </div>
+
+  {# The most common diseases #}
+  <div id="diseases" class="card">
+    <h2>Diseases</h2>
+    {% set distinct_diseases = cohort.count_distinct_diseases() %}
+    {% if distinct_diseases > 0 %}
+    The cohort members were diagnosed with {{ distinct_diseases | pluralize('disease') }}.
+    <table>
+      {% if distinct_diseases > top_phenotype_count %}
+      <caption>
+        Top {{ top_phenotype_count }} most common diseases.
+      </caption>
+      {% endif %}
+
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">Disease</th>
+        </tr>
+        {% for count in disease_counts %}
+        <tr>
+          <td>{{ count['count'] }}</td>
+          <td class="lft"><a href="https://hpo.jax.org/browse/disease/{{ count['term_id'] }}">{{ count['label'] }}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    No diagnoses were provided.
+    {% endif %}
+  </div>
+
+  {# Genotype #}
+  {# The most common variants #}
+  <div class="card">
+    <h2>Variants</h2>
+    <p>
+      A total of {{ cohort.all_variant_infos() | count | pluralize('unique variant') }}
+      were identified in the cohort. Variants were annotated with respect to {{ transcript_id }}.
+    </p>
+    <table>
+      <caption>
+        <h3>Top {{top_var_count}} variants</h3>
+      </caption>
+      <tbody>
+        <tr class="strng">
+          <th><em>n</em></th>
+          <th class="lft">Variant key</th>
+          <th>HGVS</th>
+          <th>Variant Class</th>
+        </tr>
+        {% for count in var_counts %}
+        <tr>
+          <td>{{ count['count'] }}</td>
+          <td class="lft">{{ count['key'] }}</td>
+          <td>{{ count['hgvsc'] }} ({{ count['hgvsp'] }})</td>
+          <td>{{ count['effects'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# The most common variant effects #}
+  <div class="card">
+    {% if has_transcript %}
+    <h2>Variant effects</h2>
+    <p>
+      The effects were predicted for {{ transcript_id }}
+    </p>
+    <table>
+      <tbody>
+        <tr class="strng">
+          <th class="lft">Variant effect</th>
+          <th>Count</th>
+        </tr>
+        {% for effect in variant_effects %}
+        <tr>
+          <td class="lft">{{ effect['effect'] }}</td>
+          <td>{{ effect['count'] }} ({{ effect['percent'] }}%)</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>Call this function with transcript to see table with variant effect counts.</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

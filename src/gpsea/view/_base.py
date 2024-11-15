@@ -81,7 +81,7 @@ class HtmlGpseaReport(GpseaReport):
         try:
             fout = open_text_io_handle_for_writing(fh)
             fout.write(self._html)
-        except Exception:
+        finally:
             if should_close and fout is not None:
                 fout.close()
 

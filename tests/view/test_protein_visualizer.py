@@ -60,4 +60,4 @@ class TestProteinVisualizer:
         report.write(buf)
         val = buf.getvalue()
 
-        assert "html lang" in val
+        assert "gpsea-body" in val

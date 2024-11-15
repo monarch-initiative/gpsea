@@ -1,34 +1,32 @@
-{% extends "base.html" %}
+{% extends "minibase.html" %}
 {% block body %}
-<body>
-  <h1>{{ protein_label }}: {{ protein_id }}</h1>
-  <div class="card">
-    <p>
-      {{ protein_label }} has {{ feature_list | count | pluralize('annotated protein features') }}.
-      {{ n_variants_in_features }} were found to be located within these features,
-      and {{ non_feature_count }} were located elsewhere.
-      The total length of the protein is {{ protein_length }} amino acid residues.
-    </p>
-    <table>
-      <tbody>
-          <tr>
-            <th>Count</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Coordinates</th>
-            <th>Variants</th>
-          </tr>
-          {% for feat in feature_list %}
-          <tr>
-            <td>{{ feat.count }}</td>
-            <td>{{ feat.name }}</td>
-            <td>{{ feat.type }}</td>
-            <td>{{ feat.start + 1 }} - {{ feat.end }}</td>
-            <td>{{ feat.variants }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-  </div>
-</body>
+<h1>{{ protein_label }}: {{ protein_id }}</h1>
+<div class="card">
+  <p>
+    {{ protein_label }} has {{ feature_list | count | pluralize('annotated protein features') }}.
+    {{ n_variants_in_features }} were found to be located within these features,
+    and {{ non_feature_count }} were located elsewhere.
+    The total length of the protein is {{ protein_length }} amino acid residues.
+  </p>
+  <table>
+    <tbody>
+        <tr>
+          <th>Count</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Coordinates</th>
+          <th>Variants</th>
+        </tr>
+        {% for feat in feature_list %}
+        <tr>
+          <td>{{ feat.count }}</td>
+          <td>{{ feat.name }}</td>
+          <td>{{ feat.type }}</td>
+          <td>{{ feat.start + 1 }} - {{ feat.end }}</td>
+          <td>{{ feat.variants }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
 {% endblock %}
