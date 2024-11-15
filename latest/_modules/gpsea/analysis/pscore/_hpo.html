@@ -255,7 +255,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the dev delay component of the score</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            observed_term_ids: terms observed in patient</span>
 
@@ -266,32 +266,12 @@
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">observed_term_ids</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdd_tids</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdd_tids</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-        
+
         <span class="c1"># Intellectual disability</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">observed_term_ids</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idd_tids</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idd_tids</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-        
-        <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">_term_or_descendant</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">target_tid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            target_tid: term of interest</span>
-<span class="sd">            observed_term_ids: all terms observed in patient</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            1 if the term or any descendant is present in the patient, otherwise 0</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="n">observed_term_ids</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">term_id</span> <span class="o">==</span> <span class="n">target_tid</span> \
-               <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">ancestor</span> <span class="o">==</span> <span class="n">target_tid</span> <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ancestors</span><span class="p">(</span><span class="n">term_id</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="mi">1</span>
-        
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">_term_or_descendant_count</span><span class="p">(</span>
@@ -305,14 +285,12 @@
 <span class="sd">            observed_term_ids: all terms observed in patient</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            the total count of the terms equal to or descending from the target_tid</span>
+<span class="sd">            1 if at least one term is equal to or descending from the target_tid, otherwise 0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">total_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">term_id</span> <span class="ow">in</span> <span class="n">observed_term_ids</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">desc_tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_ancestors</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">include_source</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">desc_tid</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">target_tid</span><span class="p">:</span>
-                    <span class="n">total_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">total_count</span>
+            <span class="k">if</span> <span class="n">term_id</span> <span class="o">==</span> <span class="n">target_tid</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_descendant_of</span><span class="p">(</span><span class="n">term_id</span><span class="p">,</span> <span class="n">target_tid</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">_postnatal_growth_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -320,7 +298,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the postnatal growth component of the score.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            observed_term_ids: terms observed in patient</span>
 
@@ -332,7 +310,7 @@
         <span class="n">tall_stature</span> <span class="o">=</span> <span class="s1">&#39;HP:0000098&#39;</span>
         <span class="n">total_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="p">(</span><span class="n">microcephaly</span><span class="p">,</span> <span class="n">short_stature</span><span class="p">,</span> <span class="n">macrocephaly</span><span class="p">,</span> <span class="n">tall_stature</span><span class="p">):</span>
-            <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="p">)</span>
+            <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">total_count</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inconsistent annotations for postnatal growth score </span><span class="si">{</span><span class="n">total_count</span><span class="si">}</span><span class="s2">:  </span><span class="si">{</span><span class="n">observed_term_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">total_count</span>
@@ -353,14 +331,22 @@
 <span class="sd">        Returns: facial dysmorphism score (between 0 and 2)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">hypertelorism</span> <span class="o">=</span> <span class="s1">&#39;HP:0000316&#39;</span>
+        <span class="n">globe_location</span> <span class="o">=</span> <span class="s1">&#39;HP:0100886&#39;</span>  <span class="c1"># include Hypertelorism and others</span>
+        <span class="n">lip</span> <span class="o">=</span> <span class="s1">&#39;HP:0000159&#39;</span> <span class="c1"># Abnormal lip morphology HP:0000159</span>
         <span class="n">external_nose</span> <span class="o">=</span> <span class="s1">&#39;HP:0010938&#39;</span>
         <span class="n">pinna_morphology</span> <span class="o">=</span> <span class="s1">&#39;HP:0000377&#39;</span>
+        <span class="n">facial_shape</span> <span class="o">=</span> <span class="s1">&#39;HP:0001999&#39;</span>  <span class="c1"># Abnormal facial shape</span>
+        <span class="n">midface</span> <span class="o">=</span> <span class="s1">&#39;HP:0000309&#39;</span>  <span class="c1"># Abnormal midface morphology</span>
+        <span class="n">chin</span> <span class="o">=</span> <span class="s1">&#39;HP:0000306&#39;</span>  <span class="c1"># Abnormality of the chin</span>
 
-        <span class="c1"># No need to inspect descendants since Hypertelorism has none.</span>
-        <span class="n">total_count</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">hypertelorism</span> <span class="ow">in</span> <span class="n">observed_term_ids</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">total_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">globe_location</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">lip</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">external_nose</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">pinna_morphology</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">facial_shape</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">midface</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">chin</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">total_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>
@@ -373,24 +359,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Non-facial dysmorphism and congenital abnormalities component.</span>
 <span class="sd">        One point is assigned for either the corresponding HPO terms or any of their descendents up to a maximum of 2.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            observed_term_ids:  terms observed in patient</span>
 
 <span class="sd">        Returns:   Non-facial dysmorphism and congenital abnormalities score (between 0 and 2)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">hypospadias</span> <span class="o">=</span> <span class="s1">&#39;HP:0000047&#39;</span>
+        <span class="n">abn_external_genitalia</span> <span class="o">=</span> <span class="s1">&#39;HP:0000811&#39;</span>  <span class="c1"># Abnormal external genitalia</span>
         <span class="n">abnormal_hand_morphology</span> <span class="o">=</span> <span class="s1">&#39;HP:0005922&#39;</span>
         <span class="n">abnormal_heart_morphology</span> <span class="o">=</span> <span class="s1">&#39;HP:0001627&#39;</span>
-        <span class="c1"># total_count = len([t for t in observed_term_ids if t == hypospadias])</span>
-        <span class="n">total_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span>
-            <span class="n">target_tid</span><span class="o">=</span><span class="n">hypospadias</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abnormal_hand_morphology</span><span class="p">,</span>
-                                                      <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
-        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abnormal_heart_morphology</span><span class="p">,</span>
-                                                      <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+
+        <span class="n">total_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abn_external_genitalia</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">,)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abnormal_hand_morphology</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
+        <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abnormal_heart_morphology</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">total_count</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_prenatal_growth_score</span><span class="p">(</span>
@@ -419,7 +401,7 @@
     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate score based on list of strings with term identifiers or observed HPO terms.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            patient: list of strings with term identifiers or observed HPO terms</span>
 
@@ -433,7 +415,7 @@
         <span class="n">facial_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_facial_dysmorphism_score</span><span class="p">(</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="n">congen_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_congenital_score</span><span class="p">(</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="n">prenatal_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prenatal_growth_score</span><span class="p">(</span><span class="n">observed_term_ids</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">delay_score</span> <span class="o">+</span> <span class="n">growth_score</span> <span class="o">+</span> <span class="n">facial_score</span> <span class="o">+</span> <span class="n">congen_score</span> <span class="o">+</span> <span class="n">prenatal_score</span></div>
 </div>
 

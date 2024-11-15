@@ -112,7 +112,7 @@ nonfacial dysmorphisms, and other congenital anomalies
 Statistical significance of a difference in the De Vries score between groups can be
 determined using the Mann-Whitney-U test.</p>
 <p>We refer to <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/21712853/">Feenstra et al. (2011)</a> for
-the original description of the adjusted De Vries score. Here we offer a version of the
+the original description of the adjusted De Vries score. Here we offer an adapted version of the
 score that leverages the structure of the Human Phenotype Ontology to assess the phenotype.</p>
 <section id="the-sections-of-the-score">
 <h2>The sections of the score<a class="headerlink" href="#the-sections-of-the-score" title="Link to this heading"></a></h2>
@@ -230,9 +230,12 @@ is 2 because the same individual cannot have both tall and short stature or both
 </section>
 <section id="facial-dysmorphic-features">
 <h3>Facial dysmorphic features<a class="headerlink" href="#facial-dysmorphic-features" title="Link to this heading"></a></h3>
-<p>This section assigns two points if two or more anomalies are identified in the following
-categories: hypertelorism, nasal anomalies and ear anomalies. Our implementation of this feature counts the total
-number of terms or descendents of the following HPO terms.</p>
+<p>This section assigns two points if two or more facial dysmorphisms are identified. In contrast to the list of anomalies described
+in the original 2011 publication of the DeVries score, we leverage the structure of the HPO to include many more HPO terms that
+denote various kinds of facial dysmorphism (e.g., <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0100886">Abnormality of globe location</a> instead of just
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000316">Hypertelorism (HP:0000316)</a>).</p>
+<p>Our implementation of this feature counts the total number of terms or descendents of the following HPO terms. Up to one point is given
+for each of the categories.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>HPO term</p></th>
@@ -240,23 +243,38 @@ number of terms or descendents of the following HPO terms.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000316">Hypertelorism (HP:0000316)</a></p></td>
-<td><p>1</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0100886">Abnormality of globe location (HP:0000316)</a></p></td>
+<td><p>0 or 1</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0010938">Abnormal external nose morphology (HP:0010938)</a></p></td>
-<td><p>1 each</p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000159">Abnormal lip morphology (HP:0000159)</a></p></td>
+<td><p>0 or 1</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000377">Abnormal pinna morphology (HP:0000377)</a></p></td>
-<td><p>1 each</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001999">Abnormal facial shape (HP:0001999)</a></p></td>
+<td><p>0 or 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000309">Abnormal midface morphology (HP:0000309)</a></p></td>
+<td><p>0 or 1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000290">Abnormal forehead morphology (HP:0000290)</a></p></td>
+<td><p>0 or 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000306">Abnormal chin morphology (HP:0000306)</a></p></td>
+<td><p>0 or 1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0010938">Abnormal external nose morphology (HP:0010938)</a></p></td>
+<td><p>0 or 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000377">Abnormal pinna morphology (HP:0000377)</a></p></td>
+<td><p>0 or 1</p></td>
 </tr>
 </tbody>
 </table>
-<p>If two or more terms are found, the score is 2, otherwise a score of zero is assigned.</p>
+<p>If items from two or more categories are found, the score is 2, otherwise a score of zero is assigned.</p>
 </section>
 <section id="non-facial-dysmorphism-and-congenital-abnormalities">
 <h3>Non-facial dysmorphism and congenital abnormalities<a class="headerlink" href="#non-facial-dysmorphism-and-congenital-abnormalities" title="Link to this heading"></a></h3>
-<p>One point is assigned for either the
-corresponding HPO terms or any of their descendents up to a maximum of two points.</p>
+<p>One point is assigned for either the corresponding HPO terms or any of their descendents up to a maximum of two points.
+A maximum of one point is assigned for each of the following categories.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>HPO term</p></th>
@@ -265,16 +283,17 @@ corresponding HPO terms or any of their descendents up to a maximum of two point
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0005922">Abnormal hand morphology (HP:0005922)</a></p></td>
-<td><p>1 each</p></td>
+<td><p>0 or 1</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001627">Abnormal heart morphology (HP:0001627)</a></p></td>
-<td><p>1 each</p></td>
+<td><p>0 or 1</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000047">Hypospadias (HP:0000047)</a></p></td>
-<td><p>1</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000811">Abnormal external genitalia morphology (HP:0000811)</a></p></td>
+<td><p>0 or 1</p></td>
 </tr>
 </tbody>
 </table>
+<p>The score for this section can thus be 0, 1, or 2.</p>
 </section>
 <section id="final-score">
 <h3>Final score<a class="headerlink" href="#final-score" title="Link to this heading"></a></h3>

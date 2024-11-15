@@ -15,7 +15,7 @@ Statistical significance of a difference in the De Vries score between groups ca
 determined using the Mann-Whitney-U test.
 
 We refer to `Feenstra et al. (2011) <https://pubmed.ncbi.nlm.nih.gov/21712853/>`_ for
-the original description of the adjusted De Vries score. Here we offer a version of the
+the original description of the adjusted De Vries score. Here we offer an adapted version of the
 score that leverages the structure of the Human Phenotype Ontology to assess the phenotype.
 
 
@@ -113,37 +113,53 @@ is 2 because the same individual cannot have both tall and short stature or both
 Facial dysmorphic features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section assigns two points if two or more anomalies are identified in the following
-categories: hypertelorism, nasal anomalies and ear anomalies. Our implementation of this feature counts the total
-number of terms or descendents of the following HPO terms.
+This section assigns two points if two or more facial dysmorphisms are identified. In contrast to the list of anomalies described
+in the original 2011 publication of the DeVries score, we leverage the structure of the HPO to include many more HPO terms that 
+denote various kinds of facial dysmorphism (e.g., `Abnormality of globe location <https://hpo.jax.org/browse/term/HP:0100886>`_ instead of just
+`Hypertelorism (HP:0000316) <https://hpo.jax.org/browse/term/HP:0000316>`_).
+
+Our implementation of this feature counts the total number of terms or descendents of the following HPO terms. Up to one point is given
+for each of the categories.
 
 +----------------------------------------------------------------------------------------------------------+-----------+
 | HPO term                                                                                                 | Score     |
 +==========================================================================================================+===========+
-| `Hypertelorism (HP:0000316) <https://hpo.jax.org/browse/term/HP:0000316>`_                               | 1         |
+| `Abnormality of globe location (HP:0000316) <https://hpo.jax.org/browse/term/HP:0100886>`_               | 0 or 1    |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Abnormal external nose morphology (HP:0010938) <https://hpo.jax.org/browse/term/HP:0010938>`_           | 1 each    |
+| `Abnormal lip morphology (HP:0000159) <https://hpo.jax.org/browse/term/HP:0000159>`_                     |  0 or 1   |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Abnormal pinna morphology (HP:0000377)  <https://hpo.jax.org/browse/term/HP:0000377>`_                  | 1 each    |
+| `Abnormal facial shape (HP:0001999) <https://hpo.jax.org/browse/term/HP:0001999>`_                       |  0 or 1   |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Abnormal midface morphology (HP:0000309) <https://hpo.jax.org/browse/term/HP:0000309>`_                 |  0 or 1   |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Abnormal forehead morphology (HP:0000290) <https://hpo.jax.org/browse/term/HP:0000290>`_                | 0 or 1    |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Abnormal chin morphology (HP:0000306) <https://hpo.jax.org/browse/term/HP:0000306>`_                    |  0 or 1   |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Abnormal external nose morphology (HP:0010938) <https://hpo.jax.org/browse/term/HP:0010938>`_           |  0 or 1   |
++----------------------------------------------------------------------------------------------------------+-----------+
+| `Abnormal pinna morphology (HP:0000377)  <https://hpo.jax.org/browse/term/HP:0000377>`_                  |  0 or 1   |
 +----------------------------------------------------------------------------------------------------------+-----------+
 
-If two or more terms are found, the score is 2, otherwise a score of zero is assigned.
+If items from two or more categories are found, the score is 2, otherwise a score of zero is assigned.
 
 
 Non-facial dysmorphism and congenital abnormalities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-One point is assigned for either the
-corresponding HPO terms or any of their descendents up to a maximum of two points.
+One point is assigned for either the corresponding HPO terms or any of their descendents up to a maximum of two points.
+A maximum of one point is assigned for each of the following categories.
 
 +----------------------------------------------------------------------------------------------------------+-----------+
 | HPO term                                                                                                 | Score     |
 +==========================================================================================================+===========+
-| `Abnormal hand morphology (HP:0005922) <https://hpo.jax.org/browse/term/HP:0005922>`_                    | 1 each    |
+| `Abnormal hand morphology (HP:0005922) <https://hpo.jax.org/browse/term/HP:0005922>`_                    | 0 or 1    |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Abnormal heart morphology (HP:0001627) <https://hpo.jax.org/browse/term/HP:0001627>`_                   | 1 each    |
+| `Abnormal heart morphology (HP:0001627) <https://hpo.jax.org/browse/term/HP:0001627>`_                   |  0 or 1   |
 +----------------------------------------------------------------------------------------------------------+-----------+
-| `Hypospadias (HP:0000047) <https://hpo.jax.org/browse/term/HP:0000047>`_                                 | 1         |
+| `Abnormal external genitalia morphology (HP:0000811) <https://hpo.jax.org/browse/term/HP:0000811>`_      |  0 or 1   |
 +----------------------------------------------------------------------------------------------------------+-----------+
+
+The score for this section can thus be 0, 1, or 2.
 
 
 Final score
