@@ -10,6 +10,8 @@
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/gpsea.css?v=547657ed" />
+      <link rel="stylesheet" type="text/css" href="_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="_static/dark_mode_css/dark.css?v=70edf1c7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -19,6 +21,8 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=6dbb43f8"></script>
+      <script src="_static/dark_mode_js/default_dark.js?v=fd565c74"></script>
+      <script src="_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -244,12 +248,12 @@
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_cohort_creator">configure_caching_cohort_creator() (in module gpsea.preprocessing)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator">configure_cohort_creator() (in module gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service">configure_default_protein_metadata_service() (in module gpsea.preprocessing)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis">configure_hpo_term_analysis() (in module gpsea.analysis.pcats)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_protein_metadata_service">configure_protein_metadata_service() (in module gpsea.preprocessing)</a>
@@ -282,11 +286,21 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_deceased">count_deceased() (gpsea.model.Cohort method)</a>
 </li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_distinct_diseases">count_distinct_diseases() (gpsea.model.Cohort method)</a>
+</li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_distinct_hpo_terms">count_distinct_hpo_terms() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_distinct_measurements">count_distinct_measurements() (gpsea.model.Cohort method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_females">count_females() (gpsea.model.Cohort method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_males">count_males() (gpsea.model.Cohort method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.count_unique_diseases">count_unique_diseases() (gpsea.model.Patient method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.count_unique_measurements">count_unique_measurements() (gpsea.model.Patient method)</a>
+</li>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.count_unique_phenotypes">count_unique_phenotypes() (gpsea.model.Patient method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_unknown_sex">count_unknown_sex() (gpsea.model.Cohort method)</a>
 </li>
@@ -1173,6 +1187,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.util.html#gpsea.util.open_resource">open_resource() (in module gpsea.util)</a>
+</li>
       <li><a href="apidocs/gpsea.util.html#gpsea.util.open_text_io_handle_for_reading">open_text_io_handle_for_reading() (in module gpsea.util)</a>
 </li>
       <li><a href="apidocs/gpsea.util.html#gpsea.util.open_text_io_handle_for_writing">open_text_io_handle_for_writing() (in module gpsea.util)</a>

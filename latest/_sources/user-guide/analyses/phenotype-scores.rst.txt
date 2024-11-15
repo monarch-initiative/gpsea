@@ -5,6 +5,10 @@
 Compare phenotype scores in genotype groups
 ===========================================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
 
 .. _mann-whitney-u-test:
 
@@ -288,7 +292,7 @@ to visualize the phenotype score distributions:
 .. doctest:: phenotype-scores
    :hide:
 
-   >>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
+   >>> if _overwrite: fig.savefig('docs/img/rere_phenotype_score_boxplot.png')
 
 
 
