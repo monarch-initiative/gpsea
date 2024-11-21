@@ -1,11 +1,10 @@
 import math
-import typing
 
 import hpotk
 import pandas as pd
 import pytest
 
-from gpsea.analysis import MultiPhenotypeAnalysisResult
+from gpsea.analysis import MultiPhenotypeAnalysisResult, StatisticResult
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.predicate.phenotype import HpoPredicate
 from gpsea.analysis.pcats.stats import FisherExactTest
@@ -65,8 +64,13 @@ def multi_phenotype_analysis_result(
                 columns=pd.Index(suox_gt_predicate.get_categories()),
             ),
         ),
-        pvals=(math.nan, 0.005, 0.0005, .05),
-        corrected_pvals=(math.nan, 0.01, 0.001, .5),
+        statistic_results=(
+            None,
+            StatisticResult(statistic=1., pval=0.005),
+            StatisticResult(statistic=10.0, pval=0.0005),
+            StatisticResult(statistic=0.1, pval=0.05),
+        ),
+        corrected_pvals=(math.nan, 0.01, 0.001, 0.5),
     )
 
 
