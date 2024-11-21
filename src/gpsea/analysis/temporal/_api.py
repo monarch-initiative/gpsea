@@ -13,7 +13,7 @@ from ._base import Survival
 from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
-from .._base import MonoPhenotypeAnalysisResult
+from .._base import MonoPhenotypeAnalysisResult, StatisticResult
 from .._partition import ContinuousPartitioning
 
 
@@ -69,14 +69,14 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         endpoint: Endpoint,
         statistic: SurvivalStatistic,
         data: pd.DataFrame,
-        pval: float,
+        statistic_result: StatisticResult,
     ):
         super().__init__(
             gt_predicate=gt_predicate,
             phenotype=endpoint,
             statistic=statistic,
             data=data,
-            pval=pval,
+            statistic_result=statistic_result,
         )
         assert isinstance(endpoint, Endpoint)
 
@@ -131,7 +131,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
             f"endpoint={self._phenotype}, "
             f"statistic={self._statistic}, "
             f"data={self._data}, "
-            f"pval={self._pval})"
+            f"statistic_result={self._statistic_result})"
         )
 
     def __repr__(self) -> str:
@@ -187,12 +187,12 @@ class SurvivalAnalysis:
                 survivals[gt_cat].append(survival)
 
         vals = tuple(survivals[gt_cat] for gt_cat in gt_predicate.get_categorizations())
-        pval = self._statistic.compute_pval(vals)
+        result = self._statistic.compute_pval(vals)
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,
             endpoint=endpoint,
             statistic=self._statistic,
             data=data,
-            pval=pval,
+            statistic_result=result,
         )

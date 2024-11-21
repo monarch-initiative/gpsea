@@ -25,6 +25,6 @@ class TestLogRankTest:
                 Survival(3.0, is_censored=True),
             ),
         )
-        pval = statistic.compute_pval(values)
+        result = statistic.compute_pval(values)
 
-        assert pval == pytest.approx(0.013383101)
+        assert result.pval == pytest.approx(0.013383101)

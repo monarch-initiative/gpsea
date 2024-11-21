@@ -4,7 +4,7 @@ import typing
 
 from scipy.stats import mannwhitneyu, ttest_ind
 
-from ..._base import Statistic
+from ..._base import Statistic, StatisticResult
 
 
 class PhenotypeScoreStatistic(Statistic, metaclass=abc.ABCMeta):
@@ -18,12 +18,12 @@ class PhenotypeScoreStatistic(Statistic, metaclass=abc.ABCMeta):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
-    ) -> float:
+    ) -> StatisticResult:
         pass
 
     def __eq__(self, value: object) -> bool:
         return super().__eq__(value)
-    
+
     def __hash__(self) -> int:
         return super().__hash__()
 
@@ -38,7 +38,7 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
 
     See :ref:`phenotype-score-stats` for an example usage.
     """
-    
+
     def __init__(self):
         super().__init__(
             name="Mann-Whitney U test",
@@ -47,19 +47,22 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
-    ) -> float:
+    ) -> StatisticResult:
         assert len(scores) == 2, 'Mann-Whitney U rank test only supports 2 categories at this time'
-        
+
         x, y = scores
         x = MannWhitneyStatistic._remove_nans(x)
         y = MannWhitneyStatistic._remove_nans(y)
-        _, pval = mannwhitneyu(
+        statistic, pval = mannwhitneyu(
             x=x,
             y=y,
             alternative='two-sided',
         )
 
-        return pval
+        return StatisticResult(
+            statistic=float(statistic),
+            pval=float(pval),
+        )
 
     @staticmethod
     def _remove_nans(
@@ -69,7 +72,7 @@ class MannWhitneyStatistic(PhenotypeScoreStatistic):
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MannWhitneyStatistic)
-    
+
     def __hash__(self) -> int:
         return 23
 
@@ -93,9 +96,13 @@ class TTestStatistic(PhenotypeScoreStatistic):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[float]],
-    ) -> float:
+    ) -> StatisticResult:
+        """
+        :Returns:
+            a tuple with the p-value and the t-statistic
+        """
         assert len(scores) == 2, 'T test only supports 2 categories at this time'
-        
+
         x, y = scores
         res = ttest_ind(
             a=x, b=y,
@@ -103,10 +110,13 @@ class TTestStatistic(PhenotypeScoreStatistic):
             nan_policy="omit",
         )
 
-        return res.pvalue
+        return StatisticResult(
+            statistic=float(res.statistic),
+            pval=float(res.pvalue),
+        )
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, TTestStatistic)
-    
+
     def __hash__(self) -> int:
         return 31
