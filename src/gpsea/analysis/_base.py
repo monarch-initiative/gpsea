@@ -11,6 +11,50 @@ from .predicate.genotype import GenotypePolyPredicate
 from ._partition import Partitioning
 
 
+class StatisticResult:
+    """
+    `StatisticResult` reports result of a :class:`~gpsea.analysis.Statistic`.
+
+    It includes a statistic and a corresponding p value.
+    """
+
+    def __init__(
+        self,
+        statistic: typing.Optional[float],
+        pval: float,
+    ):
+        if statistic is not None:
+            assert isinstance(statistic, float)
+        self._statistic = statistic
+
+        assert isinstance(pval, float)
+        self._pval = pval
+
+    @property
+    def statistic(self) -> typing.Optional[float]:
+        return self._statistic
+
+    @property
+    def pval(self) -> float:
+        return self._pval
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, StatisticResult)
+            and self._statistic == value._statistic
+            and self._pval == value._pval
+        )
+
+    def __hash__(self) -> int:
+        return hash((self._statistic, self._pval,))
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    def __repr__(self) -> str:
+        return f"StatisticResult(statistic={self._statistic}, pval={self._pval})"
+
+
 class Statistic(metaclass=abc.ABCMeta):
     """
     Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.

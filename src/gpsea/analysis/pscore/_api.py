@@ -262,12 +262,12 @@ class PhenotypeScoreAnalysis:
         y = data.loc[
             data[MonoPhenotypeAnalysisResult.GT_COL] == y_key, MonoPhenotypeAnalysisResult.PH_COL
         ].to_numpy(dtype=float)  # type: ignore
-        pval = self._statistic.compute_pval(scores=(x, y))
+        result = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(
             gt_predicate=gt_predicate,
             phenotype=pheno_scorer,
             statistic=self._statistic,
             data=data,
-            pval=pval,
+            pval=result.pval,
         )

@@ -187,12 +187,12 @@ class SurvivalAnalysis:
                 survivals[gt_cat].append(survival)
 
         vals = tuple(survivals[gt_cat] for gt_cat in gt_predicate.get_categorizations())
-        pval = self._statistic.compute_pval(vals)
+        result = self._statistic.compute_pval(vals)
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,
             endpoint=endpoint,
             statistic=self._statistic,
             data=data,
-            pval=pval,
+            pval=result.pval,
         )

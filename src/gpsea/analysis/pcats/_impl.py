@@ -204,8 +204,8 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
                 pvals.append(np.nan)
             else:
                 try:
-                    pval = self._count_statistic.compute_pval(count)
-                    pvals.append(pval)
+                    stat_result = self._count_statistic.compute_pval(count)
+                    pvals.append(stat_result.pval)
                 except ValueError as ve:
                     # TODO: add more context to the exception?
                     raise ve
