@@ -18,6 +18,15 @@ I = typing.TypeVar('I', bound=hpotk.model.Identified)
 Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).
 """
 
+T = typing.TypeVar('T')
+"""
+Whatever.
+"""
+
+U = typing.TypeVar('U')
+"""
+Whatever else.
+"""
 
 class Status(enum.Enum):
     UNKNOWN = 0
@@ -178,6 +187,12 @@ class Patient:
         """
         term_id = Patient._check_id(term_id)
         return Patient._find_first_by_id(term_id, self.phenotypes)
+    
+    def count_unique_phenotypes(self) -> int:
+        """
+        Get the count of unique HPO terms (present or excluded) in this individual.
+        """
+        return Patient._count_unique_identifiers(self.phenotypes)
 
     @property
     def measurements(self) -> typing.Sequence[Measurement]:
@@ -200,6 +215,12 @@ class Patient:
         term_id = Patient._check_id(term_id)
         return Patient._find_first_by_id(term_id, self.measurements)
 
+    def count_unique_measurements(self) -> int:
+        """
+        Get the count of unique measurements in this individual.
+        """
+        return Patient._count_unique_identifiers(self.measurements)
+
     @property
     def diseases(self) -> typing.Sequence[Disease]:
         """
@@ -216,6 +237,12 @@ class Patient:
         """
         term_id = Patient._check_id(term_id)
         return Patient._find_first_by_id(term_id, self.diseases)
+
+    def count_unique_diseases(self) -> int:
+        """
+        Get the count of unique diseases in this individual.
+        """
+        return Patient._count_unique_identifiers(self.diseases)
 
     @property
     def variants(self) -> typing.Sequence[Variant]:
@@ -269,6 +296,18 @@ class Patient:
                 return m
 
         return None
+    
+    @staticmethod
+    def _unique_identifiers_of_identified(
+        items: typing.Iterable[I],
+    ) -> typing.Collection[hpotk.TermId]:
+        return set(item.identifier for item in items)
+
+    @staticmethod
+    def _count_unique_identifiers(
+        items: typing.Iterable[I],
+    ) -> int:
+        return len(Patient._unique_identifiers_of_identified(items))
 
     def __str__(self) -> str:
         return (f"Patient("
@@ -356,29 +395,37 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
-        return set(itertools.chain(phenotype for patient in self._members for phenotype in patient.phenotypes))
+        return set(self._iterate_through_items(lambda p: p.phenotypes))
     
     def count_distinct_hpo_terms(self) -> int:
         """
         Get count of distinct HPO terms (either in present or excluded state) seen in the cohort members.
         """
-        terms = set(
-            itertools.chain(phenotype.identifier for patient in self._members for phenotype in patient.phenotypes)
-        )
-        return len(terms)
-
+        return Cohort._count_distinct_items(self.all_phenotypes())
 
     def all_measurements(self) -> typing.Set[Measurement]:
         """
         Get a set of all phenotypes (observed or excluded) in the cohort members.
         """
-        return set(itertools.chain(measurement for patient in self._members for measurement in patient.measurements))
+        return set(self._iterate_through_items(lambda p: p.measurements))
+
+    def count_distinct_measurements(self) -> int:
+        """
+        Get count of distinct measurements in the cohort members.
+        """
+        return Cohort._count_distinct_items(self.all_measurements())
 
     def all_diseases(self) -> typing.Set[Disease]:
         """
         Get a set of all diseases (observed or excluded) in the cohort members.
         """
-        return set(itertools.chain(disease for patient in self._members for disease in patient.diseases))
+        return set(self._iterate_through_items(lambda p: p.diseases))
+    
+    def count_distinct_diseases(self) -> int:
+        """
+        Get count of distinct disease diagnoses of the cohort members.
+        """
+        return Cohort._count_distinct_items(self.all_diseases())
 
     def count_with_disease_onset(self) -> int:
         """
@@ -437,45 +484,65 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
             typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,
                 number of patients with that phenotype)
         """
-        counter = Counter()
-        for patient in self._members:
-            counter.update(p.identifier.value for p in patient.phenotypes if p.is_present)
-        return counter.most_common(top)
+        return self._get_most_common(
+            extract_identified_items=lambda individual: individual.phenotypes,
+            extract_key=lambda p: p.identifier.value,
+            item_filter=lambda phenotype: phenotype.is_present,
+            top=top,
+        )
 
     def list_measurements(
         self,
         top: typing.Optional[int] = None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
-        Get a sequence with counts of HPO terms used as direct annotations of the cohort members.
+        Get a sequence with counts of measurements of the cohort members.
 
         Args:
-            typing.Optional[int]: If not given, lists all present phenotypes.
+            typing.Optional[int]: If not given, lists all measurements.
                 Otherwise, lists only the `top` highest counts
 
         Returns:
-            typing.Sequence[typing.Tuple[str, int]]: A sequence of tuples, formatted (phenotype CURIE,
-                number of patients with that phenotype)
+            typing.Sequence[typing.Tuple[Measurement, int]]: A sequence of tuples,
+                formatted (:class:`~gpsea.model.Measurement`, number of individuals with the measurement)
         """
-        counter = Counter()
-        for patient in self._members:
-            counter.update(m.identifier.value for m in patient.measurements)
-        return counter.most_common(top)
+        return self._get_most_common(
+            extract_identified_items=lambda individual: individual.measurements,
+            extract_key=lambda measurement: measurement.identifier.value,
+            top=top,
+        )
 
     def list_all_diseases(
         self,
-        top=None,
+        top: typing.Optional[int] = None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
-        counter = Counter()
-        for patient in self._members:
-            counter.update(d.identifier.value for d in patient.diseases)
-        return counter.most_common(top)
+        """
+        Get a sequence with counts of disease of the cohort members.
+
+        Args:
+            typing.Optional[int]: If not given, lists all diseases.
+                Otherwise, lists only the `top` highest counts
+
+        Returns:
+            typing.Sequence[typing.Tuple[Measurement, int]]: A sequence of tuples,
+                formatted (:class:`~gpsea.model.Disease`, number of individuals with the diagnosis)
+        """
+        return self._get_most_common(
+            extract_identified_items=lambda individual: individual.diseases,
+            extract_key=lambda disease: disease.identifier.value,
+            top=top,
+        )
 
     def list_all_variants(
         self,
-        top=None,
+        top: typing.Optional[int] = None,
     ) -> typing.Sequence[typing.Tuple[str, int]]:
         """
+        Get the number of times a variant has been observed in cohort individuals.
+
+        Note, this is *not* the same as the number of variant alleles in the cohort individuals!
+        This method counts each variant *once*, regardless of its genotype!
+
         Args:
             typing.Optional[int]: If not given, lists all variants. Otherwise, lists only the `top` highest counts
 
@@ -484,10 +551,11 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         """
         # TODO: the counter counts the number of occurrences of a variant in an individual,
         # and NOT the allele count! Evaluate if this is what we want!
-        counter = Counter()
-        for patient in self._members:
-            counter.update(variant.variant_info.variant_key for variant in patient.variants)
-        return counter.most_common(top)
+        return self._get_most_common(
+            extract_identified_items=lambda individual: individual.variants,
+            extract_key=lambda v: v.variant_info.variant_key,
+            top=top,
+        )
 
     def list_all_proteins(
             self,
@@ -596,7 +664,34 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
         self,
         predicate: typing.Callable[[Patient], bool],
     ) -> int:
-        return sum(predicate(individual) for individual in self._members)
+        return sum(predicate(individual) for individual in self._members)    
+
+    def _iterate_through_items(
+        self,
+        extract_items: typing.Callable[[Patient,], typing.Iterable[I]],
+    ) -> typing.Iterator[I]:
+        return itertools.chain(item for individual in self._members for item in extract_items(individual))
+
+    def _get_most_common(
+        self,
+        extract_identified_items: typing.Callable[[Patient,], typing.Iterable[T]],
+        extract_key: typing.Callable[[T,], U],
+        item_filter: typing.Optional[typing.Callable[[T,], bool]] = None,
+        top: typing.Optional[int] = None,
+    ) -> typing.Sequence[typing.Tuple[U, int]]:
+        counter = Counter()
+        for individual in self._members:
+            counter.update(
+                extract_key(item) for item in extract_identified_items(individual)
+                if item_filter is None or item_filter(item)
+            )
+        return counter.most_common(top)
+
+    @staticmethod
+    def _count_distinct_items(
+        items: typing.Iterable[I],
+    ) -> int:
+        return len(set(item.identifier for item in items))
 
     def __eq__(self, other):
         return isinstance(other, Cohort) and self._members == other._members

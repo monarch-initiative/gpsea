@@ -13,11 +13,11 @@ from gpsea.view import (
 
 class TestProteinVisualizer:
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def visualizer(self) -> ProteinVisualizer:
         return ProteinVisualizer()
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def visualizable(
         self,
         suox_mane_tx_coordinates: TranscriptCoordinates,
@@ -60,4 +60,4 @@ class TestProteinVisualizer:
         report.write(buf)
         val = buf.getvalue()
 
-        assert "html lang" in val
+        assert "gpsea-body" in val

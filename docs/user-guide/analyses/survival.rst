@@ -4,6 +4,11 @@
 Survival analysis
 =================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
 
 ****************
 Example analysis
@@ -155,7 +160,7 @@ We can plot Kaplan-Meier curves:
 .. doctest:: survival
    :hide:
 
-   >>> fig.savefig('docs/img/umod_km_curves.png')  # doctest: +SKIP
+   >>> if _overwrite: fig.savefig('docs/img/umod_km_curves.png')
    
 
 Raw data
