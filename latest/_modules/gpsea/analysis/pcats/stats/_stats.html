@@ -90,9 +90,9 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">fisher_exact</span>
 
-<span class="kn">from</span> <span class="nn">..._base</span> <span class="kn">import</span> <span class="n">Statistic</span>
+<span class="kn">from</span> <span class="nn">..._base</span> <span class="kn">import</span> <span class="n">Statistic</span><span class="p">,</span> <span class="n">StatisticResult</span>
 
 
 <div class="viewcode-block" id="CountStatistic">
@@ -150,7 +150,7 @@
     <span class="k">def</span> <span class="nf">compute_pval</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StatisticResult</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 
@@ -190,12 +190,19 @@
     <span class="k">def</span> <span class="nf">compute_pval</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StatisticResult</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">pval</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;two-sided&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">pval</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">fisher_exact</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;two-sided&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">StatisticResult</span><span class="p">(</span>
+                <span class="n">statistic</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span>
+                <span class="n">pval</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fisher_exact</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fisher_exact</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">StatisticResult</span><span class="p">(</span>
+                <span class="n">statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported counts shape </span><span class="si">{</span><span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
@@ -239,11 +246,12 @@
                 <span class="n">p_0</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
 
         <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">row_sum</span><span class="p">,</span> <span class="n">col_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">FisherExactTest</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">row_sum</span><span class="p">,</span> <span class="n">col_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_dfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dfs</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 
         <span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span> <span class="o">=</span> <span class="n">pos</span>
         <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r_sum</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">c_sum</span><span class="p">))</span>
@@ -307,7 +315,7 @@
                     <span class="n">pos_new</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">pos_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">xx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat_new</span><span class="p">,</span> <span class="n">pos_new</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">FisherExactTest</span><span class="o">.</span><span class="n">_dfs</span><span class="p">(</span><span class="n">mat_new</span><span class="p">,</span> <span class="n">pos_new</span><span class="p">,</span> <span class="n">r_sum</span><span class="p">,</span> <span class="n">c_sum</span><span class="p">,</span> <span class="n">p_0</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">FisherExactTest</span><span class="p">)</span>
