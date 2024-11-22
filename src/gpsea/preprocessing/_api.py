@@ -89,6 +89,15 @@ class TranscriptCoordinateService(metaclass=abc.ABCMeta):
         """
         pass
 
+    @staticmethod
+    def _parse_tx(tx: typing.Union[str, TranscriptInfoAware]) -> str:
+        if isinstance(tx, str):
+            return tx
+        elif isinstance(tx, TranscriptInfoAware):
+            return tx.transcript_id
+        else:
+            raise ValueError(f'Expected a `str` or `TranscriptInfoAware` but got {type(tx)}: {tx}')
+
 
 class GeneCoordinateService(metaclass=abc.ABCMeta):
     """
