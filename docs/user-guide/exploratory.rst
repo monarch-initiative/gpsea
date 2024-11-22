@@ -71,11 +71,10 @@ We start by loading the cohort from the JSON file:
 then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
 (see :ref:`choose-tx-and-protein` for more info):
 
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import VVMultiCoordinateService, configure_default_protein_metadata_service
+>>> from gpsea.preprocessing import configure_default_tx_coordinate_service, configure_default_protein_metadata_service
 >>> tx_id = "NM_181486.4"
 >>> pt_id = "NP_852259.1"
->>> tx_service = VVMultiCoordinateService(genome_build=GRCh38)
+>>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
 >>> tx_coordinates = tx_service.fetch(tx_id)
 >>> pm_service = configure_default_protein_metadata_service()
 >>> protein_meta = pm_service.annotate(pt_id)

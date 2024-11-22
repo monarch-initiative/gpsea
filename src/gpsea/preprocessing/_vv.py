@@ -167,15 +167,6 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         response_json = self.get_response(gene)
         return self.parse_multiple(response_json)
 
-    @staticmethod
-    def _parse_tx(tx: typing.Union[str, TranscriptInfoAware]) -> str:
-        if isinstance(tx, str):
-            return tx
-        elif isinstance(tx, TranscriptInfoAware):
-            return tx.transcript_id
-        else:
-            raise ValueError(f'Expected a `str` or `TranscriptInfoAware` but got {type(tx)}: {tx}')
-
     def get_response(self, tx_id: str):
         api_url = self._url % tx_id
         return fetch_response(api_url, self._headers, self._timeout)

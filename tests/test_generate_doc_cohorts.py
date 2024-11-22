@@ -13,12 +13,19 @@ from gpsea.preprocessing import load_phenopackets
 from gpsea.preprocessing import CohortCreator, configure_caching_cohort_creator
 
 
+@pytest.fixture
+def fpath_doc_data_dir(
+    fpath_project_dir: str,
+) -> str:
+    return os.path.join(fpath_project_dir, "docs", "cohort-data")
+
+
 @pytest.mark.skip("Run only to update cohorts")
 class TestGenerateCohortsForDocumentation:
 
     PHENOPACKET_STORE_VERSION = "0.1.20"
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def cohort_creator(
         self,
         hpo: hpotk.MinimalOntology,
@@ -30,13 +37,6 @@ class TestGenerateCohortsForDocumentation:
     @pytest.fixture
     def phenopacket_registry(self) -> PhenopacketStoreRegistry:
         return configure_phenopacket_registry()
-
-    @pytest.fixture
-    def fpath_doc_data_dir(
-        self,
-        fpath_project_dir: str,
-    ) -> str:
-        return os.path.join(fpath_project_dir, "docs", "cohort-data")
 
     @staticmethod
     def load_cohort(
@@ -52,7 +52,7 @@ class TestGenerateCohortsForDocumentation:
             phenopackets = tuple(
                 sorted(
                     ps.iter_cohort_phenopackets(cohort_name),
-                    key=lambda pp: pp.id + pp.subject.id
+                    key=lambda pp: pp.id + pp.subject.id,
                 )
             )
 
@@ -76,7 +76,8 @@ class TestGenerateCohortsForDocumentation:
         )
         with open(fpath_cohort_file, "w") as fh:
             json.dump(
-                cohort, fh,
+                cohort,
+                fh,
                 cls=GpseaJSONEncoder,
                 indent=2,
             )
@@ -88,7 +89,7 @@ class TestGenerateCohortsForDocumentation:
             "RERE",
             "TBX5",
             "UMOD",
-        ]
+        ],
     )
     def test_generate_cohorts(
         self,

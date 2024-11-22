@@ -19,10 +19,9 @@ from gpsea.preprocessing import (
 )
 from gpsea.preprocessing import (
     FunctionalAnnotator,
-    VarCachingFunctionalAnnotator,
-    VepFunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
     DefaultImpreciseSvFunctionalAnnotator,
+    configure_default_functional_annotator,
 )
 from gpsea.preprocessing import PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 from gpsea.preprocessing import VVMultiCoordinateService
@@ -147,11 +146,9 @@ class TestPhenopacketPatientCreator:
         fpath_variant_cache_dir = os.path.join(fpath_cache_dir, "variant_cache")
         os.makedirs(fpath_variant_cache_dir, exist_ok=True)
 
-        return VarCachingFunctionalAnnotator.with_cache_folder(
-            fpath_cache_dir=fpath_variant_cache_dir,
-            fallback=VepFunctionalAnnotator(
-                timeout=20,
-            ),
+        return configure_default_functional_annotator(
+            ann_source="VEP",
+            cache_dir=fpath_variant_cache_dir,
         )
 
     @pytest.fixture
