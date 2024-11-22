@@ -192,7 +192,16 @@
 <span class="sd">        Returns: the transcript coordinates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
-</div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tx</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">TranscriptInfoAware</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tx</span><span class="o">.</span><span class="n">transcript_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected a `str` or `TranscriptInfoAware` but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">tx</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
 

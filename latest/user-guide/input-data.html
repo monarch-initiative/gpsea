@@ -295,16 +295,16 @@ featuring a different level of convenience.</p>
 <h4>Fetch transcript coordinates from Variant Validator REST API<a class="headerlink" href="#fetch-transcript-coordinates-from-variant-validator-rest-api" title="Link to this heading"></a></h4>
 <p>Undoubtedly, the most convenient way for getting the transcript coordinates is to use
 the REST API of the amazing <a class="reference external" href="https://variantvalidator.org/">Variant Validator</a>.
-GPSEA wraps the boiler-plate associated with querying the API and parsing the response into
-<a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService" title="gpsea.preprocessing.VVMultiCoordinateService"><code class="xref py py-class docutils literal notranslate"><span class="pre">VVMultiCoordinateService</span></code></a>.</p>
-<p><strong>Example</strong></p>
-<p>To fetch transcript coordinates of the MANE transcript of <em>TBX5</em> on GRCh38,
-we import the reference genome data, instantiate the <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService" title="gpsea.preprocessing.VVMultiCoordinateService"><code class="xref py py-class docutils literal notranslate"><span class="pre">VVMultiCoordinateService</span></code></a>,
-and fetch the transcript coordinates:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">VVMultiCoordinateService</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">txc_service</span> <span class="o">=</span> <span class="n">VVMultiCoordinateService</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="n">GRCh38</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">txc_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">mane_tx_id</span><span class="p">)</span>
+GPSEA simplifies querying the API and parsing the response
+with a <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.TranscriptCoordinateService" title="gpsea.preprocessing.TranscriptCoordinateService"><code class="xref py py-class docutils literal notranslate"><span class="pre">TranscriptCoordinateService</span></code></a> API.
+Use <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_tx_coordinate_service" title="gpsea.preprocessing.configure_default_tx_coordinate_service"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_default_tx_coordinate_service()</span></code></a> to get the default instance,
+that will query the API and cache the response locally to prevent repeated queries for the same transcript queries:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">txc_service</span> <span class="o">=</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can fetch the coordinates of the MANE transcript of <em>TBX5</em> on GRCh38:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">txc_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">mane_tx_id</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -505,22 +505,10 @@ First, some boiler-plate code is needed to load HPO and the 156 phenopackets</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_fig</span><span class="p">(</span><span class="n">pvis</span><span class="o">=</span><span class="n">pvis</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;docs/user-guide/img/TBX5_gpsea_with_uniprot_domains.png&#39;</span><span class="p">)</span>  
 </pre></div>
 </div>
-<figure class="align-center" id="id6">
-<a class="reference internal image-reference" href="../_images/TBX5_gpsea_with_uniprot_domains.png"><img alt="TBX5 (Q99593, UniProt entry)" src="../_images/TBX5_gpsea_with_uniprot_domains.png" style="width: 800px;" />
+<a class="reference internal image-reference" href="../_images/TBX5_gpsea_with_uniprot_domains.png"><img alt="TBX5 (Q99593, UniProt entry)" class="align-center" src="../_images/TBX5_gpsea_with_uniprot_domains.png" style="width: 800px;" />
 </a>
-<figcaption>
-<p><span class="caption-text">GPSEA display of variants and protein features of <em>TBX5</em></span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
-</figcaption>
-</figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We use <cite>fig.savefig</cite> to save the diagram for the purpose of showing it in the user guide.
-You certainly do not need to do it as part of your analysis, unless you really want to.. 😼</p>
-</div>
 </section>
 </section>
 </section>
