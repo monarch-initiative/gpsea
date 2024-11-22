@@ -9,6 +9,7 @@ import pandas as pd
 
 from gpsea.model import Cohort
 from gpsea.io import GpseaJSONDecoder
+from gpsea.analysis import StatisticResult
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     VariantPredicates,
@@ -93,7 +94,7 @@ class TestSurvivalAnalysisResult:
             endpoint=death(),
             statistic=LogRankTest(),
             data=data,
-            pval=0.1234,
+            statistic_result=StatisticResult(statistic=1., pval=0.1234),
         )
 
     def test_properties(

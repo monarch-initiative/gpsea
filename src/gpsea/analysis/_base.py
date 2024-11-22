@@ -11,6 +11,56 @@ from .predicate.genotype import GenotypePolyPredicate
 from ._partition import Partitioning
 
 
+class StatisticResult:
+    """
+    `StatisticResult` reports result of a :class:`~gpsea.analysis.Statistic`.
+
+    It includes a statistic and a corresponding p value.
+    """
+
+    def __init__(
+        self,
+        statistic: typing.Optional[typing.Union[int, float]],
+        pval: float,
+    ):
+        if statistic is not None:
+            assert isinstance(statistic, (float, int))
+            self._statistic = float(statistic)
+        else:
+            self._statistic = None
+
+        if isinstance(pval, float) and (math.isnan(pval) or 0.0 <= pval <= 1.0):
+            self._pval = float(pval)
+        else:
+            raise ValueError(
+                f"`pval` must be a float in range [0, 1] but it was {pval}"
+            )
+
+    @property
+    def statistic(self) -> typing.Optional[float]:
+        return self._statistic
+
+    @property
+    def pval(self) -> float:
+        return self._pval
+
+    def __eq__(self, value: object) -> bool:
+        return (
+            isinstance(value, StatisticResult)
+            and self._statistic == value._statistic
+            and self._pval == value._pval
+        )
+
+    def __hash__(self) -> int:
+        return hash((self._statistic, self._pval,))
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    def __repr__(self) -> str:
+        return f"StatisticResult(statistic={self._statistic}, pval={self._pval})"
+
+
 class Statistic(metaclass=abc.ABCMeta):
     """
     Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.
@@ -93,7 +143,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         statistic: Statistic,
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
-        pvals: typing.Sequence[float],
+        statistic_results: typing.Sequence[typing.Optional[StatisticResult]],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_correction: typing.Optional[str]
     ):
@@ -107,7 +157,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         self._n_usable = tuple(n_usable)
         self._all_counts = tuple(all_counts)
 
-        self._pvals = tuple(pvals)
+        self._statistic_results = tuple(statistic_results)
         self._corrected_pvals = (
             None if corrected_pvals is None else tuple(corrected_pvals)
         )
@@ -125,7 +175,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         for seq, name in (
             (self._n_usable, 'n_usable'),
             (self._all_counts, 'all_counts'),
-            (self._pvals, 'pvals'),
+            (self._statistic_results, 'statistic_results'),
         ):
             if len(self._pheno_predicates) != len(seq):
                 errors.append(
@@ -191,12 +241,20 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         return self._all_counts
 
     @property
+    def statistic_results(self) -> typing.Sequence[typing.Optional[StatisticResult]]:
+        """
+        Get a sequence of :class:`~gpsea.analysis.StatisticResult` items with nominal p values and the associated statistic values
+        for each tested phenotype or `None` for the untested phenotypes.
+        """
+        return self._statistic_results
+
+    @property
     def pvals(self) -> typing.Sequence[float]:
         """
         Get a sequence of nominal p values for each tested phenotype.
         The sequence includes a `NaN` value for each phenotype that was *not* tested.
         """
-        return self._pvals
+        return tuple(float('nan') if r is None else r.pval for r in self._statistic_results )
 
     @property
     def corrected_pvals(self) -> typing.Optional[typing.Sequence[float]]:
@@ -248,13 +306,12 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
 
         return tuple(int(idx) for idx in np.argsort(vals) if selected[idx])
 
-
     @property
     def total_tests(self) -> int:
         """
         Get total count of genotype-phenotype associations that were tested in this analysis.
         """
-        return sum(1 for pval in self.pvals if not math.isnan(pval))
+        return sum(1 for result in self._statistic_results if result is not None)
 
     @property
     def mtc_correction(self) -> typing.Optional[str]:
@@ -270,7 +327,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
             and self._pheno_predicates == value._pheno_predicates \
             and self._n_usable == value._n_usable \
             and self._all_counts == value._all_counts \
-            and self._pvals == value._pvals \
+            and self._statistic_results == value._statistic_results \
             and self._corrected_pvals == value._corrected_pvals \
             and self._mtc_correction == value._mtc_correction
     
@@ -280,7 +337,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
             self._pheno_predicates,
             self._n_usable,
             self._all_counts,
-            self._pvals,
+            self._statistic_results,
             self._corrected_pvals,
             self._mtc_correction,
         ))
@@ -313,7 +370,7 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
         phenotype: Partitioning,
         statistic: Statistic,
         data: pd.DataFrame,
-        pval: float,
+        statistic_result: StatisticResult,
     ):
         super().__init__(gt_predicate, statistic)
 
@@ -325,12 +382,8 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
         )
         self._data = data
 
-        if isinstance(pval, float) and math.isfinite(pval) and 0.0 <= pval <= 1.0:
-            self._pval = float(pval)
-        else:
-            raise ValueError(
-                f"`pval` must be a finite float in range [0, 1] but it was {pval}"
-            )
+        assert isinstance(statistic_result, StatisticResult)
+        self._statistic_result = statistic_result
         
     @property
     def phenotype(self) -> Partitioning:
@@ -370,24 +423,30 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
             & self._data[MonoPhenotypeAnalysisResult.PH_COL].notna()
         ]
 
+    def statistic_result(self) -> StatisticResult:
+        """
+        Get statistic result with the nominal p value and the associated statistics.
+        """
+        return self._statistic_result
+
     @property
     def pval(self) -> float:
         """
         Get the p value of the test.
         """
-        return self._pval
+        return self._statistic_result.pval
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, MonoPhenotypeAnalysisResult) \
             and super(AnalysisResult, self).__eq__(value) \
             and self._phenotype == value._phenotype \
-            and self._pval == value._pval \
+            and self._statistic_result == value._statistic_result \
             and self._data.equals(value._data)
     
     def __hash__(self) -> int:
         return hash((
             super(AnalysisResult, self).__hash__(),
             self._phenotype,
-            self._pval,
+            self._statistic_result,
             self._data,
         ))
