@@ -155,17 +155,17 @@ The classes can be adapted to several use cases and will serve as examples for c
 * :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` for assessment of the severity of intellectual disability
 
 
+Counting phenotype scorer
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-CountingPhenotypeScorer
-^^^^^^^^^^^^^^^^^^^^^^^
-The `CountingPhenotypeScorer` assigns a phenotype score that is equivalent to the count of observed phenotypes (HPO terms) that are either
-an exact match to the `query` terms or their descendants. Typically, the `query`terms` will comprise abnormalities in different organ systems.
+The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` assigns a phenotype score that is equivalent to the count of observed phenotypes (HPO terms) that are either
+an exact match to the `query` terms or their descendants. Typically, the `query` terms will comprise abnormalities in different organ systems.
 For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
 In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
 An individual can then have between 0 and 4 phenotype group abnormalities.  The scorer does not double count if the individual has multiple
 observed abnormalities in one of the organ systems (i.e., multiple descendents of one of the query terms). Each individual can thus have a score 
 of between 0 (no relevant abnormalities) to the number of categories (if the individual has an abnormality in each of the categories). 
-Two genotype groups are then compared with respect the the distribution of counts using the Mann Whitney U test.
+The genotype groups are then compared with respect to the distribution of counts using the Mann Whitney U test.
 
 
 Here we use :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
@@ -319,10 +319,10 @@ The whiskers extend from the box to the farthest data point
 lying within 1.5x the inter-quartile range (IQR) from the box.
 
 
-DeVriesPhenotypeScorer
-^^^^^^^^^^^^^^^^^^^^^^
+De Vries phenotype scorer
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This scorer is similar to the `CountingPhenotypeScorer` except that a sightly different counting strategy is used, and the categories are predefined rather than being chosen 
-by the user. The DeVriesPhenotypeScorer also uses a Mann Whitney U test. See :ref:`devries-scorer` for details. 
-
-
+This scorer is similar to the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` except that a sightly different counting strategy is used,
+and the categories are predefined rather than being chosen by the user.
+The :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` also uses a Mann Whitney U test.
+See :ref:`devries-scorer` for details.
