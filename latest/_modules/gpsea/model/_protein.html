@@ -212,6 +212,14 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TOPOLOGICAL_DOMAIN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    non-membrane region of a membrane-spanning protein</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TRANSMEMBRANE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Section of a protein that goes through the membrane of the cell or an organelle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FeatureType.from_string">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.FeatureType.from_string">[docs]</a>
@@ -232,6 +240,10 @@
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">COMPOSITIONAL_BIAS</span>
         <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;zinc finger&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">ZINC_FINGER</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;topological domain&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">TOPOLOGICAL_DOMAIN</span>
+        <span class="k">elif</span> <span class="n">cat_lower</span> <span class="o">==</span> <span class="s2">&quot;transmembrane&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">TRANSMEMBRANE</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized protein feature type: &quot;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
 </div>
