@@ -13,6 +13,10 @@ ITPR1_protein_len = 2758
 ZFX_protein_len = 805
 ZFX_protein_id = "NP_001171555.1"
 
+# Q9H598
+Q9H598_protein_len = 535
+Q9H598_protein_id = "NP_542119.1"
+
 class TestUniprotJsonToMetadata:
     """
     Test function that ingests UniProt JSON and transforms it to a ProteinMetadata object
@@ -46,6 +50,26 @@ class TestUniprotJsonToMetadata:
             fpath_preprocessing_data_dir: str,
     ) -> str:
         return os.path.join(fpath_preprocessing_data_dir, "uniprot_response", "P17010_manual_download.json")
+
+
+    @pytest.fixture
+    def Q9H598_json_file_path(
+            self,
+            fpath_preprocessing_data_dir: str,
+    ) -> str:
+        return os.path.join(fpath_preprocessing_data_dir, "uniprot_response", "Q9H598_manual_download.json")
+
+    @pytest.fixture
+    def Q9H598_protein_metadata(
+            self,
+            Q9H598_json_file_path: str,
+    ) -> ProteinMetadata:
+        return ProteinMetadata.from_uniprot_json(
+            protein_id=Q9H598_protein_id,
+            label="SLC32A1",
+            uniprot_json=Q9H598_json_file_path,
+            protein_length=Q9H598_protein_len
+        )
 
     @pytest.fixture
     def P17010_protein_metadata(
@@ -111,3 +135,19 @@ class TestUniprotJsonToMetadata:
         assert feature_0.info.start == 424 ## zero based open-closed
         assert feature_0.info.end == 447
 
+    def test_Q8IZT6(self,
+                    Q9H598_protein_metadata: ProteinMetadata):
+        assert Q9H598_protein_metadata is not None
+        print(Q9H598_protein_metadata.protein_features)
+        feature_0 = Q9H598_protein_metadata.protein_features[0]
+        assert feature_0.feature_type == FeatureType.TOPOLOGICAL_DOMAIN
+        assert feature_0.info.start == 0
+        assert feature_0.info.end == 132
+        feature_1 = Q9H598_protein_metadata.protein_features[1]
+        assert feature_1.feature_type == FeatureType.TRANSMEMBRANE
+        assert feature_1.info.start == 132
+        assert feature_1.info.end == 153
+        feature_2 = Q9H598_protein_metadata.protein_features[2]
+        assert feature_2.feature_type == FeatureType.TOPOLOGICAL_DOMAIN
+        assert feature_2.info.start == 153
+        assert feature_2.info.end == 204
