@@ -13,7 +13,7 @@ A module with HPO-driven phenotype scores. The score generally work with the phe
 class CountingPhenotypeScorer(PhenotypeScorer):
     """
     `CountingPhenotypeScorer` assigns the patient with a phenotype score
-    that is equivalent to the count of present phenotypes that are either
+    that is equivalent to the count of observed phenotypes that are either
     an exact match to the `query` terms or their descendants.
 
     For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
@@ -98,8 +98,8 @@ class CountingPhenotypeScorer(PhenotypeScorer):
     ) -> float:
         """
         Get the count (number) of terms in the query set
-        that have matching terms (exact matches or descendants) in the patient.
-        Do not double count if the patient has two terms
+        that have matching terms (exact matches or descendants) in the affected individual.
+        Do not double count if the individual has two terms
         (e.g., two different descendants) of one of the query terms.
         """
         count = 0
