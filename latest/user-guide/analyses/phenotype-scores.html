@@ -218,14 +218,23 @@ is a point mutation or a loss of function mutation.</p>
 <p>This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a <cite>NaN</cite> value if the score cannot be computed for an individual.</p>
-<p>Several out-of-shelf examples include:</p>
+<p>GPSEA currently offers two related classes, both of which use a Mann Whitney U test for the statistically analysis.
+The classes can be adapted to several use cases and will serve as examples for creating similar classes for other analysis scenarios:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> to count the number of abnormalities
 in organ groups described by top-level HPO terms (<em>Abnormal brain morphology</em>, <em>Abnormal heart morphology</em>, …)</p></li>
 <li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="gpsea.analysis.pscore.DeVriesPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeVriesPhenotypeScorer</span></code></a> for assessment of the severity of intellectual disability</p></li>
-<li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="gpsea.analysis.pscore.MeasurementPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeasurementPhenotypeScorer</span></code></a> that uses a laboratory test measurement,
-such as <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>, as the score</p></li>
 </ul>
+<section id="counting-phenotype-scorer">
+<h5>Counting phenotype scorer<a class="headerlink" href="#counting-phenotype-scorer" title="Link to this heading"></a></h5>
+<p>The <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> assigns a phenotype score that is equivalent to the count of observed phenotypes (HPO terms) that are either
+an exact match to the <cite>query</cite> terms or their descendants. Typically, the <cite>query</cite> terms will comprise abnormalities in different organ systems.
+For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
+In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
+An individual can then have between 0 and 4 phenotype group abnormalities.  The scorer does not double count if the individual has multiple
+observed abnormalities in one of the organ systems (i.e., multiple descendents of one of the query terms). Each individual can thus have a score
+of between 0 (no relevant abnormalities) to the number of categories (if the individual has an abnormality in each of the categories).
+The genotype groups are then compared with respect to the distribution of counts using the Mann Whitney U test.</p>
 <p>Here we use <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> for scoring
 the individuals based on the number of structural defects
 from the following 5 categories:</p>
@@ -238,7 +247,8 @@ from the following 5 categories:</p>
 </ul>
 <p>For example, an individual with a congenital heart defect would be assigned a score of <cite>1</cite>,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of <cite>2</cite>,
-and so on.</p>
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect),
+a score of 1 (not 2) would be assigned for the heart defect category.</p>
 <p>The <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> automatizes this scoring method
 by encoding the categories into HPO terms:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">structural_defects</span> <span class="o">=</span> <span class="p">(</span>
@@ -266,6 +276,7 @@ or that is its descendant
 <span class="go">&#39;Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants&#39;</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="statistical-test">
 <h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
@@ -351,6 +362,10 @@ than the individuals with the loss-of-function mutations.</p>
 with a red line at the median.
 The whiskers extend from the box to the farthest data point
 lying within 1.5x the inter-quartile range (IQR) from the box.</p>
+<p>This scorer is similar to the <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> except that a sightly different counting strategy is used,
+and the categories are predefined rather than being chosen by the user.
+The <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="gpsea.analysis.pscore.DeVriesPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeVriesPhenotypeScorer</span></code></a> also uses a Mann Whitney U test.
+See <a class="reference internal" href="../predicates/devries.html#devries-scorer"><span class="std std-ref">De Vries Score</span></a> for details.</p>
 </section>
 </section>
 </section>

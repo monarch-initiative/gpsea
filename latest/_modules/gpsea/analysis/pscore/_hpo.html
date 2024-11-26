@@ -97,7 +97,7 @@
 <span class="k">class</span> <span class="nc">CountingPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CountingPhenotypeScorer` assigns the patient with a phenotype score</span>
-<span class="sd">    that is equivalent to the count of present phenotypes that are either</span>
+<span class="sd">    that is equivalent to the count of observed phenotypes that are either</span>
 <span class="sd">    an exact match to the `query` terms or their descendants.</span>
 
 <span class="sd">    For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.</span>
@@ -187,8 +187,8 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the count (number) of terms in the query set</span>
-<span class="sd">        that have matching terms (exact matches or descendants) in the patient.</span>
-<span class="sd">        Do not double count if the patient has two terms</span>
+<span class="sd">        that have matching terms (exact matches or descendants) in the affected individual.</span>
+<span class="sd">        Do not double count if the individual has two terms</span>
 <span class="sd">        (e.g., two different descendants) of one of the query terms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
