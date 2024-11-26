@@ -29,4 +29,4 @@ class TestPythonMultiFisherExact:
         contingency_matrix = pd.DataFrame(np.array(counts, dtype=np.int64))
 
         final_pval = fisher_exact.compute_pval(contingency_matrix)
-        assert final_pval == pytest.approx(expected)
+        assert final_pval.pval == pytest.approx(expected)

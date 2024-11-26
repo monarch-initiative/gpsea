@@ -4,6 +4,11 @@
 Input data
 ==========
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
 The genotype-phenotype association analyses are carried out with a standardized form of genotype and phenotype data.
 All analyses need an instance of :class:`~gpsea.model.Cohort` that consists
 of individuals in form of a :class:`~gpsea.model.Patient` class.
@@ -224,21 +229,18 @@ Fetch transcript coordinates from Variant Validator REST API
 
 Undoubtedly, the most convenient way for getting the transcript coordinates is to use
 the REST API of the amazing `Variant Validator <https://variantvalidator.org/>`_.
-GPSEA wraps the boiler-plate associated with querying the API and parsing the response into
-:class:`~gpsea.preprocessing.VVMultiCoordinateService`.
+GPSEA simplifies querying the API and parsing the response
+with a :class:`~gpsea.preprocessing.TranscriptCoordinateService` API.
+Use :func:`~gpsea.preprocessing.configure_default_tx_coordinate_service` to get the default instance,
+that will query the API and cache the response locally to prevent repeated queries for the same transcript queries:
+
+>>> from gpsea.preprocessing import configure_default_tx_coordinate_service
+>>> txc_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
 
 
-**Example**
+Now we can fetch the coordinates of the MANE transcript of *TBX5* on GRCh38:
 
-To fetch transcript coordinates of the MANE transcript of *TBX5* on GRCh38,
-we import the reference genome data, instantiate the :class:`~gpsea.preprocessing.VVMultiCoordinateService`,
-and fetch the transcript coordinates:
-
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import VVMultiCoordinateService
->>> txc_service = VVMultiCoordinateService(genome_build=GRCh38)
 >>> tx_coordinates = txc_service.fetch(mane_tx_id)
-
 
 
 Provide the transcript coordinates manually
@@ -458,19 +460,14 @@ and we draw the diagram using :class:`~gpsea.view.ProteinVisualizer`:
 >>> visualizer = ProteinVisualizer()
 >>> fig, ax = plt.subplots(figsize=(12, 8), dpi=120)
 >>> visualizer.draw_fig(pvis=pvis, ax=ax)
->>> fig.tight_layout()
->>> fig.savefig('docs/user-guide/img/TBX5_gpsea_with_uniprot_domains.png')  # doctest: +SKIP
 
 
-.. figure:: img/TBX5_gpsea_with_uniprot_domains.png
+.. image:: img/TBX5_gpsea_with_uniprot_domains.png
    :alt: TBX5 (Q99593, UniProt entry)
    :align: center
    :width: 800px
 
-   GPSEA display of variants and protein features of *TBX5*
+.. doctest::
+  :hide:
 
-
-.. note::
-
-    We use `fig.savefig` to save the diagram for the purpose of showing it in the user guide.
-    You certainly do not need to do it as part of your analysis, unless you really want to.. 😼
+  >>> if _overwrite: fig.tight_layout(); fig.savefig('docs/user-guide/img/TBX5_gpsea_with_uniprot_domains.png')
