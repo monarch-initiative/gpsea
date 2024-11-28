@@ -5,6 +5,13 @@ import typing
 import hpotk
 import pytest
 
+from hpotk.validate import (
+    AnnotationPropagationValidator,
+    ObsoleteTermIdsValidator,
+    PhenotypicAbnormalityValidator,
+    ValidationRunner,
+)
+
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     VariantPredicates,
@@ -31,7 +38,6 @@ from gpsea.model import (
     VariantInfo,
 )
 from gpsea.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
-from ._protein_test_service import ProteinTestMetadataService
 
 
 def pytest_addoption(parser):
@@ -113,24 +119,19 @@ def hpo(fpath_test_data_dir: str) -> hpotk.MinimalOntology:
 
 
 @pytest.fixture(scope="session")
-def validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+def validation_runner(hpo: hpotk.MinimalOntology) -> ValidationRunner:
     validators = (
-        hpotk.validate.ObsoleteTermIdsValidator(hpo),
-        hpotk.validate.AnnotationPropagationValidator(hpo),
-        hpotk.validate.PhenotypicAbnormalityValidator(hpo),
+        ObsoleteTermIdsValidator(hpo),
+        AnnotationPropagationValidator(hpo),
+        PhenotypicAbnormalityValidator(hpo),
     )
-    return hpotk.validate.ValidationRunner(validators)
+    return ValidationRunner(validators)
 
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
     a_contig = GRCh38.contig_by_name(contig)
     assert a_contig is not None
     return GenomicRegion(a_contig, start, end, Strand.POSITIVE)
-
-
-@pytest.fixture(scope="session")
-def protein_test_service() -> ProteinTestMetadataService:
-    return ProteinTestMetadataService.create()
 
 
 @pytest.fixture(scope="session")

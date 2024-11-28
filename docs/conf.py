@@ -27,7 +27,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_copybutton',
     'sphinx.ext.mathjax',
-    'sphinx_rtd_dark_mode',
+    # 'sphinx_rtd_dark_mode',
 ]
 
 
@@ -215,3 +215,6 @@ intersphinx_mapping = {
 # -- Sphinx copybutton setup --------------------------------------------------
 # Exclude `>>>`, the line numbers, and the output when copying the cell.
 copybutton_exclude = '.linenos, .gp, .go'
+
+# -- Sphinx Dark Mode setup --------------------------------------------------
+# default_dark_mode = False
