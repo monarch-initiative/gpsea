@@ -11,8 +11,6 @@
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
-      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/general.css?v=c0a7eb24" />
-      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/dark.css?v=70edf1c7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -24,8 +22,6 @@
       <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
       <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      <script src="../../_static/dark_mode_js/default_dark.js?v=fd565c74"></script>
-      <script src="../../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -346,6 +342,7 @@ We can learn more by showing the MT filter report:</p>
         }
 
         /** Dark theme */
+        /*
         @media (prefers-color-scheme: dark) {
             :root {
                 --gpsea-color-text: rgb(240, 240, 240);
@@ -362,13 +359,14 @@ We can learn more by showing the MT filter report:</p>
                 --gpsea-color-surface-a40: #717171;
                 --gpsea-color-surface-a50: #8b8b8b;
             }
-
         }
+        */
 
         #gpsea-body {
             max-width: 1600px;
             color: var(--gpsea-color-text);
             background-color: var(--gpsea-color-surface-a0);
+            padding: 10px 0;
         }
 
         #gpsea-body {
@@ -406,7 +404,7 @@ We can learn more by showing the MT filter report:</p>
             }
 
             .card {
-                border-radius: 10px;
+                border-radius: 5px;
                 padding: 0px 10px;
                 background: var(--gpsea-color-surface-a10);
                 border: 1px solid var(--gpsea-color-surface-a30);
