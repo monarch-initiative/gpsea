@@ -2,6 +2,7 @@ import typing
 
 from scipy import stats
 
+from ..._base import StatisticResult
 from .._base import Survival
 from .._util import prepare_censored_data
 from ._api import SurvivalStatistic
@@ -23,7 +24,7 @@ class LogRankTest(SurvivalStatistic):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Iterable[Survival]],
-    ) -> float:
+    ) -> StatisticResult:
         """
         Compute p value for survivals being sourced from the same distribution.
 
@@ -41,7 +42,10 @@ class LogRankTest(SurvivalStatistic):
             alternative="two-sided",
         )
 
-        return float(result.pvalue)
+        return StatisticResult(
+            statistic=float(result.statistic),
+            pval=float(result.pvalue),
+        )
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, LogRankTest)

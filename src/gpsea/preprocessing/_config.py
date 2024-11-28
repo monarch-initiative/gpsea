@@ -21,18 +21,23 @@ from tqdm import tqdm
 from gpsea.config import get_cache_dir_path
 from gpsea.model import Cohort
 from gpsea.model.genome import GRCh37, GRCh38, GenomeBuild
-from ._api import FunctionalAnnotator, PreprocessingValidationResult
+from ._api import (
+    FunctionalAnnotator,
+    ProteinMetadataService,
+    PreprocessingValidationResult,
+    TranscriptCoordinateService,
+)
 from ._generic import DefaultImpreciseSvFunctionalAnnotator
 from ._patient import CohortCreator
-from ._phenopacket import PhenopacketPatientCreator
+from ._phenopacket import PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 
-from ._protein import (
-    ProteinMetadataService,
-    ProtCachingMetadataService,
-    ProteinAnnotationCache,
+from ._caching import (
+    JsonCache,
+    CachingFunctionalAnnotator,
+    CachingProteinMetadataService,
+    CachingTranscriptCoordinateService,
 )
 from ._uniprot import UniprotProteinMetadataService
-from ._variant import VarCachingFunctionalAnnotator, VariantAnnotationCache
 from ._vep import VepFunctionalAnnotator
 from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService
 
@@ -44,8 +49,9 @@ def configure_caching_cohort_creator(
     genome_build: str = "GRCh38.p13",
     validation_runner: typing.Optional[ValidationRunner] = None,
     cache_dir: typing.Optional[str] = None,
+    include_ontology_class_onsets: bool = True,
     variant_fallback: str = "VEP",
-    timeout: float = 30.0,
+    timeout: typing.Union[float, int] = 30.0,
 ) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.
@@ -58,11 +64,14 @@ def configure_caching_cohort_creator(
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
         if the cache location should be determined as described in :func:`~gpsea.config.get_cache_dir_path`.
         In any case, the directory will be created if it does not exist (including non-existing parents).
+    :param include_ontology_class_onsets: `True` if onsets in the ontology class format
+        (e.g. `HP:0003621` for Juvenile onset) should be included (default `True`).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the REST APIs
     """
     cache_dir = _configure_cache_dir(cache_dir)
+    timeout = _normalize_timeout(timeout)
 
     build = _configure_build(genome_build)
     validator = _setup_hpo_validator(hpo, validation_runner)
@@ -73,6 +82,11 @@ def configure_caching_cohort_creator(
         build, cache_dir, timeout
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
+    term_onset_parser = (
+        PhenopacketOntologyTermOnsetParser.default_parser()
+        if include_ontology_class_onsets
+        else None
+    )
     pc = PhenopacketPatientCreator(
         hpo=hpo,
         validator=validator,
@@ -80,6 +94,7 @@ def configure_caching_cohort_creator(
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
+        term_onset_parser=term_onset_parser,
     )
 
     return CohortCreator(pc)
@@ -87,10 +102,11 @@ def configure_caching_cohort_creator(
 
 def configure_cohort_creator(
     hpo: hpotk.MinimalOntology,
-    genome_build: str = "GRCh38.p13",
+    genome_build: typing.Literal["GRCh37.p13", "GRCh38.p13"] = "GRCh38.p13",
     validation_runner: typing.Optional[ValidationRunner] = None,
+    include_ontology_class_onsets: bool = True,
     variant_fallback: str = "VEP",
-    timeout: float = 30.0,
+    timeout: typing.Union[float, int] = 30.0,
 ) -> CohortCreator[Phenopacket]:
     """
     A convenience function for configuring a non-caching :class:`~gpsea.preprocessing.PhenopacketPatientCreator`.
@@ -102,11 +118,14 @@ def configure_cohort_creator(
     :param validation_runner: an instance of the validation runner.
      if the data should be cached in `.cache` folder in the current working directory.
      In any case, the directory will be created if it does not exist (including non-existing parents).
+    :param include_ontology_class_onsets: `True` if onsets in the ontology class format
+        (e.g. `HP:0003621` for Juvenile onset) should be included (default `True`).
     :param variant_fallback: the fallback variant annotator to use if we cannot find the annotation locally.
      Choose from ``{'VEP'}`` (just one fallback implementation is available at the moment).
     :param timeout: timeout in seconds for the VEP API
     """
     build = _configure_build(genome_build)
+    timeout = _normalize_timeout(timeout)
 
     validator = _setup_hpo_validator(hpo, validation_runner)
     functional_annotator = _configure_fallback_functional(variant_fallback, timeout)
@@ -116,6 +135,11 @@ def configure_cohort_creator(
         timeout=timeout,
     )
     hgvs_annotator = VVHgvsVariantCoordinateFinder(build)
+    term_onset_parser = (
+        PhenopacketOntologyTermOnsetParser.default_parser()
+        if include_ontology_class_onsets
+        else None
+    )
     pc = PhenopacketPatientCreator(
         hpo=hpo,
         validator=validator,
@@ -123,6 +147,7 @@ def configure_cohort_creator(
         functional_annotator=functional_annotator,
         imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
         hgvs_coordinate_finder=hgvs_annotator,
+        term_onset_parser=term_onset_parser,
     )
 
     return CohortCreator(pc)
@@ -156,7 +181,7 @@ def configure_protein_metadata_service(
 def configure_default_protein_metadata_service(
     protein_source: typing.Literal["UNIPROT"] = "UNIPROT",
     cache_dir: typing.Optional[str] = None,
-    timeout: float = 30.0,
+    timeout: typing.Union[float, int] = 30.0,
 ) -> ProteinMetadataService:
     """
     Create default protein metadata service that will cache the protein metadata
@@ -167,11 +192,45 @@ def configure_default_protein_metadata_service(
     :param cache_dir: path to the folder where we will cache the results fetched from the remote APIs or `None`
         if the data should be cached as described by :func:`~gpsea.config.get_cache_dir_path` function.
         In any case, the directory will be created if it does not exist (including any non-existing parents).
-    :param timeout: timeout in seconds for the REST APIs.
+    :param timeout: a `float` or an `int` for the timeout in seconds for the REST APIs.
     """
     cache_dir = _configure_cache_dir(cache_dir)
+    timeout = _normalize_timeout(timeout)
     return _configure_protein_service(
         protein_fallback=protein_source,
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
+
+
+def configure_default_tx_coordinate_service(
+    tx_source: typing.Literal["VV"] = "VV",
+    genome_build: typing.Union[GenomeBuild, typing.Literal["hg19", "hg38"]] = "hg38",
+    cache_dir: typing.Optional[str] = None,
+    timeout: typing.Union[float, int] = 30.0,
+) -> TranscriptCoordinateService:
+    cache_dir = _configure_cache_dir(cache_dir)
+    timeout = _normalize_timeout(timeout)
+    build = _configure_build(genome_build)
+
+    return _configure_tx_service(
+        tx_source=tx_source,
+        genome_build=build,
+        cache_dir=cache_dir,
+        timeout=timeout,
+    )
+
+
+def configure_default_functional_annotator(
+    ann_source: typing.Literal["VEP"] = "VEP",
+    cache_dir: typing.Optional[str] = None,
+    timeout: typing.Union[float, int] = 30.0,
+) -> FunctionalAnnotator:
+    cache_dir = _configure_cache_dir(cache_dir)
+    timeout = _normalize_timeout(timeout)
+
+    return _configure_func_annotator(
+        ann_source=ann_source,
         cache_dir=cache_dir,
         timeout=timeout,
     )
@@ -184,17 +243,22 @@ def _configure_protein_service(
 ) -> ProteinMetadataService:
     # (1) ProteinMetadataService
     # Setup fallback
-    fallback_service = _configure_fallback_protein_service(
+    fallback = _configure_fallback_protein_service(
         protein_fallback,
         timeout,
     )
     # Setup protein metadata cache
     prot_cache_dir = os.path.join(cache_dir, "protein_cache")
     os.makedirs(prot_cache_dir, exist_ok=True)
-    prot_cache = ProteinAnnotationCache(prot_cache_dir)
-    # Assemble the final protein metadata service
-    protein_metadata_service = ProtCachingMetadataService(prot_cache, fallback_service)
-    return protein_metadata_service
+    prot_cache = JsonCache(
+        data_dir=prot_cache_dir,
+        indent=2,
+    )
+
+    return CachingProteinMetadataService(
+        cache=prot_cache,
+        fallback=fallback,
+    )
 
 
 def _configure_fallback_protein_service(
@@ -207,6 +271,45 @@ def _configure_fallback_protein_service(
         raise ValueError(f"Unknown protein fallback annotator type {protein_fallback}")
 
 
+def _configure_tx_service(
+    tx_source: str,
+    genome_build: GenomeBuild,
+    cache_dir: str,
+    timeout: float,
+) -> TranscriptCoordinateService:
+    if tx_source == "VV":
+        fallback = VVMultiCoordinateService(genome_build=genome_build, timeout=timeout)
+    else:
+        raise ValueError(f"Unknown transcript source {tx_source}")
+
+    # Setup cache
+    tx_cache_dir = os.path.join(cache_dir, "tx_cache")
+    os.makedirs(tx_cache_dir, exist_ok=True)
+    tx_cache = JsonCache(
+        data_dir=tx_cache_dir,
+        indent=2,
+    )
+    return CachingTranscriptCoordinateService(cache=tx_cache, fallback=fallback)
+
+
+def _configure_func_annotator(
+    ann_source: str,
+    cache_dir: str,
+    timeout: float,
+) -> FunctionalAnnotator:
+    if ann_source == "VEP":
+        fallback = VepFunctionalAnnotator(timeout=timeout)
+    else:
+        raise ValueError(f"Unknown functional annotation source {ann_source}")
+    # Setup cache
+    tx_cache_dir = os.path.join(cache_dir, "tx_cache")
+    os.makedirs(tx_cache_dir, exist_ok=True)
+    tx_cache = JsonCache(
+        data_dir=tx_cache_dir,
+        indent=2,
+    )
+    return CachingFunctionalAnnotator(cache=tx_cache, fallback=fallback)
+
 def _configure_cache_dir(
     cache_dir: typing.Optional[str] = None,
 ) -> str:
@@ -216,15 +319,29 @@ def _configure_cache_dir(
     return str(cache_path)
 
 
-def _configure_build(genome_build: str) -> GenomeBuild:
-    if genome_build == "GRCh38.p13":
-        return GRCh38
-    elif genome_build == "GRCh37.p13":
-        return GRCh37
+def _normalize_timeout(
+    timeout: typing.Union[float, int],
+) -> float:
+    if isinstance(timeout, (float, int)):
+        return float(timeout)
     else:
-        raise ValueError(
-            f"Unknown build {genome_build}. Choose from ['GRCh37.p13', 'GRCh38.p13']"
-        )
+        raise ValueError(f"`timeout` must be a `float` or `int` but got {timeout}")
+
+
+def _configure_build(genome_build: typing.Union[GenomeBuild, str]) -> GenomeBuild:
+    if isinstance(genome_build, GenomeBuild):
+        return genome_build
+    elif isinstance(genome_build, str):
+        if genome_build == "GRCh38.p13":
+            return GRCh38
+        elif genome_build == "GRCh37.p13":
+            return GRCh37
+        else:
+            raise ValueError(
+                f"Unknown build {genome_build}. Choose from ['GRCh37.p13', 'GRCh38.p13']"
+            )
+    else:
+        raise ValueError(f"Unsupported `genome_build`: {genome_build}")
 
 
 def _setup_hpo_validator(
@@ -257,10 +374,12 @@ def _configure_functional_annotator(
     # Setup variant cache
     var_cache_dir = os.path.join(cache_dir, "variant_cache")
     os.makedirs(var_cache_dir, exist_ok=True)
-    var_cache = VariantAnnotationCache(var_cache_dir)
+    cache = JsonCache(
+        data_dir=var_cache_dir,
+        indent=2,
+    )
 
-    # Assemble the final functional annotator
-    return VarCachingFunctionalAnnotator(var_cache, fallback)
+    return CachingFunctionalAnnotator(cache=cache, fallback=fallback)
 
 
 def _configure_fallback_functional(

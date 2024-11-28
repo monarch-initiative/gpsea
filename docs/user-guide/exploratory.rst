@@ -4,6 +4,11 @@
 Cohort exploratory analysis
 ===========================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
 As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
 these in a targeted way. Performing numerous tests without any specific plan comes with an increased
 danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
@@ -66,11 +71,10 @@ We start by loading the cohort from the JSON file:
 then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
 (see :ref:`choose-tx-and-protein` for more info):
 
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import VVMultiCoordinateService, configure_default_protein_metadata_service
+>>> from gpsea.preprocessing import configure_default_tx_coordinate_service, configure_default_protein_metadata_service
 >>> tx_id = "NM_181486.4"
 >>> pt_id = "NP_852259.1"
->>> tx_service = VVMultiCoordinateService(genome_build=GRCh38)
+>>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
 >>> tx_coordinates = tx_service.fetch(tx_id)
 >>> pm_service = configure_default_protein_metadata_service()
 >>> protein_meta = pm_service.annotate(pt_id)
@@ -111,7 +115,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_cohort_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_cohort_info.html')
 
 
 Distribution of variants across protein domains
@@ -149,7 +153,7 @@ with variants in the *TBX5* gene:
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_protein_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_protein_info.html')
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -176,6 +180,7 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 .. doctest:: exploratory
     :hide:
 
-    >>> fig.tight_layout()
-    >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
+    >>> if _overwrite:
+    ...     fig.tight_layout()
+    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')
 

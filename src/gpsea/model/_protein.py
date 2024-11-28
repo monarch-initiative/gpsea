@@ -118,21 +118,40 @@ class FeatureType(enum.Enum):
     A region of interest that cannot be described in other subsections.
     """
 
+    ZINC_FINGER = enum.auto()
+    """
+    A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.
+    """
+    TOPOLOGICAL_DOMAIN = enum.auto()
+    """
+    non-membrane region of a membrane-spanning protein
+    """
+    TRANSMEMBRANE = enum.auto()
+    """
+    Section of a protein that goes through the membrane of the cell or an organelle
+    """
+
     @staticmethod
     def from_string(category: str) -> "FeatureType":
-        cat_lover = category.lower()
-        if cat_lover == "repeat":
+        cat_lower = category.lower()
+        if cat_lower == "repeat":
             return FeatureType.REGION
-        elif cat_lover == "motif":
+        elif cat_lower == "motif":
             return FeatureType.MOTIF
-        elif cat_lover == "domain":
+        elif cat_lower == "domain":
             return FeatureType.DOMAIN
-        elif cat_lover == "region":
+        elif cat_lower == "region":
             return FeatureType.REGION
-        elif cat_lover == "coiled coil":
+        elif cat_lower == "coiled coil":
             return FeatureType.REGION
-        elif cat_lover == "compositional bias":
+        elif cat_lower == "compositional bias":
             return FeatureType.COMPOSITIONAL_BIAS
+        elif cat_lower == "zinc finger":
+            return FeatureType.ZINC_FINGER
+        elif cat_lower == "topological domain":
+            return FeatureType.TOPOLOGICAL_DOMAIN
+        elif cat_lower == "transmembrane":
+            return FeatureType.TRANSMEMBRANE
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
@@ -361,19 +380,16 @@ class ProteinMetadata:
 
         regions = list()
         for feature in data["features"]:
-            try:
-                region_name = feature["description"]
-                locus = feature["location"]
-                region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
-                region_end = int(locus["end"]["value"])
-                feature_type = FeatureType.from_string(feature["type"])
-                finfo = FeatureInfo(
-                    name=region_name, region=Region(start=region_start, end=region_end)
-                )
-                pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
-                regions.append(pfeature)
-            except Exception as feature_exception:
-                print(f"Could not parse feature: {str(feature_exception)} (skipping)")
+            region_name = feature["description"]
+            locus = feature["location"]
+            region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
+            region_end = int(locus["end"]["value"])
+            feature_type = FeatureType.from_string(feature["type"])
+            finfo = FeatureInfo(
+                name=region_name, region=Region(start=region_start, end=region_end)
+            )
+            pfeature = ProteinFeature.create(info=finfo, feature_type=feature_type)
+            regions.append(pfeature)
 
         return ProteinMetadata(
             protein_id=protein_id,

@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from ..._base import Statistic
+from ..._base import Statistic, StatisticResult
 from .._base import Survival
 
 
@@ -19,7 +19,7 @@ class SurvivalStatistic(Statistic, metaclass=abc.ABCMeta):
     def compute_pval(
         self,
         scores: typing.Collection[typing.Sequence[Survival]],
-    ) -> float:
+    ) -> StatisticResult:
         """
         Compute p value for the collection of survivals being sampled from
         the same source distribution.

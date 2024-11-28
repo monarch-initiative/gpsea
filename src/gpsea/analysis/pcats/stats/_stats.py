@@ -8,9 +8,9 @@ from decimal import Decimal
 import numpy as np
 import pandas as pd
 
-import scipy
+from scipy.stats import fisher_exact
 
-from ..._base import Statistic
+from ..._base import Statistic, StatisticResult
 
 
 class CountStatistic(Statistic, metaclass=abc.ABCMeta):
@@ -64,7 +64,7 @@ class CountStatistic(Statistic, metaclass=abc.ABCMeta):
     def compute_pval(
         self,
         counts: pd.DataFrame,
-    ) -> float:
+    ) -> StatisticResult:
         pass
 
     def __eq__(self, value: object) -> bool:
@@ -98,12 +98,19 @@ class FisherExactTest(CountStatistic):
     def compute_pval(
         self,
         counts: pd.DataFrame,
-    ) -> float:
+    ) -> StatisticResult:
         if counts.shape == (2, 2):
-            _, pval = scipy.stats.fisher_exact(counts.values, alternative="two-sided")
-            return pval
+            result = fisher_exact(counts.values, alternative="two-sided")
+            return StatisticResult(
+                statistic=result.statistic,
+                pval=result.pvalue,
+            )
         elif counts.shape == (2, 3):
-            return self._fisher_exact(counts.values)
+            pval = self._fisher_exact(counts.values)
+            return StatisticResult(
+                statistic=None,
+                pval=pval,
+            )
         else:
             raise ValueError(f'Unsupported counts shape {counts.shape}')
 
@@ -146,11 +153,12 @@ class FisherExactTest(CountStatistic):
                 p_0 /= Decimal(math.factorial(table[i][j]))
 
         p = [0]
-        self._dfs(mat, pos, row_sum, col_sum, p_0, p)
+        FisherExactTest._dfs(mat, pos, row_sum, col_sum, p_0, p)
 
         return float(p[0])
 
-    def _dfs(self, mat, pos, r_sum, c_sum, p_0, p):
+    @staticmethod
+    def _dfs(mat, pos, r_sum, c_sum, p_0, p):
 
         (xx, yy) = pos
         (r, c) = (len(r_sum), len(c_sum))
@@ -214,7 +222,7 @@ class FisherExactTest(CountStatistic):
                     pos_new = (0, yy + 1)
                 else:
                     pos_new = (xx + 1, yy)
-                self._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
+                FisherExactTest._dfs(mat_new, pos_new, r_sum, c_sum, p_0, p)
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, FisherExactTest)

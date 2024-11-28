@@ -19,12 +19,11 @@ from gpsea.preprocessing import (
 )
 from gpsea.preprocessing import (
     FunctionalAnnotator,
-    VarCachingFunctionalAnnotator,
-    VepFunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
     DefaultImpreciseSvFunctionalAnnotator,
+    configure_default_functional_annotator,
 )
-from gpsea.preprocessing import PhenopacketPatientCreator
+from gpsea.preprocessing import PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 from gpsea.preprocessing import VVMultiCoordinateService
 
 
@@ -147,11 +146,9 @@ class TestPhenopacketPatientCreator:
         fpath_variant_cache_dir = os.path.join(fpath_cache_dir, "variant_cache")
         os.makedirs(fpath_variant_cache_dir, exist_ok=True)
 
-        return VarCachingFunctionalAnnotator.with_cache_folder(
-            fpath_cache_dir=fpath_variant_cache_dir,
-            fallback=VepFunctionalAnnotator(
-                timeout=20,
-            ),
+        return configure_default_functional_annotator(
+            ann_source="VEP",
+            cache_dir=fpath_variant_cache_dir,
         )
 
     @pytest.fixture
@@ -173,6 +170,10 @@ class TestPhenopacketPatientCreator:
         return VVHgvsVariantCoordinateFinder(
             genome_build=genome_build,
         )
+    
+    @pytest.fixture(scope='class')
+    def onset_term_parser(self) -> PhenopacketOntologyTermOnsetParser:
+        return PhenopacketOntologyTermOnsetParser.default_parser()
 
     @pytest.fixture
     def patient_creator(
@@ -183,6 +184,7 @@ class TestPhenopacketPatientCreator:
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
         variant_coordinate_finder: VariantCoordinateFinder,
+        onset_term_parser: PhenopacketOntologyTermOnsetParser,
     ) -> PhenopacketPatientCreator:
         return PhenopacketPatientCreator(
             hpo=hpo,
@@ -191,6 +193,7 @@ class TestPhenopacketPatientCreator:
             functional_annotator=functional_annotator,
             imprecise_sv_functional_annotator=imprecise_sv_functional_annotator,
             hgvs_coordinate_finder=variant_coordinate_finder,
+            term_onset_parser=onset_term_parser,
         )
 
     @pytest.fixture
@@ -251,6 +254,14 @@ class TestPhenopacketPatientCreator:
             True,
             False,
         )
+        # Check onset of Hyperpigmentation of the skin `HP:0000953`
+        hyperpigmentation_of_the_skin = patient.phenotype_by_id('HP:0000953')
+        assert hyperpigmentation_of_the_skin is not None
+        # Expecting congenital onset
+        onset = hyperpigmentation_of_the_skin.onset
+        assert onset is not None
+        assert onset.days == pytest.approx(0.)
+        assert onset.is_postnatal
 
         # 6 measurements
         assert len(patient.measurements) == 6

@@ -5,6 +5,10 @@
 Compare phenotype scores in genotype groups
 ===========================================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
 
 .. _mann-whitney-u-test:
 
@@ -143,13 +147,26 @@ This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a `NaN` value if the score cannot be computed for an individual.
 
-Several out-of-shelf examples include:
+GPSEA currently offers two related classes, both of which use a Mann Whitney U test for the statistically analysis. 
+The classes can be adapted to several use cases and will serve as examples for creating similar classes for other analysis scenarios:
 
 * :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` to count the number of abnormalities 
   in organ groups described by top-level HPO terms (*Abnormal brain morphology*, *Abnormal heart morphology*, ...)
 * :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` for assessment of the severity of intellectual disability
-* :class:`~gpsea.analysis.pscore.MeasurementPhenotypeScorer` that uses a laboratory test measurement, 
-  such as `Testosterone [Mass/volume] in Serum or Plasma <https://loinc.org/2986-8/>`_, as the score
+
+
+Counting phenotype scorer
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` assigns a phenotype score that is equivalent to the count of observed phenotypes (HPO terms) that are either
+an exact match to the `query` terms or their descendants. Typically, the `query` terms will comprise abnormalities in different organ systems.
+For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
+In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
+An individual can then have between 0 and 4 phenotype group abnormalities.  The scorer does not double count if the individual has multiple
+observed abnormalities in one of the organ systems (i.e., multiple descendents of one of the query terms). Each individual can thus have a score 
+of between 0 (no relevant abnormalities) to the number of categories (if the individual has an abnormality in each of the categories). 
+The genotype groups are then compared with respect to the distribution of counts using the Mann Whitney U test.
+
 
 Here we use :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
 the individuals based on the number of structural defects
@@ -163,7 +180,8 @@ from the following 5 categories:
 
 For example, an individual with a congenital heart defect would be assigned a score of `1`,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of `2`,
-and so on.
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect), 
+a score of 1 (not 2) would be assigned for the heart defect category.
 
 The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` automatizes this scoring method
 by encoding the categories into HPO terms:
@@ -288,7 +306,7 @@ to visualize the phenotype score distributions:
 .. doctest:: phenotype-scores
    :hide:
 
-   >>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
+   >>> if _overwrite: fig.savefig('docs/img/rere_phenotype_score_boxplot.png')
 
 
 
@@ -299,3 +317,12 @@ The box extends from the first quartile (Q1) to the third quartile (Q3) of the d
 with a red line at the median.
 The whiskers extend from the box to the farthest data point
 lying within 1.5x the inter-quartile range (IQR) from the box.
+
+
+De Vries phenotype scorer
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This scorer is similar to the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` except that a sightly different counting strategy is used,
+and the categories are predefined rather than being chosen by the user.
+The :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` also uses a Mann Whitney U test.
+See :ref:`devries-scorer` for details.

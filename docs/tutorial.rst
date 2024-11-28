@@ -5,9 +5,15 @@
 Tutorial
 ========
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
 Here we present an example genotype-phenotype (G/P) analysis with GPSEA.
 We assume GPSEA was installed into the active Python environment and
 we encourage the users to execute the code in a Jupyter notebook.
+
 
 .. note::
 
@@ -146,10 +152,10 @@ The summary report provides an overview about the HPO terms, variants, diseases,
 .. raw:: html
   :file: report/tbx5_cohort_info.html
 
-.. doctest:: tutorial
+.. doctest::
   :hide:
 
-  >>> report.write('docs/report/tbx5_cohort_info.html')  # doctest: +SKIP
+  >>> if _overwrite: report.write('docs/report/tbx5_cohort_info.html')
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -160,11 +166,10 @@ We first obtain `tx_coordinates` (:class:`~gpsea.model.TranscriptCoordinates`)
 and `protein_meta` (:class:`~gpsea.model.ProteinMetadata`)
 with information about the transcript and protein "anatomy":
 
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import configure_protein_metadata_service, VVMultiCoordinateService
->>> txc_service = VVMultiCoordinateService(genome_build=GRCh38)
->>> pms = configure_protein_metadata_service()
->>> tx_coordinates = txc_service.fetch(tx_id)
+>>> from gpsea.preprocessing import configure_default_protein_metadata_service, configure_default_tx_coordinate_service
+>>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
+>>> pms = configure_default_protein_metadata_service()
+>>> tx_coordinates = tx_service.fetch(tx_id)
 >>> protein_meta = pms.annotate(px_id)
 
 and we follow with plotting the diagram of the mutations on the protein:
@@ -185,11 +190,10 @@ and we follow with plotting the diagram of the mutations on the protein:
    :align: center
    :width: 600px
 
-.. doctest:: tutorial
+.. doctest::
   :hide:
 
-  >>> fig.tight_layout()
-  >>> fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')  # doctest: +SKIP
+  >>> if _overwrite: fig.tight_layout(); fig.savefig('docs/img/tutorial/tbx5_protein_diagram.png')
 
 
 .. _show-cohort-variants:
@@ -214,7 +218,7 @@ with one or more variant alleles (*Count*):
 .. doctest:: tutorial
   :hide:
 
-  >>> report.write('docs/report/tbx5_all_variants.html')  # doctest: +SKIP
+  >>> if _overwrite: report.write('docs/report/tbx5_all_variants.html')
 
 
 *****************************************
@@ -264,39 +268,20 @@ Testing multiple hypothesis on the same dataset increases the chance of receivin
 However, GPSEA simplifies the application of an appropriate multiple testing correction.
 
 For general use, we recommend using a combination
-of a *Phenotype MTC filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
-Phenotype MTC filter chooses the HPO terms to test according to several heuristics, which
+of a *phenotype MT filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
+Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see :ref:`HPO MTC filter <hpo-mtc-filter-strategy>` for more info).
+on the most interesting terms (see :ref:`HPO MT filter <hpo-mtc-filter-strategy>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See :ref:`mtc` for more information.
 
-In this example, we will use a combination of the HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`)
-with Benjamini-Hochberg procedure (``mtc_correction='fdr_bh'``)
-with a false discovery control level at (``mtc_alpha=0.05``):
+>>> from gpsea.analysis.pcats import configure_hpo_term_analysis
+>>> analysis = configure_hpo_term_analysis(hpo)
 
->>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> mtc_filter = HpoMtcFilter.default_filter(hpo)
->>> mtc_correction = 'fdr_bh'
->>> mtc_alpha = 0.05
-
-Choosing the statistical procedure for assessment of association between genotype and phenotype
-groups is the last missing piece of the analysis. We will use Fisher Exact Test:
-
->>> from gpsea.analysis.pcats.stats import FisherExactTest
->>> count_statistic = FisherExactTest()
-
-and we finalize the analysis setup by putting all components together
-into :class:`~gpsea.analysis.pcats.HpoTermAnalysis`:
-
->>> from gpsea.analysis.pcats import HpoTermAnalysis
->>> analysis = HpoTermAnalysis(
-...     count_statistic=count_statistic,
-...     mtc_filter=mtc_filter,
-...     mtc_correction=mtc_correction,
-...     mtc_alpha=mtc_alpha,
-... )
+:func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` configures the analysis
+that uses HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) for selecting HPO terms of interest,
+Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for multiple testing correction.
 
 Now we can perform the analysis and investigate the results.
 
@@ -328,7 +313,7 @@ by exploring the phenotype MTC filtering report.
 .. doctest:: tutorial
   :hide:
 
-  >>> mtc_report.write('docs/report/tbx5_frameshift_vs_missense.mtc_report.html')  # doctest: +SKIP
+  >>> if _overwrite: mtc_report.write('docs/report/tbx5_frameshift_vs_missense.mtc_report.html')
 
 
 and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:
@@ -344,7 +329,7 @@ and these are the tested HPO terms ordered by the p value corrected with the Ben
 .. doctest:: tutorial
   :hide:
 
-  >>> summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')  # doctest: +SKIP
+  >>> if _overwrite: summary_df.to_csv('docs/report/tbx5_frameshift_vs_missense.csv')
 
 We see that several HPO terms are significantly associated
 with presence of a frameshift variant in *TBX5*.

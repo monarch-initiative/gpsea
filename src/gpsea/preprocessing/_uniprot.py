@@ -110,7 +110,9 @@ class UniprotProteinMetadataService(ProteinMetadataService):
         Args:
             protein_id (str): A protein ID
         Returns:
-            Sequence[ProteinMetadata]: A sequence of ProteinMetadata objects, or an empty sequence if no data was found.
+            ProteinMetadata: A :class:`~gpsea.model.ProteinMetadata` corresponding to the input `protein_id`.
+        Raises:
+            ValueError: in case of issues with `protein_id`, I/O issues, or parsing the REST response.
         """
         if not isinstance(protein_id, str):
             raise ValueError(f'Protein ID must be a str but it was {type(protein_id)}')
