@@ -139,11 +139,10 @@ We first obtain `tx_coordinates` (:class:`~gpsea.model.TranscriptCoordinates`)
 and `protein_meta` (:class:`~gpsea.model.ProteinMetadata`)
 with information about the transcript and protein "anatomy":
 
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import configure_protein_metadata_service, VVMultiCoordinateService
->>> txc_service = VVMultiCoordinateService(genome_build=GRCh38)
->>> pms = configure_protein_metadata_service()
->>> tx_coordinates = txc_service.fetch(tx_id)
+>>> from gpsea.preprocessing import configure_default_protein_metadata_service, configure_default_tx_coordinate_service
+>>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
+>>> pms = configure_default_protein_metadata_service()
+>>> tx_coordinates = tx_service.fetch(tx_id)
 >>> protein_meta = pms.annotate(px_id)
 
 and we follow with plotting the diagram of the mutations on the protein:

@@ -3,6 +3,7 @@ import pytest
 
 import pandas as pd
 
+from gpsea.analysis import StatisticResult
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
 from gpsea.analysis.pscore import PhenotypeScoreAnalysisResult, PhenotypeScorer
 from gpsea.analysis.pscore.stats import MannWhitneyStatistic
@@ -39,7 +40,7 @@ class TestPhenotypeScoreAnalysisResult:
             phenotype=phenotype_scorer,
             statistic=MannWhitneyStatistic(),
             data=data,
-            pval=0.1234,
+            statistic_result=StatisticResult(statistic=.2, pval=0.1234),
         )
 
     def test_properties(

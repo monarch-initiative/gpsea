@@ -122,6 +122,14 @@ class FeatureType(enum.Enum):
     """
     A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.
     """
+    TOPOLOGICAL_DOMAIN = enum.auto()
+    """
+    non-membrane region of a membrane-spanning protein
+    """
+    TRANSMEMBRANE = enum.auto()
+    """
+    Section of a protein that goes through the membrane of the cell or an organelle
+    """
 
     @staticmethod
     def from_string(category: str) -> "FeatureType":
@@ -140,6 +148,10 @@ class FeatureType(enum.Enum):
             return FeatureType.COMPOSITIONAL_BIAS
         elif cat_lower == "zinc finger":
             return FeatureType.ZINC_FINGER
+        elif cat_lower == "topological domain":
+            return FeatureType.TOPOLOGICAL_DOMAIN
+        elif cat_lower == "transmembrane":
+            return FeatureType.TRANSMEMBRANE
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
