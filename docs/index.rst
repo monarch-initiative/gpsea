@@ -11,7 +11,7 @@ In Mendelian genetics, the focus is generally placed on the study of whether spe
 are associated with specific phenotypic manifestations of the disease. 
 
 GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations, pronounced /dʒiːpiːsiː/)
-is a Python package designed to support genotype-phenotype association analysis.
+is a Python package for finding genotype-phenotype associations.
 The input to GPSEA is a collection of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_.
 GPSEA ingests the phenopackets and analyzes the genotype-phenotype associations.
 The genotype can include variant types (e.g., missense vs. premature termination codon),

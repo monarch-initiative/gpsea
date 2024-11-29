@@ -11,8 +11,8 @@ Tutorial
   >>> from gpsea import _overwrite
 
 Here we present an example genotype-phenotype (G/P) analysis with GPSEA.
-We assume GPSEA was installed into the active Python environment and
-we encourage the users to execute the tutorial code in a Jupyter notebook
+We assume GPSEA was installed as described in the :ref:`setup` section
+and we encourage the users to execute the tutorial code in a Jupyter notebook
 or a similar interactive environment.
 
 
@@ -47,7 +47,7 @@ to test for possible associations between the groups.
 We finalize the analysis by statistical testing and evaluation of the results.
 
 
-.. contents::
+.. contents:: GPSEA analysis workflow
   :depth: 2
   :local:
 

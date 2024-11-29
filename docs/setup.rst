@@ -1,11 +1,16 @@
 .. _setup:
 
-=====
+#####
 Setup
-=====
+#####
 
 Here we show how to install GPSEA and to prepare your Python environment
 for genotype-phenotype association analysis.
+
+
+.. contents:: Table of Contents
+  :depth: 1
+  :local:
 
 
 *************
@@ -28,7 +33,7 @@ into the active Python (virtual) environment::
 
 
 `pip` will fetch GPSEA from PyPi along with all its dependencies (e.g. SciPy, Matplotlib)
-and install all packages into the active environment.
+and install the packages into the environment.
 
 A specific release (e.g. ``v0.7.0``) can be installed with::
 
@@ -39,7 +44,8 @@ Latest release
 ==============
 
 It is also possible to instal the *latest* release with the latest features and bugfixes.
-On top of having Python available, installation of the latest release needs Git to be present as well::
+On top of having Python available, installation of the latest release needs
+`Git <https://git-scm.com/>`_ to be installed as well::
 
   git clone https://github.com/monarch-initiative/gpsea.git
   
@@ -50,31 +56,36 @@ On top of having Python available, installation of the latest release needs Git 
   python3 -m pip install .
 
 
-We clone the source code from GPSEA's GitHub repository into a local folder,
-then enter the folder, and switch to the `develop` branch that contains the latest features.
-Once on `develop`, we use `pip` to use the current folder (`.`) as a package,
+The commands clone the source code from GPSEA's GitHub repository into a local folder,
+then we enter the folder and switch to the `develop` branch that contains the latest features.
+Once on `develop`, we use ``pip`` to use the current folder (``.``) as a package,
 and install it into the current Python (virtual) environment.
 
 
-
-*****
-Tests
-*****
+*********
+Run tests
+*********
 
 Running tests can be done as an optional step after the installation, to ensure GPSEA works correctly.
-However, several extra libraries are required to do so, hence we must do one more install::
+However, several extra libraries are required to do so, hence we must install GPSEA with ``test`` extras::
 
   python3 -m pip install .[test]
 
-This time, `pip` installs the package with the `test` extras enabled.
-Then, running the tests should be as simple as::
+.. note::
+
+  Most users do *not* need to run the tests while installing GPSEA,
+  as the tests are run within the contiunuous integration (CI) pipeline.
+
+With the ``test`` extras installed, Then, running the tests is as simple as::
 
   pytest
 
-The Pytest runner will find and run the unit and integration tests, and report the results to the command line.
+The Pytest runner will run >400 unit and integration tests, and report the results to the command line.
+
 Only the tests that do *not* require internet access are run.
 To run the "online" tests, we add ``--runonline`` option to the command line invocation::
 
   pytest --runonline
 
-That's all about testing!
+That's all about testing! Now let's move on to the tutorial,
+where we show an example genotype-phenotype association analysis.
