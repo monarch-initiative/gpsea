@@ -1,6 +1,6 @@
-=====
+#####
 GPSEA
-=====
+#####
 
 
 The concept of phenotype denote the observable attributes of an individual, but in 
@@ -11,18 +11,19 @@ In Mendelian genetics, the focus is generally placed on the study of whether spe
 are associated with specific phenotypic manifestations of the disease. 
 
 GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations, pronounced /dʒiːpiːsiː/)
-is a Python package designed to support genotype-phenotype correlation analysis.
+is a Python package designed to support genotype-phenotype association analysis.
 The input to GPSEA is a collection of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_.
-GPSEA ingests data from phenopackets and analyzes the correlation of specific variants genotype,
-variant types (e.g., missense vs. premature termination codon), or variant location in protein motifs or other features.
+GPSEA ingests the phenopackets and analyzes the genotype-phenotype associations.
+The genotype can include variant types (e.g., missense vs. premature termination codon),
+or variant location in protein motifs or other features.
 Phenotype can be represented by `Human Phenotype Ontology (HPO) <https://hpo.jax.org/app/>`_ terms, but using other phenotypes is possible.
 Statistical analysis is performed using e.g `Fisher Exact Test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_.
 
-We designed GPSEA to integrate with modern interactive computing environments,
-such as Jupyter notebook. Therefore, we recommend to install GPSEA into a Jupyter kernel
-and to perform the analyses in a Jupyter notebooks. The documentation is structured such
-that each section can be executed in a notebook, and we encourage running the examples
-while reading the documentation.
+GPSEA integrates with modern interactive computing environments, such as Jupyter notebook.
+Therefore, we recommend to install GPSEA into a Jupyter kernel and to perform the analyses
+in a Jupyter notebooks.
+The documentation is structured such that each section can be executed in a notebook,
+and we encourage running the examples while reading the documentation.
 
 The documentation includes :ref:`setup` instructions,
 a :ref:`tutorial` with an end-to-end example, and a comprehensive :ref:`user-guide`.
