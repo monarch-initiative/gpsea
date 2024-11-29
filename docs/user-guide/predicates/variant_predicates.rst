@@ -34,7 +34,7 @@ Load cohort
 
 For the purpose of this example, we will load a :class:`~gpsea.model.Cohort`
 of 19 individuals with mutations in *RERE* leading to Holt-Oram syndrome.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as
 a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_
 following the instructions in :ref:`cohort-persistence` section.
