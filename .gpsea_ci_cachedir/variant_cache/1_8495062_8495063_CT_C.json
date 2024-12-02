@@ -2,37 +2,39 @@
   {
     "gene_id": "RERE",
     "transcript_id": "NM_001042681.2",
-    "hgvs_cdna": "NM_001042681.2:c.248dup",
+    "hgvs_cdna": "NM_001042681.2:c.1104del",
     "is_preferred": true,
     "variant_effects": [
-      "FRAMESHIFT_VARIANT"
+      "FRAMESHIFT_VARIANT",
+      "SPLICE_REGION_VARIANT"
     ],
     "overlapping_exons": [
-      2
+      10
     ],
     "protein_id": "NP_001036146.1",
-    "hgvsp": "NP_001036146.1:p.Ser84ValfsTer4",
+    "hgvsp": "NP_001036146.1:p.Leu369CysfsTer16",
     "protein_effect_location": {
-      "start": 82,
-      "end": 83
+      "start": 367,
+      "end": 368
     }
   },
   {
     "gene_id": "RERE",
     "transcript_id": "NM_012102.4",
-    "hgvs_cdna": "NM_012102.4:c.248dup",
+    "hgvs_cdna": "NM_012102.4:c.1104del",
     "is_preferred": false,
     "variant_effects": [
-      "FRAMESHIFT_VARIANT"
+      "FRAMESHIFT_VARIANT",
+      "SPLICE_REGION_VARIANT"
     ],
     "overlapping_exons": [
-      3
+      11
     ],
     "protein_id": "NP_036234.3",
-    "hgvsp": "NP_036234.3:p.Ser84ValfsTer4",
+    "hgvsp": "NP_036234.3:p.Leu369CysfsTer16",
     "protein_effect_location": {
-      "start": 82,
-      "end": 83
+      "start": 367,
+      "end": 368
     }
   }
 ]
