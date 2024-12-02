@@ -4,6 +4,16 @@
   "protein_features": [
     {
       "info": {
+        "name": "T-box",
+        "region": {
+          "start": 58,
+          "end": 238
+        }
+      },
+      "feature_type": "DNA_BINDING"
+    },
+    {
+      "info": {
         "name": "Disordered",
         "region": {
           "start": 1,
@@ -21,6 +31,26 @@
         }
       },
       "feature_type": "REGION"
+    },
+    {
+      "info": {
+        "name": "Polar residues",
+        "region": {
+          "start": 263,
+          "end": 299
+        }
+      },
+      "feature_type": "COMPOSITIONAL_BIAS"
+    },
+    {
+      "info": {
+        "name": "Basic and acidic residues",
+        "region": {
+          "start": 320,
+          "end": 346
+        }
+      },
+      "feature_type": "COMPOSITIONAL_BIAS"
     }
   ],
   "protein_length": 518
