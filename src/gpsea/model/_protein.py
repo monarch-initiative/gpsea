@@ -83,6 +83,14 @@ class FeatureInfo:
 class FeatureType(enum.Enum):
     """
     An enum representing the protein feature types supported in GPSEA.
+
+    Use :func:`~gpsea.model.FeatureType.from_string` to parse a feature from Uniprot:
+
+    >>> from gpsea.model import FeatureType
+    >>> val = "Dna Binding"
+    >>> feature_type = FeatureType.from_string(val)
+    >>> feature_type.name
+    'DNA_BINDING'
     """
 
     REPEAT = enum.auto()
@@ -122,13 +130,20 @@ class FeatureType(enum.Enum):
     """
     A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.
     """
+
     TOPOLOGICAL_DOMAIN = enum.auto()
     """
     non-membrane region of a membrane-spanning protein
     """
+
     TRANSMEMBRANE = enum.auto()
     """
     Section of a protein that goes through the membrane of the cell or an organelle
+    """
+
+    DNA_BINDING = enum.auto()
+    """
+    A region with a known DNA binding activity.
     """
 
     @staticmethod
@@ -152,6 +167,8 @@ class FeatureType(enum.Enum):
             return FeatureType.TOPOLOGICAL_DOMAIN
         elif cat_lower == "transmembrane":
             return FeatureType.TRANSMEMBRANE
+        elif cat_lower == "dna binding":
+            return FeatureType.DNA_BINDING
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
 
@@ -382,7 +399,9 @@ class ProteinMetadata:
         for feature in data["features"]:
             region_name = feature["description"]
             locus = feature["location"]
-            region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
+            region_start = (
+                int(locus["start"]["value"]) - 1
+            )  # convert to 0-based coordinates
             region_end = int(locus["end"]["value"])
             feature_type = FeatureType.from_string(feature["type"])
             finfo = FeatureInfo(
