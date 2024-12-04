@@ -2,9 +2,10 @@ import math
 import os
 
 import hpotk
-import pytest
 import pandas as pd
+import pytest
 
+from gpsea.analysis import StatisticResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.pcats.stats import FisherExactTest
 from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
@@ -104,9 +105,9 @@ class TestMtcStatsViewer:
                     columns=pd.Index(suox_gt_predicate.get_categories()),
                 ),
             ),
-            pvals=(
-                math.nan,
-                0.005,
+            statistic_results=(
+                StatisticResult(statistic=None, pval=math.nan), 
+                StatisticResult(statistic=1.23, pval=0.01), 
             ),
             corrected_pvals=(math.nan, 0.01),
             mtc_filter_name="Random MTC filter",
