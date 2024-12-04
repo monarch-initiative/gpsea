@@ -3,6 +3,7 @@ import os
 import hpotk
 import pytest
 
+from hpotk.validate import ValidationRunner
 from stairval import Level
 from stairval.notepad import create_notepad
 
@@ -179,7 +180,7 @@ class TestPhenopacketPatientCreator:
     def patient_creator(
         self,
         hpo: hpotk.MinimalOntology,
-        validation_runner: hpotk.validate.ValidationRunner,
+        validation_runner: ValidationRunner,
         genome_build: GenomeBuild,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,
