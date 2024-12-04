@@ -72,11 +72,11 @@ class Genotypes(typing.Sized, typing.Iterable):
     """
 
     @staticmethod
-    def empty():
+    def empty() -> "Genotypes":
         return EMPTY
 
     @staticmethod
-    def single(sample_id: SampleLabels, genotype: Genotype):
+    def single(sample_id: SampleLabels, genotype: Genotype) -> "Genotypes":
         """
         A shortcut for creating `Genotypes` for a single sample:
 
@@ -90,7 +90,7 @@ class Genotypes(typing.Sized, typing.Iterable):
         return Genotypes((sample_id,), (genotype,))
 
     @staticmethod
-    def from_mapping(mapping: typing.Mapping[SampleLabels, Genotype]):
+    def from_mapping(mapping: typing.Mapping[SampleLabels, Genotype]) -> "Genotypes":
         """
         Create `Genotypes` from mapping between sample IDs and genotypes.
 

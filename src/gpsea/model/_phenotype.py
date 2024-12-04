@@ -67,9 +67,13 @@ class Phenotype(hpotk.model.Identified, hpotk.model.ObservableFeature, OnsetAwar
         is_observed: bool,
         onset: typing.Optional[Age],
     ):
-        self._term_id = hpotk.util.validate_instance(term_id, hpotk.TermId, 'term_id')
-        self._observed = hpotk.util.validate_instance(is_observed, bool, 'is_observed')
-        self._onset = hpotk.util.validate_optional_instance(onset, Age, "onset")
+        assert isinstance(term_id, hpotk.TermId)
+        self._term_id = term_id
+        assert isinstance(is_observed, bool)
+        self._observed = is_observed
+        if onset is not None:
+            assert isinstance(onset, Age)
+        self._onset = onset
 
     @property
     def identifier(self) -> hpotk.TermId:
@@ -160,10 +164,15 @@ class Disease(hpotk.model.Identified, hpotk.model.ObservableFeature, hpotk.model
         is_observed: bool,
         onset: typing.Optional[Age],
     ):
-        self._term_id = hpotk.util.validate_instance(term_id, hpotk.TermId, 'term_id')
-        self._name = hpotk.util.validate_instance(name, str, 'name')
-        self._observed = hpotk.util.validate_instance(is_observed, bool, 'is_observed')
-        self._onset = hpotk.util.validate_optional_instance(onset, Age, "onset")
+        assert isinstance(term_id, hpotk.TermId)
+        self._term_id = term_id
+        assert isinstance(name, str)
+        self._name = name
+        assert isinstance(is_observed, bool)
+        self._observed = is_observed
+        if onset is not None:
+            assert isinstance(onset, Age)
+        self._onset = onset
 
     @property
     def identifier(self) -> hpotk.TermId:

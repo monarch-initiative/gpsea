@@ -3,7 +3,7 @@ import hpotk
 
 import operator
 
-from gpsea.model import Variant, VariantEffect, VariantClass, FeatureType, ProteinMetadata
+from gpsea.model import Variant, VariantEffect, VariantClass, ProteinMetadata, FeatureType
 from gpsea.model.genome import Region
 
 from ._api import VariantPredicate
@@ -631,11 +631,16 @@ class ProteinFeatureTypePredicate(VariantPredicate):
     
     def __init__(
         self,
-        feature_type: FeatureType,
+        feature_type: typing.Union[FeatureType, str],
         protein_metadata: ProteinMetadata,
     ):
-        assert isinstance(feature_type, FeatureType)
-        self._feature_type = feature_type
+        if isinstance(feature_type, str):
+            self._feature_type = feature_type
+        elif isinstance(feature_type, FeatureType):
+            FeatureType.deprecation_warning()
+            self._feature_type = feature_type.name
+        else:
+            raise ValueError(f'`feature_type` must be either `FeatureType` or `str` but was {type(feature_type)}')
         
         assert isinstance(protein_metadata, ProteinMetadata)
         self._protein_metadata = protein_metadata
@@ -646,11 +651,11 @@ class ProteinFeatureTypePredicate(VariantPredicate):
 
     @property
     def description(self) -> str:
-        return f"overlaps with a protein feature {self._feature_type.name}"
+        return f"overlaps with a protein feature {self._feature_type}"
 
     @property
     def variable_name(self) -> str:
-        return f"overlap with {self._feature_type.name} feature"
+        return f"overlap with {self._feature_type} feature"
 
     def test(self, variant: Variant) -> bool:
         for tx_ann in variant.tx_annotations:

@@ -2,7 +2,7 @@ import logging
 import requests
 import typing
 
-from gpsea.model import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
+from gpsea.model import FeatureInfo, ProteinFeature, ProteinMetadata
 from gpsea.model.genome import Region
 
 from ._api import ProteinMetadataService
@@ -111,7 +111,7 @@ class UniprotProteinMetadataService(ProteinMetadataService):
                     feature_name,
                     Region(start=feature_start, end=feature_end),
                 )
-                feature_type = FeatureType.from_string(feature["type"])
+                feature_type = feature["type"]
                 protein_feature = ProteinFeature.create(feature_info, feature_type)
                 all_features_list.append(protein_feature)
         except KeyError:

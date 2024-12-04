@@ -592,7 +592,7 @@ class ProteinVariantViewer(BaseViewer):
             feature_list.append(
                 {
                     "name": feature.info.name,
-                    "type": feature.feature_type.name,
+                    "type": feature.feature_type,
                     "start": feature.info.start,
                     "end": feature.info.end,
                     "count": len(feature_to_variants[feature]),
