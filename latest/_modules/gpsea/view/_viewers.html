@@ -111,12 +111,16 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            hpo(MinimalOntology): An HPO ontology object from hpo-toolkit</span>
+<span class="sd">            tx_id(str): the transcript accession `str` (e.g. `NM_123456.7`)</span>
 <span class="sd">            top_phenotype_count(int): Maximum number of phenotype items (HPO terms, measurements, ...) to display in the HTML table (default: 10)</span>
 <span class="sd">            top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">top_phenotype_count</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_top_phenotype_count</span> <span class="o">=</span> <span class="n">top_phenotype_count</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">top_variant_count</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_top_variant_count</span> <span class="o">=</span> <span class="n">top_variant_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;cohort.html&quot;</span><span class="p">)</span>
 
@@ -125,14 +129,16 @@
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
-        <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the report for a given `cohort`.</span>
 
+<span class="sd">        The variant effects will be reported with respect to the provided transcript.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            cohort (Cohort): The cohort being analyzed in the current Notebook</span>
-<span class="sd">            transcript_id (str): the transcript that we map variants onto</span>
+<span class="sd">            cohort (Cohort): the cohort to visualize</span>
+<span class="sd">            transcript_id (str): the accession of the target transcript (e.g. `NM_123456.7`)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            GpseaReport: a report that can be stored to a path or displayed in</span>
