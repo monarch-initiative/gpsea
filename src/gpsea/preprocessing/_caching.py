@@ -203,10 +203,10 @@ class CachingFunctionalAnnotator(FunctionalAnnotator):
     def _create_cache_key(vc: VariantCoordinates) -> str:
         vk = vc.variant_key
         if len(vk) <= 50:
-            return f"{vk}.json"
+            return f"{vk}"
         else:
             # long INDELs in sequence notation
-            return f"{vc.chrom}_{vc.start}_{vc.end}_{vc.variant_class}.json"
+            return f"{vc.chrom}_{vc.start}_{vc.end}_{vc.variant_class}"
 
     def annotate(
         self,

@@ -345,7 +345,7 @@ is as simple as running:
 >>> protein_meta.protein_length
 518
 >>> len(protein_meta.protein_features)
-2
+5
 
 The `protein_meta` represents the *TBX5* isoform that includes 518 aminoacids and two features of interest,
 which we can see on the following screenshot of the UniProt entry for *TBX5*:

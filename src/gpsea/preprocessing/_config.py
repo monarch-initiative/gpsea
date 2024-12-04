@@ -358,7 +358,8 @@ def _setup_hpo_validator(
             )
         )
     else:
-        return hpotk.util.validate_instance(validator, ValidationRunner, "validator")
+        assert isinstance(validator, ValidationRunner)
+        return validator
 
 
 def _configure_functional_annotator(
@@ -486,7 +487,7 @@ def load_phenopackets(
     :return: a tuple with the cohort and the validation result.
     """
     # Check inputs before doing anything
-    hpotk.util.validate_instance(cohort_creator, CohortCreator, "cohort_creator")
+    assert isinstance(cohort_creator, CohortCreator)
     if validation_policy.lower() not in VALIDATION_POLICIES:
         raise ValueError(f"{validation_policy} must be one of {VALIDATION_POLICIES}")
 

@@ -67,6 +67,15 @@ class TestUniprotProteinMetadataService:
         assert len(protein_metadata.protein_features) == 13
         assert protein_metadata.protein_length == 2758
 
+    @pytest.mark.skip("Just for debugging")
+    def test_fetch_annotate_online(
+        self,
+        uniprot_metadata_service: UniprotProteinMetadataService,
+    ):
+        query = "NP_852259.1"
+        protein_meta = uniprot_metadata_service.annotate(protein_id=query)
+        print(protein_meta)
+
     @pytest.mark.skip("Run manually to regenerate SUOX `NP_001027558.1` metadata")
     def test_fetch_suox_protein_metadata(
         self,
