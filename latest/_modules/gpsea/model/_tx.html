@@ -182,8 +182,9 @@
 
         <span class="n">n_bases</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exons</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">,</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">,</span> <span class="n">exon</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+            <span class="c1"># Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">,</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">,</span> <span class="n">exon</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="c1"># type: ignore</span>
             <span class="n">n_bases</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">n_bases</span> <span class="o">-</span> <span class="mi">3</span>  <span class="c1"># minus stop codon</span></div>
@@ -198,6 +199,8 @@
 <span class="sd">        Returns: the number of codons of the transcript or `None` if the transcript is non-coding.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_coding_bases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coding_base_count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n_coding_bases</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">n_coding_bases</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transcript </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="n">n_coding_bases</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> &quot;</span>
                                          <span class="sa">f</span><span class="s2">&quot;coding bases that is not divisible by 3!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_coding_bases</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span></div>
@@ -217,6 +220,7 @@
         <span class="n">utrs</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exons</span><span class="p">:</span>
+            <span class="c1"># Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.</span>
             <span class="k">if</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="k">if</span> <span class="n">exon</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">:</span>
@@ -245,6 +249,7 @@
         <span class="n">utrs</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exons</span><span class="p">:</span>
+            <span class="c1"># Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.</span>
             <span class="k">if</span> <span class="n">exon</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span> <span class="o">&lt;=</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
                     <span class="c1"># An entire exon is UTR.</span>
@@ -270,6 +275,7 @@
 
         <span class="n">coding_regions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">exon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exons</span><span class="p">:</span>
+            <span class="c1"># Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span> <span class="o">&gt;=</span> <span class="n">exon</span><span class="o">.</span><span class="n">end</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span> <span class="o">&lt;=</span> <span class="n">exon</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
                 <span class="c1"># An entire exon is UTR.</span>
                 <span class="k">continue</span>
