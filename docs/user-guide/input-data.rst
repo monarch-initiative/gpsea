@@ -9,9 +9,13 @@ Input data
 
   >>> from gpsea import _overwrite
 
-Each GPSEA analysis starts with ingest of the genotype and phenotype data.
-We need to standardize the HPO terms, remove redundancies, annotate the variants with respect to genes and transcripts.
-Additionally, most analyses need an information about the transcript and protein sequence of the target gene(s).
+Each GPSEA analysis starts with the ingest of genotype and phenotype data.
+There are many things to be done. We need to check the HPO terms
+to point out any logical inconsistencies or to remove redundancies,
+annotate the variants with respect to genes and transcripts,
+or check uniqueness of the identifiers of the cohort members.
+Additionally, most GPSEA analyses need an information about the "anatomy"
+of the transcript and/or protein corresponding to the gene(s) of interest.
 
 This section will explain how to ingest the phenopackets,
 how to persist the cohort for later, to save the preprocessing time,
@@ -38,21 +42,20 @@ Load HPO
 ========
 
 The Q/C requires access to Human Phenotype Ontology, which we can load using
-the amazing `hpo-toolkit <https://github.com/ielis/hpo-toolkit>`_ library:
+the `hpo-toolkit <https://github.com/ielis/hpo-toolkit>`_:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
-The code downloads the HPO data from GitHub and stores it in user's home directory
-to prevent future network traffic. The latest HPO can be loaded
-by leaving out the ``release`` argument.
+The code downloads the HPO data from GitHub and stores it in the user's home directory,
+to speed up the analysis by downloading the ontology data only once.
+The latest HPO can be loaded by leaving out the ``release`` argument.
 
 .. note::
 
-  If storing HPO locally is not desired, the following can be executed
-  to load HPO directly from GitHub, at the expense of additional network traffic
-  and slightly prolonged runtime::
+  If storing HPO locally is not desired, HPO can also be loaded
+  directly from GitHub, at the expense of additional network traffic::
 
     release = 'v2024-07-01'
     hpo = hpotk.load_minimal_ontology(f'https://github.com/obophenotype/human-phenotype-ontology/releases/download/{release}/hp.json')
@@ -62,30 +65,33 @@ Cohort creator
 ==============
 
 The :class:`~gpsea.preprocessing.CohortCreator` is responsible for transforming
-phenopackets into a cohort.
-and we can use :func:`~gpsea.preprocessing.configure_caching_cohort_creator`
-convenience method to get an instance:
+phenopackets into a :class:`~gpsea.model.Cohort`.
+The transformation is very flexible, with an array of parameters to tweak.
+However, the majority of cases should be covered by the default settings
+and we recommend to configure the default cohort creator with
+the :func:`~gpsea.preprocessing.configure_caching_cohort_creator` method:
 
 >>> from gpsea.preprocessing import configure_caching_cohort_creator
 >>> cohort_creator = configure_caching_cohort_creator(hpo)
 
-.. note::
-
-  The default `CohortCreator` will call Variant Effect Predictor and Uniprot APIs
-  to perform the functional annotation and protein annotation,
-  and the responses will be cached in the current working directory to reduce the network bandwidth.
-  See the :func:`~gpsea.preprocessing.configure_caching_cohort_creator` pydoc for more options.
+The ``cohort_creator`` will check the HPO terms for any invalid or obsolete
+terms, as well as point out any logical inconsistencies.
+The functional annotation and validation of variants is delegated to 
+Variant Effect Predictor and Variant Validator REST APIs,
+and the API responses are cached in the current working directory, to reduce the network bandwith.
+The cohort is also checked for individuals with non-unique ID.
 
 
 Load phenopackets
 =================
 
 We can create a cohort starting from a collection of `Phenopacket` objects
-provided by Python  `Phenopackets <https://pypi.org/project/phenopackets>`_ library.
+provided by Python `Phenopackets <https://pypi.org/project/phenopackets>`_ library.
 For the purpose of this example, we will load a cohort of patients with pathogenic mutations in *RERE* gene
-included in the release `0.1.18` of `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
+which are included in the release `0.1.18` of `Phenopacket Store <https://github.com/monarch-initiative/phenopacket-store>`_.
 We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopacket-store-toolkit>`_
-(``ppktstore`` in the code) to reduce the boilerplate code associated with loading:
+(``ppktstore`` in the code) to reduce the boilerplate code
+associated with extracting phenopacket data from Phenopacket Store release:
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> registry = configure_phenopacket_registry()
@@ -94,9 +100,13 @@ We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopa
 >>> len(phenopackets)
 19
 
-We have 19 phenopackets on hand and we can transform them
-into a :class:`~gpsea.model.Cohort`
-with the ``cohort_creator`` and the :func:`~gpsea.preprocessing.load_phenopackets`
+The code creates a ``registry`` which will download the ZIP file
+for a given Phenopacket Store data release and store it in user's home directory.
+Then, phenopackets of the *RERE* cohort are extracted,
+resulting in a tuple with 19 phenopackets.
+
+The actual transformation of the phenopackets into a :class:`~gpsea.model.Cohort`
+is orchestrated by the :func:`~gpsea.preprocessing.load_phenopackets`
 loader function:
 
 >>> from gpsea.preprocessing import load_phenopackets
@@ -108,14 +118,17 @@ Individuals Processed: ...
 >>> len(cohort)
 19
 
-We loaded a ``cohort`` that includes all 19 individuals.
-Besides ``cohort``, the loader function also reports the Q/C results ``qc_results``.
-We call :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize`
-to display a summary:
+The loader applies the ``CohortCreator`` to phenopackets, while keeping track of any issues,
+and we get back a ``cohort`` as well as a :class:`~gpsea.preprocessing.PreprocessingValidationResult` (``qc_results``)
+with any Q/C issues. 
+
+The :meth:`~gpsea.preprocessing.PreprocessingValidationResult.summarize` method summarizes the found issues:
 
 >>> qc_results.summarize()  # doctest: +SKIP
-Validated under none policy
+Validated under permissive policy
 No errors or warnings were found
+
+No issues were found in the current cohort.
 
 .. note::
 
@@ -234,7 +247,7 @@ there is a specific reason not to (which should occur rarely if at all).
 A good way to find the MANE transcript is to search on the gene symbol (e.g., *TBX5*) in `ClinVar <https://www.ncbi.nlm.nih.gov/clinvar/>`_
 and to choose a variant that is specifically located in the gene.
 The MANE transcript will be displayed here
-(e.g., `NM_181486.4(TBX5):c.1221C>G (p.Tyr407Ter) <https://www.ncbi.nlm.nih.gov/clinvar/variation/495227/>`_).
+(e.g., `NM_181486.4(TBX5):c.1221C\>G (p.Tyr407Ter) <https://www.ncbi.nlm.nih.gov/clinvar/variation/495227/>`_).
 The RefSeq identifier of the encoded protein (e.g. `NP_852259.1` for *TBX5*) should be also readily available on the ClinVar website:
 
 >>> tx_id = "NM_181486.4"
