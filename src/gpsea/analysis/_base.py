@@ -15,7 +15,10 @@ class StatisticResult:
     """
     `StatisticResult` reports result of a :class:`~gpsea.analysis.Statistic`.
 
-    It includes a statistic and a corresponding p value.
+    It includes a statistic (optional) and a corresponding p value.
+    The p value can be `NaN` if it is impossible to compute for a given dataset.
+
+    Raises an :class:`AssertionError` for an invalid input.
     """
 
     def __init__(
@@ -29,19 +32,21 @@ class StatisticResult:
         else:
             self._statistic = None
 
-        if isinstance(pval, float) and (math.isnan(pval) or 0.0 <= pval <= 1.0):
-            self._pval = float(pval)
-        else:
-            raise ValueError(
-                f"`pval` must be a float in range [0, 1] but it was {pval}"
-            )
-
+        assert isinstance(pval, float) and (math.isnan(pval) or 0.0 <= pval <= 1.0)
+        self._pval = float(pval)
+        
     @property
     def statistic(self) -> typing.Optional[float]:
+        """
+        Get a `float` with the test statistic or `None` if not available.
+        """
         return self._statistic
 
     @property
     def pval(self) -> float:
+        """
+        Get a p value (a value or a `NaN`).
+        """
         return self._pval
 
     def __eq__(self, value: object) -> bool:
@@ -59,6 +64,33 @@ class StatisticResult:
 
     def __repr__(self) -> str:
         return f"StatisticResult(statistic={self._statistic}, pval={self._pval})"
+
+
+class AnalysisException(Exception):
+    """
+    Reports analysis issues that need user's attention.
+
+    To aid troubleshooting, the exception includes :attr:`~gpsea.analysis.AnalysisException.data` -
+    a mapping with any data that has been computed prior encountering the issues.
+    """
+    
+    def __init__(
+        self,
+        data: typing.Mapping[str, typing.Any],
+        *args,
+    ):
+        super().__init__(*args)
+        self._data = data
+
+    @property
+    def data(self) -> typing.Mapping[str, typing.Any]:
+        """
+        Get a mapping with (partial) data to aid troubleshooting.
+        """
+        return self._data
+    
+    def __repr__(self) -> str:
+        return f"AnalysisException(args={self.args}, data={self._data})"
 
 
 class Statistic(metaclass=abc.ABCMeta):
@@ -143,7 +175,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         statistic: Statistic,
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
-        statistic_results: typing.Sequence[typing.Optional[StatisticResult]],
+        statistic_results: typing.Sequence[StatisticResult],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_correction: typing.Optional[str]
     ):
