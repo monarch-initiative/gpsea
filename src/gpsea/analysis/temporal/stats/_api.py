@@ -23,6 +23,8 @@ class SurvivalStatistic(Statistic, metaclass=abc.ABCMeta):
         """
         Compute p value for the collection of survivals being sampled from
         the same source distribution.
+
+        Raises an error 
         """
         pass
 

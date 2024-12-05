@@ -66,6 +66,33 @@ class StatisticResult:
         return f"StatisticResult(statistic={self._statistic}, pval={self._pval})"
 
 
+class AnalysisException(Exception):
+    """
+    Reports analysis issues that need user's attention.
+
+    To aid troubleshooting, the exception includes :attr:`~gpsea.analysis.AnalysisException.data` -
+    a mapping with any data that has been computed prior encountering the issues.
+    """
+    
+    def __init__(
+        self,
+        data: typing.Mapping[str, typing.Any],
+        *args,
+    ):
+        super().__init__(*args)
+        self._data = data
+
+    @property
+    def data(self) -> typing.Mapping[str, typing.Any]:
+        """
+        Get a mapping with (partial) data to aid troubleshooting.
+        """
+        return self._data
+    
+    def __repr__(self) -> str:
+        return f"AnalysisException(args={self.args}, data={self._data})"
+
+
 class Statistic(metaclass=abc.ABCMeta):
     """
     Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.
@@ -148,7 +175,7 @@ class MultiPhenotypeAnalysisResult(typing.Generic[P], AnalysisResult):
         statistic: Statistic,
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
-        statistic_results: typing.Sequence[typing.Optional[StatisticResult]],
+        statistic_results: typing.Sequence[StatisticResult],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_correction: typing.Optional[str]
     ):
