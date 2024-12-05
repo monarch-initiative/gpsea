@@ -61,7 +61,7 @@ by leaving out the ``release`` argument.
 Cohort creator
 ==============
 
-The :model:`~gpsea.preprocessing.CohortCreator` is responsible for transforming
+The :class:`~gpsea.preprocessing.CohortCreator` is responsible for transforming
 phenopackets into a cohort.
 and we can use :func:`~gpsea.preprocessing.configure_caching_cohort_creator`
 convenience method to get an instance:
@@ -95,7 +95,7 @@ We use `Phenopacket Store Toolkit <https://github.com/monarch-initiative/phenopa
 19
 
 We have 19 phenopackets on hand and we can transform them
-into a :model:`~gpsea.model.Cohort`
+into a :class:`~gpsea.model.Cohort`
 with the ``cohort_creator`` and the :func:`~gpsea.preprocessing.load_phenopackets`
 loader function:
 

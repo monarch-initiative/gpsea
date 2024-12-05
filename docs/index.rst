@@ -27,7 +27,7 @@ and we encourage running the examples while reading the documentation.
 
 The documentation includes :ref:`setup` instructions,
 a :ref:`tutorial` with an end-to-end example, and a comprehensive :ref:`user-guide`.
-The technical information is available in API reference.
+The technical information is available in the API reference.
 
 **********
 Literature
