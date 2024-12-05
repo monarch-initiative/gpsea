@@ -1,4 +1,5 @@
 import abc
+import math
 import typing
 
 from collections import defaultdict
@@ -13,7 +14,7 @@ from ._base import Survival
 from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
-from .._base import MonoPhenotypeAnalysisResult, StatisticResult
+from .._base import MonoPhenotypeAnalysisResult, StatisticResult, AnalysisException
 from .._partition import ContinuousPartitioning
 
 
@@ -146,6 +147,9 @@ class SurvivalAnalysis:
     The cohort is partitioned into groups using a genotype predicate
     and survival is computed for each cohort member. The difference between
     survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.
+
+    The analysis may raise an :class:`~gpsea.analysis.AnalysisException` if issues are encountered.
+    The exception includes the reason(s) in `args` as well as any partial data, to help with troubleshooting.
     """
 
     def __init__(
@@ -188,6 +192,11 @@ class SurvivalAnalysis:
 
         vals = tuple(survivals[gt_cat] for gt_cat in gt_predicate.get_categorizations())
         result = self._statistic.compute_pval(vals)
+        if math.isnan(result.pval):
+            raise AnalysisException(
+                dict(data=data),
+                "The survival values did not meet the expectation of the statistical test!",
+            )
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,

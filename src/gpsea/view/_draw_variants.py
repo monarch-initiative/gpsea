@@ -1,9 +1,11 @@
+import typing
+
 from itertools import cycle
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from gpsea.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect, FeatureType
+from gpsea.model import Cohort, ProteinMetadata, TranscriptAnnotation, TranscriptCoordinates, VariantEffect, Variant
 
 
 #  BASIC DRAWING METHODS
@@ -60,6 +62,20 @@ def _calc_aa_based_pos(pos_bases, tx_coordinates):
     # print(f'{pos_aa=}')
     return pos_aa
 
+def get_tx_anns(
+    variants: typing.Iterable[Variant],
+    tx_id: str,
+) -> typing.Sequence[TranscriptAnnotation]:
+    tx_anns = []
+    for v in variants:
+        tx_ann = v.get_tx_anno_by_tx_id(tx_id)
+        if tx_ann is None:
+            raise ValueError(f'The transcript annotation for {tx_id} was not found!')
+        else:
+            tx_anns.append(tx_ann)
+
+    return tx_anns
+
 
 class ProteinVariantVisualizer:
     def __init__(self):
@@ -108,16 +124,10 @@ class ProteinVariantVisualizer:
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
         self.protein_feature_colors = {
-            FeatureType.REPEAT: 'yellow',
-            FeatureType.MOTIF: 'orange',
-            FeatureType.DOMAIN: 'red',
-            FeatureType.REGION: 'brown'
-        }
-        self.protein_feature_names = {
-            FeatureType.REPEAT: 'Repeat',
-            FeatureType.MOTIF: 'Motif',
-            FeatureType.DOMAIN: 'Domain',
-            FeatureType.REGION: 'Region'
+            'REPEAT': 'yellow',
+            'MOTIF': 'orange',
+            'DOMAIN': 'red',
+            'REGION': 'brown'
         }
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
@@ -135,27 +145,11 @@ class ProteinVariantVisualizer:
         length = protein_track_y_max + marker_length + np.sqrt(marker_count - 1) * marker_length
         return radius, length
 
-    def _get_tx_anns(self, variants, tx_id):
-        tx_anns = []
-        for i, v in enumerate(variants):
-            tx_ann = None
-            for ann in v.tx_annotations:
-                if ann.transcript_id == tx_id:
-                    tx_ann = ann
-                    break
-            if tx_ann is None:
-                raise ValueError(f'The transcript annotation for {tx_id} was not found!')
-            else:
-                tx_anns.append(tx_ann)
-
-        return tx_anns
-
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         plt.figure(figsize=(20, 20))
         tx_id = tx_coordinates.identifier
         protein_id = protein_meta.protein_id
-        variants = cohort.all_variants
-        tx_anns = self._get_tx_anns(variants, tx_id)
+        tx_anns = get_tx_anns(cohort.all_variants(), tx_id)
         # create array of tuples with stand and end for each transcripts
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         # get minimum position on chromosome for all transcripts
@@ -163,18 +157,18 @@ class ProteinVariantVisualizer:
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
         feature_types = [pf.feature_type for pf in protein_meta.protein_features]
         feature_colors = [self.protein_feature_colors[ft] for ft in feature_types]
-        feature_names = [self.protein_feature_names[ft] for ft in feature_types]
+        feature_names = [ft.capitalize() for ft in feature_types]
         feature_limits = (feature_limits * 3) - 2 + min_exon_limit  # to convert from codons to bases
-        variant_locations = list()
-        for ann in tx_anns:
-            if ann is not None and hasattr(ann, 'protein_effect_location'):
-                prot_eff_loc = ann.protein_effect_location
-                if prot_eff_loc is not None:
-                    variant_locations.append([prot_eff_loc.start, prot_eff_loc.end])
-        variant_locations = np.array(variant_locations)
+        variant_locations = np.array(
+            [
+                (ann.protein_effect_location.start, ann.protein_effect_location.end)
+                for ann in tx_anns
+                if ann.protein_effect_location is not None
+            ]
+        )
 
         variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
-        variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
+        variant_effects = [ann.variant_effects[0] for ann in tx_anns]
         # count marker occurrences and remove duplicates
         variant_locations_counted_absolute, marker_counts = np.unique(variant_locations, axis=0, return_counts=True)
         variant_effect_colors = []
@@ -309,42 +303,23 @@ class GenomicVariantVisualizer:
         self.protein_track_color = '#a9a9a9'
         self.transcript_track_color = '#a9a9a9'
         self.protein_feature_colors = {
-            FeatureType.REPEAT: 'yellow',
-            FeatureType.MOTIF: 'orange',
-            FeatureType.DOMAIN: 'red',
-            FeatureType.REGION: 'brown'
-        }
-        self.protein_feature_names = {
-            FeatureType.REPEAT: 'Repeat',
-            FeatureType.MOTIF: 'Motif',
-            FeatureType.DOMAIN: 'Domain',
-            FeatureType.REGION: 'Region'
+            'REPEAT': 'yellow',
+            'MOTIF': 'orange',
+            'DOMAIN': 'red',
+            'REGION': 'brown'
         }
         self.feature_outline_color = 'black'
         self.exon_colors = cycle(['blue', 'lightblue'])
         self.exon_outline_color = 'black'
         self.axis_color = 'black'
 
-    def _get_tx_anns(self, variants, tx_id):
-        tx_anns = []
-        for i, v in enumerate(variants):
-            tx_ann = None
-            for ann in v.tx_annotations:
-                if ann.transcript_id == tx_id:
-                    tx_ann = ann
-                    break
-            if tx_ann is None:
-                raise ValueError(f'The transcript annotation for {tx_id} was not found!')
-            else:
-                tx_anns.append(tx_ann)
-
-        return tx_anns
-
     def draw_fig(self, tx_coordinates: TranscriptCoordinates, protein_meta: ProteinMetadata, cohort: Cohort):
         tx_id = tx_coordinates.identifier
         protein_id = protein_meta.protein_id
-        variants = cohort.all_variants
-        tx_anns = self._get_tx_anns(variants, tx_id)
+        tx_anns = get_tx_anns(
+            cohort.all_variants(),
+            tx_id,
+        )
         # create array of tuples with stand and end for each transcripts
         exon_limits = np.array([(cds.start, cds.end) for cds in tx_coordinates.get_cds_regions()])
         # get minimum position on chromosome for all transcripts

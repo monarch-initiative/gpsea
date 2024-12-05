@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from gpsea.model import ProteinMetadata, FeatureType
+from gpsea.model import ProteinMetadata
 
 
 # Homo sapiens inositol 1,4,5-trisphosphate receptor type 1 (ITPR1), transcript variant 4, mRNA
@@ -46,7 +46,7 @@ class TestProteinMetadata:
         assert domain.info.name == "Suppresor domain"
         assert domain.info.start == 0  # 0-based!
         assert domain.info.end == 223
-        assert domain.feature_type == FeatureType.DOMAIN
+        assert domain.feature_type == 'domain'
 
     def test_IP3_domain(self, itpr1_protein_metadata: ProteinMetadata):
         region = itpr1_protein_metadata.protein_features[1]
@@ -54,7 +54,7 @@ class TestProteinMetadata:
         assert region.info.name == "IP3 binding"
         assert region.info.start == 223  # 0-based!
         assert region.info.end == 578
-        assert region.feature_type == FeatureType.REGION
+        assert region.feature_type == 'region'
 
     def test_malformed_protein_metadata(self):
         """

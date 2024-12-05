@@ -4,7 +4,6 @@ from gpsea.analysis.predicate.genotype import VariantPredicates
 from gpsea.model import (
     Cohort,
     FeatureInfo,
-    FeatureType,
     ProteinFeature,
     ProteinMetadata,
     Variant,
@@ -194,11 +193,11 @@ class TestProteinPredicates:
             protein_features=(
                 ProteinFeature.create(
                     FeatureInfo(name="MOCK_REPEAT", region=Region(55, 80)),
-                    FeatureType.REPEAT,
+                    'REPEAT',
                 ),
                 ProteinFeature.create(
                     FeatureInfo(name="MOCK_DOMAIN", region=Region(30, 50)),
-                    FeatureType.DOMAIN,
+                    'DOMAIN',
                 ),
             ),
             protein_length=100,
@@ -207,14 +206,14 @@ class TestProteinPredicates:
     @pytest.mark.parametrize(
         'feature_type, expected',
         [
-            (FeatureType.DOMAIN, True),
-            (FeatureType.REPEAT, False),
+            ('DOMAIN', True),
+            ('REPEAT', False),
         ]
     )
     def test_protein_feature_type(
             self,
             missense_variant: Variant,
-            feature_type: FeatureType,
+            feature_type: str,
             protein_metadata: ProteinMetadata,
             expected: bool,
     ):

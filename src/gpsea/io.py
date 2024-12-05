@@ -18,7 +18,6 @@ from gpsea.model import (
     SampleLabels,
     VariantEffect,
     FeatureInfo,
-    FeatureType,
     ProteinFeature,
     ProteinMetadata,
     Patient,
@@ -180,7 +179,7 @@ class GpseaJSONEncoder(JSONEncoder):
         elif isinstance(o, ProteinFeature):
             return {
                 "info": o.info,
-                "feature_type": o.feature_type.name,
+                "feature_type": o.feature_type,
             }
         elif isinstance(o, FeatureInfo):
             return {
@@ -392,7 +391,7 @@ class GpseaJSONDecoder(JSONDecoder):
         elif GpseaJSONDecoder._has_all_fields(obj, _PROTEIN_FEATURE):
             return ProteinFeature.create(
                 info=obj["info"],
-                feature_type=FeatureType[obj["feature_type"]],
+                feature_type=obj["feature_type"],
             )
         elif GpseaJSONDecoder._has_all_fields(obj, _FEATURE_INFO):
             return FeatureInfo(

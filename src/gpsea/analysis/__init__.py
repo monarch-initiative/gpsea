@@ -1,4 +1,5 @@
 from ._base import (
+    AnalysisException,
     AnalysisResult,
     MonoPhenotypeAnalysisResult,
     MultiPhenotypeAnalysisResult,
@@ -7,6 +8,7 @@ from ._base import (
 )
 
 __all__ = [
+    "AnalysisException",
     "AnalysisResult",
     "MonoPhenotypeAnalysisResult",
     "MultiPhenotypeAnalysisResult",

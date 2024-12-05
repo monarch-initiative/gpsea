@@ -31,26 +31,32 @@ class CohortViewer(BaseViewer):
         """
         Args:
             hpo(MinimalOntology): An HPO ontology object from hpo-toolkit
+            tx_id(str): the transcript accession `str` (e.g. `NM_123456.7`)
             top_phenotype_count(int): Maximum number of phenotype items (HPO terms, measurements, ...) to display in the HTML table (default: 10)
             top_variant_count(int): Maximum number of variants to display in the HTML table (default: 10)
         """
         super().__init__()
+        assert isinstance(hpo, hpotk.MinimalOntology)
         self._hpo = hpo
+        assert isinstance(top_phenotype_count, int)
         self._top_phenotype_count = top_phenotype_count
+        assert isinstance(top_variant_count, int)
         self._top_variant_count = top_variant_count
         self._cohort_template = self._environment.get_template("cohort.html")
 
     def process(
         self,
         cohort: Cohort,
-        transcript_id: typing.Optional[str] = None,
+        transcript_id: str,
     ) -> GpseaReport:
         """
         Generate the report for a given `cohort`.
 
+        The variant effects will be reported with respect to the provided transcript.
+
         Args:
-            cohort (Cohort): The cohort being analyzed in the current Notebook
-            transcript_id (str): the transcript that we map variants onto
+            cohort (Cohort): the cohort to visualize
+            transcript_id (str): the accession of the target transcript (e.g. `NM_123456.7`)
 
         Returns:
             GpseaReport: a report that can be stored to a path or displayed in
@@ -592,7 +598,7 @@ class ProteinVariantViewer(BaseViewer):
             feature_list.append(
                 {
                     "name": feature.info.name,
-                    "type": feature.feature_type.name,
+                    "type": feature.feature_type,
                     "start": feature.info.start,
                     "end": feature.info.end,
                     "count": len(feature_to_variants[feature]),
