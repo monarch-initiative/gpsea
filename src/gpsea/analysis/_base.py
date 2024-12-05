@@ -15,7 +15,10 @@ class StatisticResult:
     """
     `StatisticResult` reports result of a :class:`~gpsea.analysis.Statistic`.
 
-    It includes a statistic and a corresponding p value.
+    It includes a statistic (optional) and a corresponding p value.
+    The p value can be `NaN` if it is impossible to compute for a given dataset.
+
+    Raises an :class:`AssertionError` for an invalid input.
     """
 
     def __init__(
@@ -29,19 +32,21 @@ class StatisticResult:
         else:
             self._statistic = None
 
-        if isinstance(pval, float) and (math.isnan(pval) or 0.0 <= pval <= 1.0):
-            self._pval = float(pval)
-        else:
-            raise ValueError(
-                f"`pval` must be a float in range [0, 1] but it was {pval}"
-            )
-
+        assert isinstance(pval, float) and (math.isnan(pval) or 0.0 <= pval <= 1.0)
+        self._pval = float(pval)
+        
     @property
     def statistic(self) -> typing.Optional[float]:
+        """
+        Get a `float` with the test statistic or `None` if not available.
+        """
         return self._statistic
 
     @property
     def pval(self) -> float:
+        """
+        Get a p value (a value or a `NaN`).
+        """
         return self._pval
 
     def __eq__(self, value: object) -> bool:
