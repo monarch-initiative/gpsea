@@ -27,7 +27,5 @@ in an interactive Python environment, such as Jupyter notebook.
 
   input-data
   exploratory
-  predicates/index
   analyses/index
-  mtc
   glossary

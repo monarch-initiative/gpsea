@@ -1,8 +1,8 @@
 .. _devries-scorer:
 
-==============
+##############
 De Vries Score
-==============
+##############
 
 
 The De Vries score was developed as a relatively simple phenotypic severity

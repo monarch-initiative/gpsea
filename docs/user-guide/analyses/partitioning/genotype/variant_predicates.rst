@@ -1,4 +1,4 @@
-.. _variant_predicates:
+.. _variant-predicates:
 
 ==================
 Variant Predicates

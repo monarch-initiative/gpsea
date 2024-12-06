@@ -10,13 +10,21 @@ Compare genotype and phenotype groups
 
   >>> from gpsea import _overwrite
 
+In this section, we show how to test the association between genotype and phenotype categories.
+We assume a cohort was preprocessed following the :ref:`input-data` section,
+and we use predicates described in the :ref:`partitioning` to assign each cohort member
+into a group along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the groups
+and we apply multiple testing correction to mitigate finding significant associations by chance. 
+
+
 .. _fisher-exact-test:
 
-***********************
-Fisher exact test (FET)
-***********************
+*****************
+Fisher exact test
+*****************
 
-The Fisher exact test (FET) calculates the exact probability value
+The Fisher exact test calculates the exact probability value
 for the relationship between two dichotomous variables.
 In our implementation, the two dichotomous variables are the genotype and the phenotype.
 For instance, the individuals of the cohort may be divided

@@ -378,9 +378,9 @@ with presence of a truncating variant in *TBX5*.
 For example, `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_
 was observed in 31/60 (52%) patients with a missense variant
 but it was observed in 29/29 (100%) patients with a truncating variant.
-Fisher exact test computed a p value of `~5.61e-7`
+Fisher exact test computed a p value of 5.61e\ :sup:`-7`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.000899` `~9.55e-6`.
+is 9.55e\ :sup:`-6`.
 
 
 **********

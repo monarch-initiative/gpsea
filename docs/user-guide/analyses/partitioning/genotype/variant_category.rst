@@ -1,4 +1,4 @@
-`.. _variant-category:
+.. _variant-category:
 
 =========================
 Group by variant category
