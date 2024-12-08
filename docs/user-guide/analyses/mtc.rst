@@ -183,6 +183,10 @@ The constructor takes a ``term_frequency_threshold`` option (40% by default)
 and the method's logic is made up of 8 individual heuristics 
 designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.
 
+.. contents:: HPO MT filters
+  :depth: 1
+  :local:
+
 
 `HMF01` - Skip terms that occur very rarely
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

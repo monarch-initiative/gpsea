@@ -4,6 +4,12 @@
 Group by sex
 ============
 
+.. figure:: img/sex-predicate.png
+   :alt: Sex predicate
+   :align: center
+   :width: 600px
+
+
 It is easy to investigate the differences between males and females.
 The :func:`~gpsea.analysis.predicate.genotype.sex_predicate` partitions
 the individuals based on their :class:`~gpsea.model.Sex`:

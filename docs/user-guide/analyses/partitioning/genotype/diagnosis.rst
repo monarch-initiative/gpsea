@@ -4,9 +4,15 @@
 Group by diagnosis
 ==================
 
+.. figure:: img/diagnosis-predicate.png
+   :alt: Diagnosis predicate
+   :align: center
+   :width: 600px
+
+
 We can easily compare individuals diagnosed with different diseases.
 :func:`~gpsea.analysis.predicate.genotype.diagnosis_predicate` groups the individuals
-based on the disease diagnoses present in the individuals.
+based on a diagnosis presence.
 
 >>> from gpsea.analysis.predicate.genotype import diagnosis_predicate
 >>> gt_predicate = diagnosis_predicate(
