@@ -12,7 +12,7 @@ Similarly, in an autosomal recessive disease, we may be interested in comparing 
 with :math:`AC_{A} \ge 1` with those with :math:`AC_{A} = 0`.
 In both analyses, we compare two variant categories :math:`A` and :math:`B`
 which are described by a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-(see :ref:`variant_predicates` section),
+(see :ref:`variant-predicates` section),
 while ensuring the allele count sum of both variant categories is :math:`k`.
 
 :math:`k = \sum_{i \in \{A, B\}} AC_{i}`
@@ -37,7 +37,13 @@ GPSEA provides two predicates:
 Monoallelic predicate
 *********************
 
-Monoallelic predicate compares individuals who have *one* allele of a variants of interest.
+.. figure:: img/monoallelic-predicate.png
+   :alt: Monoallelic predicate
+   :align: center
+   :width: 600px
+
+
+Monoallelic predicate compares the individuals who have *one* allele of a variants of interest.
 The predicate needs two variant predicates `A` and `B`
 to compute the allele counts :math:`AC_{A}` and :math:`AC_{B}`,
 in order to assign an individual into one of the following genotype groups:
