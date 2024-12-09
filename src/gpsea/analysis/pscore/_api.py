@@ -104,7 +104,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     patient_3   None      2
     patient_4   1         2
     ...         ...       ...
-    ==========  ========  ===============
+    ==========  ========  =========
 
     The DataFrame index includes the identifiers of the tested individuals and the values are stored
     in `genotype` and `phenotype` columns.

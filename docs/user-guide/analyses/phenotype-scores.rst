@@ -1,14 +1,22 @@
 .. _phenotype-score-stats:
 
 
-===========================================
+###########################################
 Compare phenotype scores in genotype groups
-===========================================
+###########################################
 
 .. doctest::
   :hide:
 
   >>> from gpsea import _overwrite
+
+
+In this section, we show how to test for an association between genotype group and a phenotype score.
+We assume a cohort was preprocessed following the :ref:`input-data` section,
+and we use a genotype predicate and a phenotype scorer from the :ref:`partitioning` section to assign each cohort member
+into a genotype group and to compute a phenotype score.
+We use Mann-Whitney U test to test for differences in phenotype score distributions between the groups.
+
 
 .. _mann-whitney-u-test:
 
@@ -34,7 +42,7 @@ This is a non-parametric test that compares the medians of the two groups to det
 6.348081479150902e-06
 
 
-``p_value`` evaluates to `6.348081479150901e-06`, meaning there is a significant difference between the groups.
+p value of `6.348081479150901e-06` suggests a significant difference between the groups.
 
 
 ****************
@@ -62,7 +70,7 @@ We will load 19 phenopackets that represent individuals with mutations in *RERE*
 whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
 We will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -147,28 +155,7 @@ This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a `NaN` value if the score cannot be computed for an individual.
 
-GPSEA currently offers two related classes, both of which use a Mann Whitney U test for the statistically analysis. 
-The classes can be adapted to several use cases and will serve as examples for creating similar classes for other analysis scenarios:
-
-* :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` to count the number of abnormalities 
-  in organ groups described by top-level HPO terms (*Abnormal brain morphology*, *Abnormal heart morphology*, ...)
-* :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` for assessment of the severity of intellectual disability
-
-
-Counting phenotype scorer
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` assigns a phenotype score that is equivalent to the count of observed phenotypes (HPO terms) that are either
-an exact match to the `query` terms or their descendants. Typically, the `query` terms will comprise abnormalities in different organ systems.
-For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
-In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
-An individual can then have between 0 and 4 phenotype group abnormalities.  The scorer does not double count if the individual has multiple
-observed abnormalities in one of the organ systems (i.e., multiple descendents of one of the query terms). Each individual can thus have a score 
-of between 0 (no relevant abnormalities) to the number of categories (if the individual has an abnormality in each of the categories). 
-The genotype groups are then compared with respect to the distribution of counts using the Mann Whitney U test.
-
-
-Here we use :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
+Here we use the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
 the individuals based on the number of structural defects
 from the following 5 categories:
 
@@ -317,12 +304,3 @@ The box extends from the first quartile (Q1) to the third quartile (Q3) of the d
 with a red line at the median.
 The whiskers extend from the box to the farthest data point
 lying within 1.5x the inter-quartile range (IQR) from the box.
-
-
-De Vries phenotype scorer
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This scorer is similar to the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` except that a sightly different counting strategy is used,
-and the categories are predefined rather than being chosen by the user.
-The :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` also uses a Mann Whitney U test.
-See :ref:`devries-scorer` for details.

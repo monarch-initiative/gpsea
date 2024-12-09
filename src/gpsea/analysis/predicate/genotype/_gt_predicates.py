@@ -14,11 +14,18 @@ from ._variant import VariantPredicates
 
 
 def _fixate_partitions(
-    partitions: typing.Collection[typing.Collection[int]],
+    partitions: typing.Collection[typing.Union[int, typing.Iterable[int]]],
 ) -> typing.Collection[typing.Sequence[int]]:
     fixed = []
-    for partition in partitions:
-        fixed.append(tuple(partition))
+    for i, partition in enumerate(partitions):
+        if isinstance(partition, int):
+            fixed.append((partition,))
+        elif isinstance(partition, typing.Iterable):
+            vals = tuple(partition)
+            assert all(isinstance(val, int) for val in vals), 'All indices must be `int`s!'
+            fixed.append(vals)
+        else:
+            raise ValueError(f'Partition {i} is neither an `int` nor an iterable of `int`s: {partition}')
     return fixed
 
 
@@ -274,7 +281,7 @@ def biallelic_predicate(
     b_predicate: typing.Optional[VariantPredicate] = None,
     a_label: str = "A",
     b_label: str = "B",
-    partitions: typing.Collection[typing.Collection[int]] = ((0,), (1,), (2,)),
+    partitions: typing.Collection[typing.Union[int, typing.Collection[int]]] = (0, 1, 2),
 ) -> GenotypePolyPredicate:
     """
     The predicate bins patient into one of the three groups,
@@ -291,7 +298,7 @@ def biallelic_predicate(
         of `a_predicate` should be used (named `B` by default).
     :param a_label: display name of the `a_predicate` (default ``"A"``).
     :param b_label: display name of the `b_predicate` (default ``"B"``).
-    :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).
+    :param partitions: a sequence with partition identifiers (default ``(0, 1, 2)``).
     """
     # Q/C
     assert isinstance(a_label, str)
@@ -335,18 +342,18 @@ def _build_ac_to_cat(
 
 
 def allele_count(
-    counts: typing.Collection[typing.Collection[int]],
+    counts: typing.Collection[typing.Union[int, typing.Collection[int]]],
     target: typing.Optional[VariantPredicate] = None,
 ) -> GenotypePolyPredicate:
     """
     Create a predicate to assign the patient into a group based on the allele count
     of the target variants.
 
-    The `counts` option takes a collection of `int` collections.
-    Each inner collection corresponds to an allele count partition
-    and the outer collection includes all partitions.
-    The `int` represents the target allele count.
-    A count can be included only in one partition.
+    The `counts` option takes an `int` collection or a collection of `int` collections.
+    An `int` value represents a target allele count and several counts can be grouped in a partition.
+    A standalone `int` is assumed to represent a partition.
+    The outer collection includes all partitions.
+    An allele count can be included only in one partition.
 
     Examples
     --------
@@ -355,15 +362,24 @@ def allele_count(
     with zero allele or one target allele:
 
     >>> from gpsea.analysis.predicate.genotype import allele_count
-    >>> zero_vs_one = allele_count(counts=({0,}, {1,}))
+    >>> zero_vs_one = allele_count(counts=(0, 1))
     >>> zero_vs_one.summarize_groups()
     'Allele count: 0, 1'
-    
+
     These counts will create three groups for individuals with zero, one or two alleles:
 
-    >>> zero_vs_one_vs_two = allele_count(counts=({0,}, {1,}, {2,}))
+    >>> zero_vs_one_vs_two = allele_count(counts=(0, 1, 2))
     >>> zero_vs_one_vs_two.summarize_groups()
     'Allele count: 0, 1, 2'
+
+    Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,
+    and one for the individuals with one or two alleles:
+
+    >>> zero_vs_one_vs_two = allele_count(counts=(0, {1, 2}))
+    >>> zero_vs_one_vs_two.summarize_groups()
+    'Allele count: 0, 1 OR 2'
+
+    Note that we wrap the last two allele counts in a set.
 
     :param counts: a sequence with allele count partitions.
     :param target: a predicate for choosing the variants for testing

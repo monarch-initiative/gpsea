@@ -1,8 +1,8 @@
-.. _phenotype_predicates:
+.. _phenotype-predicates-and-scorers:
 
-====================
-Phenotype Predicates
-====================
+################################
+Phenotype predicates and scorers
+################################
 
 GPSEA offers several phenotype predicates.
 
@@ -16,4 +16,5 @@ TODO -- separate explanations for HPO (Fisher), scores (Mann Whitney) and surviv
   :caption: Contents:
 
   hpo_predicate
+  counting
   devries

@@ -1,23 +1,31 @@
 .. _user-guide:
 
-==========
+##########
 User guide
-==========
+##########
 
-GPSEA allows users to perform many different kinds of genotype-phenotype correlation (GPCs) analysis. See the :ref:`tutorial` for an introduction.
-In general, the analysis will include steps for data input, exploration of the cohort to assist in generating hypotheses about potential GPCs to test, 
-corresponding choice of genotype and phenotype predicates to perform the test, choice of statistical test, and approach to multiple-testing correction (mtc).
-The pages shown in the table of contents provide more information about each step.
+The user guide is the primary reference for all GPSEA functionality
+and it aims to connect all the information you need to build
+your own G/P association analysis workflows.
+
+A typical workflow starts with ingest, Q/C, and exploration of the cohort data.
+Then, one or more G/P hypotheses need to be conceived and shaped as an analysis.
+The shaping includes selecting the ways for partitioning the cohort along the genotype and phenotype axes,
+as well as the statistical test and multiple-testing correction.
+The resultant tables and figures can include nominal and corrected p values
+or a figure with phenotype score distributions or the survival curves.
+
+The guide is broken into short self-contained sections,
+each discussing a single step of a G/P association workflow.
+We encourage the users to run the code examples
+in an interactive Python environment, such as Jupyter notebook.
 
 
 .. toctree::
-  :maxdepth: 3
+  :maxdepth: 1
   :caption: Contents:
 
   input-data
   exploratory
-  predicates/index
   analyses/index
-  mtc
-  general_hpo_terms
   glossary
