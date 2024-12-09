@@ -6,19 +6,20 @@ Genotype predicates
 
 
 A genotype predicate partitions the individuals based on their genotype.
-In GPSEA, a predicate leverages information from one of the three areas:
+In GPSEA, genotype predicates leverage information from one of the three areas:
 
-* sex (Male vs. Female)
-* disease diagnosis
-* presence of variant(s) that meet certain inclusion criteria (e.g. a missense variant in hetezygous genotype)
+* Sex
+* Disease diagnosis
+* Presence of variant(s) that meet certain inclusion criteria (e.g. a missense variant in heterozygous genotype)
 
-Partitioning based on sex or disease diagnosis is relatively straightforward
-(see :ref:`group-by-sex` and :ref:`group-by-diagnosis` for more details). 
+Partitioning based on sex or disease diagnosis is relatively straightforward - the individuals
+are assigned by the biological sex or presence of a specific diagnosis.
+See :ref:`group-by-sex` and :ref:`group-by-diagnosis` for more details. 
 
-Partitioning based on variants needs, however, more thought.
-The process is split into two steps.
-First, we count the alleles of the matching variants
-(:ref:`variant-predicates`)
+Partitioning based on variants is, however, much more flexible,
+to support the analysis of the broad spectrum of pathomechanisms
+that have been shown to lead to genetic diseases.
+In general, we first choose the variants of interests (:ref:`variant-predicates`)
 and then we interpret the count,
 possibly including factors such as the expected mode of inheritance and sex,
 to assign the tested individual into a genotype group

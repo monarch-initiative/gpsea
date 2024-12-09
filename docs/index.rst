@@ -3,7 +3,7 @@ GPSEA
 #####
 
 
-The concept of phenotype denote the observable attributes of an individual, but in 
+The concept of phenotype denotes the observable attributes of an individual, but in 
 medical contexts, the word "phenotype" is used to refer to some deviation from normal morphology, physiology, or behavior 
 (c.f. `Deep phenotyping for precision medicine <https://pubmed.ncbi.nlm.nih.gov/22504886/>`_).
 A key question in biology and human genetics concerns the relationships between phenotypic abnormalities and genotype.
