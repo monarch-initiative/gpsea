@@ -1,38 +1,53 @@
 .. _variant-predicates:
 
+
 ==================
 Variant Predicates
 ==================
 
 
-GPSEA uses the :class:`~gpsea.analysis.predicate.genotype.VariantPredicate` class
-to test if a :class:`~gpsea.model.Variant` meets the inclusion criteria.
-The variant predicate can leverage multiple primary data:
+Variant predicate is a core component to partition a cohort using the genomic variants identified in the cohort members.
+A :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+tests if a :class:`~gpsea.model.Variant` meets the inclusion criteria.
+For instance, a predicate can test if a variant is a deletion,
+leads to a missense change, or overlaps with a protein domain.
+
+An array of variant predicates is available as static methods
+of the :class:`~gpsea.analysis.predicate.VariantPredicates` class.
+
+The predicates operate on several lines of information:
 
 +------------------------+-------------------------------------------------------------------------------------------------+
-| Primary data source    |   Example                                                                                       |
+| Information            | Example                                                                                         |
 +========================+=================================================================================================+
-| Allele                 | the variant being a deletion or a single nucleotide variant (SNV)                               |
+| Allele                 | variant is e.g. a deletion of >50 bases                                                         |
 +------------------------+-------------------------------------------------------------------------------------------------+
-| Genome                 | overlaps of a target genomic region                                                             |
-+------------------------+-------------------------------------------------------------------------------------------------+
-| Functional annotation  | variant is predicted to lead to a missense change or affect an exon of certain transcript       |
+| Functional annotation  | variant leads to a missense change or affects *n*-th exon of a transcript                       |
 +------------------------+-------------------------------------------------------------------------------------------------+
 | Protein data           | variant is located in a region encoding a protein domain, protein feature type                  |
 +------------------------+-------------------------------------------------------------------------------------------------+
+| Genome                 | overlap with a genomic region of interest                                                       |
++------------------------+-------------------------------------------------------------------------------------------------+
 
 
-As a rule of thumb, the predicates for testing basic conditions are available off the shelf,
-and they can be used as building block for testing for more complex conditions,
-such as testing if the variant is "a missense or synonymous variant located in exon 6 of transcript `NM_013275.6`".
+The scope of the builtin predicates is fairly narrow
+and likely insufficient for real-life analyses.
+The predicates can, however, be chained into a compound predicate to test conditions,
+such as "variant is a missense or synonymous variant located in exon 6 of `NM_013275.6`".
 
-Let's demonstrate the variant predicate usage on a few examples.
+
+********
+Examples
+********
+
+Here we show examples of several simple variant predicates and 
+and how to combine them to test a complex condition.
 
 
 Load cohort
 -----------
 
-For the purpose of this example, we will load a :class:`~gpsea.model.Cohort`
+Let's start by loading a :class:`~gpsea.model.Cohort`
 of 19 individuals with mutations in *RERE* leading to Holt-Oram syndrome.
 The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as
@@ -51,52 +66,56 @@ following the instructions in :ref:`cohort-persistence` section.
 19
 
 
-To demonstrate the predicate API, we will use the variant ``1_8358231_8358231_T_C`` that corresponds 
-to a pathogenic variant `VCV000522858.5 <https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/>`_ 
+Some individuals were found to harbor the variant ``1_8358231_8358231_T_C`` that corresponds 
+to a pathogenic mutation `VCV000522858.5 <https://www.ncbi.nlm.nih.gov/clinvar/variation/522858/>`_ 
 that replaces the histidine encoded by the 1435th codon of `NM_001042681.2` with arginine: ``NM_001042681.2(RERE):c.4304A>G (p.His1435Arg)``.
+We can retrieve the variant by querying the cohort by the variant key:
 
 >>> variant_key_of_interest = '1_8358231_8358231_T_C'
 >>> variant = cohort.get_variant_by_key(variant_key_of_interest)
 
-Building blocks
----------------
 
-We can check that the variant overlaps with *RERE*:
+Builtin predicates
+------------------
+
+Let's use builtin predicates to verify the properties of the variant ``1_8358231_8358231_T_C``.
+
+We can check that the variant overlaps with *RERE*
 
 >>> from gpsea.analysis.predicate.genotype import VariantPredicates
 >>> gene = VariantPredicates.gene('RERE')
 >>> gene.test(variant)
 True
 
-it overlaps with the *MANE* transcript:
+it overlaps with the *MANE* transcript
 
 >>> rere_mane_tx_id = 'NM_001042681.2'
 >>> tx = VariantPredicates.transcript(rere_mane_tx_id)
 >>> tx.test(variant)
 True
 
-it in fact overlaps with the exon 20:
+it in fact overlaps with the exon 20,
 
 >>> exon20 = VariantPredicates.exon(exon=20, tx_id=rere_mane_tx_id)
 >>> exon20.test(variant)
 True
 
-and leads to a missense mutation with respect to the MANE transcript:
+and leads to a missense mutation with respect to the MANE transcript
 
 >>> from gpsea.model import VariantEffect
 >>> missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=rere_mane_tx_id)
 >>> missense.test(variant)
 True
 
-See :class:`~gpsea.analysis.predicate.genotype.VariantPredicates` 
-for more info on the predicates available off the shelf.
+See :class:`~gpsea.analysis.predicate.genotype.VariantPredicates`
+for a complete list of the builtin predicates.
 
 
-Complex conditions
-------------------
+Predicate chain
+---------------
 
-We can combine the building blocks to test for more elaborate conditions.
-For instance, we can test if the variant meets *any* or several conditions:
+Using the builtin predicates, we can build a logical chain to test complex conditions.
+For instance, we can test if the variant meets any of several conditions:
 
 >>> nonsense = VariantPredicates.variant_effect(VariantEffect.STOP_GAINED, tx_id=rere_mane_tx_id)
 >>> missense_or_nonsense = missense | nonsense
@@ -109,10 +128,10 @@ or *all* conditions:
 >>> missense_and_exon20.test(variant)
 True
 
-The `VariantPredicate` overloads Python ``&`` (AND) and ``|`` (OR) operators to build a compound predicate from lower level building blocks.
+All variant predicates overload Python ``&`` (AND) and ``|`` (OR) operators, to allow chaining.
 
 Therefore, there is nothing that prevents us to combine the predicates into multi-level tests, 
-such as testing if the variant is a *"chromosomal deletion" or a deletion which removes at least 50 bp*:
+e.g. to test if the variant is a *"chromosomal deletion" or a deletion which removes at least 50 bp*:
 
 >>> from gpsea.model import VariantClass
 >>> chromosomal_deletion = "SO:1000029"
@@ -136,12 +155,11 @@ for all variant effects except of :class:`~gpsea.model.VariantEffect.FRAMESHIFT_
 ... )
 >>> non_frameshift_predicate = VariantPredicates.all(VariantPredicates.variant_effect(eff, tx_id=rere_mane_tx_id) for eff in non_frameshift_effects)
 
-However, this is clearly tedious and it would be much better implemented 
-by a simple logical not of a predicate for a frameshift variant effect.
+However, this is clearly much better implemented by a logical *not* of a "is frameshift" predicate.
 
-To support this, `VariantPredicate` implements *logical inversion* 
-which corresponds to Python's ``~`` operator (tilde), to wrap
-the underlying predicate and to invert its test result.
+Therefore, all variant predicates implement *logical inversion* 
+which corresponds to Python's ``~`` operator (tilde),
+and results in an inverted predicate.
 
 This is how we can use the predicate inversion to build the predicate for non-frameshift deletions:
 
@@ -150,6 +168,20 @@ This is how we can use the predicate inversion to build the predicate for non-fr
 '(NOT FRAMESHIFT_VARIANT on NM_001042681.2 AND variant class is DEL)'
 
 Note the presence of a tilde ``~`` before the variant effect predicate and resulting ``NOT`` in the predicate question.
+
+
+**********
+Need more?
+**********
+
+The builtin predicates should cover majority of use cases.
+However, if a predicate seems to be missing,
+feel free to submit an issue in our
+`GitHub tracker <https://github.com/monarch-initiative/gpsea/issues>`_,
+or to implement a custom predicate
+by extending the :class:`~gpsea.analysis.predicate.genotype.VariantPredicate` class 😎.
+
+
 
 The variant predicate offers a flexible API for testing if variants meet a condition.
 However, the genotype phenotype correlations are done on the individual level

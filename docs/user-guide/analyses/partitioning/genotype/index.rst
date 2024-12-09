@@ -19,9 +19,9 @@ See :ref:`group-by-sex` and :ref:`group-by-diagnosis` for more details.
 Partitioning based on variants is, however, much more flexible,
 to support the analysis of the broad spectrum of pathomechanisms
 that have been shown to lead to genetic diseases.
-In general, we first choose the variants of interests (:ref:`variant-predicates`)
-and then we interpret the count,
-possibly including factors such as the expected mode of inheritance and sex,
+In general, we first create one or more variant predicates to select the variants of interest (:ref:`variant-predicates`),
+then count and interpret the number of alleles in the cohort members,
+including factors such as the expected mode of inheritance and sex,
 to assign the tested individual into a genotype group
 (:ref:`variant-category` or :ref:`allele-count`).
 
