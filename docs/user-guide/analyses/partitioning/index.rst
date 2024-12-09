@@ -22,7 +22,7 @@ while the phenotype predicates (:class:`~gpsea.analysis.predicate.phenotype.Phen
 decide on the group based on the HPO terms or a diagnosis.
 
 Besides assigning an individual into a discrete group,
-a continuous score (typically phenotype) can also be computed.
+a continuous score (typically for phenotype) can also be computed.
 A :class:`~gpsea.analysis.pscore.PhenotypeScorer` computes a phenotype score
 for an individual, and the differences in score distributions of genotype groups
 can be tested e.g. with Mann-Whitney U test.

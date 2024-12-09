@@ -45,7 +45,7 @@ and how to combine them to test a complex condition.
 
 
 Load cohort
------------
+===========
 
 Let's start by loading a :class:`~gpsea.model.Cohort`
 of 19 individuals with mutations in *RERE* leading to Holt-Oram syndrome.
@@ -76,7 +76,7 @@ We can retrieve the variant by querying the cohort by the variant key:
 
 
 Builtin predicates
-------------------
+==================
 
 Let's use builtin predicates to verify the properties of the variant ``1_8358231_8358231_T_C``.
 
@@ -112,7 +112,7 @@ for a complete list of the builtin predicates.
 
 
 Predicate chain
----------------
+===============
 
 Using the builtin predicates, we can build a logical chain to test complex conditions.
 For instance, we can test if the variant meets any of several conditions:
@@ -141,7 +141,7 @@ e.g. to test if the variant is a *"chromosomal deletion" or a deletion which rem
 
 
 Inverting conditions
---------------------
+====================
 
 Sometimes we may want to test the variant for a condition that must *not* be met.
 For instance, we may want to test if the variant is a deletion 
