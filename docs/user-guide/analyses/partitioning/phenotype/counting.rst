@@ -53,7 +53,15 @@ that corresponds to the structural defect
 or that is its descendant
 (e.g. `Cerebellar atrophy <https://hpo.jax.org/browse/term/HP:0001272>`_).
 
-We construct the scorer with
+
+The counting scorer uses HPO hierarchy as a prerequisite.
+We can load HPO using HPO toolkit:
+
+>>> import hpotk
+>>> store = hpotk.configure_ontology_store()
+>>> hpo = store.load_minimal_hpo(release='v2024-07-01')
+
+Then, we construct the scorer with
 :func:`~gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies` function:
 
 >>> from gpsea.analysis.pscore import CountingPhenotypeScorer

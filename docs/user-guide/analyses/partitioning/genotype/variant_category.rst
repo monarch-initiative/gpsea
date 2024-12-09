@@ -189,7 +189,7 @@ the `A/A` genotype group corresponds to index `0`,
 and the `A/B` and `B/B` genotype groups correspond to indices `1` and `2`, respectively.
 We form the corresponding partitions as:
 
->>> partitions = ({0,}, {1, 2})
+>>> partitions = (0, {1, 2})
 
 Using the ``partitions``, the biallelic predicate splits the individuals
 into two groups:

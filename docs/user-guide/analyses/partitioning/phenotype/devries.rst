@@ -177,7 +177,7 @@ GPSEA implements the score in :class:`~gpsea.analysis.pscore.DeVriesPhenotypeSco
 as a part of the :ref:`Phenotype score <phenotype-score-stats>` analysis, where it is used
 as a :ref:`phenotype scorer <phenotype-score>`.
 
-A De Vries scorer uses HPO hierarchy as a prerequisite.
+The De Vries scorer uses HPO hierarchy as a prerequisite.
 We can load HPO using HPO toolkit:
 
 >>> import hpotk
