@@ -32,7 +32,8 @@ The predicates operate on several lines of information:
 
 The scope of the builtin predicates is fairly narrow
 and likely insufficient for real-life analyses.
-The predicates can, however, be chained into a compound predicate to test conditions,
+The predicates can, however, be chained into a compound predicate
+to achive more expressivity for testing complex conditions,
 such as "variant is a missense or synonymous variant located in exon 6 of `NM_013275.6`".
 
 
