@@ -8,16 +8,17 @@ and :class:`~gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate` respecti
 
 A contingency matrix with group counts is prepared
 and the counts are tested for association using :class:`~gpsea.analysis.pcats.stats.CountStatistic`,
-such as :class:`~gpsea.analysis.pcats.stats.ScipyFisherExact`.
+such as :class:`~gpsea.analysis.pcats.stats.FisherExactTest`.
 
 It is typical to test several phenotype groups at the same time.
 Therefore, we must correct for multiple testing to prevent false positive findings.
 See :ref:`MTC section <mtc>` for more info.
 
-The results are provided as :class:`MultiPhenotypeAnalysisResult`
-(or more specific :class:`HpoTermAnalysisResult` for :class:`HpoTermAnalysis`).
+The results are provided as :class:`~gpsea.analysis.MultiPhenotypeAnalysisResult`
+(or more specific :class:`~gpsea.analysis.pcats.HpoTermAnalysisResult`
+for :class:`~gpsea.analysis.pcats.HpoTermAnalysis`).
 
-Use :func:`configure_hpo_term_analysis` to configure the HPO term analysis with the default parameters. 
+Use :func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` to configure the HPO term analysis with the default parameters.
 """
 
 from ._impl import MultiPhenotypeAnalysis, MultiPhenotypeAnalysisResult

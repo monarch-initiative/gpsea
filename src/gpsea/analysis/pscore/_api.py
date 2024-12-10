@@ -93,8 +93,8 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     """
     `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.
 
-    The :attr:`PhenotypeScoreAnalysisResult.data` property provides a data frame
-    with phenotype score for each tested individual:
+    The :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data`
+    property provides a data frame with phenotype score for each tested individual:
     
     ==========  ========  =========
     patient_id  genotype  phenotype
@@ -104,7 +104,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     patient_3   None      2
     patient_4   1         2
     ...         ...       ...
-    ==========  ========  ===============
+    ==========  ========  =========
 
     The DataFrame index includes the identifiers of the tested individuals and the values are stored
     in `genotype` and `phenotype` columns.

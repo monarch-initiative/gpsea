@@ -3,7 +3,7 @@ The `gpsea.analysis.predicate.phenotype` package provides the :class:`PhenotypeP
 for assigning :class:`~gpsea.model.Patient` into a phenotype group.
 
 An individual can be assigned based on presence/absence of a disease diagnosis (:class:`DiseasePresencePredicate`)
-or using the phenotype features encoded into HPO terms (:class:`PropagatingPhenotypePredicate`).
+or using the phenotype features encoded into HPO terms (:class:`~gpsea.analysis.predicate.phenotype.HpoPredicate`).
 """
 
 from ._pheno import PhenotypePolyPredicate, HpoPredicate

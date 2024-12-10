@@ -22,9 +22,9 @@ class Endpoint(ContinuousPartitioning, metaclass=abc.ABCMeta):
     """
     `Endpoint` computes survival for the analyzed individual.
 
-    An example endpoint includes :func:`~gpsea.analysis.survival.endpoint.death`,
-    :func:`~gpsea.analysis.survival.endpoint.disease_onset`,
-    or onset of a phenotypic feature (:func:`~gpsea.analysis.survival.endpoint.hpo_onset`).
+    Example endpoints include :func:`~gpsea.analysis.temporal.endpoint.death`,
+    :func:`~gpsea.analysis.temporal.endpoint.disease_onset`,
+    or onset of a phenotypic feature (:func:`~gpsea.analysis.temporal.endpoint.hpo_onset`).
     """
 
     @abc.abstractmethod
@@ -57,7 +57,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
 
     The index includes the individual IDs (`patient_id`), and then there are 2 columns
     with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
-    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.tempo.Survival` object.
+    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.
 
     A `genotype` value may be missing (`None`) if the individual cannot be assigned
     into a genotype category.

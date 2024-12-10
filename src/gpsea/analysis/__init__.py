@@ -6,6 +6,8 @@ from ._base import (
     Statistic,
     StatisticResult,
 )
+from ._partition import Partitioning, ContinuousPartitioning
+from ._util import Summarizable
 
 __all__ = [
     "AnalysisException",
@@ -14,4 +16,7 @@ __all__ = [
     "MultiPhenotypeAnalysisResult",
     "Statistic",
     "StatisticResult",
+    "Partitioning",
+    "ContinuousPartitioning",
+    "Summarizable",
 ]

@@ -1,4 +1,4 @@
-`.. _variant-category:
+.. _variant-category:
 
 =========================
 Group by variant category
@@ -12,7 +12,7 @@ Similarly, in an autosomal recessive disease, we may be interested in comparing 
 with :math:`AC_{A} \ge 1` with those with :math:`AC_{A} = 0`.
 In both analyses, we compare two variant categories :math:`A` and :math:`B`
 which are described by a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
-(see :ref:`variant_predicates` section),
+(see :ref:`variant-predicates` section),
 while ensuring the allele count sum of both variant categories is :math:`k`.
 
 :math:`k = \sum_{i \in \{A, B\}} AC_{i}`
@@ -37,10 +37,10 @@ GPSEA provides two predicates:
 Monoallelic predicate
 *********************
 
-Monoallelic predicate compares individuals who have *one* allele of a variants of interest.
-The predicate needs two variant predicates `A` and `B`
+Monoallelic predicate compares the individuals who have *one* allele of a variants of interest.
+The predicate uses a pair of variant predicates, `A` and `B`,
 to compute the allele counts :math:`AC_{A}` and :math:`AC_{B}`,
-in order to assign an individual into one of the following genotype groups:
+in order to assign an individual into a genotype group.
 
 .. table:: Monoallelic predicate genotype groups
 
@@ -56,6 +56,11 @@ in order to assign an individual into one of the following genotype groups:
 
 The individuals with :math:`\sum_{i \in \{A, B\}} AC_{i} \neq 1`
 are omitted from the analysis.
+
+.. figure:: img/monoallelic-predicate.png
+   :alt: Monoallelic predicate
+   :align: center
+   :width: 600px
 
 
 Example
@@ -129,6 +134,13 @@ to be assigned into one of the three genotype groups:
 Note that :math:`\sum_{i \in \{A, B\}} AC_{i} = 2` and the individuals
 with a different allele count sum are omitted from the analysis.
 
+
+.. figure:: img/biallelic-predicate.png
+   :alt: Biallelic predicate
+   :align: center
+   :width: 600px
+
+
 Example
 -------
 
@@ -148,9 +160,9 @@ to compare missense and frameshift variants in the context of an autosomal reces
 
 The predicate will assign the individuals into one of three genotype groups:
 
-* `Missense/Missense` - two missense alleles
-* `Missense/Frameshift` - one missense allele and one frameshift allele
-* `Frameshift/Frameshift` - two frameshift alleles
+* `A/A` - two missense alleles
+* `A/B` - one missense and one frameshift allele
+* `B/B` - two frameshift alleles
 
     
 Partitions
@@ -163,26 +175,35 @@ we may want to compare individuals with two "mild" mutations with the individual
 with at least one "severe" mutation.
 This comparison can be implemented using the `partitions` option.
 
-We define a partition as a set of one or more genotype group indices
-(see :ref:`biallelic-predicate-gt-groups` table),
-and we must provide at least two such partitions to the `partitions` option.
+A partition is a set of one or more genotype group indices
+(see :ref:`biallelic-predicate-gt-groups` table).
+Then, the `partitions` option needs two or more partitions.
+Typically, two partitions should be provided.
+
+For example, we can compare the individuals with two missense alleles with those harboring
+one frameshift and one missense alleles, or two frameshift alleles.
+
+Let `A` and `B` correspond to *MISSENSE* and *FRAMESHIFT* variant.
+According to :ref:`biallelic-predicate-gt-groups` table,
+the `A/A` genotype group corresponds to index `0`,
+and the `A/B` and `B/B` genotype groups correspond to indices `1` and `2`, respectively.
+We form the corresponding partitions as:
+
+>>> partitions = (0, {1, 2})
+
+Using the ``partitions``, the biallelic predicate splits the individuals
+into two groups:
+
+* two missense alleles
+* one missense alelele and one frameshift allele or two frameshift alleles
+
+.. figure:: img/biallelic-predicate-w-partitions.png
+   :alt: Biallelic predicate with partitions
+   :align: center
+   :width: 600px
 
 
-Example
--------
-
-Let `A` and `B` correspond to *MISSENSE* and *FRAMESHIFT* variant
-Here we compare the individuals with two missense alleles with the individuals with one frameshift and one missense alleles,
-or with two frameshift alelles.
-
-The partition for the two missense alleles will include the genotype group `0`,
-and the one or more frameshift alleles partition corresponds to the genotype groups `{1, 2}` (see :ref:`biallelic-predicate-gt-groups` table).
-The complete partitions are defined as:
-
->>> partitions = ({0,}, {1, 2})
-
-We provide `partitions`
-to the :func:`~gpsea.analysis.predicate.genotype.biallelic_predicate` function:
+This is how to use the ``partitions`` in code:
 
 >>> gt_predicate = biallelic_predicate(
 ...     a_predicate=is_missense,
@@ -192,8 +213,3 @@ to the :func:`~gpsea.analysis.predicate.genotype.biallelic_predicate` function:
 ... )
 >>> gt_predicate.group_labels
 ('Missense/Missense', 'Missense/Frameshift OR Frameshift/Frameshift')
-
-Now `gt_predicate` assigns an individual into one of the two categories:
-
-* `Missense/Missense`
-* `Missense/Frameshift` OR `Frameshift/Frameshift`

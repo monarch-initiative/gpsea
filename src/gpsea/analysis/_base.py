@@ -447,7 +447,7 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
 
     def complete_records(self) -> pd.DataFrame:
         """
-        Get the :attr:`~gpsea.analysis.temporal.MonoPhenotypeAnalysisResult.data` rows
+        Get the :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data` rows
         where both `genotype` and `phenotype` columns are available (i.e. not `None` or `NaN`).
         """
         return self._data.loc[
