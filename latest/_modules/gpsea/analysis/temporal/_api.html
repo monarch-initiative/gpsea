@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
@@ -102,9 +102,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Endpoint` computes survival for the analyzed individual.</span>
 
-<span class="sd">    An example endpoint includes :func:`~gpsea.analysis.survival.endpoint.death`,</span>
-<span class="sd">    :func:`~gpsea.analysis.survival.endpoint.disease_onset`,</span>
-<span class="sd">    or onset of a phenotypic feature (:func:`~gpsea.analysis.survival.endpoint.hpo_onset`).</span>
+<span class="sd">    Example endpoints include :func:`~gpsea.analysis.temporal.endpoint.death`,</span>
+<span class="sd">    :func:`~gpsea.analysis.temporal.endpoint.disease_onset`,</span>
+<span class="sd">    or onset of a phenotypic feature (:func:`~gpsea.analysis.temporal.endpoint.hpo_onset`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Endpoint.compute_survival">
@@ -143,7 +143,7 @@
 
 <span class="sd">    The index includes the individual IDs (`patient_id`), and then there are 2 columns</span>
 <span class="sd">    with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
-<span class="sd">    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.tempo.Survival` object.</span>
+<span class="sd">    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.</span>
 
 <span class="sd">    A `genotype` value may be missing (`None`) if the individual cannot be assigned</span>
 <span class="sd">    into a genotype category.</span>

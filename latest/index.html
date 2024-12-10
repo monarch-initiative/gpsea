@@ -25,7 +25,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" /> 
+    <link rel="next" title="Setup" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,9 +47,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apidocs/modules.html">API reference</a></li>
@@ -81,34 +81,40 @@
              
   <section id="gpsea">
 <h1>GPSEA<a class="headerlink" href="#gpsea" title="Link to this heading"></a></h1>
-<p>The concept of phenotype denote the observable attributes of an individual, but in
+<p>The concept of phenotype denotes the observable attributes of an individual, but in
 medical contexts, the word “phenotype” is used to refer to some deviation from normal morphology, physiology, or behavior
 (c.f. <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/22504886/">Deep phenotyping for precision medicine</a>).
-A key question in biology and human genetics concerns the relationships between phenotypic abnormalities and genotype. In Mendelian
-genetics, the focus is generally placed on the study of whether specific disease-causing alleles are associated with specific phenotypic
-manifestations of the disease.</p>
-<p><cite>GPSEA</cite>  (Genotypes and Phenotypes - Statistical Evaluation of Associations, pronounced “G”-“P”-“C”) is a Python package designed to support genotype-phenotype correlation analysis.
-The input to <cite>GPSEA</cite> is a collection of <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35705716/">Global Alliance for Genomics and Health (GA4GH) Phenopackets</a>.
-<cite>gpsea</cite> ingests data from these phenopackets and performs analysis of the correlation of specific variants,
-variant types (e.g., missense vs. premature termination codon), or variant location in protein motifs or other features.
-The phenotypic abnormalities are represented by <a class="reference external" href="https://hpo.jax.org/app/">Human Phenotype Ontology (HPO)</a> terms.
-Statistical analysis is performed using a <a class="reference external" href="https://en.wikipedia.org/wiki/Fisher%27s_exact_test">Fisher Exact Test</a>,
-and results are reported for each tested HPO term.</p>
-<p>We recommend that users create a Jupyter notebook for each cohort of patients they would like to test.</p>
-<p>This documentation includes installation instructions, a brief tutorial, and a comprehensive user guide.
-The technical information is available in API reference.</p>
+A key question in biology and human genetics concerns the relationships between phenotypic abnormalities and genotype.
+In Mendelian genetics, the focus is generally placed on the study of whether specific disease-causing alleles
+are associated with specific phenotypic manifestations of the disease.</p>
+<p>GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations, /dʒiːpiːsiː/)
+is a Python package for finding genotype-phenotype associations.
+The input to GPSEA is a collection of <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35705716/">Global Alliance for Genomics and Health (GA4GH) Phenopackets</a>.
+GPSEA ingests the phenopackets and analyzes the genotype-phenotype associations.
+The genotype can include variant types (e.g., missense vs. premature termination codon),
+or variant location in protein motifs or other features.
+Phenotype can be represented by <a class="reference external" href="https://hpo.jax.org/app/">Human Phenotype Ontology (HPO)</a> terms, but using other phenotypes is possible.
+Statistical analysis is performed using e.g <a class="reference external" href="https://en.wikipedia.org/wiki/Fisher%27s_exact_test">Fisher Exact Test</a>.</p>
+<p>GPSEA integrates with modern interactive computing environments, such as Jupyter notebook.
+Therefore, we recommend to install GPSEA into a Jupyter kernel and to perform the analyses
+in a Jupyter notebooks.
+The documentation is structured such that each section can be executed in a notebook,
+and we encourage running the examples while reading the documentation.</p>
+<p>The documentation includes <a class="reference internal" href="setup.html#setup"><span class="std std-ref">Setup</span></a> instructions,
+a <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">Tutorial</span></a> with an end-to-end example, and a comprehensive <a class="reference internal" href="user-guide/index.html#user-guide"><span class="std std-ref">User guide</span></a>.
+The technical information is available in the API reference.</p>
 <section id="literature">
 <h2>Literature<a class="headerlink" href="#literature" title="Link to this heading"></a></h2>
 <p>We provide recommended reading for background on the study of genotype-phenotype correlations.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/26042146/">Orgogozo V, et al. (2015)</a> The differential view of genotype-phenotype relationships.</p></li>
 </ul>
+</section>
 <section id="feedback">
-<h3>Feedback<a class="headerlink" href="#feedback" title="Link to this heading"></a></h3>
-<p>The best place to leave feedback, ask questions, and report bugs is the <a class="reference external" href="https://github.com/monarch-initiative/gpsea/issues">GPSEA Issue Tracker</a>.</p>
+<h2>Feedback<a class="headerlink" href="#feedback" title="Link to this heading"></a></h2>
+<p>The best place to leave feedback, ask questions, and report bugs is the GPSEA <a class="reference external" href="https://github.com/monarch-initiative/gpsea/issues">Issue Tracker</a>.</p>
 <div class="toctree-wrapper compound" id="index-toc">
 </div>
-</section>
 </section>
 </section>
 
@@ -116,7 +122,7 @@ The technical information is available in API reference.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

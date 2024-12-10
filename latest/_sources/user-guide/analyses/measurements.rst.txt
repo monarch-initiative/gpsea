@@ -1,4 +1,4 @@
-`.. _measurement-stat:
+.. _measurement-stat:
 
 
 ==========================
@@ -23,7 +23,7 @@ Load cohort
 
 For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/CYP21A2.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 

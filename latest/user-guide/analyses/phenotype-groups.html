@@ -25,8 +25,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Compare phenotype scores in genotype groups" href="phenotype-scores.html" />
-    <link rel="prev" title="Statistical analyses" href="index.html" /> 
+    <link rel="next" title="Multiple-testing correction" href="mtc.html" />
+    <link rel="prev" title="Gallery" href="partitioning/gallery.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,27 +48,26 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../predicates/index.html">Predicates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Compare genotype and phenotype groups</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#fisher-exact-test-fet">Fisher exact test (FET)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fisher-exact-test">Fisher exact test</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -103,9 +102,15 @@
              
   <section id="compare-genotype-and-phenotype-groups">
 <span id="genotype-phenotype-groups"></span><h1>Compare genotype and phenotype groups<a class="headerlink" href="#compare-genotype-and-phenotype-groups" title="Link to this heading"></a></h1>
-<section id="fisher-exact-test-fet">
-<span id="fisher-exact-test"></span><h2>Fisher exact test (FET)<a class="headerlink" href="#fisher-exact-test-fet" title="Link to this heading"></a></h2>
-<p>The Fisher exact test (FET) calculates the exact probability value
+<p>In this section, we show how to test the association between genotype and phenotype categories.
+We assume a cohort was preprocessed following the <a class="reference internal" href="../input-data.html#input-data"><span class="std std-ref">Input data</span></a> section,
+and we use predicates described in the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> to assign each cohort member
+into a group along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the groups
+and we apply multiple testing correction to mitigate finding significant associations by chance.</p>
+<section id="fisher-exact-test">
+<span id="id1"></span><h2>Fisher exact test<a class="headerlink" href="#fisher-exact-test" title="Link to this heading"></a></h2>
+<p>The Fisher exact test calculates the exact probability value
 for the relationship between two dichotomous variables.
 In our implementation, the two dichotomous variables are the genotype and the phenotype.
 For instance, the individuals of the cohort may be divided
@@ -156,7 +161,7 @@ and deposited in <a class="reference external" href="https://github.com/monarch-
 <h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
 <p>For the purpose of this analysis, we will load the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json">JSON file</a>.
-The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-cohort-from-phenopackets"><span class="std std-ref">Create a cohort from GA4GH phenopackets</span></a> section,
+The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
@@ -235,7 +240,7 @@ including the <em>indirect</em> annotations whose presence is implied by the <a 
 </section>
 <section id="statistical-analysis">
 <h4>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Link to this heading"></a></h4>
-<p>We will use <a class="reference internal" href="#fisher-exact-test"><span class="std std-ref">Fisher exact test (FET)</span></a> to test the association
+<p>We will use <a class="reference internal" href="#fisher-exact-test"><span class="std std-ref">Fisher exact test</span></a> to test the association
 between genotype and phenotype groups, as described previously.</p>
 <p>In the case of this cohort, we can test association between having a frameshift variant and one of 369 HPO terms.
 However, testing multiple hypotheses on the same dataset increases the risk of finding
@@ -243,11 +248,11 @@ a significant association solely by chance.
 GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, mitigate this risk:
 a phenotype multiple testing (MT) filter and multiple testing correction (MTC).</p>
 <p>Phenotype MT filter selects a (sub)set of HPO terms for testing,
-for instance only the user-selected terms (see <code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifyTermsStrategy</span></code>)
+for instance only the user-selected terms (see <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>)
 or the terms selected by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.</p>
 <p>Multiple testing correction then adjusts the nominal p values for the increased risk
 of false positive G/P associations.
-The available MTC procedures are listed in the <a class="reference internal" href="../mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section.</p>
+The available MTC procedures are listed in the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section.</p>
 <p>We must pick one of these to perform genotype-phenotype analysis.</p>
 <section id="default-analysis">
 <h5>Default analysis<a class="headerlink" href="#default-analysis" title="Link to this heading"></a></h5>
@@ -269,7 +274,7 @@ First, we choose a phenotype MT filter (e.g. <a class="reference internal" href=
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>See the <a class="reference internal" href="../mtc.html#mtc-filters"><span class="std std-ref">MT filters: Choosing which terms to test</span></a> section for more info on the available MT filters.</p>
+<p>See the <a class="reference internal" href="mtc.html#mtc-filters"><span class="std std-ref">MT filters: Choosing which terms to test</span></a> section for more info on the available MT filters.</p>
 </div>
 <p>then a statistical test (e.g. Fisher Exact test):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
@@ -512,8 +517,8 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  
 </pre></div>
 </div>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text"><em>TBX5</em> frameshift vs rest</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text"><em>TBX5</em> frameshift vs rest</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Allele group</p></th>
 <th class="head"><p>Frameshift</p></th>
@@ -743,8 +748,8 @@ is <cite>~0.005806</cite>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Statistical analyses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="phenotype-scores.html" class="btn btn-neutral float-right" title="Compare phenotype scores in genotype groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="partitioning/gallery.html" class="btn btn-neutral float-left" title="Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mtc.html" class="btn btn-neutral float-right" title="Multiple-testing correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

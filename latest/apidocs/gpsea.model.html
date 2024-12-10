@@ -48,9 +48,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -809,7 +809,7 @@ The postnatal timeline starts at birth and ends at death.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.Phenotype">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">Phenotype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">onset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_phenotype.html#Phenotype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Phenotype" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Identified" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identified</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.ObservableFeature" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableFeature</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">OnsetAware</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Identified" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identified</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.ObservableFeature" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableFeature</span></code></a>, <a class="reference internal" href="#gpsea.model.OnsetAware" title="gpsea.model._phenotype.OnsetAware"><code class="xref py py-class docutils literal notranslate"><span class="pre">OnsetAware</span></code></a></p>
 <p><cite>Phenotype</cite> represents a clinical sign or symptom represented as an HPO term.</p>
 <p>The phenotype can be either present in the patient or excluded.</p>
 <dl class="py method">
@@ -876,7 +876,7 @@ or <cite>None</cite> if not available.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.Disease">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">Disease</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">onset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_phenotype.html#Disease"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Disease" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Identified" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identified</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.ObservableFeature" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableFeature</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Named" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Named</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">OnsetAware</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Identified" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identified</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.ObservableFeature" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableFeature</span></code></a>, <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.Named" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Named</span></code></a>, <a class="reference internal" href="#gpsea.model.OnsetAware" title="gpsea.model._phenotype.OnsetAware"><code class="xref py py-class docutils literal notranslate"><span class="pre">OnsetAware</span></code></a></p>
 <p>Representation of a disease diagnosed (or excluded) in an investigated individual.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.Disease.from_raw_parts">
@@ -938,6 +938,20 @@ with two difference genotype classes.</p>
 <dt class="sig sig-object py" id="gpsea.model.Measurement.unit">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#gpsea.model.Measurement.unit" title="Link to this definition"></a></dt>
 <dd><p>Return the unit for the test result encoded as a TermId, e.g., <code class="docutils literal notranslate"><span class="pre">UCUM:ng/dL</span></code> for <em>nanogram per deciliter</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.model.OnsetAware">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">OnsetAware</span></span><a class="reference internal" href="../_modules/gpsea/model/_phenotype.html#OnsetAware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.OnsetAware" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A mixin for classes which may know about their <a class="reference internal" href="#gpsea.model.Age" title="gpsea.model.Age"><code class="xref py py-class docutils literal notranslate"><span class="pre">Age</span></code></a> or onset.</p>
+<p>For instance, the onset of a phenotype or a disease in an individual.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.OnsetAware.onset">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">onset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.model.OnsetAware.onset" title="Link to this definition"></a></dt>
+<dd><p>Get the age of onset or <cite>None</cite> if unknown or otherwise not available.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2069,11 +2083,9 @@ We expect to obtain the gene symbol, protein identifier, and regions</p>
 </tbody>
 </table>
 <p>The <cite>region</cite> column includes the protein feature name.
-The category is a <cite>str</cite> representing region’s feature type. Use <cite>‘region’</cite> if no better type fits.</p>
-<blockquote>
-<div><p>Last, <cite>start</cite> and <cite>end</cite> denote 1-based start and end coordinates</p>
-</div></blockquote>
-<p>of the aminoacid sequence region described by the feature.
+The category is a <cite>str</cite> representing region’s feature type. Use <cite>‘region’</cite> if no better type fits.
+Last, <cite>start</cite> and <cite>end</cite> denote 1-based start and end coordinates
+of the aminoacid sequence region described by the feature.
 For instance, <cite>[1, 10]</cite> for the first ten aminoacids of the protein.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -10,13 +10,21 @@ Compare genotype and phenotype groups
 
   >>> from gpsea import _overwrite
 
+In this section, we show how to test the association between genotype and phenotype categories.
+We assume a cohort was preprocessed following the :ref:`input-data` section,
+and we use predicates described in the :ref:`partitioning` to assign each cohort member
+into a group along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the groups
+and we apply multiple testing correction to mitigate finding significant associations by chance. 
+
+
 .. _fisher-exact-test:
 
-***********************
-Fisher exact test (FET)
-***********************
+*****************
+Fisher exact test
+*****************
 
-The Fisher exact test (FET) calculates the exact probability value
+The Fisher exact test calculates the exact probability value
 for the relationship between two dichotomous variables.
 In our implementation, the two dichotomous variables are the genotype and the phenotype.
 For instance, the individuals of the cohort may be divided
@@ -82,7 +90,7 @@ Load cohort
 
 For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -184,7 +192,7 @@ GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, 
 a phenotype multiple testing (MT) filter and multiple testing correction (MTC).
 
 Phenotype MT filter selects a (sub)set of HPO terms for testing,
-for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifyTermsStrategy`)
+for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`)
 or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
 
 Multiple testing correction then adjusts the nominal p values for the increased risk

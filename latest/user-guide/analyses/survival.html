@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Multiple-testing correction" href="../mtc.html" />
+    <link rel="next" title="Glossary" href="../glossary.html" />
     <link rel="prev" title="Compare measurement values" href="measurements.html" /> 
 </head>
 
@@ -46,16 +46,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../predicates/index.html">Predicates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Survival analysis</a><ul>
@@ -64,8 +65,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -109,7 +108,7 @@ in exon 3 of <em>UMOD</em> vs. individuals with other <em>UMOD</em> mutation.</p
 <h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
 <p>For the purpose of this analysis, we will load the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/UMOD.0.1.20.json">JSON file</a>.
-The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-cohort-from-phenopackets"><span class="std std-ref">Create a cohort from GA4GH phenopackets</span></a> section,
+The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
@@ -183,7 +182,7 @@ the genotype groups:</p>
 </section>
 <section id="final-analysis">
 <h4>Final analysis<a class="headerlink" href="#final-analysis" title="Link to this heading"></a></h4>
-<p>We will put the final analysis together into <code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code>.</p>
+<p>We will put the final analysis together into a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.SurvivalAnalysis" title="gpsea.analysis.temporal.SurvivalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurvivalAnalysis</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal</span> <span class="kn">import</span> <span class="n">SurvivalAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">survival_analysis</span> <span class="o">=</span> <span class="n">SurvivalAnalysis</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">statistic</span><span class="o">=</span><span class="n">survival_statistic</span><span class="p">,</span>
@@ -263,7 +262,7 @@ or until the individual dropped out of the analysis (<cite>is_censored=True</cit
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="measurements.html" class="btn btn-neutral float-left" title="Compare measurement values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../mtc.html" class="btn btn-neutral float-right" title="Multiple-testing correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

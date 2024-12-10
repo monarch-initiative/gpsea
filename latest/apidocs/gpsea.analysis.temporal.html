@@ -46,9 +46,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -102,11 +102,11 @@ between genotype groups.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">Endpoint</span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.ContinuousPartitioning" title="gpsea.analysis._partition.ContinuousPartitioning"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></a></p>
 <p><cite>Endpoint</cite> computes survival for the analyzed individual.</p>
-<p>An example endpoint includes <code class="xref py py-func docutils literal notranslate"><span class="pre">death()</span></code>,
-<code class="xref py py-func docutils literal notranslate"><span class="pre">disease_onset()</span></code>,
-or onset of a phenotypic feature (<code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_onset()</span></code>).</p>
+<p>Example endpoints include <a class="reference internal" href="gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.death" title="gpsea.analysis.temporal.endpoint.death"><code class="xref py py-func docutils literal notranslate"><span class="pre">death()</span></code></a>,
+<a class="reference internal" href="gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.disease_onset" title="gpsea.analysis.temporal.endpoint.disease_onset"><code class="xref py py-func docutils literal notranslate"><span class="pre">disease_onset()</span></code></a>,
+or onset of a phenotypic feature (<a class="reference internal" href="gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.hpo_onset" title="gpsea.analysis.temporal.endpoint.hpo_onset"><code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_onset()</span></code></a>).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.Endpoint.compute_survival">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_survival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal._base.Survival"><span class="pre">Survival</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#Endpoint.compute_survival"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.Endpoint.compute_survival" title="Link to this definition"></a></dt>
@@ -172,8 +172,8 @@ The exception includes the reason(s) in <cite>args</cite> as well as any partial
 </tbody>
 </table>
 <p>The index includes the individual IDs (<cite>patient_id</cite>), and then there are 2 columns
-with the <cite>genotype</cite> group id (<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
-and the <cite>phenotype</cite> with the survival represented as <code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code> object.</p>
+with the <cite>genotype</cite> group id (<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>)
+and the <cite>phenotype</cite> with the survival represented as <a class="reference internal" href="#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a> object.</p>
 <p>A <cite>genotype</cite> value may be missing (<cite>None</cite>) if the individual cannot be assigned
 into a genotype category.
 Similarly, a <cite>survival</cite> is <cite>None</cite> if computing the survival for an individual is impossible.</p>

@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiple-testing correction &mdash; GPSEA 0.7.2.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a2717a26"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=6dbb43f8"></script>
+      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Compare phenotype scores in genotype groups" href="phenotype-scores.html" />
+    <link rel="prev" title="Compare genotype and phenotype groups" href="phenotype-groups.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Multiple-testing correction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implementation-in-gpsea">Implementation in GPSEA</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Statistical analyses</a></li>
+      <li class="breadcrumb-item active">Multiple-testing correction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/user-guide/analyses/mtc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multiple-testing-correction">
+<span id="mtc"></span><h1>Multiple-testing correction<a class="headerlink" href="#multiple-testing-correction" title="Link to this heading"></a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
+<p>A p-value is the probability that a test result, under the null hypothesis,
+assumes the observed or a more extreme value. It is important to realize that if we
+perform many tests, we are likely to get a “significant” result by chance alone.
+For instance, if we test a null hypothesis that is true using a significance level
+of <span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>, then there is a probability of <span class="math notranslate nohighlight">\(1-\alpha = 0.95\)</span>
+of arriving at a correct conclusion of non-significance. If we now test
+two independent true null hypotheses, the probability that neither
+test is significant is <span class="math notranslate nohighlight">\(0.95\times 0.95 = 0.90.\)</span> If we test 20
+independent null hypotheses, the probability that none will be
+significant is then <span class="math notranslate nohighlight">\((0.95)^{20}=0.36\)</span>. This corresponds to a
+probability of <span class="math notranslate nohighlight">\(1-0.36=0.64\)</span> of getting at least one spurious
+significant result, and the expected number of spurious significant
+results in 20 tests is <span class="math notranslate nohighlight">\(20\times 0.05=1\)</span>. If we perform 100 such
+tests, the probability that none will be significant is
+<span class="math notranslate nohighlight">\((0.95)^{100}=0.01\)</span> and there is a 99% probability of getting at
+least one significant result.</p>
+</section>
+<section id="implementation-in-gpsea">
+<h2>Implementation in GPSEA<a class="headerlink" href="#implementation-in-gpsea" title="Link to this heading"></a></h2>
+<p>By default, GPSEA performs a hypothesis test for each HPO term found at least twice
+in the cohort, meaning that we may perform up to hundreds of tests.
+Therefore, unless we take into account the fact that multiple statistical tests are being performed,
+it is likely that we will obtain one or more false-positive results.</p>
+<p>GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
+and MT filters to choose the terms to be tested.</p>
+<section id="multiple-testing-correction-procedures">
+<span id="mtc-correction-procedures"></span><h3>Multiple-testing correction procedures<a class="headerlink" href="#multiple-testing-correction-procedures" title="Link to this heading"></a></h3>
+<p>A number of MTC procedures have
+been developed to limit the probability of false-positive results. The
+MTC procedures differ in complexity, in their assumptions about the
+data, and in the type of control they provide.</p>
+<p>The GPSEA package uses the Python package <a class="reference external" href="https://www.statsmodels.org/devel/">statsmodels</a> to implement
+MTC. See the <a class="reference external" href="https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html">documentation</a> for details;
+the following table shows allowable options.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>MTC procedure</p></th>
+<th class="head"><p>abbreviation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>bonferroni</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-odd"><td><p>sidak</p></td>
+<td><p>s</p></td>
+</tr>
+<tr class="row-even"><td><p>holm-sidak</p></td>
+<td><p>hs</p></td>
+</tr>
+<tr class="row-odd"><td><p>holm</p></td>
+<td><p>h</p></td>
+</tr>
+<tr class="row-even"><td><p>simes-hochberg</p></td>
+<td><p>sh</p></td>
+</tr>
+<tr class="row-odd"><td><p>hommel</p></td>
+<td><p>ho</p></td>
+</tr>
+<tr class="row-even"><td><p>fdr_bh</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fdr_by</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fdr_tsbh</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fdr_tsbky</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fdr_gbs</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The oldest and simplest MTC procedure is the Bonferroni
+correction (<code class="docutils literal notranslate"><span class="pre">bonferroni</span></code>). The Bonferroni procedure thus provides control of the family-wise
+error rate (FWER), which is the probability of at least one Type I
+error.  The Bonferroni method multiplies the p-value
+returned by each test (which is call the <em>nominal</em> p-value)
+by the number of tests performed (the result is capped at 1.0).</p>
+<p>Alternatively, procedures that control the false-discovery rate (FDR),
+limit the proportion of significant results that are type I
+errors (false discoveries).
+The Benjamini and Hochberg method (<code class="docutils literal notranslate"><span class="pre">fdr_bh</span></code>) is probably the most commonly used one.
+This is the <em>default</em> method in GPSEA.</p>
+<p>To set an alternative MTC procedure, we use the <cite>mtc_correction</cite> option
+when creating an instance of <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">FisherExactTest</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">mtc_filter</span><span class="o">=</span><span class="n">UseAllTermsMtcFilter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">mtc_correction</span><span class="o">=</span><span class="s1">&#39;bonferroni&#39;</span><span class="p">,</span>  <span class="c1">#      &lt;--- The MTC correction setup</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="mt-filters-choosing-which-terms-to-test">
+<span id="mtc-filters"></span><h3>MT filters: Choosing which terms to test<a class="headerlink" href="#mt-filters-choosing-which-terms-to-test" title="Link to this heading"></a></h3>
+<p>We can reduce the overall MTC burden by choosing which terms to test.
+For example, if we choose to test only ten terms out of 450,
+then the mutliplication factor of the Bonferroni correction
+is only 10 instead of 450, and more p-values
+may “survive” the multiple-testing correction.</p>
+<p>In the context of GPSEA, we represent the concept of phenotype filtering
+by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>.
+We provide three filtering strategies.</p>
+<section id="test-all-terms">
+<span id="use-all-terms-strategy"></span><h4>Test all terms<a class="headerlink" href="#test-all-terms" title="Link to this heading"></a></h4>
+<p>The first MT filtering strategy is the simplest - do not apply any filtering at all.
+This will result in testing all terms and we do not recommend this strategy,
+but it can be used to disable MT filtering.</p>
+<p>The strategy is implemented in <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter" title="gpsea.analysis.mtc_filter.UseAllTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">UseAllTermsMtcFilter</span></code></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">use_all</span> <span class="o">=</span> <span class="n">UseAllTermsMtcFilter</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="specify-terms-strategy">
+<span id="id1"></span><h4>Specify terms strategy<a class="headerlink" href="#specify-terms-strategy" title="Link to this heading"></a></h4>
+<p>In presence of a specific hypothesis as to which terms may be different between groups,
+then you can specify these terms in <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>.</p>
+<p>For example if we want to specifically test
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0031982">Abnormal putamen morphology (HP:0031982)</a> and
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0002339">Abnormal caudate nucleus morphology (HP:0002339)</a>
+we pass an iterable (e.g. a tuple) with these two terms as an argument:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">SpecifiedTermsMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specified_terms</span> <span class="o">=</span> <span class="n">SpecifiedTermsMtcFilter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">terms_to_test</span><span class="o">=</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="s2">&quot;HP:0031982&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal putamen morphology</span>
+<span class="gp">... </span>        <span class="s2">&quot;HP:0002339&quot;</span><span class="p">,</span>  <span class="c1"># Abnormal caudate nucleus morphology</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">specified_terms</span><span class="o">.</span><span class="n">terms_to_test</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</section>
+<section id="hpo-mt-filter-strategy">
+<span id="hpo-mtc-filter-strategy"></span><h4>HPO MT filter strategy<a class="headerlink" href="#hpo-mt-filter-strategy" title="Link to this heading"></a></h4>
+<p>The HPO MT strategy involves making several domain judgments and takes advantage of the HPO structure.
+The strategy needs access to HPO:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and it is implemented in the <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a> class:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use static constructor <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a>
+for creating <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.
+The constructor takes a <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> option (40% by default)
+and the method’s logic is made up of 8 individual heuristics
+designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.</p>
+<nav class="contents local" id="hpo-mt-filters">
+<p class="topic-title">HPO MT filters</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#hmf01-skip-terms-that-occur-very-rarely" id="id2"><cite>HMF01</cite> - Skip terms that occur very rarely</a></p></li>
+<li><p><a class="reference internal" href="#hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count" id="id3"><cite>HMF02</cite> - Skip terms if no genotype group has more than one count</a></p></li>
+<li><p><a class="reference internal" href="#hmf03-skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term" id="id4"><cite>HMF03</cite> - Skip terms if all counts are identical to counts for a child term</a></p></li>
+<li><p><a class="reference internal" href="#hmf05-skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations" id="id5"><cite>HMF05</cite> - Skip term if one of the genotype groups has neither observed nor excluded observations</a></p></li>
+<li><p><a class="reference internal" href="#hmf06-skip-term-if-underpowered-for-2x2-or-2x3-analysis" id="id6"><cite>HMF06</cite> - Skip term if underpowered for 2x2 or 2x3 analysis</a></p></li>
+<li><p><a class="reference internal" href="#hmf07-skipping-terms-that-are-not-descendents-of-phenotypic-abnormality" id="id7"><cite>HMF07</cite> - Skipping terms that are not descendents of <em>Phenotypic abnormality</em></a></p></li>
+<li><p><a class="reference internal" href="#hmf08-skipping-general-level-terms" id="id8"><cite>HMF08</cite> - Skipping “general” level terms</a></p></li>
+<li><p><a class="reference internal" href="#hmf09-skipping-terms-that-are-rare-on-the-cohort-level" id="id9"><cite>HMF09</cite> - Skipping terms that are rare on the cohort level</a></p></li>
+</ul>
+</nav>
+<section id="hmf01-skip-terms-that-occur-very-rarely">
+<h5><a class="toc-backref" href="#id2" role="doc-backlink"><cite>HMF01</cite> - Skip terms that occur very rarely</a><a class="headerlink" href="#hmf01-skip-terms-that-occur-very-rarely" title="Link to this heading"></a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> determines the mininum proportion of individuals
+with direct or indirect annotation by the HPO term to test.
+We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE),
+and we only retain a term for testing if the proportion of individuals
+in at least one genotype group is greater than
+or equal to <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code>.
+This is because of our assumption that even if there is statistical significance,
+if a term is only seen in (for example) 7% of individuals
+in the MISSENSE group and 2% in the not-MISSENSE group,
+the term is unlikely to be of great interest because it is rare.</p>
+</section>
+<section id="hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count">
+<h5><a class="toc-backref" href="#id3" role="doc-backlink"><cite>HMF02</cite> - Skip terms if no genotype group has more than one count</a><a class="headerlink" href="#hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count" title="Link to this heading"></a></h5>
+<p>In a related heuristic, we skip terms if no genotype group has more
+than one count. This is not completely redundant with the previous condition,
+because some terms may have a small number of total observations.</p>
+</section>
+<section id="hmf03-skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term">
+<h5><a class="toc-backref" href="#id4" role="doc-backlink"><cite>HMF03</cite> - Skip terms if all counts are identical to counts for a child term</a><a class="headerlink" href="#hmf03-skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term" title="Link to this heading"></a></h5>
+<p>Let’s say a term such as
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001115">Posterior polar cataract (HP:0001115)</a>
+was observed in 7 of 11 individuals with MISSENSE variants
+and in 3 of 8 individuals with NONSENSE variants.
+If we find the same patient counts (7 of 11 and 3 of 8) in the parent term
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0010696">Polar cataract HP:0010696</a>,
+then we choose to not test the parent term.</p>
+<p>This is because the more specific an HPO term is,
+the more information it has (the more interesting the correlation would be if it exists),
+and the result of a test, such as the Fisher Exact test, would be exactly the same
+for <em>Polar cataract</em> as for <em>Posterior polar cataract</em>.</p>
+</section>
+<section id="hmf05-skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations">
+<h5><a class="toc-backref" href="#id5" role="doc-backlink"><cite>HMF05</cite> - Skip term if one of the genotype groups has neither observed nor excluded observations</a><a class="headerlink" href="#hmf05-skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations" title="Link to this heading"></a></h5>
+<p>Skip terms if there are no HPO observations in a group.</p>
+</section>
+<section id="hmf06-skip-term-if-underpowered-for-2x2-or-2x3-analysis">
+<h5><a class="toc-backref" href="#id6" role="doc-backlink"><cite>HMF06</cite> - Skip term if underpowered for 2x2 or 2x3 analysis</a><a class="headerlink" href="#hmf06-skip-term-if-underpowered-for-2x2-or-2x3-analysis" title="Link to this heading"></a></h5>
+<p>If the individuals are binned into 2 phenotype groups and 2 genotype groups (2x2)
+and the total count of patients in all genotype-phenotype groups is less than 7,
+or into 2 phenotype groups and 3 genotype groups (2x3) and the total count of patients
+is less than 6, then there is a lack even of the nominal statistical power
+and the counts can never be significant.</p>
+</section>
+<section id="hmf07-skipping-terms-that-are-not-descendents-of-phenotypic-abnormality">
+<h5><a class="toc-backref" href="#id7" role="doc-backlink"><cite>HMF07</cite> - Skipping terms that are not descendents of <em>Phenotypic abnormality</em></a><a class="headerlink" href="#hmf07-skipping-terms-that-are-not-descendents-of-phenotypic-abnormality" title="Link to this heading"></a></h5>
+<p>The HPO has a number of other branches that describe modes of inheritance,
+past medical history, and clinical modifiers.
+We do not think it makes much sense to test for enrichment of these terms,
+so, all terms that are not descendants of
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality</a> are filtered out.</p>
+</section>
+<section id="hmf08-skipping-general-level-terms">
+<h5><a class="toc-backref" href="#id8" role="doc-backlink"><cite>HMF08</cite> - Skipping “general” level terms</a><a class="headerlink" href="#hmf08-skipping-general-level-terms" title="Link to this heading"></a></h5>
+<p>All the direct children of the root phenotype term
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000118">Phenotypic abnormality (HP:0000118)</a>
+are skipped, because of the assumption that if there is a valid signal,
+it will derive from one of the more specific descendents.</p>
+<p>For instance,
+<a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000707">Abnormality of the nervous system</a>
+(HP:0000707) is a child of <em>Phenotypic abnormality</em>, and this assumption implies
+that if there is a signal from the nervous system,
+it will lead to at least one of the descendents of
+<em>Abnormality of the nervous system</em> being significant.</p>
+</section>
+<section id="hmf09-skipping-terms-that-are-rare-on-the-cohort-level">
+<h5><a class="toc-backref" href="#id9" role="doc-backlink"><cite>HMF09</cite> - Skipping terms that are rare on the cohort level</a><a class="headerlink" href="#hmf09-skipping-terms-that-are-rare-on-the-cohort-level" title="Link to this heading"></a></h5>
+<p>We skip terms that occur in less than a certain percentage of cohort members.
+The purpose of this threshold is to omit terms for which we simply
+do not have much data overall.</p>
+<p>For instance, if the cohort consists of 100 individuals,
+and we have explicit observed observations for 20 and excluded for 10 individuals,
+then the annotation frequency is <cite>0.3</cite>.</p>
+<p>The threshold is set as <code class="docutils literal notranslate"><span class="pre">annotation_frequency_threshold</span></code> option
+of the <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a> constructor,
+with the default value of <cite>0.4</cite> (40%).</p>
+<p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> section for details.</p>
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="phenotype-groups.html" class="btn btn-neutral float-left" title="Compare genotype and phenotype groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="phenotype-scores.html" class="btn btn-neutral float-right" title="Compare phenotype scores in genotype groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -46,9 +46,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -99,7 +99,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScorer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScorer</span></span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScorer" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.ContinuousPartitioning" title="gpsea.analysis._partition.ContinuousPartitioning"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></a></p>
 <p><cite>PhenotypeScorer</cite> assigns the patient with a phenotype score.</p>
 <p>The score can be <cite>math.nan</cite> if it is not possible to compute the score for a patient.</p>
 <p>The scorer can be created by wrapping a scoring function (see <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function" title="gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">wrap_scoring_function()</span></code></a>).</p>
@@ -163,11 +163,41 @@ and the results are reported as a <a class="reference internal" href="#gpsea.ana
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.pscore.</span></span><span class="sig-name descname"><span class="pre">PhenotypeScoreAnalysisResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype._api.GenotypePolyPredicate"><span class="pre">GenotypePolyPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><span class="pre">PhenotypeScorer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Statistic" title="gpsea.analysis._base.Statistic"><span class="pre">Statistic</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/2.0.0/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.0.0)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic_result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.StatisticResult" title="gpsea.analysis._base.StatisticResult"><span class="pre">StatisticResult</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult" title="gpsea.analysis._base.MonoPhenotypeAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonoPhenotypeAnalysisResult</span></code></a></p>
 <p><cite>PhenotypeScoreAnalysisResult</cite> is a container for <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysis" title="gpsea.analysis.pscore.PhenotypeScoreAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code></a> results.</p>
-<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysisResult.data</span></code> property provides a data frame
-with phenotype score for each tested individual:</p>
+<p>The <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.data" title="gpsea.analysis.MonoPhenotypeAnalysisResult.data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code></a>
+property provides a data frame with phenotype score for each tested individual:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>patient_id</p></th>
+<th class="head"><p>genotype</p></th>
+<th class="head"><p>phenotype</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>patient_1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>patient_2</p></td>
+<td><p>0</p></td>
+<td><p>nan</p></td>
+</tr>
+<tr class="row-even"><td><p>patient_3</p></td>
+<td><p>None</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>patient_4</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
 <p>The DataFrame index includes the identifiers of the tested individuals and the values are stored
 in <cite>genotype</cite> and <cite>phenotype</cite> columns.</p>
-<p>The <cite>genotype</cite> includes the genotype category ID (<code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code>)
+<p>The <cite>genotype</cite> includes the genotype category ID (<a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>)
 or <cite>None</cite> if the patient cannot be assigned into any genotype category.</p>
 <p>The <cite>phenotype</cite> contains a <cite>float</cite> with the phenotype score. A <cite>NaN</cite> value is used
 if the phenotype score is impossible to compute.</p>
@@ -256,7 +286,7 @@ Do not double count if the individual has two terms
 <dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore._api.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a></p>
 <p><cite>DeVriesPhenotypeScorer</cite> computes “adapted De Vries Score”
 as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/21712853">Feenstra et al.</a>.</p>
-<p>See more in <a class="reference internal" href="../user-guide/predicates/devries.html#devries-scorer"><span class="std std-ref">De Vries Score</span></a> section.</p>
+<p>See more in <a class="reference internal" href="../user-guide/analyses/partitioning/phenotype/devries.html#devries-scorer"><span class="std std-ref">De Vries Score</span></a> section.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.DeVriesPhenotypeScorer.name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.pscore.DeVriesPhenotypeScorer.name" title="Link to this definition"></a></dt>

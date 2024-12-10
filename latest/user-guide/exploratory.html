@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Predicates" href="predicates/index.html" />
+    <link rel="next" title="Statistical analyses" href="analyses/index.html" />
     <link rel="prev" title="Input data" href="input-data.html" /> 
 </head>
 
@@ -46,15 +46,18 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cohort exploratory analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#types-of-statistical-test">Types of statistical test</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#power">Power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#types-of-statistical-tests">Types of statistical tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#power">Power</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#exploration">Exploration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#interactive-exploration">Interactive exploration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cohort-summary">Cohort summary</a></li>
@@ -64,10 +67,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="predicates/index.html">Predicates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analyses/index.html">Statistical analyses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -101,23 +101,26 @@
              
   <section id="cohort-exploratory-analysis">
 <span id="exploratory"></span><h1>Cohort exploratory analysis<a class="headerlink" href="#cohort-exploratory-analysis" title="Link to this heading"></a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
 <p>As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
 these in a targeted way. Performing numerous tests without any specific plan comes with an increased
-danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
+danger of false-positive results (although it may be appropriate to generate hypotheses if a validation cohort is
 available).</p>
-<section id="types-of-statistical-test">
-<h2>Types of statistical test<a class="headerlink" href="#types-of-statistical-test" title="Link to this heading"></a></h2>
-<p>GPSEA offers four statistical tests.</p>
+<section id="types-of-statistical-tests">
+<h3>Types of statistical tests<a class="headerlink" href="#types-of-statistical-tests" title="Link to this heading"></a></h3>
+<p>GPSEA offers four statistical tests:</p>
 <ul class="simple">
-<li><p>Fisher Exact Test (FET): Association between two categorical variables. In this case, the first categorical variable is presence/absense of a genotype and the second is presence/absense of annotation to an HPO term.</p></li>
-<li><p>Mann Whitney U test: Association between presence/absence of a genotype with a phenotype score (e.g., <span class="xref std std-ref">devries</span>).</p></li>
-<li><p>t test: Association between presence/absence of a genotype with a numerical test result (e.g., potassium level)</p></li>
-<li><p>log rank score: Association between presence/absence of a genotype with age-of-onset of disease or of an HPO feature or with mortality</p></li>
+<li><p>Fisher Exact Test (FET): Association between two categorical variables.
+In this case, the first categorical variable is presence/absense of a genotype and the second is presence/absense of annotation to an HPO term.</p></li>
+<li><p>Mann Whitney U test: Association between presence/absence of a genotype with a phenotype score (e.g., <a class="reference internal" href="analyses/partitioning/phenotype/devries.html#devries-scorer"><span class="std std-ref">De Vries Score</span></a>).</p></li>
+<li><p>t test: Association between presence/absence of a genotype with a numerical test result (e.g., potassium level).</p></li>
+<li><p>log rank test: Association between presence/absence of a genotype with age-of-onset of a disease or of an HPO feature or with mortality.</p></li>
 </ul>
 <p>Please consult the documentation pages for each of these tests if you are unsure which to use.</p>
 </section>
 <section id="power">
-<h2>Power<a class="headerlink" href="#power" title="Link to this heading"></a></h2>
+<h3>Power<a class="headerlink" href="#power" title="Link to this heading"></a></h3>
 <p>Two things must be true to identify a valid genotype-phenotype correlation. First, and obviously,
 the correlation must actually exist in the dataset being analyzed. Second, there must be statistical power to
 identify the effect.
@@ -126,6 +129,7 @@ particular effect if it is truly present (<a class="reference external" href="ht
 <p>It will generally not be possible to perform a formal power calculation because the effect size of
 most genotype-phenotype correlations is not well known. But, for instance it would not
 make much sense to test for correlation with a specific variant that occurs in only one of 50 individuals in a cohort.</p>
+</section>
 </section>
 <section id="exploration">
 <h2>Exploration<a class="headerlink" href="#exploration" title="Link to this heading"></a></h2>
@@ -147,7 +151,7 @@ in JSON format.</p>
 <span class="go">156</span>
 </pre></div>
 </div>
-<p>then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
+<p>Then we choose the transcript and protein identifiers, and we fetch the corresponding data:
 (see <a class="reference internal" href="input-data.html#choose-tx-and-protein"><span class="std std-ref">Choose the transcript and protein of interest</span></a> for more info):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">,</span> <span class="n">configure_default_protein_metadata_service</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_181486.4&quot;</span>
@@ -158,7 +162,7 @@ in JSON format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pm_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pt_id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and we will load HPO <cite>v2024-07-01</cite> for using in the exploratory analysis:</p>
+<p>Last, we load HPO <cite>v2024-07-01</cite> to use in the exploratory analysis:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
@@ -166,16 +170,17 @@ in JSON format.</p>
 </div>
 <section id="interactive-exploration">
 <h3>Interactive exploration<a class="headerlink" href="#interactive-exploration" title="Link to this heading"></a></h3>
-<p>We designed GPSEA to integrate with interactive Python with a widespread use
-in contemporary scientific workflows.</p>
-<p>The code for exploration is located in <a class="reference internal" href="../apidocs/gpsea.view.html#module-gpsea.view" title="gpsea.view"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.view</span></code></a> module.
-As a rule of thumb, the reports are provided as <a class="reference internal" href="../apidocs/gpsea.view.html#gpsea.view.GpseaReport" title="gpsea.view.GpseaReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">GpseaReport</span></code></a>
-which leverages IPython’s “magic” to integrate with environments such as Jupyter notebook.</p>
+<p>The code for generating reports with tables and figures is located in <a class="reference internal" href="../apidocs/gpsea.view.html#module-gpsea.view" title="gpsea.view"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.view</span></code></a> module.
+As a rule of thumb, the reports leverage IPython’s “magic”
+to integrate with the environments such as Jupyter notebook.
+Returning the report object as the last cell expression will render the report in the cell output.</p>
 </section>
 <section id="cohort-summary">
 <h3>Cohort summary<a class="headerlink" href="#cohort-summary" title="Link to this heading"></a></h3>
 <p>We recommend that users start be generating a cohort summary
-with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:</p>
+with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently.
+We create the <cite>viewer</cite> and we generate the <cite>report</cite> for a cohort and transcript.
+The implicit return of the <cite>report</cite> at the end of the cell renders the report in the cell output:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewer</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
@@ -335,7 +340,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
     
 
     
-    1 individual had disease onset information
+    52 individuals had disease onset information
     and 0 had information about the age of last encounter.
   </p>
 
@@ -601,12 +606,12 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
         </tr>
         
         <tr>
-          <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
+          <td class="lft">INFRAME_INSERTION</td>
           <td>2 (1%)</td>
         </tr>
         
         <tr>
-          <td class="lft">INTRON_VARIANT</td>
+          <td class="lft">STOP_RETAINED_VARIANT</td>
           <td>2 (1%)</td>
         </tr>
         
@@ -616,12 +621,12 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
         </tr>
         
         <tr>
-          <td class="lft">INFRAME_INSERTION</td>
+          <td class="lft">SPLICE_DONOR_5TH_BASE_VARIANT</td>
           <td>2 (1%)</td>
         </tr>
         
         <tr>
-          <td class="lft">STOP_RETAINED_VARIANT</td>
+          <td class="lft">INTRON_VARIANT</td>
           <td>2 (1%)</td>
         </tr>
         
@@ -642,7 +647,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
 <h3>Distribution of variants across protein domains<a class="headerlink" href="#distribution-of-variants-across-protein-domains" title="Link to this heading"></a></h3>
 <p>GPSEA gathers information about protein domains from the UniProt API, and alternatively allows users to
 enter domain information manually (See <a class="reference internal" href="input-data.html#fetch-protein-data"><span class="std std-ref">Fetch protein data</span></a>).
-Protein domains are  distinct functional or structural units in a protein. For instance, the following graphic shows domains of
+Protein domains are distinct functional or structural units in a protein. For instance, the following graphic shows domains of
 the <em>PLD1</em> protein. The HKD domains contribute to the catalytic activity of the protein whereas the PX and PH domains
 regulation PLD1 localization within the cell. Observations such as this may suggest testable hypotheses.</p>
 <figure class="align-center" id="id1">
@@ -802,9 +807,9 @@ with variants in the <em>TBX5</em> gene:</p>
 <h1>T-box transcription factor TBX5: NP_852259.1</h1>
 <div class="card">
   <p>
-    T-box transcription factor TBX5 has 2 annotated protein featureses.
-    32 were found to be located within these features,
-    and 113 were located elsewhere.
+    T-box transcription factor TBX5 has 5 annotated protein featureses.
+    139 were found to be located within these features,
+    and 6 were located elsewhere.
     The total length of the protein is 518 amino acid residues.
   </p>
   <table>
@@ -820,17 +825,41 @@ with variants in the <em>TBX5</em> gene:</p>
         <tr>
           <td>13</td>
           <td>Disordered</td>
-          <td>REGION</td>
+          <td>Region</td>
           <td>2 - 46</td>
-          <td>p.Ala34GlyfsTer27; p.Pro14Thr; p.Ala34ProfsTer32; p.Ser36ThrfsTer25</td>
+          <td>p.Ala34GlyfsTer27; p.Ser36ThrfsTer25; p.Ala34ProfsTer32; p.Pro14Thr</td>
+        </tr>
+        
+        <tr>
+          <td>107</td>
+          <td>T-box</td>
+          <td>DNA binding</td>
+          <td>59 - 238</td>
+          <td>p.Trp121Gly; p.Ala143ArgfsTer40; p.Leu94Arg; p.Arg237Trp; p.Gly80Arg; p.Arg237Gln; p.Thr72Lys; p.Val214GlyfsTer12; p.Ile227_Glu228insTer; p.Phe168LeufsTer6; p.Arg81Trp; p.Tyr136Ter; p.Gln151Ter; p.Lys88Ter; p.Pro85Thr; p.His220del; p.Arg237Pro; p.Arg134ProfsTer49; p.Ile106Val; p.Met83PhefsTer6; p.Val153SerfsTer21; p.Met74Ile; p.Thr161Pro; p.Lys226Asn; p.Leu65GlnfsTer10; p.Thr223Met; p.Pro139GlnfsTer11; p.Gly125AlafsTer25; p.Ser196Ter; p.Gly195Ala</td>
         </tr>
         
         <tr>
           <td>19</td>
           <td>Disordered</td>
-          <td>REGION</td>
+          <td>Region</td>
           <td>251 - 356</td>
-          <td>p.Tyr291Ter; p.Glu294Ter; p.Tyr342ThrfsTer52; p.Ser261Cys; p.Gln315ArgfsTer79; p.Arg279Ter; p.Val263Met; p.Gln302ArgfsTer92; p.Val267TrpfsTer127</td>
+          <td>p.Glu294Ter; p.Val267TrpfsTer127; p.Tyr291Ter; p.Val263Met; p.Ser261Cys; p.Gln315ArgfsTer79; p.Arg279Ter; p.Gln302ArgfsTer92; p.Tyr342ThrfsTer52</td>
+        </tr>
+        
+        <tr>
+          <td>8</td>
+          <td>Polar residues</td>
+          <td>Compositional bias</td>
+          <td>264 - 299</td>
+          <td>p.Arg279Ter; p.Tyr291Ter; p.Val267TrpfsTer127; p.Glu294Ter</td>
+        </tr>
+        
+        <tr>
+          <td>1</td>
+          <td>Basic and acidic residues</td>
+          <td>Compositional bias</td>
+          <td>321 - 346</td>
+          <td>p.Tyr342ThrfsTer52</td>
         </tr>
         
     </tbody>
@@ -865,7 +894,7 @@ with variants in the <em>TBX5</em> gene:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="input-data.html" class="btn btn-neutral float-left" title="Input data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="predicates/index.html" class="btn btn-neutral float-right" title="Predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="analyses/index.html" class="btn btn-neutral float-right" title="Statistical analyses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

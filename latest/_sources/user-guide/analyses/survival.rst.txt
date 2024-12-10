@@ -24,7 +24,7 @@ Load cohort
 
 For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/UMOD.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -105,7 +105,7 @@ the genotype groups:
 Final analysis
 --------------
 
-We will put the final analysis together into :class:`~gpsea.analysis.temporal.PhenotypeScoreAnalysis`.
+We will put the final analysis together into a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
 
 >>> from gpsea.analysis.temporal import SurvivalAnalysis
 >>> survival_analysis = SurvivalAnalysis(

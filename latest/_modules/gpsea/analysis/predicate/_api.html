@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
@@ -90,6 +90,8 @@
 <span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">Partitioning</span>
 
 
+<div class="viewcode-block" id="PatientCategory">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory">[docs]</a>
 <span class="k">class</span> <span class="nc">PatientCategory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PatientCategory` represents one of several exclusive discrete groups.</span>
@@ -141,14 +143,19 @@
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">description</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">))</span></div>
 
 
+
+<div class="viewcode-block" id="Categorization">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization">[docs]</a>
 <span class="k">class</span> <span class="nc">Categorization</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Categorization` represents one of discrete group a :class:`~gpsea.model.Patient` can be assigned into.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Categorization.from_raw_parts">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization.from_raw_parts">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_raw_parts</span><span class="p">(</span>
         <span class="n">cat_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -164,7 +171,8 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -186,7 +194,8 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Categorization(category=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="si">}</span><span class="s1">)&#39;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
 
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Categorization</span><span class="p">)</span>
